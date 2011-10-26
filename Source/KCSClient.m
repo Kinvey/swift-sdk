@@ -25,6 +25,7 @@
 @synthesize basicAuthCred;
 @synthesize actionDelegate;
 @synthesize connectionTimeout;
+@synthesize options;
 
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
 {
@@ -118,9 +119,9 @@
 
 
 
-- (id)initWithAppKey:(NSString *)key andSecret:(NSString *)secret andBaseURI:(NSString *)uri
+- (id)initWithAppKey:(NSString *)key andSecret:(NSString *)secret usingBaseURI:(NSString *)uri
 {
-    NSLog(@"TRACE: initWithAppKey");
+    NSLog(@"TRACE: initWithAppKey:andSecret:usingBaseURI:");
     self = [super init];
     if (self){
         [self setAppKey: key];
@@ -129,7 +130,13 @@
         if (key != nil && secret != nil){
             basicAuthCred = [[NSURLCredential alloc] initWithUser:key password:secret persistence:NSURLCredentialPersistenceForSession]; 
         } else {
+            NSLog(@"No auth cred was provided..., authentication is not available during this session.");
             basicAuthCred = nil;
+        }
+        
+        // Make sure that our options dictionary is valid
+        if (options == Nil){
+            options = [[NSDictionary alloc] initWithObjectsAndKeys:@"appKey", key, @"appSecret", secret, @"baseURI", uri, nil];
         }
     }
     
@@ -140,15 +147,38 @@
 - (id)initWithAppKey:(NSString *)key andSecret:(NSString *)secret
 {
     NSLog(@"TRACE: initWithAppKey:andSecret:");
-    return [self initWithAppKey: key andSecret: secret andBaseURI:nil];
+    return [self initWithAppKey: key andSecret: secret usingBaseURI:nil];
 }
 
 - (id)init
 {
-    NSLog(@"TRACE: init");
-    return [self initWithAppKey:nil andSecret:nil andBaseURI:nil];
+    NSLog(@"TRACE: init:");
+    return [self initWithAppKey:nil andSecret:nil usingBaseURI:nil];
 }
 
+- (id)initWithOptions:(NSDictionary *)optionsDictionary
+{
+    NSLog(@"initWithOptions:");
+    
+    [self setOptions:optionsDictionary];
+
+    NSString *portString;
+    if ([optionsDictionary valueForKey:@"kinveyPort"] != nil){
+        portString = [@":" stringByAppendingString: [options valueForKey:@"kinveyPort"]];
+    } else {
+        portString = @"";
+    }
+
+    // Extract the relevant info and build the baseURI string. 
+    NSString *uri = [NSString stringWithFormat:@"https://%@.kinvey.com%@/appdata/%@",
+                     [options valueForKey:@"service"],
+                     portString,
+                     [options valueForKey:@"appKey"]];
+    
+    [options setValue:uri forKey:@"baseURI"];
+    
+    return [self initWithAppKey:[options valueForKey:@"appKey"] andSecret: [options valueForKey:@"appSecret"] usingBaseURI:uri];
+}
 
 
 // Generic connection handler for all requests
