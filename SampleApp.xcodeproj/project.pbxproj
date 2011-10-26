@@ -31,6 +31,12 @@
 		D307921E14560D2000E5A284 /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921314560D2000E5A284 /* KinveyCollection.m */; };
 		D307921F14560D2000E5A284 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921514560D2000E5A284 /* KinveyEntity.m */; };
 		D307922014560D2000E5A284 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921514560D2000E5A284 /* KinveyEntity.m */; };
+		D3AEED3D1457373D00E9523E /* KinveyKitEntityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3AEED3C1457373D00E9523E /* KinveyKitEntityTests.m */; };
+		D3AEED411457398600E9523E /* KinveyKitCollectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3AEED401457398600E9523E /* KinveyKitCollectionTests.m */; };
+		D3AEED441457553000E9523E /* NSURL+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D3AEED431457553000E9523E /* NSURL+KinveyAdditions.m */; };
+		D3AEED451457553000E9523E /* NSURL+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D3AEED431457553000E9523E /* NSURL+KinveyAdditions.m */; };
+		D3AEED481457555500E9523E /* NSString+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D3AEED471457555500E9523E /* NSString+KinveyAdditions.m */; };
+		D3AEED491457555500E9523E /* NSString+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D3AEED471457555500E9523E /* NSString+KinveyAdditions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +82,15 @@
 		D307921414560D2000E5A284 /* KinveyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyEntity.h; sourceTree = "<group>"; };
 		D307921514560D2000E5A284 /* KinveyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyEntity.m; sourceTree = "<group>"; };
 		D307921614560D2000E5A284 /* KinveyPersistable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyPersistable.h; sourceTree = "<group>"; };
+		D30792291456108800E5A284 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		D3AEED3B1457373D00E9523E /* KinveyKitEntityTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KinveyKitEntityTests.h; path = Tests/KinveyKitEntityTests.h; sourceTree = "<group>"; };
+		D3AEED3C1457373D00E9523E /* KinveyKitEntityTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KinveyKitEntityTests.m; path = Tests/KinveyKitEntityTests.m; sourceTree = "<group>"; };
+		D3AEED3F1457398600E9523E /* KinveyKitCollectionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KinveyKitCollectionTests.h; path = Tests/KinveyKitCollectionTests.h; sourceTree = "<group>"; };
+		D3AEED401457398600E9523E /* KinveyKitCollectionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KinveyKitCollectionTests.m; path = Tests/KinveyKitCollectionTests.m; sourceTree = "<group>"; };
+		D3AEED421457553000E9523E /* NSURL+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+KinveyAdditions.h"; sourceTree = "<group>"; };
+		D3AEED431457553000E9523E /* NSURL+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+KinveyAdditions.m"; sourceTree = "<group>"; };
+		D3AEED461457555500E9523E /* NSString+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+KinveyAdditions.h"; sourceTree = "<group>"; };
+		D3AEED471457555500E9523E /* NSString+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+KinveyAdditions.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,8 +195,10 @@
 		D307920714560D2000E5A284 /* KinveyKit */ = {
 			isa = PBXGroup;
 			children = (
+				D3AEED3E1457374500E9523E /* Tests */,
 				D307920814560D2000E5A284 /* Frameworks */,
 				D307920C14560D2000E5A284 /* KinveyKit.h */,
+				D30792291456108800E5A284 /* README.md */,
 				D307920D14560D2000E5A284 /* Source */,
 			);
 			path = KinveyKit;
@@ -216,8 +233,23 @@
 				D307921414560D2000E5A284 /* KinveyEntity.h */,
 				D307921514560D2000E5A284 /* KinveyEntity.m */,
 				D307921614560D2000E5A284 /* KinveyPersistable.h */,
+				D3AEED461457555500E9523E /* NSString+KinveyAdditions.h */,
+				D3AEED471457555500E9523E /* NSString+KinveyAdditions.m */,
+				D3AEED421457553000E9523E /* NSURL+KinveyAdditions.h */,
+				D3AEED431457553000E9523E /* NSURL+KinveyAdditions.m */,
 			);
 			path = Source;
+			sourceTree = "<group>";
+		};
+		D3AEED3E1457374500E9523E /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				D3AEED3B1457373D00E9523E /* KinveyKitEntityTests.h */,
+				D3AEED3C1457373D00E9523E /* KinveyKitEntityTests.m */,
+				D3AEED3F1457398600E9523E /* KinveyKitCollectionTests.h */,
+				D3AEED401457398600E9523E /* KinveyKitCollectionTests.m */,
+			);
+			name = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -336,6 +368,8 @@
 				D307921B14560D2000E5A284 /* KCSSimpleEntity.m in Sources */,
 				D307921D14560D2000E5A284 /* KinveyCollection.m in Sources */,
 				D307921F14560D2000E5A284 /* KinveyEntity.m in Sources */,
+				D3AEED441457553000E9523E /* NSURL+KinveyAdditions.m in Sources */,
+				D3AEED481457555500E9523E /* NSString+KinveyAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,6 +383,10 @@
 				D307921C14560D2000E5A284 /* KCSSimpleEntity.m in Sources */,
 				D307921E14560D2000E5A284 /* KinveyCollection.m in Sources */,
 				D307922014560D2000E5A284 /* KinveyEntity.m in Sources */,
+				D3AEED3D1457373D00E9523E /* KinveyKitEntityTests.m in Sources */,
+				D3AEED411457398600E9523E /* KinveyKitCollectionTests.m in Sources */,
+				D3AEED451457553000E9523E /* NSURL+KinveyAdditions.m in Sources */,
+				D3AEED491457555500E9523E /* NSString+KinveyAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,7 +506,6 @@
 		D307920514560CEB00E5A284 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/SampleApp";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
@@ -477,7 +514,6 @@
 				GCC_PREFIX_HEADER = "SampleApp/SampleApp-Prefix.pch";
 				INFOPLIST_FILE = "SampleAppTests/SampleAppTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -485,7 +521,6 @@
 		D307920614560CEB00E5A284 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/SampleApp";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
@@ -494,7 +529,6 @@
 				GCC_PREFIX_HEADER = "SampleApp/SampleApp-Prefix.pch";
 				INFOPLIST_FILE = "SampleAppTests/SampleAppTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
@@ -518,6 +552,7 @@
 				D307920314560CEB00E5A284 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D307920414560CEB00E5A284 /* Build configuration list for PBXNativeTarget "SampleAppTests" */ = {
 			isa = XCConfigurationList;
@@ -526,6 +561,7 @@
 				D307920614560CEB00E5A284 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

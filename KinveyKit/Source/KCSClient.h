@@ -1,10 +1,11 @@
 //
-//  KinveyClient.h
+//  KCSClient.h
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/13/11.
 //  Copyright (c) 2011 Kinvey. All rights reserved.
 //
+//  
 
 #import <Foundation/Foundation.h>
 #import "JSONKit.h"
@@ -13,7 +14,6 @@
 
 - (void) actionDidFail: (id)error;
 - (void) actionDidComplete: (NSObject *) result;
-
 
 @end
 
@@ -30,6 +30,8 @@
 @property (retain, nonatomic) NSURLCredential *basicAuthCred;
 @property (assign) id <KCSClientActionDelegate> actionDelegate;
 @property (readonly) double connectionTimeout;
+@property (retain) NSDictionary *options;
+
 
 
 #pragma mark -
@@ -50,7 +52,8 @@
 
 - (id)init;
 - (id)initWithAppKey:(NSString *)key andSecret: (NSString *)secret;
-- (id)initWithAppKey:(NSString *)key andSecret: (NSString *)secret andBaseURI: (NSString *)uri;
+- (id)initWithAppKey:(NSString *)key andSecret: (NSString *)secret usingBaseURI: (NSString *)uri;
+- (id)initWithOptions:(NSDictionary *)optionsDictionary;
 
 
 // GET, PUT, POST, DELETE
