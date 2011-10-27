@@ -18,7 +18,7 @@
 @protocol KCSPersistable <NSObject>
 
 // This name seems gimpy... but it conforms to the sytle guide, WTF mate?
-- (void)persistDelegatePersist: (id <KCSPersistDelegate>) delegate;
+- (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistUsingClient:(KCSClient *)client;
 - (NSDictionary*)propertyToElementMapping;
 
 @end

@@ -13,11 +13,14 @@
 #import "NSURL+KinveyAdditions.h"
 
 #import "JSONKit.h"
+#import "KinveyPersistable.h"
 
 // For assoc storage
 #import <objc/runtime.h>
+#import <Foundation/Foundation.h>
 
-// Declare several static vars here to create uniuqe pointers to serve as keys
+
+// Declare several static vars here to create unique pointers to serve as keys
 // for the assoc objects
 static char collectionKey;
 static char oidKey;
@@ -54,6 +57,7 @@ static char oidKey;
     
     KCSEntityDelegateMapper *mapper = [[KCSEntityDelegateMapper alloc] init];
     [mapper setMappedDelegate:delegate];
+    [mapper setObjectToLoad:self];
     [client clientActionDelegate:mapper forGetRequestAtPath:builtQuery];
 }
 
@@ -108,17 +112,65 @@ static char oidKey;
 
 - (NSString *)valueForProperty: (NSString *)property
 {
+    if ([property compare:@"_id"] == NSOrderedSame){
+        // String is _id, so this is our special case
+        return [self objectId];
+    } else {
+        return [self valueForKey:property];
+    }
     return nil;
 }
 
-- (void)delagate: (id)delagate loadObjectWithId: (NSString *)objectId
+- (void)entityDelegate:(id <KCSEntityDelegate>)delegate loadObjectWithId:(NSString *)objectId usingClient:(KCSClient *)client
 {
-    
+    KCSEntityDelegateMapper *deferredLoader = [[KCSEntityDelegateMapper alloc] init];
+    [deferredLoader setMappedDelegate:delegate];
+    [deferredLoader setObjectToLoad:self];
+
+    NSString *idLocation = [[client baseURI] stringsByAppendingPaths:[NSArray arrayWithObjects:[self entityColleciton], objectId, nil]];
+    [client clientActionDelegate:deferredLoader forGetRequestAtPath:idLocation];
 }
 
 - (void)setValue: (NSString *)value forProperty: (NSString *)property
 {
-    
+    if ([property compare:@"_id"] == NSOrderedSame){
+        [self setObjectId:value];
+    } else {
+        [self setValue:value forKey:property];
+    }
+}
+
+- (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistUsingClient:(KCSClient *)client {
+
+    NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
+    NSDictionary *kinveyMapping = [self propertyToElementMapping];
+
+    NSString *key;
+    for (key in kinveyMapping){
+        [dictionaryToMap setValue:[self valueForKey:key] forKey:key];
+    }
+
+    KCSPersistDelegateMapper *mapping = [[KCSPersistDelegateMapper alloc] init];
+
+    [mapping setMappedDelegate:delegate];
+    NSString *documentPath = [[client baseURI] stringByAppendingPathExtension:[self entityColleciton]];
+    [client clientActionDelegate:mapping forPostRequest:[dictionaryToMap JSONData] atPath:documentPath];
+
+    [dictionaryToMap release];
+    [mapping release];
+
+}
+
+- (NSDictionary *)propertyToElementMapping
+{
+    // Eventually this will be used to allow a default scanning of "self" to build and cache a
+    // 1-1 mapping of the client properties
+    NSException* myException = [NSException
+                                exceptionWithName:@"UnsupportedFeatureException"
+                                reason:@"This version of the Kinvey iOS library requires clients to override this method"
+                                userInfo:nil];
+
+    return nil;
 }
 
 
@@ -128,14 +180,54 @@ static char oidKey;
 @implementation KCSEntityDelegateMapper
 
 @synthesize mappedDelegate;
+@synthesize objectToLoad;
+@synthesize jsonDecoder;
+
+
+- (id)init {
+    self = [super init];
+    
+    if (self){
+        jsonDecoder = [[JSONDecoder alloc] init];
+    }
+
+}
+
+- (void)dealloc
+{
+    // Do something
+    [jsonDecoder release];
+    [mappedDelegate release];
+    [objectToLoad release];
+    [super dealloc];
+}
+
 
 - (void) actionDidFail: (id)error
 {
+    NSLog(@"Load failed!");
+    // Load failed, leave the object alone, nothing is needed here.
     [mappedDelegate fetchDidFail:error];
 }
 
 - (void) actionDidComplete: (NSObject *) result
 {
+    NSLog(@"KCSEntityDelegateMapper loading request and delegating to %@", mappedDelegate);
+    if (objectToLoad == Nil){
+        NSException* myException = [NSException
+                                    exceptionWithName:@"NilPointerException"
+                                    reason:@"EntityDelegateMapper attempting to retrieve entity into Nil object."
+                                    userInfo:nil];
+        @throw myException;
+    }
+
+    NSDictionary *jsonData = [jsonDecoder objectWithData:(NSData *)result];
+    NSDictionary *kinveyMapping = [objectToLoad propertyToElementMapping];
+
+    NSString *key;
+    for (key in kinveyMapping){
+        [objectToLoad setValue:[kinveyMapping valueForKey:key] forKey:key];
+    }
 
     [mappedDelegate fetchDidComplete:result];
 }
@@ -143,3 +235,26 @@ static char oidKey;
 
 @end
 
+@implementation KCSPersistDelegateMapper
+
+@synthesize mappedDelegate;
+
+- (void) actionDidFail: (id)error
+{
+    NSLog(@"Persist failed!");
+    // Load failed, leave the object alone, nothing is needed here.
+    [mappedDelegate persistDidFail:error];
+}
+
+- (void) actionDidComplete: (NSObject *) result
+{
+    [mappedDelegate persistDidComplete:result];
+}
+
+- (void)dealloc {
+    [mappedDelegate release];
+    [super dealloc];
+}
+
+
+@end
