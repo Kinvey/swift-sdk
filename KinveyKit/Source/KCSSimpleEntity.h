@@ -16,7 +16,7 @@
 @property (assign) id<KCSPersistDelegate> delegate;
 
 
-- (void)persistDelegatePersist: (id <KCSPersistDelegate>) delegate;
+- (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistUsingClient:(KCSClient *)client;
 - (NSDictionary*)propertyToElementMapping;
 
 
