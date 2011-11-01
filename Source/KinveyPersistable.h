@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class KCSClient;
+
 @protocol KCSPersistDelegate <NSObject>
 
 - (void) persistDidFail: (id)error;

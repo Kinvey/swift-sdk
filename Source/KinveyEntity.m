@@ -141,20 +141,39 @@ static char oidKey;
 }
 
 - (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistUsingClient:(KCSClient *)client {
+    
+    BOOL isPostRequest = NO;
 
     NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
     NSDictionary *kinveyMapping = [self propertyToElementMapping];
 
     NSString *key;
     for (key in kinveyMapping){
-        [dictionaryToMap setValue:[self valueForKey:key] forKey:key];
+        NSString *jsonName = [kinveyMapping valueForKey:key];
+        [dictionaryToMap setValue:[self valueForKey:key] forKey:jsonName];
+        
+        if ([jsonName compare:@"_id"] == NSOrderedSame){
+            if ([self valueForKey:key] == nil){
+                isPostRequest = YES;
+            } else {
+                isPostRequest = NO;
+            }
+        }
     }
 
     KCSPersistDelegateMapper *mapping = [[KCSPersistDelegateMapper alloc] init];
 
     [mapping setMappedDelegate:delegate];
     NSString *documentPath = [[client baseURI] stringByAppendingPathExtension:[self entityColleciton]];
-    [client clientActionDelegate:mapping forPostRequest:[dictionaryToMap JSONData] atPath:documentPath];
+    
+    
+    // If we need to post this, then do so
+    if (isPostRequest){
+        [client clientActionDelegate:mapping forPostRequest:[dictionaryToMap JSONData] atPath:documentPath];
+    } else {
+        // Otherwise we just put the data on Kinvey
+        [client clientActionDelegate:mapping forPutRequest:[dictionaryToMap JSONData] atPath:documentPath];
+    }
 
     [dictionaryToMap release];
     [mapping release];
