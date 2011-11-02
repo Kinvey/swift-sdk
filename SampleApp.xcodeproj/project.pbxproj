@@ -25,8 +25,8 @@
 		D307921814560D2000E5A284 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = D307920B14560D2000E5A284 /* JSONKit.m */; };
 		D307921914560D2000E5A284 /* KCSClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D307920F14560D2000E5A284 /* KCSClient.m */; };
 		D307921A14560D2000E5A284 /* KCSClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D307920F14560D2000E5A284 /* KCSClient.m */; };
-		D307921B14560D2000E5A284 /* KCSSimpleEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921114560D2000E5A284 /* KCSSimpleEntity.m */; };
-		D307921C14560D2000E5A284 /* KCSSimpleEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921114560D2000E5A284 /* KCSSimpleEntity.m */; };
+		D307921B14560D2000E5A284 /* KCSEntityDict.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921114560D2000E5A284 /* KCSEntityDict.m */; };
+		D307921C14560D2000E5A284 /* KCSEntityDict.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921114560D2000E5A284 /* KCSEntityDict.m */; };
 		D307921D14560D2000E5A284 /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921314560D2000E5A284 /* KinveyCollection.m */; };
 		D307921E14560D2000E5A284 /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921314560D2000E5A284 /* KinveyCollection.m */; };
 		D307921F14560D2000E5A284 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921514560D2000E5A284 /* KinveyEntity.m */; };
@@ -75,8 +75,8 @@
 		D307920C14560D2000E5A284 /* KinveyKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKit.h; sourceTree = "<group>"; };
 		D307920E14560D2000E5A284 /* KCSClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSClient.h; sourceTree = "<group>"; };
 		D307920F14560D2000E5A284 /* KCSClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSClient.m; sourceTree = "<group>"; };
-		D307921014560D2000E5A284 /* KCSSimpleEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSimpleEntity.h; sourceTree = "<group>"; };
-		D307921114560D2000E5A284 /* KCSSimpleEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSimpleEntity.m; sourceTree = "<group>"; };
+		D307921014560D2000E5A284 /* KCSEntityDict.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityDict.h; sourceTree = "<group>"; };
+		D307921114560D2000E5A284 /* KCSEntityDict.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityDict.m; sourceTree = "<group>"; };
 		D307921214560D2000E5A284 /* KinveyCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyCollection.h; sourceTree = "<group>"; };
 		D307921314560D2000E5A284 /* KinveyCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyCollection.m; sourceTree = "<group>"; };
 		D307921414560D2000E5A284 /* KinveyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyEntity.h; sourceTree = "<group>"; };
@@ -226,8 +226,8 @@
 			children = (
 				D307920E14560D2000E5A284 /* KCSClient.h */,
 				D307920F14560D2000E5A284 /* KCSClient.m */,
-				D307921014560D2000E5A284 /* KCSSimpleEntity.h */,
-				D307921114560D2000E5A284 /* KCSSimpleEntity.m */,
+				D307921014560D2000E5A284 /* KCSEntityDict.h */,
+				D307921114560D2000E5A284 /* KCSEntityDict.m */,
 				D307921214560D2000E5A284 /* KinveyCollection.h */,
 				D307921314560D2000E5A284 /* KinveyCollection.m */,
 				D307921414560D2000E5A284 /* KinveyEntity.h */,
@@ -365,7 +365,7 @@
 				D30791E914560CEB00E5A284 /* KCSViewController.m in Sources */,
 				D307921714560D2000E5A284 /* JSONKit.m in Sources */,
 				D307921914560D2000E5A284 /* KCSClient.m in Sources */,
-				D307921B14560D2000E5A284 /* KCSSimpleEntity.m in Sources */,
+				D307921B14560D2000E5A284 /* KCSEntityDict.m in Sources */,
 				D307921D14560D2000E5A284 /* KinveyCollection.m in Sources */,
 				D307921F14560D2000E5A284 /* KinveyEntity.m in Sources */,
 				D3AEED441457553000E9523E /* NSURL+KinveyAdditions.m in Sources */,
@@ -380,7 +380,7 @@
 				D30791FE14560CEB00E5A284 /* SampleAppTests.m in Sources */,
 				D307921814560D2000E5A284 /* JSONKit.m in Sources */,
 				D307921A14560D2000E5A284 /* KCSClient.m in Sources */,
-				D307921C14560D2000E5A284 /* KCSSimpleEntity.m in Sources */,
+				D307921C14560D2000E5A284 /* KCSEntityDict.m in Sources */,
 				D307921E14560D2000E5A284 /* KinveyCollection.m in Sources */,
 				D307922014560D2000E5A284 /* KinveyEntity.m in Sources */,
 				D3AEED3D1457373D00E9523E /* KinveyKitEntityTests.m in Sources */,
