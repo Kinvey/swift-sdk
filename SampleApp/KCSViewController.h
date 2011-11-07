@@ -9,5 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface KCSViewController : UIViewController
+@property (retain, nonatomic) IBOutlet UIImageView *splashImage;
+@property (retain, nonatomic) IBOutlet UILabel *loadingText;
+@property (retain, nonatomic) IBOutlet UIActivityIndicatorView *loadingProgress;
 
 @end

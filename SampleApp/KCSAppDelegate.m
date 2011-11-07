@@ -21,6 +21,13 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    // TODO: Need to add conditional for iPad
+//    UIStoryboard *board = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
+//
+//    UIViewController *splash = [board instantiateViewControllerWithIdentifier:@"splashScreen"];
+//    UIView *sv = splash.view;
+//    [[self window] addSubview:sv];
+//    [[self window] bringSubviewToFront:sv];
     return YES;
 }
 							
