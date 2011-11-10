@@ -10,6 +10,9 @@
 #import <Foundation/Foundation.h>
 #import "JSONKit.h"
 
+
+#define KCS_HTTP_STATUS_OK 200
+
 /*! Interface for a delegate interested in performing an action when a request to the Kinvey Cloud Service Completes.
 
     Any client that makes a request to the KCS services needs to provided with a delegate which will be notified
@@ -44,6 +47,9 @@
 
 /*! Stored data in response to a request */
 @property (retain, nonatomic) NSMutableData *receivedData;
+
+/*! The (HTTP) response from the server.  We only store the final responding server in a redirect chain */
+@property (retain, nonatomic) NSURLResponse *lastResponse;
 
 /*! Kinvey provided App Key */
 @property (retain, nonatomic, readwrite) NSString *appKey;
@@ -136,6 +142,8 @@
 	@note The PATH paramter will be appended to the base URL to form the complete URL.
 */
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forPutRequest: (NSData *)putRequest atPath: (NSString *)path;
+
+- (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forDataPutRequest: (NSData *)putRequest atPath: (NSString *)path;
 
 /*! Perform a GET request against the Kinvey Server
 	@param delegate The delegate to inform about the result of the request

@@ -8,6 +8,8 @@
 
 #import "KCSClient.h"
 
+#define KCS_JSON_TYPE @"application/json"
+#define KCS_DATA_TYPE @"application/octet-stream"
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
@@ -19,6 +21,7 @@
 @implementation KCSClient
 
 @synthesize receivedData;
+@synthesize lastResponse=_lastResponse;
 @synthesize appKey;
 @synthesize appSecret;
 @synthesize baseURI;
@@ -87,6 +90,14 @@
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     NSLog(@"TRACE: connection:didReceiveResponse:");
+    
+    // Store this response, after possibly releasing the last response
+    [[self lastResponse] release]; // Initialized to nil, so this does nothing if we don't have a last response
+    [self setLastResponse:response];
+    
+    // Make sure to keep the reference around
+    [[self lastResponse] retain];
+    
     // Reset any connection specific properties, begin logging new connection data
     [receivedData setLength:0];
 }
@@ -124,6 +135,7 @@
     NSLog(@"TRACE: initWithAppKey:andSecret:usingBaseURI:");
     self = [super init];
     if (self){
+        [self setLastResponse:nil];
         [self setAppKey: key];
         [self setAppSecret: secret];
         [self setBaseURI: uri];
@@ -133,6 +145,8 @@
             NSLog(@"No auth cred was provided..., authentication is not available during this session.");
             basicAuthCred = nil;
         }
+        
+        [self setConnectionTimeout:60.0];
         
         // Make sure that our options dictionary is valid
         if (options == Nil){
@@ -160,8 +174,6 @@
 {
     NSLog(@"initWithOptions:");
     
-    [self setOptions:optionsDictionary];
-
     NSString *portString;
     if ([optionsDictionary valueForKey:@"kinveyPort"] != nil){
         portString = [@":" stringByAppendingString: [options valueForKey:@"kinveyPort"]];
@@ -177,7 +189,13 @@
     
     [options setValue:uri forKey:@"baseURI"];
     
-    return [self initWithAppKey:[options valueForKey:@"appKey"] andSecret: [options valueForKey:@"appSecret"] usingBaseURI:uri];
+    self = [self initWithAppKey:[options valueForKey:@"appKey"] andSecret: [options valueForKey:@"appSecret"] usingBaseURI:uri];
+    
+    if (self){
+        [self setOptions:optionsDictionary];
+    }
+    
+    return self;
 }
 
 
@@ -223,7 +241,7 @@
 // The only difference between a nominal PUT and a POST is the presence of '_id'...
 // Also, you can POST a map/reduce based on a post, but this is not really of concern to us in the library.
 
-- (void)clientActionDelegate:(id<KCSClientActionDelegate>)delegate forDataRequest: (NSData *)dataRequest withMethod: (NSString *)method atPath:(NSString *)path
+- (void)clientActionDelegate:(id<KCSClientActionDelegate>)delegate forDataRequest: (NSData *)dataRequest withMethod: (NSString *)method atPath:(NSString *)path withContentType: (NSString *)contentType;
 {
     NSLog(@"TRACE: clientActionDelegate:forDataRequest:withMethod:atPath:");
     NSURL *requestURL = [NSURL URLWithString:[baseURI stringByAppendingString:path]];
@@ -235,7 +253,7 @@
     [theRequest setHTTPMethod:method];
     
     // Add required fields to the header
-    [theRequest addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [theRequest addValue:contentType forHTTPHeaderField:@"Content-Type"];
     
     // Add the body to the request
     [theRequest setHTTPBody:dataRequest];
@@ -246,21 +264,36 @@
     
 }
 
+// TODO: This is major code duplication, but oh wells
+
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forPutRequest: (NSData *)putRequest atPath: (NSString *)path
 {
     NSLog(@"TRACE: clientActionDelegate:forPutRequest:atPath:");
-    [self clientActionDelegate:delegate forDataRequest:putRequest withMethod:@"PUT" atPath:path];
+    [delegate retain];
+    [self clientActionDelegate:delegate forDataRequest:putRequest withMethod:@"PUT" atPath:path withContentType:KCS_JSON_TYPE];
+    [delegate release];
+}
+
+- (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forDataPutRequest: (NSData *)putRequest atPath: (NSString *)path
+{
+    NSLog(@"TRACE: clientActionDelegate:forPutRequest:atPath:");
+    [delegate retain];
+    [self clientActionDelegate:delegate forDataRequest:putRequest withMethod:@"PUT" atPath:path withContentType:KCS_DATA_TYPE];
+    [delegate release];
 }
 
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forPostRequest: (NSData *)postRequest atPath: (NSString *)path
 {
     NSLog(@"TRACE: clientActionDelegate:forPostRequestAtPath:");
-    [self clientActionDelegate:delegate forDataRequest:postRequest withMethod:@"POST" atPath:path];
+    [delegate retain];
+    [self clientActionDelegate:delegate forDataRequest:postRequest withMethod:@"POST" atPath:path withContentType:KCS_JSON_TYPE];
+    [delegate release];
 }
 
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forDeleteRequestAtPath: (NSString *)path
 {
     NSLog(@"TRACE: clientActionDelegate:forDeleteRequestAtPath:");
+    [delegate retain];
     NSURL *requestURL = [NSURL URLWithString:[baseURI stringByAppendingString:path]];
     
     NSURLRequest *theRequest=[NSURLRequest requestWithURL:requestURL
@@ -269,6 +302,7 @@
     
     // Actually perform the connection
     [self clientActionDelegate:delegate forRequest:theRequest];
+    [delegate release];
 }
 
 
