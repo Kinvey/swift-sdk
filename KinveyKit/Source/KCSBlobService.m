@@ -138,6 +138,11 @@
     return self;
 }
 
+- (id)initWithDelegate:(id<KCSBlobDelegate>)theDelegate forOperation:(NSString *)op usingClient: (KCSClient *)client
+{
+    return [self initWithDelegate:theDelegate forOperation:op withRequestData:nil usingClient:client];
+}
+
 - (id)initWithDelegate:(id<KCSBlobDelegate>)theDelegate forOperation: (NSString *)op
 {
     return [self initWithDelegate:theDelegate forOperation:op withRequestData:nil usingClient:nil];
@@ -167,7 +172,11 @@
     KCSBlobDelegateMapper *finalMap = [KCSBlobDelegateMapper blobDelegateMapperFromBlobUtilDelegateMapper:self];
     [finalMap retain];
     
-    [[self kinveyClient] clientActionDelegate:finalMap forDataPutRequest:[self requestData] atPath:[jsonData valueForKey:@"URI"]];
+    if ([[self requestType] isEqualToString:@"PUT"]){
+        [[self kinveyClient] clientActionDelegate:finalMap forDataPutRequest:[self requestData] atPath:[jsonData valueForKey:@"URI"]];        
+    } else {
+        [[self kinveyClient] clientActionDelegate:finalMap forDeleteRequestAtPath:[jsonData valueForKey:@"URI"]];
+    }
     
     [finalMap release];
 }
@@ -229,7 +238,7 @@
 {
     NSString *putPath = [NSString stringWithFormat:@"/blob/%@/upload-loc/%@", [[self kinveyClient] appKey], blobId];
     
-    KCSBlobUtilDelegateMapper *mapper = [[KCSBlobUtilDelegateMapper alloc] initWithDelegate:delegate forOperation:@"PUT" usingRequestData:data];
+    KCSBlobUtilDelegateMapper *mapper = [[KCSBlobUtilDelegateMapper alloc] initWithDelegate:delegate forOperation:@"PUT" withRequestData:data usingClient:[self kinveyClient]];
     
     [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath:putPath];
     
@@ -241,7 +250,7 @@
 {
     NSString *deletePath = [NSString stringWithFormat:@"/blob/%@/remove-loc/%@", [[self kinveyClient] appKey], blobId];
     
-    KCSBlobUtilDelegateMapper *mapper = [[KCSBlobUtilDelegateMapper alloc] initWithDelegate:delegate forOperation:@"DELETE"];
+    KCSBlobUtilDelegateMapper *mapper = [[KCSBlobUtilDelegateMapper alloc] initWithDelegate:delegate forOperation:@"DELETE" usingClient:[self kinveyClient]];
     
     [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath:deletePath];
     

@@ -127,7 +127,7 @@ static char oidKey;
     [deferredLoader setMappedDelegate:delegate];
     [deferredLoader setObjectToLoad:self];
 
-    NSString *idLocation = [[client baseURI] stringsByAppendingPaths:[NSArray arrayWithObjects:[self entityColleciton], objectId, nil]];
+    NSString *idLocation = [[client baseURI] stringByAppendingFormat:@"%@/%@", [self entityColleciton], objectId];
     [client clientActionDelegate:deferredLoader forGetRequestAtPath:idLocation];
 }
 
@@ -145,7 +145,7 @@ static char oidKey;
     BOOL isPostRequest = NO;
 
     NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
-    NSDictionary *kinveyMapping = [self propertyToElementMapping];
+    NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
 
     NSString *key;
     for (key in kinveyMapping){
@@ -180,7 +180,7 @@ static char oidKey;
 
 }
 
-- (NSDictionary *)propertyToElementMapping
+- (NSDictionary *)hostToKinveyPropertyMapping
 {
     // Eventually this will be used to allow a default scanning of "self" to build and cache a
     // 1-1 mapping of the client properties
@@ -188,6 +188,8 @@ static char oidKey;
                                 exceptionWithName:@"UnsupportedFeatureException"
                                 reason:@"This version of the Kinvey iOS library requires clients to override this method"
                                 userInfo:nil];
+    
+    @throw myException;
 
     return nil;
 }
@@ -209,6 +211,7 @@ static char oidKey;
     if (self){
         jsonDecoder = [[JSONDecoder alloc] init];
     }
+    return self;
 
 }
 
@@ -241,11 +244,11 @@ static char oidKey;
     }
 
     NSDictionary *jsonData = [jsonDecoder objectWithData:(NSData *)result];
-    NSDictionary *kinveyMapping = [objectToLoad propertyToElementMapping];
+    NSDictionary *kinveyMapping = [objectToLoad hostToKinveyPropertyMapping];
 
     NSString *key;
     for (key in kinveyMapping){
-        [objectToLoad setValue:[kinveyMapping valueForKey:key] forKey:key];
+        [objectToLoad setValue:[jsonData valueForKey:[kinveyMapping valueForKey:key]] forKey:key];
     }
 
     [mappedDelegate fetchDidComplete:result];

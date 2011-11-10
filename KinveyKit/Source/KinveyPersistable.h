@@ -87,6 +87,6 @@ implementing these methods.
      @endcode
 
  */
-- (NSDictionary*)propertyToElementMapping;
+- (NSDictionary*)hostToKinveyPropertyMapping;
 
 @end

@@ -38,7 +38,7 @@
 *
 * This category is used to cause any NSObject to be able to be persisted into the Kinvey Cloud Service.
 */
-@interface NSObject (KCSEntity) <KCSPersistable>
+@interface NSObject (KCSEntity) <KCSPersistable, NSCopying>
 
 /*! Fetch one instance of this entity from KCS
 *

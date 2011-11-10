@@ -35,7 +35,7 @@
 
 - (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file;
 - (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file toBlob: (NSString *)blobId;
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveData:(NSData *) toBlob: (NSString *)blobId;
+- (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveData:(NSData *) data toBlob: (NSString *)blobId;
 
 - (void)blobDelegate:(id<KCSBlobDelegate>)delegate deleteBlog:(NSString *)blobId;
 
