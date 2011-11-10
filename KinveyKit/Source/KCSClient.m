@@ -7,6 +7,7 @@
 //
 
 #import "KCSClient.h"
+#import "KinveyAnalytics.h"
 
 #define KCS_JSON_TYPE @"application/json"
 #define KCS_DATA_TYPE @"application/octet-stream"
@@ -15,7 +16,10 @@
 // readwrite.  This keeps KVO notation, while allowing private mutability.
 @interface KCSClient ()
     // Redeclare private iVars
-    @property (readwrite) double connectionTimeout;
+    @property double connectionTimeout;
+
+    // Do not expose this to clients yet... soon?
+    @property (retain) KCSAnalytics *analytics;
 @end
 
 @implementation KCSClient
@@ -29,6 +33,8 @@
 @synthesize actionDelegate;
 @synthesize connectionTimeout;
 @synthesize options;
+
+@synthesize analytics=_analytics;
 
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
 {
@@ -139,6 +145,9 @@
         [self setAppKey: key];
         [self setAppSecret: secret];
         [self setBaseURI: uri];
+        
+        [self setAnalytics: [[KCSAnalytics alloc] init]];
+        
         if (key != nil && secret != nil){
             basicAuthCred = [[NSURLCredential alloc] initWithUser:key password:secret persistence:NSURLCredentialPersistenceForSession]; 
         } else {
@@ -152,6 +161,9 @@
         if (options == Nil){
             options = [[NSDictionary alloc] initWithObjectsAndKeys:@"appKey", key, @"appSecret", secret, @"baseURI", uri, nil];
         }
+        
+        // Cheat for now
+        NSLog(@"Running KinveyAnalytics on Device: %@", [[self analytics] UUID]);
     }
     
     return self;
