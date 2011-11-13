@@ -6,12 +6,19 @@
 //  Copyright (c) 2011 Kinvey. All rights reserved.
 //
 
+#import "KinveyKit.h"
 #import "KCSListItemDetailController.h"
 #import "KCSListEntry.h"
+#import "KCSAppDelegate.h"
+
 
 @implementation KCSListItemDetailController
 
 @synthesize itemDetail=_itemDetail;
+@synthesize kinveyClient=_kinveyClient;
+@synthesize itemName = _itemName;
+@synthesize itemDescription = _itemDescription;
+@synthesize itemPicture = _itemPicture;
 
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -43,11 +50,26 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
+    if (self.kinveyClient == nil){
+        KCSAppDelegate *app = (KCSAppDelegate *)[[UIApplication sharedApplication] delegate];
+        self.kinveyClient = [app kinveyClient];
+    }
+    
+    self.itemName.text = self.itemDetail.name;
+    self.itemDescription.text = self.itemDetail.itemDescription;
+    
+    if ([self.itemDetail hasCustomImage]){
+        self.itemPicture.image = self.itemDetail.loadedImage;
+    }
+
     self.navigationItem.title = self.itemDetail.name;
 }
 
 - (void)viewDidUnload
 {
+    [self setItemName:nil];
+    [self setItemDescription:nil];
+    [self setItemPicture:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -81,34 +103,38 @@
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    // Return the number of sections.
-    // TODO, this may not be right
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    // Return the number of rows in the section.
-    // This will have more info later...
-    return 1;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"DetailCell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-    }
-    
-    // Configure the cell...
-    cell.textLabel.text = self.itemDetail.name;
-    
-    return cell;
-}
+//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+//{
+//    // Return the number of sections.
+//    // Right now we've got a pretty static layout,
+//    // NAME
+//    // DESC
+//    // <ETC, not implemented yet>
+//    // PIC
+//    return 3;
+//}
+//
+//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+//{
+//    // Return the number of rows in the section.
+//    // This will have more info later...
+//    return 1;
+//}
+//
+//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    static NSString *CellIdentifier = @"DetailCell";
+//    
+//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+//    if (cell == nil) {
+//        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+//    }
+//    
+//    // Configure the cell...
+//    cell.textLabel.text = self.itemDetail.name;
+//    
+//    return cell;
+//}
 
 /*
 // Override to support conditional editing of the table view.
@@ -163,4 +189,10 @@
      */
 }
 
+- (void)dealloc {
+    [_itemName release];
+    [_itemDescription release];
+    [_itemPicture release];
+    [super dealloc];
+}
 @end

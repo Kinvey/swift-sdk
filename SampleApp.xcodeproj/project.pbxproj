@@ -31,6 +31,8 @@
 		D307921E14560D2000E5A284 /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921314560D2000E5A284 /* KinveyCollection.m */; };
 		D307921F14560D2000E5A284 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921514560D2000E5A284 /* KinveyEntity.m */; };
 		D307922014560D2000E5A284 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D307921514560D2000E5A284 /* KinveyEntity.m */; };
+		D3405415146ABF7E003448F7 /* KCSBlobService.m in Sources */ = {isa = PBXBuildFile; fileRef = D3405414146ABF7E003448F7 /* KCSBlobService.m */; };
+		D3405416146ABF7E003448F7 /* KCSBlobService.m in Sources */ = {isa = PBXBuildFile; fileRef = D3405414146ABF7E003448F7 /* KCSBlobService.m */; };
 		D36F10C314644B4000BB1E0C /* Lobster 1.4.otf in Resources */ = {isa = PBXBuildFile; fileRef = D36F10C214644B4000BB1E0C /* Lobster 1.4.otf */; };
 		D36F10CE14647D7C00BB1E0C /* logo57.png in Resources */ = {isa = PBXBuildFile; fileRef = D36F10CD14647D7C00BB1E0C /* logo57.png */; };
 		D36F10D014647D8300BB1E0C /* logo114.png in Resources */ = {isa = PBXBuildFile; fileRef = D36F10CF14647D8300BB1E0C /* logo114.png */; };
@@ -53,6 +55,8 @@
 		D3AEED451457553000E9523E /* NSURL+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D3AEED431457553000E9523E /* NSURL+KinveyAdditions.m */; };
 		D3AEED481457555500E9523E /* NSString+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D3AEED471457555500E9523E /* NSString+KinveyAdditions.m */; };
 		D3AEED491457555500E9523E /* NSString+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D3AEED471457555500E9523E /* NSString+KinveyAdditions.m */; };
+		D3D0E04E146B55CD00D58624 /* KinveyAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D0E04D146B55CD00D58624 /* KinveyAnalytics.m */; };
+		D3D0E04F146B55CD00D58624 /* KinveyAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D0E04D146B55CD00D58624 /* KinveyAnalytics.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,7 +70,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D30791CB14560CEB00E5A284 /* SampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D30791CB14560CEB00E5A284 /* KinveyLists.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinveyLists.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D30791CF14560CEB00E5A284 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		D30791D114560CEB00E5A284 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D30791D314560CEB00E5A284 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -99,6 +103,8 @@
 		D307921514560D2000E5A284 /* KinveyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyEntity.m; sourceTree = "<group>"; };
 		D307921614560D2000E5A284 /* KinveyPersistable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyPersistable.h; sourceTree = "<group>"; };
 		D30792291456108800E5A284 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		D3405413146ABF7E003448F7 /* KCSBlobService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBlobService.h; sourceTree = "<group>"; };
+		D3405414146ABF7E003448F7 /* KCSBlobService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBlobService.m; sourceTree = "<group>"; };
 		D36F10C214644B4000BB1E0C /* Lobster 1.4.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lobster 1.4.otf"; sourceTree = "<group>"; };
 		D36F10CD14647D7C00BB1E0C /* logo57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo57.png; sourceTree = "<group>"; };
 		D36F10CF14647D8300BB1E0C /* logo114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo114.png; sourceTree = "<group>"; };
@@ -122,6 +128,8 @@
 		D3AEED431457553000E9523E /* NSURL+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+KinveyAdditions.m"; sourceTree = "<group>"; };
 		D3AEED461457555500E9523E /* NSString+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+KinveyAdditions.h"; sourceTree = "<group>"; };
 		D3AEED471457555500E9523E /* NSString+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+KinveyAdditions.m"; sourceTree = "<group>"; };
+		D3D0E04C146B55CD00D58624 /* KinveyAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyAnalytics.h; sourceTree = "<group>"; };
+		D3D0E04D146B55CD00D58624 /* KinveyAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyAnalytics.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,7 +173,7 @@
 		D30791CC14560CEB00E5A284 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D30791CB14560CEB00E5A284 /* SampleApp.app */,
+				D30791CB14560CEB00E5A284 /* KinveyLists.app */,
 				D30791EF14560CEB00E5A284 /* SampleAppTests.octest */,
 			);
 			name = Products;
@@ -273,12 +281,16 @@
 				D307920E14560D2000E5A284 /* KCSClient.h */,
 				D307920F14560D2000E5A284 /* KCSClient.m */,
 				D307921014560D2000E5A284 /* KCSEntityDict.h */,
+				D3D0E04C146B55CD00D58624 /* KinveyAnalytics.h */,
+				D3D0E04D146B55CD00D58624 /* KinveyAnalytics.m */,
 				D307921114560D2000E5A284 /* KCSEntityDict.m */,
 				D307921214560D2000E5A284 /* KinveyCollection.h */,
 				D307921314560D2000E5A284 /* KinveyCollection.m */,
 				D307921414560D2000E5A284 /* KinveyEntity.h */,
 				D307921514560D2000E5A284 /* KinveyEntity.m */,
 				D307921614560D2000E5A284 /* KinveyPersistable.h */,
+				D3405413146ABF7E003448F7 /* KCSBlobService.h */,
+				D3405414146ABF7E003448F7 /* KCSBlobService.m */,
 				D3AEED461457555500E9523E /* NSString+KinveyAdditions.h */,
 				D3AEED471457555500E9523E /* NSString+KinveyAdditions.m */,
 				D3AEED421457553000E9523E /* NSURL+KinveyAdditions.h */,
@@ -301,9 +313,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D30791CA14560CEB00E5A284 /* SampleApp */ = {
+		D30791CA14560CEB00E5A284 /* KinveyLists */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D307920114560CEB00E5A284 /* Build configuration list for PBXNativeTarget "SampleApp" */;
+			buildConfigurationList = D307920114560CEB00E5A284 /* Build configuration list for PBXNativeTarget "KinveyLists" */;
 			buildPhases = (
 				D30791C714560CEB00E5A284 /* Sources */,
 				D30791C814560CEB00E5A284 /* Frameworks */,
@@ -313,9 +325,9 @@
 			);
 			dependencies = (
 			);
-			name = SampleApp;
+			name = KinveyLists;
 			productName = SampleApp;
-			productReference = D30791CB14560CEB00E5A284 /* SampleApp.app */;
+			productReference = D30791CB14560CEB00E5A284 /* KinveyLists.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D30791EE14560CEB00E5A284 /* SampleAppTests */ = {
@@ -358,7 +370,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D30791CA14560CEB00E5A284 /* SampleApp */,
+				D30791CA14560CEB00E5A284 /* KinveyLists */,
 				D30791EE14560CEB00E5A284 /* SampleAppTests */,
 			);
 		};
@@ -427,6 +439,8 @@
 				D37B4C6314643CF5000CEC45 /* KCSListItemDetailController.m in Sources */,
 				D37B4C6714643D1A000CEC45 /* KCSList.m in Sources */,
 				D37B4C6B14643D40000CEC45 /* KCSListEntry.m in Sources */,
+				D3405415146ABF7E003448F7 /* KCSBlobService.m in Sources */,
+				D3D0E04E146B55CD00D58624 /* KinveyAnalytics.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,6 +463,8 @@
 				D37B4C6414643CF5000CEC45 /* KCSListItemDetailController.m in Sources */,
 				D37B4C6814643D1A000CEC45 /* KCSList.m in Sources */,
 				D37B4C6C14643D40000CEC45 /* KCSListEntry.m in Sources */,
+				D3405416146ABF7E003448F7 /* KCSBlobService.m in Sources */,
+				D3D0E04F146B55CD00D58624 /* KinveyAnalytics.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,7 +473,7 @@
 /* Begin PBXTargetDependency section */
 		D30791F514560CEB00E5A284 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D30791CA14560CEB00E5A284 /* SampleApp */;
+			target = D30791CA14560CEB00E5A284 /* KinveyLists */;
 			targetProxy = D30791F414560CEB00E5A284 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -607,7 +623,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D307920114560CEB00E5A284 /* Build configuration list for PBXNativeTarget "SampleApp" */ = {
+		D307920114560CEB00E5A284 /* Build configuration list for PBXNativeTarget "KinveyLists" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D307920214560CEB00E5A284 /* Debug */,

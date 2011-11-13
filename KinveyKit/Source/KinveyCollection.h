@@ -76,7 +76,7 @@
 /*! A cached copy of the last results from Kinvey (handy if you forget to copy them in your delegate) */
 @property (retain) NSArray *lastFetchResults;
 
-@property (retain) NSString *filters;
+@property (retain) NSMutableArray *filters;
 
 // TODO: Need a way to story the query portion of the library.
 

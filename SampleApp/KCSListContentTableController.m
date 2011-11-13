@@ -8,11 +8,19 @@
 
 #import "KCSListContentTableController.h"
 #import "KCSListItemDetailController.h"
+#import "KCSAppDelegate.h"
+#import "KCSListEntry.h"
+
+
 
 @implementation KCSListContentTableController
 
 @synthesize listContents=_listContents;
 @synthesize listName=_listName;
+@synthesize kinveyClient=_kinveyClient;
+@synthesize listItemsCollection=_listItemsCollection;
+@synthesize listId=_listId;
+
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -31,6 +39,13 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
+
+- (void)updateData
+{
+    [self.listItemsCollection collectionDelegateFetch:self];
+   
+}
+
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad
@@ -41,8 +56,25 @@
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    if (self.kinveyClient == nil){
+        KCSAppDelegate *app = (KCSAppDelegate *)[[UIApplication sharedApplication] delegate];
+        self.kinveyClient = [app kinveyClient];
+    }
+
     self.navigationItem.title = self.listName;
+    
+    // We've got a list name, we now need to get a listContents
+    if ([self listItemsCollection] == nil){
+        self.listItemsCollection = [[KCSCollection alloc] init];
+        self.listItemsCollection.collectionName = @"list-items";
+        self.listItemsCollection.objectTemplate = [[KCSListEntry alloc] init];
+        self.listItemsCollection.kinveyClient = self.kinveyClient;
+        [self.listItemsCollection addFilterCriteriaForProperty:@"list" withStringValue:self.listId filteredByOperator:KCS_EQUALS_OPERATOR];
+    }
+
+    [self updateData];
+    
 }
 
 - (void)viewDidUnload
@@ -117,19 +149,25 @@
 }
 */
 
-/*
+
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
+        KCSListEntry *entry = [self.listContents objectAtIndex:indexPath.row];
+        [entry deleteDelegate:self usingClient:self.kinveyClient];
+
+        [self.listContents removeObjectAtIndex:indexPath.row];
+        
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
-*/
+
 
 /*
 // Override to support rearranging the table view.
@@ -169,6 +207,38 @@
         content.itemDetail = [self.listContents objectAtIndex: self.tableView.indexPathForSelectedRow.row];
     }
 }
+
+
+- (void) fetchCollectionDidFail: (id)error
+{
+    NSLog(@"Update failed: %@", error);
+}
+
+- (void) fetchCollectionDidComplete: (NSObject *) result
+{
+    NSArray *res = (NSArray *)result;
+    NSLog(@"Got successfull fetch response: %@", res);
+    //    NSLog(@"Number of elements: %@", res.count);
+    
+    self.listContents = [NSMutableArray arrayWithArray:(NSArray *)result];
+    [self.view reloadData];
+}
+
+- (void)persistDidFail:(id)error
+{
+    NSLog(@"Persist failed: %@", error);
+}
+
+- (void)persistDidComplete:(NSObject *)result
+{
+    NSLog(@"Persist succeeded: %@", (NSURLResponse *)result);
+    NSHTTPURLResponse *res = (NSHTTPURLResponse *)[[self kinveyClient] lastResponse];
+    NSDictionary *headers = [res allHeaderFields];
+//    NSLog(@"Response code: %@, Headers: %@", res.statusCode, headers);
+    
+    
+}
+
 
 
 

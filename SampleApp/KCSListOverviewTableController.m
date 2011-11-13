@@ -10,10 +10,14 @@
 #import "KCSListContentTableController.h"
 #import "KCSList.h"
 #import "KCSListEntry.h"
+#import "KCSAppDelegate.h"
+#import "KinveyCollection.h"
 
 @implementation KCSListOverviewTableController
 
 @synthesize kLists=_kLists;
+@synthesize kinveyClient=_kinveyClient;
+@synthesize listsCollection=_listsCollection;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -32,22 +36,27 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
-#pragma mark - View lifecycle
+- (void) updateData
+{
+    [self.listsCollection collectionDelegateFetchAll:self];
+}
+
+#pragma mark - View lifecycl
 
 - (void)initStaticList
 {
     [self.kLists addObject:[[KCSList alloc] initWithName:@"Kinvey -- Costco" 
                                                 withList:[NSMutableArray arrayWithObjects:
-                                                          [[KCSListEntry alloc] initWithName:@"Granola Bars"],
-                                                          [[KCSListEntry alloc] initWithName:@"Gum"],
-                                                          [[KCSListEntry alloc] initWithName:@"Beer"],
-                                                          [[KCSListEntry alloc] initWithName:@"Cristal"], nil]]];
+                                                          [[KCSListEntry alloc] initWithName:@"Granola Bars" withDescription:@"Very tasty treats to be eating"],
+                                                          [[KCSListEntry alloc] initWithName:@"Gum" withDescription:@"For chewing, you know, like gum? Should be available at 1 Cambridge Center, Cambridge, MA"],
+                                                          [[KCSListEntry alloc] initWithName:@"Beer" withDescription:@"Chug! Chug! Chug! Chug! Chug! Check Pretty Things (www.prettythingsbeertoday.com)"],
+                                                          [[KCSListEntry alloc] initWithName:@"Cristal" withDescription:@"When only the finest will do, cold cocked!"], nil]]];
     
     [self.kLists addObject:[[KCSList alloc] initWithName:@"Brian -- Apple Store"
                                                 withList:[NSMutableArray arrayWithObjects:
-                                                          [[KCSListEntry alloc] initWithName:@"MiniDP to DVI"],
-                                                          [[KCSListEntry alloc] initWithName:@"iPhone"],
-                                                          [[KCSListEntry alloc] initWithName:@"Cinema Display"],
+                                                          [[KCSListEntry alloc] initWithName:@"MiniDP to DVI" withDescription:@"To go from my lap to my face"],
+                                                          [[KCSListEntry alloc] initWithName:@"iPhone" withDescription:@"Hey, aren't we using this technology now?"],
+                                                          [[KCSListEntry alloc] initWithName:@"Cinema Display" withDescription:@"Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda."],
                                                           nil]]];    
 }
 
@@ -61,14 +70,18 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
-    //    self.kLists = [NSArray arrayWithObjects:@"Kinvey -- Costco", @"Brian -- Apple Store", @"Brian -- Shaw's", @"Ryan -- Wal-mart", nil];
-
-    if (self.kLists == nil){
-        self.kLists = [[NSMutableArray alloc] init];
-        
-        [self initStaticList];
-        
+    // Prepare for syncing with Kinvey...
+    if (self.kinveyClient == nil){
+        KCSAppDelegate *app = (KCSAppDelegate *)[[UIApplication sharedApplication] delegate];
+        self.kinveyClient = [app kinveyClient];
+        self.listsCollection = [[KCSCollection alloc] init];
+        self.listsCollection.kinveyClient = self.kinveyClient;
+        self.listsCollection.objectTemplate = [[KCSList alloc] init];
+        self.listsCollection.collectionName = @"lists";
     }
+    
+    [self updateData];
+    
     NSLog(@"Hey, at least the view loaded... %@", self.kLists);
 }
 
@@ -200,8 +213,28 @@
     if ([segue.identifier isEqualToString:@"pushToList"]){
         NSLog(@"Segue pushToList called...");
         KCSListContentTableController *content = segue.destinationViewController;
-        content.listName = [[self .kLists objectAtIndex: self.tableView.indexPathForSelectedRow.row] name];
-        content.listContents = [self.kLists objectAtIndex: self.tableView.indexPathForSelectedRow.row];
+        content.listName = [[self.kLists objectAtIndex: self.tableView.indexPathForSelectedRow.row] name];
+        content.listId = [[self.kLists objectAtIndex: self.tableView.indexPathForSelectedRow.row] listId];
+//        content.listContents = [self.kLists objectAtIndex: self.tableView.indexPathForSelectedRow.row];
     }
 }
+
+- (void) fetchCollectionDidFail: (id)error
+{
+    NSLog(@"Update failed: %@", error);
+}
+
+- (void) fetchCollectionDidComplete: (NSObject *) result
+{
+    NSArray *res = (NSArray *)result;
+    NSLog(@"Got successfull fetch response: %@", res);
+//    NSLog(@"Number of elements: %@", res.count);
+    
+    self.kLists = [NSMutableArray arrayWithArray:(NSArray *)result];
+    [self.view reloadData];
+}
+
+
+
+
 @end

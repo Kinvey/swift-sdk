@@ -7,10 +7,14 @@
 //
 
 #import "KCSAppDelegate.h"
+#import "KinveyKit.h"
 
 @implementation KCSAppDelegate
 
+
 @synthesize window = _window;
+@synthesize kinveyClient=_kinveyClient;
+
 
 - (void)dealloc
 {
@@ -28,6 +32,9 @@
 //    UIView *sv = splash.view;
 //    [[self window] addSubview:sv];
 //    [[self window] bringSubviewToFront:sv];
+    
+    // At this point we start the loading sequence, and signal (later) when it's done
+    self.kinveyClient = [[KCSClient alloc] initWithAppKey:@"kid1064" andSecret:@"89a04894101544d5ae72ee66594e6845" usingBaseURI:@"https://latestbeta.kinvey.com/appdata/kid1064/"];
     return YES;
 }
 							

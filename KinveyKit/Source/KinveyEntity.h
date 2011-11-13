@@ -163,6 +163,8 @@
  */
 @property (retain) JSONDecoder *jsonDecoder;
 
+@property (retain) KCSClient *kinveyClient;
+
 /*! Initialize the object
     @returns the instance of this object
  */

@@ -13,6 +13,8 @@
 #import "KinveyEntity.h"
 #import "KinveyCollection.h"
 #import "KinveyPersistable.h"
+#import "NSString+KinveyAdditions.h"
+#import "NSURL+KinveyAdditions.h"
 
 
 

@@ -7,17 +7,31 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "KinveyKit.h"
 
-@interface KCSListEntry : NSObject
+@interface KCSListEntry : NSObject <KCSPersistable>
+{
+    // Kinvey Object ID
+    NSString *_id;
+}
 
 @property (retain) NSString *name;
-@property (retain) UIImage *image;
-@property (retain) NSString *imagePath;
+@property (retain) NSString *image;
+@property (retain) UIImage *loadedImage;
+@property (retain) NSString *itemDescription;
+@property (retain) NSString *objectId;
+@property (retain) NSString *list;
+
+
 
 - (id)init;
 - (id)initWithName: (NSString *)name;
+- (id)initWithName:(NSString *)name withDescription: (NSString *)description;
 
 - (BOOL) hasCustomImage;
+
+- (NSDictionary*)hostToKinveyPropertyMapping;
+
 
 
 @end

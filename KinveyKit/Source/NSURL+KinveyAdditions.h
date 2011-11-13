@@ -28,5 +28,6 @@
 
  */
 - (NSURL *)URLByAppendingQueryString:(NSString *)queryString;
++ (NSURL *)URLWithUnencodedString:(NSString *)string;
 
 @end

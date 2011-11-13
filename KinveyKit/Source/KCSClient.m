@@ -8,6 +8,8 @@
 
 #import "KCSClient.h"
 #import "KinveyAnalytics.h"
+#import "NSURL+KinveyAdditions.h"
+#import "NSString+KinveyAdditions.h"
 
 #define KCS_JSON_TYPE @"application/json"
 #define KCS_DATA_TYPE @"application/octet-stream"
@@ -240,7 +242,9 @@
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forGetRequestAtPath: (NSString *)path
 {
     NSLog(@"TRACE: clientActionDelegate:forGetRequestAtPath:");
+//    NSURL *requestURL = [NSURL URLWithString:[baseURI stringbyAppendingStringWithPercentEncoding:path]];
     NSURL *requestURL = [NSURL URLWithString:[baseURI stringByAppendingString:path]];
+
     
     NSURLRequest *theRequest=[NSURLRequest requestWithURL:requestURL
                                               cachePolicy:NSURLRequestUseProtocolCachePolicy
@@ -256,6 +260,7 @@
 - (void)clientActionDelegate:(id<KCSClientActionDelegate>)delegate forDataRequest: (NSData *)dataRequest withMethod: (NSString *)method atPath:(NSString *)path withContentType: (NSString *)contentType;
 {
     NSLog(@"TRACE: clientActionDelegate:forDataRequest:withMethod:atPath:");
+//    NSURL *requestURL = [NSURL URLWithString:[baseURI stringbyAppendingStringWithPercentEncoding:path]];
     NSURL *requestURL = [NSURL URLWithString:[baseURI stringByAppendingString:path]];
     
     NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:requestURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:[self connectionTimeout]];
@@ -306,11 +311,16 @@
 {
     NSLog(@"TRACE: clientActionDelegate:forDeleteRequestAtPath:");
     [delegate retain];
+//    NSURL *requestURL = [NSURL URLWithString:[baseURI stringbyAppendingStringWithPercentEncoding:path]];
     NSURL *requestURL = [NSURL URLWithString:[baseURI stringByAppendingString:path]];
+  
+    NSMutableURLRequest *theRequest=[NSMutableURLRequest requestWithURL:requestURL
+                                                            cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                        timeoutInterval:[self connectionTimeout]];
     
-    NSURLRequest *theRequest=[NSURLRequest requestWithURL:requestURL
-                                              cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                          timeoutInterval:[self connectionTimeout]];
+    [theRequest setHTTPMethod:@"DELETE"];
+    
+    NSLog(@"DELETE: %@", requestURL);
     
     // Actually perform the connection
     [self clientActionDelegate:delegate forRequest:theRequest];

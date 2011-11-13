@@ -7,13 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "KinveyKit.h"
 
 @class KCSListEntry;
 
-@interface KCSList : NSObject
+@interface KCSList : NSObject <KCSPersistable>
 
 @property (retain) NSMutableArray *entries;
+@property (retain) NSString *listId;
 @property (retain) NSString *name;
+@property (retain) NSString *image;
 @property (retain) UIImage *listImage;
 
 

@@ -22,4 +22,20 @@
     return theURL;
 }
 
+
++ (NSURL *)URLWithUnencodedString:(NSString *)string
+{
+    NSString *encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
+                                            (CFStringRef) string,
+                                            NULL,
+                                            (CFStringRef) @"!*'();:@&=+$,/?%#[]{}",
+                                            kCFStringEncodingUTF8);
+
+//    NSString *encodedString = [string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSURL *returnedURL = [NSURL URLWithString:encodedString];
+    [encodedString release];
+    
+    return returnedURL;
+}
+
 @end

@@ -36,4 +36,9 @@
  */
 - (NSString *)URLStringByAppendingQueryString:(NSString *)queryString;
 
+- (NSString *)stringbyAppendingStringWithPercentEncoding:(NSString *)string;
++ (NSString *)stringbyPercentEncodingString:(NSString *)string;
+
+
+
 @end

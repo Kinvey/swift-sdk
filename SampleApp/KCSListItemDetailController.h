@@ -9,9 +9,16 @@
 #import <UIKit/UIKit.h>
 
 @class KCSListEntry;
+@class KCSClient;
+
 
 @interface KCSListItemDetailController : UITableViewController
     
 @property (retain) KCSListEntry *itemDetail;
+@property (retain) KCSClient *kinveyClient;
+
+@property (retain, nonatomic) IBOutlet UITextField *itemName;
+@property (retain, nonatomic) IBOutlet UITextView *itemDescription;
+@property (retain, nonatomic) IBOutlet UIImageView *itemPicture;
 
 @end

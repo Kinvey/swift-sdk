@@ -164,7 +164,7 @@ static char oidKey;
     KCSPersistDelegateMapper *mapping = [[KCSPersistDelegateMapper alloc] init];
 
     [mapping setMappedDelegate:delegate];
-    NSString *documentPath = [[client baseURI] stringByAppendingPathExtension:[self entityColleciton]];
+    NSString *documentPath = [NSString stringWithFormat:@"%@", [self entityColleciton]];
     
     
     // If we need to post this, then do so
@@ -177,6 +177,29 @@ static char oidKey;
 
     [dictionaryToMap release];
     [mapping release];
+
+}
+
+- (void)deleteDelegate:(id<KCSPersistDelegate>)delegate usingClient:(KCSClient *)client
+{
+    KCSPersistDelegateMapper *mapping = [[KCSPersistDelegateMapper alloc] init];
+    
+    [mapping setMappedDelegate:delegate];
+    NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
+    
+    NSString *oid = nil;
+    for (NSString *key in kinveyMapping){
+        NSString *jsonName = [kinveyMapping valueForKey:key];
+        if ([jsonName compare:@"_id"] == NSOrderedSame){
+            oid = [self valueForKey:key];
+        }
+    }
+
+    NSString *documentPath = [NSString stringWithFormat:@"%@/%@", [self entityColleciton],
+                              oid];
+    
+    [client clientActionDelegate:mapping forDeleteRequestAtPath:documentPath];
+    
 
 }
 
@@ -203,6 +226,7 @@ static char oidKey;
 @synthesize mappedDelegate;
 @synthesize objectToLoad;
 @synthesize jsonDecoder;
+@synthesize kinveyClient=_kinveyClient;
 
 
 - (id)init {
@@ -210,6 +234,7 @@ static char oidKey;
     
     if (self){
         jsonDecoder = [[JSONDecoder alloc] init];
+        [self setKinveyClient:nil];
     }
     return self;
 

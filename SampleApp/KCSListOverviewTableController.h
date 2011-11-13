@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "KinveyKit.h"
 
-@interface KCSListOverviewTableController : UITableViewController
+@interface KCSListOverviewTableController : UITableViewController <KCSCollectionDelegate>
 
 @property (retain) NSMutableArray *kLists;
-
+@property (retain) KCSClient *kinveyClient;
+@property (retain) KCSCollection *listsCollection;
 
 @end

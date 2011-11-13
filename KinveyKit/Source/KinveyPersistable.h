@@ -53,6 +53,9 @@ implementing these methods.
  */
 - (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistUsingClient:(KCSClient *)client;
 
+
+- (void)deleteDelegate:(id <KCSPersistDelegate>)delegate usingClient:(KCSClient *)client;
+
 /*! Provide the mapping from an Entity's representation to the Native Objective-C representation.
     @returns a dictionary mapping Objective-C properties to Entity Properties.
 
