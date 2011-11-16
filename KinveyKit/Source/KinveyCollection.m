@@ -238,7 +238,8 @@
     KCSCollectionDelegateMapper *mapper = [[KCSCollectionDelegateMapper alloc] initWithDelegate:delegate];
     [mapper setObjectTemplate:[self objectTemplate]];
     [mapper setCollection:[self collectionName]];
-    [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath: [self collectionName]];
+    NSString *requestPath = [[_kinveyClient baseURL] stringByAppendingString:_collectionName];
+    [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath: requestPath];
     
 }
 
@@ -336,10 +337,10 @@
     KCSCollectionDelegateMapper *mapper = [[KCSCollectionDelegateMapper alloc] initWithDelegate:delegate];
     [mapper setObjectTemplate:[self objectTemplate]];
 
-    [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath: [[self collectionName] stringByAppendingFormat:@"/?query=%@", 
-                                                                           [NSString stringbyPercentEncodingString:
-                                                                            [self buildQueryForFilters:[self filters]]]]];
-
+    NSString *requestPath = [[_kinveyClient baseURL] stringByAppendingFormat:@"%@/?query=%@",
+                             _collectionName, [NSString stringbyPercentEncodingString:[self buildQueryForFilters:[self filters]]]];
+    
+    [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath:requestPath];
 }
 
 #pragma mark Utility Methods
@@ -349,8 +350,9 @@
 	
     KCSInformationDelegateMapper *mapper = [[KCSInformationDelegateMapper alloc] initWithDelegate:delegate];
     
-    [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath: [NSString stringWithFormat:@"%@/%@", [self collectionName], @"_count"]];
-//    [mapper autorelease];
+    NSString *requestPath = [[_kinveyClient baseURL] stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
+    
+    [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath: requestPath];
 }
 
 // AVG is not in the REST docs anymore

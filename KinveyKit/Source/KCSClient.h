@@ -13,8 +13,6 @@
 @class KCSCollection;
 
 
-#define KCS_HTTP_STATUS_OK 200
-
 // Keys for options hash
 #define KCS_APP_KEY_KEY @"kcsAppKey"
 #define KCS_APP_SECRET_KEY @"kcsSecret"
@@ -154,7 +152,7 @@
 
 /*! Perform a GET request against the Kinvey Server
 	@param delegate The delegate to inform about the result of the request
-	@param path The path of the resource to GET
+	@param path The FULL path of the resource to GET
 	@note The PATH paramter will be appended to the base URL to form the complete URL.
 */
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forGetRequestAtPath: (NSString *)path;
@@ -162,7 +160,7 @@
 /*! Perform a GET request against the Kinvey Server
 	@param delegate The delegate to inform about the result of the request
 	@param putRequest an NSData object containing UTF-8 encoded JSON data
-	@param path The path of the resource to PUT
+	@param path The FULL path of the resource to PUT
 	@note The PATH paramter will be appended to the base URL to form the complete URL.
 */
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forPutRequest: (NSData *)putRequest atPath: (NSString *)path;
@@ -172,14 +170,14 @@
 /*! Perform a GET request against the Kinvey Server
 	@param delegate The delegate to inform about the result of the request
 	@param postRequest an NSData object containing UTF-8 encoded JSON data
-	@param path The path of the resource to POST
+	@param path The FULL path of the resource to POST
 	@note The PATH paramter will be appended to the base URL to form the complete URL.
 */
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forPostRequest: (NSData *)postRequest atPath: (NSString *)path;
 
 /*! Perform a GET request against the Kinvey Server
 	@param delegate The delegate to inform about the result of the request
-	@param path The path of the resource to DELETE
+	@param path The FULL path of the resource to DELETE
 	@note The PATH paramter will be appended to the base URL to form the complete URL.
 */
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forDeleteRequestAtPath: (NSString *)path;

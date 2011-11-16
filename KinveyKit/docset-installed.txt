@@ -1,4 +1,0 @@
-Documentation set was installed to Xcode!
-
-Path: /tmp/docset/com.kinvey.kinveykit.KinveyKit.docset
-Time: 2011-11-15 09:14:30 +0000
