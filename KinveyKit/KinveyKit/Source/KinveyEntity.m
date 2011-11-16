@@ -25,15 +25,17 @@
 
 
 
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFetchOne: (NSString *)query usingClient: (KCSClient *)client
+- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFetchOne: (NSString *)query fromCollection: (KCSCollection *)collection;
 {
 
-    NSString *builtQuery = [[[client baseURL] stringByAppendingPathComponent:[self entityColleciton]] URLStringByAppendingQueryString:query];
-    
+    NSString *baseQuery = [[[collection kinveyClient] baseURL] stringByAppendingFormat:@"%@/", [collection collectionName]];
+    NSString *builtQuery = [baseQuery URLStringByAppendingQueryString:[NSString stringbyPercentEncodingString:query]];
+                           
     KCSEntityDelegateMapper *mapper = [[KCSEntityDelegateMapper alloc] init];
     [mapper setMappedDelegate:delegate];
     [mapper setObjectToLoad:self];
-    [client clientActionDelegate:mapper forGetRequestAtPath:builtQuery];
+    
+    [[collection kinveyClient] clientActionDelegate:mapper forGetRequestAtPath:builtQuery];
 }
 
 - (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withBoolValue: (BOOL) value usingClient: (KCSClient *)client
@@ -87,7 +89,7 @@
 
 - (NSString *)valueForProperty: (NSString *)property
 {
-    if ([property compare:@"_id"] == NSOrderedSame){
+    if ([property isEqualToString:@"_id"]){
         // String is _id, so this is our special case
         return [self objectId];
     } else {
@@ -96,14 +98,14 @@
     return nil;
 }
 
-- (void)entityDelegate:(id <KCSEntityDelegate>)delegate loadObjectWithId:(NSString *)objectId usingClient:(KCSClient *)client
+- (void)entityDelegate:(id <KCSEntityDelegate>)delegate loadObjectWithId:(NSString *)objectId fromCollection:(KCSCollection *)collection
 {
     KCSEntityDelegateMapper *deferredLoader = [[KCSEntityDelegateMapper alloc] init];
     [deferredLoader setMappedDelegate:delegate];
     [deferredLoader setObjectToLoad:self];
 
-    NSString *idLocation = [[client baseURL] stringByAppendingFormat:@"%@/%@", [self entityColleciton], objectId];
-    [client clientActionDelegate:deferredLoader forGetRequestAtPath:idLocation];
+    NSString *idLocation = [[[collection kinveyClient] baseURL] stringByAppendingFormat:@"%@/%@", [self entityColleciton], objectId];
+    [[collection kinveyClient ] clientActionDelegate:deferredLoader forGetRequestAtPath:idLocation];
 }
 
 - (void)setValue: (NSString *)value forProperty: (NSString *)property
@@ -138,7 +140,7 @@
     KCSPersistDelegateMapper *mapping = [[KCSPersistDelegateMapper alloc] init];
 
     [mapping setMappedDelegate:delegate];
-    NSString *documentPath = [NSString stringWithFormat:@"%@/%@", [collection collectionName], objectId];
+    NSString *documentPath = [[[collection kinveyClient] baseURL] stringByAppendingFormat:@"%@/%@", [collection collectionName], objectId];
     
     
     // If we need to post this, then do so
@@ -168,7 +170,7 @@
         }
     }
 
-    NSString *documentPath = [NSString stringWithFormat:@"%@/%@", [collection collectionName], oid];
+    NSString *documentPath = [[[collection kinveyClient] baseURL] stringByAppendingFormat:@"%@/%@", [collection collectionName], oid];
     
     [[collection kinveyClient] clientActionDelegate:mapping forDeleteRequestAtPath:documentPath];
     

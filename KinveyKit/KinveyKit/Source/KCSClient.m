@@ -115,6 +115,8 @@
     [_lastResponse release]; // Initialized to nil, so this does nothing if we don't have a last response
     [self setLastResponse:response];
     
+    NSLog(@"Got response, status code: %d, response: %@", [(NSHTTPURLResponse *)response statusCode], response);
+    
     // Make sure to keep the reference around
     [[self lastResponse] retain];
     
@@ -203,15 +205,6 @@
 {
     NSLog(@"initWithOptions:");
   
-    // Extract the relevant info and build the baseURL string. 
-
-    //    NSString *url = [NSString stringWithFormat:@"https://%@.kinvey.com%@/appdata/%@/",
-    //                     [_options valueForKey:@"service"],
-    //                     portString,
-    //                     [_options valueForKey:@"appKey"]];
-    
-    //    [_options setValue:url forKey:@"baseURL"];
-    
     self = [super init];
     
     if (self){
@@ -379,11 +372,13 @@
 // These calls are async
 // This is the actual implementation of the REST API
 // GET, PUT, POST, DELETE
+
+
+
 - (void)clientActionDelegate: (id <KCSClientActionDelegate>)delegate forGetRequestAtPath: (NSString *)path
 {
     NSLog(@"TRACE: clientActionDelegate:forGetRequestAtPath:");
-//    NSURL *requestURL = [NSURL URLWithString:[baseURL stringbyAppendingStringWithPercentEncoding:path]];
-    NSURL *requestURL = [NSURL URLWithString:[_baseURL stringByAppendingString:path]];
+    NSURL *requestURL = [NSURL URLWithString:path];
 
     
     NSURLRequest *theRequest=[NSURLRequest requestWithURL:requestURL
@@ -401,8 +396,7 @@
 {
     NSLog(@"TRACE: clientActionDelegate:forDataRequest:withMethod:atPath:");
     
-//    NSURL *requestURL = [NSURL URLWithString:[baseURL stringbyAppendingStringWithPercentEncoding:path]];
-    NSURL *requestURL = [NSURL URLWithString:[_baseURL stringByAppendingString:path]];
+    NSURL *requestURL = [NSURL URLWithString:path];
     
     NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:requestURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:[self connectionTimeout]];
     
@@ -412,11 +406,16 @@
     
     // Add required fields to the header
     [theRequest addValue:contentType forHTTPHeaderField:@"Content-Type"];
+    [theRequest addValue:[NSString stringWithFormat:@"%d", [dataRequest length]] forHTTPHeaderField:@"Content-Length"];
     
     // Add the body to the request
     [theRequest setHTTPBody:dataRequest];
     
-    NSLog(@"Content-Type: %@, Payload: %@", contentType, [dataRequest objectFromJSONData]);
+    if ([contentType isEqualToString:KCS_JSON_TYPE]){
+        NSLog(@"Content-Type: %@, Payload: %@", contentType, [dataRequest objectFromJSONData]);
+    } else {
+        NSLog(@"Content-Type: %@, Payload Size: %d", contentType, [dataRequest length]);
+    }
     
     // Actually perform the connection
     [self clientActionDelegate:delegate forRequest:theRequest];
@@ -453,8 +452,7 @@
 {
     NSLog(@"TRACE: clientActionDelegate:forDeleteRequestAtPath:");
     [delegate retain];
-//    NSURL *requestURL = [NSURL URLWithString:[baseURL stringbyAppendingStringWithPercentEncoding:path]];
-    NSURL *requestURL = [NSURL URLWithString:[_baseURL stringByAppendingString:path]];
+    NSURL *requestURL = [NSURL URLWithString:path];
   
     NSMutableURLRequest *theRequest=[NSMutableURLRequest requestWithURL:requestURL
                                                             cachePolicy:NSURLRequestUseProtocolCachePolicy
