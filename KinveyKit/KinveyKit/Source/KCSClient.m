@@ -247,8 +247,9 @@
         
         [self setConnectionTimeout:timeout];
         
+#ifndef NO_URBAN_AIRSHIP_PUSH
         [self initializeUrbanAirshipWithOptions:optionsDictionary];
-
+#endif
         
     }
     

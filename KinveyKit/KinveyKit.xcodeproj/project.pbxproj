@@ -1333,6 +1333,94 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		D30E55E01476FD3C00F0EC04 /* DebugNoPush */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = DebugNoPush;
+		};
+		D30E55E11476FD3C00F0EC04 /* DebugNoPush */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					NO_URBAN_AIRSHIP_PUSH,
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = "Airship/**";
+				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = DebugNoPush;
+		};
+		D30E55E21476FD3C00F0EC04 /* DebugNoPush */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				INFOPLIST_FILE = "KinveyKitTests/KinveyKitTests-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = DebugNoPush;
+		};
+		D30E55E31476FD3C00F0EC04 /* DebugNoPush */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				HEADER_SEARCH_PATHS = "Airship/**";
+				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
+				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
+				);
+				PRODUCT_NAME = KinveyKitNoPush;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = DebugNoPush;
+		};
 		D32A60EE14716EE300F77A3F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1460,8 +1548,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
 				HEADER_SEARCH_PATHS = "Airship/**";
-				INFOPLIST_FILE = "KinveyKit copy-Info.plist";
-				INFOPLIST_PREPROCESSOR_DEFINITIONS = "NO_URBAN_AIRSHIP_PUSH=1";
+				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
+				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
@@ -1481,8 +1569,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
 				HEADER_SEARCH_PATHS = "Airship/**";
-				INFOPLIST_FILE = "KinveyKit copy-Info.plist";
-				INFOPLIST_PREPROCESSOR_DEFINITIONS = "NO_URBAN_AIRSHIP_PUSH=1";
+				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
+				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
@@ -1500,6 +1588,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D32A60EE14716EE300F77A3F /* Debug */,
+				D30E55E01476FD3C00F0EC04 /* DebugNoPush */,
 				D32A60EF14716EE300F77A3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1509,6 +1598,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D32A60F114716EE300F77A3F /* Debug */,
+				D30E55E11476FD3C00F0EC04 /* DebugNoPush */,
 				D32A60F214716EE300F77A3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1518,6 +1608,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D32A60F414716EE300F77A3F /* Debug */,
+				D30E55E21476FD3C00F0EC04 /* DebugNoPush */,
 				D32A60F514716EE300F77A3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1527,6 +1618,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D3B24C9314733CE500F14DEE /* Debug */,
+				D30E55E31476FD3C00F0EC04 /* DebugNoPush */,
 				D3B24C9414733CE500F14DEE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
