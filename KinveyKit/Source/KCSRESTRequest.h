@@ -19,6 +19,10 @@ enum {
     kDeleteRESTMethod  = 3
 };
 
+// Switch to static...
+#define KCS_JSON_TYPE @"application/json; charset=utf-8"
+#define KCS_DATA_TYPE @"application/octet-stream"
+
 
 @interface KCSRESTRequest : KCSConnection
 
