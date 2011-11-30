@@ -75,6 +75,12 @@
 @property (nonatomic, copy, readonly) NSString *libraryVersion;
 @property (nonatomic, copy) NSURLCredential *authCredentials;
 
+@property (nonatomic, readonly) NSURLCacheStoragePolicy cachePolicy;
+@property (nonatomic, copy, readonly) NSString *dataBaseURL;
+@property (nonatomic, copy, readonly) NSString *assetBaseURL;
+
+@property double connectionTimeout;
+
 
 
 

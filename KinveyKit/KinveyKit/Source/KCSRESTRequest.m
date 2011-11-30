@@ -10,6 +10,25 @@
 #import "KCSConnectionPool.h"
 #import "KCSClient.h"
 
+// *cough* hack *cough*
+#define MAX_DATE_STRING_LENGTH_K 40 
+
+NSString *getLogDate(void); // Make compiler happy...
+
+NSString *
+getLogDate(void)
+{
+    time_t now = time(NULL);
+    struct tm *t = gmtime(&now);
+    
+    char timestring[MAX_DATE_STRING_LENGTH_K];
+    
+    int len = strftime(timestring, MAX_DATE_STRING_LENGTH_K - 1, "%a, %d %b %Y %T %Z", t);
+    assert(len < MAX_DATE_STRING_LENGTH_K);
+    
+    return [NSString stringWithCString:timestring encoding:NSASCIIStringEncoding];
+}
+
 
 @interface KCSRESTRequest()
 @property (nonatomic, retain) NSMutableURLRequest *request;
@@ -137,6 +156,7 @@
 - (void)start
 {
     KCSConnection *connection;
+    KCSClient *kinveyClient = [KCSClient sharedClient];
     
     if (self.isSyncRequest){
         connection = [[KCSConnectionPool syncConnection] retain];
@@ -144,19 +164,19 @@
         connection = [[KCSConnectionPool asyncConnection] retain];
     }
     
-//    self.request = [NSURLRequest requestWithURL:self.resourceLocation cachePolicy:XXX timeoutInterval:60.0];
-    self.request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.resourceLocation]];
+    self.request = [NSURLRequest requestWithURL:[NSURL URLWithString:self.resourceLocation] cachePolicy:kinveyClient.cachePolicy timeoutInterval:kinveyClient.connectionTimeout];
     [self.request  setHTTPMethod: [self getHTTPMethodForConstant: self.method]];
     
     for (NSString *key in [self.headers allKeys]) {
         [self.request addValue:[self.headers valueForKey:key] forHTTPHeaderField:key];
     }
     
-    [self.request addValue:[[KCSClient sharedClient] userAgent] forHTTPHeaderField:@"User-Agent"];
-    [self.request addValue:[NSDateFormatter localizedStringFromDate:[NSDate dateWithTimeIntervalSinceNow:0] dateStyle:NSDateFormatterLongStyle timeStyle:NSDateFormatterLongStyle] forHTTPHeaderField:@"Date"];
-    [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:[[KCSClient sharedClient] authCredentials]];
+    [self.request addValue:[kinveyClient userAgent] forHTTPHeaderField:@"User-Agent"];
+
+    [self.request addValue:getLogDate() forHTTPHeaderField:@"Date"];
+    [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:[kinveyClient authCredentials]];
      
-     [connection release];
+    [connection release];
 }
 
 @end

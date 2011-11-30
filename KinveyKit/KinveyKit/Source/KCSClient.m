@@ -16,18 +16,15 @@
 #import "NSURL+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
 
-#define KCS_JSON_TYPE @"application/json"
-#define KCS_DATA_TYPE @"application/octet-stream"
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
 @interface KCSClient ()
 // Redeclare private iVars
-@property double connectionTimeout;
-@property (nonatomic, copy) NSString *userAgent;
-@property (nonatomic, copy) NSString *libraryVersion;
-@property (nonatomic, copy) NSString *dataBaseURL;
-@property (nonatomic, copy) NSString *assetBaseURL;
+@property (nonatomic, copy, readwrite) NSString *userAgent;
+@property (nonatomic, copy, readwrite) NSString *libraryVersion;
+@property (nonatomic, copy, readwrite) NSString *dataBaseURL;
+@property (nonatomic, copy, readwrite) NSString *assetBaseURL;
 
 
 // Do not expose this to clients yet... soon?
@@ -45,6 +42,7 @@
 @synthesize userAgent=_userAgent;
 @synthesize libraryVersion=_libraryVersion;
 @synthesize authCredentials=_authCredentials;
+@synthesize cachePolicy=_cachePolicy;
 
 @synthesize analytics=_analytics;
 
@@ -59,6 +57,7 @@
         // Until latestbeta is upgraded...
         self.assetBaseURL = [[NSString alloc] initWithFormat:@"http://latestbeta.kinvey.com/appdata/blob/%@/", self.appKey];
         self.connectionTimeout = 60.0; // Default timeout to 1 minute...
+        _cachePolicy = NSURLCacheStorageNotAllowed; // Inhibit caching for now
     }
     
     return self;
