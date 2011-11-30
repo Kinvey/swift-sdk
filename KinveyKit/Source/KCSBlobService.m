@@ -33,9 +33,9 @@
 
 - (void)dealloc
 {
-    [self.localFileName release];
+    [_localFileName release];
     self.localFileName = nil;
-    [self.blobId release];
+    [_blobId release];
     self.blobId = nil;
     
     self.blob = nil;

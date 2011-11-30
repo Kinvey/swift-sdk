@@ -43,27 +43,15 @@
 		D32A61271471700200F77A3F /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A61251471700200F77A3F /* JSONKit.h */; };
 		D32A61281471700200F77A3F /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A61261471700200F77A3F /* JSONKit.m */; };
 		D32A61291471700200F77A3F /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A61261471700200F77A3F /* JSONKit.m */; };
-		D3B24C7914733CE500F14DEE /* KCSBlobService.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60F814716F2D00F77A3F /* KCSBlobService.m */; };
-		D3B24C7A14733CE500F14DEE /* KCSClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60FA14716F2D00F77A3F /* KCSClient.m */; };
-		D3B24C7B14733CE500F14DEE /* KCSEntityDict.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60FC14716F2D00F77A3F /* KCSEntityDict.m */; };
-		D3B24C7C14733CE500F14DEE /* KinveyAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60FE14716F2D00F77A3F /* KinveyAnalytics.m */; };
-		D3B24C7D14733CE500F14DEE /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610014716F2D00F77A3F /* KinveyCollection.m */; };
-		D3B24C7E14733CE500F14DEE /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610214716F2D00F77A3F /* KinveyEntity.m */; };
-		D3B24C7F14733CE500F14DEE /* NSString+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610514716F2D00F77A3F /* NSString+KinveyAdditions.m */; };
-		D3B24C8014733CE500F14DEE /* NSURL+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610714716F2D00F77A3F /* NSURL+KinveyAdditions.m */; };
-		D3B24C8114733CE500F14DEE /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A61261471700200F77A3F /* JSONKit.m */; };
-		D3B24C8414733CE500F14DEE /* KCSBlobService.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60F714716F2D00F77A3F /* KCSBlobService.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8514733CE500F14DEE /* KCSClient.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60F914716F2D00F77A3F /* KCSClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8614733CE500F14DEE /* KCSEntityDict.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60FB14716F2D00F77A3F /* KCSEntityDict.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8714733CE500F14DEE /* KinveyAnalytics.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60FD14716F2D00F77A3F /* KinveyAnalytics.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8814733CE500F14DEE /* KinveyCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60FF14716F2D00F77A3F /* KinveyCollection.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8914733CE500F14DEE /* KinveyEntity.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A610114716F2D00F77A3F /* KinveyEntity.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8A14733CE500F14DEE /* KinveyPersistable.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A610314716F2D00F77A3F /* KinveyPersistable.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8B14733CE500F14DEE /* NSString+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A610414716F2D00F77A3F /* NSString+KinveyAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8C14733CE500F14DEE /* NSURL+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A610614716F2D00F77A3F /* NSURL+KinveyAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8D14733CE500F14DEE /* KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A612114716F5200F77A3F /* KinveyKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3B24C8E14733CE500F14DEE /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A61251471700200F77A3F /* JSONKit.h */; };
-		D3B24C9014733CE500F14DEE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D32A60D014716EE300F77A3F /* InfoPlist.strings */; };
+		D33E686E147DBA5700EE885E /* KCSConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = D33E686C147DBA5700EE885E /* KCSConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D33E686F147DBA5700EE885E /* KCSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E686D147DBA5700EE885E /* KCSConnection.m */; };
+		D33E6870147DBA5700EE885E /* KCSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E686D147DBA5700EE885E /* KCSConnection.m */; };
+		D33E6873147DBA7200EE885E /* KCSAsyncConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = D33E6871147DBA7200EE885E /* KCSAsyncConnection.h */; };
+		D33E6874147DBA7200EE885E /* KCSAsyncConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E6872147DBA7200EE885E /* KCSAsyncConnection.m */; };
+		D33E6875147DBA7200EE885E /* KCSAsyncConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E6872147DBA7200EE885E /* KCSAsyncConnection.m */; };
+		D33E6878147DC1A400EE885E /* KCSConnectionResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = D33E6876147DC1A400EE885E /* KCSConnectionResponse.h */; };
+		D33E6879147DC1A400EE885E /* KCSConnectionResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E6877147DC1A400EE885E /* KCSConnectionResponse.m */; };
+		D33E687A147DC1A400EE885E /* KCSConnectionResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E6877147DC1A400EE885E /* KCSConnectionResponse.m */; };
 		D3C5E67A14745E39002D8F2B /* libUAirship-1.1.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A643E147174C300F77A3F /* libUAirship-1.1.1.a */; };
 		D3C5E67D14745E6E002D8F2B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */; };
 		D3C5E68114745EEE002D8F2B /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */; };
@@ -73,7 +61,20 @@
 		D3C5E68814745F09002D8F2B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68514745F09002D8F2B /* Security.framework */; };
 		D3C5E68914745F09002D8F2B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68614745F09002D8F2B /* SystemConfiguration.framework */; };
 		D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */; };
-		D3C5E69A147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */; };
+		D3EA224C148412A600666259 /* KCSConnectionPool.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA224A148412A600666259 /* KCSConnectionPool.h */; };
+		D3EA224D148412A600666259 /* KCSConnectionPool.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA224B148412A600666259 /* KCSConnectionPool.m */; };
+		D3EA224E148412A600666259 /* KCSConnectionPool.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA224B148412A600666259 /* KCSConnectionPool.m */; };
+		D3EA22521484180300666259 /* KCSSyncConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22501484180300666259 /* KCSSyncConnection.h */; };
+		D3EA22531484180300666259 /* KCSSyncConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22511484180300666259 /* KCSSyncConnection.m */; };
+		D3EA22541484180300666259 /* KCSSyncConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22511484180300666259 /* KCSSyncConnection.m */; };
+		D3EA22571484228300666259 /* KCSRESTRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22551484228300666259 /* KCSRESTRequest.h */; };
+		D3EA22581484228300666259 /* KCSRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22561484228300666259 /* KCSRESTRequest.m */; };
+		D3EA22591484228300666259 /* KCSRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22561484228300666259 /* KCSRESTRequest.m */; };
+		D3EA22691484852B00666259 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22671484852B00666259 /* KCSPush.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D3EA226A1484852B00666259 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22681484852B00666259 /* KCSPush.m */; };
+		D3EA226B1484852B00666259 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22681484852B00666259 /* KCSPush.m */; };
+		D3EA226E148529A400666259 /* KinveyKitRESTRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA226D148529A400666259 /* KinveyKitRESTRequestTests.m */; };
+		D3EA2270148543D600666259 /* KinveyBlocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA226F148543D600666259 /* KinveyBlocks.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,7 +127,6 @@
 		D32A612114716F5200F77A3F /* KinveyKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKit.h; sourceTree = "<group>"; };
 		D32A61251471700200F77A3F /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
 		D32A61261471700200F77A3F /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
-		D32A63EA147174C300F77A3F /* .README.rst.swp */ = {isa = PBXFileReference; lastKnownFileType = file; path = .README.rst.swp; sourceTree = "<group>"; };
 		D32A63EB147174C300F77A3F /* CHANGELOG */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		D32A63ED147174C300F77A3F /* UAAnalytics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAAnalytics.h; sourceTree = "<group>"; };
 		D32A63EE147174C300F77A3F /* UAAnalyticsDBManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAAnalyticsDBManager.h; sourceTree = "<group>"; };
@@ -334,7 +334,12 @@
 		D32A64DD147174C300F77A3F /* UASubscriptionRootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UASubscriptionRootViewController.xib; sourceTree = "<group>"; };
 		D32A64DE147174C300F77A3F /* UASubscriptionSettingsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UASubscriptionSettingsViewController.xib; sourceTree = "<group>"; };
 		D32A64DF147174C300F77A3F /* UASubscriptionUserProductsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UASubscriptionUserProductsViewController.xib; sourceTree = "<group>"; };
-		D3B24C9514733CE500F14DEE /* KinveyKitNoPush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; includeInIndex = 0; path = KinveyKitNoPush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D33E686C147DBA5700EE885E /* KCSConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSConnection.h; sourceTree = "<group>"; };
+		D33E686D147DBA5700EE885E /* KCSConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSConnection.m; sourceTree = "<group>"; };
+		D33E6871147DBA7200EE885E /* KCSAsyncConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAsyncConnection.h; sourceTree = "<group>"; };
+		D33E6872147DBA7200EE885E /* KCSAsyncConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSAsyncConnection.m; sourceTree = "<group>"; };
+		D33E6876147DC1A400EE885E /* KCSConnectionResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSConnectionResponse.h; sourceTree = "<group>"; };
+		D33E6877147DC1A400EE885E /* KCSConnectionResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSConnectionResponse.m; sourceTree = "<group>"; };
 		D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -343,6 +348,17 @@
 		D3C5E68514745F09002D8F2B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		D3C5E68614745F09002D8F2B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyHTTPStatusCodes.h; sourceTree = "<group>"; };
+		D3EA224A148412A600666259 /* KCSConnectionPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSConnectionPool.h; sourceTree = "<group>"; };
+		D3EA224B148412A600666259 /* KCSConnectionPool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSConnectionPool.m; sourceTree = "<group>"; };
+		D3EA22501484180300666259 /* KCSSyncConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSyncConnection.h; sourceTree = "<group>"; };
+		D3EA22511484180300666259 /* KCSSyncConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSyncConnection.m; sourceTree = "<group>"; };
+		D3EA22551484228300666259 /* KCSRESTRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRESTRequest.h; sourceTree = "<group>"; };
+		D3EA22561484228300666259 /* KCSRESTRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRESTRequest.m; sourceTree = "<group>"; };
+		D3EA22671484852B00666259 /* KCSPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPush.h; sourceTree = "<group>"; };
+		D3EA22681484852B00666259 /* KCSPush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPush.m; sourceTree = "<group>"; };
+		D3EA226C148529A400666259 /* KinveyKitRESTRequestTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitRESTRequestTests.h; sourceTree = "<group>"; };
+		D3EA226D148529A400666259 /* KinveyKitRESTRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitRESTRequestTests.m; sourceTree = "<group>"; };
+		D3EA226F148543D600666259 /* KinveyBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyBlocks.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -372,16 +388,82 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D3B24C8214733CE500F14DEE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D312B3F4147EA5BA007F48B9 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				D3EA22551484228300666259 /* KCSRESTRequest.h */,
+				D3EA22561484228300666259 /* KCSRESTRequest.m */,
+				D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */,
+				D33E686C147DBA5700EE885E /* KCSConnection.h */,
+				D33E686D147DBA5700EE885E /* KCSConnection.m */,
+				D3EA22501484180300666259 /* KCSSyncConnection.h */,
+				D3EA22511484180300666259 /* KCSSyncConnection.m */,
+				D33E6876147DC1A400EE885E /* KCSConnectionResponse.h */,
+				D33E6877147DC1A400EE885E /* KCSConnectionResponse.m */,
+				D33E6871147DBA7200EE885E /* KCSAsyncConnection.h */,
+				D33E6872147DBA7200EE885E /* KCSAsyncConnection.m */,
+				D3EA224A148412A600666259 /* KCSConnectionPool.h */,
+				D3EA224B148412A600666259 /* KCSConnectionPool.m */,
+				D3EA226F148543D600666259 /* KinveyBlocks.h */,
+			);
+			name = Network;
+			sourceTree = "<group>";
+		};
+		D312B3F6147EA5DE007F48B9 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				D32A610414716F2D00F77A3F /* NSString+KinveyAdditions.h */,
+				D32A610514716F2D00F77A3F /* NSString+KinveyAdditions.m */,
+				D32A610614716F2D00F77A3F /* NSURL+KinveyAdditions.h */,
+				D32A610714716F2D00F77A3F /* NSURL+KinveyAdditions.m */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
+		D312B3F7147EA5FD007F48B9 /* AssetService */ = {
+			isa = PBXGroup;
+			children = (
+				D32A60F714716F2D00F77A3F /* KCSBlobService.h */,
+				D32A60F814716F2D00F77A3F /* KCSBlobService.m */,
+			);
+			name = AssetService;
+			sourceTree = "<group>";
+		};
+		D312B3F8147EA63C007F48B9 /* DataService */ = {
+			isa = PBXGroup;
+			children = (
+				D32A60FB14716F2D00F77A3F /* KCSEntityDict.h */,
+				D32A60FC14716F2D00F77A3F /* KCSEntityDict.m */,
+				D32A60FF14716F2D00F77A3F /* KinveyCollection.h */,
+				D32A610014716F2D00F77A3F /* KinveyCollection.m */,
+				D32A610114716F2D00F77A3F /* KinveyEntity.h */,
+				D32A610214716F2D00F77A3F /* KinveyEntity.m */,
+				D32A610314716F2D00F77A3F /* KinveyPersistable.h */,
+			);
+			name = DataService;
+			sourceTree = "<group>";
+		};
+		D312B3F9147EA671007F48B9 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				D32A60FD14716F2D00F77A3F /* KinveyAnalytics.h */,
+				D32A60FE14716F2D00F77A3F /* KinveyAnalytics.m */,
+			);
+			name = Analytics;
+			sourceTree = "<group>";
+		};
+		D312B3FA147EA692007F48B9 /* KinveyService */ = {
+			isa = PBXGroup;
+			children = (
+				D32A60F914716F2D00F77A3F /* KCSClient.h */,
+				D32A60FA14716F2D00F77A3F /* KCSClient.m */,
+			);
+			name = KinveyService;
+			sourceTree = "<group>";
+		};
 		D32A60BA14716EE300F77A3F = {
 			isa = PBXGroup;
 			children = (
@@ -397,7 +479,6 @@
 			children = (
 				D32A60C814716EE300F77A3F /* KinveyKit.framework */,
 				D32A60D914716EE300F77A3F /* KinveyKitTests.octest */,
-				D3B24C9514733CE500F14DEE /* KinveyKitNoPush.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -422,8 +503,8 @@
 		D32A60CD14716EE300F77A3F /* KinveyKit */ = {
 			isa = PBXGroup;
 			children = (
-				D32A61231471700200F77A3F /* 3rdParty */,
 				D32A612114716F5200F77A3F /* KinveyKit.h */,
+				D32A61231471700200F77A3F /* 3rdParty */,
 				D32A60F614716F2D00F77A3F /* Source */,
 				D32A60CE14716EE300F77A3F /* Supporting Files */,
 			);
@@ -446,6 +527,8 @@
 				D32A60EB14716EE300F77A3F /* KinveyKitTests.h */,
 				D32A60EC14716EE300F77A3F /* KinveyKitTests.m */,
 				D32A60E614716EE300F77A3F /* Supporting Files */,
+				D3EA226C148529A400666259 /* KinveyKitRESTRequestTests.h */,
+				D3EA226D148529A400666259 /* KinveyKitRESTRequestTests.m */,
 			);
 			path = KinveyKitTests;
 			sourceTree = "<group>";
@@ -462,24 +545,13 @@
 		D32A60F614716F2D00F77A3F /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				D32A60F714716F2D00F77A3F /* KCSBlobService.h */,
-				D32A60F814716F2D00F77A3F /* KCSBlobService.m */,
-				D32A60F914716F2D00F77A3F /* KCSClient.h */,
-				D32A60FA14716F2D00F77A3F /* KCSClient.m */,
-				D32A60FB14716F2D00F77A3F /* KCSEntityDict.h */,
-				D32A60FC14716F2D00F77A3F /* KCSEntityDict.m */,
-				D32A60FD14716F2D00F77A3F /* KinveyAnalytics.h */,
-				D32A60FE14716F2D00F77A3F /* KinveyAnalytics.m */,
-				D32A60FF14716F2D00F77A3F /* KinveyCollection.h */,
-				D32A610014716F2D00F77A3F /* KinveyCollection.m */,
-				D32A610114716F2D00F77A3F /* KinveyEntity.h */,
-				D32A610214716F2D00F77A3F /* KinveyEntity.m */,
-				D32A610314716F2D00F77A3F /* KinveyPersistable.h */,
-				D32A610414716F2D00F77A3F /* NSString+KinveyAdditions.h */,
-				D32A610514716F2D00F77A3F /* NSString+KinveyAdditions.m */,
-				D32A610614716F2D00F77A3F /* NSURL+KinveyAdditions.h */,
-				D32A610714716F2D00F77A3F /* NSURL+KinveyAdditions.m */,
-				D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */,
+				D3EA22661484850B00666259 /* Push */,
+				D312B3FA147EA692007F48B9 /* KinveyService */,
+				D312B3F9147EA671007F48B9 /* Analytics */,
+				D312B3F8147EA63C007F48B9 /* DataService */,
+				D312B3F7147EA5FD007F48B9 /* AssetService */,
+				D312B3F6147EA5DE007F48B9 /* Utils */,
+				D312B3F4147EA5BA007F48B9 /* Network */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -505,7 +577,6 @@
 		D32A63E9147174C300F77A3F /* Airship */ = {
 			isa = PBXGroup;
 			children = (
-				D32A63EA147174C300F77A3F /* .README.rst.swp */,
 				D32A63EB147174C300F77A3F /* CHANGELOG */,
 				D32A63EC147174C300F77A3F /* Common */,
 				D32A63FE147174C300F77A3F /* External */,
@@ -1021,6 +1092,15 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
+		D3EA22661484850B00666259 /* Push */ = {
+			isa = PBXGroup;
+			children = (
+				D3EA22671484852B00666259 /* KCSPush.h */,
+				D3EA22681484852B00666259 /* KCSPush.m */,
+			);
+			name = Push;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1038,27 +1118,16 @@
 				D32A611B14716F2D00F77A3F /* NSString+KinveyAdditions.h in Headers */,
 				D32A611E14716F2D00F77A3F /* NSURL+KinveyAdditions.h in Headers */,
 				D32A612214716F5200F77A3F /* KinveyKit.h in Headers */,
+				D33E686E147DBA5700EE885E /* KCSConnection.h in Headers */,
+				D3EA22691484852B00666259 /* KCSPush.h in Headers */,
 				D32A61271471700200F77A3F /* JSONKit.h in Headers */,
 				D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D3B24C8314733CE500F14DEE /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D3B24C8414733CE500F14DEE /* KCSBlobService.h in Headers */,
-				D3B24C8514733CE500F14DEE /* KCSClient.h in Headers */,
-				D3B24C8614733CE500F14DEE /* KCSEntityDict.h in Headers */,
-				D3B24C8714733CE500F14DEE /* KinveyAnalytics.h in Headers */,
-				D3B24C8814733CE500F14DEE /* KinveyCollection.h in Headers */,
-				D3B24C8914733CE500F14DEE /* KinveyEntity.h in Headers */,
-				D3B24C8A14733CE500F14DEE /* KinveyPersistable.h in Headers */,
-				D3B24C8B14733CE500F14DEE /* NSString+KinveyAdditions.h in Headers */,
-				D3B24C8C14733CE500F14DEE /* NSURL+KinveyAdditions.h in Headers */,
-				D3B24C8D14733CE500F14DEE /* KinveyKit.h in Headers */,
-				D3B24C8E14733CE500F14DEE /* JSONKit.h in Headers */,
-				D3C5E69A147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */,
+				D33E6873147DBA7200EE885E /* KCSAsyncConnection.h in Headers */,
+				D33E6878147DC1A400EE885E /* KCSConnectionResponse.h in Headers */,
+				D3EA224C148412A600666259 /* KCSConnectionPool.h in Headers */,
+				D3EA22521484180300666259 /* KCSSyncConnection.h in Headers */,
+				D3EA22571484228300666259 /* KCSRESTRequest.h in Headers */,
+				D3EA2270148543D600666259 /* KinveyBlocks.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1105,26 +1174,6 @@
 			productReference = D32A60D914716EE300F77A3F /* KinveyKitTests.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
-		D3B24C7614733CE500F14DEE /* KinveyKitNoPush */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D3B24C9214733CE500F14DEE /* Build configuration list for PBXNativeTarget "KinveyKitNoPush" */;
-			buildPhases = (
-				D3B24C7714733CE500F14DEE /* ShellScript */,
-				D3B24C7814733CE500F14DEE /* Sources */,
-				D3B24C8214733CE500F14DEE /* Frameworks */,
-				D3B24C8314733CE500F14DEE /* Headers */,
-				D3B24C8F14733CE500F14DEE /* Resources */,
-				D3B24C9114733CE500F14DEE /* ShellScript */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = KinveyKitNoPush;
-			productName = KinveyKit;
-			productReference = D3B24C9514733CE500F14DEE /* KinveyKitNoPush.framework */;
-			productType = "com.apple.product-type.framework.static";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1148,7 +1197,6 @@
 			targets = (
 				D32A60C714716EE300F77A3F /* KinveyKit */,
 				D32A60D814716EE300F77A3F /* KinveyKitTests */,
-				D3B24C7614733CE500F14DEE /* KinveyKitNoPush */,
 			);
 		};
 /* End PBXProject section */
@@ -1167,14 +1215,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D32A60EA14716EE300F77A3F /* InfoPlist.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D3B24C8F14733CE500F14DEE /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D3B24C9014733CE500F14DEE /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1220,32 +1260,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
 		};
-		D3B24C7714733CE500F14DEE /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\n\nset +u\nif [[ $UFW_MASTER_SCRIPT_RUNNING ]]\nthen\n    # Nothing for the slave script to do\n    exit 0\nfi\nset -u\n\nif [[ \"$SDK_NAME\" =~ ([A-Za-z]+) ]]\nthen\n    UFW_SDK_PLATFORM=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find platform name from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$SDK_NAME\" =~ ([0-9]+.*$) ]]\nthen\n\tUFW_SDK_VERSION=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find sdk version  from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$UFW_SDK_PLATFORM\" = \"iphoneos\" ]]\nthen\n    UFW_OTHER_PLATFORM=iphonesimulator\nelse\n    UFW_OTHER_PLATFORM=iphoneos\nfi\n\nif [[ \"$BUILT_PRODUCTS_DIR\" =~ (.*)$UFW_SDK_PLATFORM$ ]]\nthen\n    UFW_OTHER_BUILT_PRODUCTS_DIR=\"${BASH_REMATCH[1]}${UFW_OTHER_PLATFORM}\"\nelse\n    echo \"Could not find $UFW_SDK_PLATFORM in $BUILT_PRODUCTS_DIR\"\n    exit 1\nfi\n\nONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM:-$ONLY_ACTIVE_ARCH}\n\n# Short-circuit if all binaries are up to date\n\nif [[ -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && \\\n   [[ -f \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && \\\n   [[ ! \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -nt \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && \\\n  ([[ \"${ONLY_ACTIVE_PLATFORM}\" == \"YES\" ]] || \\\n    ([[ -f \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && \\\n     [[ -f \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && \\\n     [[ ! \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -nt \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]]\n    )\n  )\nthen\n    exit 0\nfi\n\n\n# Clean other platform if needed\n\nif [[ ! -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && [[ \"${ONLY_ACTIVE_PLATFORM}\" != \"YES\" ]]\nthen\n\techo \"Platform \\\"$UFW_SDK_PLATFORM\\\" was cleaned recently. Cleaning \\\"$UFW_OTHER_PLATFORM\\\" as well\"\n\techo xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" clean\n\txcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" clean\nfi\n\n\n# Make sure we are building from fresh binaries\n\nrm -rf \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\nrm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\n\nif [[ \"${ONLY_ACTIVE_PLATFORM}\" != \"YES\" ]]\nthen\n    rm -rf \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\n    rm -rf \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\nfi\n";
-		};
-		D3B24C9114733CE500F14DEE /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\n\nset +u\nif [[ $UFW_MASTER_SCRIPT_RUNNING ]]\nthen\n    # Nothing for the slave script to do\n    exit 0\nfi\nset -u\nexport UFW_MASTER_SCRIPT_RUNNING=1\n\n\n# Functions\n\n## List files in the specified directory, storing to the specified array.\n#\n# @param $1 The path to list\n# @param $2 The name of the array to fill\n#\n##\nlist_files ()\n{\n    filelist=$(ls \"$1\")\n    while read line\n    do\n        eval \"$2[\\${#$2[*]}]=\\\"\\$line\\\"\"\n    done <<< \"$filelist\"\n}\n\n\n# Sanity check\n\nif [[ ! -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]]\nthen\n    echo \"Framework target \\\"${TARGET_NAME}\\\" had no source files to build from. Make sure your source files have the correct target membership\"\n    exit 1\nfi\n\n\n# Gather information\n\nif [[ \"$SDK_NAME\" =~ ([A-Za-z]+) ]]\nthen\n    UFW_SDK_PLATFORM=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find platform name from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$SDK_NAME\" =~ ([0-9]+.*$) ]]\nthen\n    UFW_SDK_VERSION=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find sdk version from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$UFW_SDK_PLATFORM\" = \"iphoneos\" ]]\nthen\n    UFW_OTHER_PLATFORM=iphonesimulator\nelse\n    UFW_OTHER_PLATFORM=iphoneos\nfi\n\nif [[ \"$BUILT_PRODUCTS_DIR\" =~ (.*)$UFW_SDK_PLATFORM$ ]]\nthen\n    UFW_OTHER_BUILT_PRODUCTS_DIR=\"${BASH_REMATCH[1]}${UFW_OTHER_PLATFORM}\"\nelse\n    echo \"Could not find $UFW_SDK_PLATFORM in $BUILT_PRODUCTS_DIR\"\n    exit 1\nfi\n\nONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM:-$ONLY_ACTIVE_ARCH}\n\n# Short-circuit if all binaries are up to date.\n# We already checked the other platform in the prerun script.\n\nif [[ -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && [[ -f \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && [[ ! \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -nt \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]]\nthen\n    exit 0\nfi\n\nif [ \"${ONLY_ACTIVE_PLATFORM}\" == \"YES\" ]\nthen\n    echo \"ONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM}: Skipping other platform build\"\nelse\n    # Make sure the other platform gets built\n    \n    echo \"Build other platform\"\n    \n    echo xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" $ACTION\n    xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" $ACTION\n    \n    \n    # Build the fat static library binary\n    \n    echo \"Create universal static library\"\n    \n    echo \"$PLATFORM_DEVELOPER_BIN_DIR/libtool\" -static \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -o \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\"\n    \"$PLATFORM_DEVELOPER_BIN_DIR/libtool\" -static \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -o \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\"\n    \n    echo mv \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\n    mv \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\nfi\n\n# Build embedded framework structure\n\necho \"Build Embedded Framework\"\n\necho rm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\nrm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\necho mkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources\"\nmkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources\"\necho cp -a \"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/\"\ncp -a \"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/\"\n\ndeclare -a UFW_FILE_LIST\nlist_files \"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\" UFW_FILE_LIST\nfor filename in \"${UFW_FILE_LIST[@]}\"\ndo\n    if [[ \"${filename}\" != \"Info.plist\" ]] && [[ ! \"${filename}\" =~ .*\\.lproj$ ]]\n    then\n        echo ln -sf \"../${WRAPPER_NAME}/Resources/${filename}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources/${filename}\"\n        ln -sf \"../${WRAPPER_NAME}/Resources/${filename}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources/${filename}\"\n    fi\ndone\n\n\nif [ \"${ONLY_ACTIVE_PLATFORM}\" != \"YES\" ]\nthen\n    # Replace other platform's framework with a copy of this one (so that both have the same universal binary)\n    \n    echo \"Copy from $UFW_SDK_PLATFORM to $UFW_OTHER_PLATFORM\"\n    \n    echo rm -rf \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    rm -rf \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    echo cp -a \"${BUILD_DIR}/${CONFIGURATION}-${UFW_SDK_PLATFORM}\" \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    cp -a \"${BUILD_DIR}/${CONFIGURATION}-${UFW_SDK_PLATFORM}\" \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\nfi\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1262,6 +1276,13 @@
 				D32A611C14716F2D00F77A3F /* NSString+KinveyAdditions.m in Sources */,
 				D32A611F14716F2D00F77A3F /* NSURL+KinveyAdditions.m in Sources */,
 				D32A61281471700200F77A3F /* JSONKit.m in Sources */,
+				D33E686F147DBA5700EE885E /* KCSConnection.m in Sources */,
+				D33E6874147DBA7200EE885E /* KCSAsyncConnection.m in Sources */,
+				D33E6879147DC1A400EE885E /* KCSConnectionResponse.m in Sources */,
+				D3EA224D148412A600666259 /* KCSConnectionPool.m in Sources */,
+				D3EA22531484180300666259 /* KCSSyncConnection.m in Sources */,
+				D3EA22581484228300666259 /* KCSRESTRequest.m in Sources */,
+				D3EA226A1484852B00666259 /* KCSPush.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1279,22 +1300,14 @@
 				D32A611D14716F2D00F77A3F /* NSString+KinveyAdditions.m in Sources */,
 				D32A612014716F2D00F77A3F /* NSURL+KinveyAdditions.m in Sources */,
 				D32A61291471700200F77A3F /* JSONKit.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D3B24C7814733CE500F14DEE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D3B24C7914733CE500F14DEE /* KCSBlobService.m in Sources */,
-				D3B24C7A14733CE500F14DEE /* KCSClient.m in Sources */,
-				D3B24C7B14733CE500F14DEE /* KCSEntityDict.m in Sources */,
-				D3B24C7C14733CE500F14DEE /* KinveyAnalytics.m in Sources */,
-				D3B24C7D14733CE500F14DEE /* KinveyCollection.m in Sources */,
-				D3B24C7E14733CE500F14DEE /* KinveyEntity.m in Sources */,
-				D3B24C7F14733CE500F14DEE /* NSString+KinveyAdditions.m in Sources */,
-				D3B24C8014733CE500F14DEE /* NSURL+KinveyAdditions.m in Sources */,
-				D3B24C8114733CE500F14DEE /* JSONKit.m in Sources */,
+				D33E6870147DBA5700EE885E /* KCSConnection.m in Sources */,
+				D33E6875147DBA7200EE885E /* KCSAsyncConnection.m in Sources */,
+				D33E687A147DC1A400EE885E /* KCSConnectionResponse.m in Sources */,
+				D3EA224E148412A600666259 /* KCSConnectionPool.m in Sources */,
+				D3EA22541484180300666259 /* KCSSyncConnection.m in Sources */,
+				D3EA22591484228300666259 /* KCSRESTRequest.m in Sources */,
+				D3EA226B1484852B00666259 /* KCSPush.m in Sources */,
+				D3EA226E148529A400666259 /* KinveyKitRESTRequestTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1397,27 +1410,6 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
-			};
-			name = DebugNoPush;
-		};
-		D30E55E31476FD3C00F0EC04 /* DebugNoPush */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
-				HEADER_SEARCH_PATHS = "Airship/**";
-				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
-				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
-				);
-				PRODUCT_NAME = KinveyKitNoPush;
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = framework;
 			};
 			name = DebugNoPush;
 		};
@@ -1539,48 +1531,6 @@
 			};
 			name = Release;
 		};
-		D3B24C9314733CE500F14DEE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
-				HEADER_SEARCH_PATHS = "Airship/**";
-				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
-				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
-				);
-				PRODUCT_NAME = KinveyKitNoPush;
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = framework;
-			};
-			name = Debug;
-		};
-		D3B24C9414733CE500F14DEE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
-				HEADER_SEARCH_PATHS = "Airship/**";
-				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
-				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
-				);
-				PRODUCT_NAME = KinveyKitNoPush;
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = framework;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1610,16 +1560,6 @@
 				D32A60F414716EE300F77A3F /* Debug */,
 				D30E55E21476FD3C00F0EC04 /* DebugNoPush */,
 				D32A60F514716EE300F77A3F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D3B24C9214733CE500F14DEE /* Build configuration list for PBXNativeTarget "KinveyKitNoPush" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D3B24C9314733CE500F14DEE /* Debug */,
-				D30E55E31476FD3C00F0EC04 /* DebugNoPush */,
-				D3B24C9414733CE500F14DEE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

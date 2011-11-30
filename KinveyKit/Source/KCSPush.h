@@ -14,6 +14,12 @@
 #ifndef NO_URBAN_AIRSHIP_PUSH
 
 #pragma mark push notifications
+
++ (KCSPush *)sharedPush;
+
+- (void)onLoadHelper: (NSDictionary *)options;
+- (void)onUnloadHelper;
+
 // PUSH
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo;
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;

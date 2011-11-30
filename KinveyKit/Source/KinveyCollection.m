@@ -22,14 +22,14 @@
 
 // Avoid compiler warning by prototyping here...
 void
-makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
+makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      KCSConnectionFailureBlock *fBlock,
                      KCSConnectionProgressBlock *pBlock,
                      KCSCollection *collection,
                      id <KCSCollectionDelegate> delegate);
 
 void
-makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
+makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      KCSConnectionFailureBlock *fBlock,
                      KCSConnectionProgressBlock *pBlock,
                      KCSCollection *collection,
@@ -174,7 +174,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     KCSConnectionFailureBlock fBlock;
     KCSConnectionProgressBlock pBlock;
     
-    makeConnectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
+    makeCollectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
@@ -285,7 +285,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     KCSConnectionFailureBlock fBlock;
     KCSConnectionProgressBlock pBlock;
     
-    makeConnectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
+    makeCollectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];

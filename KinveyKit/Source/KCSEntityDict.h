@@ -9,7 +9,8 @@
 //  subclass this if you need to 
 
 #import <Foundation/Foundation.h>
-#import "KinveyKit.h"
+#import "KinveyPersistable.h"
+#import "KCSClient.h"
 
 /*! An entity dictionary object that can persist to Kinvey.
 
