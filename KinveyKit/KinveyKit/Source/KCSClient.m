@@ -53,9 +53,6 @@
     if (self){
         self.libraryVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:(id)kCFBundleVersionKey];
         self.userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%f", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
-        self.dataBaseURL = [[NSString alloc] initWithFormat:@"http://latestbeta.kinvey.com/appdata/%@/", self.appKey];
-        // Until latestbeta is upgraded...
-        self.assetBaseURL = [[NSString alloc] initWithFormat:@"http://latestbeta.kinvey.com/appdata/blob/%@/", self.appKey];
         self.connectionTimeout = 60.0; // Default timeout to 1 minute...
         _cachePolicy = NSURLCacheStorageNotAllowed; // Inhibit caching for now
     }
@@ -84,6 +81,10 @@
 {
     self.appKey = appKey;
     self.appSecret = appSecret;
+
+    self.dataBaseURL = [[NSString alloc] initWithFormat:@"https://latestbeta.kinvey.com/appdata/%@/", self.appKey];
+    // Until latestbeta is upgraded...
+    self.assetBaseURL = [[NSString alloc] initWithFormat:@"https://latestbeta.kinvey.com/appdata/blob/%@/", self.appKey];
 
     // TODO extract options to something meaningful...
     self.options = options;

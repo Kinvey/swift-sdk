@@ -9,15 +9,13 @@
 #ifndef KinveyKit_h
 #define KinveyKit_h
 
-#import "KCSClient.h"
-#import "KinveyEntity.h"
-#import "KinveyCollection.h"
-#import "KinveyPersistable.h"
-#import "NSString+KinveyAdditions.h"
-#import "NSURL+KinveyAdditions.h"
-#import "KCSBlobService.h"
-#import "KCSEntityDict.h"
-#import "KinveyAnalytics.h"
-
+#include "KCSPush.h"
+#include "KCSClient.h"
+#include "KinveyAnalytics.h"
+#include "KCSEntityDict.h"
+#include "KinveyCollection.h"
+#include "KinveyEntity.h"
+#include "KinveyPersistable.h"
+#include "KCSBlobService.h"
 
 #endif

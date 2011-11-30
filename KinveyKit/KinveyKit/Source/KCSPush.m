@@ -14,12 +14,42 @@
 #import "UAPush.h"
 #endif
 
+@interface KCSPush()
+- (void)initializeUrbanAirshipWithOptions: (NSDictionary *)options;
+
+@end
 
 @implementation KCSPush
 
 
 #ifndef NO_URBAN_AIRSHIP_PUSH
 #pragma mark UA Init
++ (KCSPush *)sharedPush
+{
+    static KCSPush *sKCSPush;
+    // This can be called on any thread, so we synchronise.  We only do this in 
+    // the sKCSClient case because, once sKCSClient goes non-nil, it can 
+    // never go nil again.
+    
+    if (sKCSPush == nil) {
+        @synchronized (self) {
+            sKCSPush = [[KCSPush alloc] init];
+            assert(sKCSPush != nil);
+        }
+    }
+    
+    return sKCSPush;
+}
+
+- (void)onLoadHelper:(NSDictionary *)options
+{
+    [self initializeUrbanAirshipWithOptions:options];
+}
+
+- (void)onUnloadHelper
+{
+    [UAirship land];
+}
 
 - (void)initializeUrbanAirshipWithOptions: (NSDictionary *)options
 {

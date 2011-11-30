@@ -57,7 +57,7 @@ getLogDate(void)
         _progressAction = NULL;
         _failureAction = NULL;
         _isSyncRequest = NO;
-        self.headers = [[NSMutableDictionary alloc] init];
+        _headers = [[NSMutableDictionary dictionary] retain];
         _request = nil;
     }
     return self;
@@ -65,15 +65,16 @@ getLogDate(void)
 
 - (void)dealloc
 {
-    [self.resourceLocation release];
-    self.resourceLocation = nil;
-    [self.headers release];
-    self.headers = nil;
+    [_resourceLocation release];
+    [_headers release];
+
+    _resourceLocation = nil;
+    _headers = nil;
     
     self.request = nil;
-    self.completionAction = NULL;
-    self.progressAction = NULL;
-    self.failureAction = NULL;
+//    self.completionAction = NULL;
+//    self.progressAction = NULL;
+//    self.failureAction = NULL;
     
     [super dealloc];
 }
@@ -93,9 +94,8 @@ getLogDate(void)
 {
     NSArray *keys = [theHeaders allKeys];
     
-    // 
     for (NSString *key in keys) {
-        [self.headers setValue:[theHeaders valueForKey:key] forKey:key];
+        [self.headers setObject:[theHeaders objectForKey:key] forKey:key];
     }
     
     return self;
@@ -121,12 +121,12 @@ getLogDate(void)
 // Modify known headers
 - (void)setContentType: (NSString *)contentType
 {
-    [self.headers setValue:contentType forKey:@"Content-Type"];
+    [self.headers setObject:contentType forKey:@"Content-Type"];
 }
 
 - (void)setContentLength: (NSInteger)contentLength
 {
-    [self.headers setValue:[NSNumber numberWithInt:contentLength] forKey:@"Content-Length"];    
+    [self.headers setObject:[NSNumber numberWithInt:contentLength] forKey:@"Content-Length"];    
 }
 
 // Prototype is to make compiler happy
@@ -164,11 +164,11 @@ getLogDate(void)
         connection = [[KCSConnectionPool asyncConnection] retain];
     }
     
-    self.request = [NSURLRequest requestWithURL:[NSURL URLWithString:self.resourceLocation] cachePolicy:kinveyClient.cachePolicy timeoutInterval:kinveyClient.connectionTimeout];
+    self.request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.resourceLocation] cachePolicy:kinveyClient.cachePolicy timeoutInterval:kinveyClient.connectionTimeout];
     [self.request  setHTTPMethod: [self getHTTPMethodForConstant: self.method]];
     
     for (NSString *key in [self.headers allKeys]) {
-        [self.request addValue:[self.headers valueForKey:key] forHTTPHeaderField:key];
+        [self.request addValue:[self.headers objectForKey:key] forHTTPHeaderField:key];
     }
     
     [self.request addValue:[kinveyClient userAgent] forHTTPHeaderField:@"User-Agent"];
