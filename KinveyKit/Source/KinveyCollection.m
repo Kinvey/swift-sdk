@@ -11,155 +11,89 @@
 //#import "KinveyEntity.h"
 #import "NSString+KinveyAdditions.h"
 #import "JSONKit.h"
-
-////////// PRIVATE HELPER CLASSES
-
-// Mapping from CollectionDelegate to ActionDelegate
-@interface KCSCollectionDelegateMapper : NSObject <KCSClientActionDelegate>
-
-@property (retain) id<KCSCollectionDelegate> mappedDelegate; // delegate
-@property (retain) JSONDecoder *jsonDecoder;                 // Persistent decoder
-@property (retain) KCSCollection *resultStore;
-@property (retain) Class objectTemplate;
-@property (retain) NSString *collection;
-
-- (id)initWithDelegate: (id<KCSCollectionDelegate>) delegate;
-- (void) actionDidFail: (id)error;
-- (void) actionDidComplete: (NSObject *) result;
-
-@end
-
-// Implementation
-@implementation KCSCollectionDelegateMapper
-
-@synthesize mappedDelegate=_mappedDelegate;
-@synthesize jsonDecoder=_jsonDecoder;
-@synthesize resultStore=_resultStore;
-@synthesize objectTemplate=_objectTemplate;
-@synthesize collection=_collection;
-
-- (id)init
-{
-    return [self initWithDelegate:nil];
-}
-- (id)initWithDelegate:(id<KCSCollectionDelegate>)delegate
-{    
-    self = [super init];
-    
-    if (self){
-        _jsonDecoder = [[JSONDecoder alloc] init];
-        _mappedDelegate = delegate;
-        _resultStore = nil;
-    }
-    return self;
-}
-
-- (void) actionDidFail: (id)error
-{
-    NSLog(@"Action Failed! %@", error);
-    [[self mappedDelegate] fetchCollectionDidFail:error];
-}
-
-- (void) actionDidComplete: (NSObject *) result
-{
-    NSLog(@"Fetch request did succeed");
-//    NSArray *jsonData = [[self jsonDecoder] objectWithData:(NSData *)result];
-    id templateClassObject = [[[self objectTemplate] alloc] init];
-    NSDictionary *hostToJsonMap = [templateClassObject hostToKinveyPropertyMapping];
-    NSMutableArray *processedData = [[NSMutableArray alloc] init];
-    
-    Class templateClass = [[self objectTemplate] class];
-    
-    NSObject *jsonData = [[self jsonDecoder] objectWithData:(NSData *)result];
-    NSArray *jsonArray;
-    
-
-    if ([jsonData isKindOfClass:[NSArray class]]){
-        jsonArray = (NSArray *)jsonData;
-    } else {
-        jsonArray = [[NSArray alloc] initWithObjects:(NSDictionary *)jsonData, nil];
-    }
-    
-    for (NSDictionary *dict in jsonArray) {
- 
-        id copiedObject = [[templateClass alloc] init];
-        
-        for (NSString *hostKey in hostToJsonMap) {
-            NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
-
-//            NSLog(@"Mapping from %@ to %@ (using value: %@)", jsonKey, hostKey, [dict valueForKey:jsonKey]);
-
-            [copiedObject setValue:[dict valueForKey:jsonKey] forKey:hostKey];
-//            NSLog(@"Copied Object: %@", copiedObject);
-        }
-        [processedData addObject:copiedObject];
-    }
-    
-    // result should now be the correct type
-    if ([self resultStore]){
-        [[self resultStore] setLastFetchResults:processedData];
-    }
-    
-    [[self mappedDelegate] fetchCollectionDidComplete:processedData];
-}
-
-@end
-
-// Mapping from CollectionDelegate to ActionDelegate
-@interface KCSInformationDelegateMapper : NSObject <KCSClientActionDelegate>
-
-@property (retain) id<KCSInformationDelegate> mappedDelegate; // delegate
-@property (retain) JSONDecoder *jsonDecoder;                 // Persistent decoder
-
-- (id) initWithDelegate: (id<KCSInformationDelegate>)delegate;
-- (void) actionDidFail: (id)error;
-- (void) actionDidComplete: (NSObject *) result;
-
-@end
-
-// Implementation
-@implementation KCSInformationDelegateMapper
-
-@synthesize mappedDelegate=_mappedDelegate;
-@synthesize jsonDecoder=_jsonDecoder;
-
-- (id) initWithDelegate: (id<KCSInformationDelegate>)delegate;
-{    self = [super init];
-    
-    if (self){
-        self.jsonDecoder = [[JSONDecoder alloc] init];
-        [self setMappedDelegate:delegate];
-    }
-    return self;
-}
-
-- (void) actionDidFail: (id)error
-{
-    NSLog(@"Action Failed!");
-}
-- (void) actionDidComplete: (NSObject *) result
-{
-    NSDictionary *jsonData = [self.jsonDecoder objectWithData:(NSData *)result];
-    int count;
-    NSString *val = [jsonData valueForKey:@"count"];
-    
-    if (val){
-        count = [val intValue];
-    } else {
-        count = 0;
-    }
-
-    [[self mappedDelegate] informationOperationDidComplete:count];
-    
-
-}
-@end
-
-
+#import "KCSRESTRequest.h"
+#import "KinveyHTTPStatusCodes.h"
+#import "KCSConnectionResponse.h"
 
 @interface KCSCollection ()
 @property (retain) JSONDecoder *decoderHelper;
 @end
+
+
+// Avoid compiler warning by prototyping here...
+void
+makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
+                     KCSConnectionFailureBlock *fBlock,
+                     KCSConnectionProgressBlock *pBlock,
+                     KCSCollection *collection,
+                     id <KCSCollectionDelegate> delegate);
+
+void
+makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
+                     KCSConnectionFailureBlock *fBlock,
+                     KCSConnectionProgressBlock *pBlock,
+                     KCSCollection *collection,
+                     id <KCSCollectionDelegate> delegate)
+{
+    *cBlock = ^(KCSConnectionResponse *response){
+        
+        id templateClassObject = [[[collection objectTemplate] alloc] init];
+        NSDictionary *hostToJsonMap = [templateClassObject hostToKinveyPropertyMapping];
+        [templateClassObject release];
+        templateClassObject = nil;
+        
+        NSMutableArray *processedData = [[NSMutableArray alloc] init];
+        
+        Class templateClass = [[collection objectTemplate] class];
+        
+// New KCS behavior, not ready yet
+#if 0
+        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
+        NSObject *jsonData = [jsonResponse valueForKey:@"result"];
+#else  
+        NSObject *jsonData = [response.responseData objectFromJSONData];
+#endif        
+        NSArray *jsonArray;
+        if (response.responseCode != KCS_HTTP_STATUS_OK){
+            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:(NSDictionary *)jsonData];
+            [delegate fetchCollectionDidFail:err];
+            return;
+        }
+
+        if ([jsonData isKindOfClass:[NSArray class]]){
+            jsonArray = (NSArray *)jsonData;
+        } else {
+            jsonArray = [NSArray arrayWithObjects:(NSDictionary *)jsonData, nil];
+        }
+        
+        for (NSDictionary *dict in jsonArray) {
+            
+            id copiedObject = [[[templateClass alloc] init] autorelease];
+            
+            for (NSString *hostKey in hostToJsonMap) {
+                NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
+                
+                //            NSLog(@"Mapping from %@ to %@ (using value: %@)", jsonKey, hostKey, [dict valueForKey:jsonKey]);
+                
+                [copiedObject setValue:[dict valueForKey:jsonKey] forKey:hostKey];
+                //            NSLog(@"Copied Object: %@", copiedObject);
+            }
+            [processedData addObject:copiedObject];
+        }
+        [delegate fetchCollectionDidComplete:processedData];
+        [processedData release];
+    };
+    
+    *fBlock = ^(NSError *error){
+        [delegate fetchCollectionDidFail:error];  
+    };
+    
+    *pBlock = ^(KCSConnection *conn)
+    {
+        // Do nothing...
+    };
+    
+}
 
 
 
@@ -233,14 +167,17 @@
 
 - (void)collectionDelegateFetchAll: (id <KCSCollectionDelegate>)delegate
 {
+    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/", self.collectionName];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
 
-    // Format the request and dispatch it...
-    KCSCollectionDelegateMapper *mapper = [[KCSCollectionDelegateMapper alloc] initWithDelegate:delegate];
-    [mapper setObjectTemplate:[self objectTemplate]];
-    [mapper setCollection:[self collectionName]];
-    NSString *requestPath = [[_kinveyClient baseURL] stringByAppendingString:_collectionName];
-    [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath: requestPath];
+    KCSConnectionCompletionBlock cBlock;
+    KCSConnectionFailureBlock fBlock;
+    KCSConnectionProgressBlock pBlock;
     
+    makeConnectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
+    
+    // Make the request happen
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
 // Private class helper method...
@@ -332,27 +269,69 @@
 	
 }
 
+- (void)resetFilterCriteria
+{
+    [self.filters removeAllObjects];
+}
+
 - (void)collectionDelegateFetch: (id <KCSCollectionDelegate>)delegate
 {
-    KCSCollectionDelegateMapper *mapper = [[KCSCollectionDelegateMapper alloc] initWithDelegate:delegate];
-    [mapper setObjectTemplate:[self objectTemplate]];
+    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/?query=%@",
+                             self.collectionName, [NSString stringbyPercentEncodingString:[self buildQueryForFilters:[self filters]]]];
 
-    NSString *requestPath = [[_kinveyClient baseURL] stringByAppendingFormat:@"%@/?query=%@",
-                             _collectionName, [NSString stringbyPercentEncodingString:[self buildQueryForFilters:[self filters]]]];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
-    [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath:requestPath];
+    KCSConnectionCompletionBlock cBlock;
+    KCSConnectionFailureBlock fBlock;
+    KCSConnectionProgressBlock pBlock;
+    
+    makeConnectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
+    
+    // Make the request happen
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
 #pragma mark Utility Methods
 
 - (void)informationDelegateCollectionCount: (id <KCSInformationDelegate>)delegate
 {
-	
-    KCSInformationDelegateMapper *mapper = [[KCSInformationDelegateMapper alloc] initWithDelegate:delegate];
+    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
-    NSString *requestPath = [[_kinveyClient baseURL] stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
+#if 0
+        // Needs KCS update for this feature
+        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
+#else
+        NSDictionary *responseToReturn = jsonResponse;
+#endif
+        int count;
+
+        if (response.responseCode != KCS_HTTP_STATUS_OK){
+            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:(NSDictionary *)responseToReturn];
+            [delegate informationOperationDidFail:err];
+            return;
+        }
+
+        NSString *val = [responseToReturn valueForKey:@"count"];
+        
+        if (val){
+            count = [val intValue];
+        } else {
+            count = 0;
+        }
+        [delegate informationOperationDidComplete:count];
+    };
     
-    [[self kinveyClient] clientActionDelegate:mapper forGetRequestAtPath: requestPath];
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        [delegate informationOperationDidFail:error];
+    };
+    
+    KCSConnectionProgressBlock pBlock = ^(KCSConnection *collection) {};
+        
+    // Make the request happen
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
 // AVG is not in the REST docs anymore

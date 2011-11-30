@@ -99,6 +99,7 @@
 - (void)addFilterCriteriaForProperty: (NSString *)property withDoubleValue: (double)value filteredByOperator: (int)operator;
 - (void)addFilterCriteriaForProperty: (NSString *)property withIntegerValue: (int)value filteredByOperator: (int)operator;
 - (void)addFilterCriteriaForProperty: (NSString *)property withStringValue: (NSString *)value filteredByOperator: (int)operator;
+- (void)resetFilterCriteria;
 
 - (void)collectionDelegateFetch: (id <KCSCollectionDelegate>)delegate;
 
