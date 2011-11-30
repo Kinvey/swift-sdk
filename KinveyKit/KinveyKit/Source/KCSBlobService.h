@@ -12,10 +12,12 @@
 
 @interface KCSBlobResponse : NSObject
 
-@property (retain) NSString *localFileName;
-@property (retain) NSString *blobId;
+@property (copy) NSString *localFileName;
+@property (copy) NSString *blobId;
 @property (retain) NSData *blob;
 @property NSInteger length;
+
++ (KCSBlobResponse *)responseWithFileName: (NSString *)localFile withBlobId: (NSString *)blobId withData: (NSData *)blob withLength: (NSInteger)length;
 
 @end
 
@@ -37,7 +39,7 @@
 - (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file toBlob: (NSString *)blobId;
 - (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveData:(NSData *) data toBlob: (NSString *)blobId;
 
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate deleteBlog:(NSString *)blobId;
+- (void)blobDelegate:(id<KCSBlobDelegate>)delegate deleteBlob:(NSString *)blobId;
 
 
 @end
