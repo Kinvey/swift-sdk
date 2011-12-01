@@ -158,7 +158,7 @@
                                                 <action selector="cancel:" destination="FEb-4A-3K6" id="Icn-4Z-skP"/>
                                             </connections>
                                         </barButtonItem>
-                                        <barButtonItem key="rightBarButtonItem" title="Done" id="6JZ-ct-AET">
+                                        <barButtonItem key="rightBarButtonItem" title="Add" id="6JZ-ct-AET">
                                             <connections>
                                                 <action selector="done:" destination="FEb-4A-3K6" id="czW-To-s4g"/>
                                             </connections>
@@ -227,7 +227,7 @@
                     <navigationItem key="navigationItem" id="Wz1-ax-cJf">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="gAR-sn-Jdu">
                             <connections>
-                                <segue destination="nAu-6v-9pj" kind="push" id="7hx-k7-Nhr"/>
+                                <segue destination="nAu-6v-9pj" kind="push" identifier="addItem" id="7hx-k7-Nhr"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -275,7 +275,7 @@
                                             <rect key="frame" x="10" y="1" width="300" height="93"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" id="xED-sq-xLh">
+                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" id="xED-sq-xLh">
                                                     <rect key="frame" x="20" y="0.0" width="260" height="93"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -349,7 +349,7 @@
         <scene sceneID="ggq-ds-0vk">
             <objects>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Bn-SH-2BT" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tableViewController id="nAu-6v-9pj" customClass="KCSListItemDetailController" sceneMemberID="viewController">
+                <tableViewController id="nAu-6v-9pj" customClass="KCSAddItemController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="pfp-Ir-b8L">
                         <rect key="frame" x="0.0" y="44" width="320" height="436"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -364,11 +364,14 @@
                                             <rect key="frame" x="10" y="1" width="300" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" id="2aW-wi-SLw">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" minimumFontSize="17" id="2aW-wi-SLw">
                                                     <rect key="frame" x="20" y="6" width="260" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="nAu-6v-9pj" id="1ka-tl-shW"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -386,14 +389,16 @@
                                             <rect key="frame" x="10" y="1" width="300" height="93"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" id="hx6-gS-JTb">
+                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="This is not editable yet, will be soon." id="hx6-gS-JTb">
                                                     <rect key="frame" x="20" y="0.0" width="260" height="93"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                     <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES" calendarEvent="YES"/>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="nAu-6v-9pj" id="CFe-Fs-t2A"/>
+                                                    </connections>
                                                 </textView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -411,11 +416,21 @@
                                             <rect key="frame" x="10" y="1" width="300" height="122"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="logo114.png" id="gBB-Fy-VNM">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="uAC-p9-cxb">
                                                     <rect key="frame" x="20" y="20" width="260" height="82"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                                </imageView>
+                                                    <fontDescription key="fontDescription" type="boldSystem" size="button"/>
+                                                    <state key="normal">
+                                                        <color key="titleColor" red="0.19607843137254902" green="0.30980392156862746" blue="0.52156862745098043" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                    <state key="highlighted">
+                                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="addImage:" destination="nAu-6v-9pj" eventType="touchUpInside" id="ZFo-Fs-MQ3"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -430,13 +445,21 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Add an Item" id="q3h-dG-KuD">
-                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="TXa-ol-IfW"/>
-                        <barButtonItem key="rightBarButtonItem" title="Done" id="Qcz-sR-bQU"/>
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="TXa-ol-IfW">
+                            <connections>
+                                <action selector="cancel:" destination="nAu-6v-9pj" id="keS-J5-q1i"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Add" id="Qcz-sR-bQU">
+                            <connections>
+                                <action selector="done:" destination="nAu-6v-9pj" id="PHM-7h-9Fe"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="itemDescription" destination="hx6-gS-JTb" id="21m-8r-tN8"/>
-                        <outlet property="itemName" destination="2aW-wi-SLw" id="gth-8a-m1V"/>
-                        <outlet property="itemPicture" destination="gBB-Fy-VNM" id="hjK-la-rHT"/>
+                        <outlet property="imageButton" destination="uAC-p9-cxb" id="6os-L5-gdy"/>
+                        <outlet property="itemDescriptionToAdd" destination="hx6-gS-JTb" id="C3a-jk-yfe"/>
+                        <outlet property="itemNameToAdd" destination="2aW-wi-SLw" id="lFP-27-mRi"/>
                     </connections>
                 </tableViewController>
             </objects>
@@ -448,39 +471,6 @@
         <image name="logo114.png" width="114" height="114"/>
         <image name="logo57.png" width="57" height="57"/>
     </resources>
-    <classes>
-        <class className="KCSAddListController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/KCSAddListController.h"/>
-            <relationships>
-                <relationship kind="action" name="cancel:"/>
-                <relationship kind="action" name="done:"/>
-                <relationship kind="outlet" name="newListName" candidateClass="UITextField"/>
-            </relationships>
-        </class>
-        <class className="KCSListContentTableController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/KCSListContentTableController.h"/>
-        </class>
-        <class className="KCSListItemDetailController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/KCSListItemDetailController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="itemDescription" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="itemName" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="itemPicture" candidateClass="UIImageView"/>
-            </relationships>
-        </class>
-        <class className="KCSListOverviewTableController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/KCSListOverviewTableController.h"/>
-        </class>
-        <class className="KCSViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/KCSViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="listButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="loadingProgress" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="loadingText" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="splashImage" candidateClass="UIImageView"/>
-            </relationships>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
