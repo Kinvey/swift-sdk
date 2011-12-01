@@ -10,6 +10,7 @@
 #import "KCSListItemDetailController.h"
 #import "KCSAppDelegate.h"
 #import "KCSListEntry.h"
+#import "KCSAddItemController.h"
 
 
 
@@ -19,7 +20,7 @@
 @synthesize listName            = _listName;
 @synthesize listItemsCollection = _listItemsCollection;
 @synthesize listId              = _listId;
-
+@synthesize entryBeingAdded     = _entryBeingAdded;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -193,9 +194,50 @@
      */
 }
 
+#pragma mark - PlayerDetailsViewControllerDelegate
+
+- (void)detailsViewControllerDidCancel:(UIViewController *)controller
+{
+    NSLog(@"Caught cancel request, self: %@, controller: %@", self, controller);
+    [controller.navigationController popViewControllerAnimated:YES];
+    //	[controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)detailsViewControllerDidSave:(UIViewController *)controller
+{
+    KCSAddItemController *aiController = (KCSAddItemController *)controller;
+    [aiController.addedEntry retain];
+    
+    // Make sure to associate with this list...
+    aiController.addedEntry.list = self.listId;
+    
+    // Persist image to blob...
+    // Persist entry to kinvey
+    [aiController.addedEntry persistDelegate:self persistToCollection:self.listItemsCollection];
+    
+    //    KCSAddListController *alController = (KCSAddListController *)controller;
+    //    [alController.addedList retain];
+    //    
+    //    self.listToAdd = alController.addedList;
+    //    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    //    [self.listToAdd persistDelegate:self persistToCollection:self.listsCollection];
+    
+    self.entryBeingAdded = aiController.addedEntry;
+    
+    [controller.navigationController popViewControllerAnimated:YES];
+    
+    [aiController.addedEntry release];
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"pushToDetail"]){
+    
+    if ([segue.identifier isEqualToString:@"addItem"])	{
+        NSLog(@"Ok, i'm in the right spot");
+        KCSAddItemController *addItemController = segue.destinationViewController;
+        //		KCSAddListController *addListController = [[navigationController viewControllers] objectAtIndex:0];
+        addItemController.delegate = self;
+    } else if ([segue.identifier isEqualToString:@"pushToDetail"]){
         NSLog(@"Segue pushToDetail called...");
         KCSListItemDetailController *content = segue.destinationViewController;
         content.itemDetail = [self.listContents objectAtIndex: self.tableView.indexPathForSelectedRow.row];
@@ -225,12 +267,20 @@
 
 - (void)persistDidComplete:(NSObject *)result
 {
-    NSLog(@"Persist succeeded: %@", (NSURLResponse *)result);
-//    NSHTTPURLResponse *res = (NSHTTPURLResponse *)[[self kinveyClient] lastResponse];
-//    NSDictionary *headers = [res allHeaderFields];
-//    NSLog(@"Response code: %d, Headers: %@", res.statusCode, headers);
-    
-    
+    NSLog(@"Result: %@", result);
+    // Nil result means that we deleted.
+    if (self.entryBeingAdded == nil || result == nil){
+        // We just deleted something... do nothing, just make sure view is updated
+        return;
+    }
+    NSArray *array = [NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.listContents.count inSection:0]];
+    [self.listContents addObject:self.entryBeingAdded];
+    [[self tableView] beginUpdates];
+    [[self tableView] insertRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationAutomatic];
+    [[self tableView] endUpdates];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    [self updateData];
+
 }
 
 

@@ -189,4 +189,5 @@
     [_itemPicture release];
     [super dealloc];
 }
+
 @end

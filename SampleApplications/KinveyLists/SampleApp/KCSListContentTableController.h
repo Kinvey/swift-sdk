@@ -8,13 +8,19 @@
 
 #import <UIKit/UIKit.h>
 #import <KinveyKit/KinveyKit.h>
+#import "KCSTableViewControllerAddDelegate.h"
 
-@interface KCSListContentTableController : UITableViewController <KCSCollectionDelegate, KCSPersistDelegate>
+@class KCSListEntry;
+@interface KCSListContentTableController : UITableViewController <KCSCollectionDelegate, KCSPersistDelegate, KCSTableViewControllerAddDelegate>
 
 @property (retain) NSString *listName;
 @property (retain) NSMutableArray *listContents;
 @property (retain) KCSCollection *listItemsCollection;
 @property (retain) NSString *listId;
+
+@property (retain) KCSListEntry *entryBeingAdded;
+
+- (void)removeList;
 
 
 @end
