@@ -278,6 +278,16 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 - (void)collectionDelegateFetch: (id <KCSCollectionDelegate>)delegate
 {
+    // Guard against an empty filter
+    if (self.filters.count == 0){
+        NSException* myException = [NSException
+                                    exceptionWithName:NSInvalidArgumentException
+                                    reason:@"Attempt to fetch from a Kinvey Collection with an empty filter, use fetchAll instead."
+                                    userInfo:nil];
+        
+        @throw myException;
+    }
+    
     NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/?query=%@",
                              self.collectionName, [NSString stringbyPercentEncodingString:[self buildQueryForFilters:[self filters]]]];
 
@@ -287,7 +297,6 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     KCSConnectionCompletionBlock cBlock = makeCollectionCompletionBlock(self, delegate);
     KCSConnectionFailureBlock fBlock = makeCollectionFailureBlock(self, delegate);
     KCSConnectionProgressBlock pBlock = makeCollectionProgressBlock(self, delegate);
-    
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
