@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "KinveyKit.h"
+#import <KinveyKit/KinveyKit.h>
 
 @interface KCSListEntry : NSObject <KCSPersistable>
 {

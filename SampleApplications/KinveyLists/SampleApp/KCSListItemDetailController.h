@@ -15,7 +15,6 @@
 @interface KCSListItemDetailController : UITableViewController
     
 @property (retain) KCSListEntry *itemDetail;
-@property (retain) KCSClient *kinveyClient;
 
 @property (retain, nonatomic) IBOutlet UITextField *itemName;
 @property (retain, nonatomic) IBOutlet UITextView *itemDescription;

@@ -15,11 +15,10 @@
 
 @implementation KCSListContentTableController
 
-@synthesize listContents=_listContents;
-@synthesize listName=_listName;
-@synthesize kinveyClient=_kinveyClient;
-@synthesize listItemsCollection=_listItemsCollection;
-@synthesize listId=_listId;
+@synthesize listContents        = _listContents;
+@synthesize listName            = _listName;
+@synthesize listItemsCollection = _listItemsCollection;
+@synthesize listId              = _listId;
 
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -43,7 +42,7 @@
 - (void)updateData
 {
     [self.listItemsCollection collectionDelegateFetch:self];
-   
+  
 }
 
 #pragma mark - View lifecycle
@@ -56,20 +55,12 @@
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    if (self.kinveyClient == nil){
-        KCSAppDelegate *app = (KCSAppDelegate *)[[UIApplication sharedApplication] delegate];
-        self.kinveyClient = [app kinveyClient];
-    }
-
+//    self.navigationItem.rightBarButtonItem = self.editButtonItem;
     self.navigationItem.title = self.listName;
     
     // We've got a list name, we now need to get a listContents
     if ([self listItemsCollection] == nil){
-        self.listItemsCollection = [[KCSCollection alloc] init];
-        self.listItemsCollection.collectionName = @"list-items";
-        self.listItemsCollection.objectTemplate = [[KCSListEntry alloc] init];
-        self.listItemsCollection.kinveyClient = self.kinveyClient;
+        self.listItemsCollection = [[[KCSClient sharedClient] collectionFromString:@"list-items" withClass:[KCSListEntry class]] retain];
         [self.listItemsCollection addFilterCriteriaForProperty:@"list" withStringValue:self.listId filteredByOperator:KCS_EQUALS_OPERATOR];
     }
 
@@ -135,7 +126,9 @@
     }
     
     // Configure the cell...
-    cell.textLabel.text = [[self.listContents objectAtIndex:[indexPath row]] name];
+    KCSListEntry *ent = [self.listContents objectAtIndex:[indexPath row]];
+    cell.textLabel.text = ent.name;
+    cell.detailTextLabel.text = ent.itemDescription;
     
     return cell;
 }
@@ -156,16 +149,17 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         KCSListEntry *entry = [self.listContents objectAtIndex:indexPath.row];
-        [entry deleteDelegate:self usingClient:self.kinveyClient];
+        [entry deleteDelegate:self fromCollection:self.listItemsCollection];
+
 
         [self.listContents removeObjectAtIndex:indexPath.row];
         
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         
     }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+//    else if (editingStyle == UITableViewCellEditingStyleInsert) {
+//        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+//    }   
 }
 
 
@@ -232,9 +226,9 @@
 - (void)persistDidComplete:(NSObject *)result
 {
     NSLog(@"Persist succeeded: %@", (NSURLResponse *)result);
-    NSHTTPURLResponse *res = (NSHTTPURLResponse *)[[self kinveyClient] lastResponse];
-    NSDictionary *headers = [res allHeaderFields];
-//    NSLog(@"Response code: %@, Headers: %@", res.statusCode, headers);
+//    NSHTTPURLResponse *res = (NSHTTPURLResponse *)[[self kinveyClient] lastResponse];
+//    NSDictionary *headers = [res allHeaderFields];
+//    NSLog(@"Response code: %d, Headers: %@", res.statusCode, headers);
     
     
 }

@@ -11,13 +11,15 @@
 #import "KCSList.h"
 #import "KCSListEntry.h"
 #import "KCSAppDelegate.h"
-#import "KinveyCollection.h"
+#import "KCSAddListController.h"
+#import <KinveyKit/KinveyKit.h>
+
 
 @implementation KCSListOverviewTableController
 
-@synthesize kLists=_kLists;
-@synthesize kinveyClient=_kinveyClient;
-@synthesize listsCollection=_listsCollection;
+@synthesize kLists          = _kLists;
+@synthesize listsCollection = _listsCollection;
+@synthesize listToAdd       = _listToAdd;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -38,27 +40,13 @@
 
 - (void) updateData
 {
+    NSLog(@"Updating Data");
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [self.listsCollection collectionDelegateFetchAll:self];
 }
 
 #pragma mark - View lifecycl
 
-- (void)initStaticList
-{
-    [self.kLists addObject:[[KCSList alloc] initWithName:@"Kinvey -- Costco" 
-                                                withList:[NSMutableArray arrayWithObjects:
-                                                          [[KCSListEntry alloc] initWithName:@"Granola Bars" withDescription:@"Very tasty treats to be eating"],
-                                                          [[KCSListEntry alloc] initWithName:@"Gum" withDescription:@"For chewing, you know, like gum? Should be available at 1 Cambridge Center, Cambridge, MA"],
-                                                          [[KCSListEntry alloc] initWithName:@"Beer" withDescription:@"Chug! Chug! Chug! Chug! Chug! Check Pretty Things (www.prettythingsbeertoday.com)"],
-                                                          [[KCSListEntry alloc] initWithName:@"Cristal" withDescription:@"When only the finest will do, cold cocked!"], nil]]];
-    
-    [self.kLists addObject:[[KCSList alloc] initWithName:@"Brian -- Apple Store"
-                                                withList:[NSMutableArray arrayWithObjects:
-                                                          [[KCSListEntry alloc] initWithName:@"MiniDP to DVI" withDescription:@"To go from my lap to my face"],
-                                                          [[KCSListEntry alloc] initWithName:@"iPhone" withDescription:@"Hey, aren't we using this technology now?"],
-                                                          [[KCSListEntry alloc] initWithName:@"Cinema Display" withDescription:@"Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda. Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda."],
-                                                          nil]]];    
-}
 
 - (void)viewDidLoad
 {
@@ -71,17 +59,20 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
     // Prepare for syncing with Kinvey...
-    if (self.kinveyClient == nil){
-        KCSAppDelegate *app = (KCSAppDelegate *)[[UIApplication sharedApplication] delegate];
-        self.kinveyClient = [app kinveyClient];
-        self.listsCollection = [[KCSCollection alloc] init];
-        self.listsCollection.kinveyClient = self.kinveyClient;
-        self.listsCollection.objectTemplate = [[KCSList alloc] init];
-        self.listsCollection.collectionName = @"lists";
+    if (self.listsCollection == nil){
+        self.listsCollection = [[[KCSClient sharedClient] collectionFromString:@"lists" withClass:[KCSList class]] retain];
     }
+
+    if (self.kLists == nil){
+        [self updateData];
+    }
+
     
-    [self updateData];
-    
+    [[UIApplication sharedApplication] setStatusBarHidden:NO   
+                                            withAnimation:UIStatusBarAnimationSlide];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    self.navigationItem.hidesBackButton = YES;
+
     NSLog(@"Hey, at least the view loaded... %@", self.kLists);
 }
 
@@ -95,6 +86,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self updateData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -132,7 +124,7 @@
     NSLog(@"KLists is messed up... %@", self.kLists);
     NSLog(@"Number of rows... %d", self.kLists.count);
     return self.kLists.count;
-//    return 0;
+
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -163,19 +155,30 @@
 }
 */
 
-/*
+
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
+        // Delete the subcollection
+        // Delete the row from the data source
+        KCSList *entry = [self.kLists objectAtIndex:indexPath.row];
+        [entry deleteDelegate:self fromCollection:self.listsCollection];
+        
+        NSLog(@"Klists Bfore: %@", self.kLists);        
+        [self.kLists removeObjectAtIndex:indexPath.row];
+        NSLog(@"Klists After: %@", self.kLists);
+        
+        // Delete the collection?
+        
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
+//    else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+//    }   
 }
-*/
+
 
 /*
 // Override to support rearranging the table view.
@@ -216,12 +219,28 @@
         content.listName = [[self.kLists objectAtIndex: self.tableView.indexPathForSelectedRow.row] name];
         content.listId = [[self.kLists objectAtIndex: self.tableView.indexPathForSelectedRow.row] listId];
 //        content.listContents = [self.kLists objectAtIndex: self.tableView.indexPathForSelectedRow.row];
-    }
+    } else if ([segue.identifier isEqualToString:@"addList"])	{
+        NSLog(@"Ok, i'm in the right spot");
+		KCSAddListController *addListController = segue.destinationViewController;
+//		KCSAddListController *addListController = [[navigationController viewControllers] objectAtIndex:0];
+		addListController.delegate = self;
+	}
 }
 
 - (void) fetchCollectionDidFail: (id)error
 {
     NSLog(@"Update failed: %@", error);
+    UIAlertView *alert =
+    [[UIAlertView alloc] initWithTitle: @"Error getting collection"
+                               message: [error description]
+                              delegate: self
+                     cancelButtonTitle: @"OK"
+                     otherButtonTitles: nil];
+    [alert show];
+    [alert release];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void) fetchCollectionDidComplete: (NSObject *) result
@@ -231,9 +250,62 @@
 //    NSLog(@"Number of elements: %@", res.count);
     
     self.kLists = [NSMutableArray arrayWithArray:(NSArray *)result];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self.view reloadData];
 }
 
+#pragma mark - PlayerDetailsViewControllerDelegate
+
+- (void)detailsViewControllerDidCancel:(UIViewController *)controller
+{
+    NSLog(@"Caught cancel request, self: %@, controller: %@", self, controller);
+	[controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)detailsViewControllerDidSave:(UIViewController *)controller
+{
+    NSLog(@"Attempting to add to a list");
+    KCSAddListController *alController = (KCSAddListController *)controller;
+    [alController.addedList retain];
+    
+    self.listToAdd = alController.addedList;
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    [self.listToAdd persistDelegate:self persistToCollection:self.listsCollection];
+	[controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+- (void)persistDidComplete:(NSObject *)result
+{
+    NSLog(@"Result: %@", result);
+    // Nil result means that we deleted.
+    if (self.listToAdd == nil || result == nil){
+        // We just deleted something... do nothing, just make sure view is updated
+        return;
+    }
+    NSLog(@"List Saving worked!");
+    NSArray *array = [NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.kLists.count inSection:0]];
+    [self.kLists addObject:self.listToAdd];
+    [[self tableView] beginUpdates];
+    [[self tableView] insertRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationAutomatic];
+    [[self tableView] endUpdates];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    [self updateData];
+
+}
+
+- (void)persistDidFail:(id)error
+{
+    UIAlertView *alert =
+    [[UIAlertView alloc] initWithTitle: @"Error Saving List"
+                               message: [error description]
+                              delegate: self
+                     cancelButtonTitle: @"OK"
+                     otherButtonTitles: nil];
+    [alert show];
+    [alert release];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+}
 
 
 
