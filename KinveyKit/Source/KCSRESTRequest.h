@@ -8,10 +8,6 @@
 
 #import "KCSConnection.h"
 
-//NSString *blobLoc = [baseURL stringByAppendingFormat:@"/blob/%@/download-loc/%@", [[self kinveyClient] appKey], blobId];
-//KCSBlobDelegateMapper *mappedDelegate = [[KCSBlobDelegateMapper alloc] initWithDelegate:delegate usingClient:_kinveyClient];
-
-
 enum {
     kGetRESTMethod     = 0,
     kPutRESTMethod     = 1,
@@ -24,12 +20,12 @@ enum {
 #define KCS_DATA_TYPE @"application/octet-stream"
 
 
-@interface KCSRESTRequest : KCSConnection
+@interface KCSRESTRequest : NSObject
 
 @property (nonatomic, copy) NSString *resourceLocation;
-@property (nonatomic, retain) KCSConnectionCompletionBlock completionAction;
-@property (nonatomic, retain) KCSConnectionFailureBlock failureAction;
-@property (nonatomic, retain) KCSConnectionProgressBlock progressAction;
+@property (nonatomic, copy) KCSConnectionCompletionBlock completionAction;
+@property (nonatomic, copy) KCSConnectionFailureBlock failureAction;
+@property (nonatomic, copy) KCSConnectionProgressBlock progressAction;
 @property (nonatomic, copy) NSMutableDictionary *headers;
 @property (nonatomic) NSInteger method;
 @property (nonatomic) BOOL isSyncRequest;

@@ -43,6 +43,7 @@
 @synthesize libraryVersion=_libraryVersion;
 @synthesize authCredentials=_authCredentials;
 @synthesize cachePolicy=_cachePolicy;
+@synthesize protocol=_protocol;
 
 @synthesize analytics=_analytics;
 
@@ -52,9 +53,10 @@
     
     if (self){
         self.libraryVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:(id)kCFBundleVersionKey];
-        self.userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%f", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
+        self.userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
         self.connectionTimeout = 60.0; // Default timeout to 1 minute...
-        _cachePolicy = NSURLCacheStorageNotAllowed; // Inhibit caching for now
+        _cachePolicy = NSURLRequestReloadIgnoringLocalCacheData; //NSURLCacheStorageNotAllowed; // Inhibit caching for now
+        _protocol = @"https://";
     }
     
     return self;
@@ -82,9 +84,9 @@
     self.appKey = appKey;
     self.appSecret = appSecret;
 
-    self.dataBaseURL = [[NSString alloc] initWithFormat:@"https://latestbeta.kinvey.com/appdata/%@/", self.appKey];
+    self.dataBaseURL = [[NSString alloc] initWithFormat:@"%@latestbeta.kinvey.com/appdata/%@/", self.protocol, self.appKey];
     // Until latestbeta is upgraded...
-    self.assetBaseURL = [[NSString alloc] initWithFormat:@"https://latestbeta.kinvey.com/appdata/blob/%@/", self.appKey];
+    self.assetBaseURL = [[NSString alloc] initWithFormat:@"%@latestbeta.kinvey.com/blob/%@/", self.protocol, self.appKey];
 
     // TODO extract options to something meaningful...
     self.options = options;

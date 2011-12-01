@@ -75,6 +75,9 @@
 		D3EA226B1484852B00666259 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22681484852B00666259 /* KCSPush.m */; };
 		D3EA226E148529A400666259 /* KinveyKitRESTRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA226D148529A400666259 /* KinveyKitRESTRequestTests.m */; };
 		D3EA2270148543D600666259 /* KinveyBlocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA226F148543D600666259 /* KinveyBlocks.h */; };
+		D3EA22C71486B0BD00666259 /* KinveyPing.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22C51486B0BD00666259 /* KinveyPing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D3EA22C81486B0BD00666259 /* KinveyPing.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22C61486B0BD00666259 /* KinveyPing.m */; };
+		D3EA22C91486B0BD00666259 /* KinveyPing.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22C61486B0BD00666259 /* KinveyPing.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -359,6 +362,8 @@
 		D3EA226C148529A400666259 /* KinveyKitRESTRequestTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitRESTRequestTests.h; sourceTree = "<group>"; };
 		D3EA226D148529A400666259 /* KinveyKitRESTRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitRESTRequestTests.m; sourceTree = "<group>"; };
 		D3EA226F148543D600666259 /* KinveyBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyBlocks.h; sourceTree = "<group>"; };
+		D3EA22C51486B0BD00666259 /* KinveyPing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyPing.h; sourceTree = "<group>"; };
+		D3EA22C61486B0BD00666259 /* KinveyPing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyPing.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -442,6 +447,8 @@
 				D32A610114716F2D00F77A3F /* KinveyEntity.h */,
 				D32A610214716F2D00F77A3F /* KinveyEntity.m */,
 				D32A610314716F2D00F77A3F /* KinveyPersistable.h */,
+				D3EA22C51486B0BD00666259 /* KinveyPing.h */,
+				D3EA22C61486B0BD00666259 /* KinveyPing.m */,
 			);
 			name = DataService;
 			sourceTree = "<group>";
@@ -1120,6 +1127,7 @@
 				D32A612214716F5200F77A3F /* KinveyKit.h in Headers */,
 				D33E686E147DBA5700EE885E /* KCSConnection.h in Headers */,
 				D3EA22691484852B00666259 /* KCSPush.h in Headers */,
+				D3EA22C71486B0BD00666259 /* KinveyPing.h in Headers */,
 				D32A61271471700200F77A3F /* JSONKit.h in Headers */,
 				D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */,
 				D33E6873147DBA7200EE885E /* KCSAsyncConnection.h in Headers */,
@@ -1283,6 +1291,7 @@
 				D3EA22531484180300666259 /* KCSSyncConnection.m in Sources */,
 				D3EA22581484228300666259 /* KCSRESTRequest.m in Sources */,
 				D3EA226A1484852B00666259 /* KCSPush.m in Sources */,
+				D3EA22C81486B0BD00666259 /* KinveyPing.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1308,6 +1317,7 @@
 				D3EA22591484228300666259 /* KCSRESTRequest.m in Sources */,
 				D3EA226B1484852B00666259 /* KCSPush.m in Sources */,
 				D3EA226E148529A400666259 /* KinveyKitRESTRequestTests.m in Sources */,
+				D3EA22C91486B0BD00666259 /* KinveyPing.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

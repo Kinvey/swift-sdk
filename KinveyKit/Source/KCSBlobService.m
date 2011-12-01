@@ -52,12 +52,12 @@
 
 - (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId
 {
-    NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"/blob/%@/download-loc/%@", [[KCSClient sharedClient] appKey], blobId];
+    NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"download-loc/%@", blobId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            [delegate blobRequestDidFail:[NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:[response.responseData objectFromJSONData]]];
+            [delegate blobRequestDidFail:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[response.responseData objectFromJSONData]]];
         } else {
             [delegate blobRequestDidComplete:[KCSBlobResponse responseWithFileName:nil withBlobId:blobId withData:response.responseData withLength:[response.responseData length]]];
         }
@@ -104,7 +104,7 @@
 
 - (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveData:(NSData *) data toBlob: (NSString *)blobId
 {
-    NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"/appdata/blob/%@/upload-loc/%@", [[KCSClient sharedClient] appKey], blobId];
+    NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"upload-loc/%@", blobId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
 
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
@@ -115,7 +115,8 @@
     
     KCSConnectionCompletionBlock userCallback = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_CREATED){
-            [delegate blobRequestDidFail:[NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:[response.responseData objectFromJSONData]]];
+            NSString *xmlData = [[[NSString alloc] initWithData:response.responseData encoding:NSUTF8StringEncoding] autorelease];
+            [delegate blobRequestDidFail:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:xmlData forKey:@"serviceError"]]];
         } else {
             // I feel like we should have a length here, but I might not be saving that response...
             [delegate blobRequestDidComplete:[KCSBlobResponse responseWithFileName:nil withBlobId:blobId withData:nil withLength:0]];
@@ -125,7 +126,7 @@
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         NSDictionary *jsonData = [response.responseData objectFromJSONData];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:jsonData];
+            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:jsonData];
             [delegate blobRequestDidFail:err];
         } else {
             NSString *newResource = [jsonData valueForKey:@"URI"];
@@ -142,7 +143,7 @@
 
 - (void)blobDelegate:(id<KCSBlobDelegate>)delegate deleteBlob:(NSString *)blobId
 {
-    NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"/appdata/blob/%@/remove-loc/%@", [[KCSClient sharedClient] appKey], blobId];
+    NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"remove-loc/%@", blobId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
 
     
@@ -154,7 +155,8 @@
     
     KCSConnectionCompletionBlock userCallback = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_ACCEPTED){
-            [delegate blobRequestDidFail:[NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:[response.responseData objectFromJSONData]]];
+            NSString *xmlData = [[[NSString alloc] initWithData:response.responseData encoding:NSUTF8StringEncoding] autorelease];
+            [delegate blobRequestDidFail:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:xmlData forKey:@"serviceError"]]];
         } else {
             // I feel like we should have a length here, but I might not be saving that response...
             [delegate blobRequestDidComplete:[KCSBlobResponse responseWithFileName:nil withBlobId:nil withData:nil withLength:0]];
@@ -165,7 +167,7 @@
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         NSDictionary *jsonData = [response.responseData objectFromJSONData];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:jsonData];
+            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:jsonData];
             [delegate blobRequestDidFail:err];
         } else {
             NSString *newResource = [jsonData valueForKey:@"URI"];

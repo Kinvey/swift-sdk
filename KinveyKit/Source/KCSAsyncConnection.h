@@ -8,7 +8,7 @@
 
 #import "KCSConnection.h"
 
-@interface KCSAsyncConnection : KCSConnection
+@interface KCSAsyncConnection : KCSConnection <NSURLConnectionDelegate>
 
 
 /*! Stored data in response to a request */
@@ -23,7 +23,7 @@
 /*! How long to wait for a response before timing out */
 @property (readonly) double connectionTimeout;
 
-@property (nonatomic, retain) NSURLRequest *request;
+@property (nonatomic, copy) NSURLRequest *request;
 
 @property (nonatomic, readonly) NSInteger contentLength;
 @property (nonatomic, readonly) double percentComplete;

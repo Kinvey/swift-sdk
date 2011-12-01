@@ -17,5 +17,6 @@
 #include "KinveyEntity.h"
 #include "KinveyPersistable.h"
 #include "KCSBlobService.h"
+#include "KinveyPing.h"
 
 #endif

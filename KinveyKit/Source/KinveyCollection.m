@@ -21,21 +21,15 @@
 
 
 // Avoid compiler warning by prototyping here...
-void
-makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
-                     KCSConnectionFailureBlock *fBlock,
-                     KCSConnectionProgressBlock *pBlock,
-                     KCSCollection *collection,
-                     id <KCSCollectionDelegate> delegate);
+KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collection, id<KCSCollectionDelegate>delegate);
+KCSConnectionFailureBlock    makeCollectionFailureBlock(KCSCollection *collection, id<KCSCollectionDelegate>delegate);
+KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collection, id<KCSCollectionDelegate>delegate);
 
-void
-makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
-                     KCSConnectionFailureBlock *fBlock,
-                     KCSConnectionProgressBlock *pBlock,
-                     KCSCollection *collection,
-                     id <KCSCollectionDelegate> delegate)
+KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collection, id<KCSCollectionDelegate>delegate)
 {
-    *cBlock = ^(KCSConnectionResponse *response){
+    return [[^(KCSConnectionResponse *response){
+        
+        NSLog(@"In collection callback with response: %@", response);
         
         id templateClassObject = [[[collection objectTemplate] alloc] init];
         NSDictionary *hostToJsonMap = [templateClassObject hostToKinveyPropertyMapping];
@@ -46,7 +40,7 @@ makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
         
         Class templateClass = [[collection objectTemplate] class];
         
-// New KCS behavior, not ready yet
+        // New KCS behavior, not ready yet
 #if 0
         NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
         NSObject *jsonData = [jsonResponse valueForKey:@"result"];
@@ -55,11 +49,12 @@ makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
 #endif        
         NSArray *jsonArray;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:(NSDictionary *)jsonData];
+            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:(NSDictionary *)jsonData];
             [delegate fetchCollectionDidFail:err];
+            [processedData release];
             return;
         }
-
+        
         if ([jsonData isKindOfClass:[NSArray class]]){
             jsonArray = (NSArray *)jsonData;
         } else {
@@ -74,7 +69,10 @@ makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
                 NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
                 
                 //            NSLog(@"Mapping from %@ to %@ (using value: %@)", jsonKey, hostKey, [dict valueForKey:jsonKey]);
-                
+                if ([dict valueForKey:jsonKey] == nil){
+                    NSLog(@"Data Mismatch, unable to find value for JSON Key %@ (Host Key %@).  Object not 100%% valid.", jsonKey, hostKey);
+                    continue;
+                }
                 [copiedObject setValue:[dict valueForKey:jsonKey] forKey:hostKey];
                 //            NSLog(@"Copied Object: %@", copiedObject);
             }
@@ -82,16 +80,22 @@ makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
         }
         [delegate fetchCollectionDidComplete:processedData];
         [processedData release];
-    };
-    
-    *fBlock = ^(NSError *error){
+    } copy] autorelease];
+}
+
+KCSConnectionFailureBlock    makeCollectionFailureBlock(KCSCollection *collection, id<KCSCollectionDelegate>delegate)
+{
+    return [[^(NSError *error){
         [delegate fetchCollectionDidFail:error];  
-    };
+    } copy] autorelease];
+}
+KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collection, id<KCSCollectionDelegate>delegate)
+{
     
-    *pBlock = ^(KCSConnection *conn)
+    return [[^(KCSConnection *conn)
     {
         // Do nothing...
-    };
+    } copy] autorelease];
     
 }
 
@@ -170,11 +174,9 @@ makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
     NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/", self.collectionName];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
 
-    KCSConnectionCompletionBlock cBlock;
-    KCSConnectionFailureBlock fBlock;
-    KCSConnectionProgressBlock pBlock;
-    
-    makeCollectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
+    KCSConnectionCompletionBlock cBlock = makeCollectionCompletionBlock(self, delegate);
+    KCSConnectionFailureBlock fBlock = makeCollectionFailureBlock(self, delegate);
+    KCSConnectionProgressBlock pBlock = makeCollectionProgressBlock(self, delegate);
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
@@ -281,11 +283,11 @@ makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
-    KCSConnectionCompletionBlock cBlock;
-    KCSConnectionFailureBlock fBlock;
-    KCSConnectionProgressBlock pBlock;
     
-    makeCollectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
+    KCSConnectionCompletionBlock cBlock = makeCollectionCompletionBlock(self, delegate);
+    KCSConnectionFailureBlock fBlock = makeCollectionFailureBlock(self, delegate);
+    KCSConnectionProgressBlock pBlock = makeCollectionProgressBlock(self, delegate);
+    
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
@@ -309,7 +311,7 @@ makeCollectionBlocks(KCSConnectionCompletionBlock *cBlock,
         int count;
 
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:(NSDictionary *)responseToReturn];
+            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:(NSDictionary *)responseToReturn];
             [delegate informationOperationDidFail:err];
             return;
         }
