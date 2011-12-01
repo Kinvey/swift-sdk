@@ -53,7 +53,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 #endif
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:responseToReturn];
+            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
             [delegate fetchDidFail:err];
         } else {
             NSDictionary *kinveyMapping = [objectOfInterest hostToKinveyPropertyMapping];
@@ -198,7 +198,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
     NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
     NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
-    NSString *objectId;
+    NSString *objectId = nil;
 
     NSString *key;
     for (key in kinveyMapping){
@@ -249,8 +249,8 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         NSDictionary *responseToReturn = jsonResponse;
 #endif
         
-        if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:responseToReturn];
+        if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
+            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
             [delegate persistDidFail:err];
         } else {
             [delegate persistDidComplete:responseToReturn];
@@ -298,8 +298,8 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         NSDictionary *responseToReturn = jsonResponse;
 #endif
         
-        if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:1 userInfo:responseToReturn];
+        if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
+            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
             [delegate persistDidFail:err];
         } else {
             [delegate persistDidComplete:responseToReturn];

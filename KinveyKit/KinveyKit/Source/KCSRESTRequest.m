@@ -13,6 +13,13 @@
 // *cough* hack *cough*
 #define MAX_DATE_STRING_LENGTH_K 40 
 
+void clogResource(NSString *resource, NSInteger requestMethod);
+void clogResource(NSString *resource, NSInteger requestMethod)
+{
+    NSLog(@"cLogResource: (%@[%p], %d)", resource, (void *)resource, requestMethod);
+}
+
+
 NSString *getLogDate(void); // Make compiler happy...
 
 NSString *
@@ -32,7 +39,6 @@ getLogDate(void)
 
 @interface KCSRESTRequest()
 @property (nonatomic, retain) NSMutableURLRequest *request;
-
 - (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod;
 @end
 
@@ -47,6 +53,16 @@ getLogDate(void)
 @synthesize isSyncRequest=_isSyncRequest;
 @synthesize request=_request;
 
+//- (id)init
+//{
+//    self = [super init];
+//    
+//    if (self){
+//        _headers = [[NSMutableDictionary dictionary] retain];
+//    }
+//    return self;
+//}
+
 - (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod
 {
     self = [super init];
@@ -58,7 +74,14 @@ getLogDate(void)
         _failureAction = NULL;
         _isSyncRequest = NO;
         _headers = [[NSMutableDictionary dictionary] retain];
-        _request = nil;
+
+        // Prepare to generate the request...
+        KCSClient *kinveyClient = [KCSClient sharedClient];
+//        NSString *urlString = [NSString stringWithFormat:@"%@%@:%@@%@", kinveyClient.protocol, kinveyClient.authCredentials.user, kinveyClient.authCredentials.password, self.resourceLocation];
+        NSURL *url = [NSURL URLWithString:resource];
+        
+        NSLog(@"Requesting resource: %@", resource);
+        _request = [[NSMutableURLRequest requestWithURL:url cachePolicy:kinveyClient.cachePolicy timeoutInterval:kinveyClient.connectionTimeout] retain];
     }
     return self;
 }
@@ -71,16 +94,31 @@ getLogDate(void)
     _resourceLocation = nil;
     _headers = nil;
     
-    self.request = nil;
-//    self.completionAction = NULL;
-//    self.progressAction = NULL;
-//    self.failureAction = NULL;
+    [_request release];
+    self.completionAction = NULL;
+    self.progressAction = NULL;
+    self.failureAction = NULL;
     
     [super dealloc];
 }
 
+- (void)logResource: (NSString *)resource usingMethod: (NSInteger)requestMethod
+{
+    NSLog(@"logResource: (%@[%p], %d)", resource, (void *)resource, requestMethod);
+}
+
 + (KCSRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod
 {
+//    KCSRESTRequest *request = [KCSRESTRequest alloc];
+//    request.resourceLocation = resource;
+//    request.method = requestMethod;
+//    
+//    [request logResource:resource usingMethod:requestMethod];
+//    clogResource(resource, requestMethod);
+//
+//    [request autorelease];
+//    return request;
+//
     return [[[KCSRESTRequest alloc] initWithResource:resource usingMethod:requestMethod] autorelease];
 }
 
@@ -164,7 +202,6 @@ getLogDate(void)
         connection = [[KCSConnectionPool asyncConnection] retain];
     }
     
-    self.request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.resourceLocation] cachePolicy:kinveyClient.cachePolicy timeoutInterval:kinveyClient.connectionTimeout];
     [self.request  setHTTPMethod: [self getHTTPMethodForConstant: self.method]];
     
     for (NSString *key in [self.headers allKeys]) {

@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define MINIMUM_KCS_VERSION_SUPPORTED 0.0
+#define MINIMUM_KCS_VERSION_SUPPORTED @"0.6.5"
 
 @class UIApplication;
 @class KCSCollection;
@@ -78,6 +78,7 @@
 @property (nonatomic, readonly) NSURLCacheStoragePolicy cachePolicy;
 @property (nonatomic, copy, readonly) NSString *dataBaseURL;
 @property (nonatomic, copy, readonly) NSString *assetBaseURL;
+@property (nonatomic, copy, readonly) NSString *protocol;
 
 @property double connectionTimeout;
 

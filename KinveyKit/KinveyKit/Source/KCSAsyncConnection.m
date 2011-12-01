@@ -164,19 +164,62 @@
 {
     // Cause all members to release their current object and reset to the nil state.
     self.request = nil;
-    self.progressBlock = nil;
-    self.completionBlock = nil;
-    self.failureBlock = nil;
     self.basicAuthCred = nil;
     self.connection = nil;
     self.activeDownload = nil;
-    self.request = nil;
     self.lastResponse = nil;
     self.lastPercentage = 0; // Reset
+
+    [_request release];
+    [_progressBlock release];
+    [_completionBlock release];
+    [_failureBlock release];
+    _progressBlock = NULL;
+    _completionBlock = NULL;
+    _failureBlock = NULL;
+
 }
 
 #pragma mark -
 #pragma mark Download support (NSURLConnectionDelegate)
+
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
+{
+//    NSLog(@"ProtectionSpace %@ requesting method %@ (Using protocol %@ with host %@)", protectionSpace, protectionSpace.authenticationMethod, protectionSpace.protocol, protectionSpace.host);
+    return YES;
+//    if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodHTTPBasic]){
+//        return YES;
+//    } else {
+//        NSLog(@"Unsupported Authentication Metchod called: %@ (%@)", protectionSpace.authenticationMethod, protectionSpace);
+//        return NO;
+//    }
+}
+
+- (void)connection:(NSURLConnection *)connection didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    NSLog(@"TRACE: connection:didCancelAuthenticationChallenge:");
+    NSLog(@"*** This is very unexpected and a serious error, please contact support@kinvey.com (%@)", challenge);
+}
+
+
+- (BOOL)connectionShouldUseCredentialStorage:(NSURLConnection *)connection
+{
+    // Right now this might need to be implemented to support Ivan's Stuff
+    return NO;
+}
+
+- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+//    NSLog(@"Connection WILL authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
+    [[challenge sender] useCredential:self.basicAuthCred forAuthenticationChallenge:challenge];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+//    NSLog(@"Connection DID authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
+    [[challenge sender] useCredential:self.basicAuthCred forAuthenticationChallenge:challenge];
+    
+}
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
@@ -239,15 +282,6 @@
     
     [self cleanUp];
 }
-
-- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
-    [[challenge sender] useCredential:self.basicAuthCred forAuthenticationChallenge:challenge];
-}
-
-
-
-
 
 
 @end
