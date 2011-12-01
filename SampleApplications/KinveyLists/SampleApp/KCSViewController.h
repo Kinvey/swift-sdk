@@ -7,10 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface KCSViewController : UIViewController
+#import <KinveyKit/KinveyKit.h>
+@interface KCSViewController : UIViewController <KCSCollectionDelegate>
 @property (retain, nonatomic) IBOutlet UIImageView *splashImage;
 @property (retain, nonatomic) IBOutlet UILabel *loadingText;
 @property (retain, nonatomic) IBOutlet UIActivityIndicatorView *loadingProgress;
+
+
+@property (retain, nonatomic) IBOutlet UIButton *listButton;
+
+// For initial loading
+@property (retain) KCSCollection *listsCollection;
+@property (retain) NSArray *kLists;
+
 
 @end

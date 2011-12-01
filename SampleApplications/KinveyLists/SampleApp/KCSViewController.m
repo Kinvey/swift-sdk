@@ -7,11 +7,20 @@
 //
 
 #import "KCSViewController.h"
+#import "KCSListOverviewTableController.h"
+#import "KCSAppDelegate.h"
+#import "KCSList.h"
+#import <KinveyKit/KinveyKit.h>
 
 @implementation KCSViewController
 @synthesize splashImage;
 @synthesize loadingText;
 @synthesize loadingProgress;
+@synthesize listButton;
+
+@synthesize listsCollection=_listsCollection;
+@synthesize kLists=_kLists;
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -25,13 +34,25 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+
+    if (self.listsCollection){
+        return;
+    }
+    // Do any additional setup after loading the view, typically from a nib.
+    self.navigationController.navigationBarHidden = YES;
+    [[UIApplication sharedApplication] setStatusBarHidden:YES   
+                                            withAnimation:UIStatusBarAnimationSlide];
+
     NSLog(@"About to do splash stuff");
     [loadingText setFont: [UIFont fontWithName:@"Lobster 1.4" size: 32.0]];
     [loadingProgress startAnimating];
-    NSLog(@"Scheduling 'segueToMain' for 10 seconds past: %@ (%@)", [NSDate date], [NSDate dateWithTimeInterval:10 sinceDate:[NSDate date]]);
-    [self performSelector:@selector(segueToMain) withObject:nil afterDelay:10.0];
     NSLog(@"Done with splash");
+    self.listsCollection = [[KCSClient sharedClient] collectionFromString:@"lists" withClass:[KCSList class]];
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    [self.listsCollection collectionDelegateFetchAll:self];
+
+
 }
 
 - (void)viewDidUnload
@@ -39,6 +60,7 @@
     [self setSplashImage:nil];
     [self setLoadingText:nil];
     [self setLoadingProgress:nil];
+    [self setListButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -78,6 +100,7 @@
     [splashImage release];
     [loadingText release];
     [loadingProgress release];
+    [listButton release];
     [super dealloc];
 }
 
@@ -85,9 +108,49 @@
 {
     NSLog(@"Made it to segueToMain @ %@", [NSDate date]);
     [loadingProgress stopAnimating];
-//    [self performSegueWithIdentifier:@"pushToList" sender:self];
-    [[self view] removeFromSuperview];
+    [loadingProgress setHidesWhenStopped:YES];
+//    [self.listButton setUserInteractionEnabled:YES];
+//    [self.listButton setHidden:NO];
+    [self.loadingText setHidden:YES];
+    [self performSegueWithIdentifier:@"pushToMain" sender:self];
+}
 
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    NSLog(@"Segue: %@", segue.identifier);
+    if ([segue.identifier isEqualToString:@"pushToMain"]){
+        KCSListOverviewTableController *nextViewController = segue.destinationViewController;
+        nextViewController.kLists = [NSMutableArray arrayWithArray:self.kLists];
+        
+    }
+}
+
+- (void) fetchCollectionDidFail: (id)error
+{
+    NSLog(@"Update failed: %@", error);
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    UIAlertView *alert =
+    [[UIAlertView alloc] initWithTitle: @"Error Downloading Lists"
+                               message: [error description]
+                              delegate: self
+                     cancelButtonTitle: @"OK"
+                     otherButtonTitles: nil];
+    [alert show];
+    [alert release];
+    [self segueToMain];
+
+}
+
+- (void) fetchCollectionDidComplete: (NSObject *) result
+{
+    NSArray *res = (NSArray *)result;
+    NSLog(@"Got successfull fetch response: %@", res);
+    //    NSLog(@"Number of elements: %@", res.count);
+    
+    self.kLists = [NSMutableArray arrayWithArray:(NSArray *)result];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    [self segueToMain];
 }
 
 @end

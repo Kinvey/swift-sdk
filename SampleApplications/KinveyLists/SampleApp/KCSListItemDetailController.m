@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 Kinvey. All rights reserved.
 //
 
-#import "KinveyKit.h"
+#import <KinveyKit/KinveyKit.h>
 #import "KCSListItemDetailController.h"
 #import "KCSListEntry.h"
 #import "KCSAppDelegate.h"
@@ -14,11 +14,10 @@
 
 @implementation KCSListItemDetailController
 
-@synthesize itemDetail=_itemDetail;
-@synthesize kinveyClient=_kinveyClient;
-@synthesize itemName = _itemName;
+@synthesize itemDetail      = _itemDetail;
+@synthesize itemName        = _itemName;
 @synthesize itemDescription = _itemDescription;
-@synthesize itemPicture = _itemPicture;
+@synthesize itemPicture     = _itemPicture;
 
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -49,12 +48,7 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-    if (self.kinveyClient == nil){
-        KCSAppDelegate *app = (KCSAppDelegate *)[[UIApplication sharedApplication] delegate];
-        self.kinveyClient = [app kinveyClient];
-    }
-    
+
     self.itemName.text = self.itemDetail.name;
     self.itemDescription.text = self.itemDetail.itemDescription;
     

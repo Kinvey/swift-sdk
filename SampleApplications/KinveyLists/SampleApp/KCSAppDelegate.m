@@ -7,13 +7,13 @@
 //
 
 #import "KCSAppDelegate.h"
-#import "KinveyKit.h"
+#import <KinveyKit/KinveyKit.h>
 
 @implementation KCSAppDelegate
 
 
 @synthesize window = _window;
-@synthesize kinveyClient=_kinveyClient;
+
 
 
 - (void)dealloc
@@ -26,15 +26,20 @@
 {
     // Override point for customization after application launch.
     // TODO: Need to add conditional for iPad
-//    UIStoryboard *board = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
-//
-//    UIViewController *splash = [board instantiateViewControllerWithIdentifier:@"splashScreen"];
-//    UIView *sv = splash.view;
-//    [[self window] addSubview:sv];
-//    [[self window] bringSubviewToFront:sv];
     
     // At this point we start the loading sequence, and signal (later) when it's done
-    self.kinveyClient = [[KCSClient alloc] initWithAppKey:@"kid1064" andSecret:@"89a04894101544d5ae72ee66594e6845" usingBaseURI:@"https://latestbeta.kinvey.com/appdata/kid1064/"];
+    // This NEEEEDS to be done here...
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1064" withAppSecret:@"89a04894101544d5ae72ee66594e6845" usingOptions:nil];
+
+//    UIStoryboard *board = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
+//    UIViewController *initial = board.instantiateInitialViewController;
+//
+//    UIViewController *splash = [[board instantiateViewControllerWithIdentifier:@"splashScreen"] retain];
+//    UIView *sv = splash.view;
+//    [initial.view addSubview:sv];
+//    [initial.view bringSubviewToFront:sv];
+    
+    
     return YES;
 }
 							
