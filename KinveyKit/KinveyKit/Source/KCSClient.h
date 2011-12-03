@@ -11,8 +11,10 @@
 
 #define MINIMUM_KCS_VERSION_SUPPORTED @"0.6.5"
 
+@class KCSAnalytics;
 @class UIApplication;
 @class KCSCollection;
+@class KCSUser;
 
 
 // Keys for options hash
@@ -78,12 +80,21 @@
 @property (nonatomic, readonly) NSURLCacheStoragePolicy cachePolicy;
 @property (nonatomic, copy, readonly) NSString *dataBaseURL;
 @property (nonatomic, copy, readonly) NSString *assetBaseURL;
+@property (nonatomic, copy, readonly) NSString *userBaseURL;
+
 @property (nonatomic, copy, readonly) NSString *protocol;
 
 @property double connectionTimeout;
 
+@property (nonatomic, retain) KCSUser *currentUser;
+
+/////// D A N G E R -- Always lock before 
+@property (nonatomic) BOOL userIsAuthenticated;
+@property (nonatomic) BOOL userAuthenticationInProgress;
 
 
+// Do not expose this to clients yet... soon?
+@property (readonly) KCSAnalytics *analytics;
 
 #pragma mark -
 #pragma mark Initializers

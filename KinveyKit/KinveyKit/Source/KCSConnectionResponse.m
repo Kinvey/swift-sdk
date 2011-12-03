@@ -13,26 +13,29 @@
 @synthesize responseCode=_responseCode;
 @synthesize responseData=_responseData;
 @synthesize userData=_userData;
+@synthesize responseHeaders=_responseHeaders;
 
-- (id)initWithCode:(NSInteger)code responseData:(NSData *)data userData:(NSDictionary *)userDefinedData
+- (id)initWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData
 {
     self = [super init];
     if (self){
         _responseCode = code;
         _responseData = data;
         _userData = userDefinedData;
+        _responseHeaders = header;
         
         [_userData retain];
         [_responseData retain];
+        [_responseHeaders retain];
     }
     
     return self;
 }
 
-+ (KCSConnectionResponse *)connectionResponseWithCode:(NSInteger)code responseData:(NSData *)data userData:(NSDictionary *)userDefinedData
++ (KCSConnectionResponse *)connectionResponseWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData
 {
     // Return the autoreleased instance.
-    return [[[KCSConnectionResponse alloc] initWithCode:code responseData:data userData:userDefinedData] autorelease];
+    return [[[KCSConnectionResponse alloc] initWithCode:code responseData:data headerData:header userData:userDefinedData] autorelease];
 }
 
 - (void)dealloc
