@@ -147,7 +147,6 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 - (void)dealloc
 {
-//    [_decoderHelper release];
     [_filters release];
 }
 

@@ -48,9 +48,7 @@
 
 @implementation KCSBlobService
 
-@synthesize kinveyClient=_kinveyClient;
-
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId
 {
     NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"download-loc/%@", blobId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
@@ -72,7 +70,7 @@
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId toFile: (NSString *)file
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId toFile: (NSString *)file
 {
     NSException* myException = [NSException
                                 exceptionWithName:@"UnsupportedFeatureException"
@@ -82,7 +80,7 @@
    
 }
 
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file
 {
     NSException* myException = [NSException
                                 exceptionWithName:@"UnsupportedFeatureException"
@@ -92,7 +90,7 @@
 
 }
 
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file toBlob: (NSString *)blobId
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file toBlob: (NSString *)blobId
 {
     NSException* myException = [NSException
                                 exceptionWithName:@"UnsupportedFeatureException"
@@ -102,7 +100,7 @@
 
 }
 
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveData:(NSData *) data toBlob: (NSString *)blobId
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveData:(NSData *) data toBlob: (NSString *)blobId
 {
     NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"upload-loc/%@", blobId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
@@ -141,7 +139,7 @@
 
 }
 
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate deleteBlob:(NSString *)blobId
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate deleteBlob:(NSString *)blobId
 {
     NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"remove-loc/%@", blobId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
