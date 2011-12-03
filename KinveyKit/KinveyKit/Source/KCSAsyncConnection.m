@@ -210,13 +210,13 @@
 
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-//    NSLog(@"Connection WILL authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
+    NSLog(@"Connection WILL authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
     [[challenge sender] useCredential:self.basicAuthCred forAuthenticationChallenge:challenge];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-//    NSLog(@"Connection DID authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
+    NSLog(@"Connection DID authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
     [[challenge sender] useCredential:self.basicAuthCred forAuthenticationChallenge:challenge];
     
 }
@@ -275,7 +275,8 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     NSInteger statusCode = [(NSHTTPURLResponse *)self.lastResponse statusCode];
-    self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.activeDownload userData:nil]);
+    NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
+    self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.activeDownload headerData:headers userData:nil]);
     
     self.activeDownload = nil;
     self.connection = nil;

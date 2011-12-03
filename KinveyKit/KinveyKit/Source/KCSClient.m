@@ -9,6 +9,7 @@
 
 #import "KCSClient.h"
 #import "JSONKit.h"
+#import "KinveyUser.h"
 
 
 #import "KinveyCollection.h"
@@ -25,10 +26,11 @@
 @property (nonatomic, copy, readwrite) NSString *libraryVersion;
 @property (nonatomic, copy, readwrite) NSString *dataBaseURL;
 @property (nonatomic, copy, readwrite) NSString *assetBaseURL;
+@property (nonatomic, copy, readwrite) NSString *userBaseURL;
 
+@property (atomic, retain) NSRecursiveLock *authInProgressLock;
+@property (atomic, retain) NSRecursiveLock *authCompleteLock;
 
-// Do not expose this to clients yet... soon?
-@property (retain) KCSAnalytics *analytics;
 @end
 
 @implementation KCSClient
@@ -44,8 +46,16 @@
 @synthesize authCredentials=_authCredentials;
 @synthesize cachePolicy=_cachePolicy;
 @synthesize protocol=_protocol;
+@synthesize currentUser=_currentUser;
+@synthesize userBaseURL=_userBaseURL;
+@synthesize authInProgressLock=_authInProgressLock;
+@synthesize authCompleteLock=_authCompleteLock;
+
+@synthesize userIsAuthenticated=_userIsAuthenticated;
+@synthesize userAuthenticationInProgress=_userAuthenticationInProgress;
 
 @synthesize analytics=_analytics;
+
 
 - (id)init
 {
@@ -55,11 +65,50 @@
         self.libraryVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:(id)kCFBundleVersionKey];
         self.userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
         self.connectionTimeout = 60.0; // Default timeout to 1 minute...
+        _analytics = [[KCSAnalytics alloc] init];
         _cachePolicy = NSURLRequestReloadIgnoringLocalCacheData; //NSURLCacheStorageNotAllowed; // Inhibit caching for now
         _protocol = @"https://";
+        _userIsAuthenticated = NO;
+        _userAuthenticationInProgress = NO;
+        _authCompleteLock   = [[NSRecursiveLock alloc] init];
+        _authInProgressLock = [[NSRecursiveLock alloc] init];
+        _currentUser = [[KCSUser alloc] init];
     }
     
     return self;
+}
+
+- (BOOL)userIsAuthenticated
+{
+    BOOL retVal;
+    
+    [_authCompleteLock lock];
+    retVal = _userIsAuthenticated;
+    [_authCompleteLock unlock];
+    return retVal;
+}
+
+- (void)setUserIsAuthenticated:(BOOL)userIsAuthenticated
+{
+    [_authCompleteLock lock];
+    _userIsAuthenticated = userIsAuthenticated;
+    [_authCompleteLock unlock];
+}
+
+- (BOOL)userAuthenticationInProgress
+{
+    BOOL retVal;
+    [_authInProgressLock lock];
+    retVal = _userAuthenticationInProgress;
+    [_authInProgressLock unlock];
+    return retVal;
+}
+
+- (void)setUserAuthenticationInProgress:(BOOL)userAuthenticationInProgress
+{
+    [_authInProgressLock lock];
+    _userAuthenticationInProgress = userAuthenticationInProgress;
+    [_authInProgressLock unlock];
 }
 
 + (KCSClient *)sharedClient
@@ -88,6 +137,8 @@
     // Until latestbeta is upgraded...
     self.assetBaseURL = [[NSString alloc] initWithFormat:@"%@latestbeta.kinvey.com/blob/%@/", self.protocol, self.appKey];
 
+    self.userBaseURL = [[NSString alloc] initWithFormat:@"%@latestbeta.kinvey.com/user/%@/", self.protocol, self.appKey];
+
     // TODO extract options to something meaningful...
     self.options = options;
     self.authCredentials = [NSURLCredential credentialWithUser:appKey password:appSecret persistence:NSURLCredentialPersistenceNone];
@@ -113,6 +164,5 @@
 {
     return [KCSCollection collectionFromString:collection ofClass:collectionClass withKinveyClient:self];
 }
-
 
 @end

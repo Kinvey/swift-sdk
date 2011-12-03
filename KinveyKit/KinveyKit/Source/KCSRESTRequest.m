@@ -9,6 +9,7 @@
 #import "KCSRESTRequest.h"
 #import "KCSConnectionPool.h"
 #import "KCSClient.h"
+#import "KinveyUser.h"
 
 // *cough* hack *cough*
 #define MAX_DATE_STRING_LENGTH_K 40 
@@ -211,6 +212,19 @@ getLogDate(void)
     [self.request addValue:[kinveyClient userAgent] forHTTPHeaderField:@"User-Agent"];
 
     [self.request addValue:getLogDate() forHTTPHeaderField:@"Date"];
+    
+    // If we have the proper credentials then kinveyClient.userIsAuthenticated returns true, so just use the stored credentials
+    // If it's not true, then we could be in the acutal user request, if that's the case (aka, resourceLocation is the userBaseURL)
+    // then just allow the requst, it's already authenticated...
+    // TODO: this needs to check each URL for the user API, since future maybe more than just the baseURL.
+    if (!kinveyClient.userIsAuthenticated && ![self.resourceLocation isEqualToString:kinveyClient.userBaseURL]){
+        // User isn't authenticated, we need to perform default auth here and return.  Auth will handle completing this request.
+//        NSLog(@"Username: %@ Password: %@", kinveyClient.authCredentials.user, kinveyClient.authCredentials.password);
+        [kinveyClient.currentUser initializeCurrentUserWithRequest:self];
+        // Make sure to release the connection here, as we're breaking.
+        [connection release];
+        return;
+    }
     [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:[kinveyClient authCredentials]];
      
     [connection release];

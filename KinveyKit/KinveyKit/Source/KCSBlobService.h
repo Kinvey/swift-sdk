@@ -30,16 +30,14 @@
 
 @interface KCSBlobService : NSObject
 
-@property (retain) KCSClient *kinveyClient;
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId;
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId toFile: (NSString *)file;
 
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId;
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId toFile: (NSString *)file;
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file;
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file toBlob: (NSString *)blobId;
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveData:(NSData *) data toBlob: (NSString *)blobId;
 
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file;
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file toBlob: (NSString *)blobId;
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveData:(NSData *) data toBlob: (NSString *)blobId;
-
-- (void)blobDelegate:(id<KCSBlobDelegate>)delegate deleteBlob:(NSString *)blobId;
++ (void)blobDelegate:(id<KCSBlobDelegate>)delegate deleteBlob:(NSString *)blobId;
 
 
 @end
