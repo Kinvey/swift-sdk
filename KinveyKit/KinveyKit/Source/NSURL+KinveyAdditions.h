@@ -28,6 +28,12 @@
 
  */
 - (NSURL *)URLByAppendingQueryString:(NSString *)queryString;
+
+/*! Generate a NSURL by percent-encoding an unencoded string.
+ @param string an *unencoded* string that needs percent encoding.
+ @returns The URL object by percent encoding the string.
+ 
+ */
 + (NSURL *)URLWithUnencodedString:(NSString *)string;
 
 @end

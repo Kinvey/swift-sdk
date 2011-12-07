@@ -8,6 +8,7 @@
 
 #import "KCSAsyncConnection.h"
 #import "KCSConnectionResponse.h"
+#import "KCSConnectionProgress.h"
 
 @interface KCSAsyncConnection()
 
@@ -233,7 +234,7 @@
         // Probably want to handle this differently, since now the caller needs to know what's going
         // on, but I think that at a minimum, we need progress + data.
         self.lastPercentage = downloadPercent; // Update to the current value
-        self.progressBlock(self);
+        self.progressBlock([[[KCSConnectionProgress alloc] init] autorelease]);
     }
 }
 

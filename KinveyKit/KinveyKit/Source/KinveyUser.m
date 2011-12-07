@@ -13,7 +13,6 @@
 #import "KinveyAnalytics.h"
 #import "JSONKit.h"
 #import "KinveyBlocks.h"
-#import "KCSConnection.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
 
@@ -156,7 +155,7 @@
             @throw myException;
         };
         
-        KCSConnectionProgressBlock pBlock = ^(KCSConnection *conn){};
+        KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
         
         [[userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
         

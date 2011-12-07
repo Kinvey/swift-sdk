@@ -28,8 +28,15 @@
 @property (nonatomic, copy, readwrite) NSString *assetBaseURL;
 @property (nonatomic, copy, readwrite) NSString *userBaseURL;
 
+@property (nonatomic, copy, readwrite) NSString *appKey;
+@property (nonatomic, copy, readwrite) NSString *appSecret;
+
+
 @property (atomic, retain) NSRecursiveLock *authInProgressLock;
 @property (atomic, retain) NSRecursiveLock *authCompleteLock;
+
+@property (nonatomic, retain, readwrite) NSDictionary *options;
+
 
 @end
 
@@ -152,17 +159,9 @@
 // for that collection
 
 // Basically this is just a convienience method which I think may get
-// Refactored out yet again
-- (KCSCollection *)collectionFromString:(NSString *)collection
-{
-    return [KCSCollection collectionFromString:collection withKinveyClient:self];
-}
-
-// Basically this is just a convienience method which I think may get
-// Refactored out yet again
 - (KCSCollection *)collectionFromString:(NSString *)collection withClass:(Class)collectionClass
 {
-    return [KCSCollection collectionFromString:collection ofClass:collectionClass withKinveyClient:self];
+    return [KCSCollection collectionFromString:collection ofClass:collectionClass];
 }
 
 @end
