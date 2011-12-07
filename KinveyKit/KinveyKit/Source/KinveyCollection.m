@@ -8,16 +8,12 @@
 
 #import "KinveyPersistable.h"
 #import "KinveyCollection.h"
-//#import "KinveyEntity.h"
+#import "KCSClient.h"
 #import "NSString+KinveyAdditions.h"
 #import "JSONKit.h"
 #import "KCSRESTRequest.h"
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSConnectionResponse.h"
-
-@interface KCSCollection ()
-@property (retain) JSONDecoder *decoderHelper;
-@end
 
 
 // Avoid compiler warning by prototyping here...
@@ -92,7 +88,7 @@ KCSConnectionFailureBlock    makeCollectionFailureBlock(KCSCollection *collectio
 KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collection, id<KCSCollectionDelegate>delegate)
 {
     
-    return [[^(KCSConnection *conn)
+    return [[^(KCSConnectionProgress *conn)
     {
         // Do nothing...
     } copy] autorelease];
@@ -115,24 +111,20 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 // [self.objectCollection collectionDelegateFetchAll: ()
 
 @synthesize collectionName=_collectionName;
-@synthesize kinveyClient=_kinveyClient;
 @synthesize objectTemplate=_objectTemplate;
 @synthesize lastFetchResults=_lastFetchResults;
-@synthesize decoderHelper=_decoderHelper;
 @synthesize filters=_filters;
 
 // TODO: Need a way to store the query portion of the library.
 
-- (id)initWithName: (NSString *)name forTemplateClass: (Class) theClass usingClient: (KCSClient *)client
+- (id)initWithName: (NSString *)name forTemplateClass: (Class) theClass
 {
     self = [super init];
     
     if (self){
         _collectionName = name;
-        _kinveyClient = client;
         _objectTemplate = theClass;
         _lastFetchResults = nil;
-        _decoderHelper = [[[JSONDecoder alloc] init] autorelease];
         _filters = [[NSMutableArray alloc] init];      
     }
     
@@ -142,25 +134,21 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 - (id)init
 {
-    return [self initWithName:nil forTemplateClass:[NSObject class] usingClient:nil];
+    return [self initWithName:nil forTemplateClass:[NSObject class]];
 }
 
 - (void)dealloc
 {
     [_filters release];
+    [_lastFetchResults release];
+    [_collectionName release];
 }
 
 
 
-+ (KCSCollection *)collectionFromString: (NSString *)string withKinveyClient: (KCSClient *)client
++ (KCSCollection *)collectionFromString: (NSString *)string ofClass: (Class)templateClass
 {
-    KCSCollection *collection = [[[KCSCollection alloc] initWithName:string forTemplateClass:[NSObject class] usingClient:client] autorelease];
-    return collection;
-}
-
-+ (KCSCollection *)collectionFromString: (NSString *)string ofClass: (Class)templateClass withKinveyClient: (KCSClient *)client
-{
-    KCSCollection *collection = [[[KCSCollection alloc] initWithName:string forTemplateClass:templateClass usingClient:client] autorelease];
+    KCSCollection *collection = [[[KCSCollection alloc] initWithName:string forTemplateClass:templateClass] autorelease];
     return collection;
 }
 
@@ -338,7 +326,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         [delegate informationOperationDidFail:error];
     };
     
-    KCSConnectionProgressBlock pBlock = ^(KCSConnection *collection) {};
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *collection) {};
         
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];

@@ -10,34 +10,159 @@
 
 @class KCSClient;
 
-@interface KCSBlobResponse : NSObject
+/*! Container for Resource responses.
+ 
+ This represents the results from a Resource request.  Because the resource may be eventually fetched from another sericve that doesn't respond
+ in the same fashion as Kinvey, we have a slightly different response format for Resources than for other Kinvey items.
+ 
+*/
+@interface KCSResourceResponse : NSObject
 
+///---------------------------------------------------------------------------------------
+/// @name Resource Information
+///---------------------------------------------------------------------------------------
+
+/*! Contains the local filename that the Resource was saved to. */
 @property (copy) NSString *localFileName;
-@property (copy) NSString *blobId;
-@property (retain) NSData *blob;
+
+/*! Contains the Resource ID, which is used to uniquely identify this resource .*/
+@property (copy) NSString *resourceId;
+
+ /*! Contains the actual data for the resources. */
+@property (retain) NSData *resource;
+
+/*! Contains the "expected" size of the resource. */
 @property NSInteger length;
 
-+ (KCSBlobResponse *)responseWithFileName: (NSString *)localFile withBlobId: (NSString *)blobId withData: (NSData *)blob withLength: (NSInteger)length;
+///---------------------------------------------------------------------------------------
+/// @name Initialization & disposal
+///---------------------------------------------------------------------------------------
+
+/*! Returns an autoreleased Resource Response.
+ 
+ Responses can only be built using this method.  There are no facilities for editing a resource, so they are effectively immutable.  The lifetime of
+ a response is limited and any data should be retained elsewhere if it is required (such as the NSData representing the resource.
+ 
+ @param localFile The local filename that this resource was saved inot, nil of no local filename.
+ @param resourceId The unique ID that identifies this resource in the Kinvey Cloud.
+ @param resource The actual data of the resource.  The data must be converted to a different representation to use.  Nil for an upload/delete response.
+ @param length The length of the response.  Should be set to match the expected length as given by the server.
+ @return An Autoreleased KCSResourceResponse that can be used to obtain the response information.
+ 
+ */
++ (KCSResourceResponse *)responseWithFileName: (NSString *)localFile withResourceId: (NSString *)resourceId withData: (NSData *)resource withLength: (NSInteger)length;
 
 @end
 
-@protocol KCSBlobDelegate <NSObject>
+/*! Methods used to communicate the successful/failure of a Resource action to/from Kinvey.
+ 
+ A client conforming to this protocol can be notified about successful or unsuccessful completion of a resource request to Kinvey.
+ */
+@protocol KCSResourceDelegate <NSObject>
 
-- (void)blobRequestDidComplete: (KCSBlobResponse *)result;
-- (void)blobRequestDidFail: (id)error;
+///---------------------------------------------------------------------------------------
+/// @name Success
+///---------------------------------------------------------------------------------------
+
+/*! A successful request to Kinvey occurred with a specific result.
+ 
+ This method will be called if the requested action completed with a successful result.
+ 
+ @param result All information availble about the request.  See KCSResourceResponse for details of the available properties.
+ */
+- (void)resourceServiceDidCompleteWithResult: (KCSResourceResponse *)result;
+
+///---------------------------------------------------------------------------------------
+/// @name Failure
+///---------------------------------------------------------------------------------------
+
+/*! A failed request to Kinvey occurred.
+ 
+ This method will be called if the requested action failed.  Note, the request action was not performed, and Kinvey remains in the
+ state previous to the request.
+ 
+ @param error An NSError that describes all availble failure information.
+ 
+ @bug Error codes are not yet documented.
+ */
+- (void)resourceServicetDidFailWithError: (NSError *)error;
 
 @end
 
-@interface KCSBlobService : NSObject
+/*! Kinvey Resource Helper
+ 
+ This class is used to provide access to all Kinvey Resource services.
+ */
+@interface KCSResourceService : NSObject
 
-+ (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId;
-+ (void)blobDelegate:(id<KCSBlobDelegate>)delegate downloadBlob:(NSString *)blobId toFile: (NSString *)file;
+///---------------------------------------------------------------------------------------
+/// @name Downloading Resources
+///---------------------------------------------------------------------------------------
 
-+ (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file;
-+ (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveFile:(NSString *)file toBlob: (NSString *)blobId;
-+ (void)blobDelegate:(id<KCSBlobDelegate>)delegate saveData:(NSData *) data toBlob: (NSString *)blobId;
+/*! Downloads the given Resource ID into a local NSData object
+ 
+ This method should be used to download a resource from Kinvey into a local NSData object.
+ 
+ @param resourceId The Resource ID to download.
+ @param delegate The delegate to be notified upon completion of the request.  The delegate will be provided a KCSResourceResponse that contains the data.
+ */
++ (void)downloadResource: (NSString *)resourceId withResourceDelegate: (id<KCSResourceDelegate>)delegate;
 
-+ (void)blobDelegate:(id<KCSBlobDelegate>)delegate deleteBlob:(NSString *)blobId;
+/*! Downloads the given Resource ID into a local file.
+ 
+ This method should be used to download a resource from Kinvey into a local File.  The file can then be used to access the resource.
+ 
+ @param resourceId The Resource ID to download.
+ @param filename The filename that the resource will use as the download location.  This will be set in the KCSResourceResponse that the delegate receives. 
+ @param delegate The delegate to be notified upon completion of the request.
+ */
++ (void)downloadResource: (NSString *)resourceId toFile: (NSString *)filename withResourceDelegate: (id<KCSResourceDelegate>)delegate;
+
+///---------------------------------------------------------------------------------------
+/// @name Uploading Resources
+///---------------------------------------------------------------------------------------
+
+/*! Saves the given File to Kinvey.
+ 
+ This method is used to upload a local file to Kinvey, the resource ID will be the last path component of the filename with extension.
+ 
+ @param filename The filename of the local file to upload.
+ @param delegate The delegate to be notified upon completion of the save.
+ */
++ (void)saveLocalResource: (NSString *)filename withDelegate: (id<KCSResourceDelegate>)delegate;
+
+/*! Saves the given File into the specified resource.
+ 
+ This method is used to upload a local file to Kinvey, use this varient to specify an exact remote resource ID.
+ 
+ @param filename The filename of the local file to upload.
+ @param resourceId The resource ID to use for remote storage
+ @param delegate The delegate to be notified upon completion of the save.
+ */
++ (void)saveLocalResource: (NSString *)filename toResource: (NSString *)resourceId withDelegate: (id<KCSResourceDelegate>)delegate;
+
+/*! Saves the given Data into the specified resource.
+ 
+ This method is used to upload NSData into the Kinvey service.
+ 
+ @param data The Data to upload to Kinvey.
+ @param resourceId The resource ID to use for remote storage
+ @param delegate The delegate to be notified upon completion of the save.
+ */
++ (void)saveData: (NSData *)data toResource: (NSString *)resourceId withDelegate: (id<KCSResourceDelegate>)delegate;
+
+///---------------------------------------------------------------------------------------
+/// @name Deleting Resources
+///---------------------------------------------------------------------------------------
+
+/*! Delete the given resource from Kinvey.
+ 
+ Use this method to delete a given resource from Kinvey.  Additional attempts to access this resource will fail with error code 404.
+ 
+ @param resourceId The resource ID that should be removed.
+ @param delegate The delegate to be notified that the deletion action finished.
+ */
++ (void)deleteResource:(NSString *)resourceId withDelegate: (id<KCSResourceDelegate>)delegate;
 
 
 @end

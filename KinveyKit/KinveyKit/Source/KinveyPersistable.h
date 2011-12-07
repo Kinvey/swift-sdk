@@ -39,44 +39,59 @@ The KCSEntity category on NSObject conforms to this protocol, providing a defaul
 for all NSObject descendants.  You may directly implement this protocol in order to provide actions not accomplished by
 the default methods provided.  See method documentation for important information about restrictions on clients when
 implementing these methods.
+ 
+ @bug Only hostToKinveyPropertyMapping should be implemented by the library user, the implementation provided by the KCSEntity category
+ should be used for all other methods.
+ 
  */
 @protocol KCSPersistable <NSObject>
-
+///---------------------------------------------------------------------------------------
+/// @name Persist Items
+///---------------------------------------------------------------------------------------
 /*!  Persist an Entity into KCS for a given KCS client and register a delegate to notify when complete.
-    @param delegate The delegate to inform upon the completion of the persist operation.
-    @param client An instance of a KCS client to use in persisting this Entity
 
-    @note When overriding this method an implementer will most likely need to communicate with the KCSClient class,
-    which has a different delegate interface.  An implementer will need to map between these delegates.  This does
-    not apply to using the built-in implementation.
+  When overriding this method an implementer will most likely need to communicate with the KCSClient class,
+ which has a different delegate interface.  An implementer will need to map between these delegates.  This does
+ not apply to using the built-in implementation.
+ 
+ @warning It is strongly advised to not override this method.
+
+ @param delegate The delegate to inform upon the completion of the persist operation.
+ @param collection An instance of a KCS collection to use in persisting this Entity
+ 
 
  */
-//- (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistUsingClient:(KCSClient *)client;
-//
-//
-//- (void)deleteDelegate:(id <KCSPersistDelegate>)delegate usingClient:(KCSClient *)client;
-
 - (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistToCollection:(KCSCollection *)collection;
 
+///---------------------------------------------------------------------------------------
+/// @name Delete Items
+///---------------------------------------------------------------------------------------
+/*! Delete an entity from Kinvey and register a delegate for notification.
+ When overriding this method an implementer will most likely need to communicate with the KCSClient class,
+ which has a different delegate interface.  An implementer will need to map between these delegates.  This does
+ not apply to using the built-in implementation.
+ 
+ @warning It is strongly advised to not override this method.
+ 
+ @param delegate The delegate to inform upon the completion of the persist operation.
+ @param collection The collection to remove the item from.
+*/ 
 
 - (void)deleteDelegate:(id <KCSPersistDelegate>)delegate fromCollection:(KCSCollection *)collection;
 
-
+///---------------------------------------------------------------------------------------
+/// @name Map from Local to Kinvey property names
+///---------------------------------------------------------------------------------------
 /*! Provide the mapping from an Entity's representation to the Native Objective-C representation.
-    @returns a dictionary mapping Objective-C properties to Entity Properties.
+ 
+ 
+ 
+ A simple implementation of a mapping function is:
 
-    @todo In this beta version of KCS this method has no default implementation and will raise an exception if the default
-    implementation is used.
+ Header file:
+    @property (retain, readonly) NSDictionary *mapping;
 
-    A simple implementation of a mapping function is:
-
-    Header file:
-    @code
-        @param (retain, readonly) NSDictionary *mapping;
-    @endcode
-
-    Implimentation File:
-    @code
+ Implimentation File:
         @synthesize mapping;
 
         - (id)init
@@ -93,7 +108,13 @@ implementing these methods.
         {
             return mapping;
         }
-     @endcode
+
+ 
+ 
+ @bug In this beta version of KCS this method has no default implementation and will raise an exception if the default
+ implementation is used.
+
+ @return The dictionary that maps from objective-c to Kinvey (JSON) mapping.
 
  */
 - (NSDictionary*)hostToKinveyPropertyMapping;

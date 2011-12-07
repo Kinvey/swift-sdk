@@ -9,7 +9,6 @@
 #import "KinveyEntity.h"
 
 #import "KCSClient.h"
-#import "KCSConnection.h"
 #import "KCSRESTRequest.h"
 #import "KinveyCollection.h"
 #import "NSString+KinveyAdditions.h"
@@ -70,7 +69,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         [delegate fetchDidFail:error];  
     };
     
-    *pBlock = ^(KCSConnection *conn)
+    *pBlock = ^(KCSConnectionProgress *conn)
     {
         // Do nothing...
     };
@@ -262,7 +261,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     };
     
     // Future enhancement
-    KCSConnectionProgressBlock pBlock = ^(KCSConnection *conn){};
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
@@ -311,7 +310,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     };
     
     // Future enhancement
-    KCSConnectionProgressBlock pBlock = ^(KCSConnection *conn){};
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];

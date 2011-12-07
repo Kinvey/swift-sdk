@@ -9,11 +9,11 @@
 #ifndef KinveyKit_KinveyBlocks_h
 #define KinveyKit_KinveyBlocks_h
 
-@class KCSConnection;
+@class KCSConnectionProgress;
 @class KCSConnectionResponse;
 
 // Define the block types that we expect
-typedef void(^KCSConnectionProgressBlock)(KCSConnection *connection);
+typedef void(^KCSConnectionProgressBlock)(KCSConnectionProgress *);
 typedef void(^KCSConnectionCompletionBlock)(KCSConnectionResponse *);
 typedef void(^KCSConnectionFailureBlock)(NSError *);
 
