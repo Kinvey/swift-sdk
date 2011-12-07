@@ -31,87 +31,140 @@
 #define KCS_PUSH_DEBUG @"debug"
 #define KCS_PUSH_RELEASE @"release"
 
+/*! A Singleton Class that provides access to all Kinvey Services.
 
-///*! Interface for a delegate interested in performing an action when a request to the Kinvey Cloud Service Completes.
-//
-//    Any client that makes a request to the KCS services needs to provided with a delegate which will be notified
-//    when the async operations complete.
-// */
-//@protocol KCSClientActionDelegate <NSObject>
-//
-///*! Called upon unsuccessful completion of a KCS Request
-//    @param error The object representing the failure.
-// */
-//- (void) actionDidFail: (id)error;
-///*! Called upon successful completion of the request
-//    @param result The result of the specific action
-// */
-//- (void) actionDidComplete: (NSObject *) result;
-//
-//@end
+ This class provides a single interface to most Kinvey services.  It provides access to User Servies, Collection services
+ (needed to both fetch and save data), Resource Services and Push Services.
+ 
+ @warning Note that this class is a singleton and the single method to get the instance is @see sharedClient.
 
-/*! A connection to the Kinvey Cloud Service
-
-    This class is used to represent a connection to the Kinvey service.  It handles all necessary
-    authentication and connections to the system, performing all REST actions and notifying completions using
-    the @see KCSClientActionDelegate
-
-	@todo: Remove nonatomic property from fields (after verifying atomicity)
  */
 @interface KCSClient : NSObject <NSURLConnectionDelegate>
 
 #pragma mark -
 #pragma mark Properties
 
+///---------------------------------------------------------------------------------------
+/// @name Application Information
+///---------------------------------------------------------------------------------------
+/*! Kinvey provided App Key, set via @see initializeKinveyServiceForAppKey:withAppSecret:usingOptions */
+@property (nonatomic, copy, readonly) NSString *appKey;
 
-/*! Kinvey provided App Key */
-@property (nonatomic, copy, readwrite) NSString *appKey;
+/*! Kinvey provided App Secret, set via @see initializeKinveyServiceForAppKey:withAppSecret:usingOptions */
+@property (nonatomic, copy, readonly) NSString *appSecret;
 
-/*! App Secret Key provided by Kinvey */
-@property (nonatomic, copy, readwrite) NSString *appSecret;
+/*! Configuration options, set via @see initializeKinveyServiceForAppKey:withAppSecret:usingOptions */
+@property (nonatomic, retain, readonly) NSDictionary *options;
 
-/*! Configuration settings for this client */
-@property (nonatomic, retain) NSDictionary *options;
-
+///---------------------------------------------------------------------------------------
+/// @name Library Information
+///---------------------------------------------------------------------------------------
+/*! User Agent string returned to Kinvey (used automatically, provided for reference. */
 @property (nonatomic, copy, readonly) NSString *userAgent;
-@property (nonatomic, copy, readonly) NSString *libraryVersion;
-@property (nonatomic, copy) NSURLCredential *authCredentials;
 
-@property (nonatomic, readonly) NSURLCacheStoragePolicy cachePolicy;
+/*! Library Version string returned to Kinvey (used automatically, provided for reference. */
+@property (nonatomic, copy, readonly) NSString *libraryVersion;
+
+///---------------------------------------------------------------------------------------
+/// @name Kinvey Service URL Access
+///---------------------------------------------------------------------------------------
+/*! Base URL for Kinvey data service */
 @property (nonatomic, copy, readonly) NSString *dataBaseURL;
+
+/*! Base URL for Kinvey Resource Service */
 @property (nonatomic, copy, readonly) NSString *assetBaseURL;
+
+/*! Base URL for Kinvey User Service */
 @property (nonatomic, copy, readonly) NSString *userBaseURL;
 
+///---------------------------------------------------------------------------------------
+/// @name Connection Properties
+///---------------------------------------------------------------------------------------
+/*! Protocol used to connection to Kinvey Service (nominally HTTPS)*/
 @property (nonatomic, copy, readonly) NSString *protocol;
 
+/*! Connection Timeout value, set this to cause shorter or longer network timeouts. */
 @property double connectionTimeout;
 
-@property (nonatomic, retain) KCSUser *currentUser;
+/*! Current Kinvey Cacheing policy */
+@property (nonatomic, readonly) NSURLCacheStoragePolicy cachePolicy;
 
-/////// D A N G E R -- Always lock before 
+
+///---------------------------------------------------------------------------------------
+/// @name User Authentication
+///---------------------------------------------------------------------------------------
+/*! Current Kinvey User */
+@property (nonatomic, retain) KCSUser *currentUser;
+/*! Has the current user been authenticated?  (NOTE: Thread Safe) */
 @property (nonatomic) BOOL userIsAuthenticated;
+/*! Is user authentication in progress?  (NOTE: Thread Safe, can be used to spin for completion) */
 @property (nonatomic) BOOL userAuthenticationInProgress;
+/*! Stored authentication credentials */
+@property (nonatomic, copy) NSURLCredential *authCredentials;
+
 
 
 // Do not expose this to clients yet... soon?
+
+/*! The suite of Kinvey Analytics Services */
+///---------------------------------------------------------------------------------------
+/// @name Analytics
+///---------------------------------------------------------------------------------------
 @property (readonly) KCSAnalytics *analytics;
 
 #pragma mark -
 #pragma mark Initializers
 
 // Singleton
+///---------------------------------------------------------------------------------------
+/// @name Accessing the Singleton
+///---------------------------------------------------------------------------------------
+/*! Return the instance of the singleton.  (NOTE: Thread Safe)
+ 
+ This routine will give you access to all the Kinvey Services by returning the Singleton KCSClient that
+ can be used for all client needs.
+ 
+ @returns The instance of the singleton client.
+ 
+ */
 + (KCSClient *)sharedClient;
 
+///---------------------------------------------------------------------------------------
+/// @name Initializing the Singleton
+///---------------------------------------------------------------------------------------
+/*! Initialize the singleton KCSClient with this applications key and the secret for this app, along with any needed options.
+ 
+ This routine MUST be called prior to using the Kinvey Service otherwise all access will fail.  This routine authenticates you with
+ the Kinvey Service.  The appKey and appSecret are available in the Kinvey Console.  Options can be used to configure push, etc.
+ 
+ @bug Options array is required for Push, but not yet documented.
+ 
+ @param appKey The Kinvey provided App Key used to identify this application
+ @param appSecret The Kinvey provided App Secret used to authenticate this application.
+ @param options The NSDictionary used to configure optional services.
+ @returns The KCSClient singleton (can be used to chain several calls)
+ 
+ For example, KCSClient *client = [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"key" withAppSecret:@"secret" usingOptions:nil];
+ 
+ */
 - (KCSClient *)initializeKinveyServiceForAppKey: (NSString *)appKey withAppSecret: (NSString *)appSecret usingOptions: (NSDictionary *)options;
 
 #pragma mark Client Interface
 
+///---------------------------------------------------------------------------------------
+/// @name Collection Interface
+///---------------------------------------------------------------------------------------
 /*! Return the collection object that a specific entity will belong to
  
+ All acess to data items stored on Kinvey must use a collection, to get access to a collection, use this routine to gain access to a collection.
+ Simply provide a name and the class of an object that you want to store and you'll be returned the collection object to use.
+ 
  @param collection The name of the collection that will contain the objects.
+ @param collectionClass A class that represents the objects of this collection.
  @returns The collection object.
+ 
+ 
 */
-- (KCSCollection *)collectionFromString: (NSString *)collection;
 - (KCSCollection *)collectionFromString: (NSString *)collection withClass: (Class)collectionClass;
 
 

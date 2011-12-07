@@ -41,7 +41,7 @@
 *
 * @param delegate Delegate object to inform upon completion or failure of this request
 * @param query Arbitrary JSON query to execute on KCS (See Queries in KCS documentation for details on Queries)
-* @param client Instance of client to communicate to the KCS services
+* @param collection Collection to pull the entity from
 */
 - (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFetchOne: (NSString *)query fromCollection: (KCSCollection *)collection;
 
@@ -50,27 +50,27 @@
 * @param delegate Delegate object to inform upon completion or failure of this request
 * @param property property to query
 * @param value Boolean value (YES or NO) to query against value
-* @param client Instance of client to communicate to the KCS services
+* @param collection Collection to pull the entity from
 */
 - (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withBoolValue: (BOOL) value fromCollection: (KCSCollection *)collection;
 
 /*! Fetch first entity with a given Date value for a property
 *
-* WARNING: This method is not implemented yet and will raise an exception if used.
+* @bug This method is not implemented yet and will raise an exception if used.
 *
 * @param delegate Delegate object to inform upon completion or failure of this request
 * @param property property to query
 * @param value Date value to query against value
-* @param client Instance of client to communicate to the KCS services
+* @param collection Collection to pull the entity from
 */
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withDateValue: (NSDate *) value fromCollection: (KCSCollection *)collection;
+//- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withDateValue: (NSDate *) value fromCollection: (KCSCollection *)collection;
 
 /*! Fetch first entity with a given Double value for a property
 *
 * @param delegate Delegate object to inform upon completion or failure of this request
 * @param property property to query
 * @param value Real value to query against value
-* @param client Instance of client to communicate to the KCS services
+* @param collection Collection to pull the entity from
 */
 - (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withDoubleValue: (double) value fromCollection: (KCSCollection *)collection;
 
@@ -79,7 +79,7 @@
 * @param delegate Delegate object to inform upon completion or failure of this request
 * @param property property to query
 * @param value Integer to query against value
-* @param client Instance of client to communicate to the KCS services
+* @param collection Collection to pull the entity from
 */
 - (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withIntegerValue: (int) value fromCollection: (KCSCollection *)collection;
 
@@ -88,7 +88,7 @@
 * @param delegate Delegate object to inform upon completion or failure of this request
 * @param property property to query
 * @param value String to query against value
-* @param client Instance of client to communicate to the KCS services
+* @param collection Collection to pull the entity from
 */
 - (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withStringValue: (NSString *) value fromCollection: (KCSCollection *)collection;
 
@@ -115,20 +115,8 @@
 /*! Load an entity with a specific ID and replace the current object
 * @param delegate The delegate to notify upon completion of the load.
 * @param objectId The ID of the entity to request
-* @param client Instance of client to connect to the KCS service.
+* @param collection Collection to pull the entity from
 */
 - (void)entityDelegate:(id <KCSEntityDelegate>)delegate loadObjectWithId:(NSString *)objectId fromCollection:(KCSCollection *)collection;
-
-
-///*! Set the Entity Collection that we should use to pull entities from
-//*   @param entityCollection The name of the collection to use.
-//*/
-//- (void)setEntityCollection: (NSString *)entityCollection;
-//
-///*! Return the Entity Collection that we are interested in using.
-//* @returns the Entity Collection currently in use.
-//*/
-//- (NSString *)entityColleciton;
-
 
 @end

@@ -12,6 +12,10 @@
 @class KCSConnectionResponse;
 
 
+/*! Abstract base class for all network connections
+ 
+ This class is used to declare the interfaces for all connection types
+ */
 @interface KCSConnection : NSObject
 
 - (id)initWithCredentials:(NSURLCredential *)credentials;
