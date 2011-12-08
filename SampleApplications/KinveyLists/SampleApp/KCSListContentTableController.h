@@ -11,7 +11,7 @@
 #import "KCSTableViewControllerAddDelegate.h"
 
 @class KCSListEntry;
-@interface KCSListContentTableController : UITableViewController <KCSCollectionDelegate, KCSPersistDelegate, KCSTableViewControllerAddDelegate>
+@interface KCSListContentTableController : UITableViewController <KCSCollectionDelegate, KCSPersistDelegate, KCSTableViewControllerAddDelegate, KCSResourceDelegate>
 
 @property (retain) NSString *listName;
 @property (retain) NSMutableArray *listContents;
@@ -20,7 +20,6 @@
 
 @property (retain) KCSListEntry *entryBeingAdded;
 
-- (void)removeList;
 
 
 @end

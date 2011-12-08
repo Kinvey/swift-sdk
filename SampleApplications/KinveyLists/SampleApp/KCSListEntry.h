@@ -21,14 +21,14 @@
 @property (retain) NSString *itemDescription;
 @property (retain) NSString *objectId;
 @property (retain) NSString *list;
+@property BOOL hasCustomImage;
+@property BOOL imageStartedUpload;
 
 
 
 - (id)init;
 - (id)initWithName: (NSString *)name;
 - (id)initWithName:(NSString *)name withDescription: (NSString *)description;
-
-- (BOOL) hasCustomImage;
 
 - (NSDictionary*)hostToKinveyPropertyMapping;
 

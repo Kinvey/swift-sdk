@@ -23,7 +23,6 @@
 		D30791FE14560CEB00E5A284 /* SampleAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D30791FD14560CEB00E5A284 /* SampleAppTests.m */; };
 		D30E55F01478C3EF00F0EC04 /* KCSAddListController.m in Sources */ = {isa = PBXBuildFile; fileRef = D30E55EF1478C3EF00F0EC04 /* KCSAddListController.m */; };
 		D30E55F11478C3EF00F0EC04 /* KCSAddListController.m in Sources */ = {isa = PBXBuildFile; fileRef = D30E55EF1478C3EF00F0EC04 /* KCSAddListController.m */; };
-		D31A80F51487AE2300514A88 /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D31A80F41487AE2300514A88 /* KinveyKit.framework */; };
 		D36F10C314644B4000BB1E0C /* Lobster 1.4.otf in Resources */ = {isa = PBXBuildFile; fileRef = D36F10C214644B4000BB1E0C /* Lobster 1.4.otf */; };
 		D36F10CE14647D7C00BB1E0C /* logo57.png in Resources */ = {isa = PBXBuildFile; fileRef = D36F10CD14647D7C00BB1E0C /* logo57.png */; };
 		D36F10D014647D8300BB1E0C /* logo114.png in Resources */ = {isa = PBXBuildFile; fileRef = D36F10CF14647D8300BB1E0C /* logo114.png */; };
@@ -40,9 +39,13 @@
 		D37B4C6C14643D40000CEC45 /* KCSListEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = D37B4C6A14643D40000CEC45 /* KCSListEntry.m */; };
 		D37B4C6E14644353000CEC45 /* Kinvey_Splash.png in Resources */ = {isa = PBXBuildFile; fileRef = D37B4C6D14644353000CEC45 /* Kinvey_Splash.png */; };
 		D37B4C6F14644353000CEC45 /* Kinvey_Splash.png in Resources */ = {isa = PBXBuildFile; fileRef = D37B4C6D14644353000CEC45 /* Kinvey_Splash.png */; };
+		D39B11BD1491769100C13506 /* KCSDeleteHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D39B11BC1491769100C13506 /* KCSDeleteHelper.m */; };
+		D39B11C3149178DA00C13506 /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D39B11C2149178DA00C13506 /* KinveyKit.framework */; };
+		D39B11C4149178DA00C13506 /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D39B11C2149178DA00C13506 /* KinveyKit.framework */; };
 		D3F7E8601487D0C50044F1E8 /* KCSAddItemController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E85F1487D0C50044F1E8 /* KCSAddItemController.m */; };
 		D3F7E8681487DF0B0044F1E8 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F7E8671487DF0B0044F1E8 /* MobileCoreServices.framework */; };
 		D3F7E86B1487E3A70044F1E8 /* UIImage+Extra.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E86A1487E3A60044F1E8 /* UIImage+Extra.m */; };
+		D3F7E88214895A820044F1E8 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F7E88114895A820044F1E8 /* Security.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,7 +82,6 @@
 		D30E55EE1478C3EE00F0EC04 /* KCSAddListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAddListController.h; sourceTree = "<group>"; };
 		D30E55EF1478C3EF00F0EC04 /* KCSAddListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSAddListController.m; sourceTree = "<group>"; };
 		D30E55F21478C42B00F0EC04 /* KCSTableViewControllerAddDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSTableViewControllerAddDelegate.h; sourceTree = "<group>"; };
-		D31A80F41487AE2300514A88 /* KinveyKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KinveyKit.framework; sourceTree = "<group>"; };
 		D36F10C214644B4000BB1E0C /* Lobster 1.4.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lobster 1.4.otf"; sourceTree = "<group>"; };
 		D36F10CD14647D7C00BB1E0C /* logo57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo57.png; sourceTree = "<group>"; };
 		D36F10CF14647D8300BB1E0C /* logo114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo114.png; sourceTree = "<group>"; };
@@ -95,11 +97,15 @@
 		D37B4C6914643D40000CEC45 /* KCSListEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSListEntry.h; sourceTree = "<group>"; };
 		D37B4C6A14643D40000CEC45 /* KCSListEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSListEntry.m; sourceTree = "<group>"; };
 		D37B4C6D14644353000CEC45 /* Kinvey_Splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Kinvey_Splash.png; path = ../../../../../../Downloads/Kinvey_Splash.png; sourceTree = "<group>"; };
+		D39B11BB1491769100C13506 /* KCSDeleteHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDeleteHelper.h; sourceTree = "<group>"; };
+		D39B11BC1491769100C13506 /* KCSDeleteHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSDeleteHelper.m; sourceTree = "<group>"; };
+		D39B11C2149178DA00C13506 /* KinveyKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KinveyKit.framework; path = "../../KinveyKit/build/DebugNoPush-iphoneos/KinveyKit.framework"; sourceTree = "<group>"; };
 		D3F7E85E1487D0C50044F1E8 /* KCSAddItemController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAddItemController.h; sourceTree = "<group>"; };
 		D3F7E85F1487D0C50044F1E8 /* KCSAddItemController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSAddItemController.m; sourceTree = "<group>"; };
 		D3F7E8671487DF0B0044F1E8 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		D3F7E8691487E3A60044F1E8 /* UIImage+Extra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Extra.h"; sourceTree = "<group>"; };
 		D3F7E86A1487E3A60044F1E8 /* UIImage+Extra.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Extra.m"; sourceTree = "<group>"; };
+		D3F7E88114895A820044F1E8 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,11 +113,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3F7E88214895A820044F1E8 /* Security.framework in Frameworks */,
 				D3F7E8681487DF0B0044F1E8 /* MobileCoreServices.framework in Frameworks */,
 				D30791D014560CEB00E5A284 /* UIKit.framework in Frameworks */,
 				D30791D214560CEB00E5A284 /* Foundation.framework in Frameworks */,
 				D30791D414560CEB00E5A284 /* CoreGraphics.framework in Frameworks */,
-				D31A80F51487AE2300514A88 /* KinveyKit.framework in Frameworks */,
+				D39B11C3149178DA00C13506 /* KinveyKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,6 +129,7 @@
 				D30791F114560CEB00E5A284 /* SenTestingKit.framework in Frameworks */,
 				D30791F214560CEB00E5A284 /* UIKit.framework in Frameworks */,
 				D30791F314560CEB00E5A284 /* Foundation.framework in Frameworks */,
+				D39B11C4149178DA00C13506 /* KinveyKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +139,7 @@
 		D30791C014560CEB00E5A284 = {
 			isa = PBXGroup;
 			children = (
+				D3F7E88114895A820044F1E8 /* Security.framework */,
 				D36F10D114647D9000BB1E0C /* logo72.png */,
 				D36F10CF14647D8300BB1E0C /* logo114.png */,
 				D36F10CD14647D7C00BB1E0C /* logo57.png */,
@@ -153,8 +162,8 @@
 		D30791CE14560CEB00E5A284 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D39B11C2149178DA00C13506 /* KinveyKit.framework */,
 				D3F7E8671487DF0B0044F1E8 /* MobileCoreServices.framework */,
-				D31A80F41487AE2300514A88 /* KinveyKit.framework */,
 				D30791CF14560CEB00E5A284 /* UIKit.framework */,
 				D30791D114560CEB00E5A284 /* Foundation.framework */,
 				D30791D314560CEB00E5A284 /* CoreGraphics.framework */,
@@ -239,6 +248,8 @@
 			isa = PBXGroup;
 			children = (
 				D37B4C5D1464363D000CEC45 /* KCSListContentTableController.h */,
+				D39B11BB1491769100C13506 /* KCSDeleteHelper.h */,
+				D39B11BC1491769100C13506 /* KCSDeleteHelper.m */,
 				D37B4C5E1464363D000CEC45 /* KCSListContentTableController.m */,
 			);
 			name = "Sub Lists";
@@ -384,6 +395,7 @@
 				D30E55F01478C3EF00F0EC04 /* KCSAddListController.m in Sources */,
 				D3F7E8601487D0C50044F1E8 /* KCSAddItemController.m in Sources */,
 				D3F7E86B1487E3A70044F1E8 /* UIImage+Extra.m in Sources */,
+				D39B11BD1491769100C13506 /* KCSDeleteHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,6 +510,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../KinveyKit/build/DebugNoPush-iphoneos\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SampleApp/KinveyLists-Prefix.pch";
@@ -514,6 +527,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../KinveyKit/build/DebugNoPush-iphoneos\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SampleApp/KinveyLists-Prefix.pch";
@@ -531,6 +545,7 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../KinveyKit/build/DebugNoPush-iphoneos\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SampleApp/SampleApp-Prefix.pch";
@@ -547,6 +562,7 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../KinveyKit/build/DebugNoPush-iphoneos\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SampleApp/SampleApp-Prefix.pch";

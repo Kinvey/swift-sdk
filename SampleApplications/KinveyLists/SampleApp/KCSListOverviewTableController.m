@@ -12,6 +12,7 @@
 #import "KCSListEntry.h"
 #import "KCSAppDelegate.h"
 #import "KCSAddListController.h"
+#import "KCSDeleteHelper.h"
 #import <KinveyKit/KinveyKit.h>
 
 
@@ -20,6 +21,7 @@
 @synthesize kLists          = _kLists;
 @synthesize listsCollection = _listsCollection;
 @synthesize listToAdd       = _listToAdd;
+@synthesize deleteHelper    = _deleteHelper;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -61,6 +63,7 @@
     // Prepare for syncing with Kinvey...
     if (self.listsCollection == nil){
         self.listsCollection = [[[KCSClient sharedClient] collectionFromString:@"lists" withClass:[KCSList class]] retain];
+        _deleteHelper = [[KCSDeleteHelper deleteHelper] retain];
     }
 
     if (self.kLists == nil){
@@ -73,7 +76,7 @@
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     self.navigationItem.hidesBackButton = YES;
 
-    NSLog(@"Hey, at least the view loaded... %@", self.kLists);
+//    NSLog(@"Hey, at least the view loaded... %@", self.kLists);
 }
 
 - (void)viewDidUnload
@@ -81,6 +84,7 @@
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
+    [_deleteHelper release];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -121,8 +125,8 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    NSLog(@"KLists is messed up... %@", self.kLists);
-    NSLog(@"Number of rows... %d", self.kLists.count);
+//    NSLog(@"KLists is messed up... %@", self.kLists);
+//    NSLog(@"Number of rows... %d", self.kLists.count);
     return self.kLists.count;
 
 }
@@ -139,8 +143,8 @@
     // Configure the cell...
 
     KCSList *cellList = [self.kLists objectAtIndex:[indexPath row]];
-    NSLog(@"Cell of interest: %@", cellList);
-    NSLog(@"Cell of interest Name: %@", cellList.name);
+//    NSLog(@"Cell of interest: %@", cellList);
+//    NSLog(@"Cell of interest Name: %@", cellList.name);
     cell.textLabel.text = cellList.name;
     
     return cell;
@@ -164,11 +168,12 @@
         // Delete the subcollection
         // Delete the row from the data source
         KCSList *entry = [self.kLists objectAtIndex:indexPath.row];
+        [self.deleteHelper removeItemsFromList:entry.name withListID:entry.listId];
         [entry deleteDelegate:self fromCollection:self.listsCollection];
         
-        NSLog(@"Klists Bfore: %@", self.kLists);        
+//        NSLog(@"Klists Bfore: %@", self.kLists);        
         [self.kLists removeObjectAtIndex:indexPath.row];
-        NSLog(@"Klists After: %@", self.kLists);
+//        NSLog(@"Klists After: %@", self.kLists);
         
         // Delete the collection?
         
@@ -245,13 +250,13 @@
 
 - (void) fetchCollectionDidComplete: (NSObject *) result
 {
-    NSArray *res = (NSArray *)result;
-    NSLog(@"Got successfull fetch response: %@", res);
+//    NSArray *res = (NSArray *)result;
+//    NSLog(@"Got successfull fetch response: %@", res);
 //    NSLog(@"Number of elements: %@", res.count);
     
     self.kLists = [NSMutableArray arrayWithArray:(NSArray *)result];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    [self.view reloadData];
+    [(UITableView *)self.view reloadData];
 }
 
 #pragma mark - PlayerDetailsViewControllerDelegate

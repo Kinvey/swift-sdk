@@ -25,6 +25,8 @@
 
 @property (nonatomic, retain) KCSListEntry *addedEntry;
 
+@property BOOL hasSelectedImage;
+
 //@property (retain) KCSList *addedList;
 
 @property (retain, nonatomic) IBOutlet UITextField *itemNameToAdd;

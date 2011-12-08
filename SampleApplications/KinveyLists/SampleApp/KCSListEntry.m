@@ -16,7 +16,8 @@
 @synthesize itemDescription=_itemDescription;
 @synthesize loadedImage=_loadedImage;
 @synthesize list=_list;
-
+@synthesize hasCustomImage=_hasCustomImage;
+@synthesize imageStartedUpload=_imageStartedUpload;
 
 - (id)init
 {
@@ -34,15 +35,13 @@
     if (self){
         self.name = name;
         self.itemDescription = description;
+        self.hasCustomImage = NO;
+        self.imageStartedUpload = NO;
+        self.loadedImage = nil;
+        self.image = nil;
     }
     return self;
 }
-
-- (BOOL)hasCustomImage
-{
-    return NO;
-}
-
 
 - (NSDictionary*)hostToKinveyPropertyMapping
 {
@@ -51,6 +50,8 @@
             @"name", @"name",
             @"list", @"list",
             @"description", @"itemDescription",
+            @"image", @"image",
+            @"hasCustomImage", @"hasCustomImage",
             nil];
 }
 
@@ -58,6 +59,5 @@
 {
     return [NSString stringWithFormat:@"Object ID: %@\nName: %@\nDescription: %@\nImage: %@\n", self.objectId, self.name, self.itemDescription, self.image];
 }
-
 
 @end
