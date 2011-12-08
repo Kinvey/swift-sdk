@@ -144,8 +144,8 @@
 
 - (void) fetchCollectionDidComplete: (NSObject *) result
 {
-    NSArray *res = (NSArray *)result;
-    NSLog(@"Got successfull fetch response: %@", res);
+//    NSArray *res = (NSArray *)result;
+//    NSLog(@"Got successfull fetch response: %@", res);
     //    NSLog(@"Number of elements: %@", res.count);
     
     self.kLists = [NSMutableArray arrayWithArray:(NSArray *)result];

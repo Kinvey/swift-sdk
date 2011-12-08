@@ -13,12 +13,13 @@
 
 
 @synthesize window = _window;
-
+@synthesize imageCache=_imageCache;
 
 
 - (void)dealloc
 {
     [_window release];
+    [_imageCache release];
     [super dealloc];
 }
 
@@ -29,16 +30,11 @@
     
     // At this point we start the loading sequence, and signal (later) when it's done
     // This NEEEEDS to be done here...
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1064" withAppSecret:@"89a04894101544d5ae72ee66594e6845" usingOptions:nil];
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1081" withAppSecret:@"0d934bb1c7f549a3836e2d92fa9ec402" usingOptions:nil];
 
-//    UIStoryboard *board = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
-//    UIViewController *initial = board.instantiateInitialViewController;
-//
-//    UIViewController *splash = [[board instantiateViewControllerWithIdentifier:@"splashScreen"] retain];
-//    UIView *sv = splash.view;
-//    [initial.view addSubview:sv];
-//    [initial.view bringSubviewToFront:sv];
-    
+    // Initialize Image Cache
+    NSMutableDictionary *cache = [[NSMutableDictionary alloc] init];
+    self.imageCache = cache;
     
     return YES;
 }

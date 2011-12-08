@@ -32,6 +32,8 @@
 @synthesize keyboadShouldSlide=_keyboadShouldSlide;
 @synthesize addedEntry=_addedEntry;
 
+@synthesize hasSelectedImage=_hasSelectedImage;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -64,6 +66,7 @@
 {
     [super viewDidLoad];
     self.keyboadShouldSlide = YES;
+    self.hasSelectedImage = NO;
     self.selectedImage = [[UIImage imageWithContentsOfFile:[[NSBundle mainBundle]
                                                            pathForResource:@"logo114"
                                                            ofType:@"png"]] retain];
@@ -91,6 +94,7 @@
                                              selector: @selector(shiftViewDownAfterKeyboard)
                                                  name: UIKeyboardWillHideNotification
                                                object: nil];
+    
     
     
     // Make our button pretty
@@ -220,8 +224,9 @@
     NSLog(@"Got done request: %@", sender);
     self.addedEntry = [[[KCSListEntry alloc] initWithName:self.itemNameToAdd.text withDescription:self.itemDescriptionToAdd.text] autorelease];
     
-    self.addedEntry.image = [NSString stringWithFormat:@"%@.image", [self.itemNameToAdd.text stringByReplacingOccurrencesOfString:@" " withString:@""]];
+    self.addedEntry.image = [NSString stringWithFormat:@"%@.png", [self.itemNameToAdd.text stringByReplacingOccurrencesOfString:@" " withString:@""]];
     self.addedEntry.loadedImage = self.selectedImage;
+    self.addedEntry.hasCustomImage = YES;
     
 //    self.addedList = [[[KCSList alloc] initWithName:self.addedListName.text withList:nil] autorelease];
 	[self.delegate detailsViewControllerDidSave:self];
@@ -265,6 +270,7 @@
             UIImageWriteToSavedPhotosAlbum (imageToSave, nil, nil , nil);
         }
         self.selectedImage = imageToSave;
+        self.hasSelectedImage = YES;
             
     }
     

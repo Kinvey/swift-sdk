@@ -13,5 +13,6 @@
 @interface KCSAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+@property (nonatomic, retain) NSMutableDictionary *imageCache;
 
 @end

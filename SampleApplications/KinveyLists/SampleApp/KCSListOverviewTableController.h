@@ -10,10 +10,12 @@
 #import <KinveyKit/KinveyKit.h>
 #import "KCSTableViewControllerAddDelegate.h"
 @class KCSList;
+@class KCSDeleteHelper;
 @interface KCSListOverviewTableController : UITableViewController <KCSCollectionDelegate, KCSTableViewControllerAddDelegate, KCSPersistDelegate>
 
 @property (retain) NSMutableArray *kLists;
 @property (retain) KCSCollection *listsCollection;
 @property (retain) KCSList *listToAdd;
+@property (retain) KCSDeleteHelper *deleteHelper;
 
 @end
