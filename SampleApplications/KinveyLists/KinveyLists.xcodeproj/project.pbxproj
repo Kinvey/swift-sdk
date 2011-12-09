@@ -557,7 +557,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../KinveyKit/build/DebugNoPush-iphoneos\"",
 					"\"$(SRCROOT)/../../KinveyKit/build/Debug-iphoneos\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
