@@ -22,6 +22,7 @@
 @synthesize listItemsCollection = _listItemsCollection;
 @synthesize listId              = _listId;
 @synthesize entryBeingAdded     = _entryBeingAdded;
+@synthesize isDetailUpdate      = _isDetailUpdate;
 
 - (id)init
 {
@@ -34,6 +35,7 @@
 {
     self = [super initWithStyle:style];
     if (self) {
+        self.isDetailUpdate = NO;
         self.listContents = nil;
     }
     return self;
@@ -70,6 +72,7 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
 //    self.navigationItem.rightBarButtonItem = self.editButtonItem;
     self.navigationItem.title = self.listName;
+    self.isDetailUpdate = NO;
     
     
     // We've got a list name, we now need to get a listContents
@@ -216,6 +219,8 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      [detailViewController release];
      */
+    self.isDetailUpdate = YES;
+    [self performSegueWithIdentifier:@"addItem" sender:self];
 }
 
 #pragma mark - PlayerDetailsViewControllerDelegate
@@ -271,10 +276,20 @@
         KCSAddItemController *addItemController = segue.destinationViewController;
         //		KCSAddListController *addListController = [[navigationController viewControllers] objectAtIndex:0];
         addItemController.delegate = self;
+        addItemController.isUpdateView = NO;
+        if (self.isDetailUpdate){
+            addItemController.isUpdateView = YES;
+            addItemController.addedEntry = [self.listContents objectAtIndex: self.tableView.indexPathForSelectedRow.row];
+            self.isDetailUpdate = NO;
+        }
     } else if ([segue.identifier isEqualToString:@"pushToDetail"]){
         NSLog(@"Segue pushToDetail called...");
-        KCSListItemDetailController *content = segue.destinationViewController;
-        content.itemDetail = [self.listContents objectAtIndex: self.tableView.indexPathForSelectedRow.row];
+        KCSAddItemController *addItemController = segue.destinationViewController;
+        addItemController.isUpdateView = YES;
+        addItemController.delegate = self;
+        addItemController.addedEntry = [self.listContents objectAtIndex: self.tableView.indexPathForSelectedRow.row];
+        //KCSListItemDetailController *content = segue.destinationViewController;
+        //content.itemDetail = [self.listContents objectAtIndex: self.tableView.indexPathForSelectedRow.row];
     }
 }
 
@@ -282,6 +297,13 @@
 - (void) fetchCollectionDidFail: (id)error
 {
     NSLog(@"Update failed: %@", error);
+    UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Update Failed!"
+                                                     message:[error description]
+                                                    delegate:self cancelButtonTitle:@"Ok"
+                                           otherButtonTitles:nil] autorelease];
+
+    [alert show];
+
 }
 
 - (void) fetchCollectionDidComplete: (NSObject *) result
@@ -298,6 +320,13 @@
 - (void)persistDidFail:(id)error
 {
     NSLog(@"Persist failed: %@", error);
+    UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Save Failed!"
+                                                     message:[error description]
+                                                    delegate:self cancelButtonTitle:@"Ok"
+                                           otherButtonTitles:nil] autorelease];
+    
+    [alert show];
+
 }
 
 - (void)persistDidComplete:(NSObject *)result

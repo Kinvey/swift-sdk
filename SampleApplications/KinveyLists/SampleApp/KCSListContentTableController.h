@@ -19,7 +19,7 @@
 @property (retain) NSString *listId;
 
 @property (retain) KCSListEntry *entryBeingAdded;
-
+@property (nonatomic) BOOL isDetailUpdate;
 
 
 @end
