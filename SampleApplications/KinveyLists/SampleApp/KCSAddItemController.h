@@ -26,12 +26,18 @@
 @property (nonatomic, retain) KCSListEntry *addedEntry;
 
 @property BOOL hasSelectedImage;
+@property (retain, nonatomic) UIBarButtonItem *addButton;
+@property (retain, nonatomic) UIBarButtonItem *doneButton;
+@property (retain, nonatomic) UIBarButtonItem *updateButton;
+@property (retain, nonatomic) UIBarButtonItem *cancelButton;
 
 //@property (retain) KCSList *addedList;
 
 @property (retain, nonatomic) IBOutlet UITextField *itemNameToAdd;
 @property (retain, nonatomic) IBOutlet UITextView *itemDescriptionToAdd;
 @property (retain, nonatomic) IBOutlet UIButton *imageButton;
+
+@property (nonatomic) BOOL isUpdateView;
 
 
 - (IBAction)cancel:(id)sender;

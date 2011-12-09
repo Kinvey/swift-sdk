@@ -30,7 +30,18 @@
     
     // At this point we start the loading sequence, and signal (later) when it's done
     // This NEEEEDS to be done here...
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1081" withAppSecret:@"0d934bb1c7f549a3836e2d92fa9ec402" usingOptions:nil];
+//    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1081" withAppSecret:@"0d934bb1c7f549a3836e2d92fa9ec402" usingOptions:nil];
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             @"kid1081", KCS_APP_KEY_KEY,
+                             @"0d934bb1c7f549a3836e2d92fa9ec402", KCS_APP_SECRET_KEY,
+                             @"hqENfOc6T82t0XTF8MVbpA", KCS_PUSH_KEY_KEY,
+                             @"0vu-VwMVRFeZsrm4Clb-Ew", KCS_PUSH_SECRET_KEY,
+                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
+                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
+    
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
+    [[KCSPush sharedPush] onLoadHelper:options];
+
 
     // Initialize Image Cache
     NSMutableDictionary *cache = [[NSMutableDictionary alloc] init];
@@ -38,6 +49,22 @@
     
     return YES;
 }
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    [[KCSPush sharedPush] application:application didReceiveRemoteNotification:userInfo];
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    NSLog(@"Device Token: %@", deviceToken);
+    [[KCSPush sharedPush] application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    NSLog(@"Error: %@", error);
+}
+
+
 							
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -71,6 +98,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+    [[KCSPush sharedPush] onUnloadHelper];
     /*
      Called when the application is about to terminate.
      Save data if appropriate.

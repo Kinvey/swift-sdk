@@ -31,6 +31,11 @@
 @synthesize imageNeedsSaved=_imageNeedsSaved;
 @synthesize keyboadShouldSlide=_keyboadShouldSlide;
 @synthesize addedEntry=_addedEntry;
+@synthesize addButton=_addButton;
+@synthesize doneButton=_doneButton;
+@synthesize cancelButton=_cancelButton;
+@synthesize updateButton=_updateButton;
+@synthesize isUpdateView=_isUpdateView;
 
 @synthesize hasSelectedImage=_hasSelectedImage;
 
@@ -70,6 +75,25 @@
     self.selectedImage = [[UIImage imageWithContentsOfFile:[[NSBundle mainBundle]
                                                            pathForResource:@"logo114"
                                                            ofType:@"png"]] retain];
+    self.doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(textViewShouldReturn)];
+
+    self.updateButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(doneWrapper)];
+//    self.cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBar target:self action:@selector(doneWrapper)];
+
+    if (self.isUpdateView){
+        self.addButton = self.updateButton;
+        self.navigationItem.rightBarButtonItem = self.updateButton;
+        self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem;
+        self.itemNameToAdd.text = self.addedEntry.name;
+        self.itemDescriptionToAdd.text = self.addedEntry.itemDescription;
+        
+        if (self.addedEntry.hasCustomImage){
+            self.selectedImage = self.addedEntry.loadedImage;
+        }
+    } else {
+        self.addButton = self.navigationItem.rightBarButtonItem;
+    }
+
 }
 
 - (void)viewDidUnload
@@ -95,18 +119,22 @@
                                                  name: UIKeyboardWillHideNotification
                                                object: nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(setTextViewButton:)
+                                                  name:UITextViewTextDidBeginEditingNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(unsetTextViewButton:)
+                                                 name:UITextViewTextDidEndEditingNotification
+                                               object:nil];
     
     
     // Make our button pretty
-//    self.imageButton.contentMode = UIViewContentModeScale;;
-//    [self.imageButton setBackgroundImage:self.defaultImage forState:UIControlStateNormal];
     CGRect buttonRect = [self.imageButton contentRectForBounds:self.imageButton.bounds];
     
     [self.imageButton setImage:[self.selectedImage imageByScalingProportionallyToSize:buttonRect.size]  forState:UIControlStateNormal];
     self.imageButton.contentMode = UIViewContentModeScaleAspectFit;
-//    self.imageButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
-//    self.imageButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
-    
 }
 
 
@@ -119,14 +147,33 @@
     [[NSNotificationCenter defaultCenter] removeObserver: self
                                                     name: UIKeyboardWillHideNotification
                                                   object: nil];
+    [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                    name: UITextViewTextDidBeginEditingNotification
+                                                  object: nil];
+    [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                    name: UITextViewTextDidEndEditingNotification
+                                                  object: nil];
     
+}
+
+
+- (void)setTextViewButton: (NSNotification *)theNotification
+{
+    // Make the new "button" show up
+    self.navigationItem.rightBarButtonItem = self.doneButton;
+}
+
+- (void)unsetTextViewButton: (NSNotification *)theNotification
+{    
+    // Make sure the button switches
+    self.navigationItem.rightBarButtonItem = self.addButton;
 }
 
 // Make the keyboard display properly
 - (void) shiftViewUpForKeyboard: (NSNotification*) theNotification;
 {
     if (!self.keyboadShouldSlide){return;}
-    
+
     CGRect keyboardFrame;
     NSDictionary* userInfo = theNotification.userInfo;
     self.keyboardSlideDuration = [[userInfo objectForKey: UIKeyboardAnimationDurationUserInfoKey] floatValue];
@@ -150,8 +197,9 @@
 
 - (void) shiftViewDownAfterKeyboard;
 {
-    if (!self.keyboadShouldSlide){return;}
 
+    if (!self.keyboadShouldSlide){return;}
+    
     if (self.viewShiftedForKeyboard)
     {
         [UIView beginAnimations: @"ShiftUp" context: nil];
@@ -163,6 +211,7 @@
 }
 
 
+
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {	
     self.keyboadShouldSlide = NO;
@@ -171,6 +220,11 @@
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     self.keyboadShouldSlide = YES;
+}
+
+- (void)textViewShouldReturn
+{
+    [self.itemDescriptionToAdd resignFirstResponder];
 }
 
     // Make the Keyboard go away
@@ -193,6 +247,18 @@
     [imageButton release];
     [super dealloc];
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	if (indexPath.section == 0){
+        [self.itemNameToAdd becomeFirstResponder];
+    } else if (indexPath.section == 1){
+        [self.itemDescriptionToAdd becomeFirstResponder];
+    } else if (indexPath.section == 2){
+        [self.imageButton becomeFirstResponder];
+    }
+}
+
 - (IBAction)addImage:(id)sender {
     self.imagePicker = [[UIImagePickerController alloc] init];
     self.imagePicker.delegate = self;
@@ -219,14 +285,36 @@
 //    self.addedList = nil;
 	[self.delegate detailsViewControllerDidCancel:self];
 }
+
+- (void)doneWrapper
+{
+    [self done:self.updateButton];
+}
+
 - (IBAction)done:(id)sender
 {
     NSLog(@"Got done request: %@", sender);
-    self.addedEntry = [[[KCSListEntry alloc] initWithName:self.itemNameToAdd.text withDescription:self.itemDescriptionToAdd.text] autorelease];
-    
-    self.addedEntry.image = [NSString stringWithFormat:@"%@.png", [self.itemNameToAdd.text stringByReplacingOccurrencesOfString:@" " withString:@""]];
-    self.addedEntry.loadedImage = self.selectedImage;
-    self.addedEntry.hasCustomImage = YES;
+    if (!self.isUpdateView){
+        self.addedEntry = [[[KCSListEntry alloc] initWithName:self.itemNameToAdd.text withDescription:self.itemDescriptionToAdd.text] autorelease];
+        
+        self.addedEntry.image = [NSString stringWithFormat:@"%@.png", [self.itemNameToAdd.text stringByReplacingOccurrencesOfString:@" " withString:@""]];
+        self.addedEntry.loadedImage = self.selectedImage;
+        self.addedEntry.hasCustomImage = self.hasSelectedImage;
+    } else {
+        if (self.hasSelectedImage){
+            self.addedEntry.hasCustomImage = self.hasSelectedImage;
+            self.addedEntry.image = [NSString stringWithFormat:@"%@.png", [self.itemNameToAdd.text stringByReplacingOccurrencesOfString:@" " withString:@""]];
+            self.addedEntry.loadedImage = self.selectedImage;
+        } else {
+            if (![self.addedEntry.name isEqualToString:self.itemNameToAdd.text] && self.addedEntry.hasCustomImage){
+                // We need to "copy" the image to a new name.
+                self.addedEntry.image = [NSString stringWithFormat:@"%@.png", [self.itemNameToAdd.text stringByReplacingOccurrencesOfString:@" " withString:@""]];
+            }
+        }
+        self.addedEntry.itemDescription = self.itemDescriptionToAdd.text;
+        self.addedEntry.name            = self.itemNameToAdd.text;
+    }
+        
     
 //    self.addedList = [[[KCSList alloc] initWithName:self.addedListName.text withList:nil] autorelease];
 	[self.delegate detailsViewControllerDidSave:self];
