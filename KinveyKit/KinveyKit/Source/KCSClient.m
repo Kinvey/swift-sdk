@@ -176,6 +176,26 @@
     return self;
 }
 
+- (KCSClient *)initializeKinveyServiceWithPropertyList
+{
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"KinveyOptions" ofType:@"plist"];
+    NSDictionary *opt = [NSDictionary dictionaryWithContentsOfFile:path];
+    
+    if (opt == nil){
+        // Something failed, bail
+        NSException* myException = [NSException exceptionWithName:@"KinveyInitializationError"
+                                                           reason:@"Failed to open plist, no runtime info available."
+                                                         userInfo:nil];
+    
+        @throw myException;
+
+    }
+    
+    return [self initializeKinveyServiceForAppKey:[opt valueForKey:KCS_APP_KEY_KEY] 
+                                    withAppSecret:[opt valueForKey:KCS_APP_SECRET_KEY]
+                                     usingOptions:opt];
+}
+
 #pragma mark Collection Interface
 
 // We don't want to own the collection, we just want to create the collection
