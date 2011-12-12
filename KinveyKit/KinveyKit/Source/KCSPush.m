@@ -5,14 +5,13 @@
 //  Created by Brian Wilson on 11/28/11.
 //  Copyright (c) 2011 Kinvey. All rights reserved.
 //
+#ifndef NO_URBAN_AIRSHIP_PUSH
 
 #import "KCSPush.h"
 #import "KCSClient.h"
 
-#ifndef NO_URBAN_AIRSHIP_PUSH
 #import "UAirship.h"
 #import "UAPush.h"
-#endif
 
 @interface KCSPush()
 - (void)initializeUrbanAirshipWithOptions: (NSDictionary *)options;
@@ -22,7 +21,6 @@
 @implementation KCSPush
 
 
-#ifndef NO_URBAN_AIRSHIP_PUSH
 #pragma mark UA Init
 + (KCSPush *)sharedPush
 {
@@ -125,6 +123,6 @@
     [UAPush openApnsSettings:parentViewController animated:YES];
 }
 
+@end
 #endif /* NO_URBAN_AIRSHIP_PUSH */
 
-@end

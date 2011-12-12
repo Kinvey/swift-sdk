@@ -50,9 +50,7 @@
     self.listsCollection = [[KCSClient sharedClient] collectionFromString:@"lists" withClass:[KCSList class]];
     
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    [self.listsCollection collectionDelegateFetchAll:self];
-
-
+    [self.listsCollection fetchAllWithDelegate:self];
 }
 
 - (void)viewDidUnload
@@ -126,7 +124,7 @@
     }
 }
 
-- (void) fetchCollectionDidFail: (id)error
+- (void)collection:(KCSCollection *)collection didFailWithError:(NSError *)error
 {
     NSLog(@"Update failed: %@", error);
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -142,7 +140,7 @@
 
 }
 
-- (void) fetchCollectionDidComplete: (NSObject *) result
+- (void)collection:(KCSCollection *)collection didCompleteWithResult:(NSArray *)result
 {
 //    NSArray *res = (NSArray *)result;
 //    NSLog(@"Got successfull fetch response: %@", res);

@@ -49,12 +49,11 @@
     // START OF KINVEY CODE
     //////////////////////////
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             @"kid1073", KCS_APP_KEY_KEY,
-                             @"95a9ecbeffe249899bd478ca449e9197", KCS_APP_SECRET_KEY,
-                             @"Xuu3ApMbR0ylJlgoNYQZCg", KCS_PUSH_KEY_KEY,
-                             @"poGEdxCrTUuC4p1ZxkUAfw", KCS_PUSH_SECRET_KEY,
-                             @"https://latestbeta.kinvey.com/appdata/kid1073", KCS_BASE_URL_KEY,
-                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
+                             @"kid1089", KCS_APP_KEY_KEY,
+                             @"ad8f7ea0538147f89a7f75dd95491fdf", KCS_APP_SECRET_KEY,
+                             @"OzPSPvSJTyq0LTOIdff_dA", KCS_PUSH_KEY_KEY,
+                             @"ETHhR_GCRsq5QqhRLCp0ew", KCS_PUSH_SECRET_KEY,
+                             @"NO", KCS_PUSH_IS_ENABLED_KEY,
                              KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
                              
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];

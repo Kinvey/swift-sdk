@@ -29,6 +29,7 @@ enum {
 @property (nonatomic, copy) NSMutableDictionary *headers;
 @property (nonatomic) NSInteger method;
 @property (nonatomic) BOOL isSyncRequest;
+@property (nonatomic) BOOL followRedirects;
 
 + (KCSRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod;
 

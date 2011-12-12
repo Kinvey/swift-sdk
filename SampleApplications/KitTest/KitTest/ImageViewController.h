@@ -11,9 +11,8 @@
 
 @class RootViewController;
 
-@interface ImageViewController : UIViewController <KCSBlobDelegate>
+@interface ImageViewController : UIViewController <KCSResourceDelegate>
 @property (retain) KCSClient *kinveyClient;
-@property (retain) KCSBlobService *blobService;
 @property (retain, nonatomic) IBOutlet UIImageView *ourImage;
 @property (retain, nonatomic) IBOutlet UILabel *imageName;
 @property (retain, nonatomic) IBOutlet UILabel *imageState;

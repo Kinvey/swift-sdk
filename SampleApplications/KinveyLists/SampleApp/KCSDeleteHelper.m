@@ -43,17 +43,17 @@
     // We need the collection
 
     [self.listItemsCollection addFilterCriteriaForProperty:@"list" withStringValue:listID filteredByOperator:KCS_EQUALS_OPERATOR];
-    [self.listItemsCollection collectionDelegateFetch:self];
+    [self.listItemsCollection fetchWithDelegate:self];
 }
 
-- (void) fetchCollectionDidComplete: (NSObject *) result
+- (void)collection:(KCSCollection *)collection didCompleteWithResult:(NSArray *)result
 {
     NSArray *itemsToDelete = (NSArray *)result;
     for (KCSListEntry *entry in itemsToDelete) {
         if (entry.hasCustomImage){
             [KCSResourceService deleteResource:entry.image withDelegate:self];
         }
-        [entry deleteDelegate:self fromCollection:self.listItemsCollection];
+        [entry deleteFromCollection:self.listItemsCollection withDelegate:self];
     }
 }
 
@@ -62,22 +62,22 @@
     NSLog(@"DH: Resource Delete worked: %@", result);
 }
 
-- (void)persistDidComplete:(NSObject *)result
+- (void)entity:(id)entity persistDidCompleteWithResult:(NSObject *)result
 {
     NSLog(@"DH: Entity delete worked: %@", result);
 }
 
-- (void)fetchCollectionDidFail:(id)error
+- (void)collection:(KCSCollection *)collection didFailWithError:(NSError *)error
 {
     NSLog(@"DH Fetch failed: %@", error);
 }
 
-- (void)persistDidFail:(id)error
+- (void)entity:(id)entity persistDidFailWithError:(NSError *)error
 {
     NSLog(@"DH Persist Failed: %@", error);
 }
 
-- (void)resourceServicetDidFailWithError:(NSError *)error
+- (void)resourceServiceDidFailWithError:(NSError *)error
 {
     NSLog(@"DH Resource Failed: %@", error);
 }

@@ -19,14 +19,16 @@ Developers interested in performing actions based on the state of a persist oper
 @protocol KCSPersistDelegate <NSObject>
 
 /*! Invoked when a persist operation fails
-    @param error A detailed description of the error.
+ @param entity The Object that was attempting to be persisted.
+ @param error A detailed description of the error.
  */
-- (void) persistDidFail: (id)error;
+- (void) entity: (id)entity persistDidFailWithError: (NSError *)error;
 
 /*! Invoked when a persist operation completes successfully.
-    @param result The result of the operation (Definition TBD)
+ @param entity The Object that was attempting to be persisted.
+ @param result The result of the operation (Definition TBD)
  */
-- (void) persistDidComplete: (NSObject *) result;
+- (void) entity:(id)entity persistDidCompleteWithResult: (NSObject *)result;
 
 @end
 
@@ -56,12 +58,12 @@ implementing these methods.
  
  @warning It is strongly advised to not override this method.
 
- @param delegate The delegate to inform upon the completion of the persist operation.
  @param collection An instance of a KCS collection to use in persisting this Entity
+ @param delegate The delegate to inform upon the completion of the persist operation.
  
 
  */
-- (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistToCollection:(KCSCollection *)collection;
+- (void)persistToCollection: (KCSCollection *)collection withDelegate: (id <KCSPersistDelegate>)delegate;
 
 ///---------------------------------------------------------------------------------------
 /// @name Delete Items
@@ -77,7 +79,7 @@ implementing these methods.
  @param collection The collection to remove the item from.
 */ 
 
-- (void)deleteDelegate:(id <KCSPersistDelegate>)delegate fromCollection:(KCSCollection *)collection;
+- (void)deleteFromCollection: (KCSCollection *)collection withDelegate: (id<KCSPersistDelegate>)delegate;
 
 ///---------------------------------------------------------------------------------------
 /// @name Map from Local to Kinvey property names

@@ -88,7 +88,7 @@
     if (self.username == nil){
         // No user, generate it, note, use the APP KEY/APP SECRET!
         KCSAnalytics *analytics = [client analytics];
-        
+          
         NSDictionary *userData = [NSDictionary dictionaryWithObjectsAndKeys:[analytics UUID], @"username", [analytics UUID], @"UDID", nil];
         
         KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] userBaseURL] usingMethod:kPostRESTMethod];
