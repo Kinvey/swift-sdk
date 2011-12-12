@@ -15,7 +15,6 @@
 @synthesize ourImage = _ourImage;
 @synthesize imageName = _imageName;
 @synthesize imageState = _imageState;
-@synthesize blobService = _blobService;
 @synthesize currentOperation = _currentOperation;
 @synthesize rootViewController=_rootViewController;
 
@@ -53,8 +52,6 @@
     [super viewDidLoad];
     
     self.imageName.text = @"kinvey_image.png";
-    _blobService = [[KCSBlobService alloc] init];
-    [_blobService setKinveyClient:self.kinveyClient];
     
     
     //    [blob blobDelegate:self saveData:data  toBlob:@"kinvey_image.png"];
@@ -81,12 +78,12 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (void)blobRequestDidComplete:(KCSBlobResponse *)result
+- (void)resourceServiceDidCompleteWithResult:(KCSResourceResponse *)result
 {
     NSLog(@"Request Completed with: %@", result);
     
     if ([_currentOperation isEqualToString:@"GET"]){
-        NSData *imageData = [result blob];
+        NSData *imageData = [result resource];
         _ourImage.image = [UIImage imageWithData:imageData];
         [self.ourImage setHidden:NO];
         self.imageState.text = @"Image from Kinvey";
@@ -99,7 +96,7 @@
     }
 }
 
-- (void)blobRequestDidFail:(id)error
+- (void)resourceServiceDidFailWithError:(NSError *)error
 {
     NSError *err = (NSError *)error;
     NSLog(@"BLOB Failed with error: %@ (%@)", err, [err userInfo]);
@@ -120,19 +117,17 @@
     NSData *data = [NSData dataWithContentsOfFile:filePath];
     
     _currentOperation = @"PUT";
-    [_blobService blobDelegate:self saveData:data toBlob:self.imageName.text];
-
+    [KCSResourceService saveData:data toResource:self.imageName.text withDelegate:self];
 }
 
 - (IBAction)deleteImage:(id)sender {
     _currentOperation = @"DELETE";
-    [_blobService blobDelegate:self deleteBlob:self.imageName.text];
+    [KCSResourceService deleteResource:self.imageName.text withDelegate:self];
 }
 
 - (IBAction)refreshImage:(id)sender {
     _currentOperation = @"GET";
-    [_blobService blobDelegate:self downloadBlob: self.imageName.text];
-
+    [KCSResourceService downloadResource:self.imageName.text withResourceDelegate:self];
 }
 
 - (IBAction)flipView:(id)sender {

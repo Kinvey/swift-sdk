@@ -10,6 +10,8 @@
 
 @implementation KCSConnection
 
+@synthesize followRedirects=_followRedirects;
+
 - (id)initWithCredentials:(NSURLCredential *)credentials
 {
     return nil; // Unsupported base-class constructor

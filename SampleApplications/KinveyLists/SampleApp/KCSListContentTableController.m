@@ -56,8 +56,7 @@
 
 - (void)updateData
 {
-    [self.listItemsCollection collectionDelegateFetch:self];
-  
+    [self.listItemsCollection fetchWithDelegate:self];
 }
 
 #pragma mark - View lifecycle
@@ -177,8 +176,7 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         KCSListEntry *entry = [self.listContents objectAtIndex:indexPath.row];
-        [entry deleteDelegate:self fromCollection:self.listItemsCollection];
-
+        [entry deleteFromCollection:self.listItemsCollection withDelegate:self];
 
         [self.listContents removeObjectAtIndex:indexPath.row];
         
@@ -263,7 +261,7 @@
 
     // Persist image to blob...
     // Persist entry to kinvey
-    [aiController.addedEntry persistDelegate:self persistToCollection:self.listItemsCollection];
+    [aiController.addedEntry persistToCollection:self.listItemsCollection withDelegate:self];
     
 
 }
@@ -293,10 +291,9 @@
     }
 }
 
-
-- (void) fetchCollectionDidFail: (id)error
+- (void)collection:(KCSCollection *)collection didFailWithError:(NSError *)error
 {
-    NSLog(@"Update failed: %@", error);
+    NSLog(@"Update failed (Collection: %@): %@", collection, error);
     UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Update Failed!"
                                                      message:[error description]
                                                     delegate:self cancelButtonTitle:@"Ok"
@@ -306,7 +303,7 @@
 
 }
 
-- (void) fetchCollectionDidComplete: (NSObject *) result
+- (void)collection:(KCSCollection *)collection didCompleteWithResult:(NSArray *)result
 {
 //    NSArray *res = (NSArray *)result;
 //    NSLog(@"Got successfull fetch response: %@", res);
@@ -317,7 +314,7 @@
     [(UITableView *)self.view reloadData];
 }
 
-- (void)persistDidFail:(id)error
+- (void)entity:(id)entity persistDidFailWithError:(NSError *)error
 {
     NSLog(@"Persist failed: %@", error);
     UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Save Failed!"
@@ -329,7 +326,7 @@
 
 }
 
-- (void)persistDidComplete:(NSObject *)result
+- (void)entity:(id)entity persistDidCompleteWithResult:(NSObject *)result
 {
     NSLog(@"Result: %@", result);
     // Nil result means that we deleted.
@@ -348,7 +345,7 @@
 }
 
 
-- (void)resourceServicetDidFailWithError:(NSError *)error
+- (void)resourceServiceDidFailWithError:(NSError *)error
 {
     // Prevent issues later...
     self.entryBeingAdded.hasCustomImage = NO;

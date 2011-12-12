@@ -1669,6 +1669,7 @@
 				D3F7E891148D7C770044F1E8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

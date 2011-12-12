@@ -170,30 +170,29 @@
 - (void)refreshAllFields
 {
     // Update the count
-    [self.testObjects informationDelegateCollectionCount:self];
-    
+    [self.testObjects entityCountWithDelegate:self];
+
 }
 
-
-- (void) persistDidFail: (id)error
+- (void)entity:(id)entity persistDidFailWithError:(NSError *)error
 {
     NSLog(@"Persist failed: %@", error);
     [self.networkActivity stopAnimating];
 }
 
-- (void) persistDidComplete: (NSObject *) result
+- (void)entity:(id)entity persistDidCompleteWithResult:(NSObject *)result
 {
     NSLog(@"Persist Succeeded: %@", result);
     [self refreshAllFields];
 }
 
-- (void) fetchCollectionDidFail: (id)error
+- (void)collection:(KCSCollection *)collection didFailWithError:(NSError *)error
 {
     NSLog(@"Fetch Failed: %@", error);
     [self.networkActivity stopAnimating];
 }
 
-- (void) fetchCollectionDidComplete: (NSObject *) result
+- (void)collection:(KCSCollection *)collection didCompleteWithResult:(NSArray *)result
 {
     NSArray *objects = (NSArray *)result;
     _lastObject = [[objects lastObject] retain];
@@ -207,19 +206,19 @@
 
 }
 
-- (void) informationOperationDidFail: (id)error
+- (void)collection:(KCSCollection *)collection informationOperationFailedWithError:(NSError *)error
 {
     NSLog(@"Information Operation failed: %@", error);
     [self.networkActivity stopAnimating];
 }
 
-- (void) informationOperationDidComplete: (int)result
+- (void)collection:(KCSCollection *)collection informationOperationDidCompleteWithResult:(int)result
 {
     NSLog(@"Information Operation succeeded: %d", result);
     self.currentCount.text = [NSString stringWithFormat:@"%d", result];
 
     // Update the last entity
-    [self.testObjects collectionDelegateFetchAll:self];
+    [self.testObjects fetchAllWithDelegate:self];
 }
 
 
@@ -243,7 +242,7 @@
 - (IBAction)populateData:(id)sender {
     NSLog(@"Populating Data");
     [self.networkActivity startAnimating];
-    [self.testObject persistDelegate:self persistToCollection:_testObjects];
+    [self.testObject persistToCollection:_testObjects withDelegate:self];
 }
 
 - (void)persistNewValues: (BOOL)isUpdate
@@ -259,7 +258,7 @@
         // Having a legit object id causes an update instead of a new value
         test.objectId = self.lastObject.objectId;
     }
-    [test persistDelegate:self persistToCollection:_testObjects];
+    [test persistToCollection:_testObjects withDelegate:self];
 
 }
 
@@ -273,7 +272,7 @@
 
 - (IBAction)deleteLast:(id)sender {
     [self.networkActivity startAnimating];
-    [self.lastObject deleteDelegate:self fromCollection:_testObjects];
+    [self.lastObject deleteFromCollection:_testObjects withDelegate:self];
 }
 
 - (IBAction)flipView:(id)sender {
@@ -296,7 +295,7 @@
     if (self.testObjects == nil){
         KCSCollection *collection = [[KCSClient sharedClient] collectionFromString:@"test_objects" withClass:[KitTestObject class]];
         _testObjects = collection;
-        [self.testObject persistDelegate:self persistToCollection:_testObjects];
+        [self.testObject persistToCollection:_testObjects withDelegate:self];
         [self.networkActivity startAnimating];
     }    
 }

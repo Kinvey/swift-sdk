@@ -18,6 +18,8 @@
  */
 @interface KCSConnection : NSObject
 
+@property (nonatomic) BOOL followRedirects;
+
 - (id)initWithCredentials:(NSURLCredential *)credentials;
 - (id)initWithUsername:(NSString *)username password:(NSString *)password;
 - (id)initWithConnection:(NSURLConnection *)theConnection; // For Mock testing

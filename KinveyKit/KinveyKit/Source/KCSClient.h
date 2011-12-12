@@ -72,7 +72,7 @@
 @property (nonatomic, copy, readonly) NSString *dataBaseURL;
 
 /*! Base URL for Kinvey Resource Service */
-@property (nonatomic, copy, readonly) NSString *assetBaseURL;
+@property (nonatomic, copy, readonly) NSString *resourceBaseURL;
 
 /*! Base URL for Kinvey User Service */
 @property (nonatomic, copy, readonly) NSString *userBaseURL;

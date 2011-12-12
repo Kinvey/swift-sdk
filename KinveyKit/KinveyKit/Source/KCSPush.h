@@ -113,6 +113,7 @@
 
 // - (void) exposeSettingsViewInView: (UIViewController *)parentViewController
 
+@end
+
 #endif /* NO_URBAN_AIRSHIP_PUSH */
 
-@end

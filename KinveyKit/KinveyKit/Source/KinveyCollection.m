@@ -46,7 +46,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
         NSArray *jsonArray;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:(NSDictionary *)jsonData];
-            [delegate fetchCollectionDidFail:err];
+            [delegate collection:collection didFailWithError:err];
             [processedData release];
             return;
         }
@@ -74,7 +74,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
             }
             [processedData addObject:copiedObject];
         }
-        [delegate fetchCollectionDidComplete:processedData];
+        [delegate collection:collection didCompleteWithResult:processedData];
         [processedData release];
     } copy] autorelease];
 }
@@ -82,7 +82,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
 KCSConnectionFailureBlock    makeCollectionFailureBlock(KCSCollection *collection, id<KCSCollectionDelegate>delegate)
 {
     return [[^(NSError *error){
-        [delegate fetchCollectionDidFail:error];  
+        [delegate collection:collection didFailWithError:error];
     } copy] autorelease];
 }
 KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collection, id<KCSCollectionDelegate>delegate)
@@ -156,7 +156,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 #pragma mark Basic Methods
 
-- (void)collectionDelegateFetchAll: (id <KCSCollectionDelegate>)delegate
+- (void)fetchAllWithDelegate:(id<KCSCollectionDelegate>)delegate
 {
     NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/", self.collectionName];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
@@ -263,7 +263,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     [self.filters removeAllObjects];
 }
 
-- (void)collectionDelegateFetch: (id <KCSCollectionDelegate>)delegate
+- (void)fetchWithDelegate:(id<KCSCollectionDelegate>)delegate
 {
     // Guard against an empty filter
     if (self.filters.count == 0){
@@ -291,7 +291,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 #pragma mark Utility Methods
 
-- (void)informationDelegateCollectionCount: (id <KCSInformationDelegate>)delegate
+- (void)entityCountWithDelegate:(id<KCSInformationDelegate>)delegate
 {
     NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
@@ -308,7 +308,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:(NSDictionary *)responseToReturn];
-            [delegate informationOperationDidFail:err];
+            [delegate collection:self informationOperationFailedWithError:err];
             return;
         }
 
@@ -319,11 +319,11 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         } else {
             count = 0;
         }
-        [delegate informationOperationDidComplete:count];
+        [delegate collection:self informationOperationDidCompleteWithResult:count];
     };
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate informationOperationDidFail:error];
+        [delegate collection:self informationOperationFailedWithError:error];
     };
     
     KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *collection) {};

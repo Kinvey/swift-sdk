@@ -53,6 +53,7 @@ getLogDate(void)
 @synthesize method=_method;
 @synthesize isSyncRequest=_isSyncRequest;
 @synthesize request=_request;
+@synthesize followRedirects=_followRedirects;
 
 //- (id)init
 //{
@@ -74,6 +75,7 @@ getLogDate(void)
         _progressAction = NULL;
         _failureAction = NULL;
         _isSyncRequest = NO;
+        _followRedirects = YES;
         _headers = [[NSMutableDictionary dictionary] retain];
 
         // Prepare to generate the request...
@@ -209,9 +211,16 @@ getLogDate(void)
         [self.request addValue:[self.headers objectForKey:key] forHTTPHeaderField:key];
     }
     
+    // We need to do basic filtering on the request URL and do some things for "Kinvey" requests
+    
+    // Add the Kinvey User-Agent
     [self.request addValue:[kinveyClient userAgent] forHTTPHeaderField:@"User-Agent"];
 
+    // Add the Date as a header
     [self.request addValue:getLogDate() forHTTPHeaderField:@"Date"];
+
+    // Let the server know that we support GZip.
+    [self.request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];  
     
     // If we have the proper credentials then kinveyClient.userIsAuthenticated returns true, so just use the stored credentials
     // If it's not true, then we could be in the acutal user request, if that's the case (aka, resourceLocation is the userBaseURL)
@@ -225,6 +234,11 @@ getLogDate(void)
         [connection release];
         return;
     }
+    
+    if (!self.followRedirects){
+        connection.followRedirects = NO;
+    }
+    
     [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:[kinveyClient authCredentials]];
      
     [connection release];

@@ -44,7 +44,7 @@
 {
     NSLog(@"Updating Data");
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    [self.listsCollection collectionDelegateFetchAll:self];
+    [self.listsCollection fetchAllWithDelegate:self];
 }
 
 #pragma mark - View lifecycl
@@ -169,7 +169,7 @@
         // Delete the row from the data source
         KCSList *entry = [self.kLists objectAtIndex:indexPath.row];
         [self.deleteHelper removeItemsFromList:entry.name withListID:entry.listId];
-        [entry deleteDelegate:self fromCollection:self.listsCollection];
+        [entry deleteFromCollection:self.listsCollection withDelegate:self];
         
 //        NSLog(@"Klists Bfore: %@", self.kLists);        
         [self.kLists removeObjectAtIndex:indexPath.row];
@@ -232,7 +232,7 @@
 	}
 }
 
-- (void) fetchCollectionDidFail: (id)error
+- (void)collection:(KCSCollection *)collection didFailWithError:(NSError *)error
 {
     NSLog(@"Update failed: %@", error);
     UIAlertView *alert =
@@ -248,7 +248,7 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
-- (void) fetchCollectionDidComplete: (NSObject *) result
+- (void)collection:(KCSCollection *)collection didCompleteWithResult:(NSArray *)result
 {
 //    NSArray *res = (NSArray *)result;
 //    NSLog(@"Got successfull fetch response: %@", res);
@@ -275,12 +275,12 @@
     
     self.listToAdd = alController.addedList;
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    [self.listToAdd persistDelegate:self persistToCollection:self.listsCollection];
+    [self.listToAdd persistToCollection:self.listsCollection withDelegate:self];
 	[controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 
-- (void)persistDidComplete:(NSObject *)result
+- (void)entity:(id)entity persistDidCompleteWithResult:(NSObject *)result
 {
     NSLog(@"Result: %@", result);
     // Nil result means that we deleted.
@@ -299,7 +299,7 @@
 
 }
 
-- (void)persistDidFail:(id)error
+- (void)entity:(id)entity persistDidFailWithError:(NSError *)error
 {
     UIAlertView *alert =
     [[UIAlertView alloc] initWithTitle: @"Error Saving List"

@@ -101,7 +101,7 @@
 
 - (id)init
 {
-    self = [super self];
+    self = [super init];
     if (self){
         _activeDownload = nil;
         _lastResponse = nil;
@@ -109,6 +109,7 @@
         _connection = nil;
         _percentNotificationThreshold = 1; // Default to 1%
         _lastPercentage = 0; // Start @ 0%
+        self.followRedirects = YES;
         // Don't cache the Auth, just in case we switch it up later...
         _basicAuthCred = nil;
     }
@@ -284,6 +285,19 @@
     
     [self cleanUp];
 }
+
+// Don't honor the redirect, just grab the location and move on...
+-(NSURLRequest *)connection:(NSURLConnection *)connection
+            willSendRequest:(NSURLRequest *)request
+           redirectResponse:(NSURLResponse *)redirectResponse
+{
+    NSURLRequest *newRequest = request;
+    if (redirectResponse && !self.followRedirects) {
+        newRequest = nil;
+    }
+    return newRequest;
+}
+
 
 
 @end

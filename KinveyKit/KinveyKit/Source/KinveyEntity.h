@@ -19,15 +19,17 @@
 
 /*!
 *  Called when a request fails for some reason (including network failure, internal server failure, request issues...)
-*  @param error An object that encodes our error message (Documentation TBD)
+ @param entity The Object that was attempting to be fetched.
+ @param error An object that encodes our error message (Documentation TBD)
 */
-- (void) fetchDidFail: (id)error;
+- (void) entity: (id <KCSPersistable>)entity fetchDidFailWithError: (NSError *)error;
 
 /*!
 * Called when a request completes successfully.
-* @param result The result of the completed request (Typically NSData encoded JSON)
+ @param entity The Object that was attempting to be fetched.
+ @param result The result of the completed request (Typically NSData encoded JSON)
 */
-- (void) fetchDidComplete: (NSObject *) result;
+- (void) entity: (id <KCSPersistable>)entity fetchDidCompleteWithResult: (NSObject *)result;
 
 @end
 
@@ -39,58 +41,47 @@
 
 /*! Fetch one instance of this entity from KCS
 *
-* @param delegate Delegate object to inform upon completion or failure of this request
-* @param query Arbitrary JSON query to execute on KCS (See Queries in KCS documentation for details on Queries)
 * @param collection Collection to pull the entity from
+* @param query Arbitrary JSON query to execute on KCS (See Queries in KCS documentation for details on Queries)
+* @param delegate Delegate object to inform upon completion or failure of this request 
 */
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFetchOne: (NSString *)query fromCollection: (KCSCollection *)collection;
+- (void)fetchOneFromCollection: (KCSCollection *)collection matchingQuery: (NSString *)query withDelegate: (id<KCSEntityDelegate>)delegate;
 
 /*! Fetch first entity with a given Boolean value for a property
 *
-* @param delegate Delegate object to inform upon completion or failure of this request
 * @param property property to query
 * @param value Boolean value (YES or NO) to query against value
 * @param collection Collection to pull the entity from
-*/
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withBoolValue: (BOOL) value fromCollection: (KCSCollection *)collection;
-
-/*! Fetch first entity with a given Date value for a property
-*
-* @bug This method is not implemented yet and will raise an exception if used.
-*
 * @param delegate Delegate object to inform upon completion or failure of this request
-* @param property property to query
-* @param value Date value to query against value
-* @param collection Collection to pull the entity from
 */
-//- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withDateValue: (NSDate *) value fromCollection: (KCSCollection *)collection;
+- (void)findEntityWithProperty: (NSString *)property matchingBoolValue: (BOOL)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
 
 /*! Fetch first entity with a given Double value for a property
 *
-* @param delegate Delegate object to inform upon completion or failure of this request
 * @param property property to query
 * @param value Real value to query against value
 * @param collection Collection to pull the entity from
+* @param delegate Delegate object to inform upon completion or failure of this request
 */
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withDoubleValue: (double) value fromCollection: (KCSCollection *)collection;
+- (void)findEntityWithProperty: (NSString *)property matchingDoubleValue: (double)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
 
 /*! Fetch first entity with a given Integer value for a property
 *
-* @param delegate Delegate object to inform upon completion or failure of this request
 * @param property property to query
 * @param value Integer to query against value
 * @param collection Collection to pull the entity from
+* @param delegate Delegate object to inform upon completion or failure of this request
 */
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withIntegerValue: (int) value fromCollection: (KCSCollection *)collection;
+- (void)findEntityWithProperty: (NSString *)property matchingIntegerValue: (int)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
 
 /*! Fetch first entity with a given String value for a property
 *
-* @param delegate Delegate object to inform upon completion or failure of this request
 * @param property property to query
 * @param value String to query against value
 * @param collection Collection to pull the entity from
+* @param delegate Delegate object to inform upon completion or failure of this request
 */
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withStringValue: (NSString *) value fromCollection: (KCSCollection *)collection;
+- (void)findEntityWithProperty: (NSString *)property matchingStringValue: (NSString *)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
 
 /*! Return the "_id" value for this entity
 *
@@ -113,10 +104,10 @@
 
 
 /*! Load an entity with a specific ID and replace the current object
-* @param delegate The delegate to notify upon completion of the load.
-* @param objectId The ID of the entity to request
+* @param objectID The ID of the entity to request
 * @param collection Collection to pull the entity from
+* @param delegate The delegate to notify upon completion of the load.
 */
-- (void)entityDelegate:(id <KCSEntityDelegate>)delegate loadObjectWithId:(NSString *)objectId fromCollection:(KCSCollection *)collection;
+- (void)loadObjectWithID: (NSString *)objectID fromCollection: (KCSCollection *)collection withDelegate:(id <KCSEntityDelegate>)delegate;
 
 @end
