@@ -53,7 +53,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
-            [delegate fetchDidFail:err];
+            [delegate entity:objectOfInterest fetchDidFailWithError:err];
         } else {
             NSDictionary *kinveyMapping = [objectOfInterest hostToKinveyPropertyMapping];
             
@@ -61,12 +61,12 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
             for (key in kinveyMapping){
                 [objectOfInterest setValue:[responseToReturn valueForKey:[kinveyMapping valueForKey:key]] forKey:key];
             }
-            [delegate fetchDidComplete:responseToReturn];
+            [delegate entity:objectOfInterest fetchDidCompleteWithResult:responseToReturn];
         }
     };
     
     *fBlock = ^(NSError *error){
-        [delegate fetchDidFail:error];  
+        [delegate entity:objectOfInterest fetchDidFailWithError:error];
     };
     
     *pBlock = ^(KCSConnectionProgress *conn)
@@ -81,7 +81,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 @implementation NSObject (KCSEntity)
 
 
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFetchOne: (NSString *)query fromCollection: (KCSCollection *)collection;
+- (void)fetchOneFromCollection:(KCSCollection *)collection matchingQuery:(NSString *)query withDelegate:(id<KCSEntityDelegate>)delegate
 {
     KCSClient *kinveyClient = [KCSClient sharedClient];
 
@@ -97,50 +97,36 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     [[[KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod] withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withBoolValue: (BOOL) value fromCollection: (KCSCollection *)collection;
+- (void)findEntityWithProperty:(NSString *)property matchingBoolValue:(BOOL)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
     
     NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:value], property, nil] JSONString];
     
-    [self entityDelegate:delegate shouldFetchOne:[NSString stringbyPercentEncodingString:query] fromCollection:collection];
+    [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
     
 }
 
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withDateValue: (NSDate *) value fromCollection: (KCSCollection *)collection;
-{
-    NSException* myException = [NSException
-                                exceptionWithName:@"UnsupportedFeatureException"
-                                reason:@"JSON Data Support not yet implemented"
-                                userInfo:nil];
-    @throw myException;
-
-    //    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:value], property, nil] JSONString];
-    
-//    [self entityDelegate:delegate shouldFetchOne:query usingClient:client];
-    
-}
-
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withDoubleValue: (double) value fromCollection: (KCSCollection *)collection;
+- (void)findEntityWithProperty:(NSString *)property matchingDoubleValue:(double)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
     NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithDouble:value], property, nil] JSONString];
     
-    [self entityDelegate:delegate shouldFetchOne:[NSString stringbyPercentEncodingString:query] fromCollection:collection];
+    [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
     
 }
 
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withIntegerValue: (int) value fromCollection: (KCSCollection *)collection;
+- (void)findEntityWithProperty:(NSString *)property matchingIntegerValue:(int)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
     NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:value], property, nil] JSONString];
     
-    [self entityDelegate:delegate shouldFetchOne:[NSString stringbyPercentEncodingString:query] fromCollection:collection];
+    [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
     
 }
 
-- (void)entityDelegate: (id <KCSEntityDelegate>) delegate shouldFindByProperty: (NSString *)property withStringValue: (NSString *) value fromCollection: (KCSCollection *)collection;
+- (void)findEntityWithProperty:(NSString *)property matchingStringValue:(NSString *)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
     NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:value, property, nil] JSONString];
     
-    [self entityDelegate:delegate shouldFetchOne:[NSString stringbyPercentEncodingString:query] fromCollection:collection];
+    [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
     
 }
 
@@ -174,9 +160,9 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     return nil;
 }
 
-- (void)entityDelegate:(id <KCSEntityDelegate>)delegate loadObjectWithId:(NSString *)objectId fromCollection:(KCSCollection *)collection
+- (void)loadObjectWithID:(NSString *)objectID fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
-    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
+    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, objectID];
 
     KCSConnectionCompletionBlock cBlock;
     KCSConnectionFailureBlock fBlock;
@@ -191,7 +177,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     [self setValue:value forKey:property];
 }
 
-- (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistToCollection:(KCSCollection *)collection
+- (void)persistToCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistDelegate>)delegate
 {
     BOOL isPostRequest = NO;
 
@@ -250,14 +236,14 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
             NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
-            [delegate persistDidFail:err];
+            [delegate entity:self persistDidFailWithError:err];
         } else {
-            [delegate persistDidComplete:responseToReturn];
+            [delegate entity:self persistDidCompleteWithResult:responseToReturn];
         }
     };
 
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate persistDidFail:error];
+        [delegate entity:self persistDidFailWithError:error];
     };
     
     // Future enhancement
@@ -270,7 +256,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 }
 
-- (void)deleteDelegate:(id<KCSPersistDelegate>)delegate fromCollection:(KCSCollection *)collection
+- (void)deleteFromCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistDelegate>)delegate
 {
     NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
     
@@ -299,14 +285,14 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         
         if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
             NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
-            [delegate persistDidFail:err];
+            [delegate entity:self persistDidFailWithError:err];
         } else {
-            [delegate persistDidComplete:responseToReturn];
+            [delegate entity:self persistDidCompleteWithResult:responseToReturn];
         }
     };
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate persistDidFail:error];
+        [delegate entity:self persistDidFailWithError:error];
     };
     
     // Future enhancement

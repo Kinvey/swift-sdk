@@ -25,7 +25,7 @@
 @property (nonatomic, copy, readwrite) NSString *userAgent;
 @property (nonatomic, copy, readwrite) NSString *libraryVersion;
 @property (nonatomic, copy, readwrite) NSString *dataBaseURL;
-@property (nonatomic, copy, readwrite) NSString *assetBaseURL;
+@property (nonatomic, copy, readwrite) NSString *resourceBaseURL;
 @property (nonatomic, copy, readwrite) NSString *userBaseURL;
 
 @property (nonatomic, copy, readwrite) NSString *appKey;
@@ -45,7 +45,7 @@
 @synthesize appKey=_appKey;
 @synthesize appSecret=_appSecret;
 @synthesize dataBaseURL=_dataBaseURL;
-@synthesize assetBaseURL=_assetBaseURL;
+@synthesize resourceBaseURL=_resourceBaseURL;
 @synthesize connectionTimeout=_connectionTimeout;
 @synthesize options=_options;
 @synthesize userAgent=_userAgent;
@@ -83,6 +83,30 @@
     }
     
     return self;
+}
+
+- (void)dealloc
+{
+    [_userAgent release];
+    [_analytics release];
+    [_authCompleteLock release];
+    [_authInProgressLock release];
+    [_currentUser release];
+    [_resourceBaseURL release];
+    [_userBaseURL release];
+    [_dataBaseURL release];
+    
+    
+    _userAgent = nil;
+    _analytics = nil;
+    _authCompleteLock = nil;
+    _authInProgressLock = nil;
+    _currentUser = nil;
+    _resourceBaseURL = nil;
+    _userBaseURL = nil;
+    _dataBaseURL = nil;
+    
+    [super dealloc];
 }
 
 - (BOOL)userIsAuthenticated
@@ -142,12 +166,12 @@
 
     self.dataBaseURL = [[NSString alloc] initWithFormat:@"%@latestbeta.kinvey.com/appdata/%@/", self.protocol, self.appKey];
     // Until latestbeta is upgraded...
-    self.assetBaseURL = [[NSString alloc] initWithFormat:@"%@latestbeta.kinvey.com/blob/%@/", self.protocol, self.appKey];
+    self.resourceBaseURL = [[NSString alloc] initWithFormat:@"%@latestbeta.kinvey.com/blob/%@/", self.protocol, self.appKey];
 
     self.userBaseURL = [[NSString alloc] initWithFormat:@"%@latestbeta.kinvey.com/user/%@/", self.protocol, self.appKey];
 
     // TODO extract options to something meaningful...
-    self.options = options;
+    self.options = [options retain];
     self.authCredentials = [NSURLCredential credentialWithUser:appKey password:appSecret persistence:NSURLCredentialPersistenceNone];
     return self;
 }

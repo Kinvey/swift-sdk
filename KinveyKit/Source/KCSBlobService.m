@@ -19,14 +19,16 @@
 @synthesize resourceId=_resourceId;
 @synthesize resource=_resource; // Set to nil on upload
 @synthesize length=_length;
+@synthesize streamingURL=_streamingURL;
 
-+ (KCSResourceResponse *)responseWithFileName:(NSString *)localFile withResourceId:(NSString *)resourceId withData:(NSData *)resource withLength:(NSInteger)length
++ (KCSResourceResponse *)responseWithFileName:(NSString *)localFile withResourceId:(NSString *)resourceId withStreamingURL:(NSString *)streamingURL withData:(NSData *)resource withLength:(NSInteger)length
 {
     KCSResourceResponse *response = [[[KCSResourceResponse alloc] init] autorelease];
     response.localFileName = localFile;
     response.resourceId = resourceId;
     response.resource = resource;
     response.length = length;
+    response.streamingURL = streamingURL;
     
     return response;
 }
@@ -42,6 +44,9 @@
     [_resource release];
     self.resource = nil;
     
+    [_streamingURL release];
+    self.streamingURL = nil;
+    
     [super dealloc];
 }
 
@@ -53,19 +58,19 @@
 @implementation KCSResourceService
 + (void)downloadResource: (NSString *)resourceId withResourceDelegate: (id<KCSResourceDelegate>)delegate;
 {
-    NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"download-loc/%@", resourceId];
+    NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"download-loc/%@", resourceId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            [delegate resourceServicetDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[response.responseData objectFromJSONData]]];
+            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[response.responseData objectFromJSONData]]];
         } else {
-            [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withData:response.responseData withLength:[response.responseData length]]];
+            [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:nil withData:response.responseData withLength:[response.responseData length]]];
         }
     };
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate resourceServicetDidFailWithError:error];
+        [delegate resourceServiceDidFailWithError:error];
     };
     
     KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
@@ -93,6 +98,38 @@
 
 }
 
++ (void)getStreamingURLForResource:(NSString *)resourceId withResourceDelegate:(id<KCSResourceDelegate>)delegate
+{
+    NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"download-loc/%@", resourceId];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
+    
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        // This needs to be REDIRECT, otherwise something is messed up!
+        if (response.responseCode != KCS_HTTP_STATUS_REDIRECT){
+            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[response.responseData objectFromJSONData]]];
+        } else {
+            NSString *URL = [response.responseHeaders objectForKey:@"Location"];
+            
+            if (!URL){
+                [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:@"Malformed Redirect, cannot get URL" forKey:@"error"]]];
+            } else {
+                [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:URL withData:nil withLength:0]];
+            }
+        }
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        [delegate resourceServiceDidFailWithError:error];
+    };
+    
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
+    
+    request.followRedirects = NO;
+    
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+
+}
+
 + (void)saveLocalResource:(NSString *)filename toResource:(NSString *)resourceId withDelegate:(id<KCSResourceDelegate>)delegate
 {
     NSException* myException = [NSException
@@ -105,11 +142,11 @@
 
 + (void)saveData:(NSData *)data toResource:(NSString *)resourceId withDelegate:(id<KCSResourceDelegate>)delegate
 {
-    NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"upload-loc/%@", resourceId];
+    NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"upload-loc/%@", resourceId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
 
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate resourceServicetDidFailWithError:error];
+        [delegate resourceServiceDidFailWithError:error];
     };
     
     KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
@@ -117,10 +154,10 @@
     KCSConnectionCompletionBlock userCallback = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_CREATED){
             NSString *xmlData = [[[NSString alloc] initWithData:response.responseData encoding:NSUTF8StringEncoding] autorelease];
-            [delegate resourceServicetDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:xmlData forKey:@"serviceError"]]];
+            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:xmlData forKey:@"serviceError"]]];
         } else {
             // I feel like we should have a length here, but I might not be saving that response...
-            [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withData:nil withLength:0]];
+            [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:nil withData:nil withLength:0]];
         }
     };
     
@@ -128,7 +165,7 @@
         NSDictionary *jsonData = [response.responseData objectFromJSONData];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:jsonData];
-            [delegate resourceServicetDidFailWithError:err];
+            [delegate resourceServiceDidFailWithError:err];
         } else {
             NSString *newResource = [jsonData valueForKey:@"URI"];
             KCSRESTRequest *newRequest = [KCSRESTRequest requestForResource:newResource usingMethod:kPutRESTMethod];
@@ -144,12 +181,12 @@
 
 + (void)deleteResource:(NSString *)resourceId withDelegate:(id<KCSResourceDelegate>)delegate
 {
-    NSString *resource = [[[KCSClient sharedClient] assetBaseURL] stringByAppendingFormat:@"remove-loc/%@", resourceId];
+    NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"remove-loc/%@", resourceId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
 
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate resourceServicetDidFailWithError:error];
+        [delegate resourceServiceDidFailWithError:error];
     };
     
     KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
@@ -157,10 +194,10 @@
     KCSConnectionCompletionBlock userCallback = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_ACCEPTED){
             NSString *xmlData = [[[NSString alloc] initWithData:response.responseData encoding:NSUTF8StringEncoding] autorelease];
-            [delegate resourceServicetDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:xmlData forKey:@"serviceError"]]];
+            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:xmlData forKey:@"serviceError"]]];
         } else {
             // I feel like we should have a length here, but I might not be saving that response...
-            [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:nil withData:nil withLength:0]];
+            [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:nil withStreamingURL:nil withData:nil withLength:0]];
         }
 
     };
@@ -169,7 +206,7 @@
         NSDictionary *jsonData = [response.responseData objectFromJSONData];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:jsonData];
-            [delegate resourceServicetDidFailWithError:err];
+            [delegate resourceServiceDidFailWithError:err];
         } else {
             NSString *newResource = [jsonData valueForKey:@"URI"];
             KCSRESTRequest *newRequest = [KCSRESTRequest requestForResource:newResource usingMethod:kDeleteRESTMethod];

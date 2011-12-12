@@ -25,6 +25,9 @@
 /*! Contains the local filename that the Resource was saved to. */
 @property (copy) NSString *localFileName;
 
+/*! Contains the streaming URL if it was requested. */
+@property (copy) NSString *streamingURL;
+
 /*! Contains the Resource ID, which is used to uniquely identify this resource .*/
 @property (copy) NSString *resourceId;
 
@@ -46,11 +49,12 @@
  @param localFile The local filename that this resource was saved inot, nil of no local filename.
  @param resourceId The unique ID that identifies this resource in the Kinvey Cloud.
  @param resource The actual data of the resource.  The data must be converted to a different representation to use.  Nil for an upload/delete response.
+ @param streamingURL The URL used to stream the resource, nil if not available for streaming.
  @param length The length of the response.  Should be set to match the expected length as given by the server.
  @return An Autoreleased KCSResourceResponse that can be used to obtain the response information.
  
  */
-+ (KCSResourceResponse *)responseWithFileName: (NSString *)localFile withResourceId: (NSString *)resourceId withData: (NSData *)resource withLength: (NSInteger)length;
++ (KCSResourceResponse *)responseWithFileName: (NSString *)localFile withResourceId: (NSString *)resourceId withStreamingURL:(NSString *)streamingURL withData: (NSData *)resource withLength: (NSInteger)length;
 
 @end
 
@@ -85,7 +89,7 @@
  
  @bug Error codes are not yet documented.
  */
-- (void)resourceServicetDidFailWithError: (NSError *)error;
+- (void)resourceServiceDidFailWithError: (NSError *)error;
 
 @end
 
@@ -117,6 +121,16 @@
  @param delegate The delegate to be notified upon completion of the request.
  */
 + (void)downloadResource: (NSString *)resourceId toFile: (NSString *)filename withResourceDelegate: (id<KCSResourceDelegate>)delegate;
+
+/*! Obtain a 30-second time-limited URL for streaming a resource stored on Kinvey.
+ 
+ This method is used for large objects stored on the Resource Service.  It's used to get a URL that allows the resource to be
+ streamed to the device.
+ 
+ @param resourceId The Resource ID to stream
+ @param delegate The delegate to be notified upon completion of the request.
+ */
++ (void)getStreamingURLForResource: (NSString *)resourceId withResourceDelegate: (id<KCSResourceDelegate>)delegate;
 
 ///---------------------------------------------------------------------------------------
 /// @name Uploading Resources

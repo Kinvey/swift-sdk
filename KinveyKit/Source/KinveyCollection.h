@@ -20,25 +20,26 @@
 @protocol KCSCollectionDelegate <NSObject>
 
 ///---------------------------------------------------------------------------------------
-/// @name Success
+/// @name Failure
 ///---------------------------------------------------------------------------------------
 /*! Called when a request fails for some reason (including network failure, internal server failure, request issues...)
  * 
  * Use this method to handle failures.
- *
+ *  @param collection The collection attempting to perform the operation.
  *  @param error An object that encodes our error message (Documentation TBD)
  */
-- (void) fetchCollectionDidFail: (id)error;
+- (void) collection: (KCSCollection *)collection didFailWithError: (NSError *)error;
 
 ///---------------------------------------------------------------------------------------
-/// @name Failure
+/// @name Success
 ///---------------------------------------------------------------------------------------
 /*! Called when a request completes successfully.
+ * @param collection The collection attempting to perform the operation.
  * @param result The results of the completed request
  *
  * @bug This interface will change and switch to using NSArray instead of NSObject, this should be transparent to client code, which should be using NSArray now anyway.
  */
-- (void) fetchCollectionDidComplete: (NSObject *) result;
+- (void) collection: (KCSCollection *)collection didCompleteWithResult: (NSArray *)result;
 
 @end
 
@@ -52,18 +53,23 @@
 /// @name Failure
 ///---------------------------------------------------------------------------------------
 /*! Called when the operation encounters an error (either through completion with failure or lack of completion).
- 
+
+ @param collection The collection attempting to perform the operation. 
  @param error The error that the system encountered.
+
  */
-- (void) informationOperationDidFail: (NSError *)error;
+- (void) collection: (KCSCollection *)collection informationOperationFailedWithError: (NSError *)error;
 
 ///---------------------------------------------------------------------------------------
 /// @name Success
 ///---------------------------------------------------------------------------------------
 /*! Called when the operation complets with no failures
+
+ @param collection The collection attempting to perform the operation.
  @param result The integer result.
+
  */
-- (void) informationOperationDidComplete: (int)result;
+- (void) collection: (KCSCollection *)collection informationOperationDidCompleteWithResult: (int)result;
 
 @end
 
@@ -112,12 +118,12 @@
 /*! Fetch all of the entities in the collection
  *  @param delegate The delegate that we'll notify upon completion of the request.
  */
-- (void)collectionDelegateFetchAll: (id <KCSCollectionDelegate>)delegate;
+- (void)fetchAllWithDelegate: (id <KCSCollectionDelegate>)delegate;
 
 /*! Fetch all entries that pass all filters that have been set.
  *  @param delegate The delegate that we'll notify upon completion of the request.
  */
-- (void)collectionDelegateFetch: (id <KCSCollectionDelegate>)delegate;
+- (void)fetchWithDelegate: (id <KCSCollectionDelegate>)delegate;
 
 ///---------------------------------------------------------------------------------------
 /// @name Building Queries
@@ -180,7 +186,7 @@
  
  @param delegate The delegate to inform that the operation is complete.
  */
-- (void)informationDelegateCollectionCount: (id <KCSInformationDelegate>)delegate;
+- (void)entityCountWithDelegate: (id <KCSInformationDelegate>)delegate;
 
 
 @end
