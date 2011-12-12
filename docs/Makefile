@@ -1,6 +1,6 @@
 ####### Makefile for docs
 
-DOCS= iOS-Getting-Started.html iOS-Users-Guide.html
+DOCS= iOS-Getting-Started.html iOS-Developers-Guide.html
 
 #THEME=-a theme=volnitsky
 #THEME=-a theme=flask
