@@ -2,14 +2,14 @@
 
 DOCS= iOS-Getting-Started.html iOS-Users-Guide.html
 
-THEME=-a theme=volnitsky
+#THEME=-a theme=volnitsky
 #THEME=-a theme=flask
-#THEME=
+THEME=
 
 #ASCII= /usr/local/bin/asciidoc -b html5 -a icons -a pygments=  -a linkcss=yes -a stylesdir=css -a scriptsdir=js
 
 ## Not the end result, quick for initial integration
-ASCII= /usr/local/bin/asciidoc -b html5 -a icons -a pygments= 
+ASCII= /usr/local/bin/asciidoc -b html5 -a icons -a pygments= -a toc
 
 %.html: %.txt
 	@echo Converting $< to HTML $@
