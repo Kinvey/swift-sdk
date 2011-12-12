@@ -132,9 +132,9 @@
 ///---------------------------------------------------------------------------------------
 /// @name Initializing the Singleton
 ///---------------------------------------------------------------------------------------
-/*! Initialize the singleton KCSClient with this applications key and the secret for this app, along with any needed options.
+/*! Initialize the singleton KCSClient with this application's key and the secret for this app, along with any needed options.
  
- This routine MUST be called prior to using the Kinvey Service otherwise all access will fail.  This routine authenticates you with
+ This routine (or initializeKinveyServiceWithPropertyList) MUST be called prior to using the Kinvey Service otherwise all access will fail.  This routine authenticates you with
  the Kinvey Service.  The appKey and appSecret are available in the Kinvey Console.  Options can be used to configure push, etc.
  
  @bug Options array is required for Push, but not yet documented.
@@ -142,12 +142,26 @@
  @param appKey The Kinvey provided App Key used to identify this application
  @param appSecret The Kinvey provided App Secret used to authenticate this application.
  @param options The NSDictionary used to configure optional services.
- @returns The KCSClient singleton (can be used to chain several calls)
+ @return The KCSClient singleton (can be used to chain several calls)
  
  For example, KCSClient *client = [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"key" withAppSecret:@"secret" usingOptions:nil];
  
  */
 - (KCSClient *)initializeKinveyServiceForAppKey: (NSString *)appKey withAppSecret: (NSString *)appSecret usingOptions: (NSDictionary *)options;
+
+/*! Initialize the singleton KCSClient with a dictionary plist containing options to run
+ 
+ This routine (or initializeKinveyServiceForAppKey:withAppSecret:usingOptions:) MUST be called prior to using the Kinvey Service
+ otherwise all access will fail.  If the plist does not contain an App Key and an App Secret, then attempts to access the Kinvey
+ service will fail.
+ 
+ The plist MUST be loadable into an NSDictionary, the plist MUST be located in the root directory of the main bundle and MUST be named
+ KinveyOptions.plist.
+ 
+ @exception KinveyInitializationError Raised to indicate an issue loading the plist file, Kinvey Services will not be available.
+ @return The KCSClient singleton (can be used to chain several calls)
+ */
+- (KCSClient *)initializeKinveyServiceWithPropertyList;
 
 #pragma mark Client Interface
 

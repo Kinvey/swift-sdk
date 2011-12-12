@@ -80,22 +80,42 @@
 
 + (void)downloadResource:(NSString *)resourceId toFile:(NSString *)filename withResourceDelegate:(id<KCSResourceDelegate>)delegate
 {
-    NSException* myException = [NSException
-                                exceptionWithName:@"UnsupportedFeatureException"
-                                reason:@"This feature is not yet supported."
-                                userInfo:nil];
-    @throw myException;
-   
+    NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"download-loc/%@", resourceId];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
+    
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        if (response.responseCode != KCS_HTTP_STATUS_OK){
+            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[response.responseData objectFromJSONData]]];
+        } else {
+            // We have a valid NSData object, right now this is the only way I know to complete this request...
+            NSError *fileError = [[NSError alloc] init];
+            BOOL didWriteSuccessfully = [response.responseData writeToFile:filename
+                                                                   options:NSDataWritingAtomic
+                                                                     error:&fileError];
+            
+            if (didWriteSuccessfully){
+                [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:filename 
+                                                                                          withResourceId:resourceId withStreamingURL:nil withData:nil withLength:[response.responseData length]]];
+            } else {
+                // We failed to write the file
+                [delegate resourceServiceDidFailWithError:fileError];
+            }
+            [fileError release];
+        }
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        [delegate resourceServiceDidFailWithError:error];
+    };
+    
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
+    
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
 + (void)saveLocalResource:(NSString *)filename withDelegate:(id<KCSResourceDelegate>)delegate
 {
-    NSException* myException = [NSException
-                                exceptionWithName:@"UnsupportedFeatureException"
-                                reason:@"This feature is not yet supported."
-                                userInfo:nil];
-    @throw myException;
-
+    [KCSResourceService saveLocalResource:filename toResource:[filename lastPathComponent] withDelegate:delegate];
 }
 
 + (void)getStreamingURLForResource:(NSString *)resourceId withResourceDelegate:(id<KCSResourceDelegate>)delegate
@@ -132,12 +152,17 @@
 
 + (void)saveLocalResource:(NSString *)filename toResource:(NSString *)resourceId withDelegate:(id<KCSResourceDelegate>)delegate
 {
-    NSException* myException = [NSException
-                                exceptionWithName:@"UnsupportedFeatureException"
-                                reason:@"This feature is not yet supported"
-                                userInfo:nil];
-    @throw myException;
-
+    NSError *fileOpError = [[NSError alloc] init];
+    // Not sure what the best read options to use here are, so not providing any.  Hopefully the defaults are ok.
+    NSData *data = [NSData dataWithContentsOfFile:filename options:0 error:&fileOpError];
+    if (data){
+        // We read in the data, we can upload it.
+        [KCSResourceService saveData:data toResource:resourceId withDelegate:delegate];
+    } else {
+        // We had an issue..., we didn't upload, so call the failure method of the delegate
+        [delegate resourceServiceDidFailWithError:fileOpError];
+    }
+    [fileOpError release];
 }
 
 + (void)saveData:(NSData *)data toResource:(NSString *)resourceId withDelegate:(id<KCSResourceDelegate>)delegate
