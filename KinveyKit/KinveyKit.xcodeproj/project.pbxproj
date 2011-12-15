@@ -66,6 +66,9 @@
 		D33E6878147DC1A400EE885E /* KCSConnectionResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = D33E6876147DC1A400EE885E /* KCSConnectionResponse.h */; };
 		D33E6879147DC1A400EE885E /* KCSConnectionResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E6877147DC1A400EE885E /* KCSConnectionResponse.m */; };
 		D33E687A147DC1A400EE885E /* KCSConnectionResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E6877147DC1A400EE885E /* KCSConnectionResponse.m */; };
+		D3650FEA149682E600945F7D /* KCSMockConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D3650FE9149682E600945F7D /* KCSMockConnection.m */; };
+		D3650FEE1496856800945F7D /* KCSMockURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D3650FED1496856800945F7D /* KCSMockURLConnection.m */; };
+		D3650FF11496916800945F7D /* KinveyKitAsyncConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3650FF01496916800945F7D /* KinveyKitAsyncConnectionTests.m */; };
 		D3C5E67A14745E39002D8F2B /* libUAirship-1.1.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A643E147174C300F77A3F /* libUAirship-1.1.1.a */; };
 		D3C5E67D14745E6E002D8F2B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */; };
 		D3C5E68114745EEE002D8F2B /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */; };
@@ -366,6 +369,12 @@
 		D33E6872147DBA7200EE885E /* KCSAsyncConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSAsyncConnection.m; sourceTree = "<group>"; };
 		D33E6876147DC1A400EE885E /* KCSConnectionResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSConnectionResponse.h; sourceTree = "<group>"; };
 		D33E6877147DC1A400EE885E /* KCSConnectionResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSConnectionResponse.m; sourceTree = "<group>"; };
+		D3650FE8149682E600945F7D /* KCSMockConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMockConnection.h; sourceTree = "<group>"; };
+		D3650FE9149682E600945F7D /* KCSMockConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMockConnection.m; sourceTree = "<group>"; };
+		D3650FEC1496856800945F7D /* KCSMockURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMockURLConnection.h; sourceTree = "<group>"; };
+		D3650FED1496856800945F7D /* KCSMockURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMockURLConnection.m; sourceTree = "<group>"; };
+		D3650FEF1496916800945F7D /* KinveyKitAsyncConnectionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitAsyncConnectionTests.h; sourceTree = "<group>"; };
+		D3650FF01496916800945F7D /* KinveyKitAsyncConnectionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitAsyncConnectionTests.m; sourceTree = "<group>"; };
 		D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -567,6 +576,12 @@
 				D32A60E614716EE300F77A3F /* Supporting Files */,
 				D3EA226C148529A400666259 /* KinveyKitRESTRequestTests.h */,
 				D3EA226D148529A400666259 /* KinveyKitRESTRequestTests.m */,
+				D3650FE8149682E600945F7D /* KCSMockConnection.h */,
+				D3650FE9149682E600945F7D /* KCSMockConnection.m */,
+				D3650FEC1496856800945F7D /* KCSMockURLConnection.h */,
+				D3650FED1496856800945F7D /* KCSMockURLConnection.m */,
+				D3650FEF1496916800945F7D /* KinveyKitAsyncConnectionTests.h */,
+				D3650FF01496916800945F7D /* KinveyKitAsyncConnectionTests.m */,
 			);
 			path = KinveyKitTests;
 			sourceTree = "<group>";
@@ -1384,6 +1399,9 @@
 				D3F7E872148807900044F1E8 /* KCSKeyChain.m in Sources */,
 				D3F7E8771488084D0044F1E8 /* KinveyUser.m in Sources */,
 				D3F7E88C148D64560044F1E8 /* KCSConnectionProgress.m in Sources */,
+				D3650FEA149682E600945F7D /* KCSMockConnection.m in Sources */,
+				D3650FEE1496856800945F7D /* KCSMockURLConnection.m in Sources */,
+				D3650FF11496916800945F7D /* KinveyKitAsyncConnectionTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

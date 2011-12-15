@@ -2,11 +2,12 @@
 //  KCSEntityDict.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 10/21/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
 //
-//  This is an example implementation of a persistable object
-//  subclass this if you need to 
+//  This software contains valuable confidential and proprietary information of
+//  KINVEY, INC and is subject to applicable licensing agreements.
+//  Unauthorized reproduction, transmission or distribution of this file and its
+//  contents is a violation of applicable laws.
 
 #import <Foundation/Foundation.h>
 #import "KinveyPersistable.h"
