@@ -69,26 +69,6 @@
 #pragma mark -
 #pragma mark Constructors
 
-//- (id)initWithCredentials:(NSURLCredential *)credentials
-//{
-//    self = [super self];
-//    if (self){
-//        _activeDownload = nil;
-//        _lastResponse = nil;
-//        _request = nil;
-//        _connection = nil;
-//        _percentNotificationThreshold = 1; // Default to 1%
-//        _lastPercentage = 0; // Start @ 0%
-//        // Don't cache the Auth, just in case we switch it up later...
-//        _basicAuthCred = [credentials retain];  // We own this now...
-//    }
-//    return self;
-//}
-//
-//- (id)initWithUsername:(NSString *)username password:(NSString *)password
-//{
-//    return [self initWithCredentials:[NSURLCredential credentialWithUser:username password:password persistence:NSURLCredentialPersistenceNone]];
-//}
 
 - (id)initWithConnection:(NSURLConnection *)theConnection
 {
@@ -148,6 +128,10 @@
     // If our connection has been cleaned up, then we need to make sure that we get it back before using it.
     if (self.connection == nil){
         self.connection = [NSURLConnection connectionWithRequest:self.request delegate:self]; // Retained due to accessor
+    } else {
+        // This method only starts the connection if it's not been started, if we somehow end up here
+        // without a started connection... well... we need to start it.
+        [self.connection start];
     }
     
     if (self.connection) {
