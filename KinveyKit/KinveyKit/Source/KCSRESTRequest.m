@@ -40,6 +40,8 @@ getLogDate(void)
 
 @interface KCSRESTRequest()
 @property (nonatomic, retain) NSMutableURLRequest *request;
+@property (nonatomic) BOOL isMockRequest;
+@property (nonatomic, retain) Class mockConnection;
 - (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod;
 @end
 
@@ -52,6 +54,8 @@ getLogDate(void)
 @synthesize headers=_headers;
 @synthesize method=_method;
 @synthesize isSyncRequest=_isSyncRequest;
+@synthesize isMockRequest=_isMockRequest;
+@synthesize mockConnection=_mockConnection;
 @synthesize request=_request;
 @synthesize followRedirects=_followRedirects;
 
@@ -75,6 +79,7 @@ getLogDate(void)
         _progressAction = NULL;
         _failureAction = NULL;
         _isSyncRequest = NO;
+        _isMockRequest = NO;
         _followRedirects = YES;
         _headers = [[NSMutableDictionary dictionary] retain];
 
@@ -91,7 +96,7 @@ getLogDate(void)
 
 - (void)dealloc
 {
-    [_resourceLocation release];
+    [_resourceLocation release]; 
     [_headers release];
 
     _resourceLocation = nil;
@@ -128,6 +133,13 @@ getLogDate(void)
 - (id)syncRequest
 {
     self.isSyncRequest = YES;
+    return self;
+}
+
+- (id)mockRequestWithMockClass:(Class)connection
+{
+    self.isMockRequest = YES;
+    self.mockConnection = connection;
     return self;
 }
 
@@ -201,6 +213,8 @@ getLogDate(void)
     
     if (self.isSyncRequest){
         connection = [[KCSConnectionPool syncConnection] retain];
+    } else if (self.isMockRequest) {
+        connection = [[KCSConnectionPool connectionWithConnectionType:self.mockConnection] retain];
     } else {
         connection = [[KCSConnectionPool asyncConnection] retain];
     }
