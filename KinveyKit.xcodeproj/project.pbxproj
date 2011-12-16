@@ -104,6 +104,8 @@
 		D3F7E88A148D64560044F1E8 /* KCSConnectionProgress.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E888148D64560044F1E8 /* KCSConnectionProgress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3F7E88B148D64560044F1E8 /* KCSConnectionProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E889148D64560044F1E8 /* KCSConnectionProgress.m */; };
 		D3F7E88C148D64560044F1E8 /* KCSConnectionProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E889148D64560044F1E8 /* KCSConnectionProgress.m */; };
+		D3FC21FB149A82FC00979F09 /* OCHamcrestIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3FC21FA149A82FC00979F09 /* OCHamcrestIOS.framework */; };
+		D3FC21FE149A833E00979F09 /* KinveyKitClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FC21FD149A833E00979F09 /* KinveyKitClientTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -402,6 +404,9 @@
 		D3F7E8741488084D0044F1E8 /* KinveyUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyUser.m; sourceTree = "<group>"; };
 		D3F7E888148D64560044F1E8 /* KCSConnectionProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSConnectionProgress.h; sourceTree = "<group>"; };
 		D3F7E889148D64560044F1E8 /* KCSConnectionProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSConnectionProgress.m; sourceTree = "<group>"; };
+		D3FC21FA149A82FC00979F09 /* OCHamcrestIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrestIOS.framework; sourceTree = "<group>"; };
+		D3FC21FC149A833E00979F09 /* KinveyKitClientTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitClientTests.h; sourceTree = "<group>"; };
+		D3FC21FD149A833E00979F09 /* KinveyKitClientTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitClientTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -428,6 +433,7 @@
 				D32A60DD14716EE300F77A3F /* UIKit.framework in Frameworks */,
 				D32A60DE14716EE300F77A3F /* Foundation.framework in Frameworks */,
 				D32A60E314716EE300F77A3F /* KinveyKit.framework in Frameworks */,
+				D3FC21FB149A82FC00979F09 /* OCHamcrestIOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,7 +483,7 @@
 			name = ResourceService;
 			sourceTree = "<group>";
 		};
-		D312B3F8147EA63C007F48B9 /* DataService */ = {
+		D312B3F8147EA63C007F48B9 /* appdataService */ = {
 			isa = PBXGroup;
 			children = (
 				D32A60FB14716F2D00F77A3F /* KCSEntityDict.h */,
@@ -490,7 +496,7 @@
 				D3EA22C51486B0BD00666259 /* KinveyPing.h */,
 				D3EA22C61486B0BD00666259 /* KinveyPing.m */,
 			);
-			name = DataService;
+			name = appdataService;
 			sourceTree = "<group>";
 		};
 		D312B3F9147EA671007F48B9 /* Analytics */ = {
@@ -533,6 +539,7 @@
 		D32A60CA14716EE300F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D3FC21FA149A82FC00979F09 /* OCHamcrestIOS.framework */,
 				D3C5E68414745F09002D8F2B /* MobileCoreServices.framework */,
 				D3C5E68514745F09002D8F2B /* Security.framework */,
 				D3C5E68614745F09002D8F2B /* SystemConfiguration.framework */,
@@ -571,6 +578,8 @@
 		D32A60E514716EE300F77A3F /* KinveyKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				D3FC21FC149A833E00979F09 /* KinveyKitClientTests.h */,
+				D3FC21FD149A833E00979F09 /* KinveyKitClientTests.m */,
 				D32A60EB14716EE300F77A3F /* KinveyKitTests.h */,
 				D32A60EC14716EE300F77A3F /* KinveyKitTests.m */,
 				D32A60E614716EE300F77A3F /* Supporting Files */,
@@ -602,7 +611,7 @@
 				D3EA22661484850B00666259 /* Push */,
 				D312B3FA147EA692007F48B9 /* KinveyService */,
 				D312B3F9147EA671007F48B9 /* Analytics */,
-				D312B3F8147EA63C007F48B9 /* DataService */,
+				D312B3F8147EA63C007F48B9 /* appdataService */,
 				D312B3F7147EA5FD007F48B9 /* ResourceService */,
 				D312B3F6147EA5DE007F48B9 /* Utils */,
 				D312B3F4147EA5BA007F48B9 /* Network */,
@@ -1402,6 +1411,7 @@
 				D3650FEA149682E600945F7D /* KCSMockConnection.m in Sources */,
 				D3650FEE1496856800945F7D /* KCSMockURLConnection.m in Sources */,
 				D3650FF11496916800945F7D /* KinveyKitAsyncConnectionTests.m in Sources */,
+				D3FC21FE149A833E00979F09 /* KinveyKitClientTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1494,6 +1504,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SRCROOT)/../../../Downloaded/OCHamcrest/Source/build/OCHamcrest-1.6\"",
+					"\"$(SRCROOT)\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
@@ -1593,6 +1605,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SRCROOT)/../../../Downloaded/OCHamcrest/Source/build/OCHamcrest-1.6\"",
+					"\"$(SRCROOT)\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
@@ -1612,6 +1626,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SRCROOT)/../../../Downloaded/OCHamcrest/Source/build/OCHamcrest-1.6\"",
+					"\"$(SRCROOT)\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";

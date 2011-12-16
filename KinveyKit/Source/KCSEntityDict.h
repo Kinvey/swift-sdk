@@ -13,21 +13,11 @@
 #import "KinveyPersistable.h"
 #import "KCSClient.h"
 
-/*! An entity dictionary object that can persist to Kinvey.
+/*! An entity dictionary object that can save to Kinvey.
 
-	To use this object, simply treat it as a dictionary and issue a fetch/persist to update it's
+	To use this object, simply treat it as a dictionary and issue a fetch/save to update it's
 	data from Kinvey.
 */
 @interface KCSEntityDict : NSObject <KCSPersistable>
-
-/*! The delegate to be notified once a persist is complete.  @todo: This is probably OBE.*/
-@property (assign) id<KCSPersistDelegate> delegate;
-
-/*! @sa KCSPersistable */
-- (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistUsingClient:(KCSClient *)client;
-
-/*! @sa KCSPersistable */
-- (NSDictionary*)propertyToElementMapping;
-
 
 @end

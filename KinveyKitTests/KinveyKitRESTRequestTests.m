@@ -8,6 +8,8 @@
 
 #import "KinveyKitRESTRequestTests.h"
 #import "KCSRESTRequest.h"
+#import "KCSMockConnection.h"
+#import "KCSMockURLConnection.h"
 
 @implementation KinveyKitRESTRequestTests
 
@@ -22,6 +24,16 @@ NSString *getLogDate(void); // Make compiler happy...
 - (void)testMath
 {
     STAssertTrue((1 + 1) == 2, @"Compiler isn't feeling well today :-(");
+}
+
+- (void)testTest
+{
+    KCSMockConnection *connection = [[KCSMockConnection alloc] initWithConnection:[KCSMockURLConnection connectionWithRequest:nil delegate:self]];
+    
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:@"/" usingMethod:kGetRESTMethod];
+    [request mockRequestWithMockClass:[KCSMockConnection class]];
+    [request start];
+    STAssertFalse(request.isSyncRequest, @"Request should be MOCK, not Sync");
 }
 
 @end
