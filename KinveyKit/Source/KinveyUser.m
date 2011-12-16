@@ -68,6 +68,7 @@
                 if (request != nil){
                     // We're going to Make a failure happen here...
                     request.failureAction([NSError errorWithDomain:@"KINVEY ERROR" code:-1 userInfo:errorDict]);
+                    return;
                 } else {
                     // This case is not handled yet...
                     NSException* myException = [NSException
@@ -177,6 +178,13 @@
 - (void)initializeCurrentUser
 {
     [self initializeCurrentUserWithRequest:nil];
+}
+
+- (void)logout
+{
+    [KCSKeyChain removeStringForKey:@"username"];
+    [KCSKeyChain removeStringForKey:@"password"];
+    [KCSKeyChain removeStringForKey:@"_id"];
 }
 
 @end
