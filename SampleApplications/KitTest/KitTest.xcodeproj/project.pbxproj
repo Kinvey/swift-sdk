@@ -24,12 +24,12 @@
 		D32A65231471A5E300F77A3F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65211471A5E300F77A3F /* libsqlite3.dylib */; };
 		D32A65241471A5E300F77A3F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65221471A5E300F77A3F /* libz.dylib */; };
 		D32A65261471A5FC00F77A3F /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65251471A5FC00F77A3F /* CoreTelephony.framework */; };
+		D3503D20149B98B200460879 /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3503D1F149B98B200460879 /* KinveyKit.framework */; };
 		D35E07DB1471D5B100DD9E41 /* logo57.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E07DA1471D5B100DD9E41 /* logo57.png */; };
 		D35E07DE1471D5B400DD9E41 /* logo114.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E07DD1471D5B400DD9E41 /* logo114.png */; };
 		D35E07E01471D63300DD9E41 /* twitter_round_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E07DF1471D63300DD9E41 /* twitter_round_57.png */; };
 		D35E07E31471D75700DD9E41 /* KitTestObject.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E07E21471D75700DD9E41 /* KitTestObject.m */; };
 		D35E07F21471F98500DD9E41 /* libUAirship-1.1.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D35E07F11471F98500DD9E41 /* libUAirship-1.1.1.a */; };
-		D3B96ED91490190100877493 /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B96ED81490190100877493 /* KinveyKit.framework */; };
 		D3C5E6A51474B595002D8F2B /* ImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C5E6A41474B595002D8F2B /* ImageViewController.m */; };
 		D3C5E6A71474B61A002D8F2B /* ImageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3C5E6A61474B61A002D8F2B /* ImageView.xib */; };
 		D3C5E6AB1474B930002D8F2B /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C5E6A91474B930002D8F2B /* RootViewController.m */; };
@@ -59,13 +59,13 @@
 		D32A65211471A5E300F77A3F /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		D32A65221471A5E300F77A3F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		D32A65251471A5FC00F77A3F /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		D3503D1F149B98B200460879 /* KinveyKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KinveyKit.framework; path = "../../KinveyKit/build/Debug-iphoneos/KinveyKit.framework"; sourceTree = "<group>"; };
 		D35E07DA1471D5B100DD9E41 /* logo57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo57.png; sourceTree = "<group>"; };
 		D35E07DD1471D5B400DD9E41 /* logo114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo114.png; sourceTree = "<group>"; };
 		D35E07DF1471D63300DD9E41 /* twitter_round_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = twitter_round_57.png; sourceTree = "<group>"; };
 		D35E07E11471D75700DD9E41 /* KitTestObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KitTestObject.h; sourceTree = "<group>"; };
 		D35E07E21471D75700DD9E41 /* KitTestObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KitTestObject.m; sourceTree = "<group>"; };
 		D35E07F11471F98500DD9E41 /* libUAirship-1.1.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.1.1.a"; path = "Airship/libUAirship-1.1.1.a"; sourceTree = "<group>"; };
-		D3B96ED81490190100877493 /* KinveyKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KinveyKit.framework; path = "../../KinveyKit/build/Release-iphoneos/KinveyKit.framework"; sourceTree = "<group>"; };
 		D3C5E6A31474B595002D8F2B /* ImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewController.h; sourceTree = "<group>"; };
 		D3C5E6A41474B595002D8F2B /* ImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageViewController.m; sourceTree = "<group>"; };
 		D3C5E6A61474B61A002D8F2B /* ImageView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageView.xib; sourceTree = "<group>"; };
@@ -91,7 +91,7 @@
 				D32A64F014717B4800F77A3F /* UIKit.framework in Frameworks */,
 				D32A64F214717B4800F77A3F /* Foundation.framework in Frameworks */,
 				D32A64F414717B4800F77A3F /* CoreGraphics.framework in Frameworks */,
-				D3B96ED91490190100877493 /* KinveyKit.framework in Frameworks */,
+				D3503D20149B98B200460879 /* KinveyKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,11 +121,11 @@
 		D32A64EE14717B4800F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D3503D1F149B98B200460879 /* KinveyKit.framework */,
 				D32A65251471A5FC00F77A3F /* CoreTelephony.framework */,
 				D32A65211471A5E300F77A3F /* libsqlite3.dylib */,
 				D35E07F11471F98500DD9E41 /* libUAirship-1.1.1.a */,
 				D32A65221471A5E300F77A3F /* libz.dylib */,
-				D3B96ED81490190100877493 /* KinveyKit.framework */,
 				D32A651F1471A5BA00F77A3F /* StoreKit.framework */,
 				D32A65191471A57700F77A3F /* MobileCoreServices.framework */,
 				D32A651A1471A57700F77A3F /* Security.framework */,

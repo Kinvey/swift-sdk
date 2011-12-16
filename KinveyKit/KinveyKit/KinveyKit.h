@@ -13,14 +13,15 @@
 #ifndef KinveyKit_h
 #define KinveyKit_h
 
-#include "KCSPush.h"
-#include "KCSClient.h"
-#include "KinveyAnalytics.h"
-#include "KCSEntityDict.h"
-#include "KinveyCollection.h"
-#include "KinveyEntity.h"
-#include "KinveyPersistable.h"
-#include "KCSBlobService.h"
-#include "KinveyPing.h"
+#import "KCSPush.h"
+#import "KCSClient.h"
+#import "KinveyAnalytics.h"
+#import "KCSEntityDict.h"
+#import "KinveyCollection.h"
+#import "KinveyEntity.h"
+#import "KinveyPersistable.h"
+#import "KCSBlobService.h"
+#import "KinveyPing.h"
+#import "KinveyUser.h"
 
 #endif

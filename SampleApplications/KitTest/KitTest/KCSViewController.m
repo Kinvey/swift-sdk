@@ -174,13 +174,13 @@
 
 }
 
-- (void)entity:(id)entity persistDidFailWithError:(NSError *)error
+- (void)entity:(id)entity operationDidFailWithError:(NSError *)error
 {
     NSLog(@"Persist failed: %@", error);
     [self.networkActivity stopAnimating];
 }
 
-- (void)entity:(id)entity persistDidCompleteWithResult:(NSObject *)result
+- (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
 {
     NSLog(@"Persist Succeeded: %@", result);
     [self refreshAllFields];
@@ -242,7 +242,7 @@
 - (IBAction)populateData:(id)sender {
     NSLog(@"Populating Data");
     [self.networkActivity startAnimating];
-    [self.testObject persistToCollection:_testObjects withDelegate:self];
+    [self.testObject saveToCollection:_testObjects withDelegate:self];
 }
 
 - (void)persistNewValues: (BOOL)isUpdate
@@ -258,7 +258,7 @@
         // Having a legit object id causes an update instead of a new value
         test.objectId = self.lastObject.objectId;
     }
-    [test persistToCollection:_testObjects withDelegate:self];
+    [test saveToCollection:_testObjects withDelegate:self];
 
 }
 
@@ -295,7 +295,7 @@
     if (self.testObjects == nil){
         KCSCollection *collection = [[KCSClient sharedClient] collectionFromString:@"test_objects" withClass:[KitTestObject class]];
         _testObjects = collection;
-        [self.testObject persistToCollection:_testObjects withDelegate:self];
+        [self.testObject saveToCollection:_testObjects withDelegate:self];
         [self.networkActivity startAnimating];
     }    
 }

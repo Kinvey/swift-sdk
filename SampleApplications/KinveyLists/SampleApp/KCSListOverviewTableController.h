@@ -11,7 +11,7 @@
 #import "KCSTableViewControllerAddDelegate.h"
 @class KCSList;
 @class KCSDeleteHelper;
-@interface KCSListOverviewTableController : UITableViewController <KCSCollectionDelegate, KCSTableViewControllerAddDelegate, KCSPersistDelegate>
+@interface KCSListOverviewTableController : UITableViewController <KCSCollectionDelegate, KCSTableViewControllerAddDelegate, KCSPersistableDelegate>
 
 @property (retain) NSMutableArray *kLists;
 @property (retain) KCSCollection *listsCollection;

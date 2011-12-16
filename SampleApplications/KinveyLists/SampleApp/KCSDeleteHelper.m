@@ -62,7 +62,7 @@
     NSLog(@"DH: Resource Delete worked: %@", result);
 }
 
-- (void)entity:(id)entity persistDidCompleteWithResult:(NSObject *)result
+- (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
 {
     NSLog(@"DH: Entity delete worked: %@", result);
 }
@@ -72,7 +72,7 @@
     NSLog(@"DH Fetch failed: %@", error);
 }
 
-- (void)entity:(id)entity persistDidFailWithError:(NSError *)error
+- (void)entity:(id)entity operationDidFailWithError:(NSError *)error
 {
     NSLog(@"DH Persist Failed: %@", error);
 }

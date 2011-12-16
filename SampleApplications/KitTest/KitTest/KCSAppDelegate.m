@@ -48,16 +48,29 @@
     ///////////////////////////
     // START OF KINVEY CODE
     //////////////////////////
+//    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+//                             @"kid1089", KCS_APP_KEY_KEY,
+//                             @"ad8f7ea0538147f89a7f75dd95491fdf", KCS_APP_SECRET_KEY,
+//                             @"OzPSPvSJTyq0LTOIdff_dA", KCS_PUSH_KEY_KEY,
+//                             @"ETHhR_GCRsq5QqhRLCp0ew", KCS_PUSH_SECRET_KEY,
+//                             @"NO", KCS_PUSH_IS_ENABLED_KEY,
+//                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
+
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             @"kid1089", KCS_APP_KEY_KEY,
-                             @"ad8f7ea0538147f89a7f75dd95491fdf", KCS_APP_SECRET_KEY,
-                             @"OzPSPvSJTyq0LTOIdff_dA", KCS_PUSH_KEY_KEY,
-                             @"ETHhR_GCRsq5QqhRLCp0ew", KCS_PUSH_SECRET_KEY,
-                             @"NO", KCS_PUSH_IS_ENABLED_KEY,
+                             @"kid1003", KCS_APP_KEY_KEY,
+                             @"e43e23bc016e41319da72f5fa00f5299", KCS_APP_SECRET_KEY,
+                             @"X-_pc0WmS3OLqkYKvC5Ubw", KCS_PUSH_KEY_KEY,
+                             @"2GgUMA6uTbqOftEYw80b7g", KCS_PUSH_SECRET_KEY,
+                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
                              KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
-                             
+
+    
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
     [[KCSPush sharedPush] onLoadHelper:options];
+    
+//    [[[KCSClient sharedClient] currentUser] logout];
+//    
+//    exit(EXIT_SUCCESS);
     
     
     

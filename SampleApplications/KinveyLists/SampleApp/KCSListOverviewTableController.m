@@ -275,12 +275,12 @@
     
     self.listToAdd = alController.addedList;
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    [self.listToAdd persistToCollection:self.listsCollection withDelegate:self];
+    [self.listToAdd saveToCollection:self.listsCollection withDelegate:self];
 	[controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 
-- (void)entity:(id)entity persistDidCompleteWithResult:(NSObject *)result
+- (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
 {
     NSLog(@"Result: %@", result);
     // Nil result means that we deleted.
@@ -299,7 +299,7 @@
 
 }
 
-- (void)entity:(id)entity persistDidFailWithError:(NSError *)error
+- (void)entity:(id)entity operationDidFailWithError:(NSError *)error
 {
     UIAlertView *alert =
     [[UIAlertView alloc] initWithTitle: @"Error Saving List"

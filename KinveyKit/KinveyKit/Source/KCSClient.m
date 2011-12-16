@@ -195,6 +195,8 @@
     self.appKey = appKey;
     self.appSecret = appSecret;
     
+    _serviceHostname = @"baas";
+    
     [self updateURLs];
     
     // TODO extract options to something meaningful...

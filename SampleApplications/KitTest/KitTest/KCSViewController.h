@@ -14,7 +14,7 @@
 @class KCSCollection;
 @class RootViewController;
 
-@interface KCSViewController : UIViewController <KCSPersistDelegate, KCSCollectionDelegate, KCSInformationDelegate>
+@interface KCSViewController : UIViewController <KCSPersistableDelegate, KCSCollectionDelegate, KCSInformationDelegate>
 
 // Kinvey Note: This is moving to be a Singleton in KinveyKit, so this code will not be necessary in the next release
 @property (retain) KCSCollection *testObjects;
