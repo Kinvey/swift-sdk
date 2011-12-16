@@ -13,12 +13,6 @@
 
 @implementation KCSEntityDict
 
-@synthesize delegate;
-
-// This name seems gimpy... but it conforms to the sytle guide, WTF mate?
-- (void)persistDelegate:(id <KCSPersistDelegate>)delegate persistUsingClient:(KCSClient *)client {
-    
-}
 
 - (NSDictionary*)propertyToElementMapping
 {

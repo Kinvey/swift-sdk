@@ -38,7 +38,7 @@
 
 /*!  Add ActiveRecord capabilities to the built-in root object (NSObject) of the AppKit/Foundation system.
 *
-* This category is used to cause any NSObject to be able to be persisted into the Kinvey Cloud Service.
+* This category is used to cause any NSObject to be able to be saved into the Kinvey Cloud Service.
 */
 @interface NSObject (KCSEntity) <KCSPersistable>
 

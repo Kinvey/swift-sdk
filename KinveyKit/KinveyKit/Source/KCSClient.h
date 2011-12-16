@@ -70,20 +70,18 @@
 ///---------------------------------------------------------------------------------------
 /// @name Kinvey Service URL Access
 ///---------------------------------------------------------------------------------------
+
+/*! Kinvey Service Hostname */
+@property (nonatomic, copy) NSString *serviceHostname;
+
 /*! Base URL for Kinvey data service */
-@property (nonatomic, copy, readonly) NSString *dataBaseURL;
+@property (nonatomic, copy, readonly) NSString *appdataBaseURL;
 
 /*! Base URL for Kinvey Resource Service */
 @property (nonatomic, copy, readonly) NSString *resourceBaseURL;
 
 /*! Base URL for Kinvey User Service */
 @property (nonatomic, copy, readonly) NSString *userBaseURL;
-
-///---------------------------------------------------------------------------------------
-/// @name Connection Properties
-///---------------------------------------------------------------------------------------
-/*! Protocol used to connection to Kinvey Service (nominally HTTPS)*/
-@property (nonatomic, copy, readonly) NSString *protocol;
 
 /*! Connection Timeout value, set this to cause shorter or longer network timeouts. */
 @property double connectionTimeout;

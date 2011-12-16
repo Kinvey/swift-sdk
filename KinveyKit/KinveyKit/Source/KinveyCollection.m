@@ -158,7 +158,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 - (void)fetchAllWithDelegate:(id<KCSCollectionDelegate>)delegate
 {
-    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/", self.collectionName];
+    NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/", self.collectionName];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
 
     KCSConnectionCompletionBlock cBlock = makeCollectionCompletionBlock(self, delegate);
@@ -275,7 +275,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         @throw myException;
     }
     
-    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/?query=%@",
+    NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/?query=%@",
                              self.collectionName, [NSString stringbyPercentEncodingString:[self buildQueryForFilters:[self filters]]]];
 
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
@@ -293,7 +293,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 - (void)entityCountWithDelegate:(id<KCSInformationDelegate>)delegate
 {
-    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
+    NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
