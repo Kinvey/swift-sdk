@@ -5,6 +5,13 @@
 //  Created by Brian Wilson on 12/1/11.
 //  Copyright (c) 2011 Kinvey. All rights reserved.
 //
+//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//
+//  This software contains valuable confidential and proprietary information of
+//  KINVEY, INC and is subject to applicable licensing agreements.
+//  Unauthorized reproduction, transmission or distribution of this file and its
+//  contents is a violation of applicable laws.
+
 
 // DERIVED FROM Keychain.m
 //
@@ -31,6 +38,36 @@
 		appName = [bundle objectForInfoDictionaryKey:@"CFBundleName"];	
 	}
     return appName;
+}
+
++ (BOOL)removeStringForKey:(NSString *)key
+{
+    if (key == nil){
+        return NO;
+    }
+    
+    key = [NSString stringWithFormat:@"%@ - %@", [KCSKeyChain appName], key];
+    
+	// First check if it already exists, by creating a search dictionary and requesting that 
+    // nothing be returned, and performing the search anyway.
+	NSMutableDictionary *existsQueryDictionary = [NSMutableDictionary dictionary];
+	
+	[existsQueryDictionary setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+	
+	// Add the keys to the search dict
+	[existsQueryDictionary setObject:@"service" forKey:(id)kSecAttrService];
+	[existsQueryDictionary setObject:key forKey:(id)kSecAttrAccount];
+    
+	OSStatus res = SecItemCopyMatching((CFDictionaryRef)existsQueryDictionary, NULL);
+
+    if (res == errSecItemNotFound){
+        return NO;
+    } else {
+        res = SecItemDelete((CFDictionaryRef)existsQueryDictionary);
+        NSAssert1(res == errSecSuccess, @"Recieved %d from SecItemDelete!", res);
+    }
+    
+    return YES;
 }
 
 + (BOOL)setString:(NSString *)string forKey:(NSString *)key {

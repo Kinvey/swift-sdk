@@ -11,7 +11,7 @@
 #import "KCSTableViewControllerAddDelegate.h"
 
 @class KCSListEntry;
-@interface KCSListContentTableController : UITableViewController <KCSCollectionDelegate, KCSPersistDelegate, KCSTableViewControllerAddDelegate, KCSResourceDelegate>
+@interface KCSListContentTableController : UITableViewController <KCSCollectionDelegate, KCSPersistableDelegate, KCSTableViewControllerAddDelegate, KCSResourceDelegate>
 
 @property (retain) NSString *listName;
 @property (retain) NSMutableArray *listContents;

@@ -63,4 +63,8 @@
  */
 - (void)initializeCurrentUser;
 
+
+- (void)logout;
+
+
 @end

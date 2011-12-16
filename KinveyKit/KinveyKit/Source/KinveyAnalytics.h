@@ -24,6 +24,15 @@
 
 /*! The unique identifier for this device/user */
 @property (retain) NSString *UUID;
+//@property (retain) NSString *UDID;
+
+/*! Generate a UUID
+ 
+ This UUID is not persistent, but is meant to be a one-time UUID.
+ 
+ @return The generated UUID.
+ */
+- (NSString *)generateUUID;
 
 
 @end

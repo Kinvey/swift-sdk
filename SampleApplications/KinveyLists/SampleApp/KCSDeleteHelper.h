@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <KinveyKit/KinveyKit.h>
 
-@interface KCSDeleteHelper : NSObject <KCSPersistDelegate, KCSResourceDelegate, KCSCollectionDelegate>
+@interface KCSDeleteHelper : NSObject <KCSPersistableDelegate, KCSResourceDelegate, KCSCollectionDelegate>
 
 + (id)deleteHelper;
 - (void)removeItemsFromList: (NSString *)list withListID: (NSString *)listID; 

@@ -261,7 +261,7 @@
 
     // Persist image to blob...
     // Persist entry to kinvey
-    [aiController.addedEntry persistToCollection:self.listItemsCollection withDelegate:self];
+    [aiController.addedEntry saveToCollection:self.listItemsCollection withDelegate:self];
     
 
 }
@@ -314,7 +314,7 @@
     [(UITableView *)self.view reloadData];
 }
 
-- (void)entity:(id)entity persistDidFailWithError:(NSError *)error
+- (void)entity:(id)entity operationDidFailWithError:(NSError *)error
 {
     NSLog(@"Persist failed: %@", error);
     UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Save Failed!"
@@ -326,7 +326,7 @@
 
 }
 
-- (void)entity:(id)entity persistDidCompleteWithResult:(NSObject *)result
+- (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
 {
     NSLog(@"Result: %@", result);
     // Nil result means that we deleted.
