@@ -54,7 +54,7 @@
     // Dummy
     KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
     
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] dataBaseURL] usingMethod:kGetRESTMethod];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] appdataBaseURL] usingMethod:kGetRESTMethod];
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 

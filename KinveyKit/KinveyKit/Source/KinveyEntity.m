@@ -85,7 +85,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 {
     KCSClient *kinveyClient = [KCSClient sharedClient];
 
-    NSString *resource = [kinveyClient.dataBaseURL stringByAppendingFormat:@"%@/%@",
+    NSString *resource = [kinveyClient.appdataBaseURL stringByAppendingFormat:@"%@/%@",
                           [collection collectionName],
                           [NSString stringbyPercentEncodingString:query]];
 
@@ -162,7 +162,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)loadObjectWithID:(NSString *)objectID fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
-    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, objectID];
+    NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, objectID];
 
     KCSConnectionCompletionBlock cBlock;
     KCSConnectionFailureBlock fBlock;
@@ -177,7 +177,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     [self setValue:value forKey:property];
 }
 
-- (void)persistToCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistDelegate>)delegate
+- (void)saveToCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistableDelegate>)delegate
 {
     BOOL isPostRequest = NO;
 
@@ -202,7 +202,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     }
 
     
-    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
+    NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
     
 
     NSInteger HTTPMethod;
@@ -236,14 +236,14 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
             NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
-            [delegate entity:self persistDidFailWithError:err];
+            [delegate entity:self operationDidFailWithError:err];
         } else {
-            [delegate entity:self persistDidCompleteWithResult:responseToReturn];
+            [delegate entity:self operationDidCompleteWithResult:responseToReturn];
         }
     };
 
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate entity:self persistDidFailWithError:error];
+        [delegate entity:self operationDidFailWithError:error];
     };
     
     // Future enhancement
@@ -256,7 +256,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 }
 
-- (void)deleteFromCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistDelegate>)delegate
+- (void)deleteFromCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistableDelegate>)delegate
 {
     NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
     
@@ -268,7 +268,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         }
     }
 
-    NSString *resource = [[[KCSClient sharedClient] dataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, oid];
+    NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, oid];
     
     // Prepare our request
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kDeleteRESTMethod];
@@ -285,14 +285,14 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         
         if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
             NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
-            [delegate entity:self persistDidFailWithError:err];
+            [delegate entity:self operationDidFailWithError:err];
         } else {
-            [delegate entity:self persistDidCompleteWithResult:responseToReturn];
+            [delegate entity:self operationDidCompleteWithResult:responseToReturn];
         }
     };
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate entity:self persistDidFailWithError:error];
+        [delegate entity:self operationDidFailWithError:error];
     };
     
     // Future enhancement

@@ -14,31 +14,31 @@
 // Forward declaration to have access to the KCSClient definition in this protocol definition.
 @class KCSCollection;
 
-/*! Defines the implementation details of a class expecting to perform actions after the completion of a persist operation.
+/*! Defines the implementation details of a class expecting to perform actions after the completion of a save operation.
 
-Developers interested in performing actions based on the state of a persist operation should conform to this protocol.
+Developers interested in performing actions based on the state of a save operation should conform to this protocol.
 
  */
-@protocol KCSPersistDelegate <NSObject>
+@protocol KCSPersistableDelegate <NSObject>
 
-/*! Invoked when a persist operation fails
- @param entity The Object that was attempting to be persisted.
+/*! Invoked when a save operation fails
+ @param entity The Object that was attempting to be saved.
  @param error A detailed description of the error.
  */
-- (void) entity: (id)entity persistDidFailWithError: (NSError *)error;
+- (void) entity: (id)entity operationDidFailWithError: (NSError *)error;
 
-/*! Invoked when a persist operation completes successfully.
- @param entity The Object that was attempting to be persisted.
+/*! Invoked when a save operation completes successfully.
+ @param entity The Object that was attempting to be saved.
  @param result The result of the operation (Definition TBD)
  */
-- (void) entity:(id)entity persistDidCompleteWithResult: (NSObject *)result;
+- (void) entity:(id)entity operationDidCompleteWithResult: (NSObject *)result;
 
 @end
 
 /*! Definies the interface for a persistable object.
 
-This protocol is used to inform that this object is able to be persisted to the Kinvey Cloud Service.  The methods
-defined in this protocol are used to determine what data to persist and then to actually persist the data.
+This protocol is used to inform that this object is able to be saved to the Kinvey Cloud Service.  The methods
+defined in this protocol are used to determine what data to save and then to actually save the data.
 
 The KCSEntity category on NSObject conforms to this protocol, providing a default implementation of this protocol
 for all NSObject descendants.  You may directly implement this protocol in order to provide actions not accomplished by
@@ -51,9 +51,9 @@ implementing these methods.
  */
 @protocol KCSPersistable <NSObject>
 ///---------------------------------------------------------------------------------------
-/// @name Persist Items
+/// @name Save Items
 ///---------------------------------------------------------------------------------------
-/*!  Persist an Entity into KCS for a given KCS client and register a delegate to notify when complete.
+/*!  Save an Entity into KCS for a given KCS client and register a delegate to notify when complete.
 
   When overriding this method an implementer will most likely need to communicate with the KCSClient class,
  which has a different delegate interface.  An implementer will need to map between these delegates.  This does
@@ -61,12 +61,12 @@ implementing these methods.
  
  @warning It is strongly advised to not override this method.
 
- @param collection An instance of a KCS collection to use in persisting this Entity
- @param delegate The delegate to inform upon the completion of the persist operation.
+ @param collection An instance of a KCS collection to use in saving this Entity
+ @param delegate The delegate to inform upon the completion of the save operation.
  
 
  */
-- (void)persistToCollection: (KCSCollection *)collection withDelegate: (id <KCSPersistDelegate>)delegate;
+- (void)saveToCollection: (KCSCollection *)collection withDelegate: (id <KCSPersistableDelegate>)delegate;
 
 ///---------------------------------------------------------------------------------------
 /// @name Delete Items
@@ -78,11 +78,11 @@ implementing these methods.
  
  @warning It is strongly advised to not override this method.
  
- @param delegate The delegate to inform upon the completion of the persist operation.
+ @param delegate The delegate to inform upon the completion of the delet operation.
  @param collection The collection to remove the item from.
 */ 
 
-- (void)deleteFromCollection: (KCSCollection *)collection withDelegate: (id<KCSPersistDelegate>)delegate;
+- (void)deleteFromCollection: (KCSCollection *)collection withDelegate: (id<KCSPersistableDelegate>)delegate;
 
 ///---------------------------------------------------------------------------------------
 /// @name Map from Local to Kinvey property names
