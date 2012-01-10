@@ -35,6 +35,9 @@
 + (KCSConnectionResponse *)connectionResponseWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData
 {
     // Return the autoreleased instance.
+    if (code < 0){
+        code = -1;
+    }
     return [[[KCSConnectionResponse alloc] initWithCode:code responseData:data headerData:header userData:userDefinedData] autorelease];
 }
 

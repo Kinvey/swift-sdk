@@ -182,6 +182,10 @@
 
 - (void)logout
 {
+    self.username = nil;
+    self.password = nil;
+    self.userId = nil;
+    
     [KCSKeyChain removeStringForKey:@"username"];
     [KCSKeyChain removeStringForKey:@"password"];
     [KCSKeyChain removeStringForKey:@"_id"];

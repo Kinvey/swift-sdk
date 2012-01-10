@@ -23,8 +23,10 @@
 ///---------------------------------------------------------------------------------------
 
 /*! The unique identifier for this device/user */
-@property (retain) NSString *UUID;
-//@property (retain) NSString *UDID;
+@property (retain, readonly) NSString *UUID;
+
+/*! The Apple Provided UDID for this device, note Deprecated in iOS 5. */
+@property (retain, readonly) NSString *UDID;
 
 /*! Generate a UUID
  
