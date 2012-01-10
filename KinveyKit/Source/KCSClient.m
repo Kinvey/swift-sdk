@@ -16,7 +16,7 @@
 #import "KinveyAnalytics.h"
 #import "NSURL+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
-
+#import "KCSReachability.h"
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
@@ -36,6 +36,14 @@
 @property (atomic, retain) NSRecursiveLock *authCompleteLock;
 
 @property (nonatomic, retain, readwrite) NSDictionary *options;
+
+#if TARGET_OS_IPHONE
+@property (nonatomic, retain, readwrite) KCSReachability *networkReachability;
+@property (nonatomic, retain, readwrite) KCSReachability *kinveyReachability;
+
+#endif
+
+@property (nonatomic, readonly) NSString *kinveyDomain;
 
 ///---------------------------------------------------------------------------------------
 /// @name Connection Properties
@@ -72,15 +80,23 @@
 
 @synthesize analytics=_analytics;
 
+#if TARGET_OS_IPHONE
+@synthesize networkReachability = _networkReachability;
+@synthesize kinveyReachability = _kinveyReachability;
+#endif
+
+@synthesize kinveyDomain = _kinveyDomain;
+
 
 - (id)init
 {
     self = [super init];
     
     if (self){
-        self.libraryVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:(id)kCFBundleVersionKey];
+        _kinveyDomain = @"kinvey.com";
+        self.libraryVersion = @"TAG-ME";
         self.userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
-        self.connectionTimeout = 60.0; // Default timeout to 1 minute...
+        self.connectionTimeout = 10.0; // Default timeout to 10 seconds
         _analytics = [[KCSAnalytics alloc] init];
         _cachePolicy = NSURLRequestReloadIgnoringLocalCacheData; //NSURLCacheStorageNotAllowed; // Inhibit caching for now
         _protocol = @"https";
@@ -90,6 +106,14 @@
         _authInProgressLock = [[NSRecursiveLock alloc] init];
         _currentUser = [[KCSUser alloc] init];
         _serviceHostname = @"baas";
+
+#if TARGET_OS_IPHONE
+        _networkReachability = [[KCSReachability reachabilityForInternetConnection] retain];
+        // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
+        // We start this in init in the hopes that it will be (mostly) complete by the time we need to use it.
+        // TODO: Investigate being notified of changes in KCS Client
+        _kinveyReachability = [[KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]] retain];
+#endif
     }
     
     return self;
@@ -106,6 +130,8 @@
     [_userBaseURL release];
     [_appdataBaseURL release];
     [_serviceHostname release];
+    [_kinveyReachability release];
+    [_networkReachability release];
     
     
     _userAgent = nil;
@@ -117,6 +143,8 @@
     _userBaseURL = nil;
     _appdataBaseURL = nil;
     _serviceHostname = nil;
+    _networkReachability = nil;
+    _kinveyReachability = nil;
     
     [super dealloc];
 }
@@ -156,12 +184,17 @@
 
 - (void)setServiceHostname:(NSString *)serviceHostname
 {
+    // Note that we need to update the Kinvey Reachability host here...
     NSString *oldName = _serviceHostname;
     _serviceHostname = [serviceHostname copy]; // Implicit retain here
     [oldName release];
     
     [self updateURLs];
     
+#if TARGET_OS_IPHONE
+    // We do this here because there is latency on DNS resolution of the hostname.  We need to do this ASAP when the hostname changes
+    self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.serviceHostname, self.kinveyDomain]];
+#endif
 }
 
 + (KCSClient *)sharedClient
@@ -231,9 +264,9 @@
 
 - (void)updateURLs
 {
-    self.appdataBaseURL  = [NSString stringWithFormat:@"%@://%@.kinvey.com/appdata/%@/", self.protocol, self.serviceHostname, self.appKey];
-    self.resourceBaseURL = [NSString stringWithFormat:@"%@://%@.kinvey.com/blob/%@/", self.protocol, self.serviceHostname, self.appKey];
-    self.userBaseURL     = [NSString stringWithFormat:@"%@://%@.kinvey.com/user/%@/", self.protocol, self.serviceHostname, self.appKey];
+    self.appdataBaseURL  = [NSString stringWithFormat:@"%@://%@.%@/appdata/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
+    self.resourceBaseURL = [NSString stringWithFormat:@"%@://%@.%@/blob/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
+    self.userBaseURL     = [NSString stringWithFormat:@"%@://%@.%@/user/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
     
 
 }

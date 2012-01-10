@@ -23,5 +23,6 @@
 #import "KCSBlobService.h"
 #import "KinveyPing.h"
 #import "KinveyUser.h"
+#import "KCSReachability.h"
 
 #endif

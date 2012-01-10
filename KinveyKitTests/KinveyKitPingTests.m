@@ -41,8 +41,13 @@
 }
 
 
-- (void)testPingSuccessOnGoodRequest
+- (void)testPingSuccessOnGoodRequestOldStyle
 {
+    // Set-up client
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1234" 
+                                                 withAppSecret:@"1234"
+                                                  usingOptions:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES]
+                                                                                           forKey:KCS_USE_OLD_PING_STYLE_KEY]];
     __block NSString *description;
     __block BOOL pingWasSuccessful;
     
@@ -74,6 +79,49 @@
     assertThat([NSNumber numberWithBool:pingWasSuccessful], is(equalToBool(YES)));
     assertThat(description, containsString(@"kinvey = hello"));
     assertThat(description, containsString(@"version = \"0.6.6\""));
+    
+    [conn release];
+    
+    // Reset client
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1234" 
+                                                 withAppSecret:@"1234"
+                                                  usingOptions:nil];
+
+}
+
+- (void)testPingSuccessOnGoodRequestNewStyle
+{
+    __block NSString *description;
+    __block BOOL pingWasSuccessful;
+    
+    KCSPingBlock pinger = ^(KCSPingResult *result){
+        description = result.description;
+        pingWasSuccessful = result.pingWasSuccessful;
+    };
+    
+    NSDictionary *pingResponse = [NSDictionary dictionaryWithObjectsAndKeys:@"0.6.6", @"version", @"hello", @"kinvey", nil];
+    KCSMockConnection *conn = [[KCSMockConnection alloc] init];
+    
+    KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
+                                                                           responseData:[pingResponse JSONData]
+                                                                             headerData:nil
+                                                                               userData:nil];
+    
+    NSError *failure = [NSError errorWithDomain:@"TEST ERROR" code:-1 userInfo:nil];
+    
+    conn.responseForSuccess = response;
+    conn.errorForFailure = failure;
+    conn.connectionShouldReturnNow = YES;
+    
+    // Success
+    conn.connectionShouldFail = NO;
+    [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
+    
+    [KCSPing pingKinveyWithBlock:pinger];
+    
+    assertThat([NSNumber numberWithBool:pingWasSuccessful], is(equalToBool(YES)));
+    assertThat(description, startsWith(@"Kinvey Service is alive, version: "));
+    assertThat(description, endsWith(@", response: hello"));
     
     [conn release];
 }
