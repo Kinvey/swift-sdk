@@ -54,7 +54,11 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
         if ([jsonData isKindOfClass:[NSArray class]]){
             jsonArray = (NSArray *)jsonData;
         } else {
-            jsonArray = [NSArray arrayWithObjects:(NSDictionary *)jsonData, nil];
+            if ([(NSDictionary *)jsonData count] == 0){
+                jsonArray = [NSArray array];
+            } else {
+                jsonArray = [NSArray arrayWithObjects:(NSDictionary *)jsonData, nil];
+            }
         }
         
         for (NSDictionary *dict in jsonArray) {
@@ -142,6 +146,31 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     [_filters release];
     [_lastFetchResults release];
     [_collectionName release];
+}
+
+// Override isEqual method to allow comparing of Collections
+// A collection is equal if the name, object template and filter are the same
+- (BOOL) isEqual:(id)object
+{
+    KCSCollection *c = (KCSCollection *)object;
+    
+    if (![object isKindOfClass:[self class]]){
+        return NO;
+    }
+    
+    if (![self.collectionName isEqualToString:c.collectionName]){
+        return NO;
+    }
+    
+    if (![c.objectTemplate isEqual:c.objectTemplate]){
+        return NO;
+    }
+    
+    if (![self.filters isEqualToArray:c.filters]){
+        return NO;
+    }
+    
+    return YES;
 }
 
 
