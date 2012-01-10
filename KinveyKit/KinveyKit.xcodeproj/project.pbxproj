@@ -97,6 +97,8 @@
 		D3EA2270148543D600666259 /* KinveyBlocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA226F148543D600666259 /* KinveyBlocks.h */; };
 		D3EA22C71486B0BD00666259 /* KinveyPing.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22C51486B0BD00666259 /* KinveyPing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3EA22C81486B0BD00666259 /* KinveyPing.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22C61486B0BD00666259 /* KinveyPing.m */; };
+		D3F3409814BC8AB800DB6C37 /* KCSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F3409614BC8AB800DB6C37 /* KCSReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D3F3409914BC8AB800DB6C37 /* KCSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3409714BC8AB800DB6C37 /* KCSReachability.m */; };
 		D3F3E88E14BABD5F009063DE /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		D3F7E870148807900044F1E8 /* KCSKeyChain.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E86E148807900044F1E8 /* KCSKeyChain.h */; };
 		D3F7E871148807900044F1E8 /* KCSKeyChain.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E86F148807900044F1E8 /* KCSKeyChain.m */; };
@@ -432,6 +434,8 @@
 		D3EA226F148543D600666259 /* KinveyBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyBlocks.h; sourceTree = "<group>"; };
 		D3EA22C51486B0BD00666259 /* KinveyPing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyPing.h; sourceTree = "<group>"; };
 		D3EA22C61486B0BD00666259 /* KinveyPing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyPing.m; sourceTree = "<group>"; };
+		D3F3409614BC8AB800DB6C37 /* KCSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReachability.h; sourceTree = "<group>"; };
+		D3F3409714BC8AB800DB6C37 /* KCSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReachability.m; sourceTree = "<group>"; };
 		D3F3E88D14BABD5F009063DE /* 1px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1px.png; sourceTree = "<group>"; };
 		D3F7E86E148807900044F1E8 /* KCSKeyChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSKeyChain.h; sourceTree = "<group>"; };
 		D3F7E86F148807900044F1E8 /* KCSKeyChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSKeyChain.m; sourceTree = "<group>"; };
@@ -659,6 +663,7 @@
 		D32A61231471700200F77A3F /* 3rdParty */ = {
 			isa = PBXGroup;
 			children = (
+				D3F3409514BC8AB800DB6C37 /* Reachability */,
 				D32A63E9147174C300F77A3F /* Airship */,
 				D32A61241471700200F77A3F /* JSONKit */,
 			);
@@ -1306,6 +1311,15 @@
 			name = Push;
 			sourceTree = "<group>";
 		};
+		D3F3409514BC8AB800DB6C37 /* Reachability */ = {
+			isa = PBXGroup;
+			children = (
+				D3F3409614BC8AB800DB6C37 /* KCSReachability.h */,
+				D3F3409714BC8AB800DB6C37 /* KCSReachability.m */,
+			);
+			path = Reachability;
+			sourceTree = "<group>";
+		};
 		D3F3E88B14BABCB5009063DE /* Test Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1346,6 +1360,7 @@
 				D3EA22691484852B00666259 /* KCSPush.h in Headers */,
 				D3EA22C71486B0BD00666259 /* KinveyPing.h in Headers */,
 				D3F7E8751488084D0044F1E8 /* KinveyUser.h in Headers */,
+				D3F3409814BC8AB800DB6C37 /* KCSReachability.h in Headers */,
 				D32A61271471700200F77A3F /* JSONKit.h in Headers */,
 				D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */,
 				D33E6873147DBA7200EE885E /* KCSAsyncConnection.h in Headers */,
@@ -1532,6 +1547,7 @@
 				D3F7E8761488084D0044F1E8 /* KinveyUser.m in Sources */,
 				D3F7E88B148D64560044F1E8 /* KCSConnectionProgress.m in Sources */,
 				D3451F5D14A50DD200090E9F /* NSDate+ISO8601.m in Sources */,
+				D3F3409914BC8AB800DB6C37 /* KCSReachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

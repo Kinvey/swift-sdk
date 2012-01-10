@@ -11,12 +11,13 @@
 
 #import <Foundation/Foundation.h>
 
-#define MINIMUM_KCS_VERSION_SUPPORTED @"0.6.5"
+#define MINIMUM_KCS_VERSION_SUPPORTED @"TAG-ME"
 
 @class KCSAnalytics;
 @class UIApplication;
 @class KCSCollection;
 @class KCSUser;
+@class KCSReachability;
 
 
 // Keys for options hash
@@ -32,6 +33,7 @@
 #define KCS_PUSH_MODE_KEY @"kcsPushMode"
 #define KCS_PUSH_DEBUG @"debug"
 #define KCS_PUSH_RELEASE @"release"
+#define KCS_USE_OLD_PING_STYLE_KEY @"kcsPingStyle"
 
 /*! A Singleton Class that provides access to all Kinvey Services.
 
@@ -89,6 +91,15 @@
 /*! Current Kinvey Cacheing policy */
 @property (nonatomic, readonly) NSURLCacheStoragePolicy cachePolicy;
 
+#if TARGET_OS_IPHONE
+/*! Overall Network Status Reachability Object */
+@property (nonatomic, retain, readonly) KCSReachability *networkReachability;
+
+/*! Kinvey Host Specific Reachability Object */
+@property (nonatomic, retain, readonly) KCSReachability *kinveyReachability;
+#endif
+
+
 
 ///---------------------------------------------------------------------------------------
 /// @name User Authentication
@@ -110,7 +121,7 @@
 ///---------------------------------------------------------------------------------------
 /// @name Analytics
 ///---------------------------------------------------------------------------------------
-@property (readonly) KCSAnalytics *analytics;
+@property (nonatomic, readonly) KCSAnalytics *analytics;
 
 #pragma mark -
 #pragma mark Initializers
