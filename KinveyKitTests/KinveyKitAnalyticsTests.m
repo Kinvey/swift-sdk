@@ -9,6 +9,7 @@
 #import "KinveyKitAnalyticsTests.h"
 #import "KCSClient.h"
 #import "KinveyAnalytics.h"
+#import "KCSAnalytics+UniqueHardwareID.h"
 
 @implementation KinveyKitAnalyticsTests
 
@@ -33,6 +34,14 @@
     KCSAnalytics *lytics = [[KCSClient sharedClient] analytics];
     
     assertThat(lytics.UUID, isNot(lytics.UDID));
+}
+
+- (void)testMACAddressGetsMACLikeAddress
+{
+    NSString *kinveyUDID = [[[KCSClient sharedClient] analytics] kinveyUDID];
+    NSString *macAddr = [[[KCSClient sharedClient] analytics] getMacAddress];
+    
+    assertThat(kinveyUDID, is(macAddr));
 }
 
 @end

@@ -19,7 +19,7 @@
     self = [super init];
     if (self){
         _UDID = [[[UIDevice currentDevice] uniqueIdentifier] retain];
-        _UUID = [self.UDID retain];
+        _UUID = nil;
     }
     return self;
 }
@@ -33,7 +33,23 @@
         uuidString = (NSString *)CFUUIDCreateString(NULL, uuid);
         CFRelease(uuid);
     }
-    return uuidString;
+    // CreateString creates the string, so we own this string.
+    // We must ensure it gets destroyed
+    return [uuidString autorelease];
+}
+
+// Always return the same UUID for all users.
+- (NSString *)UUID
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults objectForKey:KCS_UUID_USER_DEFAULTS_KEY] == nil) {
+        [defaults setObject:[self generateUUID] forKey:KCS_UUID_USER_DEFAULTS_KEY];
+        [defaults synchronize];
+    }
+    
+    // Return the stored version
+    return [defaults objectForKey:KCS_UUID_USER_DEFAULTS_KEY];
+
 }
 
 @end

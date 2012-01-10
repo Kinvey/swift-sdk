@@ -84,7 +84,6 @@
 		D3C5E68814745F09002D8F2B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68514745F09002D8F2B /* Security.framework */; };
 		D3C5E68914745F09002D8F2B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68614745F09002D8F2B /* SystemConfiguration.framework */; };
 		D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */; };
-		D3CF2D0614B77FB000C90D38 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A61261471700200F77A3F /* JSONKit.m */; };
 		D3EA224C148412A600666259 /* KCSConnectionPool.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA224A148412A600666259 /* KCSConnectionPool.h */; };
 		D3EA224D148412A600666259 /* KCSConnectionPool.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA224B148412A600666259 /* KCSConnectionPool.m */; };
 		D3EA22521484180300666259 /* KCSSyncConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22501484180300666259 /* KCSSyncConnection.h */; };
@@ -99,6 +98,10 @@
 		D3EA22C81486B0BD00666259 /* KinveyPing.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22C61486B0BD00666259 /* KinveyPing.m */; };
 		D3F3409814BC8AB800DB6C37 /* KCSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F3409614BC8AB800DB6C37 /* KCSReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3F3409914BC8AB800DB6C37 /* KCSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3409714BC8AB800DB6C37 /* KCSReachability.m */; };
+		D3F340A714BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F340A514BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D3F340A814BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F340A614BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m */; };
+		D3F340AA14BCCEA600DB6C37 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F340A914BCCEA500DB6C37 /* StoreKit.framework */; };
+		D3F340AC14BCCEBB00DB6C37 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */; };
 		D3F3E88E14BABD5F009063DE /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		D3F7E870148807900044F1E8 /* KCSKeyChain.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E86E148807900044F1E8 /* KCSKeyChain.h */; };
 		D3F7E871148807900044F1E8 /* KCSKeyChain.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E86F148807900044F1E8 /* KCSKeyChain.m */; };
@@ -436,6 +439,10 @@
 		D3EA22C61486B0BD00666259 /* KinveyPing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyPing.m; sourceTree = "<group>"; };
 		D3F3409614BC8AB800DB6C37 /* KCSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReachability.h; sourceTree = "<group>"; };
 		D3F3409714BC8AB800DB6C37 /* KCSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReachability.m; sourceTree = "<group>"; };
+		D3F340A514BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSAnalytics+UniqueHardwareID.h"; sourceTree = "<group>"; };
+		D3F340A614BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSAnalytics+UniqueHardwareID.m"; sourceTree = "<group>"; };
+		D3F340A914BCCEA500DB6C37 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D3F3E88D14BABD5F009063DE /* 1px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1px.png; sourceTree = "<group>"; };
 		D3F7E86E148807900044F1E8 /* KCSKeyChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSKeyChain.h; sourceTree = "<group>"; };
 		D3F7E86F148807900044F1E8 /* KCSKeyChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSKeyChain.m; sourceTree = "<group>"; };
@@ -460,6 +467,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3F340AC14BCCEBB00DB6C37 /* CoreGraphics.framework in Frameworks */,
+				D3F340AA14BCCEA600DB6C37 /* StoreKit.framework in Frameworks */,
 				D3C5E68714745F09002D8F2B /* MobileCoreServices.framework in Frameworks */,
 				D3C5E68814745F09002D8F2B /* Security.framework in Frameworks */,
 				D3C5E68914745F09002D8F2B /* SystemConfiguration.framework in Frameworks */,
@@ -543,6 +552,8 @@
 		D312B3F9147EA671007F48B9 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
+				D3F340A514BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.h */,
+				D3F340A614BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m */,
 				D32A60FD14716F2D00F77A3F /* KinveyAnalytics.h */,
 				D32A60FE14716F2D00F77A3F /* KinveyAnalytics.m */,
 			);
@@ -580,6 +591,8 @@
 		D32A60CA14716EE300F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */,
+				D3F340A914BCCEA500DB6C37 /* StoreKit.framework */,
 				D3FC21FA149A82FC00979F09 /* OCHamcrestIOS.framework */,
 				D3C5E68414745F09002D8F2B /* MobileCoreServices.framework */,
 				D3C5E68514745F09002D8F2B /* Security.framework */,
@@ -1355,6 +1368,7 @@
 				D32A611A14716F2D00F77A3F /* KinveyPersistable.h in Headers */,
 				D32A611B14716F2D00F77A3F /* NSString+KinveyAdditions.h in Headers */,
 				D32A611E14716F2D00F77A3F /* NSURL+KinveyAdditions.h in Headers */,
+				D3F340A714BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.h in Headers */,
 				D32A612214716F5200F77A3F /* KinveyKit.h in Headers */,
 				D3F7E88A148D64560044F1E8 /* KCSConnectionProgress.h in Headers */,
 				D3EA22691484852B00666259 /* KCSPush.h in Headers */,
@@ -1548,6 +1562,7 @@
 				D3F7E88B148D64560044F1E8 /* KCSConnectionProgress.m in Sources */,
 				D3451F5D14A50DD200090E9F /* NSDate+ISO8601.m in Sources */,
 				D3F3409914BC8AB800DB6C37 /* KCSReachability.m in Sources */,
+				D3F340A814BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1555,7 +1570,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3CF2D0614B77FB000C90D38 /* JSONKit.m in Sources */,
 				D32A60ED14716EE300F77A3F /* KinveyKitTests.m in Sources */,
 				D3EA226E148529A400666259 /* KinveyKitRESTRequestTests.m in Sources */,
 				D3650FEA149682E600945F7D /* KCSMockConnection.m in Sources */,
@@ -1680,6 +1694,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};
@@ -1781,6 +1796,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};
@@ -1802,6 +1818,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};

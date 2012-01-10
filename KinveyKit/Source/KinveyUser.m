@@ -90,7 +90,11 @@
         // No user, generate it, note, use the APP KEY/APP SECRET!
         KCSAnalytics *analytics = [client analytics];
           
-        NSDictionary *userData = [NSDictionary dictionaryWithObjectsAndKeys:[analytics UUID], @"username", [analytics UUID], @"UDID", nil];
+        // Make sure to leave username empty
+        NSDictionary *userData = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  [analytics UDID], @"UDID",
+                                  [analytics UUID], @"UUID", nil];
+
         
         KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] userBaseURL] usingMethod:kPostRESTMethod];
         

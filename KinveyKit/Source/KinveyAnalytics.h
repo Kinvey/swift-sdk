@@ -11,6 +11,8 @@
 
 #import <Foundation/Foundation.h>
 
+#define KCS_UUID_USER_DEFAULTS_KEY @"KCS_UUID"
+
 /*! Interface to Kinvey Analytics Service.
  
  This objects is the single interface to all Kinvey Analytics services.  It should not be created directly, but should be used through
@@ -32,7 +34,7 @@
  
  This UUID is not persistent, but is meant to be a one-time UUID.
  
- @return The generated UUID.
+ @return The generated UUID, note this is an autoreleased string, please retain if necessary.
  */
 - (NSString *)generateUUID;
 
