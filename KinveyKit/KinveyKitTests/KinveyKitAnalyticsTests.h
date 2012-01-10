@@ -1,8 +1,8 @@
 //
-//  KinveyKitRESTRequestTests.h
+//  KinveyKitAnalyticsTests.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 11/29/11.
+//  Created by Brian Wilson on 12/19/11.
 //  Copyright (c) 2011 Kinvey. All rights reserved.
 //
 
@@ -13,6 +13,6 @@
 #define HC_SHORTHAND
 #import <OCHamcrest/OCHamcrest.h>
 
-@interface KinveyKitRESTRequestTests : SenTestCase
+@interface KinveyKitAnalyticsTests : SenTestCase
 
 @end

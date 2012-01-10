@@ -1,9 +1,9 @@
 //
-//  KinveyKitRESTRequestTests.h
+//  KinveyKitBlobServiceTests.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 11/29/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Created by Brian Wilson on 1/5/12.
+//  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 
 //  Logic unit tests contain unit test code that is designed to be linked into an independent test executable.
@@ -12,7 +12,9 @@
 #import <SenTestingKit/SenTestingKit.h>
 #define HC_SHORTHAND
 #import <OCHamcrest/OCHamcrest.h>
+#import "KCSBlobService.h"
 
-@interface KinveyKitRESTRequestTests : SenTestCase
+@interface KinveyKitBlobServiceTests : SenTestCase <KCSResourceDelegate>
+
 
 @end

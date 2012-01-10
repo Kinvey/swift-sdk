@@ -12,12 +12,14 @@
 @implementation KCSAnalytics
 
 @synthesize UUID=_UUID;
+@synthesize UDID=_UDID;
 
 - (id)init
 {
     self = [super init];
     if (self){
-        [self setUUID:[[UIDevice currentDevice] uniqueIdentifier]];
+        _UDID = [[[UIDevice currentDevice] uniqueIdentifier] retain];
+        _UUID = [self.UDID retain];
     }
     return self;
 }

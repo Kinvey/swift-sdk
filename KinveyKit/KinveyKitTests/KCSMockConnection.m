@@ -10,6 +10,28 @@
 
 @implementation KCSMockConnection
 
+@synthesize connectionShouldReturnNow = _connectionShouldReturnNow;
+@synthesize connectionShouldFail = _connectionShouldFail;
+@synthesize responseForSuccess = _responseForSuccess;
+@synthesize progressActions = _progressActions;
+@synthesize errorForFailure = _errorForFailure;
+@synthesize delayInMSecs = _delayInMSecs;
+@synthesize providedRequest = _providedRequest;
+@synthesize providedCredentials = _providedCredentials;
+
+- (id)init
+{
+    self = [super init];
+    if (self){
+        _connectionShouldFail = NO;
+        _connectionShouldReturnNow = NO;
+        _delayInMSecs = 0.1; // Essentially "now"
+        _providedCredentials = nil;
+        _providedRequest = nil;
+    }
+    
+    return self;
+}
 
 - (id)initWithConnection:(NSURLConnection *)theConnection
 {
@@ -25,8 +47,36 @@
           failureBlock:(KCSConnectionFailureBlock)onFailure
       usingCredentials:(NSURLCredential *)credentials
 {
+    NSLog(@"**** MOCK OBJECT TESTING IN PROGRESS, NO NETWORK! ****");
+    if (!self.connectionShouldReturnNow){
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, self.delayInMSecs * NSEC_PER_MSEC);
+        
+        if ([self.progressActions count] > 0){
+            NSLog(@"TBD functionality...");
+        }
+        
+        if (self.connectionShouldFail) {
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                onFailure(self.errorForFailure);
+            });
+        } else {
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                onCompletion(self.responseForSuccess);
+            });
+        }
+    } else {
+        if (self.connectionShouldFail){
+            onFailure(self.errorForFailure);
+        } else {
+            onCompletion(self.responseForSuccess);
+        }
+    }
+    
+    self.providedCredentials = credentials;
+    self.providedRequest = theRequest;
     
 }
+
 
 
 

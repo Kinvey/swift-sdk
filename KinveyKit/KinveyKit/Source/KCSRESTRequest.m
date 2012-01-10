@@ -163,9 +163,10 @@ getLogDate(void)
 
 - (id)withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failure progressAction: (KCSConnectionProgressBlock)progress
 {
-    self.completionAction = complete;
-    self.progressAction = progress;
-    self.failureAction = failure;
+    // The analyzer complains that there is a memory leak 
+    self.completionAction = [complete copy];
+    self.progressAction = [progress copy];
+    self.failureAction = [failure copy];
     
     return self;
     
