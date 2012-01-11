@@ -16,6 +16,7 @@
 #import "KCSConnectionResponse.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
+#import "KCSLogManager.h"
 
 
 // Avoid compiler warning by prototyping here...
@@ -27,7 +28,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
 {
     return [[^(KCSConnectionResponse *response){
         
-        NSLog(@"In collection callback with response: %@", response);
+        KCSLogTrace(@"In collection callback with response: %@", response);
         
         id templateClassObject = [[[collection objectTemplate] alloc] init];
         NSDictionary *hostToJsonMap = [templateClassObject hostToKinveyPropertyMapping];
@@ -78,13 +79,13 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
             for (NSString *hostKey in hostToJsonMap) {
                 NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
                 
-                //            NSLog(@"Mapping from %@ to %@ (using value: %@)", jsonKey, hostKey, [dict valueForKey:jsonKey]);
+                //            KCSLogDebug(@"Mapping from %@ to %@ (using value: %@)", jsonKey, hostKey, [dict valueForKey:jsonKey]);
                 if ([dict valueForKey:jsonKey] == nil){
-                    NSLog(@"Data Mismatch, unable to find value for JSON Key %@ (Host Key %@).  Object not 100%% valid.", jsonKey, hostKey);
+                    KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key %@ (Host Key %@).  Object not 100%% valid.", jsonKey, hostKey);
                     continue;
                 }
                 [copiedObject setValue:[dict valueForKey:jsonKey] forKey:hostKey];
-                //            NSLog(@"Copied Object: %@", copiedObject);
+                //            KCSLogDebug(@"Copied Object: %@", copiedObject);
             }
             [processedData addObject:copiedObject];
         }

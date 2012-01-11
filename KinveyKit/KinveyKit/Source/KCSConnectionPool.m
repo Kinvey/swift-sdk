@@ -79,9 +79,6 @@ void verifyConnectionType(id connectionClass);
 
 - (void)fillAsyncPoolWithConnections:(Class)connectionClass
 {
-    NSLog(@"WTF Mate: %@(%@) => %d", connectionClass, [connectionClass superclass],
-          [connectionClass isKindOfClass:[KCSConnection class]]);
-
     // Note that we have to allocate an object before testing the class, since I don't know the way to
     // do a direct comparison, I could use the underlying structure of the objc types, but that
     // feels more hacky than the temp copy here.

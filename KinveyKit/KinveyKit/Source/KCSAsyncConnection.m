@@ -11,6 +11,7 @@
 #import "KCSConnectionProgress.h"
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
+#import "KCSLogManager.h"
 
 
 @interface KCSAsyncConnection()
@@ -142,7 +143,7 @@
         // receivedData is an instance variable declared elsewhere.
         self.activeDownload = [[NSMutableData data] retain];
     } else {
-        NSLog(@"KCSConnection: Connection unabled to be created.");
+        KCSLogNetwork(@"KCSConnection: Connection unabled to be created.");
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create network connection.s"
                                                                            withFailureReason:@"connectionWithRequest:delegate: returned nil connection."
                                                                       withRecoverySuggestion:@"Retry request."
@@ -180,20 +181,20 @@
 
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
 {
-//    NSLog(@"ProtectionSpace %@ requesting method %@ (Using protocol %@ with host %@)", protectionSpace, protectionSpace.authenticationMethod, protectionSpace.protocol, protectionSpace.host);
+//    KCSLogNetwork(@"ProtectionSpace %@ requesting method %@ (Using protocol %@ with host %@)", protectionSpace, protectionSpace.authenticationMethod, protectionSpace.protocol, protectionSpace.host);
     return YES;
 //    if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodHTTPBasic]){
 //        return YES;
 //    } else {
-//        NSLog(@"Unsupported Authentication Metchod called: %@ (%@)", protectionSpace.authenticationMethod, protectionSpace);
+//        KCSLogNetwork(@"Unsupported Authentication Metchod called: %@ (%@)", protectionSpace.authenticationMethod, protectionSpace);
 //        return NO;
 //    }
 }
 
 - (void)connection:(NSURLConnection *)connection didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    NSLog(@"TRACE: connection:didCancelAuthenticationChallenge:");
-    NSLog(@"*** This is very unexpected and a serious error, please contact support@kinvey.com (%@)", challenge);
+    KCSLogTrace(@"connection:didCancelAuthenticationChallenge:");
+    KCSLogError(@"*** This is very unexpected and a serious error, please contact support@kinvey.com (%@)", challenge);
 }
 
 
@@ -205,13 +206,13 @@
 
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    NSLog(@"Connection WILL authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
+    KCSLogNetwork(@"Connection WILL authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
     [[challenge sender] useCredential:self.basicAuthCred forAuthenticationChallenge:challenge];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    NSLog(@"Connection DID authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
+    KCSLogNetwork(@"Connection DID authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
     [[challenge sender] useCredential:self.basicAuthCred forAuthenticationChallenge:challenge];
     
 }
@@ -234,7 +235,7 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    NSLog(@"Connection failed! Error - %@ %@",
+    KCSLogError(@"Connection failed! Error - %@ %@",
           [error localizedDescription],
           [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
 

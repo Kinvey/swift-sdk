@@ -105,6 +105,8 @@
 		D3F340FC14BD2A8100DB6C37 /* KinveyErrorCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F340FB14BD2A8100DB6C37 /* KinveyErrorCodes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3F3410414BD491F00DB6C37 /* KCSErrorUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F3410214BD491F00DB6C37 /* KCSErrorUtilities.h */; };
 		D3F3410514BD491F00DB6C37 /* KCSErrorUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3410314BD491F00DB6C37 /* KCSErrorUtilities.m */; };
+		D3F3412914BD686100DB6C37 /* KCSLogManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F3412714BD686000DB6C37 /* KCSLogManager.h */; settings = {ATTRIBUTES = (); }; };
+		D3F3412A14BD686100DB6C37 /* KCSLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3412814BD686000DB6C37 /* KCSLogManager.m */; };
 		D3F3E88E14BABD5F009063DE /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		D3F7E870148807900044F1E8 /* KCSKeyChain.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E86E148807900044F1E8 /* KCSKeyChain.h */; };
 		D3F7E871148807900044F1E8 /* KCSKeyChain.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E86F148807900044F1E8 /* KCSKeyChain.m */; };
@@ -449,6 +451,8 @@
 		D3F340FB14BD2A8100DB6C37 /* KinveyErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyErrorCodes.h; sourceTree = "<group>"; };
 		D3F3410214BD491F00DB6C37 /* KCSErrorUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSErrorUtilities.h; sourceTree = "<group>"; };
 		D3F3410314BD491F00DB6C37 /* KCSErrorUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSErrorUtilities.m; sourceTree = "<group>"; };
+		D3F3412714BD686000DB6C37 /* KCSLogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KCSLogManager.h; path = KinveyKit/Source/KCSLogManager.h; sourceTree = SOURCE_ROOT; };
+		D3F3412814BD686000DB6C37 /* KCSLogManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KCSLogManager.m; path = KinveyKit/Source/KCSLogManager.m; sourceTree = SOURCE_ROOT; };
 		D3F3E88D14BABD5F009063DE /* 1px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1px.png; sourceTree = "<group>"; };
 		D3F7E86E148807900044F1E8 /* KCSKeyChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSKeyChain.h; sourceTree = "<group>"; };
 		D3F7E86F148807900044F1E8 /* KCSKeyChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSKeyChain.m; sourceTree = "<group>"; };
@@ -526,6 +530,8 @@
 				D3451F5B14A50DD200090E9F /* NSDate+ISO8601.m */,
 				D3F3410214BD491F00DB6C37 /* KCSErrorUtilities.h */,
 				D3F3410314BD491F00DB6C37 /* KCSErrorUtilities.m */,
+				D3F3412714BD686000DB6C37 /* KCSLogManager.h */,
+				D3F3412814BD686000DB6C37 /* KCSLogManager.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -1397,6 +1403,7 @@
 				D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */,
 				D33E6873147DBA7200EE885E /* KCSAsyncConnection.h in Headers */,
 				D33E6878147DC1A400EE885E /* KCSConnectionResponse.h in Headers */,
+				D3F3412914BD686100DB6C37 /* KCSLogManager.h in Headers */,
 				D33E686E147DBA5700EE885E /* KCSConnection.h in Headers */,
 				D3EA224C148412A600666259 /* KCSConnectionPool.h in Headers */,
 				D3EA22521484180300666259 /* KCSSyncConnection.h in Headers */,
@@ -1583,6 +1590,7 @@
 				D3F3409914BC8AB800DB6C37 /* KCSReachability.m in Sources */,
 				D3F340A814BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m in Sources */,
 				D3F3410514BD491F00DB6C37 /* KCSErrorUtilities.m in Sources */,
+				D3F3412A14BD686100DB6C37 /* KCSLogManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1682,6 +1690,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					"KINVEY_DEBUG_ENABLED=1",
 					"DEBUG=1",
 					NO_URBAN_AIRSHIP_PUSH,
 					"$(inherited)",
@@ -1709,6 +1718,11 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"KINVEY_DEBUG_ENABLED=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = "KinveyKitTests/KinveyKitTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1768,6 +1782,11 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"KINVEY_DEBUG_ENABLED=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				HEADER_SEARCH_PATHS = "Airship/**";
 				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -1811,6 +1830,11 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"KINVEY_DEBUG_ENABLED=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = "KinveyKitTests/KinveyKitTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

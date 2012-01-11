@@ -17,6 +17,7 @@
 #import "KinveyHTTPStatusCodes.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
+#import "KCSLogManager.h"
 
 
 @interface KCSUser()
@@ -117,7 +118,7 @@
             if (response.responseCode != KCS_HTTP_STATUS_CREATED){
                 // Crap, authentication failed, not really sure how to proceed here!!!
                 // I really don't know what to do here, we can't continue... Something died...
-                NSLog(@"KINVEY: Internal Error! (%@)", [[response.responseData objectFromJSONData] JSONString]);
+                KCSLogError(@"Internal Error! (%@)", [[response.responseData objectFromJSONData] JSONString]);
                 CFShow(response);
                 
                 client.userIsAuthenticated = NO;
@@ -155,8 +156,7 @@
         
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
             // I really don't know what to do here, we can't continue... Something died...
-            NSLog(@"KINVEY: Internal Error!");
-            CFShow(error);
+            KCSLogError(@"Internal Error: %@", error);
 
             client.userIsAuthenticated = NO;
             client.userAuthenticationInProgress = NO;

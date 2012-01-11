@@ -10,6 +10,7 @@
 
 
 #import "KCSAnalytics+UniqueHardwareID.h"
+#import "KCSLogManager.h"
 
 #include <sys/socket.h>
 #include <sys/sysctl.h>
@@ -39,17 +40,17 @@
     
     // With all configured interfaces requested, get handle index
     if ((mgmtInfoBase[5] = if_nametoindex("en0")) == 0){ 
-//        errorFlag = @"if_nametoindex failure";
+        errorFlag = @"if_nametoindex failure";
     // Get the size of the data available (store in len)
     } else if (sysctl(mgmtInfoBase, 6, NULL, &length, NULL, 0) < 0) {
-//        errorFlag = @"sysctl mgmtInfoBase failure";
+        errorFlag = @"sysctl mgmtInfoBase failure";
     // Alloc memory based on above call
     } else if ((msgBuffer = malloc(length)) == NULL) {
-//        errorFlag = @"buffer allocation failure";
+        errorFlag = @"buffer allocation failure";
     // Get system information, store in buffer
     } else if (sysctl(mgmtInfoBase, 6, msgBuffer, &length, NULL, 0) < 0) {
         free(msgBuffer);
-//        errorFlag = @"sysctl msgBuffer failure";
+        errorFlag = @"sysctl msgBuffer failure";
     } else {
         // Map msgbuffer to interface message structure
         struct if_msghdr *interfaceMsgStruct = (struct if_msghdr *) msgBuffer;
@@ -64,7 +65,7 @@
         // Read from char array into a string object, into traditional Mac address format
         NSString *macAddressString = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X",
                                       macAddress[0], macAddress[1], macAddress[2], macAddress[3], macAddress[4], macAddress[5]];
-        NSLog(@"Mac Address: %@", macAddressString);
+        KCSLogDebug(@"Mac Address: %@", macAddressString);
         
         // Release the buffer memory
         free(msgBuffer);
@@ -73,7 +74,7 @@
     }
     
     // Error...
-    NSLog(@"Error: %@", errorFlag);
+    KCSLogError(@"Error: %@", errorFlag);
     
     return nil;
 }
