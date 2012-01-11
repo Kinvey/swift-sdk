@@ -16,6 +16,7 @@
 #import "KinveyHTTPStatusCodes.h"
 #import "JSONKit.h"
 #import "KinveyPing.h"
+#import "KCSLogManager.h"
 
 @implementation KinveyKitUserTests
 
@@ -36,7 +37,7 @@
     
     [cUser initializeCurrentUser];
     
-    NSLog(@"Blah: %@", cUser.password);
+    KCSLogDebug(@"Blah: %@", cUser.password);
     
     assertThat(cUser.username, is(equalTo(@"brian")));
     assertThat(cUser.password, is(equalTo(@"12345")));

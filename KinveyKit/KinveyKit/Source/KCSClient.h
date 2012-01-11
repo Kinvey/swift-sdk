@@ -192,5 +192,43 @@
 */
 - (KCSCollection *)collectionFromString: (NSString *)collection withClass: (Class)collectionClass;
 
+///---------------------------------------------------------------------------------------
+/// @name Logging Control
+///---------------------------------------------------------------------------------------
+/*! Controls what internal data is reported while using the KinveyKit debug library
+ 
+ When using the debugging build KinveyKit is configured to log debugging information.  This information
+ may or may not be useful to you as a developer, so what is printed is configurable.
+ 
+ The information logged is as follows:
+ Network: Information regarding network information and RES actions
+ Debug: Information used for internally debugging the Kinvey Library
+ Trace: Tracing the execution of the Kinvey Library
+ Warning: Warning statements about issues detected by the library
+ Error: Errors detected by the Kinvey Library
+ 
+ Warnings and Errors are presented to a developer using NSErrors for issues that can be fixed or where
+ execution can continue and exceptions where execution cannot.  The logged information is extra and is
+ not required for correct operation or handling of errors.
+ 
+ This method allows you to specify which data you are interested in viewing.  You must explicitly enable
+ information you wish to see
+ 
+ @warning No extra logged information is available in the release version of the library.
+ @warning By default all debugging information is turned off.
+ 
+ @param networkIsEnabled Set to YES if you want to see network debugging information.
+ @param debugIsEnabled Set to YES if you want to see debugging information.
+ @param traceIsEnabled Set to YES if you want to see tracing information
+ @param warningIsEnabled Set to YES if you want to see warning information.
+ @param errorIsEnabled Set to YES if you want to see error information.
+ 
+ 
+ */
++ (void)configureLoggingWithNetworkEnabled: (BOOL)networkIsEnabled
+                              debugEnabled: (BOOL)debugIsEnabled
+                              traceEnabled: (BOOL)traceIsEnabled
+                            warningEnabled: (BOOL)warningIsEnabled
+                              errorEnabled: (BOOL)errorIsEnabled;
 
 @end

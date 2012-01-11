@@ -17,6 +17,7 @@
 #import "KinveyUser.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
+#import "KCSLogManager.h"
 
 typedef BOOL(^SuccessAction)(KCSResourceResponse *);
 typedef BOOL(^FailureAction)(NSError *);
@@ -75,13 +76,13 @@ typedef BOOL(^FailureAction)(NSError *);
 
 - (void)resourceServiceDidCompleteWithResult:(KCSResourceResponse *)result
 {
-    NSLog(@"Success delegate called for test: %@", self.testID);
+    KCSLogDebug(@"Success delegate called for test: %@", [self.testID copy]);
     self.testPassed = _onSuccess(result);
 }
 
 - (void)resourceServiceDidFailWithError:(NSError *)error
 {
-    NSLog(@"Failure delegate called for test: %@", self.testID);
+    KCSLogDebug(@"Failure delegate called for test: %@", self.testID);
     self.testPassed = _onFailure(error);
 }
 
@@ -161,7 +162,7 @@ typedef BOOL(^FailureAction)(NSError *);
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     [KCSResourceService downloadResource:@"blah" withResourceDelegate:self];
 
-    NSLog(@"Conn: %@", conn.providedRequest);
+    KCSLogDebug(@"Conn: %@", conn.providedRequest);
     KCSClient *client = [KCSClient sharedClient];
     NSString *expectedString = [NSString stringWithFormat:@"%@download-loc/blah",
                                 client.resourceBaseURL];
@@ -183,7 +184,7 @@ typedef BOOL(^FailureAction)(NSError *);
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     [KCSResourceService downloadResource:@"blah" withResourceDelegate:self];
     
-    NSLog(@"Conn: %@", conn.providedRequest);
+    KCSLogDebug(@"Conn: %@", conn.providedRequest);
     KCSClient *client = [KCSClient sharedClient];
     NSString *expectedString = [NSString stringWithFormat:@"%@download-loc/blah",
                                 client.resourceBaseURL];
@@ -266,7 +267,7 @@ typedef BOOL(^FailureAction)(NSError *);
     NSString *filePath = [[NSBundle bundleForClass:[self class]]   pathForResource:@"1px" ofType:@"png"];
     [KCSResourceService saveLocalResource:filePath withDelegate:self];
     
-    NSLog(@"Conn: %@", kinvey.providedRequest);
+    KCSLogDebug(@"Conn: %@", kinvey.providedRequest);
     KCSClient *client = [KCSClient sharedClient];
     NSString *expectedString = [NSString stringWithFormat:@"%@upload-loc/1px.png",
                                 client.resourceBaseURL];
@@ -278,7 +279,7 @@ typedef BOOL(^FailureAction)(NSError *);
     [kinvey release];
     [[KCSConnectionPool sharedPool] drainPools];
     
-    NSLog(@"Made it out of the woods...");
+    KCSLogDebug(@"Made it out of the woods...");
 
 }
 
@@ -315,7 +316,7 @@ typedef BOOL(^FailureAction)(NSError *);
     [KCSResourceService saveData:[NSData data] toResource:@"blob" withDelegate:self];
     
     
-    NSLog(@"Conn: %@", kinvey.providedRequest);
+    KCSLogDebug(@"Conn: %@", kinvey.providedRequest);
     KCSClient *client = [KCSClient sharedClient];
     NSString *expectedString = [NSString stringWithFormat:@"%@upload-loc/blob",
                                 client.resourceBaseURL];
@@ -361,7 +362,7 @@ typedef BOOL(^FailureAction)(NSError *);
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:kinvey];
     [KCSResourceService deleteResource:@"blah" withDelegate:self];
     
-    NSLog(@"Conn: %@", kinvey.providedRequest);
+    KCSLogDebug(@"Conn: %@", kinvey.providedRequest);
     KCSClient *client = [KCSClient sharedClient];
     NSString *expectedString = [NSString stringWithFormat:@"%remove-loc/blah",
                                 client.resourceBaseURL];

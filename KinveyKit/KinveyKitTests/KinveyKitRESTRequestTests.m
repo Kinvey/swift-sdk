@@ -10,6 +10,7 @@
 #import "KCSRESTRequest.h"
 #import "KCSMockConnection.h"
 #import "KCSMockURLConnection.h"
+#import "KCSLogManager.h"
 
 @implementation KinveyKitRESTRequestTests
 
@@ -17,7 +18,7 @@
 NSString *getLogDate(void); // Make compiler happy...
 - (void)testDate
 {
-    NSLog(@"Date Header: %@", getLogDate());
+    KCSLogDebug(@"Date Header: %@", getLogDate());
 }
 
 //- (void)testTest

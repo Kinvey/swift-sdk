@@ -17,6 +17,7 @@
 #import "NSURL+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSReachability.h"
+#import "KCSLogManager.h"
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
@@ -114,6 +115,7 @@
         // TODO: Investigate being notified of changes in KCS Client
         _kinveyReachability = [[KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]] retain];
 #endif
+        
     }
     
     return self;
@@ -294,5 +296,20 @@
     @throw myException;
     
 }
+
+
++ (void)configureLoggingWithNetworkEnabled: (BOOL)networkIsEnabled
+                              debugEnabled: (BOOL)debugIsEnabled
+                              traceEnabled: (BOOL)traceIsEnabled
+                            warningEnabled: (BOOL)warningIsEnabled
+                              errorEnabled: (BOOL)errorIsEnabled
+{
+    [[KCSLogManager sharedLogManager] configureLoggingWithNetworkEnabled:networkIsEnabled
+                                                            debugEnabled:debugIsEnabled
+                                                            traceEnabled:traceIsEnabled
+                                                          warningEnabled:warningIsEnabled
+                                                            errorEnabled:errorIsEnabled];
+}
+
 
 @end

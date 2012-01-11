@@ -10,6 +10,7 @@
 #import "KCSConnectionPool.h"
 #import "KCSClient.h"
 #import "KinveyUser.h"
+#import "KCSLogManager.h"
 
 // *cough* hack *cough*
 #define MAX_DATE_STRING_LENGTH_K 40 
@@ -17,7 +18,7 @@
 void clogResource(NSString *resource, NSInteger requestMethod);
 void clogResource(NSString *resource, NSInteger requestMethod)
 {
-    NSLog(@"cLogResource: (%@[%p], %d)", resource, (void *)resource, requestMethod);
+    KCSLogDebug(@"cLogResource: (%@[%p], %d)", resource, (void *)resource, requestMethod);
 }
 
 
@@ -88,7 +89,7 @@ getLogDate(void)
 //        NSString *urlString = [NSString stringWithFormat:@"%@%@:%@@%@", kinveyClient.protocol, kinveyClient.authCredentials.user, kinveyClient.authCredentials.password, self.resourceLocation];
         NSURL *url = [NSURL URLWithString:resource];
         
-        NSLog(@"Requesting resource: %@", resource);
+        KCSLogNetwork(@"Requesting resource: %@", resource);
         _request = [[NSMutableURLRequest requestWithURL:url cachePolicy:kinveyClient.cachePolicy timeoutInterval:kinveyClient.connectionTimeout] retain];
     }
     return self;
@@ -112,7 +113,7 @@ getLogDate(void)
 
 - (void)logResource: (NSString *)resource usingMethod: (NSInteger)requestMethod
 {
-    NSLog(@"logResource: (%@[%p], %d)", resource, (void *)resource, requestMethod);
+    KCSLogNetwork(@"logResource: (%@[%p], %d)", resource, (void *)resource, requestMethod);
 }
 
 + (KCSRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod
@@ -243,7 +244,7 @@ getLogDate(void)
     // TODO: this needs to check each URL for the user API, since future maybe more than just the baseURL.
     if (!kinveyClient.userIsAuthenticated && ![self.resourceLocation isEqualToString:kinveyClient.userBaseURL]){
         // User isn't authenticated, we need to perform default auth here and return.  Auth will handle completing this request.
-//        NSLog(@"Username: %@ Password: %@", kinveyClient.authCredentials.user, kinveyClient.authCredentials.password);
+//        KCSLogDebug(@"Username: %@ Password: %@", kinveyClient.authCredentials.user, kinveyClient.authCredentials.password);
         [kinveyClient.currentUser initializeCurrentUserWithRequest:self];
         // Make sure to release the connection here, as we're breaking.
         [connection release];

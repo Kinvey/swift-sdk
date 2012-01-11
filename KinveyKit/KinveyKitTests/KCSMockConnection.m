@@ -7,6 +7,7 @@
 //
 
 #import "KCSMockConnection.h"
+#import "KCSLogManager.h"
 
 @implementation KCSMockConnection
 
@@ -47,12 +48,12 @@
           failureBlock:(KCSConnectionFailureBlock)onFailure
       usingCredentials:(NSURLCredential *)credentials
 {
-    NSLog(@"**** MOCK OBJECT TESTING IN PROGRESS, NO NETWORK! ****");
+    KCSLogWarning(@"**** MOCK OBJECT TESTING IN PROGRESS, NO NETWORK! ****");
     if (!self.connectionShouldReturnNow){
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, self.delayInMSecs * NSEC_PER_MSEC);
         
         if ([self.progressActions count] > 0){
-            NSLog(@"TBD functionality...");
+            KCSLogWarning(@"TBD functionality...");
         }
         
         if (self.connectionShouldFail) {

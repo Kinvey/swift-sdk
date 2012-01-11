@@ -7,6 +7,7 @@
 //
 
 #import "KCSMockURLConnection.h"
+#import "KCSLogManager.h"
 
 @implementation KCSMockURLConnection
 
@@ -59,11 +60,11 @@
 
 - (void)start
 {
-    NSLog(@"KCSMockURLConnection: Got request: %@ for delegate: %@", self.request, self.delegate);
+    KCSLogDebug(@"KCSMockURLConnection: Got request: %@ for delegate: %@", self.request, self.delegate);
     [_delegate connection:(NSURLConnection *)self didReceiveResponse:nil];
     [_delegate connection:(NSURLConnection *)self didReceiveData:nil];
     [_delegate connectionDidFinishLoading:(NSURLConnection *)self];
-    NSLog(@"KCSMockURLConnection: We done!");
+    KCSLogDebug(@"KCSMockURLConnection: We done!");
 }
 
 @end
