@@ -17,6 +17,8 @@
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
 #import "JSONKit.h"
+#import "KinveyErrorCodes.h"
+#import "KCSErrorUtilities.h"
 
 //#import "KinveyCollection.h"
 //
@@ -52,8 +54,17 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 #endif
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
-            [delegate entity:objectOfInterest fetchDidFailWithError:err];
+            
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Entity fetch operation was unsuccessful."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate entity:objectOfInterest fetchDidFailWithError:error];
+
         } else {
             NSDictionary *kinveyMapping = [objectOfInterest hostToKinveyPropertyMapping];
             
@@ -235,8 +246,16 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 #endif
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
-            [delegate entity:self operationDidFailWithError:err];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Entity operation was unsuccessful."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate entity:self operationDidFailWithError:error];
+
         } else {
             [delegate entity:self operationDidCompleteWithResult:responseToReturn];
         }
@@ -284,8 +303,15 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 #endif
         
         if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:responseToReturn];
-            [delegate entity:self operationDidFailWithError:err];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Entity operation was unsuccessful."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate entity:self operationDidFailWithError:error];
         } else {
             [delegate entity:self operationDidCompleteWithResult:responseToReturn];
         }
