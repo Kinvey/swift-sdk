@@ -12,6 +12,9 @@
 #ifndef KinveyKit_KinveyHTTPStatusCodes_h
 #define KinveyKit_KinveyHTTPStatusCodes_h
 
+
+// This is a partial collection of status codes
+// it is not complete, and is based on a list from MSDN
 #define KCS_HTTP_STATUS_CONTINUE 100
 #define KCS_HTTP_STATUS_SWITCH_PROTOCOLS 101
 #define KCS_HTTP_STATUS_OK 200

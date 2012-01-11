@@ -14,6 +14,8 @@
 #import "KCSRESTRequest.h"
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSConnectionResponse.h"
+#import "KinveyErrorCodes.h"
+#import "KCSErrorUtilities.h"
 
 
 // Avoid compiler warning by prototyping here...
@@ -45,8 +47,16 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
 #endif        
         NSArray *jsonArray;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:(NSDictionary *)jsonData];
-            [delegate collection:collection didFailWithError:err];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Collection fetch was unsuccessful."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate collection:collection didFailWithError:error];
+
             [processedData release];
             return;
         }
@@ -336,8 +346,15 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         int count;
 
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:(NSDictionary *)responseToReturn];
-            [delegate collection:self informationOperationFailedWithError:err];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Information request was unsuccessful."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate collection:self informationOperationFailedWithError:error];
             return;
         }
 

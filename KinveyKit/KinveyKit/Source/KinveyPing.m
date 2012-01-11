@@ -13,6 +13,8 @@
 #import "JSONKit.h"
 #import "KCSClient.h"
 #import "KCSReachability.h"
+#import "KinveyErrorCodes.h"
+#import "KCSErrorUtilities.h"
 
 typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *response, NSError *error);
 
@@ -92,8 +94,24 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
         KCSRESTRequest *request = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] appdataBaseURL] usingMethod:kGetRESTMethod];
         [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
     } else {
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Network is not reachable at this time." forKey:NSLocalizedDescriptionKey];
-        onComplete(NO, nil, [NSError errorWithDomain:@"KINVEY NETWORK ERROR" code:100 userInfo:userInfo]);
+        NSString *description;
+        NSInteger errorCode;
+        if ([KCSPing networkIsReachable]){
+            errorCode = KCSKinveyUnreachableError;
+            description = @"Unable to reach Kinvey service.";
+        } else {
+            errorCode = KCSNetworkUnreachableError;
+            description = @"Unable to reach network.";
+        }
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:description
+                                                                           withFailureReason:@"Reachability determined that either Kinvey or the network was not reachable"
+                                                                      withRecoverySuggestion:@"Check to make sure device is not in Airplane mode and has a signal or try again later"
+                                                                         withRecoveryOptions:nil];
+        NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
+                                             code:errorCode
+                                         userInfo:userInfo];
+        
+        onComplete(NO, nil, error);
     }
 
 }
