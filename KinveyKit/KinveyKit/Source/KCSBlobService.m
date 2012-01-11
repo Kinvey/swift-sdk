@@ -12,6 +12,8 @@
 #import "JSONKit.h"
 #import "KCSRESTRequest.h"
 #import "KCSConnectionResponse.h"
+#import "KCSErrorUtilities.h"
+#import "KinveyErrorCodes.h"
 
 @implementation KCSResourceResponse
 
@@ -63,7 +65,16 @@
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[response.responseData objectFromJSONData]]];
+            NSString *failureJSON = [[response.responseData objectFromJSONData] description];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource download failed."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", failureJSON]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate resourceServiceDidFailWithError:error];
         } else {
             [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:nil withData:response.responseData withLength:[response.responseData length]]];
         }
@@ -85,7 +96,16 @@
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[response.responseData objectFromJSONData]]];
+            NSString *failureJSON = [[response.responseData objectFromJSONData] description];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource download to file failed."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", failureJSON]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate resourceServiceDidFailWithError:error];
         } else {
             // We have a valid NSData object, right now this is the only way I know to complete this request...
             NSError *fileError = [[NSError alloc] init];
@@ -95,7 +115,10 @@
             
             if (didWriteSuccessfully){
                 [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:filename 
-                                                                                          withResourceId:resourceId withStreamingURL:nil withData:nil withLength:[response.responseData length]]];
+                                                                                          withResourceId:resourceId 
+                                                                                        withStreamingURL:nil
+                                                                                                withData:nil
+                                                                                              withLength:[response.responseData length]]];
             } else {
                 // We failed to write the file
                 [delegate resourceServiceDidFailWithError:fileError];
@@ -126,12 +149,29 @@
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         // This needs to be REDIRECT, otherwise something is messed up!
         if (response.responseCode != KCS_HTTP_STATUS_REDIRECT){
-            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[response.responseData objectFromJSONData]]];
+            NSString *failureJSON = [[response.responseData objectFromJSONData] description];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Get streaming URL failed."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", failureJSON]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate resourceServiceDidFailWithError:error];
         } else {
             NSString *URL = [response.responseHeaders objectForKey:@"Location"];
             
             if (!URL){
-                [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:@"Malformed Redirect, cannot get URL" forKey:@"error"]]];
+                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"URL for streaming resource not available."
+                                                                                   withFailureReason:@"No 'Location' header found in HTTP redirect."
+                                                                              withRecoverySuggestion:@"No client recovery available, contact Kinvey Support."
+                                                                                 withRecoveryOptions:nil];
+                NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
+                                                     code:KCSUnexpectedResultFromServerError
+                                                 userInfo:userInfo];
+                
+                [delegate resourceServiceDidFailWithError:error];
             } else {
                 [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:URL withData:nil withLength:0]];
             }
@@ -179,7 +219,16 @@
     KCSConnectionCompletionBlock userCallback = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_CREATED){
             NSString *xmlData = [[[NSString alloc] initWithData:response.responseData encoding:NSUTF8StringEncoding] autorelease];
-            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:xmlData forKey:@"serviceError"]]];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Saving data to the resource service failed."
+                                                                               withFailureReason:[NSString stringWithFormat:@"XML Error: %@", xmlData]
+                                                                          withRecoverySuggestion:@"Retry request based on information in XML Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate resourceServiceDidFailWithError:error];
+
         } else {
             // I feel like we should have a length here, but I might not be saving that response...
             [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:nil withData:nil withLength:0]];
@@ -189,8 +238,15 @@
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         NSDictionary *jsonData = [response.responseData objectFromJSONData];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:jsonData];
-            [delegate resourceServiceDidFailWithError:err];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Getting the resource service save location failed."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate resourceServiceDidFailWithError:error];
         } else {
             NSString *newResource = [jsonData valueForKey:@"URI"];
             KCSRESTRequest *newRequest = [KCSRESTRequest requestForResource:newResource usingMethod:kPutRESTMethod];
@@ -219,7 +275,16 @@
     KCSConnectionCompletionBlock userCallback = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_ACCEPTED){
             NSString *xmlData = [[[NSString alloc] initWithData:response.responseData encoding:NSUTF8StringEncoding] autorelease];
-            [delegate resourceServiceDidFailWithError:[NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:[NSDictionary dictionaryWithObject:xmlData forKey:@"serviceError"]]];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Deleting resource from resource service failed."
+                                                                               withFailureReason:[NSString stringWithFormat:@"XML Error: %@", xmlData]
+                                                                          withRecoverySuggestion:@"Retry request based on information in XML Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate resourceServiceDidFailWithError:error];
+
         } else {
             // I feel like we should have a length here, but I might not be saving that response...
             [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:nil withStreamingURL:nil withData:nil withLength:0]];
@@ -230,8 +295,15 @@
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         NSDictionary *jsonData = [response.responseData objectFromJSONData];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError *err = [NSError errorWithDomain:@"KINVEY ERROR" code:[response responseCode] userInfo:jsonData];
-            [delegate resourceServiceDidFailWithError:err];
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Getting delete location failed."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            [delegate resourceServiceDidFailWithError:error];
         } else {
             NSString *newResource = [jsonData valueForKey:@"URI"];
             KCSRESTRequest *newRequest = [KCSRESTRequest requestForResource:newResource usingMethod:kDeleteRESTMethod];

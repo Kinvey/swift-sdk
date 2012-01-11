@@ -9,6 +9,9 @@
 #import "KCSAsyncConnection.h"
 #import "KCSConnectionResponse.h"
 #import "KCSConnectionProgress.h"
+#import "KCSErrorUtilities.h"
+#import "KinveyErrorCodes.h"
+
 
 @interface KCSAsyncConnection()
 
@@ -140,8 +143,14 @@
         self.activeDownload = [[NSMutableData data] retain];
     } else {
         NSLog(@"KCSConnection: Connection unabled to be created.");
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create network connection.s"
+                                                                           withFailureReason:@"connectionWithRequest:delegate: returned nil connection."
+                                                                      withRecoverySuggestion:@"Retry request."
+                                                                         withRecoveryOptions:nil];
         // TODO, make error codes, provide some userInfo love, probably make a Kinvey Error class and use that for these values
-        NSError *error = [NSError errorWithDomain:@"KinveyError" code:1 userInfo:nil];
+        NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
+                                             code:KCSUnderlyingNetworkConnectionCreationFailureError
+                                         userInfo:userInfo];
         self.failureBlock(error);
     }
 }

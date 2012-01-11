@@ -102,6 +102,9 @@
 		D3F340A814BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F340A614BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m */; };
 		D3F340AA14BCCEA600DB6C37 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F340A914BCCEA500DB6C37 /* StoreKit.framework */; };
 		D3F340AC14BCCEBB00DB6C37 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */; };
+		D3F340FC14BD2A8100DB6C37 /* KinveyErrorCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F340FB14BD2A8100DB6C37 /* KinveyErrorCodes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D3F3410414BD491F00DB6C37 /* KCSErrorUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F3410214BD491F00DB6C37 /* KCSErrorUtilities.h */; };
+		D3F3410514BD491F00DB6C37 /* KCSErrorUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3410314BD491F00DB6C37 /* KCSErrorUtilities.m */; };
 		D3F3E88E14BABD5F009063DE /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		D3F7E870148807900044F1E8 /* KCSKeyChain.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E86E148807900044F1E8 /* KCSKeyChain.h */; };
 		D3F7E871148807900044F1E8 /* KCSKeyChain.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E86F148807900044F1E8 /* KCSKeyChain.m */; };
@@ -443,6 +446,9 @@
 		D3F340A614BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSAnalytics+UniqueHardwareID.m"; sourceTree = "<group>"; };
 		D3F340A914BCCEA500DB6C37 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		D3F340FB14BD2A8100DB6C37 /* KinveyErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyErrorCodes.h; sourceTree = "<group>"; };
+		D3F3410214BD491F00DB6C37 /* KCSErrorUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSErrorUtilities.h; sourceTree = "<group>"; };
+		D3F3410314BD491F00DB6C37 /* KCSErrorUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSErrorUtilities.m; sourceTree = "<group>"; };
 		D3F3E88D14BABD5F009063DE /* 1px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1px.png; sourceTree = "<group>"; };
 		D3F7E86E148807900044F1E8 /* KCSKeyChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSKeyChain.h; sourceTree = "<group>"; };
 		D3F7E86F148807900044F1E8 /* KCSKeyChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSKeyChain.m; sourceTree = "<group>"; };
@@ -493,7 +499,6 @@
 			children = (
 				D3EA22551484228300666259 /* KCSRESTRequest.h */,
 				D3EA22561484228300666259 /* KCSRESTRequest.m */,
-				D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */,
 				D33E686C147DBA5700EE885E /* KCSConnection.h */,
 				D33E686D147DBA5700EE885E /* KCSConnection.m */,
 				D3EA22501484180300666259 /* KCSSyncConnection.h */,
@@ -504,7 +509,6 @@
 				D33E6872147DBA7200EE885E /* KCSAsyncConnection.m */,
 				D3EA224A148412A600666259 /* KCSConnectionPool.h */,
 				D3EA224B148412A600666259 /* KCSConnectionPool.m */,
-				D3EA226F148543D600666259 /* KinveyBlocks.h */,
 				D3F7E888148D64560044F1E8 /* KCSConnectionProgress.h */,
 				D3F7E889148D64560044F1E8 /* KCSConnectionProgress.m */,
 			);
@@ -520,6 +524,8 @@
 				D32A610714716F2D00F77A3F /* NSURL+KinveyAdditions.m */,
 				D3451F5A14A50DD200090E9F /* NSDate+ISO8601.h */,
 				D3451F5B14A50DD200090E9F /* NSDate+ISO8601.m */,
+				D3F3410214BD491F00DB6C37 /* KCSErrorUtilities.h */,
+				D3F3410314BD491F00DB6C37 /* KCSErrorUtilities.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -661,6 +667,7 @@
 		D32A60F614716F2D00F77A3F /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				D3F340FA14BD2A2900DB6C37 /* Headers */,
 				D3F7E86C148803D60044F1E8 /* UserService */,
 				D3EA22661484850B00666259 /* Push */,
 				D312B3FA147EA692007F48B9 /* KinveyService */,
@@ -1333,6 +1340,16 @@
 			path = Reachability;
 			sourceTree = "<group>";
 		};
+		D3F340FA14BD2A2900DB6C37 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				D3EA226F148543D600666259 /* KinveyBlocks.h */,
+				D3F340FB14BD2A8100DB6C37 /* KinveyErrorCodes.h */,
+				D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
 		D3F3E88B14BABCB5009063DE /* Test Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1370,6 +1387,7 @@
 				D32A611E14716F2D00F77A3F /* NSURL+KinveyAdditions.h in Headers */,
 				D3F340A714BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.h in Headers */,
 				D32A612214716F5200F77A3F /* KinveyKit.h in Headers */,
+				D3F340FC14BD2A8100DB6C37 /* KinveyErrorCodes.h in Headers */,
 				D3F7E88A148D64560044F1E8 /* KCSConnectionProgress.h in Headers */,
 				D3EA22691484852B00666259 /* KCSPush.h in Headers */,
 				D3EA22C71486B0BD00666259 /* KinveyPing.h in Headers */,
@@ -1386,6 +1404,7 @@
 				D3EA2270148543D600666259 /* KinveyBlocks.h in Headers */,
 				D3F7E870148807900044F1E8 /* KCSKeyChain.h in Headers */,
 				D3451F5C14A50DD200090E9F /* NSDate+ISO8601.h in Headers */,
+				D3F3410414BD491F00DB6C37 /* KCSErrorUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1563,6 +1582,7 @@
 				D3451F5D14A50DD200090E9F /* NSDate+ISO8601.m in Sources */,
 				D3F3409914BC8AB800DB6C37 /* KCSReachability.m in Sources */,
 				D3F340A814BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m in Sources */,
+				D3F3410514BD491F00DB6C37 /* KCSErrorUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

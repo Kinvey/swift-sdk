@@ -15,6 +15,8 @@
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
+#import "KinveyErrorCodes.h"
+#import "KCSErrorUtilities.h"
 
 
 @interface KCSUser()
@@ -67,7 +69,14 @@
                 NSDictionary *errorDict = [NSDictionary dictionaryWithObjectsAndKeys:@"Network Timeout", @"failure", @"User Auth timeout", @"Kinvey Internal Error", nil];
                 if (request != nil){
                     // We're going to Make a failure happen here...
-                    request.failureAction([NSError errorWithDomain:@"KINVEY ERROR" code:-1 userInfo:errorDict]);
+                    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
+                                                                                       withFailureReason:@"User creation timed out with one request holding the lock." 
+                                                                                  withRecoverySuggestion:@"Try request again later."
+                                                                                     withRecoveryOptions:nil];
+                    
+                    request.failureAction([NSError errorWithDomain:KCSUserErrorDomain
+                                                              code:KCSUserCreationContentionTimeoutError
+                                                          userInfo:userInfo]);
                     return;
                 } else {
                     // This case is not handled yet...
