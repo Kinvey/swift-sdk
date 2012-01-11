@@ -15,6 +15,8 @@
 #import "KCSKeyChain.h"
 #import "KCSClient.h"
 #import "KinveyUser.h"
+#import "KinveyErrorCodes.h"
+#import "KCSErrorUtilities.h"
 
 typedef BOOL(^SuccessAction)(KCSResourceResponse *);
 typedef BOOL(^FailureAction)(NSError *);
@@ -101,7 +103,13 @@ typedef BOOL(^FailureAction)(NSError *);
     KCSMockConnection *conn = [[KCSMockConnection alloc] init];
     conn.connectionShouldFail = NO;
     conn.connectionShouldReturnNow = YES;
-    NSError *err = [NSError errorWithDomain:@"TEST" code:400 userInfo:nil];
+    NSError *err = [NSError errorWithDomain:KCSErrorDomain
+                                       code:KCSBadRequestError
+                                   userInfo:[KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Planned Testing Error"
+                                                                                      withFailureReason:@"Attempting to simulate failure"
+                                                                                 withRecoverySuggestion:@"Non offered, non expected."
+                                                                                    withRecoveryOptions:nil]];
+    
     KCSConnectionResponse *cr = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_OK
                                                                      responseData:[[NSDictionary dictionary] JSONData]
                                                                        headerData:nil userData:nil];
@@ -130,7 +138,12 @@ typedef BOOL(^FailureAction)(NSError *);
     KCSMockConnection *conn = [[KCSMockConnection alloc] init];
     conn.connectionShouldFail = NO;
     conn.connectionShouldReturnNow = YES;
-    NSError *err = [NSError errorWithDomain:@"TEST" code:400 userInfo:nil];
+    NSError *err = [NSError errorWithDomain:KCSErrorDomain
+                                       code:KCSBadRequestError
+                                   userInfo:[KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Planned Testing Error"
+                                                                                      withFailureReason:@"Attempting to simulate failure"
+                                                                                 withRecoverySuggestion:@"Non offered, non expected."
+                                                                                    withRecoveryOptions:nil]];
     KCSConnectionResponse *cr = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_OK
                                                                      responseData:[[NSDictionary dictionary] JSONData]
                                                                        headerData:nil userData:nil];

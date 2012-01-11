@@ -15,7 +15,8 @@
 #import "KCSMockConnection.h"
 #import "KinveyUser.h"
 #import "KinveyPing.h"
-
+#import "KinveyErrorCodes.h"
+#import "KCSErrorUtilities.h"
 
 @implementation KinveyKitPingTests
 
@@ -63,8 +64,13 @@
                                                                            responseData:[pingResponse JSONData]
                                                                              headerData:nil
                                                                                userData:nil];
-    
-    NSError *failure = [NSError errorWithDomain:@"TEST ERROR" code:-1 userInfo:nil];
+
+    NSError *failure = [NSError errorWithDomain:KCSErrorDomain
+                                           code:KCSBadRequestError
+                                       userInfo:[KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Planned Testing Error"
+                                                                                          withFailureReason:@"Attempting to simulate failure"
+                                                                                     withRecoverySuggestion:@"Non offered, non expected."
+                                                                                        withRecoveryOptions:nil]];
     
     conn.responseForSuccess = response;
     conn.errorForFailure = failure;
@@ -107,7 +113,12 @@
                                                                              headerData:nil
                                                                                userData:nil];
     
-    NSError *failure = [NSError errorWithDomain:@"TEST ERROR" code:-1 userInfo:nil];
+    NSError *failure = [NSError errorWithDomain:KCSErrorDomain
+                                           code:KCSBadRequestError
+                                       userInfo:[KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Planned Testing Error"
+                                                                                          withFailureReason:@"Attempting to simulate failure"
+                                                                                     withRecoverySuggestion:@"Non offered, non expected."
+                                                                                        withRecoveryOptions:nil]];
     
     conn.responseForSuccess = response;
     conn.errorForFailure = failure;
@@ -145,7 +156,12 @@
                                                                              headerData:nil
                                                                                userData:nil];
     
-    NSError *failure = [NSError errorWithDomain:@"TEST ERROR" code:-1 userInfo:nil];
+    NSError *failure = [NSError errorWithDomain:KCSErrorDomain
+                                           code:KCSBadRequestError
+                                       userInfo:[KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Planned Testing Error"
+                                                                                          withFailureReason:@"Attempting to simulate failure"
+                                                                                     withRecoverySuggestion:@"Non offered, non expected."
+                                                                                        withRecoveryOptions:nil]];
     
     conn.responseForSuccess = response;
     conn.errorForFailure = failure;
@@ -158,7 +174,7 @@
     [KCSPing pingKinveyWithBlock:pinger];
     
     assertThat([NSNumber numberWithBool:pingWasSuccessful], is(equalToBool(NO)));
-    assertThat(description, containsString(@"TEST ERROR"));
+    assertThat(description, containsString(@"Planned Testing Error"));
     
     [conn release];
 }
