@@ -99,7 +99,7 @@
         self.userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
         self.connectionTimeout = 10.0; // Default timeout to 10 seconds
         _analytics = [[KCSAnalytics alloc] init];
-        _cachePolicy = NSURLRequestReloadIgnoringLocalCacheData; //NSURLCacheStorageNotAllowed; // Inhibit caching for now
+        _cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;  // Inhibit caching for now
         _protocol = @"https";
         _userIsAuthenticated = NO;
         _userAuthenticationInProgress = NO;
@@ -310,6 +310,5 @@
                                                           warningEnabled:warningIsEnabled
                                                             errorEnabled:errorIsEnabled];
 }
-
 
 @end
