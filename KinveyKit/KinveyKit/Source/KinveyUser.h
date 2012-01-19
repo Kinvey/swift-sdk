@@ -10,8 +10,58 @@
 //  contents is a violation of applicable laws.
 
 #import <Foundation/Foundation.h>
+#import "KinveyPersistable.h"
+#import "KinveyEntity.h"
 
+@class KCSCollection;
 @class KCSRESTRequest;
+
+typedef void(^KCSUsernameCheckBlock)(BOOL usernameDoesNotExist, NSString *checkedUsername);
+
+// Need to predefine our classes here
+@class KCSUser;
+@class KCSUserResult;
+
+typedef NSInteger KCSUserActionResult;
+
+enum {
+    KCSUserCreated = 1,
+    KCSUserDeleted = 2,
+    KCSUserFound = 3,
+    KCSUSerNotFound = 4
+};
+
+/*!  Describes required methods for an object wishing to be notified about the status of user actions.
+ *
+ * This Protocol should be implemented by a client for processing the results of any User Actions against the Kinvey
+ * service that deals with users.
+ */
+@protocol KCSUserActionDelegate <NSObject>
+
+///---------------------------------------------------------------------------------------
+/// @name Success
+///---------------------------------------------------------------------------------------
+/*! Called when a User Request completes successfully.
+ * @param user The user the action was performed on.
+ * @param result The results of the completed request
+ *
+ * @bug This interface will change and switch to using NSArray instead of NSObject, this should be transparent to client code, which should be using NSArray now anyway.
+ */
+- (void)user: (KCSUser *)user actionDidCompleteWithResult: (KCSUserActionResult)result;
+
+///---------------------------------------------------------------------------------------
+/// @name Failure
+///---------------------------------------------------------------------------------------
+/*! Called when a User Request fails for some reason (including network failure, internal server failure, request issues...)
+ * 
+ * Use this method to handle failures.
+ *  @param user The user the operation was performed on.
+ *  @param error An object that encodes our error message
+ */
+- (void)user: (KCSUser *)user actionDidFailWithError: (NSError *)error;
+
+@end
+
 
 /*! User in the Kinvey System
  
@@ -23,7 +73,7 @@
  user used to make all requests.  Convienience routines are available to manage the state of this Current User.
  
  */
-@interface KCSUser : NSObject
+@interface KCSUser : NSObject <KCSPersistable>
 
 ///---------------------------------------------------------------------------------------
 /// @name User Information
@@ -62,9 +112,80 @@
  
  */
 - (void)initializeCurrentUser;
++ (void)initCurrentUser;
 
+///---------------------------------------------------------------------------------------
+/// @name Creating Users
+///---------------------------------------------------------------------------------------
+/*! Create a new Kinvey user and register them with the backend.
+ * @param username The username to create, if it already exists on the back-end an error will be returned.
+ * @param password The user's password
+ * @param delegate The delegate to inform once creation completes
+*/
++ (void)userWithUsername: (NSString *)username password: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate;
 
+/*! Check to see if a username already exists and call checkBlock with the results
+ * @param checkBlock The block to execute when the check is complete
+*/
++ (void)checkForExistingUsernameWithBlock: (KCSUsernameCheckBlock)checkBlock;
+
+///---------------------------------------------------------------------------------------
+/// @name Managing the Current User
+///---------------------------------------------------------------------------------------
+/*! Login an existing user, generates an error if the user doesn't exist
+ * @param username The username of the user
+ * @param password The user's password
+ * @param delegate The delegate to inform once the action is complete
+*/
++ (void)loginWithUserName: (NSString *)username password: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate;
+
+/*! Removes a user and their data from Kinvey
+ * @param delegate The delegate to inform once the action is complete.
+*/
+- (void)removeWithDelegate: (id<KCSPersistableDelegate>)delegate;
+
+/*! Logout the user.
+*/
 - (void)logout;
+
+///---------------------------------------------------------------------------------------
+/// @name Using User Attributes
+///---------------------------------------------------------------------------------------
+/*! Load the data for the given user, user must be logged-in.
+ *
+ * @param delegate The delegate to inform once the action is complete.
+ */
+- (void)loadWithDelegate: (id<KCSEntityDelegate>)delegate;
+
+/*! Called to update the Kinvey state of a user.
+ * @param delegate The delegate to inform once the action is complete.
+ */
+- (void)saveWithDelegate: (id<KCSPersistable>)delegate;
+
+/*! Return the list of all attributes for this user.
+ 
+ @return An array of all user
+ */
+- (NSArray *)attributes;
+
+/*! Return the value for an attribute for this user
+ * @param attribute The attribute to retrieve
+ */
+- (id)getValueForAttribute: (NSString *)attribute;
+
+/*! Set the value for an attribute
+ * @param value The value to set.
+ * @param attribute The attribute to modify.
+ */
+- (void)setValue: (id)value forAttribute: (NSString *)attribute;
+
+/*! Called when a User Request completes successfully.
+ * @return The KCSCollection to access users.
+ */
+- (KCSCollection *)userCollection;
+
+
+
 
 
 @end

@@ -89,7 +89,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     [KCSKeyChain setString:@"12345" forKey:@"password"];
     
     // Needed, otherwise we burn a connection later...
-    [[client currentUser] initializeCurrentUser];
+    [KCSUser initCurrentUser];
 
     
     // Seed data types
@@ -218,7 +218,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     KCSCollection *collection = [client collectionFromString:@"test" withClass:[SimpleClass class]];
     
     KCSConnectionResponse *response = nil;
-    __block int expectedResult = 0;
+    __block long long expectedResult = 0;
     
     self.onInfoSuccess = ^(int res){
         self.message = [NSString stringWithFormat:@"Value mismatch, got %d, expected %d", res, expectedResult];

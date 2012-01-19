@@ -44,7 +44,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      id objectOfInterest,
                      id <KCSEntityDelegate> delegate)
 {
-     *cBlock = ^(KCSConnectionResponse *response){
+     *cBlock = [^(KCSConnectionResponse *response){
         NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
 #if 0
         // Needs KCS update for this feature
@@ -66,6 +66,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
             [delegate entity:objectOfInterest fetchDidFailWithError:error];
 
         } else {
+#warning Need to add load logic here...
             NSDictionary *kinveyMapping = [objectOfInterest hostToKinveyPropertyMapping];
             
             NSString *key;
@@ -74,16 +75,16 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
             }
             [delegate entity:objectOfInterest fetchDidCompleteWithResult:responseToReturn];
         }
-    };
+    } copy];
     
-    *fBlock = ^(NSError *error){
+    *fBlock = [^(NSError *error){
         [delegate entity:objectOfInterest fetchDidFailWithError:error];
-    };
+    } copy];
     
-    *pBlock = ^(KCSConnectionProgress *conn)
+    *pBlock = [^(KCSConnectionProgress *conn)
     {
         // Do nothing...
-    };
+    } copy];
    
 }
 
@@ -154,6 +155,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 }
 
 
+#warning Needs fix
 - (NSString *)valueForProperty: (NSString *)property
 {
     if ([property isEqualToString:@"_id"]){
@@ -210,6 +212,16 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
                 isPostRequest = NO;
             }
         }
+    }
+    
+    // We've handled all the built-in keys, we need to just store the dict if there is one
+    BOOL useDictionary = [[[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_USE_DICTIONARY_KEY] boolValue];
+    
+    if (useDictionary){
+        // Get the name of the dictionary to store
+        NSString *dictionaryName = [[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_DICTIONARY_NAME_KEY];
+        
+        [dictionaryToMap setObject:[self valueForKey:dictionaryName] forKey:dictionaryName];
     }
 
     
@@ -282,7 +294,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     NSString *oid = nil;
     for (NSString *key in kinveyMapping){
         NSString *jsonName = [kinveyMapping valueForKey:key];
-        if ([jsonName compare:@"_id"] == NSOrderedSame){
+        if ([jsonName isEqualToString:@"_id"]){
             oid = [self valueForKey:key];
         }
     }
@@ -339,6 +351,26 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
     @throw myException;
 
+    return nil;
+}
+
++ (id)kinveyDesignatedInitializer
+{
+    // Eventually this will be used to allow a default scanning of "self" to build and cache a
+    // 1-1 mapping of the client properties
+    NSException* myException = [NSException
+                                exceptionWithName:@"UnsupportedFeatureException"
+                                reason:@"This version of the Kinvey iOS library requires clients to override this method"
+                                userInfo:nil];
+    
+    @throw myException;
+    
+    return nil;
+
+}
+
++ (NSDictionary *)kinveyObjectBuilderOptions
+{
     return nil;
 }
 

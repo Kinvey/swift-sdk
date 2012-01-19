@@ -101,6 +101,8 @@
 /*! A cached copy of the last results from Kinvey (handy if you forget to copy them in your delegate) */
 @property (retain) NSArray *lastFetchResults;
 
+@property (nonatomic, retain) NSString *baseURL;
+
 
 ///---------------------------------------------------------------------------------------
 /// @name Creating Access to a Kinvey Object
