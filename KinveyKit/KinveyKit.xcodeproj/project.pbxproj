@@ -84,6 +84,8 @@
 		D3C5E68814745F09002D8F2B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68514745F09002D8F2B /* Security.framework */; };
 		D3C5E68914745F09002D8F2B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68614745F09002D8F2B /* SystemConfiguration.framework */; };
 		D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */; };
+		D3E7326414C879A4002972B8 /* KCSObjectMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = D3E7326214C879A4002972B8 /* KCSObjectMapper.h */; };
+		D3E7326514C879A4002972B8 /* KCSObjectMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = D3E7326314C879A4002972B8 /* KCSObjectMapper.m */; };
 		D3EA224C148412A600666259 /* KCSConnectionPool.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA224A148412A600666259 /* KCSConnectionPool.h */; };
 		D3EA224D148412A600666259 /* KCSConnectionPool.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA224B148412A600666259 /* KCSConnectionPool.m */; };
 		D3EA22521484180300666259 /* KCSSyncConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22501484180300666259 /* KCSSyncConnection.h */; };
@@ -434,6 +436,8 @@
 		D3C5E68514745F09002D8F2B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		D3C5E68614745F09002D8F2B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyHTTPStatusCodes.h; sourceTree = "<group>"; };
+		D3E7326214C879A4002972B8 /* KCSObjectMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSObjectMapper.h; sourceTree = "<group>"; };
+		D3E7326314C879A4002972B8 /* KCSObjectMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSObjectMapper.m; sourceTree = "<group>"; };
 		D3EA224A148412A600666259 /* KCSConnectionPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSConnectionPool.h; sourceTree = "<group>"; };
 		D3EA224B148412A600666259 /* KCSConnectionPool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSConnectionPool.m; sourceTree = "<group>"; };
 		D3EA22501484180300666259 /* KCSSyncConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSyncConnection.h; sourceTree = "<group>"; };
@@ -570,6 +574,8 @@
 				D32A610314716F2D00F77A3F /* KinveyPersistable.h */,
 				D3EA22C51486B0BD00666259 /* KinveyPing.h */,
 				D3EA22C61486B0BD00666259 /* KinveyPing.m */,
+				D3E7326214C879A4002972B8 /* KCSObjectMapper.h */,
+				D3E7326314C879A4002972B8 /* KCSObjectMapper.m */,
 			);
 			name = appdataService;
 			sourceTree = "<group>";
@@ -1431,6 +1437,7 @@
 				D3F3410414BD491F00DB6C37 /* KCSErrorUtilities.h in Headers */,
 				D3FF5FDB14C6178600680BD2 /* KCSAuthCredential.h in Headers */,
 				D3FF5FE314C6373C00680BD2 /* KCSBase64.h in Headers */,
+				D3E7326414C879A4002972B8 /* KCSObjectMapper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1612,6 +1619,7 @@
 				D3F3412A14BD686100DB6C37 /* KCSLogManager.m in Sources */,
 				D3FF5FDC14C6178600680BD2 /* KCSAuthCredential.m in Sources */,
 				D3FF5FE414C6373C00680BD2 /* KCSBase64.m in Sources */,
+				D3E7326514C879A4002972B8 /* KCSObjectMapper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

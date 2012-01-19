@@ -17,6 +17,7 @@
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
 #import "KCSLogManager.h"
+#import "KCSObjectMapper.h"
 
 
 // Avoid compiler warning by prototyping here...
@@ -29,36 +30,6 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
     return [[^(KCSConnectionResponse *response){
         
         KCSLogTrace(@"In collection callback with response: %@", response);
-        
-        // See if the class has a function map
-        Class templateClass = collection.objectTemplate;
-        NSDictionary *specialOptions = [templateClass kinveyObjectBuilderOptions];
-        BOOL hasDesignatedInit = NO;
-        BOOL hasFlatMap = NO;
-        
-        if (specialOptions != nil){
-            if ([specialOptions objectForKey:KCS_USE_DESIGNATED_INITIALIZER_MAPPING_KEY] != nil){
-                hasDesignatedInit = YES;
-            }
-            
-            if ([specialOptions objectForKey:KCS_USE_DICTIONARY_KEY]){
-                hasFlatMap = YES;
-            }
-        }
-        
-        id templateClassObject = nil;
-        
-        if (hasDesignatedInit){
-            // We need to retain this to get a known +1 on the refcount to match below
-            templateClassObject = [[templateClass kinveyDesignatedInitializer] retain];
-        } else {
-            templateClassObject = [[templateClass alloc] init];
-        }
-        
-        NSDictionary *hostToJsonMap = [templateClassObject hostToKinveyPropertyMapping];
-        [templateClassObject release];
-        templateClassObject = nil;
-        
         NSMutableArray *processedData = [[NSMutableArray alloc] init];
         
         
@@ -96,45 +67,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
         }
         
         for (NSDictionary *dict in jsonArray) {
-            
-            id copiedObject = nil;
-            if (hasDesignatedInit){
-                copiedObject = [templateClass kinveyDesignatedInitializer];
-            } else {
-                copiedObject = [[[templateClass alloc] init] autorelease];
-            }
-            
-            for (NSString *hostKey in hostToJsonMap) {
-                NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
-                
-                //            KCSLogDebug(@"Mapping from %@ to %@ (using value: %@)", jsonKey, hostKey, [dict valueForKey:jsonKey]);
-                if ([dict valueForKey:jsonKey] == nil){
-                    KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key %@ (Host Key %@).  Object not 100%% valid.", jsonKey, hostKey);
-                    continue;
-                }
-                [copiedObject setValue:[dict valueForKey:jsonKey] forKey:hostKey];
-                //            KCSLogDebug(@"Copied Object: %@", copiedObject);
-            }
-            
-            // We've processed all the known keys, let's put the rest in our "dictionary" if required
-            if (hasFlatMap){
-                NSString *dictName = [specialOptions objectForKey:KCS_DICTIONARY_NAME_KEY];
-                if (dictName){
-                    NSArray *knownJsonProps = [hostToJsonMap allValues];
-                    for (NSString *property in dict) {
-                        // Check if in known set
-                        if ([knownJsonProps containsObject:property]){
-                            continue;
-                        } else {
-                            // otherwise build key path and insert.
-                            NSString *keyPath = [dictName stringByAppendingFormat:@".%@", property];
-                            [copiedObject setValue:[dict objectForKey:property] forKeyPath:keyPath];
-                        }
-                    }
-                }
-            }
-            
-            [processedData addObject:copiedObject];
+            [processedData addObject:[KCSObjectMapper makeObjectOfType:collection.objectTemplate withData:dict]];
         }
         [delegate collection:collection didCompleteWithResult:processedData];
         [processedData release];
