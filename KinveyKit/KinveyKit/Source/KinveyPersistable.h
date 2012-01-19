@@ -124,4 +124,11 @@ implementing these methods.
  */
 - (NSDictionary*)hostToKinveyPropertyMapping;
 
+#define KCS_USE_DESIGNATED_INITIALIZER_MAPPING_KEY @"KCS_DESIGNATED_INITIALIZER_MAPPING_KEY"
+#define KCS_USE_DICTIONARY_KEY @"KCS_DICTIONARY_MAPPER_KEY"
+#define KCS_DICTIONARY_NAME_KEY @"KCS_DICTIONARY_NAME_KEY"
+
++ (id)kinveyDesignatedInitializer;
++ (NSDictionary *)kinveyObjectBuilderOptions;
+
 @end

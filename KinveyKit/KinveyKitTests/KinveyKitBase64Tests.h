@@ -1,8 +1,8 @@
 //
-//  KinveyKitUserTests.h
+//  KinveyKitBase64Tests.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 1/5/12.
+//  Created by Brian Wilson on 1/17/12.
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 
@@ -13,11 +13,6 @@
 #define HC_SHORTHAND
 #import <OCHamcrest/OCHamcrest.h>
 
-#import "KinveyUser.h"
-#import "KinveyPersistable.h"
-#import "KinveyEntity.h"
-
-@interface KinveyKitUserTests : SenTestCase <KCSUserActionDelegate, KCSEntityDelegate, KCSPersistableDelegate>
-
+@interface KinveyKitBase64Tests : SenTestCase
 
 @end

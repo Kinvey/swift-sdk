@@ -50,6 +50,12 @@ enum {
     KCSKinveyUnreachableError = 60002,
     KCSUserCreationContentionTimeoutError = 60003,
     KCSUnexpectedResultFromServerError = 60004,
+    KCSAuthenticationRetryError = 60005,
+    KCSUserAlreadyLoggedInError = 60006,
+    KCSUserAlreadyExistsError = 60007,
+    KCSOperationREquiresCurrentUserError = 60008,
+    KCSLoginFailureError = 60009,
+    KCSUnexpectedError = 60010,
     
     
     // For testing only, no user should ever see this!

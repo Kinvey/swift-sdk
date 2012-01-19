@@ -11,9 +11,16 @@
 #import "KCSClient.h"
 #import "KinveyUser.h"
 #import "KCSLogManager.h"
+#import "KCSAuthCredential.h"
+#import "KinveyErrorCodes.h"
+#import "KCSErrorUtilities.h"
+#import "KCSReachability.h"
 
 // *cough* hack *cough*
 #define MAX_DATE_STRING_LENGTH_K 40 
+#define MAX_NUMBER_OF_RETRIES_K 10
+// This is in Seconds!
+#define KCS_RETRY_DELAY 0.05
 
 void clogResource(NSString *resource, NSInteger requestMethod);
 void clogResource(NSString *resource, NSInteger requestMethod)
@@ -43,6 +50,7 @@ getLogDate(void)
 @property (nonatomic, retain) NSMutableURLRequest *request;
 @property (nonatomic) BOOL isMockRequest;
 @property (nonatomic, retain) Class mockConnection;
+@property (nonatomic) NSInteger retriesAttempted;
 - (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod;
 @end
 
@@ -59,6 +67,7 @@ getLogDate(void)
 @synthesize mockConnection=_mockConnection;
 @synthesize request=_request;
 @synthesize followRedirects=_followRedirects;
+@synthesize retriesAttempted = _retriesAttempted;
 
 //- (id)init
 //{
@@ -82,6 +91,7 @@ getLogDate(void)
         _isSyncRequest = NO;
         _isMockRequest = NO;
         _followRedirects = YES;
+        _retriesAttempted = 0;
         _headers = [[NSMutableDictionary dictionary] retain];
 
         // Prepare to generate the request...
@@ -212,6 +222,21 @@ getLogDate(void)
 {
     KCSConnection *connection;
     KCSClient *kinveyClient = [KCSClient sharedClient];
+   
+    // Check for reachability here, but how do we allow for mock testing?
+    if (![kinveyClient.kinveyReachability isReachable]){
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Kinvey not reachable"
+                                                                           withFailureReason:@"Reachability determined that Kinvey was not reachable."
+                                                                      withRecoverySuggestion:@"Check to make sure device is not in Airplane mode and has a signal or try again later"
+                                                                         withRecoveryOptions:nil];
+        NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
+                                             code:KCSKinveyUnreachableError
+                                         userInfo:userInfo];
+        self.failureAction(error);
+        // No connection, no release
+        return;
+    }
+
     
     if (self.isSyncRequest){
         connection = [[KCSConnectionPool syncConnection] retain];
@@ -227,8 +252,6 @@ getLogDate(void)
         [self.request addValue:[self.headers objectForKey:key] forHTTPHeaderField:key];
     }
     
-    // We need to do basic filtering on the request URL and do some things for "Kinvey" requests
-    
     // Add the Kinvey User-Agent
     [self.request addValue:[kinveyClient userAgent] forHTTPHeaderField:@"User-Agent"];
 
@@ -236,26 +259,56 @@ getLogDate(void)
     [self.request addValue:getLogDate() forHTTPHeaderField:@"Date"];
 
     // Let the server know that we support GZip.
-    [self.request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];  
+    [self.request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
+
+    KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
+    if (cred.requiresAuthentication){
+        NSString *authString = [cred HTTPBasicAuthString];
+        // If authString is nil and we needed it (requiresAuthentication is true),
+        // then there is no current user, so we need to retry this "later", say 500 msec
+        if (authString == nil){
+            // We're only going to try this so many times before we just give up
+            if (self.retriesAttempted >= MAX_NUMBER_OF_RETRIES_K){
+                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Request Timeout"
+                                                                                   withFailureReason:@"Authentication service failed to return valid credentials after multiple attempts." 
+                                                                              withRecoverySuggestion:@"Check to see if the network is active."
+                                                                                 withRecoveryOptions:nil];
+                
+                self.failureAction([NSError errorWithDomain:KCSUserErrorDomain
+                                                          code:KCSAuthenticationRetryError
+                                                      userInfo:userInfo]);
+            } else {
+                self.retriesAttempted++;
+                [self performSelector:@selector(start) withObject:nil afterDelay:KCS_RETRY_DELAY];
+                // This iteration is done.
+            }
+            [connection release];
+            return;
+        }
+        [self.request setValue:authString forHTTPHeaderField:@"Authorization"];
+    }
+    
+
     
     // If we have the proper credentials then kinveyClient.userIsAuthenticated returns true, so just use the stored credentials
     // If it's not true, then we could be in the acutal user request, if that's the case (aka, resourceLocation is the userBaseURL)
     // then just allow the requst, it's already authenticated...
     // TODO: this needs to check each URL for the user API, since future maybe more than just the baseURL.
-    if (!kinveyClient.userIsAuthenticated && ![self.resourceLocation isEqualToString:kinveyClient.userBaseURL]){
-        // User isn't authenticated, we need to perform default auth here and return.  Auth will handle completing this request.
-//        KCSLogDebug(@"Username: %@ Password: %@", kinveyClient.authCredentials.user, kinveyClient.authCredentials.password);
-        [kinveyClient.currentUser initializeCurrentUserWithRequest:self];
-        // Make sure to release the connection here, as we're breaking.
-        [connection release];
-        return;
-    }
+//    if (!kinveyClient.userIsAuthenticated && ![self.resourceLocation isEqualToString:kinveyClient.userBaseURL]){
+//        // User isn't authenticated, we need to perform default auth here and return.  Auth will handle completing this request.
+////        KCSLogDebug(@"Username: %@ Password: %@", kinveyClient.authCredentials.user, kinveyClient.authCredentials.password);
+//        [kinveyClient.currentUser initializeCurrentUserWithRequest:self];
+//        // Make sure to release the connection here, as we're breaking.
+//        [connection release];
+//        return;
+//    }
     
     if (!self.followRedirects){
         connection.followRedirects = NO;
     }
     
-    [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:[kinveyClient authCredentials]];
+    //    [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:[kinveyClient authCredentials]];
+    [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:nil];    
      
     [connection release];
 }
