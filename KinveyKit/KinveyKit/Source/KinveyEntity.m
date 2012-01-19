@@ -19,6 +19,7 @@
 #import "JSONKit.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
+#import "KCSObjectMapper.h"
 
 //#import "KinveyCollection.h"
 //
@@ -66,14 +67,8 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
             [delegate entity:objectOfInterest fetchDidFailWithError:error];
 
         } else {
-#warning Need to add load logic here...
-            NSDictionary *kinveyMapping = [objectOfInterest hostToKinveyPropertyMapping];
-            
-            NSString *key;
-            for (key in kinveyMapping){
-                [objectOfInterest setValue:[responseToReturn valueForKey:[kinveyMapping valueForKey:key]] forKey:key];
-            }
-            [delegate entity:objectOfInterest fetchDidCompleteWithResult:responseToReturn];
+            // Populate our object and return it to the delegate
+            [delegate entity:[KCSObjectMapper populateObject:objectOfInterest withData:responseToReturn] fetchDidCompleteWithResult:responseToReturn];
         }
     } copy];
     
@@ -155,7 +150,6 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 }
 
 
-#warning Needs fix
 - (NSString *)valueForProperty: (NSString *)property
 {
     if ([property isEqualToString:@"_id"]){
@@ -167,6 +161,13 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
             if ([property isEqualToString:jsonName]){
                 return [self valueForKey:key];
             }
+        }
+        // Didn't find anything yet, search the dictionary if there is one
+        if ([[[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_USE_DICTIONARY_KEY] boolValue]){
+            // Need to check dictionary
+            NSString *dictionaryName = [[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_DICTIONARY_NAME_KEY];
+            NSString *keyPath = [dictionaryName stringByAppendingFormat:@".%@", property];
+            return [self valueForKeyPath:keyPath];
         }
     }
     // Nothing found, return nil
@@ -192,38 +193,11 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)saveToCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistableDelegate>)delegate
 {
-    BOOL isPostRequest = NO;
 
-    NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
-    NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
-    NSString *objectId = nil;
-
-    NSString *key;
-    for (key in kinveyMapping){
-        NSString *jsonName = [kinveyMapping valueForKey:key];
-        [dictionaryToMap setValue:[self valueForKey:key] forKey:jsonName];
-        
-        if ([jsonName isEqualToString:@"_id"]){
-            objectId = [self valueForKey:key];
-            if (objectId == nil){
-                isPostRequest = YES;
-                objectId = @""; // Set to the empty string for the document path
-            } else {
-                isPostRequest = NO;
-            }
-        }
-    }
-    
-    // We've handled all the built-in keys, we need to just store the dict if there is one
-    BOOL useDictionary = [[[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_USE_DICTIONARY_KEY] boolValue];
-    
-    if (useDictionary){
-        // Get the name of the dictionary to store
-        NSString *dictionaryName = [[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_DICTIONARY_NAME_KEY];
-        
-        [dictionaryToMap setObject:[self valueForKey:dictionaryName] forKey:dictionaryName];
-    }
-
+    KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self];
+    BOOL isPostRequest = obj.isPostRequest;
+    NSString *objectId = obj.objectId;
+    NSDictionary *dictionaryToMap = [obj.dataToSerialize retain];
     
     NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
     
@@ -289,15 +263,16 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)deleteFromCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistableDelegate>)delegate
 {
-    NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
-    
-    NSString *oid = nil;
-    for (NSString *key in kinveyMapping){
-        NSString *jsonName = [kinveyMapping valueForKey:key];
-        if ([jsonName isEqualToString:@"_id"]){
-            oid = [self valueForKey:key];
-        }
-    }
+//    NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
+//    
+//    NSString *oid = nil;
+//    for (NSString *key in kinveyMapping){
+//        NSString *jsonName = [kinveyMapping valueForKey:key];
+//        if ([jsonName isEqualToString:@"_id"]){
+//            oid = [self valueForKey:key];
+//        }
+//    }
+    NSString *oid = [self kinveyObjectId];
 
     NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, oid];
     

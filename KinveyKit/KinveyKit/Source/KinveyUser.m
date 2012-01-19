@@ -110,7 +110,7 @@
     // Did we get a username and password?  If we did, then we're not interested in being already logged in
     // If we didn't, we need to check to see if there are keychain items.
     
-    __block KCSUser *createdUser = [[KCSUser alloc] init];
+    __block KCSUser *createdUser = [[[KCSUser alloc] init] autorelease];
     createdUser.username = [KCSKeyChain getStringForKey:@"username"];
     
     if (createdUser.username == nil){
@@ -131,6 +131,7 @@
         
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+            [createdUser retain];
             // Ok, we're probably authenticated
             if (response.responseCode != KCS_HTTP_STATUS_CREATED){
                 // Crap, authentication failed, not really sure how to proceed here!!!
@@ -169,6 +170,7 @@
             client.userAuthenticationInProgress = NO;
             
             [delegate user:createdUser actionDidCompleteWithResult:KCSUserCreated];
+            [createdUser release];
         };
         
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
@@ -241,7 +243,7 @@
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
             // Ok, we're probably authenticated
-            KCSUser *createdUser = [[KCSUser alloc] init];
+            KCSUser *createdUser = [[[KCSUser alloc] init] autorelease];
             createdUser.username = username;
             createdUser.password = password;
             if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -309,7 +311,7 @@
 
         // We need to init the current user to something before trying this
         client.userAuthenticationInProgress = YES;
-        client.currentUser = [[KCSUser alloc] init];
+        client.currentUser = [[[KCSUser alloc] init] autorelease];
         client.currentUser.username = username;
         client.currentUser.password = password;
         [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
@@ -448,13 +450,18 @@
     return userColl;
 }
 
-- (NSDictionary *)kinveyFunctionMapping
+
++ (NSDictionary *)kinveyObjectBuilderOptions
 {
-    static NSDictionary *mappedDict = nil;
+    static NSDictionary *options = nil;
     
-    if (mappedDict == nil){
+    if (options == nil){
+        options = [[NSDictionary dictionaryWithObjectsAndKeys:
+                    [NSNumber numberWithBool:YES], KCS_USE_DICTIONARY_KEY,
+                    @"userAttributes", KCS_DICTIONARY_NAME_KEY, nil] retain];
     }
-    return mappedDict;
+    
+    return options;
 }
 
 - (NSDictionary *)hostToKinveyPropertyMapping
@@ -462,10 +469,10 @@
     static NSDictionary *mappedDict = nil;
     
     if (mappedDict == nil){
-        mappedDict = [NSDictionary dictionaryWithObjectsAndKeys:
+        mappedDict = [[NSDictionary dictionaryWithObjectsAndKeys:
                       @"_id", @"userId",
                       @"username", @"username",
-                      @"password", @"password", nil];
+                      @"password", @"password", nil] retain];
     }
     
     return mappedDict;
