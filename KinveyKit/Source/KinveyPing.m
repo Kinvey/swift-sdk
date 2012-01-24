@@ -10,7 +10,8 @@
 #import "KinveyBlocks.h"
 #import "KCSRESTRequest.h"
 #import "KCSConnectionResponse.h"
-#import "JSONKit.h"
+//#import "JSONKit.h"
+#import "SBJson.h"
 #import "KCSClient.h"
 #import "KCSReachability.h"
 #import "KinveyErrorCodes.h"
@@ -138,7 +139,9 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
     KCSCommonPingBlock cpb = ^(BOOL didSucceed, KCSConnectionResponse *response, NSError *error){
         NSString *description = nil;
         if (didSucceed){
-            NSDictionary *jsonData = [response.responseData objectFromJSONData];
+            KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+            NSDictionary *jsonData = [parser objectWithData:response.responseData];
+            [parser release];
             NSNumber *useOldStyle = [[[KCSClient sharedClient] options] valueForKey:KCS_USE_OLD_PING_STYLE_KEY];
             if ([useOldStyle boolValue]){
                 description = [jsonData description];

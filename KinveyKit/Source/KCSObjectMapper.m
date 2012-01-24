@@ -131,10 +131,10 @@
     NSString *key;
     for (key in kinveyMapping){
         NSString *jsonName = [kinveyMapping valueForKey:key];
-        [dictionaryToMap setValue:[self valueForKey:key] forKey:jsonName];
+        [dictionaryToMap setValue:[object valueForKey:key] forKey:jsonName];
         
         if ([jsonName isEqualToString:@"_id"]){
-            objectId = [self valueForKey:key];
+            objectId = [object valueForKey:key];
             if (objectId == nil){
                 isPostRequest = YES;
                 objectId = @""; // Set to the empty string for the document path
@@ -145,13 +145,16 @@
     }
     
     // We've handled all the built-in keys, we need to just store the dict if there is one
-    BOOL useDictionary = [[[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_USE_DICTIONARY_KEY] boolValue];
+    BOOL useDictionary = [[[[object class] kinveyObjectBuilderOptions] objectForKey:KCS_USE_DICTIONARY_KEY] boolValue];
     
     if (useDictionary){
         // Get the name of the dictionary to store
-        NSString *dictionaryName = [[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_DICTIONARY_NAME_KEY];
-        
-        [dictionaryToMap setObject:[self valueForKey:dictionaryName] forKey:dictionaryName];
+        NSString *dictionaryName = [[[object class] kinveyObjectBuilderOptions] objectForKey:KCS_DICTIONARY_NAME_KEY];
+
+        NSDictionary *subDict = (NSDictionary *)[object valueForKey:dictionaryName];
+        for (NSString *key in subDict) {
+            [dictionaryToMap setObject:[subDict objectForKey:key] forKey:key];
+        }
     }
     
     KCSSerializedObject *sObject = [[[KCSSerializedObject alloc] initWithObjectId:objectId dataToSerialize:dictionaryToMap isPostRequest:isPostRequest] autorelease];

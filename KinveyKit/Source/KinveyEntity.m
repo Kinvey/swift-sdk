@@ -16,7 +16,8 @@
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
-#import "JSONKit.h"
+//#import "JSONKit.h"
+#import "SBJson.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
 #import "KCSObjectMapper.h"
@@ -46,18 +47,19 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      id <KCSEntityDelegate> delegate)
 {
      *cBlock = [^(KCSConnectionResponse *response){
-        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
+         KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
 #if 0
         // Needs KCS update for this feature
-        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
+//        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
 #else
-        NSDictionary *responseToReturn = jsonResponse;
+//        NSDictionary *responseToReturn = jsonResponse;
 #endif
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Entity fetch operation was unsuccessful."
-                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", (NSDictionary *)jsonResponse]
                                                                           withRecoverySuggestion:@"Retry request based on information in JSON Error"
                                                                              withRecoveryOptions:nil];
             NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
@@ -68,6 +70,13 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
         } else {
             // Populate our object and return it to the delegate
+            NSDictionary *responseToReturn = nil;
+            
+            if ([jsonResponse isKindOfClass:[NSArray class]]){
+                responseToReturn = (NSDictionary *)[(NSArray *)jsonResponse objectAtIndex:0];
+            } else {
+                responseToReturn = (NSDictionary *)jsonResponse;
+            }
             [delegate entity:[KCSObjectMapper populateObject:objectOfInterest withData:responseToReturn] fetchDidCompleteWithResult:responseToReturn];
         }
     } copy];
@@ -90,11 +99,19 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)fetchOneFromCollection:(KCSCollection *)collection matchingQuery:(NSString *)query withDelegate:(id<KCSEntityDelegate>)delegate
 {
-    KCSClient *kinveyClient = [KCSClient sharedClient];
+    NSString *resource = nil;
+    // This is the user collection...
+    if ([collection.collectionName isEqualToString:@""]){
+        resource = [collection.baseURL stringByAppendingFormat:@"%@",
+                    [NSString stringbyPercentEncodingString:query]];
 
-    NSString *resource = [kinveyClient.appdataBaseURL stringByAppendingFormat:@"%@/%@",
-                          [collection collectionName],
-                          [NSString stringbyPercentEncodingString:query]];
+    } else {
+        resource = [collection.baseURL stringByAppendingFormat:@"%@/%@",
+                    [collection collectionName],
+                    [NSString stringbyPercentEncodingString:query]];
+
+    }
+
 
     KCSConnectionCompletionBlock cBlock;
     KCSConnectionFailureBlock fBlock;
@@ -107,7 +124,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 - (void)findEntityWithProperty:(NSString *)property matchingBoolValue:(BOOL)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
     
-    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:value], property, nil] JSONString];
+    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:value], property, nil] JSONRepresentation];
     
     [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
     
@@ -115,7 +132,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)findEntityWithProperty:(NSString *)property matchingDoubleValue:(double)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
-    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithDouble:value], property, nil] JSONString];
+    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithDouble:value], property, nil] JSONRepresentation];
     
     [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
     
@@ -123,7 +140,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)findEntityWithProperty:(NSString *)property matchingIntegerValue:(int)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
-    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:value], property, nil] JSONString];
+    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:value], property, nil] JSONRepresentation];
     
     [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
     
@@ -131,7 +148,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)findEntityWithProperty:(NSString *)property matchingStringValue:(NSString *)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
-    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:value, property, nil] JSONString];
+    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:value, property, nil] JSONRepresentation];
     
     [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
     
@@ -176,7 +193,13 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)loadObjectWithID:(NSString *)objectID fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
-    NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, objectID];
+    NSString *resource = nil;
+    // This is the user collection...
+    if ([collection.collectionName isEqualToString:@""]){
+        resource = [collection.baseURL stringByAppendingFormat:@"%@", objectID];
+    } else {
+        resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, objectID];
+    }
 
     KCSConnectionCompletionBlock cBlock;
     KCSConnectionFailureBlock fBlock;
@@ -199,7 +222,12 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     NSString *objectId = obj.objectId;
     NSDictionary *dictionaryToMap = [obj.dataToSerialize retain];
     
-    NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
+    NSString *resource = nil;
+    if ([collection.collectionName isEqualToString:@""]){
+        resource = [collection.baseURL stringByAppendingFormat:@"%@", objectId];        
+    } else {
+        resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
+    }
     
 
     NSInteger HTTPMethod;
@@ -219,11 +247,13 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     [request setContentType:KCS_JSON_TYPE];
     
     // Make sure to include the UTF-8 encoded JSONData...
-    [request addBody:[dictionaryToMap JSONData]];
+    KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+    [request addBody:[writer dataWithObject:dictionaryToMap]];
     
     // Prepare our handlers
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
+        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
 #if 0
         // Needs KCS update for this feature
         NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
@@ -273,15 +303,20 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 //        }
 //    }
     NSString *oid = [self kinveyObjectId];
-
-    NSString *resource = [[[KCSClient sharedClient] appdataBaseURL] stringByAppendingFormat:@"%@/%@", collection.collectionName, oid];
+    NSString *resource = nil;
+    if ([collection.collectionName isEqualToString:@""]){
+        resource = [collection.baseURL stringByAppendingFormat:@"%@", oid];
+    } else {
+        resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, oid];
+    }
     
     // Prepare our request
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kDeleteRESTMethod];
     
     // Prepare our handlers
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
+        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
 #if 0
         // Needs KCS update for this feature
         NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];

@@ -56,6 +56,7 @@ enum {
     KCSOperationREquiresCurrentUserError = 60008,
     KCSLoginFailureError = 60009,
     KCSUnexpectedError = 60010,
+    KCSFileError = 60011,
     
     
     // For testing only, no user should ever see this!

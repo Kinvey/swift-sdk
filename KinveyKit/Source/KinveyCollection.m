@@ -10,7 +10,8 @@
 #import "KinveyCollection.h"
 #import "KCSClient.h"
 #import "NSString+KinveyAdditions.h"
-#import "JSONKit.h"
+//#import "JSONKit.h"
+#import "SBJson.h"
 #import "KCSRESTRequest.h"
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSConnectionResponse.h"
@@ -38,7 +39,9 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
         NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
         NSObject *jsonData = [jsonResponse valueForKey:@"result"];
 #else  
-        NSObject *jsonData = [response.responseData objectFromJSONData];
+        KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+        NSObject *jsonData = [parser objectWithData:response.responseData];
+        [parser release];
 #endif        
         NSArray *jsonArray;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -118,10 +121,10 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     self = [super init];
     
     if (self){
-        _collectionName = name;
+        _collectionName = [name retain];
         _objectTemplate = theClass;
         _lastFetchResults = nil;
-        _baseURL = [[KCSClient sharedClient] appdataBaseURL]; // Initialize this to the default appdata URL
+        _baseURL = [[[KCSClient sharedClient] appdataBaseURL] retain]; // Initialize this to the default appdata URL
         _filters = [[NSMutableArray alloc] init];      
     }
     
@@ -139,6 +142,8 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     [_filters release];
     [_lastFetchResults release];
     [_collectionName release];
+    [_baseURL release];
+    [super dealloc];
 }
 
 // Override isEqual method to allow comparing of Collections
@@ -315,11 +320,18 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 - (void)entityCountWithDelegate:(id<KCSInformationDelegate>)delegate
 {
-    NSString *resource = [self.baseURL stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
+    NSString *resource = nil;
+    if ([self.collectionName isEqualToString:@""]){
+        resource = [self.baseURL stringByAppendingFormat:@"%@", @"_count"];        
+    } else {
+        resource = [self.baseURL stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
+    }
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
+        KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
+        [parser release];
 #if 0
         // Needs KCS update for this feature
         NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
