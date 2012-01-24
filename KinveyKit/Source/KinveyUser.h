@@ -139,7 +139,7 @@ enum {
  * @param password The user's password
  * @param delegate The delegate to inform once the action is complete
 */
-+ (void)loginWithUserName: (NSString *)username password: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate;
++ (void)loginWithUsername: (NSString *)username password: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate;
 
 /*! Removes a user and their data from Kinvey
  * @param delegate The delegate to inform once the action is complete.
@@ -162,7 +162,7 @@ enum {
 /*! Called to update the Kinvey state of a user.
  * @param delegate The delegate to inform once the action is complete.
  */
-- (void)saveWithDelegate: (id<KCSPersistable>)delegate;
+- (void)saveWithDelegate: (id<KCSPersistableDelegate>)delegate;
 
 /*! Return the value for an attribute for this user
  * @param attribute The attribute to retrieve
