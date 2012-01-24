@@ -34,9 +34,9 @@
 #import "KCS_SBJsonStreamParser.h"
 
 typedef enum {
-	SBJsonStreamParserAdapterNone,
-	SBJsonStreamParserAdapterArray,
-	SBJsonStreamParserAdapterObject,
+	KCS_SBJsonStreamParserAdapterNone,
+	KCS_SBJsonStreamParserAdapterArray,
+	KCS_SBJsonStreamParserAdapterObject,
 } KCS_SBJsonStreamParserAdapterType;
 
 /**

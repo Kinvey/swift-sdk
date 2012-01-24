@@ -254,7 +254,7 @@
     [KCSUser registerUserWithUsername:username withPassword:password withDelegate:delegate forceNew:YES];
 }
 
-+ (void)loginWithUserName: (NSString *)username
++ (void)loginWithUsername: (NSString *)username
                  password: (NSString *)password
              withDelegate: (id<KCSUserActionDelegate>)delegate
 {

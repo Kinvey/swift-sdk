@@ -126,26 +126,26 @@
 enum {
 	
 	// DDG NetworkStatus Constant Names.
-	kNotReachable = 0, // Apple's code depends upon 'NotReachable' being the same value as 'NO'.
-	kReachableViaWWAN, // Switched order from Apple's enum. WWAN is active before WiFi.
-	kReachableViaWiFi
+	kKCSNotReachable = 0, // Apple's code depends upon 'NotReachable' being the same value as 'NO'.
+	kKCSReachableViaWWAN, // Switched order from Apple's enum. WWAN is active before WiFi.
+	kKCSReachableViaWiFi
 	
 };
-typedef	uint32_t NetworkStatus;
+typedef	uint32_t KCSNetworkStatus;
 
 enum {
 	
 	// Apple NetworkStatus Constant Names.
-	NotReachable     = kNotReachable,
-	ReachableViaWiFi = kReachableViaWiFi,
-	ReachableViaWWAN = kReachableViaWWAN
+	KCSNotReachable     = kKCSNotReachable,
+	KCSReachableViaWiFi = kKCSReachableViaWiFi,
+	KCSReachableViaWWAN = kKCSReachableViaWWAN
 	
 };
 
 
-extern NSString *const kInternetConnection;
-extern NSString *const kLocalWiFiConnection;
-extern NSString *const kReachabilityChangedNotification;
+extern NSString *const kKCSInternetConnection;
+extern NSString *const kKCSLocalWiFiConnection;
+extern NSString *const kKCSReachabilityChangedNotification;
 
 @interface KCSReachability: NSObject {
 	
@@ -181,7 +181,7 @@ extern NSString *const kReachabilityChangedNotification;
 - (BOOL) isEqual: (KCSReachability *) r;
 
 // These are the status tests.
-- (NetworkStatus) currentReachabilityStatus;
+- (KCSNetworkStatus) currentReachabilityStatus;
 
 // The main direct test of reachability.
 - (BOOL) isReachable;
