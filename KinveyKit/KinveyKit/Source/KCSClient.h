@@ -117,11 +117,19 @@
 
 // Do not expose this to clients yet... soon?
 
-/*! The suite of Kinvey Analytics Services */
 ///---------------------------------------------------------------------------------------
 /// @name Analytics
 ///---------------------------------------------------------------------------------------
+/*! The suite of Kinvey Analytics Services */
 @property (nonatomic, readonly) KCSAnalytics *analytics;
+
+///---------------------------------------------------------------------------------------
+/// @name Data Type Support
+///---------------------------------------------------------------------------------------
+/*! NSDateFormatter String for Date storage */
+@property (nonatomic, readonly) NSString *dateStorageFormatString;
+
+
 
 #pragma mark -
 #pragma mark Initializers

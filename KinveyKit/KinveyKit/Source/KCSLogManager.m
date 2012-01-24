@@ -61,11 +61,11 @@ enum {
     
     if (channels == nil){
         channels = [[NSDictionary dictionaryWithObjectsAndKeys:
-                                     [[KCSLogChannel alloc] initWithDisplayString:@"[Network]" channelID:kKCSNetworkChannelID], @"kNetworkChannel",
-                                     [[KCSLogChannel alloc] initWithDisplayString:@"[DEBUG]" channelID:kKCSDebugChannelID], @"kDebugChannel",
-                                     [[KCSLogChannel alloc] initWithDisplayString:@"[Trace]" channelID:kKCSTraceChannelID], @"kTraceChannel",
-                                     [[KCSLogChannel alloc] initWithDisplayString:@"[WARN]" channelID:kKCSWarningChannelID], @"kWarningChannel",
-                                     [[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSErrorChannelID], @"kErrorChannel",
+                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[Network]" channelID:kKCSNetworkChannelID] autorelease], @"kNetworkChannel",
+                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[DEBUG]" channelID:kKCSDebugChannelID] autorelease], @"kDebugChannel",
+                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[Trace]" channelID:kKCSTraceChannelID] autorelease], @"kTraceChannel",
+                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[WARN]" channelID:kKCSWarningChannelID]  autorelease], @"kWarningChannel",
+                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSErrorChannelID] autorelease], @"kErrorChannel",
                                      nil] retain];
     }
     

@@ -9,7 +9,8 @@
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSBlobService.h"
 #import "KCSClient.h"
-#import "JSONKit.h"
+//#import "JSONKit.h"
+#import "SBJson.h"
 #import "KCSRESTRequest.h"
 #import "KCSConnectionResponse.h"
 #import "KCSErrorUtilities.h"
@@ -65,7 +66,8 @@
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSString *failureJSON = [[response.responseData objectFromJSONData] description];
+            KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+            NSString *failureJSON = [[parser objectWithData:response.responseData] description];
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource download failed."
                                                                                withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", failureJSON]
                                                                           withRecoverySuggestion:@"Retry request based on information in JSON Error"
@@ -96,7 +98,9 @@
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSString *failureJSON = [[response.responseData objectFromJSONData] description];
+            KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+
+            NSString *failureJSON = [[parser objectWithData:response.responseData] description];
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource download to file failed."
                                                                                withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", failureJSON]
                                                                           withRecoverySuggestion:@"Retry request based on information in JSON Error"
@@ -141,6 +145,30 @@
     [KCSResourceService saveLocalResource:filename toResource:[filename lastPathComponent] withDelegate:delegate];
 }
 
++ (void)saveLocalResourceWithURL:(NSURL *)URL toResource:(NSString *)resourceId withDelegate:(id<KCSResourceDelegate>)delegate
+{
+    // Not sure what the best read options to use here are, so not providing any.  Hopefully the defaults are ok.
+    NSData *data = [NSData dataWithContentsOfURL:URL];
+    if (data){
+        // We read in the data, we can upload it.
+        [KCSResourceService saveData:data toResource:resourceId withDelegate:delegate];
+    } else {
+        // We had an issue..., we didn't upload, so call the failure method of the delegate
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Updload failed"
+                                                                           withFailureReason:@"Unable to determine why, URL didn't load"
+                                                                      withRecoverySuggestion:@"Unknown"
+                                                                         withRecoveryOptions:nil];
+        NSError *err = [NSError errorWithDomain:KCSResourceErrorDomain code:KCSFileError userInfo:userInfo];
+        [delegate resourceServiceDidFailWithError:err];
+    }
+
+}
+
++ (void)saveLocalResourceWithURL:(NSURL *)URL withDelegate:(id<KCSResourceDelegate>)delegate
+{
+    [KCSResourceService saveLocalResourceWithURL:URL toResource:[URL lastPathComponent] withDelegate:delegate];
+}
+
 + (void)getStreamingURLForResource:(NSString *)resourceId withResourceDelegate:(id<KCSResourceDelegate>)delegate
 {
     NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"download-loc/%@", resourceId];
@@ -149,7 +177,8 @@
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         // This needs to be REDIRECT, otherwise something is messed up!
         if (response.responseCode != KCS_HTTP_STATUS_REDIRECT){
-            NSString *failureJSON = [[response.responseData objectFromJSONData] description];
+            KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+            NSString *failureJSON = [[parser objectWithData:response.responseData] description];
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Get streaming URL failed."
                                                                                withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", failureJSON]
                                                                           withRecoverySuggestion:@"Retry request based on information in JSON Error"
@@ -160,7 +189,7 @@
             
             [delegate resourceServiceDidFailWithError:error];
         } else {
-            NSString *URL = [response.responseHeaders objectForKey:@"Location"];
+            NSString *URL = [[response.responseHeaders objectForKey:@"Location"] retain];
             
             if (!URL){
                 NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"URL for streaming resource not available."
@@ -236,7 +265,8 @@
     };
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        NSDictionary *jsonData = [response.responseData objectFromJSONData];
+        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+        NSDictionary *jsonData = [parser objectWithData:response.responseData];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Getting the resource service save location failed."
                                                                                withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
@@ -293,7 +323,8 @@
     };
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        NSDictionary *jsonData = [response.responseData objectFromJSONData];
+        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+        NSDictionary *jsonData = [parser objectWithData:response.responseData];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Getting delete location failed."
                                                                                withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]

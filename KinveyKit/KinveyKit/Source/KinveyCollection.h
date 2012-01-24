@@ -101,6 +101,7 @@
 /*! A cached copy of the last results from Kinvey (handy if you forget to copy them in your delegate) */
 @property (retain) NSArray *lastFetchResults;
 
+/*! The Endpoint where we look for a request */
 @property (nonatomic, retain) NSString *baseURL;
 
 

@@ -167,7 +167,7 @@ char *KCSNewBase64Encode(
 	const unsigned char *inputBuffer = (const unsigned char *)buffer;
 	
 #define MAX_NUM_PADDING_CHARS 2
-#define OUTPUT_LINE_LENGTH 64
+#define OUTPUT_LINE_LENGTH 4096
 #define INPUT_LINE_LENGTH ((OUTPUT_LINE_LENGTH / BASE64_UNIT_SIZE) * BINARY_UNIT_SIZE)
 #define CR_LF_SIZE 2
 	
@@ -309,9 +309,18 @@ NSString *KCSbase64EncodedStringFromData(NSData *data)
     [[[NSString alloc]
       initWithBytes:outputBuffer
       length:outputLength
-      encoding:NSASCIIStringEncoding]
+      encoding:NSUTF8StringEncoding]
      autorelease];
 	free(outputBuffer);
 	return result;
 }
 
+
+NSString *KCSbasicAuthString(NSString *username, NSString *password)
+{
+    NSString *authString    = [NSString stringWithFormat:@"%@:%@", username, password];
+    NSString *encodedString = KCSbase64EncodedStringFromData([authString dataUsingEncoding:NSUTF8StringEncoding]);
+    NSString *headerString = [NSString stringWithFormat:@"Basic %@",
+                              [encodedString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+    return headerString;
+}

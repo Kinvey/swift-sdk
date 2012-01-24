@@ -20,13 +20,9 @@
     self = [super init];
     if (self){
         _responseCode = code;
-        _responseData = data;
-        _userData = userDefinedData;
-        _responseHeaders = header;
-        
-        [_userData retain];
-        [_responseData retain];
-        [_responseHeaders retain];
+        _responseData = [data retain];
+        _userData = [userDefinedData retain];
+        _responseHeaders = [header retain];
     }
     
     return self;
@@ -45,6 +41,8 @@
 {
     [_responseData release];
     [_userData release];
+    [_responseHeaders release];
+    [super dealloc];
 }
 
 

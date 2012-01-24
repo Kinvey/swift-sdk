@@ -148,6 +148,15 @@
  */
 + (void)saveLocalResource: (NSString *)filename withDelegate: (id<KCSResourceDelegate>)delegate;
 
+/*! Saves the given URL to Kinvey.
+ 
+ This method is used to upload a local file to Kinvey, the resource ID will be the last path component of the filename with extension.
+ 
+ @param URL The URL of the local file to upload.
+ @param delegate The delegate to be notified upon completion of the save.
+ */
++ (void)saveLocalResourceWithURL: (NSURL *)URL withDelegate: (id<KCSResourceDelegate>)delegate;
+
 /*! Saves the given File into the specified resource.
  
  This method is used to upload a local file to Kinvey, use this varient to specify an exact remote resource ID.
@@ -157,6 +166,16 @@
  @param delegate The delegate to be notified upon completion of the save.
  */
 + (void)saveLocalResource: (NSString *)filename toResource: (NSString *)resourceId withDelegate: (id<KCSResourceDelegate>)delegate;
+
+/*! Saves the given URL into the specified resource.
+ 
+ This method is used to upload a local file to Kinvey, use this varient to specify an exact remote resource ID.
+ 
+ @param URL The URL of the local file to upload.
+ @param resourceId The resource ID to use for remote storage
+ @param delegate The delegate to be notified upon completion of the save.
+ */
++ (void)saveLocalResourceWithURL: (NSURL *)URL toResource: (NSString *)resourceId withDelegate: (id<KCSResourceDelegate>)delegate;
 
 /*! Saves the given Data into the specified resource.
  

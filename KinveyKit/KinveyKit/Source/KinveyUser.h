@@ -112,6 +112,8 @@ enum {
  
  */
 - (void)initializeCurrentUser;
+
+// Private method
 + (void)initCurrentUser;
 
 ///---------------------------------------------------------------------------------------
@@ -161,12 +163,6 @@ enum {
  * @param delegate The delegate to inform once the action is complete.
  */
 - (void)saveWithDelegate: (id<KCSPersistable>)delegate;
-
-/*! Return the list of all attributes for this user.
- 
- @return An array of all user
- */
-- (NSArray *)attributes;
 
 /*! Return the value for an attribute for this user
  * @param attribute The attribute to retrieve

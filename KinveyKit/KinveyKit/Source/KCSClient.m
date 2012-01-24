@@ -8,7 +8,7 @@
 
 
 #import "KCSClient.h"
-#import "JSONKit.h"
+//#import "JSONKit.h"
 #import "KinveyUser.h"
 
 
@@ -80,6 +80,7 @@
 @synthesize userAuthenticationInProgress=_userAuthenticationInProgress;
 
 @synthesize analytics=_analytics;
+@synthesize dateStorageFormatString = _dateStorageFormatString;
 
 #if TARGET_OS_IPHONE
 @synthesize networkReachability = _networkReachability;
@@ -95,9 +96,9 @@
     
     if (self){
         _kinveyDomain = @"kinvey.com";
-        self.libraryVersion = @"TAG-ME";
-        self.userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
-        self.connectionTimeout = 10.0; // Default timeout to 10 seconds
+        _libraryVersion = @"TAG-ME";
+        _userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
+        _connectionTimeout = 10.0; // Default timeout to 10 seconds
         _analytics = [[KCSAnalytics alloc] init];
         _cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;  // Inhibit caching for now
         _protocol = @"https";
@@ -105,8 +106,9 @@
         _userAuthenticationInProgress = NO;
         _authCompleteLock   = [[NSRecursiveLock alloc] init];
         _authInProgressLock = [[NSRecursiveLock alloc] init];
-        _currentUser = [[KCSUser alloc] init];
+//        _currentUser = [[KCSUser alloc] init];
         _serviceHostname = @"baas";
+        _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
 
 #if TARGET_OS_IPHONE
         _networkReachability = [[KCSReachability reachabilityForInternetConnection] retain];
