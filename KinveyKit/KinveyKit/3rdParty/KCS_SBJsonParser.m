@@ -68,15 +68,15 @@
 	parser.delegate = adapter;
 	
 	switch ([parser parse:data]) {
-		case SBJsonStreamParserComplete:
+		case KCS_SBJsonStreamParserComplete:
             return accumulator.value;
 			break;
 			
-		case SBJsonStreamParserWaitingForData:
+		case KCS_SBJsonStreamParserWaitingForData:
 		    self.error = @"Unexpected end of input";
 			break;
 
-		case SBJsonStreamParserError:
+		case KCS_SBJsonStreamParserError:
 		    self.error = parser.error;
 			break;
 	}

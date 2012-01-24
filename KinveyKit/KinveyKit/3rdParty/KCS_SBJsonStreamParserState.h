@@ -37,9 +37,9 @@
 
 @interface KCS_SBJsonStreamParserState : NSObject
 + (id)sharedInstance;
-- (BOOL)parser:(KCS_SBJsonStreamParser*)parser shouldAcceptToken:(sbjson_token_t)token;
+- (BOOL)parser:(KCS_SBJsonStreamParser*)parser shouldAcceptToken:(kcs_sbjson_token_t)token;
 - (KCS_SBJsonStreamParserStatus)parserShouldReturn:(KCS_SBJsonStreamParser*)parser;
-- (void)parser:(KCS_SBJsonStreamParser*)parser shouldTransitionTo:(sbjson_token_t)tok;
+- (void)parser:(KCS_SBJsonStreamParser*)parser shouldTransitionTo:(kcs_sbjson_token_t)tok;
 - (BOOL)needKey;
 
 - (NSString*)name;

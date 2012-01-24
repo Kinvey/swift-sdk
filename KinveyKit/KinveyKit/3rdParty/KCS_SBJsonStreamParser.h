@@ -37,9 +37,9 @@
 @class KCS_SBJsonStreamParserState;
 
 typedef enum {
-	SBJsonStreamParserComplete,
-	SBJsonStreamParserWaitingForData,
-	SBJsonStreamParserError,
+	KCS_SBJsonStreamParserComplete,
+	KCS_SBJsonStreamParserWaitingForData,
+	KCS_SBJsonStreamParserError,
 } KCS_SBJsonStreamParserStatus;
 
 
