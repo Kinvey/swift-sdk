@@ -8,7 +8,7 @@
 
 #import "KinveyKitConnectionResponseTests.h"
 #import "KCSConnectionResponse.h"
-#import "JSONKit.h"
+#import "SBJson.h"
 
 @implementation KinveyKitConnectionResponseTests
 
@@ -16,7 +16,8 @@
 - (void)testFactoryMethodGeneratesValidResponse{
     NSDictionary *header = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
     NSDictionary *userData = [NSDictionary dictionaryWithObject:@"This is some Test Data" forKey:@"testData"];
-    NSData *data = [userData JSONData];
+    KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+    NSData *data = [writer dataWithObject:userData];
     
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
                                                                            responseData:data

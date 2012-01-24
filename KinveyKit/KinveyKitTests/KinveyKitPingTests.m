@@ -11,14 +11,22 @@
 #import "KCSKeyChain.h"
 #import "KCSConnectionPool.h"
 #import "KCSConnectionResponse.h"
-#import "JSONKit.h"
+#import "SBJson.h"
 #import "KCSMockConnection.h"
 #import "KinveyUser.h"
 #import "KinveyPing.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
 
+@interface KinveyKitPingTests()
+@property (nonatomic, retain) KCS_SBJsonParser *parser;
+@property (nonatomic, retain) KCS_SBJsonWriter *writer;
+@end
+
 @implementation KinveyKitPingTests
+@synthesize parser = _parser;
+@synthesize writer = _writer;
+
 
 - (void)setUp
 {
@@ -33,6 +41,9 @@
     
     // Needed, otherwise we burn a connection later...
     [KCSUser initCurrentUser];
+    
+    _parser = [[[KCS_SBJsonParser alloc] init]retain];
+    _writer = [[[KCS_SBJsonWriter alloc] init]retain];
 
 }
 
@@ -61,7 +72,7 @@
     KCSMockConnection *conn = [[KCSMockConnection alloc] init];
 
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                                           responseData:[pingResponse JSONData]
+                                                                           responseData:[self.writer dataWithObject:pingResponse]
                                                                              headerData:nil
                                                                                userData:nil];
 
@@ -109,7 +120,7 @@
     KCSMockConnection *conn = [[KCSMockConnection alloc] init];
     
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                                           responseData:[pingResponse JSONData]
+                                                                           responseData:[self.writer dataWithObject:pingResponse]
                                                                              headerData:nil
                                                                                userData:nil];
     
@@ -152,7 +163,7 @@
     KCSMockConnection *conn = [[KCSMockConnection alloc] init];
     
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                                           responseData:[pingResponse JSONData]
+                                                                           responseData:[self.writer dataWithObject:pingResponse]
                                                                              headerData:nil
                                                                                userData:nil];
     

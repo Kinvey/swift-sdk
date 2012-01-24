@@ -11,7 +11,8 @@
 #import "KCSKeyChain.h"
 #import "KCSRESTRequest.h"
 #import "KinveyAnalytics.h"
-#import "JSONKit.h"
+//#import "JSONKit.h"
+#import "SBJson.h"
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
@@ -26,7 +27,7 @@
 @property (nonatomic, retain) NSString *userId;
 @property (nonatomic, retain) NSMutableDictionary *userAttributes;
 
-+ (void)registerUserWithUsername: (NSString *)uname withPassword: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate;
++ (void)registerUserWithUsername: (NSString *)uname withPassword: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate forceNew: (BOOL)forceNew;
 @end
 
 @implementation KCSUser
@@ -53,10 +54,11 @@
     [_username release];
     [_password release];
     [_userId release];
+    [_userAttributes release];
     [super dealloc];
 }
 
-+ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate
++ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew
 {
     BOOL localInitInProgress = NO;
     KCSClient *client = [KCSClient sharedClient];
@@ -109,34 +111,52 @@
 
     // Did we get a username and password?  If we did, then we're not interested in being already logged in
     // If we didn't, we need to check to see if there are keychain items.
+
+    if (forceNew){
+        [KCSKeyChain removeStringForKey: @"username"];
+        [KCSKeyChain removeStringForKey: @"password"];
+    }
     
-    __block KCSUser *createdUser = [[[KCSUser alloc] init] autorelease];
+    __block KCSUser *createdUser = [[KCSUser alloc] init];
+    
     createdUser.username = [KCSKeyChain getStringForKey:@"username"];
     
     if (createdUser.username == nil){
         // No user, generate it, note, use the APP KEY/APP SECRET!
         KCSAnalytics *analytics = [client analytics];
-          
-        // Make sure to leave username empty
-        NSDictionary *userData = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  [analytics UDID], @"UDID",
-                                  [analytics UUID], @"UUID", nil];
+
+        NSDictionary *userData = nil;
+        if (uname && password){
+            userData = [NSDictionary dictionaryWithObjectsAndKeys:
+                        uname, @"username",
+                        password, @"password",
+                        [analytics UDID], @"UDID",
+                        [analytics UUID], @"UUID", nil];
+
+        } else {
+            userData = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    [analytics UDID], @"UDID",
+                                    [analytics UUID], @"UUID", nil];
+        }
 
         
         KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] userBaseURL] usingMethod:kPostRESTMethod];
         
         
         [userRequest setContentType:KCS_JSON_TYPE];
-        [userRequest addBody:[userData JSONData]];
+        KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
+        [userRequest addBody:[writer dataWithObject:userData]];
+        [writer release];
         
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+            KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
             [createdUser retain];
             // Ok, we're probably authenticated
             if (response.responseCode != KCS_HTTP_STATUS_CREATED){
                 // Crap, authentication failed, not really sure how to proceed here!!!
                 // I really don't know what to do here, we can't continue... Something died...
-                KCSLogError(@"Received Response code %d, but expected %d with response: %@", response.responseCode, KCS_HTTP_STATUS_CREATED, [[response.responseData objectFromJSONData] JSONString]);
+                KCSLogError(@"Received Response code %d, but expected %d with response: %@", response.responseCode, KCS_HTTP_STATUS_CREATED, [[parser objectWithData:response.responseData] JSONRepresentation]);
                 CFShow(response);
                 
                 client.userIsAuthenticated = NO;
@@ -145,13 +165,13 @@
                 NSException* myException = [NSException
                                             exceptionWithName:@"KinveyInternalError"
                                             reason:@"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo"
-                                            userInfo:[NSDictionary dictionaryWithObject:[[response.responseData objectFromJSONData] JSONString] forKey:@"error"]];
+                                            userInfo:[NSDictionary dictionaryWithObject:[[parser objectWithData:response.responseData] JSONRepresentation] forKey:@"error"]];
                 
                 @throw myException;                
             }
             
             // Ok, we're really authd
-            NSDictionary *dictionary = [response.responseData objectFromJSONData];
+            NSDictionary *dictionary = [parser objectWithData:response.responseData];
             createdUser.username = [dictionary objectForKey:@"username"];
             createdUser.password = [dictionary objectForKey:@"password"];
             createdUser.userId   = [dictionary objectForKey:@"_id"];
@@ -171,6 +191,7 @@
             
             [delegate user:createdUser actionDidCompleteWithResult:KCSUserCreated];
             [createdUser release];
+            [parser release];
         };
         
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
@@ -209,7 +230,7 @@
 // These routines all do similar work, but the first two are for legacy support
 - (void)initializeCurrentUserWithRequest: (KCSRESTRequest *)request
 {
-    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil];
+    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:NO];
     if (request){
         [request start];
     }
@@ -222,14 +243,15 @@
 
 + (void)initCurrentUser
 {
-    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil];
+    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:NO];
 }
 
 + (void)userWithUsername: (NSString *)username
                 password: (NSString *)password
             withDelegate: (id<KCSUserActionDelegate>)delegate
 {
-    [KCSUser registerUserWithUsername:username withPassword:password withDelegate:delegate];
+    // Ensure the old user is gone...
+    [KCSUser registerUserWithUsername:username withPassword:password withDelegate:delegate forceNew:YES];
 }
 
 + (void)loginWithUserName: (NSString *)username
@@ -243,7 +265,8 @@
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
             // Ok, we're probably authenticated
-            KCSUser *createdUser = [[[KCSUser alloc] init] autorelease];
+            KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+            KCSUser *createdUser = [[KCSUser alloc] init];
             createdUser.username = username;
             createdUser.password = password;
             if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -258,10 +281,12 @@
                                                                                  withRecoveryOptions:nil];
                 NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
                 [delegate user:createdUser actionDidFailWithError:error];
+                [parser release];
+                return;
             }
             
             // Ok, we're really authd
-            NSDictionary *dictionary = [response.responseData objectFromJSONData];
+            NSDictionary *dictionary = [parser objectWithData:response.responseData];
             createdUser.userId   = [dictionary objectForKey:@"_id"];
             for (NSString *property in dictionary) {
                 if ([property isEqualToString:@"_id"] ||
@@ -291,6 +316,7 @@
             client.userAuthenticationInProgress = NO;
             
             [delegate user:createdUser actionDidCompleteWithResult:KCSUserFound];
+            [parser release];
         };
         
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
@@ -311,7 +337,8 @@
 
         // We need to init the current user to something before trying this
         client.userAuthenticationInProgress = YES;
-        client.currentUser = [[[KCSUser alloc] init] autorelease];
+        //        client.currentUser = [[[KCSUser alloc] init] autorelease];
+        client.currentUser = [[KCSUser alloc] init];        
         client.currentUser.username = username;
         client.currentUser.password = password;
         [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
@@ -406,10 +433,6 @@
     }
 }
 
-- (NSArray *)attributes
-{
-    return [self.userAttributes allKeys];
-}
 
 - (id)getValueForAttribute: (NSString *)attribute
 {

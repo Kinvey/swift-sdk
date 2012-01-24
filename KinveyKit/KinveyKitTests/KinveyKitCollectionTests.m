@@ -12,7 +12,7 @@
 #import "KCSConnectionResponse.h"
 #import "KCSKeyChain.h"
 #import "KinveyUser.h"
-#import "JSONKit.h"
+#import "SBJson.h"
 #import "KCSMockConnection.h"
 #import "KinveyPersistable.h"
 #import "KinveyEntity.h"
@@ -52,6 +52,9 @@ typedef BOOL(^InfoSuccessAction)(int);
 @property (retain, nonatomic) NSDictionary *allTypes;
 @property (retain, nonatomic) NSDictionary *nesting;
 
+@property (retain, nonatomic) KCS_SBJsonParser *parser;
+@property (retain, nonatomic) KCS_SBJsonWriter *writer;
+
 @end
 
 @implementation KinveyKitCollectionTests
@@ -64,7 +67,8 @@ typedef BOOL(^InfoSuccessAction)(int);
 @synthesize completeDataSet = _completeDataSet;
 @synthesize allTypes = _allTypes;
 @synthesize nesting = _nesting;
-
+@synthesize parser = _parser;
+@synthesize writer = _writer;
 
 - (void)setUp
 {
@@ -100,6 +104,7 @@ typedef BOOL(^InfoSuccessAction)(int);
                  [NSNumber numberWithDouble:3.14159], @"double",
                  [NSNumber numberWithBool:NO], @"boolNo",
                  [NSNumber numberWithBool:YES], @"boolYes",
+                 [NSDate dateWithTimeIntervalSince1970:0], @"date1970",
                  @"This is my string, it's OK!", @"string",
                  nil, @"nil",
                  nil];
@@ -111,7 +116,8 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     _completeDataSet = [NSArray arrayWithObjects:_allTypes, _nesting, nil];
                  
-                
+    _writer = [[[KCS_SBJsonWriter alloc] init] retain];
+    _parser = [[[KCS_SBJsonParser alloc] init] retain];
 }
 
 - (void)tearDown
@@ -143,7 +149,7 @@ typedef BOOL(^InfoSuccessAction)(int);
 {
     NSDictionary *dict = [NSDictionary dictionaryWithObject:self.completeDataSet forKey:@"items"];
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                                           responseData:[dict JSONData]
+                                                                           responseData:[self.writer dataWithObject:dict]
                                                                              headerData:nil
                                                                                userData:nil];
     
@@ -176,7 +182,7 @@ typedef BOOL(^InfoSuccessAction)(int);
 {
     NSDictionary *dict = [NSDictionary dictionary];
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                                           responseData:[dict JSONData]
+                                                                           responseData:[self.writer dataWithObject:dict]
                                                                              headerData:nil
                                                                                userData:nil];
     
@@ -237,7 +243,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // ZERO
     self.testID = [NSString stringWithString:@"Count: 0"];
     response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                    responseData:[zero JSONData]
+                                                    responseData:[self.writer dataWithObject:zero]
                                                       headerData:nil
                                                         userData:nil];
     expectedResult = 0;
@@ -251,7 +257,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // ONE
     self.testID = [NSString stringWithString:@"Count: 1"];
     response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                    responseData:[one JSONData]
+                                                    responseData:[self.writer dataWithObject:one]
                                                       headerData:nil
                                                         userData:nil];
     expectedResult = 1;
@@ -265,7 +271,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // BIGNUM
     self.testID = [NSString stringWithString:@"Count: HUGE"];
     response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                    responseData:[bigNum JSONData]
+                                                    responseData:[self.writer dataWithObject:bigNum]
                                                       headerData:nil
                                                         userData:nil];
     expectedResult = INTMAX_MAX;
@@ -279,7 +285,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // NEGATIVE
     self.testID = [NSString stringWithString:@"Count: -1"];
     response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                    responseData:[negative JSONData]
+                                                    responseData:[self.writer dataWithObject:negative]
                                                       headerData:nil
                                                         userData:nil];
     expectedResult = -1;
@@ -289,11 +295,11 @@ typedef BOOL(^InfoSuccessAction)(int);
     STAssertTrue(self.testPassed, self.message);
     self.testPassed = NO;
     // END NEGATIVE
-    
+
     // FRACTION
     self.testID = [NSString stringWithString:@"Count: 1/2"];
     response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                    responseData:[fraction JSONData]
+                                                    responseData:[self.writer dataWithObject:fraction]
                                                       headerData:nil
                                                         userData:nil];
     expectedResult = 3;

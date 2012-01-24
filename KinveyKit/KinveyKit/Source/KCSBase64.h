@@ -42,4 +42,5 @@ char *KCSNewBase64Encode(
 
 NSData *KCSdataFromBase64String(NSString *aString);
 NSString *KCSbase64EncodedStringFromData(NSData *data);
+NSString *KCSbasicAuthString(NSString *username, NSString *password);
 

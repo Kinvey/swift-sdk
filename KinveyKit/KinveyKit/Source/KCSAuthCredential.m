@@ -69,10 +69,18 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
         _URL = [URL retain];
         _method = method;
         _authRequired = deriveAuth(_URL, _method);
-        _appKeyAuth = [NSURLCredential credentialWithUser:[[KCSClient sharedClient] appKey] password:[[KCSClient sharedClient] appSecret] persistence:NSURLCredentialPersistenceNone];
-        _appKeyBase64 = [KCSbase64EncodedStringFromData([[NSString stringWithFormat:@"%@:%@", [[KCSClient sharedClient] appKey], [[KCSClient sharedClient] appSecret]] dataUsingEncoding:NSUTF8StringEncoding]) retain];
+        _appKeyAuth = [[NSURLCredential credentialWithUser:[[KCSClient sharedClient] appKey] password:[[KCSClient sharedClient] appSecret] persistence:NSURLCredentialPersistenceNone] retain];
+        _appKeyBase64 = [KCSbasicAuthString([[KCSClient sharedClient] appKey], [[KCSClient sharedClient] appSecret]) retain];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [_URL release];
+    [_appKeyAuth release];
+    [_appKeyBase64 release];
+    [super dealloc];
 }
 
 + (KCSAuthCredential *)credentialForURL: (NSString *)URL usingMethod: (NSInteger)method
@@ -107,13 +115,16 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
 
 - (NSString *)HTTPBasicAuthString
 {
+    KCSLogDebug(@"Request for Basic Auth String with authRequired: %d", self.authRequired);
     if (self.authRequired == KCSAuthNoAuth){
         return nil;
     } else if (self.authRequired == KCSAuthBasicAuthAppKey){
-        return [NSString stringWithFormat:@"Basic %@", self.appKeyBase64];
+        KCSLogDebug(@"Using app key/app secret for auth: (%@, %@) => %@", [[KCSClient sharedClient] appKey], [[KCSClient sharedClient] appSecret], self.appKeyBase64);
+        return self.appKeyBase64;
     } else if (self.authRequired == KCSAuthBasicAuthUser){
         KCSUser *curUser = [[KCSClient sharedClient] currentUser];
         if (curUser == nil){
+            KCSLogDebug(@"No current user, auth needed.");
             // We need to start auth proceeding here
             if (![[KCSClient sharedClient] userAuthenticationInProgress]){
                 // We're the first!
@@ -121,7 +132,9 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
             }
             return nil;
         } else {
-            return [NSString stringWithFormat:@"Basic %@", KCSbase64EncodedStringFromData([[NSString stringWithFormat:@"%@:%@", curUser.username, curUser.password] dataUsingEncoding:NSUTF8StringEncoding])];
+            NSString *authString = KCSbasicAuthString(curUser.username, curUser.password);
+            KCSLogDebug(@"Current user found (%@, %@) => (%@)", curUser.username, curUser.password, authString);
+            return authString;
         }
     }
     

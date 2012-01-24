@@ -9,7 +9,7 @@
 #import "KinveyKitBlobServiceTests.h"
 #import "KCSMockConnection.h"
 #import "KCSConnectionResponse.h"
-#import "JSONKit.h"
+#import "SBJson.h"
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSConnectionPool.h"
 #import "KCSKeyChain.h"
@@ -29,6 +29,8 @@ typedef BOOL(^FailureAction)(NSError *);
 @property (retain, nonatomic) FailureAction onFailure;
 @property (nonatomic) BOOL testPassed;
 @property (retain, nonatomic) NSString *message;
+@property (retain, nonatomic) KCS_SBJsonWriter *writer;
+@property (retain, nonatomic) KCS_SBJsonParser *parser;
 
 - (KCSMockConnection *)buildDefaultMockConnection;
 
@@ -41,6 +43,8 @@ typedef BOOL(^FailureAction)(NSError *);
 @synthesize onSuccess = _onSuccess;
 @synthesize testPassed = _testPassed;
 @synthesize message = _message;
+@synthesize writer = _writer;
+@synthesize parser = _parser;
 
 - (void)setUp
 {
@@ -66,6 +70,9 @@ typedef BOOL(^FailureAction)(NSError *);
     // Needed, otherwise we burn a connection later...
 //    [[client currentUser] initializeCurrentUser];
     [KCSUser initCurrentUser];
+    
+    _writer = [[[KCS_SBJsonWriter alloc] init] retain];
+    _parser = [[[KCS_SBJsonParser alloc] init] retain];
 }
 
 - (void)tearDown
@@ -113,7 +120,7 @@ typedef BOOL(^FailureAction)(NSError *);
                                                                                     withRecoveryOptions:nil]];
     
     KCSConnectionResponse *cr = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_OK
-                                                                     responseData:[[NSDictionary dictionary] JSONData]
+                                                                     responseData:[self.writer dataWithObject:[NSDictionary dictionary]]
                                                                        headerData:nil userData:nil];
     conn.responseForSuccess = cr;
     conn.errorForFailure = err;
@@ -147,7 +154,7 @@ typedef BOOL(^FailureAction)(NSError *);
                                                                                  withRecoverySuggestion:@"Non offered, non expected."
                                                                                     withRecoveryOptions:nil]];
     KCSConnectionResponse *cr = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_OK
-                                                                     responseData:[[NSDictionary dictionary] JSONData]
+                                                                     responseData:[self.writer dataWithObject:[NSDictionary dictionary]]
                                                                        headerData:nil userData:nil];
     conn.responseForSuccess = cr;
     conn.errorForFailure = err;
@@ -259,7 +266,7 @@ typedef BOOL(^FailureAction)(NSError *);
     NSDictionary *jsonDict = [NSDictionary dictionaryWithObject:@"http://www.google.com" forKey:@"URI"];
     
     KCSConnectionResponse *kinveyResponse = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_OK
-                                                                                 responseData:[jsonDict JSONData]
+                                                                                 responseData:[self.writer dataWithObject:jsonDict]
                                                                                    headerData:nil
                                                                                      userData:nil];
     kinvey.responseForSuccess = kinveyResponse;
@@ -307,7 +314,7 @@ typedef BOOL(^FailureAction)(NSError *);
     NSDictionary *jsonDict = [NSDictionary dictionaryWithObject:@"http://www.google.com" forKey:@"URI"];
     
     KCSConnectionResponse *kinveyResponse = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_OK
-                                                                                 responseData:[jsonDict JSONData]
+                                                                                 responseData:[self.writer dataWithObject:jsonDict]
                                                                                    headerData:nil
                                                                                      userData:nil];
     kinvey.responseForSuccess = kinveyResponse;
@@ -355,7 +362,7 @@ typedef BOOL(^FailureAction)(NSError *);
     NSDictionary *jsonDict = [NSDictionary dictionaryWithObject:@"http://www.google.com" forKey:@"URI"];
     
     KCSConnectionResponse *kinveyResponse = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_OK
-                                                                                 responseData:[jsonDict JSONData]
+                                                                                 responseData:[self.writer dataWithObject:jsonDict]
                                                                                    headerData:nil
                                                                                      userData:nil];
     kinvey.responseForSuccess = kinveyResponse;

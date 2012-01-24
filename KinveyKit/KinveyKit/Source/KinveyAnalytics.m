@@ -24,6 +24,13 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [_UDID release];
+    [_UUID release];
+    [super dealloc];
+}
+
 - (NSString *)generateUUID
 {
     CFUUIDRef uuid = CFUUIDCreate(NULL);

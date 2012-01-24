@@ -30,4 +30,17 @@
     assertThat(actual, is(expectedString));    
 }
 
+- (void)testStringsHaveNoBreaks
+{
+    NSString *expectedString = @"N0M5MUU2RTMtNDlFMy01RUNELUI2NjAtNUU5NDA0REVEMTUwOmIzOTI3MjM4LTViNTctNDQ5ZS1hMjdmLWZiNjM3ZDhhNWU4Yg==";
+    NSString *string = @"7C91E6E3-49E3-5ECD-B660-5E9404DED150:b3927238-5b57-449e-a27f-fb637d8a5e8b";
+    NSString *b64 = KCSbase64EncodedStringFromData([string dataUsingEncoding:NSUTF8StringEncoding]);
+    assertThat(b64, is(expectedString));
+    
+    // Round trip
+    NSData *bd64 = KCSdataFromBase64String(string);
+    NSString *actual = [NSString stringWithUTF8String:[bd64 bytes]];
+    assertThat(actual, is(equalTo(string)));
+}
+
 @end

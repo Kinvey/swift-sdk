@@ -321,10 +321,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../../Library/Developer/Xcode/DerivedData/KinveyKit-goqqqxtdbytsjoezvrkvstxrrgak/Build/Products/Debug-iphoneos\"",
-					"\"$(SRCROOT)/Release-iphoneos\"",
 					"\"$(SRCROOT)/../../KinveyKit/build/Debug-iphoneos\"",
-					"\"$(SRCROOT)/../../KinveyKit/build/Release-iphoneos\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KitTest/KitTest-Prefix.pch";
@@ -347,10 +344,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../../Library/Developer/Xcode/DerivedData/KinveyKit-goqqqxtdbytsjoezvrkvstxrrgak/Build/Products/Debug-iphoneos\"",
-					"\"$(SRCROOT)/Release-iphoneos\"",
 					"\"$(SRCROOT)/../../KinveyKit/build/Debug-iphoneos\"",
-					"\"$(SRCROOT)/../../KinveyKit/build/Release-iphoneos\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KitTest/KitTest-Prefix.pch";

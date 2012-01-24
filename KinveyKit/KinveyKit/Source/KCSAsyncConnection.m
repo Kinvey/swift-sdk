@@ -128,6 +128,11 @@
     self.failureBlock = onFailure;
     self.completionBlock = onCompletion;
     self.basicAuthCred = credentials;
+
+    KCSLogNetwork(@"Request URL:%@", self.request.URL);
+    KCSLogNetwork(@"Request Method:%@", self.request.HTTPMethod);
+    KCSLogNetwork(@"Request Headers:%@", self.request.allHTTPHeaderFields);
+
     
     // If our connection has been cleaned up, then we need to make sure that we get it back before using it.
     if (self.connection == nil){
@@ -206,13 +211,11 @@
 
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    KCSLogNetwork(@"Connection WILL authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
     [[challenge sender] useCredential:self.basicAuthCred forAuthenticationChallenge:challenge];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    KCSLogNetwork(@"Connection DID authenticate with: (%@, %@)", self.basicAuthCred.user, self.basicAuthCred.password);
     [[challenge sender] useCredential:self.basicAuthCred forAuthenticationChallenge:challenge];
     
 }
@@ -273,6 +276,7 @@
     NSInteger statusCode = [(NSHTTPURLResponse *)self.lastResponse statusCode];
     NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
     self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.activeDownload headerData:headers userData:nil]);
+    
     
     self.activeDownload = nil;
     self.connection = nil;

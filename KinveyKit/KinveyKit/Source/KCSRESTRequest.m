@@ -96,7 +96,8 @@ getLogDate(void)
 
         // Prepare to generate the request...
         KCSClient *kinveyClient = [KCSClient sharedClient];
-//        NSString *urlString = [NSString stringWithFormat:@"%@%@:%@@%@", kinveyClient.protocol, kinveyClient.authCredentials.user, kinveyClient.authCredentials.password, self.resourceLocation];
+
+        // NB: Not retained as it is only used in the building of _request
         NSURL *url = [NSURL URLWithString:resource];
         
         KCSLogNetwork(@"Requesting resource: %@", resource);
@@ -249,14 +250,14 @@ getLogDate(void)
     [self.request  setHTTPMethod: [self getHTTPMethodForConstant: self.method]];
     
     for (NSString *key in [self.headers allKeys]) {
-        [self.request addValue:[self.headers objectForKey:key] forHTTPHeaderField:key];
+        [self.request setValue:[self.headers objectForKey:key] forHTTPHeaderField:key];
     }
     
     // Add the Kinvey User-Agent
-    [self.request addValue:[kinveyClient userAgent] forHTTPHeaderField:@"User-Agent"];
+    [self.request setValue:[kinveyClient userAgent] forHTTPHeaderField:@"User-Agent"];
 
     // Add the Date as a header
-    [self.request addValue:getLogDate() forHTTPHeaderField:@"Date"];
+    [self.request setValue:getLogDate() forHTTPHeaderField:@"Date"];
 
     // Let the server know that we support GZip.
     [self.request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
