@@ -19,6 +19,7 @@
 #import "KCSErrorUtilities.h"
 #import "KCSLogManager.h"
 #import "KCSObjectMapper.h"
+#import "KCSQuery.h"
 
 
 // Avoid compiler warning by prototyping here...
@@ -113,6 +114,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 @synthesize lastFetchResults=_lastFetchResults;
 @synthesize filters=_filters;
 @synthesize baseURL = _baseURL;
+@synthesize query = _query;
 
 // TODO: Need a way to store the query portion of the library.
 
@@ -125,7 +127,8 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         _objectTemplate = theClass;
         _lastFetchResults = nil;
         _baseURL = [[[KCSClient sharedClient] appdataBaseURL] retain]; // Initialize this to the default appdata URL
-        _filters = [[NSMutableArray alloc] init];      
+        _filters = [[NSMutableArray alloc] init];
+        _query = nil;
     }
     
     return self;
@@ -143,6 +146,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     [_lastFetchResults release];
     [_collectionName release];
     [_baseURL release];
+    [_query release];
     [super dealloc];
 }
 
@@ -293,7 +297,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 - (void)fetchWithDelegate:(id<KCSCollectionDelegate>)delegate
 {
     // Guard against an empty filter
-    if (self.filters.count == 0){
+    if (self.filters.count == 0 && self.query == nil){
         NSException* myException = [NSException
                                     exceptionWithName:NSInvalidArgumentException
                                     reason:@"Attempt to fetch from a Kinvey Collection with an empty filter, use fetchAll instead."
@@ -302,8 +306,22 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         @throw myException;
     }
     
-    NSString *resource = [self.baseURL stringByAppendingFormat:@"%@/?query=%@",
+    NSString *resource = nil;
+    NSString *format = nil;
+    
+    if ([self.collectionName isEqualToString:@""]){
+        format = @"%@?query=%@";
+    } else {
+        format = @"%@/?query=%@";
+    }
+
+    
+    if (self.query != nil){
+        resource = [self.baseURL stringByAppendingFormat:format, self.collectionName, [NSString stringbyPercentEncodingString:[self.query JSONStringRepresentation]]];
+    } else {
+        resource = [self.baseURL stringByAppendingFormat:format,
                              self.collectionName, [NSString stringbyPercentEncodingString:[self buildQueryForFilters:[self filters]]]];
+    }
 
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     

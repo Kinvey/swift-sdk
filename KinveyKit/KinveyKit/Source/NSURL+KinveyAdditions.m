@@ -31,7 +31,6 @@
                                             (CFStringRef) @"!*'();:@&=+$,/?%#[]{}",
                                             kCFStringEncodingUTF8);
 
-//    NSString *encodedString = [string stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *returnedURL = [NSURL URLWithString:encodedString];
     [encodedString release];
     
