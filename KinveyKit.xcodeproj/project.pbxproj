@@ -73,6 +73,7 @@
 		D3715ADD14B697EA0030F5E9 /* KinveyKitNSStringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ADC14B697EA0030F5E9 /* KinveyKitNSStringTests.m */; };
 		D3715AE014B697F80030F5E9 /* KinveyKitNSURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ADF14B697F80030F5E9 /* KinveyKitNSURLTests.m */; };
 		D3715AE314B698040030F5E9 /* KinveyKitNSDateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AE214B698040030F5E9 /* KinveyKitNSDateTests.m */; };
+		D3792A1F14D20C0D003D75BD /* KinveyKitQueryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3792A1E14D20C0D003D75BD /* KinveyKitQueryTests.m */; };
 		D38FC3CF14C94252009A95E7 /* KCS_SBJsonParser.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3B614C94252009A95E7 /* KCS_SBJsonParser.h */; };
 		D38FC3D014C94252009A95E7 /* KCS_SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3B714C94252009A95E7 /* KCS_SBJsonParser.m */; };
 		D38FC3D114C94252009A95E7 /* KCS_SBJsonStreamParser.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3B814C94252009A95E7 /* KCS_SBJsonStreamParser.h */; };
@@ -98,6 +99,8 @@
 		D38FC3E514C94252009A95E7 /* SBJson.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3CC14C94252009A95E7 /* SBJson.h */; };
 		D38FC3E614C94252009A95E7 /* KCS_SBJsonStreamWriterState.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3CD14C94252009A95E7 /* KCS_SBJsonStreamWriterState.h */; };
 		D38FC3E714C94252009A95E7 /* KCS_SBJsonStreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3CE14C94252009A95E7 /* KCS_SBJsonStreamWriterState.m */; };
+		D39CDF9714D1E67F00E40D19 /* KCSQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = D39CDF9514D1E67F00E40D19 /* KCSQuery.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D39CDF9814D1E67F00E40D19 /* KCSQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = D39CDF9614D1E67F00E40D19 /* KCSQuery.m */; };
 		D3C5E67A14745E39002D8F2B /* libUAirship-1.1.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A643E147174C300F77A3F /* libUAirship-1.1.1.a */; };
 		D3C5E67D14745E6E002D8F2B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */; };
 		D3C5E68114745EEE002D8F2B /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */; };
@@ -449,6 +452,8 @@
 		D3715ADF14B697F80030F5E9 /* KinveyKitNSURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitNSURLTests.m; sourceTree = "<group>"; };
 		D3715AE114B698040030F5E9 /* KinveyKitNSDateTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitNSDateTests.h; sourceTree = "<group>"; };
 		D3715AE214B698040030F5E9 /* KinveyKitNSDateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitNSDateTests.m; sourceTree = "<group>"; };
+		D3792A1D14D20C0D003D75BD /* KinveyKitQueryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitQueryTests.h; sourceTree = "<group>"; };
+		D3792A1E14D20C0D003D75BD /* KinveyKitQueryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitQueryTests.m; sourceTree = "<group>"; };
 		D38FC3B614C94252009A95E7 /* KCS_SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonParser.h; sourceTree = "<group>"; };
 		D38FC3B714C94252009A95E7 /* KCS_SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonParser.m; sourceTree = "<group>"; };
 		D38FC3B814C94252009A95E7 /* KCS_SBJsonStreamParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamParser.h; sourceTree = "<group>"; };
@@ -474,6 +479,8 @@
 		D38FC3CC14C94252009A95E7 /* SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJson.h; sourceTree = "<group>"; };
 		D38FC3CD14C94252009A95E7 /* KCS_SBJsonStreamWriterState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamWriterState.h; sourceTree = "<group>"; };
 		D38FC3CE14C94252009A95E7 /* KCS_SBJsonStreamWriterState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamWriterState.m; sourceTree = "<group>"; };
+		D39CDF9514D1E67F00E40D19 /* KCSQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQuery.h; sourceTree = "<group>"; };
+		D39CDF9614D1E67F00E40D19 /* KCSQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQuery.m; sourceTree = "<group>"; };
 		D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -709,6 +716,7 @@
 		D32A60E514716EE300F77A3F /* KinveyKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				D3792A1B14D20BF0003D75BD /* Query */,
 				D3F3E88B14BABCB5009063DE /* Test Resources */,
 				D3715ABB14B68E320030F5E9 /* UserService */,
 				D3715ABA14B68E2D0030F5E9 /* Push */,
@@ -738,6 +746,7 @@
 		D32A60F614716F2D00F77A3F /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				D39CDF9314D1E65400E40D19 /* Query */,
 				D3F340FA14BD2A2900DB6C37 /* Headers */,
 				D3F7E86C148803D60044F1E8 /* UserService */,
 				D3EA22661484850B00666259 /* Push */,
@@ -1386,6 +1395,15 @@
 			name = Mocks;
 			sourceTree = "<group>";
 		};
+		D3792A1B14D20BF0003D75BD /* Query */ = {
+			isa = PBXGroup;
+			children = (
+				D3792A1D14D20C0D003D75BD /* KinveyKitQueryTests.h */,
+				D3792A1E14D20C0D003D75BD /* KinveyKitQueryTests.m */,
+			);
+			name = Query;
+			sourceTree = "<group>";
+		};
 		D38FC3B414C941EC009A95E7 /* SBJSON */ = {
 			isa = PBXGroup;
 			children = (
@@ -1416,6 +1434,15 @@
 				D38FC3CE14C94252009A95E7 /* KCS_SBJsonStreamWriterState.m */,
 			);
 			name = SBJSON;
+			sourceTree = "<group>";
+		};
+		D39CDF9314D1E65400E40D19 /* Query */ = {
+			isa = PBXGroup;
+			children = (
+				D39CDF9514D1E67F00E40D19 /* KCSQuery.h */,
+				D39CDF9614D1E67F00E40D19 /* KCSQuery.m */,
+			);
+			name = Query;
 			sourceTree = "<group>";
 		};
 		D3EA22661484850B00666259 /* Push */ = {
@@ -1491,6 +1518,7 @@
 				D3EA22C71486B0BD00666259 /* KinveyPing.h in Headers */,
 				D3F7E8751488084D0044F1E8 /* KinveyUser.h in Headers */,
 				D3F3409814BC8AB800DB6C37 /* KCSReachability.h in Headers */,
+				D39CDF9714D1E67F00E40D19 /* KCSQuery.h in Headers */,
 				D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */,
 				D33E6873147DBA7200EE885E /* KCSAsyncConnection.h in Headers */,
 				D33E6878147DC1A400EE885E /* KCSConnectionResponse.h in Headers */,
@@ -1712,6 +1740,7 @@
 				D38FC3E214C94252009A95E7 /* KCS_SBJsonWriter.m in Sources */,
 				D38FC3E414C94252009A95E7 /* NSObject+SBJson.m in Sources */,
 				D38FC3E714C94252009A95E7 /* KCS_SBJsonStreamWriterState.m in Sources */,
+				D39CDF9814D1E67F00E40D19 /* KCSQuery.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1742,6 +1771,7 @@
 				D3715AE014B697F80030F5E9 /* KinveyKitNSURLTests.m in Sources */,
 				D3715AE314B698040030F5E9 /* KinveyKitNSDateTests.m in Sources */,
 				D3FF5FE814C6392A00680BD2 /* KinveyKitBase64Tests.m in Sources */,
+				D3792A1F14D20C0D003D75BD /* KinveyKitQueryTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
