@@ -82,7 +82,7 @@
 #define KCS_LESS_THAN_OR_EQUAL_OPERATOR 3
 #define KCS_GREATER_THAN_OR_EQUAL_OPERATOR 4
 
-
+@class KCSQuery;
 /*! Object for managing a collection of KinveyEntities
 *
 */
@@ -103,6 +103,8 @@
 
 /*! The Endpoint where we look for a request */
 @property (nonatomic, retain) NSString *baseURL;
+
+@property (nonatomic, retain) KCSQuery *query;
 
 
 ///---------------------------------------------------------------------------------------

@@ -25,5 +25,6 @@
 #import "KinveyUser.h"
 #import "KCSReachability.h"
 #import "KinveyErrorCodes.h"
+#import "KCSQuery.h"
 
 #endif

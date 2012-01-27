@@ -254,7 +254,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
         }
     } copy];
     
-    [KCSUser loginWithUserName:testUsername password:testPassword withDelegate:self];
+    [KCSUser loginWithUsername:testUsername password:testPassword withDelegate:self];
     
     assertThat([NSNumber numberWithBool:self.testPassed], is(equalToBool(YES)));
 
