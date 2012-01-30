@@ -116,6 +116,14 @@
 
 // - (void) exposeSettingsViewInView: (UIViewController *)parentViewController
 
+///---------------------------------------------------------------------------------------
+/// @name Device Properties
+///---------------------------------------------------------------------------------------
+@property (nonatomic, retain, readonly) NSData *deviceToken;
+
+- (NSString *)deviceTokenString;
+
+
 @end
 
 #endif /* NO_URBAN_AIRSHIP_PUSH */

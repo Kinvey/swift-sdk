@@ -11,7 +11,6 @@
 #import "KCSKeyChain.h"
 #import "KCSRESTRequest.h"
 #import "KinveyAnalytics.h"
-//#import "JSONKit.h"
 #import "SBJson.h"
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
@@ -21,6 +20,7 @@
 #import "KCSLogManager.h"
 #import "KinveyCollection.h"
 #import "KCSReachability.h"
+#import "KCSPush.h"
 
 
 @interface KCSUser()
@@ -36,6 +36,8 @@
 @synthesize password=_password;
 @synthesize userId=_userId;
 @synthesize userAttributes = _userAttributes;
+@synthesize deviceTokens = _deviceTokens;
+
 
 - (id)init
 {
@@ -45,6 +47,7 @@
         _password = [[NSString string] retain];
         _userId = [[NSString string] retain];
         _userAttributes = [[NSMutableDictionary dictionary] retain];
+        _deviceTokens = nil;
     }
     return self;
 }
@@ -55,6 +58,7 @@
     [_password release];
     [_userId release];
     [_userAttributes release];
+    [_deviceTokens release];
     [super dealloc];
 }
 
@@ -125,20 +129,28 @@
         // No user, generate it, note, use the APP KEY/APP SECRET!
         KCSAnalytics *analytics = [client analytics];
 
-        NSDictionary *userData = nil;
+
+        // Build the dictionary that will be JSON-ified here
+        
+        // We have three optional, internal fields and 2 manditory fields
+        NSMutableDictionary *userJSONPaylod = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                               [analytics UDID], @"UDID",
+                                               [analytics UUID], @"UUID", nil];
+        
+        // Next we check for the username and password
         if (uname && password){
-            userData = [NSDictionary dictionaryWithObjectsAndKeys:
-                        uname, @"username",
-                        password, @"password",
-                        [analytics UDID], @"UDID",
-                        [analytics UUID], @"UUID", nil];
-
-        } else {
-            userData = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    [analytics UDID], @"UDID",
-                                    [analytics UUID], @"UUID", nil];
+            [userJSONPaylod setObject:uname forKey:@"username"];
+            [userJSONPaylod setObject:password forKey:@"password"];
         }
-
+        
+        // Finally we check for the device token, we're creating the user,
+        // so we just need to set the one value, no merging/etc
+        KCSPush *sp = [KCSPush sharedPush];
+        if (sp.deviceToken != nil){
+            [userJSONPaylod setObject:[NSArray arrayWithObject:sp.deviceToken] forKey:@"_deviceTokens"];
+        }
+        
+        NSDictionary *userData = [NSDictionary dictionaryWithDictionary:userJSONPaylod];
         
         KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] userBaseURL] usingMethod:kPostRESTMethod];
         
@@ -175,6 +187,7 @@
             createdUser.username = [dictionary objectForKey:@"username"];
             createdUser.password = [dictionary objectForKey:@"password"];
             createdUser.userId   = [dictionary objectForKey:@"_id"];
+            createdUser.deviceTokens = [dictionary objectForKey:@"_deviceTokens"];
             
             assert(createdUser.username != nil && createdUser.password != nil && createdUser.userId != nil);
             
@@ -211,7 +224,8 @@
         
         KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
         
-        [[userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+        [userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
+        [userRequest start];
         
         
     } else {
@@ -270,7 +284,6 @@
             createdUser.username = username;
             createdUser.password = password;
             if (response.responseCode != KCS_HTTP_STATUS_OK){
-                // Crap, authentication failed, not really sure how to proceed here!!!
                 client.userIsAuthenticated = NO;
                 client.userAuthenticationInProgress = NO;
                 client.currentUser = nil;
@@ -288,12 +301,17 @@
             // Ok, we're really authd
             NSDictionary *dictionary = [parser objectWithData:response.responseData];
             createdUser.userId   = [dictionary objectForKey:@"_id"];
+            createdUser.deviceTokens = [dictionary objectForKey:@"_deviceTokens"];
+            
+            // We need to ignore the known properties, some are not stored with the user (UUID/UDID)
+            // Somer are stored elsewhere, the rest get set as attributes.
             for (NSString *property in dictionary) {
-                if ([property isEqualToString:@"_id"] ||
+                if ([property isEqualToString:@"_id"]      ||
                     [property isEqualToString:@"username"] ||
                     [property isEqualToString:@"password"] ||
-                    [property isEqualToString:@"UUID"] ||
-                    [property isEqualToString:@"UDID"])
+                    [property isEqualToString:@"UUID"]     ||
+                    [property isEqualToString:@"UDID"]     ||
+                    [property isEqualToString:@"_deviceTokens"])
                 {
                     // This is an "internal" property
                     continue;
@@ -341,7 +359,8 @@
         client.currentUser = [[KCSUser alloc] init];        
         client.currentUser.username = username;
         client.currentUser.password = password;
-        [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+        [request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
+        [request start];
 
     
     } else {
@@ -429,6 +448,17 @@
         NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationREquiresCurrentUserError userInfo:userInfo];
         [delegate entity:self operationDidFailWithError:userError];
     } else {
+        // Extract all of the items from the Array into a set, so adding the "new" device token does
+        // the right thing.  This might be less efficient than just iterating, but these routines have
+        // been optimized, we do this now, since there's no other place guarenteed to merge.
+        // Login/create store this info
+        KCSPush *sp = [KCSPush sharedPush];
+        
+        if (sp.deviceToken != nil){
+            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
+            [tmpSet addObject:[[KCSPush sharedPush] deviceToken]];
+            self.deviceTokens = [tmpSet allObjects];
+        }
         [self saveToCollection:[self userCollection] withDelegate:delegate];
     }
 }
@@ -494,6 +524,7 @@
     if (mappedDict == nil){
         mappedDict = [[NSDictionary dictionaryWithObjectsAndKeys:
                       @"_id", @"userId",
+                      @"_deviceTokens", @"deviceTokens",
                       @"username", @"username",
                       @"password", @"password", nil] retain];
     }

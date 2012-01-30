@@ -9,6 +9,75 @@
 #import "KCSQuery.h"
 #import "KCSLogManager.h"
 #import "SBJson.h"
+#import "NSString+KinveyAdditions.h"
+
+#pragma mark -
+#pragma mark KCSQuerySortModifier
+@implementation KCSQuerySortModifier
+@synthesize field = _field;
+@synthesize direction = _direction;
+
+- (id)initWithField:(NSString *)field inDirection:(KCSSortDirection)direction
+{
+    self = [super init];
+    if (self){
+        _field = [field retain];
+        _direction = direction;
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [_field release];
+    [super dealloc];
+}
+
+@end
+
+#pragma mark -
+#pragma mark KCSQueryLimitModifier
+@implementation KCSQueryLimitModifier
+@synthesize limit = _limit;
+- (id)initWithLimit:(NSInteger)limit
+{
+    self = [super init];
+    if (self){
+        _limit = limit;
+    }
+    return self;
+}
+
+- (NSString *)parameterStringRepresentation
+{
+    KCSLogDebug(@"Limit String: %@", [NSString stringWithFormat:@"limit=%d", self.limit]);
+    return [NSString stringWithFormat:@"limit=%d", self.limit];
+    
+}
+
+@end
+
+#pragma mark -
+#pragma mark KCSQuerySkipModifier
+@implementation KCSQuerySkipModifier
+@synthesize count = _count;
+
+-(id)initWithcount:(NSInteger)count
+{
+    self = [super init];
+    if (self){
+        _count = count;
+    }
+    return self;
+}
+
+- (NSString *)parameterStringRepresentation
+{
+    KCSLogDebug(@"Count String: %@", [NSString stringWithFormat:@"skip=%d", self.count]);
+    return [NSString stringWithFormat:@"skip=%d", self.count];
+}
+
+@end
+
 
 // Private interface
 @interface KCSQuery ()
@@ -195,6 +264,12 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 #pragma mark iVars
 @synthesize query = _query;
 @synthesize JSONwriter = _JSONwriter;
+@synthesize sortModifiers = _sortModifiers;
+@synthesize limitModifer = _limitModifer;
+@synthesize skipModifier = _skipModifier;
+
+
+
 
 - (id)init
 {
@@ -202,6 +277,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     if (self){
         _JSONwriter = [[KCS_SBJsonWriter alloc] init];
         _query = [[NSMutableDictionary dictionary] retain];
+        _sortModifiers = [[NSArray array] retain];
     }
     return self;
 }
@@ -210,6 +286,12 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     [_JSONwriter release];
     [_query release];
+    [_limitModifer release];
+    [_skipModifier release];
+    [_sortModifiers release];
+    _limitModifer = nil;
+    _skipModifier = nil;
+    _sortModifiers = nil;
     _JSONwriter = nil;
     _query = nil;
     [super dealloc];
@@ -233,7 +315,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
     
-    query.query = [[KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:[NSArray arrayWithObject:value] useQueriesForOps:NO] mutableCopy];
+    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:[NSArray arrayWithObject:value] useQueriesForOps:NO] mutableCopy] autorelease];
 
     return query;
 
@@ -243,7 +325,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
     
-    query.query = [[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:[NSArray arrayWithObject:value] useQueriesForOps:NO] mutableCopy];
+    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:[NSArray arrayWithObject:value] useQueriesForOps:NO] mutableCopy] autorelease];
     
     return query;
 
@@ -268,7 +350,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
     
-    query.query = [[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:args useQueriesForOps:YES] mutableCopy];
+    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:args useQueriesForOps:YES] mutableCopy] autorelease];
     
     return query;
 
@@ -286,7 +368,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
     
-    query.query = [[KCSQuery queryDictionaryWithFieldname:nil operation:joiningOperator forQueries:queries useQueriesForOps:NO] mutableCopy];
+    query.query = [[[KCSQuery queryDictionaryWithFieldname:nil operation:joiningOperator forQueries:queries useQueriesForOps:NO] mutableCopy] autorelease];
     
     return query;
 
@@ -316,7 +398,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     NSDictionary *exists = [NSDictionary dictionaryWithObjectsAndKeys:[NSNull null], @"$in", [NSNumber numberWithBool:YES], @"$exists", nil];
     NSDictionary *query = [NSDictionary dictionaryWithObject:exists forKey:field];
     KCSQuery *q = [[[KCSQuery alloc] init] autorelease];
-    q.query = [query mutableCopy];
+    q.query = [[query mutableCopy] autorelease];
     return q;
 }
 
@@ -433,6 +515,10 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     return q;
 }
 
+- (void)addSortModifiersObject:(KCSQuerySortModifier *)modifier
+{
+    self.sortModifiers = [self.sortModifiers arrayByAddingObject:modifier];
+}
 
 
 #pragma mark -
@@ -453,7 +539,6 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 #pragma mark Query Representations
 - (NSString *)JSONStringRepresentation
 {
-//    return [self.JSONwriter stringWithObject:self.query];
     return [_query JSONRepresentation];
 }
 
@@ -462,6 +547,28 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     return [self.JSONwriter dataWithObject:self.query];
 }
 
+- (NSString *)parameterStringRepresentation
+{
+    KCSLogDebug(@"Sort Keys: %@", [NSString stringWithFormat:@"query=%@", [self JSONStringRepresentation]]);
+    return [NSString stringWithFormat:@"query=%@", [NSString stringbyPercentEncodingString:[self JSONStringRepresentation]]];
+}
+
+
+#pragma mark -
+#pragma mark Getting our sort keys
+- (NSString *)parameterStringForSortKeys
+{
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:self.sortModifiers.count];
+    for (KCSQuerySortModifier *sortKey in self.sortModifiers) {
+        NSNumber *direction = [NSNumber numberWithInt:(sortKey.direction - 1)];
+        [dict setValue:direction forKey:sortKey.field];
+    }
+    
+    KCSLogDebug(@"Sort Keys: %@", [NSString stringWithFormat:@"sort=%@", [dict JSONRepresentation]]);
+    
+    return [NSString stringWithFormat:@"sort=%@", [NSString stringbyPercentEncodingString:[dict JSONRepresentation]]];
+    
+}
 
 
 @end
