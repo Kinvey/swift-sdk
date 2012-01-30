@@ -15,11 +15,26 @@
 
 @interface KCSPush()
 - (void)initializeUrbanAirshipWithOptions: (NSDictionary *)options;
+@property (nonatomic, retain, readwrite) NSData  *deviceToken;
 
 @end
 
 @implementation KCSPush
 
+@synthesize deviceToken = _deviceToken;
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        _deviceToken = nil;
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [_deviceToken release];
+    [super dealloc];
+}
 
 #pragma mark UA Init
 + (KCSPush *)sharedPush
@@ -53,7 +68,7 @@
 {
     
     NSNumber *val = [options valueForKey:KCS_PUSH_IS_ENABLED_KEY];
-    
+
     if ([val boolValue] == NO){
         // We don't want any of this code, so... we're done.
         return;
@@ -104,6 +119,9 @@
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    
+    // Capture the token for us to use later
+    self.deviceToken = deviceToken;
     // Updates the device token and registers the token with UA
     [[UAPush shared] registerDeviceToken:deviceToken];
 }
@@ -121,6 +139,15 @@
 - (void) exposeSettingsViewInView: (UIViewController *)parentViewController
 {
     [UAPush openApnsSettings:parentViewController animated:YES];
+}
+
+
+- (NSString *)deviceTokenString
+{
+    NSString *deviceToken = [[self.deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""];
+    deviceToken = [deviceToken stringByReplacingOccurrencesOfString: @">" withString: @""] ;
+    deviceToken = [deviceToken stringByReplacingOccurrencesOfString: @" " withString: @""];
+    return deviceToken;
 }
 
 @end

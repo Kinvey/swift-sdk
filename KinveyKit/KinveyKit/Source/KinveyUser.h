@@ -82,6 +82,8 @@ enum {
 @property (nonatomic, copy) NSString *username;
 /*! Password of this Kinvey User */
 @property (nonatomic, copy) NSString *password;
+/*! Device Tokens of this User */
+@property (nonatomic, copy) NSArray *deviceTokens;
 
 ///---------------------------------------------------------------------------------------
 /// @name KinveyKit Internal Services

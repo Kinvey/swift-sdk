@@ -175,7 +175,7 @@ getLogDate(void)
 
 - (id)withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failure progressAction: (KCSConnectionProgressBlock)progress
 {
-    // The analyzer complains that there is a memory leak 
+    // The analyzer complains that there is a memory leak, it's cause I'm copying these values (alloc'ing them) but never freeing them... 
     self.completionAction = [complete copy];
     self.progressAction = [progress copy];
     self.failureAction = [failure copy];
@@ -290,19 +290,6 @@ getLogDate(void)
     }
     
 
-    
-    // If we have the proper credentials then kinveyClient.userIsAuthenticated returns true, so just use the stored credentials
-    // If it's not true, then we could be in the acutal user request, if that's the case (aka, resourceLocation is the userBaseURL)
-    // then just allow the requst, it's already authenticated...
-    // TODO: this needs to check each URL for the user API, since future maybe more than just the baseURL.
-//    if (!kinveyClient.userIsAuthenticated && ![self.resourceLocation isEqualToString:kinveyClient.userBaseURL]){
-//        // User isn't authenticated, we need to perform default auth here and return.  Auth will handle completing this request.
-////        KCSLogDebug(@"Username: %@ Password: %@", kinveyClient.authCredentials.user, kinveyClient.authCredentials.password);
-//        [kinveyClient.currentUser initializeCurrentUserWithRequest:self];
-//        // Make sure to release the connection here, as we're breaking.
-//        [connection release];
-//        return;
-//    }
     
     if (!self.followRedirects){
         connection.followRedirects = NO;

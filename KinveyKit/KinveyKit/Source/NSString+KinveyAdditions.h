@@ -38,7 +38,7 @@
     @param queryString The string to append as a query
     @return The newly created string.
  */
-- (NSString *)URLStringByAppendingQueryString:(NSString *)queryString;
+- (NSString *)stringByAppendingQueryString:(NSString *)queryString;
 
 /*! Generate a string by appending a properly percent encoded string.
  @param string The string (typically a URL) that needs to be percent encoded.
