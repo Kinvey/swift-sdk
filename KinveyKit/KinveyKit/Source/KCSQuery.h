@@ -44,11 +44,39 @@ typedef enum
     // Internal Operators
     kKCSWithin = 17000,
     kKCSMulti = 17001
-
-    
-    
     
 } KCSQueryConditional;
+
+// DO NOT CHANGE THE VALUES IN THIS ENUM.  They're meaningful to the implementation of this class
+typedef enum {
+    kKCSAscending = 0,
+    kKCSDescending = 2
+} KCSSortDirection;
+
+@interface KCSQuerySortModifier : NSObject
+@property (nonatomic, copy) NSString *field;
+@property (nonatomic, assign) KCSSortDirection direction;
+
+- (id)initWithField: (NSString *)field inDirection: (KCSSortDirection)direction;
+
+@end
+
+@interface KCSQueryLimitModifier : NSObject
+@property (nonatomic, assign) NSInteger limit;
+
+- (id)initWithLimit: (NSInteger)limit;
+- (NSString *)parameterStringRepresentation;
+
+@end
+
+@interface KCSQuerySkipModifier : NSObject
+@property (nonatomic, assign) NSInteger count;
+
+- (id)initWithcount: (NSInteger)count;
+- (NSString *)parameterStringRepresentation;
+
+@end
+
 
 
 @interface KCSQuery : NSObject
@@ -84,7 +112,6 @@ typedef enum
 ///---------------------------------------------------------------------------------------
 /// @name Validating Queries
 ///---------------------------------------------------------------------------------------
-
 + (BOOL)validateQuery:(KCSQuery *)query;
 - (BOOL)isValidQuery;
 
@@ -95,7 +122,18 @@ typedef enum
 
 - (NSString *)JSONStringRepresentation;
 - (NSData *)UTF8JSONStringRepresentation;
+- (NSString *)parameterStringRepresentation;
+- (NSString *)parameterStringForSortKeys;
 
+
+///---------------------------------------------------------------------------------------
+/// @name Modifying Queries
+///---------------------------------------------------------------------------------------
+@property (nonatomic, retain) KCSQueryLimitModifier *limitModifer;
+@property (nonatomic, retain) KCSQuerySkipModifier *skipModifier;
+@property (nonatomic, retain) NSArray *sortModifiers;
+
+- (void)addSortModifiersObject:(KCSQuerySortModifier *)modifier;
 
 
 @end

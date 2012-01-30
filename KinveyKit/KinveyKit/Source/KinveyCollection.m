@@ -310,17 +310,41 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     NSString *format = nil;
     
     if ([self.collectionName isEqualToString:@""]){
-        format = @"%@?query=%@";
+        format = @"%@";
     } else {
-        format = @"%@/?query=%@";
+        format = @"%@/";
     }
 
-    
+    // Here we know that we're working with a query, so now we just check each of the params...
     if (self.query != nil){
-        resource = [self.baseURL stringByAppendingFormat:format, self.collectionName, [NSString stringbyPercentEncodingString:[self.query JSONStringRepresentation]]];
+        resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
+
+        // NB: All of the modifiers are optional and may be combined in any order.  However, we ended up here
+        //     so the user made an attempt to set some...
+        
+        // Add the Query portion of the request
+        if (self.query.query != nil && self.query.query.count > 0){
+            resource = [resource stringByAppendingQueryString:[self.query parameterStringRepresentation]];
+        }
+        
+        // Add any sort modifiers
+        if (self.query.sortModifiers.count > 0){
+            resource = [resource stringByAppendingQueryString:[self.query parameterStringForSortKeys]];
+        }
+        
+        // Add any limit modifiers
+        if (self.query.limitModifer != nil){
+            resource = [resource stringByAppendingQueryString:[self.query.limitModifer parameterStringRepresentation]];
+        }
+        
+        // Add any skip modifiers
+        if (self.query.skipModifier != nil){
+            resource = [resource stringByAppendingQueryString:[self.query.skipModifier parameterStringRepresentation]];
+        }
+        
     } else {
-        resource = [self.baseURL stringByAppendingFormat:format,
-                             self.collectionName, [NSString stringbyPercentEncodingString:[self buildQueryForFilters:[self filters]]]];
+        resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
+        resource = [resource stringByAppendingQueryString:[NSString stringWithFormat:@"query=%@", [NSString stringbyPercentEncodingString:[self buildQueryForFilters:[self filters]]]]];
     }
 
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];

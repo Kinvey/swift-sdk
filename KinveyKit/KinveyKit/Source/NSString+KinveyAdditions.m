@@ -25,10 +25,13 @@
 
 // Or:
 
-- (NSString *)URLStringByAppendingQueryString:(NSString *)queryString {
+- (NSString *)stringByAppendingQueryString:(NSString *)queryString {
     if (![queryString length]) {
         return self;
     }
+    // rangeOfString returns an NSRange, which is {location/length}, so
+    // if .length > 0, then we've found a '?' somewhere in the string so
+    // we need to append the next string with a '&'
     return [NSString stringWithFormat:@"%@%@%@", self,
             [self rangeOfString:@"?"].length > 0 ? @"&" : @"?", queryString];
 }
