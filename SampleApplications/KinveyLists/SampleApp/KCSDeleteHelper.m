@@ -42,7 +42,9 @@
 {
     // We need the collection
 
-    [self.listItemsCollection addFilterCriteriaForProperty:@"list" withStringValue:listID filteredByOperator:KCS_EQUALS_OPERATOR];
+//    [self.listItemsCollection addFilterCriteriaForProperty:@"list" withStringValue:listID filteredByOperator:KCS_EQUALS_OPERATOR];
+    self.listItemsCollection.query = [KCSQuery queryOnField:@"list" withExactMatchForValue:listID];
+    self.listItemsCollection.query.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:8];
     [self.listItemsCollection fetchWithDelegate:self];
 }
 

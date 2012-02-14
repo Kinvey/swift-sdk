@@ -43,6 +43,12 @@
     [[KCSPush sharedPush] onLoadHelper:options];
     
     [[KCSClient sharedClient] setServiceHostname:@"latestbeta"];
+    
+    [KCSClient configureLoggingWithNetworkEnabled:YES
+                                     debugEnabled:YES
+                                     traceEnabled:YES
+                                   warningEnabled:YES
+                                     errorEnabled:YES];
 
 
     // Initialize Image Cache

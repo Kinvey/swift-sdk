@@ -116,6 +116,9 @@
  
  @param string Name of the Collection (the name you'll see in the Kinvey Console) we're accessing
  @param templateClass The Class of objects that we're storing.  Instances of this class will be returned
+
+ @return The collection object representing the back-end collection.
+
  */
 + (KCSCollection *)collectionFromString: (NSString *)string ofClass: (Class)templateClass;
 
