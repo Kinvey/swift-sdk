@@ -11,7 +11,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define MINIMUM_KCS_VERSION_SUPPORTED @"TAG-ME"
+#define MINIMUM_KCS_VERSION_SUPPORTED @"0.6.8"
 
 @class KCSAnalytics;
 @class UIApplication;
