@@ -77,7 +77,8 @@
     // We've got a list name, we now need to get a listContents
     if ([self listItemsCollection] == nil){
         self.listItemsCollection = [[[KCSClient sharedClient] collectionFromString:@"list-items" withClass:[KCSListEntry class]] retain];
-        [self.listItemsCollection addFilterCriteriaForProperty:@"list" withStringValue:self.listId filteredByOperator:KCS_EQUALS_OPERATOR];
+//        [self.listItemsCollection addFilterCriteriaForProperty:@"list" withStringValue:self.listId filteredByOperator:KCS_EQUALS_OPERATOR];
+        self.listItemsCollection.query = [KCSQuery queryOnField:@"list" withExactMatchForValue:self.listId];
     }
 
     [self updateData];

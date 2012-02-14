@@ -29,6 +29,8 @@ OUTPUTLOC="${KINVEYKITLOC}/doc/"
 TEXTOUT="${OUTPUTLOC}/output"
 DOCOUT="${OUTPUTLOC}/built-docs"
 
+LICENSES="--include ${KINVEYKITLOC}/LICENSES.html"
+
 if [ ! -d $OUTPUTLOC ]
 then
 	mkdir -p -m 775 $OUTPUTLOC
@@ -52,7 +54,7 @@ then
 fi
 
 
-COMMAND="${APPLEDOC} ${OUTPUTARGS} ${WARNINGS} -o ${TEXTOUT} --docset-install-path ${DOCOUT} -p ${PROJECT} -c ${COMPANY} --company-id ${COMPANYID} ${EXCLUDES} ${KINVEYKITLOC}/KinveyKit"
+COMMAND="${APPLEDOC} ${OUTPUTARGS} ${WARNINGS} -o ${TEXTOUT} --docset-install-path ${DOCOUT} -p ${PROJECT} -c ${COMPANY} --company-id ${COMPANYID} ${EXCLUDES} ${LICENSES} ${KINVEYKITLOC}/KinveyKit"
 
 
 $COMMAND
