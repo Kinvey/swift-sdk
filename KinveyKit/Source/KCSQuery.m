@@ -71,18 +71,22 @@
 }
 
 - (NSString *)parameterStringRepresentation
-{
+{	
     KCSLogDebug(@"Count String: %@", [NSString stringWithFormat:@"skip=%d", self.count]);
     return [NSString stringWithFormat:@"skip=%d", self.count];
 }
 
 @end
 
+#pragma mark -
+#pragma mark Private Interface
 
 // Private interface
 @interface KCSQuery ()
 @property (nonatomic, readwrite, copy) NSMutableDictionary *query;
 @property (nonatomic, retain) KCS_SBJsonWriter *JSONwriter;
+@property (nonatomic, retain, readwrite) NSArray *sortModifiers;
+
 
 NSString *KCSConditionalStringFromEnum(KCSQueryConditional conditional);
 
@@ -90,6 +94,9 @@ NSString *KCSConditionalStringFromEnum(KCSQueryConditional conditional);
 
 
 @end
+
+#pragma mark -
+#pragma mark KCSQuery Implementation
 
 @implementation KCSQuery
 
@@ -111,7 +118,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
                                      @"$nearSphere", [NSNumber numberWithInt:kKCSNearSphere],                                                                                                                                                                                                                        
                                      @"$box", [NSNumber numberWithInt:kKCSWithinBox],                                                                                                                                                                                                                                
                                      @"$centerSphere", [NSNumber numberWithInt:kKCSWithinCenterSphere],                                                                                                                                                                                                              
-                                     @"$polygon", [NSNumber numberWithInt:kKCSWithinPolygon],                                                                                                                                                                                                                        
+                                     @"$polygon", [NSNumber numberWithInt:kKCSWithinPolygon],     
+                                     @"$maxDistance", [NSNumber numberWithInt:kKCSMaxDistance],
                                      
                                      
                                      // Joining Operators                                                                                                                                                                                                                                                            
@@ -229,6 +237,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
                 
                 query = [NSDictionary dictionaryWithObject:[NSDictionary dictionaryWithObject:[queries objectAtIndex:0] forKey:opName] forKey:fieldname];
             } else {
+                BOOL isGeoQuery = NO;
                 if (op != kKCSMulti || queries == nil){
                     // Error
                     return nil;
@@ -239,8 +248,36 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
                     KCSQueryConditional thisOp = [[pair objectForKey:@"op"] intValue];
                     NSObject *q = [pair objectForKey:@"query"];
                     [tmp setObject:q forKey:KCSConditionalStringFromEnum(thisOp)];
+                    
+                    // Make sure to account for Geo Queries in this version of KCS
+                    switch(thisOp){
+                        case kKCSNearSphere:
+                        case kKCSWithinBox:
+                        case kKCSWithinCenterSphere:
+                        case kKCSWithinPolygon:
+                        case kKCSMaxDistance:
+                            isGeoQuery = YES;
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                query = [NSDictionary dictionaryWithObject:tmp forKey:fieldname];
+                
+                if (isGeoQuery){
+                    //////////// HACK //////////////
+                    ///// For right now Kinvey has _geoloc as a free indexed property, if the user is using a geoquery now, then we
+                    ////  rewrite to the correct property, in the future use their passed in property
+#if 0
+                    query = [NSDictionary dictionaryWithObject:tmp forKey:fieldname];
+#else
+                    query = [NSDictionary dictionaryWithObject:tmp forKey:@"_geoloc"];
+#endif
+                    ////            
+                    //////////// HACK //////////////
+                } else {
+                    
+                    query = [NSDictionary dictionaryWithObject:tmp forKey:fieldname];
+                }
                 
             }
             break;
@@ -500,26 +537,43 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 }
 
+
+// TODO: This should use common code for the AND case.
 - (KCSQuery *)queryByJoiningQuery: (KCSQuery *)query usingOperator: (KCSQueryConditional)joiningOperator
 {
-    NSMutableDictionary *tmp = [NSMutableDictionary dictionary];
-    for (NSString *key in query.query) {
-        [tmp setObject:[query.query objectForKey:key] forKey:key];
-    }
-
-    for (NSString *key in self.query) {
-        [tmp setObject:[self.query objectForKey:key] forKey:key];
-    }
+    NSMutableDictionary *left = self.query;
+    NSMutableDictionary *right = query.query;
     KCSQuery *q = [KCSQuery query];
-    q.query = [NSMutableDictionary dictionaryWithObject:tmp forKey:KCSConditionalStringFromEnum(kKCSOr)];
+    
+    if (joiningOperator == kKCSOr){
+        NSArray *queries = [NSArray arrayWithObjects:left, right, nil];
+        q.query = [NSMutableDictionary dictionaryWithObject:queries forKey:KCSConditionalStringFromEnum(kKCSOr)];        
+    } else {
+
+        NSMutableDictionary *tmp = [NSMutableDictionary dictionary];
+        for (NSString *key in query.query) {
+            [tmp setObject:[query.query objectForKey:key] forKey:key];
+        }
+
+        for (NSString *key in self.query) {
+            [tmp setObject:[self.query objectForKey:key] forKey:key];
+        }
+        KCSQuery *q = [KCSQuery query];
+        q.query = [[tmp mutableCopy] autorelease];
+    }
     return q;
 }
 
-- (void)addSortModifiersObject:(KCSQuerySortModifier *)modifier
+- (void)addSortModifier:(KCSQuerySortModifier *)modifier
 {
     self.sortModifiers = [self.sortModifiers arrayByAddingObject:modifier];
 }
 
+- (void)clearSortModifiers
+{
+    // Assign an empty array to clear the modifiers (ie count == 0)
+    self.sortModifiers = [NSArray array];
+}
 
 #pragma mark -
 #pragma mark Validating Queries
