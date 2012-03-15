@@ -45,6 +45,7 @@ enum {
 - (void)dealloc
 {
     [_displayString release];
+    [super dealloc];
 }
 
 - (BOOL)isEqual:(id)object

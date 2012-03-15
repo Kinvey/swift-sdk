@@ -203,6 +203,8 @@
                 [delegate resourceServiceDidFailWithError:error];
             } else {
                 [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:URL withData:nil withLength:0]];
+                // FIX-ME in #610
+                // [URL release];
             }
         }
     };
