@@ -69,16 +69,6 @@ getLogDate(void)
 @synthesize followRedirects=_followRedirects;
 @synthesize retriesAttempted = _retriesAttempted;
 
-//- (id)init
-//{
-//    self = [super init];
-//    
-//    if (self){
-//        _headers = [[NSMutableDictionary dictionary] retain];
-//    }
-//    return self;
-//}
-
 - (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod
 {
     self = [super init];
@@ -129,16 +119,6 @@ getLogDate(void)
 
 + (KCSRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod
 {
-//    KCSRESTRequest *request = [KCSRESTRequest alloc];
-//    request.resourceLocation = resource;
-//    request.method = requestMethod;
-//    
-//    [request logResource:resource usingMethod:requestMethod];
-//    clogResource(resource, requestMethod);
-//
-//    [request autorelease];
-//    return request;
-//
     return [[[KCSRESTRequest alloc] initWithResource:resource usingMethod:requestMethod] autorelease];
 }
 
@@ -295,7 +275,6 @@ getLogDate(void)
         connection.followRedirects = NO;
     }
     
-    //    [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:[kinveyClient authCredentials]];
     [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:nil];    
      
     [connection release];

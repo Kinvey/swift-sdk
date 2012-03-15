@@ -146,6 +146,7 @@
     if (self.connection) {
         // Create the NSMutableData to hold the received data.
         // receivedData is an instance variable declared elsewhere.
+        // This is released by the cleanup method called when the connection completes or fails
         self.activeDownload = [[NSMutableData data] retain];
     } else {
         KCSLogNetwork(@"KCSConnection: Connection unabled to be created.");
