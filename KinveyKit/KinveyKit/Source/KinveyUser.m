@@ -121,6 +121,7 @@
         [KCSKeyChain removeStringForKey: @"password"];
     }
     
+    // FIX-ME #610 -- This causes a memory leak, but I haven't been able to trace the illicit free
     __block KCSUser *createdUser = [[KCSUser alloc] init];
     
     createdUser.username = [KCSKeyChain getStringForKey:@"username"];
@@ -174,10 +175,14 @@
                 client.userIsAuthenticated = NO;
                 client.userAuthenticationInProgress = NO;
                 
+                // Execution is expected to terminate, but if it does not, make sure that parser is freed
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[[parser objectWithData:response.responseData] JSONRepresentation] forKey:@"error"];
+                [parser release];
+                
                 NSException* myException = [NSException
                                             exceptionWithName:@"KinveyInternalError"
                                             reason:@"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo"
-                                            userInfo:[NSDictionary dictionaryWithObject:[[parser objectWithData:response.responseData] JSONRepresentation] forKey:@"error"]];
+                                            userInfo:userInfo];
                 
                 @throw myException;                
             }
@@ -274,7 +279,11 @@
 {
     
     KCSClient *client = [KCSClient sharedClient];
+    
     // Just log-in and set currentUser
+    // Note that isReachable is slightly redundant here, as 
+    // the actual request also does the reachable check, however we'd like to know
+    // here before branching to the blocks
     if ([client.kinveyReachability isReachable]){
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
@@ -295,6 +304,8 @@
                 NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
                 [delegate user:createdUser actionDidFailWithError:error];
                 [parser release];
+                // FIX-ME #610 -- This doesn't work
+                // [createdUser release];
                 return;
             }
             
