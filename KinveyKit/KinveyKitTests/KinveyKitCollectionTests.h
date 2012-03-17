@@ -11,8 +11,8 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 #define HC_SHORTHAND
-#import <OCHamcrest/OCHamcrest.h>
 #import "KinveyCollection.h"
+#import <OCHamcrestIOS/OCHamcrestIOS.h>
 
 @interface KinveyKitCollectionTests : SenTestCase <KCSCollectionDelegate, KCSInformationDelegate>
 

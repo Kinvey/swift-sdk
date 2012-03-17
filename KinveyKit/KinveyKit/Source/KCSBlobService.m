@@ -202,9 +202,9 @@
                 
                 [delegate resourceServiceDidFailWithError:error];
             } else {
+                // NB: The delegate must take ownership of this resource!
                 [delegate resourceServiceDidCompleteWithResult:[KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:URL withData:nil withLength:0]];
-                // FIX-ME in #610
-                // [URL release];
+                [URL release];
             }
         }
     };

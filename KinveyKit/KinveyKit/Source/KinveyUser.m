@@ -164,7 +164,10 @@
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
             KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-            [createdUser retain];
+
+            // Don't need to retain, as we're not releasing until this block
+            // [createdUser retain];
+            
             // Ok, we're probably authenticated
             if (response.responseCode != KCS_HTTP_STATUS_CREATED){
                 // Crap, authentication failed, not really sure how to proceed here!!!
@@ -184,6 +187,8 @@
                                             reason:@"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo"
                                             userInfo:userInfo];
                 
+                // This must be released in all paths
+                [createdUser release];
                 @throw myException;                
             }
             
@@ -207,8 +212,12 @@
             client.userIsAuthenticated = YES;
             client.userAuthenticationInProgress = NO;
             
+            // NB: The delegate MUST retain created user!
             [delegate user:createdUser actionDidCompleteWithResult:KCSUserCreated];
+
+            // This must be released in all paths
             [createdUser release];
+
             [parser release];
         };
         
@@ -224,6 +233,8 @@
                                         reason:@"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo"
                                         userInfo:[NSDictionary dictionaryWithObject:error forKey:@"error"]];
             
+            // This must be released in all paths
+            [createdUser release];
             @throw myException;
         };
         
@@ -239,8 +250,18 @@
         client.userIsAuthenticated = YES;
         client.userAuthenticationInProgress = NO;
         [[KCSClient sharedClient] setCurrentUser:createdUser];
+        
+        // Delegate must retain createdUser
         [delegate user:createdUser actionDidCompleteWithResult:KCSUserFound];
+
+        // This must be released in all paths
+        [createdUser release];
+
     }
+
+    // NB: We don't release here since the blocks won't have a chance to retain this value until WAAAAAAY later
+    // NB: I expect this is a good use for an autorelease pool.
+    // [createdUser release];
     
     
     
@@ -302,10 +323,10 @@
                                                                               withRecoverySuggestion:@"Try again with different username/password"
                                                                                  withRecoveryOptions:nil];
                 NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
+                // Delegate must retain createdUser
                 [delegate user:createdUser actionDidFailWithError:error];
+                [createdUser release];
                 [parser release];
-                // FIX-ME #610 -- This doesn't work
-                // [createdUser release];
                 return;
             }
             
@@ -344,7 +365,11 @@
             client.userIsAuthenticated = YES;
             client.userAuthenticationInProgress = NO;
             
+            // Delegate must retain createdUser
             [delegate user:createdUser actionDidCompleteWithResult:KCSUserFound];
+            
+            // Clean up
+            [createdUser release];
             [parser release];
         };
         
@@ -366,10 +391,13 @@
 
         // We need to init the current user to something before trying this
         client.userAuthenticationInProgress = YES;
-        //        client.currentUser = [[[KCSUser alloc] init] autorelease];
-        client.currentUser = [[KCSUser alloc] init];        
-        client.currentUser.username = username;
-        client.currentUser.password = password;
+
+        // Create a temp user with uname/password and use it it init currentUser
+        KCSUser *tmpCurrentUser = [[[KCSUser alloc] init] autorelease];
+        tmpCurrentUser.username = username;
+        tmpCurrentUser.password = password;
+        client.currentUser = tmpCurrentUser;
+        
         [request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
         [request start];
 
