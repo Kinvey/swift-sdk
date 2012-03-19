@@ -92,8 +92,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
    
 }
 
-// Declare several static vars here to create unique pointers to serve as keys
-// for the assoc objects
+
 @implementation NSObject (KCSEntity)
 
 
