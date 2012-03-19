@@ -10,6 +10,7 @@
 //  contents is a violation of applicable laws.
 
 #import <Foundation/Foundation.h>
+#import "KinveyEntity.h"
 #import "KinveyPersistable.h"
 #import "KCSClient.h"
 
@@ -19,5 +20,21 @@
 	data from Kinvey.
 */
 @interface KCSEntityDict : NSObject <KCSPersistable>
+
+@property (nonatomic, retain) NSString *objectId;
+
+
+/*! Return the value for an attribute for this user
+ * @param attribute The attribute to retrieve
+ */
+- (id)getValueForProperty: (NSString *)property;
+
+/*! Set the value for an attribute
+ * @param value The value to set.
+ * @param attribute The attribute to modify.
+ */
+- (void)setValue: (id)value forProperty:(NSString *)property;
+
+
 
 @end
