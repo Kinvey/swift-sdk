@@ -154,7 +154,7 @@
                                                                            withFailureReason:@"connectionWithRequest:delegate: returned nil connection."
                                                                       withRecoverySuggestion:@"Retry request."
                                                                          withRecoveryOptions:nil];
-        // TODO, make error codes, provide some userInfo love, probably make a Kinvey Error class and use that for these values
+
         NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
                                              code:KCSUnderlyingNetworkConnectionCreationFailureError
                                          userInfo:userInfo];

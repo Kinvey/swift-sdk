@@ -76,7 +76,7 @@
     
     // We've got a list name, we now need to get a listContents
     if ([self listItemsCollection] == nil){
-        self.listItemsCollection = [[[KCSClient sharedClient] collectionFromString:@"list-items" withClass:[KCSListEntry class]] retain];
+        self.listItemsCollection = [[KCSClient sharedClient] collectionFromString:@"list-items" withClass:[KCSListEntry class]];
 //        [self.listItemsCollection addFilterCriteriaForProperty:@"list" withStringValue:self.listId filteredByOperator:KCS_EQUALS_OPERATOR];
         self.listItemsCollection.query = [KCSQuery queryOnField:@"list" withExactMatchForValue:self.listId];
     }
@@ -234,7 +234,7 @@
 - (void)detailsViewControllerDidSave:(UIViewController *)controller
 {
     KCSAddItemController *aiController = (KCSAddItemController *)controller;
-    [aiController.addedEntry retain];
+//    [aiController.addedEntry retain];
     
     // Make sure to associate with this list...
     aiController.addedEntry.list = self.listId;
@@ -374,7 +374,7 @@
     }
     
     KCSAppDelegate *appDelegate = (KCSAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate.imageCache setObject:image forKey:[result.resourceId retain]];
+    [appDelegate.imageCache setObject:image forKey:result.resourceId];
     
     [(UITableView *)self.view reloadData];
 }

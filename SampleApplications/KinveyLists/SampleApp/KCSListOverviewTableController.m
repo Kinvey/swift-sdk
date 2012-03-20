@@ -62,7 +62,7 @@
 
     // Prepare for syncing with Kinvey...
     if (self.listsCollection == nil){
-        self.listsCollection = [[[KCSClient sharedClient] collectionFromString:@"lists" withClass:[KCSList class]] retain];
+        self.listsCollection = [[KCSClient sharedClient] collectionFromString:@"lists" withClass:[KCSList class]];
         _deleteHelper = [[KCSDeleteHelper deleteHelper] retain];
     }
 
@@ -271,7 +271,7 @@
 {
     NSLog(@"Attempting to add to a list");
     KCSAddListController *alController = (KCSAddListController *)controller;
-    [alController.addedList retain];
+//    [alController.addedList retain];
     
     self.listToAdd = alController.addedList;
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;

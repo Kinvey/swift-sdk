@@ -341,7 +341,7 @@
 		D30791C214560CEB00E5A284 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = Kinvey;
 			};
 			buildConfigurationList = D30791C514560CEB00E5A284 /* Build configuration list for PBXProject "KinveyLists" */;
