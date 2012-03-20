@@ -116,8 +116,6 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 @synthesize baseURL = _baseURL;
 @synthesize query = _query;
 
-// TODO: Need a way to store the query portion of the library.
-
 - (id)initWithName: (NSString *)name forTemplateClass: (Class) theClass
 {
     self = [super init];
