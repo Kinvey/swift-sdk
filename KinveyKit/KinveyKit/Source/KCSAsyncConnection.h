@@ -11,11 +11,8 @@
 
 #import "KCSConnection.h"
 
-@interface KCSAsyncConnection : KCSConnection <NSURLConnectionDelegate>
+@interface KCSAsyncConnection : KCSConnection <NSURLConnectionDataDelegate>
 
-
-/*! Stored data in response to a request */
-@property (retain, readonly) NSMutableData *activeDownload;
 
 /*! The (HTTP) response from the server.  We only store the final responding server in a redirect chain */
 @property (retain) NSURLResponse *lastResponse;

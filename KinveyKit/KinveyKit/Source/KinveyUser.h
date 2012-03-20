@@ -16,8 +16,6 @@
 @class KCSCollection;
 @class KCSRESTRequest;
 
-typedef void(^KCSUsernameCheckBlock)(BOOL usernameDoesNotExist, NSString *checkedUsername);
-
 // Need to predefine our classes here
 @class KCSUser;
 @class KCSUserResult;
@@ -127,11 +125,6 @@ enum {
  * @param delegate The delegate to inform once creation completes
 */
 + (void)userWithUsername: (NSString *)username password: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate;
-
-/*! Check to see if a username already exists and call checkBlock with the results
- * @param checkBlock The block to execute when the check is complete
-*/
-+ (void)checkForExistingUsernameWithBlock: (KCSUsernameCheckBlock)checkBlock;
 
 ///---------------------------------------------------------------------------------------
 /// @name Managing the Current User

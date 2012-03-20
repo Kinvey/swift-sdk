@@ -81,7 +81,7 @@
 - (void)resourceServiceDidCompleteWithResult:(KCSResourceResponse *)result
 {
     NSLog(@"Request Completed with: %@", result);
-    
+    [result retain];
     if ([_currentOperation isEqualToString:@"GET"]){
         NSData *imageData = [result resource];
         _ourImage.image = [UIImage imageWithData:imageData];
@@ -94,6 +94,7 @@
         self.imageState.text = @"Image deleted from Kinvey";
         [self.ourImage setHidden:YES];
     }
+    [result release];
 }
 
 - (void)resourceServiceDidFailWithError:(NSError *)error

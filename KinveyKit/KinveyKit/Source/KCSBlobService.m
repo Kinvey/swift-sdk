@@ -39,17 +39,9 @@
 - (void)dealloc
 {
     [_localFileName release];
-    self.localFileName = nil;
-
     [_resourceId release];
-    self.resourceId = nil;
-    
     [_resource release];
-    self.resource = nil;
-    
     [_streamingURL release];
-    self.streamingURL = nil;
-    
     [super dealloc];
 }
 

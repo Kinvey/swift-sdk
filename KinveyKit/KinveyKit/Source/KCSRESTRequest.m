@@ -156,9 +156,12 @@ getLogDate(void)
 - (id)withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failure progressAction: (KCSConnectionProgressBlock)progress
 {
     // The analyzer complains that there is a memory leak, it's cause I'm copying these values (alloc'ing them) but never freeing them... 
-    self.completionAction = [complete copy];
-    self.progressAction = [progress copy];
-    self.failureAction = [failure copy];
+//    self.completionAction = [complete copy];
+//    self.progressAction = [progress copy];
+//    self.failureAction = [failure copy];
+    self.completionAction = complete;
+    self.progressAction = progress;
+    self.failureAction = failure;
     
     return self;
     

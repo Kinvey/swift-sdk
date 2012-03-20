@@ -75,9 +75,9 @@
     self.selectedImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle]
                                                            pathForResource:@"logo114"
                                                            ofType:@"png"]];
-    self.doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(textViewShouldReturn)];
+    self.doneButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(textViewShouldReturn)] autorelease];
 
-    self.updateButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(doneWrapper)];
+    self.updateButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(doneWrapper)] autorelease];
 //    self.cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBar target:self action:@selector(doneWrapper)];
 
     if (self.isUpdateView){
@@ -262,7 +262,7 @@
 }
 
 - (IBAction)addImage:(id)sender {
-    self.imagePicker = [[UIImagePickerController alloc] init];
+    self.imagePicker = [[[UIImagePickerController alloc] init] autorelease];
     self.imagePicker.delegate = self;
     
     // Todo, optional
@@ -274,7 +274,7 @@
         self.imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     }
 
-    self.imagePicker.mediaTypes = [[NSArray alloc] initWithObjects: (NSString *) kUTTypeImage, nil];
+    self.imagePicker.mediaTypes = [NSArray arrayWithObjects: (NSString *) kUTTypeImage, nil];
     self.imagePicker.allowsEditing = NO;
     [self presentModalViewController: self.imagePicker animated: YES];
 //    [self presentModalViewController:self.imagePicker animated:YES];
