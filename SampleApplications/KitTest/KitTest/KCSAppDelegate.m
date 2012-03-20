@@ -67,7 +67,7 @@
     
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
     [[KCSPush sharedPush] onLoadHelper:options];
-    [[KCSClient sharedClient] setServiceHostname:@"latestbeta"];
+    [[KCSClient sharedClient] setServiceHostname:@"console-staging"];
 
     
 //    [[[KCSClient sharedClient] currentUser] logout];
