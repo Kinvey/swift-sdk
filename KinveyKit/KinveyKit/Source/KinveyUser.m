@@ -440,14 +440,6 @@
 }
 
 
-///////////
-// This is the implementation for the basic users services
-///////////
-+ (void)checkForExistingUsernameWithBlock: (KCSUsernameCheckBlock)checkBlock
-{
-    // TBD
-}
-
 - (void)removeWithDelegate: (id<KCSPersistableDelegate>)delegate
 {
     if (![self isEqual:[[KCSClient sharedClient] currentUser]]){

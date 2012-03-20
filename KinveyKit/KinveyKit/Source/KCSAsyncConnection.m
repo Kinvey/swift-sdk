@@ -20,7 +20,7 @@
 @property (copy) KCSConnectionCompletionBlock completionBlock;
 @property (copy) KCSConnectionFailureBlock    failureBlock;
 @property (copy) KCSConnectionProgressBlock   progressBlock;
-@property (retain, readwrite) NSMutableData *activeDownload;
+@property (nonatomic, retain) NSMutableData *downloadedData;
 @property (retain) NSURLConnection *connection;
 @property (nonatomic, readwrite) NSInteger contentLength;
 @property NSInteger lastPercentage;
@@ -29,7 +29,8 @@
 
 @implementation KCSAsyncConnection
 
-@synthesize activeDownload=_activeDownload;
+@synthesize downloadedData = _downloadedData;
+
 @synthesize lastResponse=_lastResponse;
 @synthesize request = _request;
 @synthesize basicAuthCred=_basicAuthCred;
@@ -87,7 +88,7 @@
 {
     self = [super init];
     if (self){
-        _activeDownload = nil;
+        _downloadedData = nil;
         _lastResponse = nil;
         _request = nil;
         _connection = nil;
@@ -109,7 +110,7 @@
     if (self.contentLength <= 0){
         return 0;
     } else {
-        return (([self.activeDownload length] * 1.0) / self.contentLength) * 100;
+        return (([self.downloadedData length] * 1.0) / self.contentLength) * 100;
     }
     
 }
@@ -147,7 +148,7 @@
         // Create the NSMutableData to hold the received data.
         // receivedData is an instance variable declared elsewhere.
         // This is released by the cleanup method called when the connection completes or fails
-        self.activeDownload = [[NSMutableData data] retain];
+        self.downloadedData = [NSMutableData data];
     } else {
         KCSLogNetwork(@"KCSConnection: Connection unabled to be created.");
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create network connection.s"
@@ -165,21 +166,26 @@
 - (void)cleanUp
 {
     // Cause all members to release their current object and reset to the nil state.
-    self.request = nil;
-    self.basicAuthCred = nil;
-    self.connection = nil;
-    self.activeDownload = nil;
-    self.lastResponse = nil;
-    self.lastPercentage = 0; // Reset
-
+    [_request release];
+    [_basicAuthCred release];
+    [_connection release];
+    [_lastResponse release];
+    [_downloadedData release];
     [_request release];
     [_progressBlock release];
     [_completionBlock release];
     [_failureBlock release];
+
+    _request = nil;
+    _basicAuthCred = nil;
+    _connection = nil;
+    _lastResponse = nil;
+    _downloadedData = nil;
     _progressBlock = NULL;
     _completionBlock = NULL;
     _failureBlock = NULL;
 
+    self.lastPercentage = 0; // Reset
 }
 
 #pragma mark -
@@ -187,14 +193,7 @@
 
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
 {
-//    KCSLogNetwork(@"ProtectionSpace %@ requesting method %@ (Using protocol %@ with host %@)", protectionSpace, protectionSpace.authenticationMethod, protectionSpace.protocol, protectionSpace.host);
     return YES;
-//    if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodHTTPBasic]){
-//        return YES;
-//    } else {
-//        KCSLogNetwork(@"Unsupported Authentication Metchod called: %@ (%@)", protectionSpace.authenticationMethod, protectionSpace);
-//        return NO;
-//    }
 }
 
 - (void)connection:(NSURLConnection *)connection didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
@@ -223,9 +222,11 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    [self.activeDownload appendData:data];
+    // Update downloaded data with new data
+    [self.downloadedData appendData:data];
     
 
+    // Update download percent and call the progress block
     double downloadPercent = floor(self.percentComplete);
     // TODO: Need to check percent complete threshold...
     if (self.progressBlock != NULL &&
@@ -243,9 +244,6 @@
           [error localizedDescription],
           [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
 
-    // Clear the activeDownload property to allow later attempts
-    self.activeDownload = nil;
-    
     // Release the connection now that it's finished
     self.connection = nil;
  
@@ -276,10 +274,8 @@
 {
     NSInteger statusCode = [(NSHTTPURLResponse *)self.lastResponse statusCode];
     NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
-    self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.activeDownload headerData:headers userData:nil]);
+    self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:nil]);    
     
-    
-    self.activeDownload = nil;
     self.connection = nil;
     
     [self cleanUp];
