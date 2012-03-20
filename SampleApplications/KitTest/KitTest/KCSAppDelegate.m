@@ -57,8 +57,8 @@
 //                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
 
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             @"kid1003", KCS_APP_KEY_KEY,
-                             @"e43e23bc016e41319da72f5fa00f5299", KCS_APP_SECRET_KEY,
+                             @"kid1097", KCS_APP_KEY_KEY,
+                             @"0f8812e27c8f41e2a190c9a145caa9ef", KCS_APP_SECRET_KEY,
                              @"X-_pc0WmS3OLqkYKvC5Ubw", KCS_PUSH_KEY_KEY,
                              @"2GgUMA6uTbqOftEYw80b7g", KCS_PUSH_SECRET_KEY,
                              @"YES", KCS_PUSH_IS_ENABLED_KEY,
@@ -67,6 +67,8 @@
     
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
     [[KCSPush sharedPush] onLoadHelper:options];
+    [[KCSClient sharedClient] setServiceHostname:@"latestbeta"];
+
     
 //    [[[KCSClient sharedClient] currentUser] logout];
 //    
@@ -79,6 +81,12 @@
 
     self.rootViewController.imageViewController = _imageViewController;
     self.rootViewController.viewController = _viewController;
+    
+    [KCSClient configureLoggingWithNetworkEnabled:YES
+                                     debugEnabled:YES
+                                     traceEnabled:YES 
+                                   warningEnabled:YES 
+                                     errorEnabled:YES];
 
     [self.viewController prepareDataForView];
     ///////////////////////////

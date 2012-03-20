@@ -52,7 +52,7 @@
 
 
     // Initialize Image Cache
-    NSMutableDictionary *cache = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *cache = [[[NSMutableDictionary alloc] init] autorelease];
     self.imageCache = cache;
     
     return YES;

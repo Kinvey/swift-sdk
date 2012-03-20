@@ -72,9 +72,9 @@
     [super viewDidLoad];
     self.keyboadShouldSlide = YES;
     self.hasSelectedImage = NO;
-    self.selectedImage = [[UIImage imageWithContentsOfFile:[[NSBundle mainBundle]
+    self.selectedImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle]
                                                            pathForResource:@"logo114"
-                                                           ofType:@"png"]] retain];
+                                                           ofType:@"png"]];
     self.doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(textViewShouldReturn)];
 
     self.updateButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(doneWrapper)];
@@ -102,6 +102,8 @@
     [self setItemDescriptionToAdd:nil];
     [self setImageButton:nil];
     [_defaultImage release];
+    [_doneButton release];
+    [_updateButton release];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;

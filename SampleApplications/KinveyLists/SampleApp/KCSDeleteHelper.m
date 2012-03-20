@@ -30,6 +30,7 @@
 - (void)dealloc
 {
     [_listItemsCollection release];
+    [super dealloc];
 }
 
 + (id)deleteHelper
@@ -41,10 +42,8 @@
 - (void)removeItemsFromList:(NSString *)list withListID:(NSString *)listID
 {
     // We need the collection
-
-//    [self.listItemsCollection addFilterCriteriaForProperty:@"list" withStringValue:listID filteredByOperator:KCS_EQUALS_OPERATOR];
     self.listItemsCollection.query = [KCSQuery queryOnField:@"list" withExactMatchForValue:listID];
-    self.listItemsCollection.query.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:8];
+    self.listItemsCollection.query.limitModifer = [[[KCSQueryLimitModifier alloc] initWithLimit:8] autorelease];
     [self.listItemsCollection fetchWithDelegate:self];
 }
 

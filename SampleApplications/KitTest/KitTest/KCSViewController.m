@@ -46,7 +46,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    self.testObject = [[KitTestObject alloc] init];
+    self.testObject = [[[KitTestObject alloc] init] autorelease];
     
     self.testObject.name  = @"Kinvey Test 1";
     self.testObject.count = 1;
@@ -218,7 +218,7 @@
     self.currentCount.text = [NSString stringWithFormat:@"%d", result];
 
     // Update the last entity
-    [self.testObjects fetchAllWithDelegate:self];
+    [self.testObjects fetchWithDelegate:self];
 }
 
 
@@ -294,7 +294,12 @@
 {
     if (self.testObjects == nil){
         KCSCollection *collection = [[KCSClient sharedClient] collectionFromString:@"test_objects" withClass:[KitTestObject class]];
-        _testObjects = collection;
+        self.testObjects = collection;
+        KCSQuery *q = [KCSQuery query];
+        KCSQuerySortModifier *sm = [[KCSQuerySortModifier alloc] initWithField:@"_id" inDirection:kKCSDescending];
+        [q addSortModifier:sm];
+        [sm release];
+        self.testObjects.query = q;
         [self.testObject saveToCollection:_testObjects withDelegate:self];
         [self.networkActivity startAnimating];
     }    
