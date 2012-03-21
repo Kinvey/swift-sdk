@@ -82,11 +82,11 @@
     self.rootViewController.imageViewController = _imageViewController;
     self.rootViewController.viewController = _viewController;
     
-    [KCSClient configureLoggingWithNetworkEnabled:YES
+    [KCSClient configureLoggingWithNetworkEnabled:NO
                                      debugEnabled:YES
-                                     traceEnabled:YES 
-                                   warningEnabled:YES 
-                                     errorEnabled:YES];
+                                     traceEnabled:NO 
+                                   warningEnabled:NO 
+                                     errorEnabled:NO];
 
     [self.viewController prepareDataForView];
     ///////////////////////////

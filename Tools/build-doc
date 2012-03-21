@@ -31,6 +31,8 @@ DOCOUT="${OUTPUTLOC}/built-docs"
 
 LICENSES="--include ${KINVEYKITLOC}/LICENSES.html"
 
+UTILPATH="--docsetutil-path /Applications/Xcode.app/Contents/Developer/usr/bin/docsetutil"
+
 if [ ! -d $OUTPUTLOC ]
 then
 	mkdir -p -m 775 $OUTPUTLOC
@@ -54,7 +56,7 @@ then
 fi
 
 
-COMMAND="${APPLEDOC} ${OUTPUTARGS} ${WARNINGS} -o ${TEXTOUT} --docset-install-path ${DOCOUT} -p ${PROJECT} -c ${COMPANY} --company-id ${COMPANYID} ${EXCLUDES} ${LICENSES} ${KINVEYKITLOC}/KinveyKit"
+COMMAND="${APPLEDOC} ${UTILPATH} ${OUTPUTARGS} ${WARNINGS} -o ${TEXTOUT} --docset-install-path ${DOCOUT} -p ${PROJECT} -c ${COMPANY} --company-id ${COMPANYID} ${EXCLUDES} ${LICENSES} ${KINVEYKITLOC}/KinveyKit"
 
 
 $COMMAND

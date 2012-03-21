@@ -242,7 +242,6 @@ typedef enum {
 
  Joins each KCSQuery and returns a new Query.  Can either be ANDed or ORed.
  
- @param field The field in Kinvey to query on.
  @param joiningOperator The operator to join the queries with.
  @param firstQuery The first query to join.
  @param ... A nil terminated list of queriers to join.
@@ -342,7 +341,6 @@ typedef enum {
  so if you have 5 queries being ANDed and OR an additional query, you'll now have 6 queries being ORed.  Use
  queryByJoiningQuery: if you don't want this behavior.
  
- @param field The field in Kinvey to query on.
  @param joiningOperator The operator to join the queries with.
  @param firstQuery The first query to join.
  @param ... A nil terminated list of queriers to join.
