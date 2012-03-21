@@ -7,6 +7,7 @@
 //
 
 #import "KCSConnection.h"
+#import "KCSLogManager.h"
 
 @implementation KCSConnection
 
@@ -23,6 +24,7 @@
           failureBlock:(KCSConnectionFailureBlock)onFailure
       usingCredentials:(NSURLCredential *)credentials
 {
+    KCSLogForced(@"EXCEPTION Encountered: Name => %@, Reason => %@", @"UnsupportedAbstractBaseClassUse", @"This method is only implemented in subclasses...");
     NSException* myException = [NSException
                                 exceptionWithName:@"UnsupportedAbstractBaseClassUse"
                                 reason:@"This method is only implemented in subclasses..."

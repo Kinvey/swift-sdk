@@ -16,11 +16,11 @@
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
-//#import "JSONKit.h"
 #import "SBJson.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
 #import "KCSObjectMapper.h"
+#import "KCSLogManager.h"
 
 //#import "KinveyCollection.h"
 //
@@ -292,15 +292,6 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)deleteFromCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistableDelegate>)delegate
 {
-//    NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
-//    
-//    NSString *oid = nil;
-//    for (NSString *key in kinveyMapping){
-//        NSString *jsonName = [kinveyMapping valueForKey:key];
-//        if ([jsonName isEqualToString:@"_id"]){
-//            oid = [self valueForKey:key];
-//        }
-//    }
     NSString *oid = [self kinveyObjectId];
     NSString *resource = nil;
     if ([collection.collectionName isEqualToString:@""]){
@@ -353,6 +344,8 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 {
     // Eventually this will be used to allow a default scanning of "self" to build and cache a
     // 1-1 mapping of the client properties
+    KCSLogForced(@"EXCEPTION Encountered: Name => %@, Reason => %@", @"UnsupportedFeatureException", @"This version of the Kinvey iOS library requires clients to override this method");
+    
     NSException* myException = [NSException
                                 exceptionWithName:@"UnsupportedFeatureException"
                                 reason:@"This version of the Kinvey iOS library requires clients to override this method"
@@ -367,6 +360,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 {
     // Eventually this will be used to allow a default scanning of "self" to build and cache a
     // 1-1 mapping of the client properties
+    KCSLogForced(@"EXCEPTION Encountered: Name => %@, Reason => %@", @"UnsupportedFeatureException", @"This version of the Kinvey iOS library requires clients to override this method");
     NSException* myException = [NSException
                                 exceptionWithName:@"UnsupportedFeatureException"
                                 reason:@"This version of the Kinvey iOS library requires clients to override this method"
