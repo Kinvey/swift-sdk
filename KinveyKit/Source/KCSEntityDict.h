@@ -21,17 +21,20 @@
 */
 @interface KCSEntityDict : NSObject <KCSPersistable>
 
+/*! The ObjectID for this dictionary, if the objectID is not set when saving to a collection one will be generated. */
 @property (nonatomic, retain) NSString *objectId;
 
 
 /*! Return the value for an attribute for this user
- * @param attribute The attribute to retrieve
+ *
+ * @param property The attribute to retrieve
  */
 - (id)getValueForProperty: (NSString *)property;
 
 /*! Set the value for an attribute
+ *
  * @param value The value to set.
- * @param attribute The attribute to modify.
+ * @param property The attribute to modify.
  */
 - (void)setValue: (id)value forProperty:(NSString *)property;
 

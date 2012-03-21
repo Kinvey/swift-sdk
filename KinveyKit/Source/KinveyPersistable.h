@@ -29,7 +29,7 @@ Developers interested in performing actions based on the state of a save operati
 
 /*! Invoked when a save operation completes successfully.
  @param entity The Object that was attempting to be saved.
- @param result The result of the operation (Definition TBD)
+ @param result The result of the operation (NOTE: The value of this result is still changing, do not count on the value yet)
  */
 - (void) entity:(id)entity operationDidCompleteWithResult: (NSObject *)result;
 
@@ -128,7 +128,41 @@ implementing these methods.
 #define KCS_USE_DICTIONARY_KEY @"KCS_DICTIONARY_MAPPER_KEY"
 #define KCS_DICTIONARY_NAME_KEY @"KCS_DICTIONARY_NAME_KEY"
 
-+ (id)kinveyDesignatedInitializer;
+///---------------------------------------------------------------------------------------
+/// @name Advanced Options (Here Be Dragons!)
+///---------------------------------------------------------------------------------------
+
+/*! Returns an NSDictionary that details advanced object building options.
+ 
+ Most users of Kinvey will not need to use this feature.  Please be careful.
+ 
+ Options recognized:
+ - KCS_USE_DESIGNATED_INITIALIZER_MAPPING_KEY -- If set to YES, KinveyKit will build your objects via: kinveyObjectBuilderOptions
+ - KCS_USE_DICTIONARY_KEY -- If set Kinvey will use a a dictionary to map data to Kinvey
+ - KCS_DICTIONARY_NAME_KEY -- The name of the Instance Variable that is the dictionary to map.
+ 
+ If KCS_USE_DICTIONARY_KEY is set to an NSNumber representing YES then KinveyKit will look for at the value for KCS_DICTIONARY_NAME_KEY.
+ It will then look in your object for a property whos name is this value and is of type NSDictionary.  It will store all Key-Value pairs
+ in this dictionary to the collection on the backend as individual properties (eg, the dictionary is not stored, but the key-values end
+ up stored as property-values in Kinvey).  When fetching from Kinvey any properties that are not in the mapping function are placed
+ as key-values into this dictionary.
+
+ @return A dictionary that stores a subset of the above options that KinveyKit will use to determine advanced options.
+ 
+ */
 + (NSDictionary *)kinveyObjectBuilderOptions;
+
+/*! Override the initializer that KinveyKit uses to build objects of this type
+ 
+ If specified in the kinveyObjectBuilderOptions dictionary, this method will be
+ called to build objects instead of [[[self class] alloc] init].  This method
+ _must_ return an instantiated object of the class that implements this protocol.
+ This routine does not release the generated object.
+ 
+ @return An instantiated object of the class implementing this protocol
+ 
+ */
++ (id)kinveyDesignatedInitializer;
+
 
 @end
