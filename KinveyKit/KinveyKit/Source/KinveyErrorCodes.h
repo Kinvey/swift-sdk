@@ -57,6 +57,7 @@ enum {
     KCSLoginFailureError = 60009,
     KCSUnexpectedError = 60010,
     KCSFileError = 60011,
+    KCSInvalidArgumentError = 60012,
     
     
     // For testing only, no user should ever see this!

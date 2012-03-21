@@ -46,6 +46,11 @@ withFormat:(format),##__VA_ARGS__]
 
 #endif
 
+#define KCSLogForced(format,...) \
+[[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kForcedChannel] file:__FILE__ lineNumber:__LINE__ \
+withFormat:(format),##__VA_ARGS__]
+
+
 @class KCSLogChannel;
 
 @interface KCSLogManager : NSObject
@@ -57,6 +62,7 @@ withFormat:(format),##__VA_ARGS__]
 + (KCSLogChannel *)kTraceChannel;
 + (KCSLogChannel *)kWarningChannel;
 + (KCSLogChannel *)kErrorChannel;
++ (KCSLogChannel *)kForcedChannel;
 
 
 - (void)logChannel: (KCSLogChannel *)channel file:(char *)sourceFile lineNumber: (int)lineNumber withFormat:(NSString *)format, ...;

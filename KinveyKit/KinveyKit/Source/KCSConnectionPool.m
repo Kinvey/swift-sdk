@@ -10,6 +10,7 @@
 #import "KCSConnection.h"
 #import "KCSAsyncConnection.h"
 #import "KCSSyncConnection.h"
+#import "KCSLogManager.h"
 
 
 @interface KCSConnectionPool ()
@@ -154,6 +155,7 @@ void verifyConnectionType(id connectionClass);
 void verifyConnectionType(id connectionClass)
 {
     if (![connectionClass isKindOfClass:[KCSConnection class]]) {
+        KCSLogForced(@"EXCEPTION Encountered: Name => %@, Reason => %@", @"InternalRuntimeError", @"Kinvey somehow created an invalid connection and can't recover, please contact support@kinvey.com");
         NSException* myException = [NSException
                                     exceptionWithName:@"InternalRuntimeError"
                                     reason:@"Kinvey somehow created an invalid connection and can't recover, please contact support@kinvey.com"

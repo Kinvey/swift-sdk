@@ -296,12 +296,16 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 {
     // Guard against an empty filter
     if (self.filters.count == 0 && self.query == nil){
-        NSException* myException = [NSException
-                                    exceptionWithName:NSInvalidArgumentException
-                                    reason:@"Attempt to fetch from a Kinvey Collection with an empty filter, use fetchAll instead."
-                                    userInfo:nil];
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to fetch with an empty query."
+                                                                           withFailureReason:@"No query or filter was supplied to fetchWithDelegate:"
+                                                                      withRecoverySuggestion:@"Provide a query or filter, or use fetchAllWithDelegate:"
+                                                                         withRecoveryOptions:nil];
+        NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                             code:KCSInvalidArgumentError
+                                         userInfo:userInfo];
         
-        @throw myException;
+        [delegate collection:self didFailWithError:error];
+        return;
     }
     
     NSString *resource = nil;
