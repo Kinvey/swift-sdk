@@ -29,7 +29,7 @@
  * 
  * Use this method to handle failures.
  *  @param collection The collection attempting to perform the operation.
- *  @param error An object that encodes our error message (Documentation TBD)
+ *  @param error An object that encodes our error message 
  */
 - (void) collection: (KCSCollection *)collection didFailWithError: (NSError *)error;
 
@@ -38,9 +38,8 @@
 ///---------------------------------------------------------------------------------------
 /*! Called when a request completes successfully.
  * @param collection The collection attempting to perform the operation.
- * @param result The results of the completed request
+ * @param result An NSArray of Class objectTemplate objects. 
  *
- * @bug This interface will change and switch to using NSArray instead of NSObject, this should be transparent to client code, which should be using NSArray now anyway.
  */
 - (void) collection: (KCSCollection *)collection didCompleteWithResult: (NSArray *)result;
 
@@ -104,7 +103,6 @@
 /*! The Endpoint where we look for a request */
 @property (nonatomic, retain) NSString *baseURL;
 
-@property (nonatomic, retain) KCSQuery *query;
 
 
 ///---------------------------------------------------------------------------------------
@@ -131,7 +129,14 @@
  */
 - (void)fetchAllWithDelegate: (id <KCSCollectionDelegate>)delegate;
 
-/*! Fetch all entries that pass all filters that have been set.
+/*! Fetch all of the entites that match the query instance variable.
+ *  
+ *  NOTE: If `collection.query == nil` then this method will return an error status, use
+ *  fetchWithDelegate: instead.
+ *
+ *  NOTE: The filter interface has been depricated in version 1.2 of KinveyKit, currently
+ *  both the query and filter interfaces are supported.  If using the filter interface
+ *  this method will fetch all entries that pass all filters that have been set. 
  *  @param delegate The delegate that we'll notify upon completion of the request.
  */
 - (void)fetchWithDelegate: (id <KCSCollectionDelegate>)delegate;
@@ -140,10 +145,15 @@
 /// @name Building Queries
 ///---------------------------------------------------------------------------------------
 
-/*! A collection of filters that will be applied when using fetch */
+/*! The current query for this collection.  Overwrite to assign new query.
+    NOTE: if query is `nil` and fetchWithDelegate: is called, an error status will be returned. */
+@property (nonatomic, retain) KCSQuery *query;
+
+
+/*! A collection of filters that will be applied when using fetch (Depricated as of version 1.2)*/
 @property (retain) NSMutableArray *filters;
 
-/*! Add a BOOL filter to the current filter set
+/*! Add a BOOL filter to the current filter set (Depricated as of version 1.2)
  
  This adds a new filter to only return entities where the property is compared against the value using the given operator.
  
@@ -153,7 +163,7 @@
  */
 - (void)addFilterCriteriaForProperty: (NSString *)property withBoolValue: (BOOL) value filteredByOperator: (int)operator;
 
-/*! Add a Double filter to the current filter set
+/*! Add a Double filter to the current filter set (Depricated as of version 1.2)
  
  This adds a new filter to only return entities where the property is compared against the value using the given operator.
  
@@ -163,7 +173,7 @@
  */
 - (void)addFilterCriteriaForProperty: (NSString *)property withDoubleValue: (double)value filteredByOperator: (int)operator;
 
-/*! Add a Integer filter to the current filter set
+/*! Add a Integer filter to the current filter set (Depricated as of version 1.2)
  
  This adds a new filter to only return entities where the property is compared against the value using the given operator.
  
@@ -173,7 +183,7 @@
  */
 - (void)addFilterCriteriaForProperty: (NSString *)property withIntegerValue: (int)value filteredByOperator: (int)operator;
 
-/*! Add a String filter to the current filter set
+/*! Add a String filter to the current filter set (Depricated as of version 1.2)
  
  This adds a new filter to only return entities where the property is compared against the value using the given operator.
  
@@ -183,7 +193,7 @@
  */
 - (void)addFilterCriteriaForProperty: (NSString *)property withStringValue: (NSString *)value filteredByOperator: (int)operator;
 
-/*! Reset all current filters
+/*! Reset all current filters (Depricated as of version 1.2)
 
  This routine needs to be run to change any of the parameters for the current set of filters.
  

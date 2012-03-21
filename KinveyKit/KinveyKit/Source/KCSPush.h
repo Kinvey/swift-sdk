@@ -111,7 +111,21 @@
 ///---------------------------------------------------------------------------------------
 /// @name Badge Management
 ///---------------------------------------------------------------------------------------
+/*! Set the number of unread push notifications on the app badge
+ 
+ Reset the number of waiting push notifications on for the app's badge.
+ This is a wrapper around the UrbanAirship feature.
+ 
+ @param number The number to set the badge to
+ 
+ */
 - (void)setPushBadgeNumber: (int)number;
+
+/*! Reset the app's unread pushes to 0
+ 
+ Reset the push count
+ 
+ */
 - (void)resetPushBadge;
 
 // - (void) exposeSettingsViewInView: (UIViewController *)parentViewController
@@ -119,8 +133,16 @@
 ///---------------------------------------------------------------------------------------
 /// @name Device Properties
 ///---------------------------------------------------------------------------------------
+/*! The current session's token for this device to receive notifications */
 @property (nonatomic, retain, readonly) NSData *deviceToken;
 
+/*! Return the device's token as a string
+ 
+ Return the current session's device token for push as an NSString.
+ 
+ @return The NSString representing the device token.
+ 
+ */
 - (NSString *)deviceTokenString;
 
 

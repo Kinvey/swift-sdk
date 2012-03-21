@@ -90,7 +90,6 @@
  
  @param error An NSError that describes all availble failure information.
  
- @bug Error codes are not yet documented.
  */
 - (void)resourceServiceDidFailWithError: (NSError *)error;
 

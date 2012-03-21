@@ -23,26 +23,26 @@
 /*!
 *  Called when a request fails for some reason (including network failure, internal server failure, request issues...)
  @param entity The Object that was attempting to be fetched.
- @param error An object that encodes our error message (Documentation TBD)
+ @param error The error that occurred
 */
 - (void) entity: (id <KCSPersistable>)entity fetchDidFailWithError: (NSError *)error;
 
 /*!
 * Called when a request completes successfully.
  @param entity The Object that was attempting to be fetched.
- @param result The result of the completed request (Typically NSData encoded JSON)
+ @param result The result of the completed request as an NSDictionary
 */
 - (void) entity: (id <KCSPersistable>)entity fetchDidCompleteWithResult: (NSObject *)result;
 
 @end
 
-/*!  Add ActiveRecord capabilities to the built-in root object (NSObject) of the AppKit/Foundation system.
+/*!  Add ActiveRecord-style capabilities to the built-in root object (NSObject) of the AppKit/Foundation system.
 *
 * This category is used to cause any NSObject to be able to be saved into the Kinvey Cloud Service.
 */
 @interface NSObject (KCSEntity) <KCSPersistable>
 
-/*! Fetch one instance of this entity from KCS
+/*! Fetch one instance of this entity from KCS (Depricated as of version 1.2)
 *
 * @param collection Collection to pull the entity from
 * @param query Arbitrary JSON query to execute on KCS (See Queries in KCS documentation for details on Queries)
@@ -50,7 +50,7 @@
 */
 - (void)fetchOneFromCollection: (KCSCollection *)collection matchingQuery: (NSString *)query withDelegate: (id<KCSEntityDelegate>)delegate;
 
-/*! Fetch first entity with a given Boolean value for a property
+/*! Fetch first entity with a given Boolean value for a property (Depricated as of version 1.2)
 *
 * @param property property to query
 * @param value Boolean value (YES or NO) to query against value
@@ -59,7 +59,7 @@
 */
 - (void)findEntityWithProperty: (NSString *)property matchingBoolValue: (BOOL)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
 
-/*! Fetch first entity with a given Double value for a property
+/*! Fetch first entity with a given Double value for a property (Depricated as of version 1.2)
 *
 * @param property property to query
 * @param value Real value to query against value
@@ -68,7 +68,7 @@
 */
 - (void)findEntityWithProperty: (NSString *)property matchingDoubleValue: (double)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
 
-/*! Fetch first entity with a given Integer value for a property
+/*! Fetch first entity with a given Integer value for a property (Depricated as of version 1.2)
 *
 * @param property property to query
 * @param value Integer to query against value
@@ -77,7 +77,7 @@
 */
 - (void)findEntityWithProperty: (NSString *)property matchingIntegerValue: (int)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
 
-/*! Fetch first entity with a given String value for a property
+/*! Fetch first entity with a given String value for a property (Depricated as of version 1.2)
 *
 * @param property property to query
 * @param value String to query against value
@@ -99,7 +99,7 @@
 */
 //- (NSString *)valueForProperty: (NSString *)property;
 
-/*! Set a value for a given property
+/*! Set a value for a given property (Depricated as of version 1.2)
 * @param value The value to set for the given property
 * @param property The property to assign this value to.
 */

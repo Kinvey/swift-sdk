@@ -171,7 +171,6 @@
     [_connection release];
     [_lastResponse release];
     [_downloadedData release];
-    [_request release];
     [_progressBlock release];
     [_completionBlock release];
     [_failureBlock release];
@@ -244,9 +243,6 @@
           [error localizedDescription],
           [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
 
-    // Release the connection now that it's finished
-    self.connection = nil;
- 
     // Notify client that the operation failed!
     self.failureBlock(error);
     
@@ -274,9 +270,9 @@
 {
     NSInteger statusCode = [(NSHTTPURLResponse *)self.lastResponse statusCode];
     NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
+    KCSLogNetwork(@"Response completed with code %d and response headers: %@", statusCode, headers);
+    KCSLogDebug(@"Kinvey Request ID: %@", [headers objectForKey:@"X-Kinvey-Request-Id"]);
     self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:nil]);    
-    
-    self.connection = nil;
     
     [self cleanUp];
 }
