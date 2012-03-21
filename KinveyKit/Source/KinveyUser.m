@@ -121,7 +121,6 @@
         [KCSKeyChain removeStringForKey: @"password"];
     }
     
-    // FIX-ME #610 -- This causes a memory leak, but I haven't been able to trace the illicit free
     __block KCSUser *createdUser = [[KCSUser alloc] init];
     
     createdUser.username = [KCSKeyChain getStringForKey:@"username"];
@@ -173,23 +172,26 @@
                 // Crap, authentication failed, not really sure how to proceed here!!!
                 // I really don't know what to do here, we can't continue... Something died...
                 KCSLogError(@"Received Response code %d, but expected %d with response: %@", response.responseCode, KCS_HTTP_STATUS_CREATED, [[parser objectWithData:response.responseData] JSONRepresentation]);
-                CFShow(response);
                 
                 client.userIsAuthenticated = NO;
                 client.userAuthenticationInProgress = NO;
                 
                 // Execution is expected to terminate, but if it does not, make sure that parser is freed
-                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[[parser objectWithData:response.responseData] JSONRepresentation] forKey:@"error"];
+                NSDictionary *errorDict = [NSDictionary dictionaryWithObject:[[parser objectWithData:response.responseData] JSONRepresentation] forKey:@"error"];
                 [parser release];
                 
-                NSException* myException = [NSException
-                                            exceptionWithName:@"KinveyInternalError"
-                                            reason:@"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo"
-                                            userInfo:userInfo];
+                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
+                                                                                   withFailureReason:[errorDict description]
+                                                                              withRecoverySuggestion:@"Contact support."
+                                                                                 withRecoveryOptions:nil];
                 
+                // No user, it's during creation
+                [delegate user:nil actionDidFailWithError:[NSError errorWithDomain:KCSUserErrorDomain
+                                                                              code:KCSUnexpectedError
+                                                                          userInfo:userInfo]];
                 // This must be released in all paths
                 [createdUser release];
-                @throw myException;                
+                return;
             }
             
             // Ok, we're really authd
@@ -228,14 +230,22 @@
             client.userIsAuthenticated = NO;
             client.userAuthenticationInProgress = NO;
 
-            NSException* myException = [NSException
-                                        exceptionWithName:@"KinveyInternalError"
-                                        reason:@"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo"
-                                        userInfo:[NSDictionary dictionaryWithObject:error forKey:@"error"]];
+            NSDictionary *errorDict = [NSDictionary dictionaryWithObjectsAndKeys:error, @"error",
+                                       @"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo", @"reason", nil];
             
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
+                                                                               withFailureReason:[errorDict description]
+                                                                          withRecoverySuggestion:@"Contact support."
+                                                                             withRecoveryOptions:nil];
+            
+            // No user, it's during creation
+            [delegate user:nil actionDidFailWithError:[NSError errorWithDomain:KCSUserErrorDomain
+                                                                          code:KCSUnexpectedError
+                                                                      userInfo:userInfo]];
+
             // This must be released in all paths
             [createdUser release];
-            @throw myException;
+            return;
         };
         
         KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};

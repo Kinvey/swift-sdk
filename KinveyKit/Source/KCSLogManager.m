@@ -13,7 +13,8 @@ enum {
     kKCSTraceChannelID = 2,
     kKCSWarningChannelID = 3,
     kKCSErrorChannelID = 4,
-    kKCSNetworkChannelID = 5
+    kKCSNetworkChannelID = 5,
+    kKCSForcedChannelID = 6
 };
 
 @interface KCSLogChannel : NSObject
@@ -67,6 +68,7 @@ enum {
                                      [[[KCSLogChannel alloc] initWithDisplayString:@"[Trace]" channelID:kKCSTraceChannelID] autorelease], @"kTraceChannel",
                                      [[[KCSLogChannel alloc] initWithDisplayString:@"[WARN]" channelID:kKCSWarningChannelID]  autorelease], @"kWarningChannel",
                                      [[[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSErrorChannelID] autorelease], @"kErrorChannel",
+                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSForcedChannelID] autorelease], @"kForcedChannel",
                                      nil] retain];
     }
     
@@ -145,13 +147,18 @@ enum {
     return [KCSLogChannel channelForKey:@"kErrorChannel"];
 }
 
++ (KCSLogChannel *)kForcedChannel
+{
+    return [KCSLogChannel channelForKey:@"kForcedChannel"];
+}
+
 
 - (void)logChannel: (KCSLogChannel *)channel file:(char *)sourceFile lineNumber: (int)lineNumber withFormat:(NSString *)format, ...
 {
     BOOL channelIsEnabled = [(NSNumber *)[self.loggingState objectForKey:[NSNumber numberWithInt:channel.channelID]] boolValue];
     
-    // If the channel is not enabled we don't do anything here
-    if (channelIsEnabled){
+    // If the channel is not enabled we don't do anything here, ALWAYS log the forced channel
+    if (channelIsEnabled || channel.channelID == kKCSForcedChannelID){
         va_list ap;
         NSString *print,*file;
         va_start(ap,format);

@@ -291,6 +291,7 @@
 // only use this if you think killing the app is a good idea (so it doesn't die later perhaps?)
 - (void)killAppViaExceptionNamed: (NSString *)name withReason: (NSString *)reason
 {
+    KCSLogForced(@"EXCEPTION Encountered: Name => %@, Reason => %@", name, reason);
     NSException* myException = [NSException exceptionWithName:name
                                                        reason:reason
                                                      userInfo:nil];
