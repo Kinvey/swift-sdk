@@ -385,6 +385,38 @@ typedef BOOL(^FailureAction)(NSError *);
 }
 
 
+- (void)testNonexistingResrouceFailsCorrectly
+{
+    self.testID = @"Test non-existent file upload";
+
+    self.onFailure = ^(NSError *err){
+        if (err){
+            NSLog(@"Got Error: %@", err);
+            self.message = [NSString stringWithString:@"Yes, We did actually handle the error"];
+            return YES;
+        } else {
+            self.message = [NSString stringWithString:@"Nope, epic fail trying to handle error"];
+            return NO;
+        }
+    };
+    
+    KCSMockConnection *conn = [self buildDefaultMockConnection];
+    
+    conn.errorForFailure = nil;
+    
+    [[KCSConnectionPool sharedPool] drainPools];
+    [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
+    
+    // Make sure we're not false positve.
+    self.testPassed = NO;
+    
+    [KCSResourceService saveLocalResource:@"ImNotHere.png" toResource:@"WhoCares.png" withDelegate:self];
+    
+    STAssertTrue(self.testPassed, self.message);
+    
+    [[KCSConnectionPool sharedPool] drainPools];
+
+}
 
 
 
