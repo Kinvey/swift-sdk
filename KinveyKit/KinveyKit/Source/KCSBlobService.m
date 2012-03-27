@@ -104,7 +104,7 @@
             [delegate resourceServiceDidFailWithError:error];
         } else {
             // We have a valid NSData object, right now this is the only way I know to complete this request...
-            NSError *fileError = [[NSError alloc] init];
+            NSError *fileError = nil;
             BOOL didWriteSuccessfully = [response.responseData writeToFile:filename
                                                                    options:NSDataWritingAtomic
                                                                      error:&fileError];
@@ -119,7 +119,6 @@
                 // We failed to write the file
                 [delegate resourceServiceDidFailWithError:fileError];
             }
-            [fileError release];
         }
     };
     
@@ -215,7 +214,7 @@
 
 + (void)saveLocalResource:(NSString *)filename toResource:(NSString *)resourceId withDelegate:(id<KCSResourceDelegate>)delegate
 {
-    NSError *fileOpError = [[NSError alloc] init];
+    NSError *fileOpError = nil;
     // Not sure what the best read options to use here are, so not providing any.  Hopefully the defaults are ok.
     NSData *data = [NSData dataWithContentsOfFile:filename options:0 error:&fileOpError];
     if (data){
@@ -225,7 +224,6 @@
         // We had an issue..., we didn't upload, so call the failure method of the delegate
         [delegate resourceServiceDidFailWithError:fileOpError];
     }
-    [fileOpError release];
 }
 
 + (void)saveData:(NSData *)data toResource:(NSString *)resourceId withDelegate:(id<KCSResourceDelegate>)delegate
