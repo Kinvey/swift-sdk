@@ -18,7 +18,7 @@
 {
     self = [super init];
     if (self){
-        _UDID = [[[UIDevice currentDevice] uniqueIdentifier] retain];
+        _UDID = @"NO LONGER IN USE"; //[[[UIDevice currentDevice] uniqueIdentifier] retain];
         _UUID = nil;
     }
     return self;
