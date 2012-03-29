@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "KinveyAnalytics.h"
+#import "KCSKinveyUDID.h"
 
 @implementation KCSAnalytics
 
@@ -18,7 +19,7 @@
 {
     self = [super init];
     if (self){
-        _UDID = @"NO LONGER IN USE"; //[[[UIDevice currentDevice] uniqueIdentifier] retain];
+        _UDID = [[KCSKinveyUDID uniqueIdentifier] retain];//[[[UIDevice currentDevice] uniqueIdentifier] retain];
         _UUID = nil;
     }
     return self;
