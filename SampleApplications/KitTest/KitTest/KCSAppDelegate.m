@@ -57,7 +57,7 @@
 //                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
 
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             @"kid1097", KCS_APP_KEY_KEY,
+                             @"kid1097", KCS_APP_KEY_KEY,                             
                              @"0f8812e27c8f41e2a190c9a145caa9ef", KCS_APP_SECRET_KEY,
                              @"X-_pc0WmS3OLqkYKvC5Ubw", KCS_PUSH_KEY_KEY,
                              @"2GgUMA6uTbqOftEYw80b7g", KCS_PUSH_SECRET_KEY,
@@ -82,7 +82,7 @@
     self.rootViewController.imageViewController = _imageViewController;
     self.rootViewController.viewController = _viewController;
     
-    [KCSClient configureLoggingWithNetworkEnabled:NO
+    [KCSClient configureLoggingWithNetworkEnabled:YES
                                      debugEnabled:YES
                                      traceEnabled:NO 
                                    warningEnabled:NO 
@@ -104,6 +104,9 @@
         } else {
             title = [NSString stringWithString:@"Kinvey Ping Failed :("];            
         }
+
+        NSLog(@"%@", result.description);
+
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle: title
                                                         message: [result description]
                                                        delegate: nil
@@ -112,6 +115,9 @@
         [alert show];
         [alert release];
     }];
+    
+    NSLog(@"X-Kinvey-Device-Information: %@", [[[KCSClient sharedClient] analytics] deviceInformation]);
+
         
     return YES;
 
