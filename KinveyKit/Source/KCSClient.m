@@ -8,7 +8,6 @@
 
 
 #import "KCSClient.h"
-//#import "JSONKit.h"
 #import "KinveyUser.h"
 
 
