@@ -39,4 +39,13 @@
 - (NSString *)generateUUID;
 
 
+/*! Returns all current information on the state of the device
+ 
+ Use this method to gather the current state of the device.
+ 
+ @return The dictionary of the current state of the device.
+ 
+ */
+- (NSDictionary *)deviceInformation;
+
 @end
