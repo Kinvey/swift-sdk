@@ -46,6 +46,12 @@
 		D32A611E14716F2D00F77A3F /* NSURL+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A610614716F2D00F77A3F /* NSURL+KinveyAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D32A611F14716F2D00F77A3F /* NSURL+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610714716F2D00F77A3F /* NSURL+KinveyAdditions.m */; };
 		D32A612214716F5200F77A3F /* KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A612114716F5200F77A3F /* KinveyKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D32D28B11523B50D008C74DD /* KCSKinveyUDID.h in Headers */ = {isa = PBXBuildFile; fileRef = D32D28AF1523B50D008C74DD /* KCSKinveyUDID.h */; };
+		D32D28B21523B50D008C74DD /* KCSKinveyUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = D32D28B01523B50D008C74DD /* KCSKinveyUDID.m */; };
+		D32D28B71523B547008C74DD /* KCSOpenUDID.h in Headers */ = {isa = PBXBuildFile; fileRef = D32D28B51523B547008C74DD /* KCSOpenUDID.h */; };
+		D32D28B81523B547008C74DD /* KCSOpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = D32D28B61523B547008C74DD /* KCSOpenUDID.m */; };
+		D32D28BB1523B567008C74DD /* KCSSecureUDID.h in Headers */ = {isa = PBXBuildFile; fileRef = D32D28B91523B567008C74DD /* KCSSecureUDID.h */; };
+		D32D28BC1523B567008C74DD /* KCSSecureUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = D32D28BA1523B567008C74DD /* KCSSecureUDID.m */; };
 		D33E686E147DBA5700EE885E /* KCSConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = D33E686C147DBA5700EE885E /* KCSConnection.h */; settings = {ATTRIBUTES = (); }; };
 		D33E686F147DBA5700EE885E /* KCSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E686D147DBA5700EE885E /* KCSConnection.m */; };
 		D33E6873147DBA7200EE885E /* KCSAsyncConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = D33E6871147DBA7200EE885E /* KCSAsyncConnection.h */; };
@@ -406,6 +412,12 @@
 		D32A64DD147174C300F77A3F /* UASubscriptionRootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UASubscriptionRootViewController.xib; sourceTree = "<group>"; };
 		D32A64DE147174C300F77A3F /* UASubscriptionSettingsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UASubscriptionSettingsViewController.xib; sourceTree = "<group>"; };
 		D32A64DF147174C300F77A3F /* UASubscriptionUserProductsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UASubscriptionUserProductsViewController.xib; sourceTree = "<group>"; };
+		D32D28AF1523B50D008C74DD /* KCSKinveyUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSKinveyUDID.h; sourceTree = "<group>"; };
+		D32D28B01523B50D008C74DD /* KCSKinveyUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSKinveyUDID.m; sourceTree = "<group>"; };
+		D32D28B51523B547008C74DD /* KCSOpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSOpenUDID.h; sourceTree = "<group>"; };
+		D32D28B61523B547008C74DD /* KCSOpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSOpenUDID.m; sourceTree = "<group>"; };
+		D32D28B91523B567008C74DD /* KCSSecureUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSecureUDID.h; sourceTree = "<group>"; };
+		D32D28BA1523B567008C74DD /* KCSSecureUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSecureUDID.m; sourceTree = "<group>"; };
 		D33E686C147DBA5700EE885E /* KCSConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSConnection.h; sourceTree = "<group>"; };
 		D33E686D147DBA5700EE885E /* KCSConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSConnection.m; sourceTree = "<group>"; };
 		D33E6871147DBA7200EE885E /* KCSAsyncConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAsyncConnection.h; sourceTree = "<group>"; };
@@ -640,6 +652,8 @@
 				D3F340A614BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m */,
 				D32A60FD14716F2D00F77A3F /* KinveyAnalytics.h */,
 				D32A60FE14716F2D00F77A3F /* KinveyAnalytics.m */,
+				D32D28AF1523B50D008C74DD /* KCSKinveyUDID.h */,
+				D32D28B01523B50D008C74DD /* KCSKinveyUDID.m */,
 			);
 			name = Analytics;
 			sourceTree = "<group>";
@@ -763,6 +777,7 @@
 		D32A61231471700200F77A3F /* 3rdParty */ = {
 			isa = PBXGroup;
 			children = (
+				D32D28B41523B518008C74DD /* UDID */,
 				D38FC3B414C941EC009A95E7 /* SBJSON */,
 				D3F3409514BC8AB800DB6C37 /* Reachability */,
 				D32A63E9147174C300F77A3F /* Airship */,
@@ -1288,6 +1303,17 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
+		D32D28B41523B518008C74DD /* UDID */ = {
+			isa = PBXGroup;
+			children = (
+				D32D28B91523B567008C74DD /* KCSSecureUDID.h */,
+				D32D28BA1523B567008C74DD /* KCSSecureUDID.m */,
+				D32D28B51523B547008C74DD /* KCSOpenUDID.h */,
+				D32D28B61523B547008C74DD /* KCSOpenUDID.m */,
+			);
+			name = UDID;
+			sourceTree = "<group>";
+		};
 		D3715AB414B68DF50030F5E9 /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -1547,6 +1573,9 @@
 				D38FC3E314C94252009A95E7 /* NSObject+SBJson.h in Headers */,
 				D38FC3E514C94252009A95E7 /* SBJson.h in Headers */,
 				D38FC3E614C94252009A95E7 /* KCS_SBJsonStreamWriterState.h in Headers */,
+				D32D28B11523B50D008C74DD /* KCSKinveyUDID.h in Headers */,
+				D32D28B71523B547008C74DD /* KCSOpenUDID.h in Headers */,
+				D32D28BB1523B567008C74DD /* KCSSecureUDID.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1741,6 +1770,9 @@
 				D38FC3E414C94252009A95E7 /* NSObject+SBJson.m in Sources */,
 				D38FC3E714C94252009A95E7 /* KCS_SBJsonStreamWriterState.m in Sources */,
 				D39CDF9814D1E67F00E40D19 /* KCSQuery.m in Sources */,
+				D32D28B21523B50D008C74DD /* KCSKinveyUDID.m in Sources */,
+				D32D28B81523B547008C74DD /* KCSOpenUDID.m in Sources */,
+				D32D28BC1523B567008C74DD /* KCSSecureUDID.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
