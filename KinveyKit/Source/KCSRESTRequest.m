@@ -15,6 +15,7 @@
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
 #import "KCSReachability.h"
+#import "KinveyAnalytics.h"
 
 // *cough* hack *cough*
 #define MAX_DATE_STRING_LENGTH_K 40 
@@ -238,6 +239,9 @@ getLogDate(void)
     
     // Add the Kinvey User-Agent
     [self.request setValue:[kinveyClient userAgent] forHTTPHeaderField:@"User-Agent"];
+    
+    // Add the Analytics header
+    [self.request setValue:[kinveyClient.analytics headerString] forHTTPHeaderField:kinveyClient.analytics.analyticsHeaderName];
 
     // Add the Date as a header
     [self.request setValue:getLogDate() forHTTPHeaderField:@"Date"];
