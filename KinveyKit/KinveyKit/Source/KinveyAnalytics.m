@@ -60,4 +60,42 @@
 
 }
 
+- (NSDictionary *)deviceInformation
+{
+    UIDevice *cd = [UIDevice currentDevice];
+    NSMutableDictionary *d = [NSMutableDictionary dictionary];
+
+    // Available Features
+    [d setObject:[NSNumber numberWithBool:cd.multitaskingSupported] forKey:@"multitaskingSupported"];
+    
+    // Identifying Device / OS
+    [d setObject:cd.name forKey:@"name"];
+    [d setObject:cd.systemName forKey:@"systemName"];
+    [d setObject:cd.systemVersion forKey:@"systemVersion"];
+    [d setObject:cd.model forKey:@"model"];
+    [d setObject:cd.localizedModel forKey:@"localizedModel"];
+
+    // Device Orientation
+    [d setObject:[NSNumber numberWithInt:cd.orientation] forKey:@"orientation"];
+    [d setObject:[NSNumber numberWithBool:cd.generatesDeviceOrientationNotifications]
+          forKey:@"generatesDeviceOrientationNotifications"];
+    
+    
+    // Battery
+    [d setObject:[NSNumber numberWithFloat:cd.batteryLevel] forKey:@"batteryLevel"];
+    [d setObject:[NSNumber numberWithBool:cd.batteryMonitoringEnabled] forKey:@"batteryMonitoringEnabled"];
+    [d setObject:[NSNumber numberWithInt:cd.batteryState] forKey:@"batteryState"];
+    
+    
+    // Proximity Sensor State
+    [d setObject:[NSNumber numberWithBool:cd.proximityMonitoringEnabled] forKey:@"proximityMonitoringEnabled"];
+    [d setObject:[NSNumber numberWithBool:cd.proximityState] forKey:@"proximityState"];
+    
+    // Record timestamp of when data was collected
+    [d setObject:[NSNumber numberWithDouble:[NSDate timeIntervalSinceReferenceDate] - NSTimeIntervalSince1970]
+          forKey:@"timestamp"];
+    
+    return d;
+}
+
 @end
