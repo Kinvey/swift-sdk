@@ -10,10 +10,16 @@
 #import "KinveyAnalytics.h"
 #import "KCSKinveyUDID.h"
 
+// For hardware platform information
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
+
 @implementation KCSAnalytics
 
 @synthesize UUID=_UUID;
 @synthesize UDID=_UDID;
+@synthesize analyticsHeaderName = _analyticsHeaderName;
 
 - (id)init
 {
@@ -21,6 +27,7 @@
     if (self){
         _UDID = [[KCSKinveyUDID uniqueIdentifier] retain];//[[[UIDevice currentDevice] uniqueIdentifier] retain];
         _UUID = nil;
+        _analyticsHeaderName = [[NSString stringWithString:@"X-Kinvey-Device-Information"] retain];
     }
     return self;
 }
@@ -29,6 +36,7 @@
 {
     [_UDID release];
     [_UUID release];
+    [_analyticsHeaderName release];
     [super dealloc];
 }
 
@@ -74,6 +82,7 @@
     [d setObject:cd.systemVersion forKey:@"systemVersion"];
     [d setObject:cd.model forKey:@"model"];
     [d setObject:cd.localizedModel forKey:@"localizedModel"];
+    [d setObject:[self platform] forKey:@"platform"];
 
     // Device Orientation
     [d setObject:[NSNumber numberWithInt:cd.orientation] forKey:@"orientation"];
@@ -92,10 +101,47 @@
     [d setObject:[NSNumber numberWithBool:cd.proximityState] forKey:@"proximityState"];
     
     // Record timestamp of when data was collected
-    [d setObject:[NSNumber numberWithDouble:[NSDate timeIntervalSinceReferenceDate] - NSTimeIntervalSince1970]
+    [d setObject:[NSNumber numberWithDouble:[NSDate timeIntervalSinceReferenceDate] + NSTimeIntervalSince1970]
           forKey:@"timestamp"];
     
     return d;
+}
+
+
+// From: http://www.cocos2d-iphone.org/forum/topic/21923
+// NB: This is not 100% awesome and needs cleaned up
+- (NSString *) platform{
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    NSString *platform = [NSString stringWithCString:machine encoding:NSASCIIStringEncoding];
+    free(machine);
+    return platform;
+}
+
+
+- (NSString *)headerString
+{
+    /*
+     * Model: The hardware model that's making the request
+     * Name: The name of the device making the request
+     * SystemName: The name of the system making the request
+     * SystemVersion: The version of the system making the request
+     * UDID: The unique device ID making the request
+     */
+    // Switch spaces to '_', space separate them in the following order
+    // model name SystemName SystemVersion
+    NSDictionary *deviceInfo = [self deviceInformation];
+    NSString *headerString = [NSString stringWithFormat:@"%@/%@ %@ %@ %@ %@",
+                              [[deviceInfo objectForKey:@"model"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
+                              [[deviceInfo objectForKey:@"platform"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
+                              [[deviceInfo objectForKey:@"name"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
+                              [[deviceInfo objectForKey:@"systemName"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
+                              [[deviceInfo objectForKey:@"systemVersion"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
+                              [self.UDID stringByReplacingOccurrencesOfString:@" " withString:@"_"]];
+    
+    return headerString;
 }
 
 @end
