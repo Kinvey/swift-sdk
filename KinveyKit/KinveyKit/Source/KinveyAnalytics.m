@@ -136,7 +136,6 @@
     NSString *headerString = [NSString stringWithFormat:@"%@/%@ %@ %@ %@ %@",
                               [[deviceInfo objectForKey:@"model"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
                               [[deviceInfo objectForKey:@"platform"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
-                              [[deviceInfo objectForKey:@"name"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
                               [[deviceInfo objectForKey:@"systemName"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
                               [[deviceInfo objectForKey:@"systemVersion"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
                               [self.UDID stringByReplacingOccurrencesOfString:@" " withString:@"_"]];
