@@ -9,7 +9,6 @@
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSBlobService.h"
 #import "KCSClient.h"
-//#import "JSONKit.h"
 #import "SBJson.h"
 #import "KCSRESTRequest.h"
 #import "KCSConnectionResponse.h"

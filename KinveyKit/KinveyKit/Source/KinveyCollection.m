@@ -10,7 +10,6 @@
 #import "KinveyCollection.h"
 #import "KCSClient.h"
 #import "NSString+KinveyAdditions.h"
-//#import "JSONKit.h"
 #import "SBJson.h"
 #import "KCSRESTRequest.h"
 #import "KinveyHTTPStatusCodes.h"
