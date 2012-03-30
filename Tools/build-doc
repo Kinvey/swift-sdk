@@ -11,6 +11,26 @@ then
 fi
 KINVEYKITLOC=$1
 
+# GENERATING License.html file
+HTMLHEADER="<html>
+    <head>
+        <title>KinveyKit Open Source License Usage</title>
+    </head>
+    <body>
+        <h2>KinveyKit License And Open Source Usage</h2>
+        <pre>"
+
+HTMLFOOTER="</pre></body></html>"
+
+if [ -e ${KINVEYKITLOC}/LICENSES.html ]
+then
+  rm ${KINVEYKITLOC}/LICENSES.html
+fi
+  
+echo ${HTMLHEADER} > ${KINVEYKITLOC}/LICENSES.html
+cat ${KINVEYKITLOC}/LICENSES >> ${KINVEYKITLOC}/LICENSES.html
+echo ${HTMLFOOTER} >> ${KINVEYKITLOC}/LICENSES.html
+
 echo "Building docs for ${KINVEYKITLOC}..."
 
 APPLEDOC=${HOME}/bin/appledoc
@@ -28,7 +48,7 @@ WARNINGS="--no-warn-invalid-crossref"
 OUTPUTLOC="${KINVEYKITLOC}/doc/"
 TEXTOUT="${OUTPUTLOC}/output"
 DOCOUT="${OUTPUTLOC}/built-docs"
-
+INDEX="--index-desc ${KINVEYKITLOC}/README.md"
 LICENSES="--include ${KINVEYKITLOC}/LICENSES.html"
 
 UTILPATH="--docsetutil-path /Applications/Xcode.app/Contents/Developer/usr/bin/docsetutil"
@@ -56,7 +76,7 @@ then
 fi
 
 
-COMMAND="${APPLEDOC} ${UTILPATH} ${OUTPUTARGS} ${WARNINGS} -o ${TEXTOUT} --docset-install-path ${DOCOUT} -p ${PROJECT} -c ${COMPANY} --company-id ${COMPANYID} ${EXCLUDES} ${LICENSES} ${KINVEYKITLOC}/KinveyKit"
+COMMAND="${APPLEDOC} ${UTILPATH} ${OUTPUTARGS} ${WARNINGS} ${INDEX} -o ${TEXTOUT} --docset-install-path ${DOCOUT} -p ${PROJECT} -c ${COMPANY} --company-id ${COMPANYID} ${EXCLUDES} ${LICENSES} ${KINVEYKITLOC}/KinveyKit"
 
 
 $COMMAND
