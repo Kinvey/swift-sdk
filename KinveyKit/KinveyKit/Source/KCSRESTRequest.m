@@ -23,6 +23,14 @@
 // This is in Seconds!
 #define KCS_RETRY_DELAY 0.05
 
+// KINVEY KCS API VERSION
+#define KINVEY_KCS_API_VERSION_HEADER @"X-Kinvey-API-Version"
+
+// For when api 1 is complete
+// #define KINVEY_KCS_API_VERSION @"1"
+#define KINVEY_KCS_API_VERSION @"0"
+
+
 void clogResource(NSString *resource, NSInteger requestMethod);
 void clogResource(NSString *resource, NSInteger requestMethod)
 {
@@ -242,6 +250,9 @@ getLogDate(void)
     
     // Add the Analytics header
     [self.request setValue:[kinveyClient.analytics headerString] forHTTPHeaderField:kinveyClient.analytics.analyticsHeaderName];
+    
+    // Add the API version
+    [self.request setValue:KINVEY_KCS_API_VERSION forHTTPHeaderField:KINVEY_KCS_API_VERSION_HEADER];
 
     // Add the Date as a header
     [self.request setValue:getLogDate() forHTTPHeaderField:@"Date"];
