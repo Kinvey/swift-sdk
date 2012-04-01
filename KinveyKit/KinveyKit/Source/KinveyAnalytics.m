@@ -133,7 +133,7 @@
     // Switch spaces to '_', space separate them in the following order
     // model name SystemName SystemVersion
     NSDictionary *deviceInfo = [self deviceInformation];
-    NSString *headerString = [NSString stringWithFormat:@"%@/%@ %@ %@ %@ %@",
+    NSString *headerString = [NSString stringWithFormat:@"%@/%@ %@ %@ %@",
                               [[deviceInfo objectForKey:@"model"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
                               [[deviceInfo objectForKey:@"platform"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
                               [[deviceInfo objectForKey:@"systemName"] stringByReplacingOccurrencesOfString:@" " withString:@"_"],
