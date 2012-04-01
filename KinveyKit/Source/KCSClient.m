@@ -106,7 +106,7 @@
         _authCompleteLock   = [[NSRecursiveLock alloc] init];
         _authInProgressLock = [[NSRecursiveLock alloc] init];
 //        _currentUser = [[KCSUser alloc] init];
-        _serviceHostname = @"baas";
+        _serviceHostname = @"baas-aws";
         _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
 
 #if TARGET_OS_IPHONE
@@ -231,7 +231,7 @@
     self.appKey = appKey;
     self.appSecret = appSecret;
     
-    _serviceHostname = @"baas";
+    _serviceHostname = @"baas-aws";
     
     [self updateURLs];
     
