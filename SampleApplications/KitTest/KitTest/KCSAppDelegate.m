@@ -57,8 +57,8 @@
 //                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
 
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             @"kid1097", KCS_APP_KEY_KEY,                             
-                             @"0f8812e27c8f41e2a190c9a145caa9ef", KCS_APP_SECRET_KEY,
+                             @"kid1095", KCS_APP_KEY_KEY,                             
+                             @"f1d070d7fc1e4470bedb0b07a1fd3253", KCS_APP_SECRET_KEY,
                              @"X-_pc0WmS3OLqkYKvC5Ubw", KCS_PUSH_KEY_KEY,
                              @"2GgUMA6uTbqOftEYw80b7g", KCS_PUSH_SECRET_KEY,
                              @"YES", KCS_PUSH_IS_ENABLED_KEY,
@@ -67,7 +67,7 @@
     
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
     [[KCSPush sharedPush] onLoadHelper:options];
-    [[KCSClient sharedClient] setServiceHostname:@"console-staging"];
+//    [[KCSClient sharedClient] setServiceHostname:@"console-staging"];
 
     
 //    [[[KCSClient sharedClient] currentUser] logout];
