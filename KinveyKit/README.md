@@ -1,4 +1,4 @@
-KinveyKit (vTAG-ME, DATE)
+KinveyKit (v1.3.0, 04/02/2012)
 ==========
 
 ## Welcome
