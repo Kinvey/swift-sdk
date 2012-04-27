@@ -4,21 +4,28 @@
 ## use both appledoc and doxygen.
 
 ## The output/input locations are passed in via command line
-if [ $# -lt 3 ]
+if [ $# -lt 2 ]
 then
-	echo "Usage: build-kinvey <KinveyKit Location> <release location> <release number>"
+	echo "Usage: release-kinvey <KinveyKit Location> <release location> <optional release number>"
 	exit
 fi
+
 KINVEYKITLOC=$1
 RELEASEDIR=$2
-RELEASENO=$3
+
+if [ $# -lt 3 ]
+then
+    RELEASENO=`date "+%Y%m%d-%H%M%S"`
+else
+    RELEASENO=$3
+fi
 
 KK=KinveyKit-${RELEASENO}
 API=KinveyKit-API-Reference-${RELEASENO}
 RKK=${RELEASEDIR}/${KK}
 RAPI=${RELEASEDIR}/${API}
 
-echo "Building KinveyKit release in ${RELEASEDIR} for ${KINVEYKITLOC}..."
+echo "Building KinveyKit ($RELEASENO) release media in ${RELEASEDIR} for ${KINVEYKITLOC}..."
 
 
 if [ ! -d ${RELEASEDIR} ]
