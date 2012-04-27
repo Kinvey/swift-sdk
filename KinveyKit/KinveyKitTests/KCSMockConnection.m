@@ -20,6 +20,17 @@
 @synthesize providedRequest = _providedRequest;
 @synthesize providedCredentials = _providedCredentials;
 
+
+#define BOOL_STRING(b) (b)?@"YES":@"NO"
+
+- (NSString *)debugDescription
+{
+    return [NSString stringWithFormat:@"Return now? %@\nShould Fail? %@\nOn Success: %@\nOn Progress: %@\nOn Error: %@\nDelay: %g\nReq: %@\n Cred: %@",
+         BOOL_STRING(_connectionShouldReturnNow), BOOL_STRING(_connectionShouldFail),
+            _responseForSuccess, _progressActions, _errorForFailure, _delayInMSecs, _providedRequest, _providedCredentials];
+}
+
+
 - (id)init
 {
     self = [super init];

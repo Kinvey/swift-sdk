@@ -604,7 +604,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 - (NSString *)parameterStringRepresentation
 {
     KCSLogDebug(@"Sort Keys: %@", [NSString stringWithFormat:@"query=%@", [self JSONStringRepresentation]]);
-    return [NSString stringWithFormat:@"query=%@", [NSString stringbyPercentEncodingString:[self JSONStringRepresentation]]];
+    return [NSString stringWithFormat:@"query=%@", [NSString stringByPercentEncodingString:[self JSONStringRepresentation]]];
 }
 
 
@@ -620,7 +620,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     
     KCSLogDebug(@"Sort Keys: %@", [NSString stringWithFormat:@"sort=%@", [dict JSONRepresentation]]);
     
-    return [NSString stringWithFormat:@"sort=%@", [NSString stringbyPercentEncodingString:[dict JSONRepresentation]]];
+    return [NSString stringWithFormat:@"sort=%@", [NSString stringByPercentEncodingString:[dict JSONRepresentation]]];
     
 }
 

@@ -168,6 +168,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     // Run the request
     [KCSPing pingKinveyWithBlock:^(KCSPingResult *res){ pingWorked = res.pingWasSuccessful; description = res.description;}];
     
+    // This test CANNOT work with the existing KCS REST framework.  There's a built-in 0.05 second delay that we cannot compensate for here...
+    // at the moment...
     assertThat([NSNumber numberWithBool:pingWorked], is(equalToBool(YES)));
     assertThat(description, isNot(containsString(@"brian")));
     

@@ -13,7 +13,11 @@
 // All code under test must be linked into the Unit Test bundle
 - (void)testSyncNotImplemented
 {
-    STFail(@"No tests yet, feature still not in library");
+
+#warning No tests for this feature as it's unplanned and will be removed.
+
+    // There are currently no plans to implement this feature
+    STAssertNil(nil, @"This feature is no longer planned and will be removed in the future");
 }
 
 @end

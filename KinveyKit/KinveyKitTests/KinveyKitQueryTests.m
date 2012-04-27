@@ -32,7 +32,7 @@
     
     KCSQuery *geoQuery = [KCSQuery queryOnField:@"location" usingConditional:kKCSNearSphere forValue:[NSArray arrayWithObjects:[NSNumber numberWithFloat:50.0], [NSNumber numberWithFloat:50.0], nil]];
     
-    NSLog(@"%@\n%@", [geoQuery JSONStringRepresentation], [NSString stringbyPercentEncodingString:[geoQuery JSONStringRepresentation]]);
+    NSLog(@"%@\n%@", [geoQuery JSONStringRepresentation], [NSString stringByPercentEncodingString:[geoQuery JSONStringRepresentation]]);
 }
 
 - (void)testCombo
