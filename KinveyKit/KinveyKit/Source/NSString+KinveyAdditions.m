@@ -13,11 +13,12 @@
 
 - (NSURL *)URLByAppendingQueryString:(NSString *)queryString {
     if (![queryString length]) {
-        return [NSURL URLWithUnencodedString:self];
+        return [NSURL URLWithString:self];
     }
     
     NSString *URLString = [[NSString alloc] initWithFormat:@"%@%@%@", self,
                            [self rangeOfString:@"?"].length > 0 ? @"&" : @"?", queryString];
+
     NSURL *theURL = [NSURL URLWithString:URLString];
     [URLString release];
     return theURL;
@@ -36,7 +37,7 @@
             [self rangeOfString:@"?"].length > 0 ? @"&" : @"?", queryString];
 }
 
-+ (NSString *)stringbyPercentEncodingString:(NSString *)string
++ (NSString *)stringByPercentEncodingString:(NSString *)string
 {
     NSString *encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
                                                                                   (CFStringRef) string,
@@ -49,9 +50,9 @@
     return encodedString;
 }
 
-- (NSString *)stringbyAppendingStringWithPercentEncoding:(NSString *)string;
+- (NSString *)stringByAppendingStringWithPercentEncoding:(NSString *)string;
 {
-    return [self stringByAppendingString:[NSString stringbyPercentEncodingString:string]];
+    return [self stringByAppendingString:[NSString stringByPercentEncodingString:string]];
 }
 
 @end

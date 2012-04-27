@@ -38,8 +38,8 @@
     assertThat(b64, is(expectedString));
     
     // Round trip
-    NSData *bd64 = KCSdataFromBase64String(string);
-    NSString *actual = [NSString stringWithUTF8String:[bd64 bytes]];
+    NSData *bd64 = KCSdataFromBase64String(expectedString);
+    NSString *actual = [[NSString alloc] initWithData:bd64 encoding:NSUTF8StringEncoding];
     assertThat(actual, is(equalTo(string)));
 }
 

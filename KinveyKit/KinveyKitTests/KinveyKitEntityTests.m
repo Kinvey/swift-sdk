@@ -7,6 +7,37 @@
 //
 
 #import "KinveyKitEntityTests.h"
+#import "KinveyEntity.h"
+
+@interface TestObject : NSObject <KCSPersistable>
+
+@property (nonatomic, retain) NSString *testId;
+@property (nonatomic, retain) NSString *testParam1;
+@property (nonatomic, retain) NSNumber *testParam2;
+
+@end
+
+@implementation TestObject
+
+@synthesize testId = _testId;
+@synthesize testParam1 = _testParam1;
+@synthesize testParam2 = _testParam2;
+
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    static NSDictionary *map = nil;
+    
+    if (map == nil){
+        map = [NSDictionary dictionaryWithObjectsAndKeys:@"_id", @"testId",
+               @"testParam1", @"testParam1",
+               @"testParam2", @"testParam2", nil];
+    }
+    
+    return map;
+}
+
+
+@end
 
 @implementation KinveyKitEntityTests
 
