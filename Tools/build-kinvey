@@ -13,8 +13,5 @@ KINVEYKITLOC=$1
 
 echo "Building KinveyKit in ${KINVEYKITLOC}..."
 
-(cd $KINVEYKITLOC && xcodebuild -configuration Debug clean)
-(cd $KINVEYKITLOC && xcodebuild -configuration Debug)
-
-(cd $KINVEYKITLOC && xcodebuild -configuration Release clean)
-(cd $KINVEYKITLOC && xcodebuild -configuration Release)
+(cd $KINVEYKITLOC && xcodebuild -configuration Debug clean build)
+(cd $KINVEYKITLOC && xcodebuild -configuration Release clean build)
