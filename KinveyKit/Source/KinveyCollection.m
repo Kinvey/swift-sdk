@@ -345,7 +345,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         
     } else {
         resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
-        resource = [resource stringByAppendingQueryString:[NSString stringWithFormat:@"query=%@", [NSString stringbyPercentEncodingString:[self buildQueryForFilters:[self filters]]]]];
+        resource = [resource stringByAppendingQueryString:[NSString stringWithFormat:@"query=%@", [NSString stringByPercentEncodingString:[self buildQueryForFilters:[self filters]]]]];
     }
 
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];

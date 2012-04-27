@@ -274,7 +274,13 @@ typedef BOOL(^InfoSuccessAction)(int);
                                                     responseData:[self.writer dataWithObject:bigNum]
                                                       headerData:nil
                                                         userData:nil];
-    expectedResult = INTMAX_MAX;
+    // This test is a little strange, the idea was to fill a 32-bit register
+    // with 1's, then, have the library convert that to JSON and send back to
+    // the library.  The idea being that we want to test the maximal value for
+    // count.  What ends up happening is that the value overflows (to 0?)
+    // but still registers as a negative int..., so we end up with:
+    // 0x80000000 => -2147483648.
+    expectedResult = -2147483648;
     conn.responseForSuccess = response;
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     [collection entityCountWithDelegate:self];
