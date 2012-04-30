@@ -760,6 +760,7 @@
 		D32A60F614716F2D00F77A3F /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				D36118EB154F44E80001BB41 /* KinveyStore */,
 				D39CDF9314D1E65400E40D19 /* Query */,
 				D3F340FA14BD2A2900DB6C37 /* Headers */,
 				D3F7E86C148803D60044F1E8 /* UserService */,
@@ -1312,6 +1313,13 @@
 				D32D28B61523B547008C74DD /* KCSOpenUDID.m */,
 			);
 			name = UDID;
+			sourceTree = "<group>";
+		};
+		D36118EB154F44E80001BB41 /* KinveyStore */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = KinveyStore;
 			sourceTree = "<group>";
 		};
 		D3715AB414B68DF50030F5E9 /* Network */ = {
