@@ -92,7 +92,15 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
    
 }
 
-
+// NOTE: We're supressing the remainder of protocol warnings here
+//       (maintainers please periodically disable this workaround
+//       to ensure program correctness).  We're disabling this
+//       because we don't implement the NSObject protocol...
+//       since NSObject implements it.  I'm not 100% positive
+//       how we should really be removing these warnings, but
+//       we should fix this for real in the future!
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wprotocol"
 @implementation NSObject (KCSEntity)
 
 
@@ -102,12 +110,12 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     // This is the user collection...
     if ([collection.collectionName isEqualToString:@""]){
         resource = [collection.baseURL stringByAppendingFormat:@"%@",
-                    [NSString stringbyPercentEncodingString:query]];
+                    [NSString stringByPercentEncodingString:query]];
 
     } else {
         resource = [collection.baseURL stringByAppendingFormat:@"%@/%@",
                     [collection collectionName],
-                    [NSString stringbyPercentEncodingString:query]];
+                    [NSString stringByPercentEncodingString:query]];
 
     }
 
@@ -125,7 +133,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
     NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:value], property, nil] JSONRepresentation];
     
-    [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
+    [self fetchOneFromCollection:collection matchingQuery:[NSString stringByPercentEncodingString:query] withDelegate:delegate];
     
 }
 
@@ -133,7 +141,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 {
     NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithDouble:value], property, nil] JSONRepresentation];
     
-    [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
+    [self fetchOneFromCollection:collection matchingQuery:[NSString stringByPercentEncodingString:query] withDelegate:delegate];
     
 }
 
@@ -141,7 +149,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 {
     NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:value], property, nil] JSONRepresentation];
     
-    [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
+    [self fetchOneFromCollection:collection matchingQuery:[NSString stringByPercentEncodingString:query] withDelegate:delegate];
     
 }
 
@@ -149,7 +157,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 {
     NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:value, property, nil] JSONRepresentation];
     
-    [self fetchOneFromCollection:collection matchingQuery:[NSString stringbyPercentEncodingString:query] withDelegate:delegate];
+    [self fetchOneFromCollection:collection matchingQuery:[NSString stringByPercentEncodingString:query] withDelegate:delegate];
     
 }
 
@@ -379,3 +387,4 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 
 @end
+#pragma clang diagnostic pop
