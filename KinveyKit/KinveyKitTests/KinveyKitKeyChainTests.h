@@ -15,4 +15,8 @@
 
 @interface KinveyKitKeyChainTests : SenTestCase
 
+- (void) explode __attribute__((deprecated("extremely unsafe, use 'combust' instead!!!")));
+- (void) blowUp  __attribute__((unavailable("Ha, fail!")));
+
+
 @end
