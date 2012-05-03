@@ -125,7 +125,7 @@
 {
     /*
      * Model: The hardware model that's making the request
-     * Name: The name of the device making the request
+     * Platform: The platform of the device making the request
      * SystemName: The name of the system making the request
      * SystemVersion: The version of the system making the request
      * UDID: The unique device ID making the request

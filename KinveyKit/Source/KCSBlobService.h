@@ -10,6 +10,7 @@
 //  contents is a violation of applicable laws.
 
 #import <Foundation/Foundation.h>
+#import "KCSBlockDefs.h"
 
 @class KCSClient;
 
@@ -113,6 +114,7 @@
  @param delegate The delegate to be notified upon completion of the request.  The delegate will be provided a KCSResourceResponse that contains the data.
  */
 + (void)downloadResource: (NSString *)resourceId withResourceDelegate: (id<KCSResourceDelegate>)delegate;
++ (void)downloadResource: (NSString *)resourceId completionBlock: (KCSCompletionBlock)completionBlock progressBlock: (KCSProgressBlock)progressBlock;
 
 /*! Downloads the given Resource ID into a local file.
  
@@ -123,6 +125,7 @@
  @param delegate The delegate to be notified upon completion of the request.
  */
 + (void)downloadResource: (NSString *)resourceId toFile: (NSString *)filename withResourceDelegate: (id<KCSResourceDelegate>)delegate;
++ (void)downloadResource: (NSString *)resourceId toFile: (NSString *)filename completionBlock: (KCSCompletionBlock)completionBlock progressBlock: (KCSProgressBlock)progressBlock;
 
 /*! Obtain a 30-second time-limited URL for streaming a resource stored on Kinvey.
  
@@ -133,6 +136,7 @@
  @param delegate The delegate to be notified upon completion of the request.
  */
 + (void)getStreamingURLForResource: (NSString *)resourceId withResourceDelegate: (id<KCSResourceDelegate>)delegate;
++ (void)getStreamingURLForResource: (NSString *)resourceId completionBlock: (KCSCompletionBlock)completionBlock progressBlock: (KCSProgressBlock)progressBlock;
 
 ///---------------------------------------------------------------------------------------
 /// @name Uploading Resources
@@ -146,6 +150,7 @@
  @param delegate The delegate to be notified upon completion of the save.
  */
 + (void)saveLocalResource: (NSString *)filename withDelegate: (id<KCSResourceDelegate>)delegate;
++ (void)saveLocalResource: (NSString *)filename completionBlock: (KCSCompletionBlock)completionBlock progressBlock: (KCSProgressBlock)progressBlock;
 
 /*! Saves the given URL to Kinvey.
  
@@ -155,6 +160,7 @@
  @param delegate The delegate to be notified upon completion of the save.
  */
 + (void)saveLocalResourceWithURL: (NSURL *)URL withDelegate: (id<KCSResourceDelegate>)delegate;
++ (void)saveLocalResourceWithURL: (NSURL *)URL  completionBlock: (KCSCompletionBlock)completionBlock progressBlock: (KCSProgressBlock)progressBlock;
 
 /*! Saves the given File into the specified resource.
  
@@ -165,6 +171,7 @@
  @param delegate The delegate to be notified upon completion of the save.
  */
 + (void)saveLocalResource: (NSString *)filename toResource: (NSString *)resourceId withDelegate: (id<KCSResourceDelegate>)delegate;
++ (void)saveLocalResource: (NSString *)filename toResource: (NSString *)resourceId  completionBlock: (KCSCompletionBlock)completionBlock progressBlock: (KCSProgressBlock)progressBlock;
 
 /*! Saves the given URL into the specified resource.
  
@@ -175,6 +182,7 @@
  @param delegate The delegate to be notified upon completion of the save.
  */
 + (void)saveLocalResourceWithURL: (NSURL *)URL toResource: (NSString *)resourceId withDelegate: (id<KCSResourceDelegate>)delegate;
++ (void)saveLocalResourceWithURL: (NSURL *)URL toResource: (NSString *)resourceId  completionBlock: (KCSCompletionBlock)completionBlock progressBlock: (KCSProgressBlock)progressBlock;
 
 /*! Saves the given Data into the specified resource.
  
@@ -185,6 +193,7 @@
  @param delegate The delegate to be notified upon completion of the save.
  */
 + (void)saveData: (NSData *)data toResource: (NSString *)resourceId withDelegate: (id<KCSResourceDelegate>)delegate;
++ (void)saveData: (NSData *)data toResource: (NSString *)resourceId completionBlock: (KCSCompletionBlock)completionBlock progressBlock: (KCSProgressBlock)progressBlock;
 
 ///---------------------------------------------------------------------------------------
 /// @name Deleting Resources
@@ -198,6 +207,7 @@
  @param delegate The delegate to be notified that the deletion action finished.
  */
 + (void)deleteResource:(NSString *)resourceId withDelegate: (id<KCSResourceDelegate>)delegate;
++ (void)deleteResource:(NSString *)resourceId completionBlock: (KCSCompletionBlock)completionBlock progressBlock: (KCSProgressBlock)progressBlock;
 
 
 @end
