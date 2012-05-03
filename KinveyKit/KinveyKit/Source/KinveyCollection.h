@@ -11,6 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KinveyPersistable.h"
+#import "KCSBlockDefs.h"
 
 @class JSONDecoder;
 
@@ -141,6 +142,9 @@
  */
 - (void)fetchWithDelegate: (id <KCSCollectionDelegate>)delegate;
 
+// Undocumented
+- (void)fetchWithQuery: (KCSQuery *)query withCompletionBlock: (KCSCompletionBlock)onCompletion withProgressBlock: (KCSProgressBlock)onProgress;
+
 ///---------------------------------------------------------------------------------------
 /// @name Building Queries
 ///---------------------------------------------------------------------------------------
@@ -151,7 +155,7 @@
 
 
 /*! A collection of filters that will be applied when using fetch (Depricated as of version 1.2)*/
-@property (retain) NSMutableArray *filters;
+@property (retain) NSMutableArray *filters DEPRECATED_ATTRIBUTE;
 
 /*! Add a BOOL filter to the current filter set (Depricated as of version 1.2)
  
@@ -161,7 +165,7 @@
  @param value The value to compare against.
  @param operator The operator to use for comparison.
  */
-- (void)addFilterCriteriaForProperty: (NSString *)property withBoolValue: (BOOL) value filteredByOperator: (int)operator;
+- (void)addFilterCriteriaForProperty: (NSString *)property withBoolValue: (BOOL) value filteredByOperator: (int)operator DEPRECATED_ATTRIBUTE;
 
 /*! Add a Double filter to the current filter set (Depricated as of version 1.2)
  
@@ -171,7 +175,7 @@
  @param value The value to compare against.
  @param operator The operator to use for comparison.
  */
-- (void)addFilterCriteriaForProperty: (NSString *)property withDoubleValue: (double)value filteredByOperator: (int)operator;
+- (void)addFilterCriteriaForProperty: (NSString *)property withDoubleValue: (double)value filteredByOperator: (int)operator DEPRECATED_ATTRIBUTE;
 
 /*! Add a Integer filter to the current filter set (Depricated as of version 1.2)
  
@@ -181,7 +185,7 @@
  @param value The value to compare against.
  @param operator The operator to use for comparison.
  */
-- (void)addFilterCriteriaForProperty: (NSString *)property withIntegerValue: (int)value filteredByOperator: (int)operator;
+- (void)addFilterCriteriaForProperty: (NSString *)property withIntegerValue: (int)value filteredByOperator: (int)operator DEPRECATED_ATTRIBUTE;
 
 /*! Add a String filter to the current filter set (Depricated as of version 1.2)
  
@@ -191,14 +195,14 @@
  @param value The value to compare against.
  @param operator The operator to use for comparison.
  */
-- (void)addFilterCriteriaForProperty: (NSString *)property withStringValue: (NSString *)value filteredByOperator: (int)operator;
+- (void)addFilterCriteriaForProperty: (NSString *)property withStringValue: (NSString *)value filteredByOperator: (int)operator DEPRECATED_ATTRIBUTE;
 
 /*! Reset all current filters (Depricated as of version 1.2)
 
  This routine needs to be run to change any of the parameters for the current set of filters.
  
  */
-- (void)resetFilterCriteria;
+- (void)resetFilterCriteria DEPRECATED_ATTRIBUTE;
 
 ///---------------------------------------------------------------------------------------
 /// @name Obtaining information about a Collection
@@ -208,6 +212,7 @@
  @param delegate The delegate to inform that the operation is complete.
  */
 - (void)entityCountWithDelegate: (id <KCSInformationDelegate>)delegate;
+- (void)entityCountWithBlock: (KCSCountBlock)countBlock;
 
 
 @end

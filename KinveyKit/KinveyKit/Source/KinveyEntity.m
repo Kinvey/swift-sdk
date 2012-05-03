@@ -298,6 +298,83 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 }
 
+- (void)saveToCollection:(KCSCollection *)collection withCompletionBlock:(KCSCompletionBlock)onCompletion withProgressBlock:(KCSProgressBlock)onProgress
+{
+    
+    KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self];
+    BOOL isPostRequest = obj.isPostRequest;
+    NSString *objectId = obj.objectId;
+    NSDictionary *dictionaryToMap = [obj.dataToSerialize retain];
+    
+    NSString *resource = nil;
+    if ([collection.collectionName isEqualToString:@""]){
+        resource = [collection.baseURL stringByAppendingFormat:@"%@", objectId];        
+    } else {
+        resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
+    }
+    
+    
+    NSInteger HTTPMethod;
+    
+    // If we need to post this, then do so
+    if (isPostRequest){
+        HTTPMethod = kPostRESTMethod;
+    } else {
+        HTTPMethod = kPutRESTMethod;
+    }
+    
+    
+    // Prepare our request
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:HTTPMethod];
+    
+    // This is a JSON request
+    [request setContentType:KCS_JSON_TYPE];
+    
+    // Make sure to include the UTF-8 encoded JSONData...
+    KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+    [request addBody:[writer dataWithObject:dictionaryToMap]];
+    
+    // Prepare our handlers
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
+#if 0
+        // Needs KCS update for this feature
+        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
+#else
+        NSDictionary *responseToReturn = jsonResponse;
+#endif
+        
+        if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Entity operation was unsuccessful."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            onCompletion(nil, error);
+        } else {
+            onCompletion([NSArray arrayWithObject:responseToReturn], nil);
+        }
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        onCompletion(nil, error);
+    };
+    
+    // Future enhancement
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
+    
+    // Make the request happen
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+    
+    [dictionaryToMap release];
+    
+
+}
+
 - (void)deleteFromCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistableDelegate>)delegate
 {
     NSString *oid = [self kinveyObjectId];
@@ -346,6 +423,57 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+}
+
+-(void)deleteFromCollection:(KCSCollection *)collection withCompletionBlock:(KCSCompletionBlock)onCompletion withProgressBlock:(KCSProgressBlock)onProgress
+{
+    NSString *oid = [self kinveyObjectId];
+    NSString *resource = nil;
+    if ([collection.collectionName isEqualToString:@""]){
+        resource = [collection.baseURL stringByAppendingFormat:@"%@", oid];
+    } else {
+        resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, oid];
+    }
+    
+    // Prepare our request
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kDeleteRESTMethod];
+    
+    // Prepare our handlers
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
+#if 0
+        // Needs KCS update for this feature
+        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
+#else
+        NSDictionary *responseToReturn = jsonResponse;
+#endif
+        
+        if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Entity operation was unsuccessful."
+                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
+                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                                 code:[response responseCode]
+                                             userInfo:userInfo];
+            
+            onCompletion(nil, error);
+        } else {
+            onCompletion([NSArray arrayWithObject:responseToReturn], nil);
+        }
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        onCompletion(nil, error);
+    };
+    
+    // Future enhancement
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
+    
+    // Make the request happen
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+
 }
 
 - (NSDictionary *)hostToKinveyPropertyMapping

@@ -18,6 +18,8 @@
 #import "KCSReachability.h"
 #import "KCSLogManager.h"
 
+#import "KCSStore.h"
+
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
 @interface KCSClient ()
@@ -273,6 +275,52 @@
     
 
 }
+
+#pragma mark -
+#pragma mark Store Interface
+- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource
+{
+    return [self store:storeType forResource:resource withClass:nil withAuthHandler:nil];
+}
+
+- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource withAuthHandler: (KCSAuthHandler *)authHandler
+{
+    return [self store:storeType forResource:resource withClass:nil withAuthHandler:authHandler];
+}
+
+- (id<KCSStore>)store: (NSString *)storeType
+        forResource: (NSString *)resource
+          withClass: (Class)collectionClass
+{
+    return [self store:storeType forResource:resource withClass:collectionClass withAuthHandler:nil];
+}
+
+- (id<KCSStore>)store: (NSString *)storeType
+        forResource: (NSString *)resource
+          withClass: (Class)collectionClass
+    withAuthHandler: (KCSAuthHandler *)authHandler
+{
+    Class storeClass = NSClassFromString(storeType);
+    
+    if (storeClass == nil){
+        // Object not found
+        KCSLogError(@"Store class %@ not found!", storeType);
+        return nil;
+    }
+
+
+    id<KCSStore> store = [[storeClass alloc] init];
+    [store setAuthHandler:authHandler];
+    
+    if (resource && collectionClass){
+        KCSCollection *backing = [KCSCollection collectionFromString:resource ofClass:collectionClass];
+        NSDictionary *options = [NSDictionary dictionaryWithObject:backing forKey:@"resource"];
+        [store configureWithOptions:options];
+    }
+    
+    return [store autorelease];
+}
+
 
 #pragma mark Collection Interface
 

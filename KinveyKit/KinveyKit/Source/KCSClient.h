@@ -18,6 +18,8 @@
 @class KCSCollection;
 @class KCSUser;
 @class KCSReachability;
+@protocol KCSStore;
+@class KCSAuthHandler;
 
 
 // Keys for options hash
@@ -212,6 +214,23 @@
  
 */
 - (KCSCollection *)collectionFromString: (NSString *)collection withClass: (Class)collectionClass;
+
+///---------------------------------------------------------------------------------------
+/// @name Store Interface
+///---------------------------------------------------------------------------------------
+- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource;
+
+- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource withAuthHandler: (KCSAuthHandler *)authHandler;
+
+- (id<KCSStore>)store: (NSString *)storeType
+          forResource: (NSString *)resource
+            withClass: (Class)collectionClass;
+
+- (id<KCSStore>)store: (NSString *)storeType
+          forResource: (NSString *)resource
+            withClass: (Class)collectionClass
+      withAuthHandler: (KCSAuthHandler *)authHandler;
+
 
 ///---------------------------------------------------------------------------------------
 /// @name Logging Control
