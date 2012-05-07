@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/12/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 //  Logic unit tests contain unit test code that is designed to be linked into an independent test executable.
@@ -14,6 +14,8 @@
 #import <OCHamcrestIOS/OCHamcrestIOS.h>
 
 
-@interface KinveyKitAsyncConnectionTests : SenTestCase
+@interface KinveyKitAsyncConnectionTests : SenTestCase {
+    NSString* _oldHostname;
+}
 
 @end

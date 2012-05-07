@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/23/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KCSAsyncConnection.h"
@@ -12,7 +12,7 @@
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
 #import "KCSLogManager.h"
-
+#import "KCSClient.h"
 
 @interface KCSAsyncConnection()
 
@@ -129,11 +129,11 @@
     self.failureBlock = onFailure;
     self.completionBlock = onCompletion;
     self.basicAuthCred = credentials;
-
+    
     KCSLogNetwork(@"Request URL:%@", self.request.URL);
     KCSLogNetwork(@"Request Method:%@", self.request.HTTPMethod);
     KCSLogNetwork(@"Request Headers:%@", self.request.allHTTPHeaderFields);
-
+    
     
     // If our connection has been cleaned up, then we need to make sure that we get it back before using it.
     if (self.connection == nil){
@@ -155,7 +155,7 @@
                                                                            withFailureReason:@"connectionWithRequest:delegate: returned nil connection."
                                                                       withRecoverySuggestion:@"Retry request."
                                                                          withRecoveryOptions:nil];
-
+        
         NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
                                              code:KCSUnderlyingNetworkConnectionCreationFailureError
                                          userInfo:userInfo];
@@ -174,7 +174,7 @@
     [_progressBlock release];
     [_completionBlock release];
     [_failureBlock release];
-
+    
     _request = nil;
     _basicAuthCred = nil;
     _connection = nil;
@@ -183,7 +183,7 @@
     _progressBlock = NULL;
     _completionBlock = NULL;
     _failureBlock = NULL;
-
+    
     self.lastPercentage = 0; // Reset
 }
 
@@ -224,7 +224,7 @@
     // Update downloaded data with new data
     [self.downloadedData appendData:data];
     
-
+    
     // Update download percent and call the progress block
     double downloadPercent = floor(self.percentComplete);
     // TODO: Need to check percent complete threshold...
@@ -240,9 +240,9 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     KCSLogError(@"Connection failed! Error - %@ %@",
-          [error localizedDescription],
-          [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
-
+                [error localizedDescription],
+                [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
+    
     // Notify client that the operation failed!
     self.failureBlock(error);
     
@@ -253,7 +253,7 @@
 {
     // Need to set content lenght field and lastResponse fields...
     self.lastResponse = response; // This properly updates our last response
-
+    
     // All connections are HTTP connections, so a valid response is HTTP
     NSDictionary *header = [(NSHTTPURLResponse *)response allHeaderFields];
     NSString *contentLengthString = [header valueForKey:@"Content-Length"];
@@ -283,8 +283,25 @@
            redirectResponse:(NSURLResponse *)redirectResponse
 {
     NSURLRequest *newRequest = request;
-    if (redirectResponse && !self.followRedirects) {
-        newRequest = nil;
+    if (redirectResponse != nil) { 
+        if (self.followRedirects && [[newRequest HTTPMethod] isEqualToString:@"GET"]) {
+            //Test that the if the redirect host is not Kinvey,
+            //create a new url request that does not copy over the headers (bug with connecting to azure with iOS 4.3, where authentication was copied over).
+            NSURL* newurl = request.URL;
+            NSString* newHost = newurl.host;
+            NSString* resourceURLString = [[KCSClient sharedClient] resourceBaseURL];
+            NSURL* resourceURL = [NSURL URLWithString:resourceURLString];
+            if (![newHost isEqualToString:[resourceURL host]]) {
+                newRequest = [[[NSMutableURLRequest alloc] initWithURL:newurl] autorelease];
+                //get date from old request
+                NSString* date = [[request allHTTPHeaderFields] objectForKey:@"Date"];
+                [(NSMutableURLRequest*)newRequest setValue:date forHTTPHeaderField:@"Date"];
+                // Let the server know that we support GZip.
+                [(NSMutableURLRequest*)newRequest setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
+            }
+        } else {
+            newRequest = nil;
+        }
     }
     return newRequest;
 }
