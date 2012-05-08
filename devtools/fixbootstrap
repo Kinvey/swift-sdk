@@ -1,0 +1,4 @@
+#! /bin/bash
+
+echo fixing bootstrap...
+launchctl list|grep UIKitApplication|awk '{print $3}'|xargs launchctl remove
