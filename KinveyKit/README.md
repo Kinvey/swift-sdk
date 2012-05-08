@@ -37,3 +37,7 @@ We are very interested in your feedback and questions please send an e-mail to <
 ## Licenses
 
 Kinvey supports open source software, see [LICENSES](docs/LICENSES.html) for a list of all open source software we use in KinveyKit.
+
+## Changes
+
+See [KinveyKit History](docs/KinveyKit-History.html) for API changes by release.

@@ -50,6 +50,7 @@ TEXTOUT="${OUTPUTLOC}/output"
 DOCOUT="${OUTPUTLOC}/built-docs"
 INDEX="--index-desc ${KINVEYKITLOC}/README.md"
 LICENSES="--include ${KINVEYKITLOC}/LICENSES.html"
+CHANGES="--include ${KINVEYKITLOC}/KinveyKit-History-template.md"
 
 UTILPATH="--docsetutil-path /Applications/Xcode.app/Contents/Developer/usr/bin/docsetutil"
 
@@ -76,7 +77,7 @@ then
 fi
 
 
-COMMAND="${APPLEDOC} ${UTILPATH} ${OUTPUTARGS} ${WARNINGS} ${INDEX} -o ${TEXTOUT} --docset-install-path ${DOCOUT} -p ${PROJECT} -c ${COMPANY} --company-id ${COMPANYID} ${EXCLUDES} ${LICENSES} ${KINVEYKITLOC}/KinveyKit"
+COMMAND="${APPLEDOC} ${UTILPATH} ${OUTPUTARGS} ${WARNINGS} ${INDEX} -o ${TEXTOUT} --docset-install-path ${DOCOUT} -p ${PROJECT} -c ${COMPANY} --company-id ${COMPANYID} ${EXCLUDES} ${LICENSES} ${CHANGES} ${KINVEYKITLOC}/KinveyKit"
 
 
 $COMMAND
