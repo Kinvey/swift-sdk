@@ -1,5 +1,12 @@
 # KinveyKit Release History
 
+## 1.4
+
+### 1.4.0
+** Release Date: ** TBD
+
+* Added`KCSCachedStore` for caching queries to collections. 
+
 ## 1.3
 
 ### 1.3.1

@@ -12,6 +12,8 @@
 #import "KinveyEntity.h"
 #import "KCSBlockDefs.h"
 
+#import "NSArray+KinveyAdditions.h"
+
 @interface KCSAppdataStore ()
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
@@ -69,14 +71,7 @@
 #pragma mark Adding/Updating
 - (void)saveObject: (id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    NSArray *objectsToProcess;
-    // If we're given a class that is not an array, then we need to wrap the object
-    // as an array so we do a single unified processing
-    if (![object isKindOfClass:[NSArray class]]){
-        objectsToProcess = [NSArray arrayWithObject:object];
-    } else {
-        objectsToProcess = object;
-    }
+    NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
     
     for (id entity in objectsToProcess) {
         if (![entity conformsToProtocol:@protocol(KCSPersistable)]){
@@ -112,14 +107,7 @@
 #pragma mark Removing
 - (void)removeObject: (id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    NSArray *objectsToProcess;
-    // If we're given a class that is not an array, then we need to wrap the object
-    // as an array so we do a single unified processing
-    if (![object isKindOfClass:[NSArray class]]){
-        objectsToProcess = [NSArray arrayWithObject:object];
-    } else {
-        objectsToProcess = object;
-    }
+    NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
     
     for (id entity in objectsToProcess) {
         if (![entity conformsToProtocol:@protocol(KCSPersistable)]){
@@ -157,7 +145,7 @@
 {
     if (options) {
         // Configure
-        self.backingCollection = [options objectForKey:@"resource"];
+        self.backingCollection = [options objectForKey:kKCSStoreKeyResource];
     }
     
     // Even if nothing happened we return YES (as it's not a failure)

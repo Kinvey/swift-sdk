@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/12/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KCSMockConnection.h"
@@ -19,7 +19,7 @@
 @synthesize delayInMSecs = _delayInMSecs;
 @synthesize providedRequest = _providedRequest;
 @synthesize providedCredentials = _providedCredentials;
-
+@synthesize wasCalled = _wasCalled;
 
 #define BOOL_STRING(b) (b)?@"YES":@"NO"
 
@@ -40,6 +40,7 @@
         _delayInMSecs = 0.1; // Essentially "now"
         _providedCredentials = nil;
         _providedRequest = nil;
+        _wasCalled = NO;
     }
     
     return self;
@@ -60,6 +61,7 @@
       usingCredentials:(NSURLCredential *)credentials
 {
     KCSLogWarning(@"**** MOCK OBJECT TESTING IN PROGRESS, NO NETWORK! ****");
+    _wasCalled = YES;
     if (!self.connectionShouldReturnNow){
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, self.delayInMSecs * NSEC_PER_MSEC);
         
@@ -88,9 +90,5 @@
     self.providedRequest = theRequest;
     
 }
-
-
-
-
 
 @end

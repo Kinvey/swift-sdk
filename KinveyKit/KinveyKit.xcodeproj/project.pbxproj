@@ -21,9 +21,15 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		D306B58E154F847C00A52CB8 /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B58D154F847C00A52CB8 /* KCSStore.h */; };
+		27302CBC155C66B300A0183E /* KCSCachedStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CBA155C66B300A0183E /* KCSCachedStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27302CBD155C66B300A0183E /* KCSCachedStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CBB155C66B300A0183E /* KCSCachedStore.m */; };
+		27302CC0155C66FF00A0183E /* KCSCachedStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CBF155C66FF00A0183E /* KCSCachedStoreTests.m */; };
+		27302CC3155D4B4100A0183E /* NSArray+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */; };
+		27302CC4155D4B4100A0183E /* NSArray+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */; };
+		27302CCB155D614B00A0183E /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC9155D614B00A0183E /* KCSStore.m */; };
+		D306B58E154F847C00A52CB8 /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B58D154F847C00A52CB8 /* KCSStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D306B5A3155095A800A52CB8 /* KinveyAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */; };
-		D306B5A61550B29100A52CB8 /* KCSAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B5A41550B29100A52CB8 /* KCSAppdataStore.h */; };
+		D306B5A61550B29100A52CB8 /* KCSAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B5A41550B29100A52CB8 /* KCSAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D306B5A71550B29100A52CB8 /* KCSAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D306B5A51550B29100A52CB8 /* KCSAppdataStore.m */; };
 		D32A60D214716EE300F77A3F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D32A60D014716EE300F77A3F /* InfoPlist.strings */; };
 		D32A60DB14716EE300F77A3F /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
@@ -113,7 +119,7 @@
 		D39CDF9814D1E67F00E40D19 /* KCSQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = D39CDF9614D1E67F00E40D19 /* KCSQuery.m */; };
 		D3BE9C501551ECEE00ED0FDF /* KCSBlocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C4E1551ECEE00ED0FDF /* KCSBlocks.h */; };
 		D3BE9C511551ECEE00ED0FDF /* KCSBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = D3BE9C4F1551ECEE00ED0FDF /* KCSBlocks.m */; };
-		D3BE9C541551ED2900ED0FDF /* KCSBlockDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C531551ED2900ED0FDF /* KCSBlockDefs.h */; };
+		D3BE9C541551ED2900ED0FDF /* KCSBlockDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C531551ED2900ED0FDF /* KCSBlockDefs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3BE9C5B15524C6100ED0FDF /* KCSResourceStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C5915524C6100ED0FDF /* KCSResourceStore.h */; };
 		D3BE9C5C15524C6100ED0FDF /* KCSResourceStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D3BE9C5A15524C6100ED0FDF /* KCSResourceStore.m */; };
 		D3C5E67A14745E39002D8F2B /* libUAirship-1.1.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A643E147174C300F77A3F /* libUAirship-1.1.1.a */; };
@@ -184,6 +190,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		27302CBA155C66B300A0183E /* KCSCachedStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCachedStore.h; sourceTree = "<group>"; };
+		27302CBB155C66B300A0183E /* KCSCachedStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCachedStore.m; sourceTree = "<group>"; };
+		27302CBE155C66FF00A0183E /* KCSCachedStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCachedStoreTests.h; sourceTree = "<group>"; };
+		27302CBF155C66FF00A0183E /* KCSCachedStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCachedStoreTests.m; sourceTree = "<group>"; };
+		27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+KinveyAdditions.h"; sourceTree = "<group>"; };
+		27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+KinveyAdditions.m"; sourceTree = "<group>"; };
+		27302CC9155D614B00A0183E /* KCSStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSStore.m; sourceTree = "<group>"; };
 		D306B58D154F847C00A52CB8 /* KCSStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSStore.h; sourceTree = "<group>"; };
 		D306B5A1155095A800A52CB8 /* KinveyAppdataStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyAppdataStoreTests.h; sourceTree = "<group>"; };
 		D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyAppdataStoreTests.m; sourceTree = "<group>"; };
@@ -602,6 +615,8 @@
 			children = (
 				D306B5A1155095A800A52CB8 /* KinveyAppdataStoreTests.h */,
 				D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */,
+				27302CBE155C66FF00A0183E /* KCSCachedStoreTests.h */,
+				27302CBF155C66FF00A0183E /* KCSCachedStoreTests.m */,
 			);
 			name = KinveyStore;
 			sourceTree = "<group>";
@@ -644,6 +659,8 @@
 				D3F3412814BD686000DB6C37 /* KCSLogManager.m */,
 				D3FF5FE114C6373C00680BD2 /* KCSBase64.h */,
 				D3FF5FE214C6373C00680BD2 /* KCSBase64.m */,
+				27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */,
+				27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -1351,10 +1368,13 @@
 			isa = PBXGroup;
 			children = (
 				D306B58D154F847C00A52CB8 /* KCSStore.h */,
+				27302CC9155D614B00A0183E /* KCSStore.m */,
 				D3BE9C5915524C6100ED0FDF /* KCSResourceStore.h */,
 				D3BE9C5A15524C6100ED0FDF /* KCSResourceStore.m */,
 				D306B5A41550B29100A52CB8 /* KCSAppdataStore.h */,
 				D306B5A51550B29100A52CB8 /* KCSAppdataStore.m */,
+				27302CBA155C66B300A0183E /* KCSCachedStore.h */,
+				27302CBB155C66B300A0183E /* KCSCachedStore.m */,
 			);
 			name = KinveyStore;
 			sourceTree = "<group>";
@@ -1626,6 +1646,8 @@
 				D3BE9C501551ECEE00ED0FDF /* KCSBlocks.h in Headers */,
 				D3BE9C541551ED2900ED0FDF /* KCSBlockDefs.h in Headers */,
 				D3BE9C5B15524C6100ED0FDF /* KCSResourceStore.h in Headers */,
+				27302CBC155C66B300A0183E /* KCSCachedStore.h in Headers */,
+				27302CC3155D4B4100A0183E /* NSArray+KinveyAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1826,6 +1848,9 @@
 				D306B5A71550B29100A52CB8 /* KCSAppdataStore.m in Sources */,
 				D3BE9C511551ECEE00ED0FDF /* KCSBlocks.m in Sources */,
 				D3BE9C5C15524C6100ED0FDF /* KCSResourceStore.m in Sources */,
+				27302CBD155C66B300A0183E /* KCSCachedStore.m in Sources */,
+				27302CC4155D4B4100A0183E /* NSArray+KinveyAdditions.m in Sources */,
+				27302CCB155D614B00A0183E /* KCSStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1858,6 +1883,7 @@
 				D3FF5FE814C6392A00680BD2 /* KinveyKitBase64Tests.m in Sources */,
 				D3792A1F14D20C0D003D75BD /* KinveyKitQueryTests.m in Sources */,
 				D306B5A3155095A800A52CB8 /* KinveyAppdataStoreTests.m in Sources */,
+				27302CC0155C66FF00A0183E /* KCSCachedStoreTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1896,7 +1922,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		D30E55E01476FD3C00F0EC04 /* DebugNoPush */ = {
+		D30E55E01476FD3C00F0EC04 /* DebugForTest */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1917,9 +1943,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
 			};
-			name = DebugNoPush;
+			name = DebugForTest;
 		};
-		D30E55E11476FD3C00F0EC04 /* DebugNoPush */ = {
+		D30E55E11476FD3C00F0EC04 /* DebugForTest */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1930,7 +1956,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"KINVEY_DEBUG_ENABLED=1",
 					"DEBUG=1",
-					NO_URBAN_AIRSHIP_PUSH,
+					"BUILD_FOR_UNIT_TEST=1",
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = "Airship/**";
@@ -1943,9 +1969,9 @@
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
 			};
-			name = DebugNoPush;
+			name = DebugForTest;
 		};
-		D30E55E21476FD3C00F0EC04 /* DebugNoPush */ = {
+		D30E55E21476FD3C00F0EC04 /* DebugForTest */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1960,6 +1986,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				INFOPLIST_FILE = "KinveyKitTests/KinveyKitTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1967,10 +1994,10 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_AFTER_BUILD = YES;
+				TEST_AFTER_BUILD = NO;
 				WRAPPER_EXTENSION = octest;
 			};
-			name = DebugNoPush;
+			name = DebugForTest;
 		};
 		D32A60EE14716EE300F77A3F /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -2072,6 +2099,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				INFOPLIST_FILE = "KinveyKitTests/KinveyKitTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2079,7 +2107,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_AFTER_BUILD = YES;
+				TEST_AFTER_BUILD = NO;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -2094,6 +2122,7 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				INFOPLIST_FILE = "KinveyKitTests/KinveyKitTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2101,7 +2130,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_AFTER_BUILD = YES;
+				TEST_AFTER_BUILD = NO;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
@@ -2113,12 +2142,12 @@
 			};
 			name = Debug;
 		};
-		D3F7E890148D7C770044F1E8 /* DebugNoPush */ = {
+		D3F7E890148D7C770044F1E8 /* DebugForTest */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
-			name = DebugNoPush;
+			name = DebugForTest;
 		};
 		D3F7E891148D7C770044F1E8 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -2134,7 +2163,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D32A60EE14716EE300F77A3F /* Debug */,
-				D30E55E01476FD3C00F0EC04 /* DebugNoPush */,
+				D30E55E01476FD3C00F0EC04 /* DebugForTest */,
 				D32A60EF14716EE300F77A3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2144,7 +2173,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D32A60F114716EE300F77A3F /* Debug */,
-				D30E55E11476FD3C00F0EC04 /* DebugNoPush */,
+				D30E55E11476FD3C00F0EC04 /* DebugForTest */,
 				D32A60F214716EE300F77A3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2154,7 +2183,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D32A60F414716EE300F77A3F /* Debug */,
-				D30E55E21476FD3C00F0EC04 /* DebugNoPush */,
+				D30E55E21476FD3C00F0EC04 /* DebugForTest */,
 				D32A60F514716EE300F77A3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2164,7 +2193,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D3F7E88F148D7C770044F1E8 /* Debug */,
-				D3F7E890148D7C770044F1E8 /* DebugNoPush */,
+				D3F7E890148D7C770044F1E8 /* DebugForTest */,
 				D3F7E891148D7C770044F1E8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;

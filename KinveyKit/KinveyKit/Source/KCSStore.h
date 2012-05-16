@@ -16,8 +16,10 @@
 @interface KCSAllObjects : NSObject
 @end
 
-@implementation KCSAllObjects
-@end
+/**
+ KCSStore options dictionary key for the backing resource
+ */
+#define kKCSStoreKeyResource @"resource"
 
 
 /*! Kinvey Store Protocol
@@ -48,7 +50,7 @@
 ///---------------------------------------------------------------------------------------
 /*! Initialize an empty Kinvey Store with the default options
  
- This routine is called to return an empty store with default options and defautl authentication.
+ This routine is called to return an empty store with default options and default authentication.
  
  @return An autoreleased empty store with default options and default authentication.
  
@@ -94,7 +96,7 @@
  have specific requirements on objects that are added to the store.  This will result in the
  completion callback being called informing you of an error.
  
- @param id An object to add/update in the store (if the object is an NSArray, all objects will be added/updated)
+ @param object An object to add/update in the store (if the object is an NSArray, all objects will be added/updated)
  @param completionBlock A block that gets invoked when the addition/update is "complete" (as defined by the store)
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  
@@ -110,7 +112,7 @@
  
  This method takes a query object and calls the 
  
- @param id A query to act on a store.  The store defines the type of queries it accepts, an object of type "KCSAllObjects" causes all objects to be returned.
+ @param query A query to act on a store.  The store defines the type of queries it accepts, an object of type "KCSAllObjects" causes all objects to be returned.
  @param completionBlock A block that gets invoked when the query/fetch is "complete" (as defined by the store)
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  
@@ -127,7 +129,7 @@
  
  <#Discussion#>
  
- @param id An object (or query) to remove from the store (if the object is an NSArray or query, matching objects will be removed)
+ @param object An object (or query) to remove from the store (if the object is an NSArray or query, matching objects will be removed)
  @param completionBlock A block that gets invoked when the remove is "complete" (as defined by the store)
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  

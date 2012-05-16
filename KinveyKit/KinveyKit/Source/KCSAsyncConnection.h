@@ -2,16 +2,24 @@
 //  KCSAsyncConnection.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
 //  Unauthorized reproduction, transmission or distribution of this file and its
 //  contents is a violation of applicable laws.
 
+#import <UIKit/UIKit.h>
+
 #import "KCSConnection.h"
 
+typedef void (^RunBlock_t)();
+
 @interface KCSAsyncConnection : KCSConnection <NSURLConnectionDataDelegate>
+{
+    UIBackgroundTaskIdentifier _bgTask;
+    RunBlock_t _blockToRun;
+}
 
 
 /*! The (HTTP) response from the server.  We only store the final responding server in a redirect chain */
