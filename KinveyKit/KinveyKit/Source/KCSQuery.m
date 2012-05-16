@@ -624,5 +624,15 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     
 }
 
+#pragma mark - Equality / hashing for comparison
+- (BOOL) isEqual:(id)object
+{
+    return [object isKindOfClass:[KCSQuery class]] && [[self JSONRepresentation] isEqualToString:[object JSONRepresentation]];
+}
+
+- (NSUInteger)hash
+{
+    return [[self JSONRepresentation] hash];
+}
 
 @end

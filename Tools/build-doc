@@ -42,7 +42,7 @@ COMPANYID="com.kinvey"
 ## Make HTML (-h), Make Docset (-d), Prep Docset for publishing (-u)
 OUTPUTARGS="-h -d -u"
 
-EXCLUDES="--ignore 3rdParty"
+EXCLUDES="--ignore 3rdParty --ignore .m"
 
 WARNINGS="--no-warn-invalid-crossref"
 OUTPUTLOC="${KINVEYKITLOC}/doc/"

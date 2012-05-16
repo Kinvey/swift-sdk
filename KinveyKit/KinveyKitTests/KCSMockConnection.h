@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/12/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KCSConnection.h"
@@ -25,6 +25,7 @@
 @property (retain, nonatomic) NSURLRequest *providedRequest;
 @property (retain, nonatomic) NSURLCredential *providedCredentials;
 
+@property (nonatomic) BOOL wasCalled;
 
 
 @end
