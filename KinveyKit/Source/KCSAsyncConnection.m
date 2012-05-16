@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/23/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KCSAsyncConnection.h"
@@ -161,10 +161,14 @@
                                          userInfo:userInfo];
         self.failureBlock(error);
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
 
 - (void)cleanUp
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     // Cause all members to release their current object and reset to the nil state.
     [_request release];
     [_basicAuthCred release];
@@ -237,23 +241,11 @@
     }
 }
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    KCSLogError(@"Connection failed! Error - %@ %@",
-          [error localizedDescription],
-          [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
-
-    // Notify client that the operation failed!
-    self.failureBlock(error);
-    
-    [self cleanUp];
-}
-
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     // Need to set content lenght field and lastResponse fields...
     self.lastResponse = response; // This properly updates our last response
-
+        
     // All connections are HTTP connections, so a valid response is HTTP
     NSDictionary *header = [(NSHTTPURLResponse *)response allHeaderFields];
     NSString *contentLengthString = [header valueForKey:@"Content-Length"];
@@ -266,15 +258,44 @@
     }
 }
 
+- (void) runBlockInForeground:(RunBlock_t)block
+{
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+        block();
+    } else {
+        _blockToRun = Block_copy(block);
+    }
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    [self invalidateBgTask]; //TODO: combine
+
+    [self runBlockInForeground:^{
+        KCSLogError(@"Connection failed! Error - %@ %@",
+                    [error localizedDescription],
+                    [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
+        
+        // Notify client that the operation failed!
+        self.failureBlock(error);
+        
+        [self cleanUp];
+    }];
+}
+
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    NSInteger statusCode = [(NSHTTPURLResponse *)self.lastResponse statusCode];
-    NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
-    KCSLogNetwork(@"Response completed with code %d and response headers: %@", statusCode, headers);
-    KCSLogDebug(@"Kinvey Request ID: %@", [headers objectForKey:@"X-Kinvey-Request-Id"]);
-    self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:nil]);    
+    [self invalidateBgTask];
     
-    [self cleanUp];
+    [self runBlockInForeground:^{
+        NSInteger statusCode = [(NSHTTPURLResponse *)self.lastResponse statusCode];
+        NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
+        KCSLogNetwork(@"Response completed with code %d and response headers: %@", statusCode, headers);
+        KCSLogDebug(@"Kinvey Request ID: %@", [headers objectForKey:@"X-Kinvey-Request-Id"]);
+        self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:nil]);    
+        
+        [self cleanUp]; 
+    }];
 }
 
 // Don't honor the redirect, just grab the location and move on...
@@ -289,6 +310,32 @@
     return newRequest;
 }
 
+#pragma mark - Background Handling
+- (void) didEnterBackground:(NSNotification*)note
+{
+    UIApplication* application = [UIApplication sharedApplication];
+    _bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+        // Clean up any unfinished task business by marking where you.
+        // stopped or ending the task outright.
+        [self.connection cancel];
+        [self invalidateBgTask];
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+}
 
+- (void) invalidateBgTask
+{
+    UIApplication* application = [UIApplication sharedApplication];
+    [application endBackgroundTask:_bgTask];
+    _bgTask = UIBackgroundTaskInvalid;
+}
 
+- (void) didBecomeActive:(NSNotification*)note
+{
+    RunBlock_t block = Block_copy(_blockToRun);
+    Block_release(_blockToRun);
+    block();
+    Block_release(block);
+}
 @end
