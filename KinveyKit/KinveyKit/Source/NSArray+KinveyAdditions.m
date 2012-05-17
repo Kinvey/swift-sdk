@@ -17,7 +17,7 @@
     if ([object isKindOfClass:[NSArray class]]){
         return object;
     } else {
-        return [NSArray arrayWithObject:object];
+        return object == nil? [NSArray array] : [NSArray arrayWithObject:object];
     }
 }
 

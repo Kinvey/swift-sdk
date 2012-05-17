@@ -11,7 +11,7 @@
 @class KCSViewController;
 @class ImageViewController;
 
-@interface RootViewController : UIViewController
+@interface RootViewController : UITabBarController
 
 @property (retain) KCSViewController *viewController;
 @property (retain) ImageViewController *imageViewController;

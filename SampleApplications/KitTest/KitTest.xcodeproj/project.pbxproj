@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2770A9F0156451DF00D619B3 /* CachingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2770A9EE156451DE00D619B3 /* CachingViewController.m */; };
+		2770A9F1156451DF00D619B3 /* CachingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2770A9EF156451DE00D619B3 /* CachingViewController.xib */; };
 		D30F7DDE14743C2F0005D2EC /* metal_kinvey_1280x800.png in Resources */ = {isa = PBXBuildFile; fileRef = D30F7DDD14743C2F0005D2EC /* metal_kinvey_1280x800.png */; };
 		D32A64F014717B4800F77A3F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A64EF14717B4800F77A3F /* UIKit.framework */; };
 		D32A64F214717B4800F77A3F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A64F114717B4800F77A3F /* Foundation.framework */; };
@@ -37,6 +39,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2770A9ED156451DE00D619B3 /* CachingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CachingViewController.h; sourceTree = "<group>"; };
+		2770A9EE156451DE00D619B3 /* CachingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CachingViewController.m; sourceTree = "<group>"; };
+		2770A9EF156451DE00D619B3 /* CachingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CachingViewController.xib; sourceTree = "<group>"; };
 		D30F7DDD14743C2F0005D2EC /* metal_kinvey_1280x800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = metal_kinvey_1280x800.png; path = KitTest/metal_kinvey_1280x800.png; sourceTree = SOURCE_ROOT; };
 		D32A64EB14717B4800F77A3F /* KitTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KitTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D32A64EF14717B4800F77A3F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -142,9 +147,9 @@
 			isa = PBXGroup;
 			children = (
 				D32A64FE14717B4800F77A3F /* KCSAppDelegate.h */,
+				D32A64FF14717B4800F77A3F /* KCSAppDelegate.m */,
 				D3C5E6A31474B595002D8F2B /* ImageViewController.h */,
 				D3C5E6A41474B595002D8F2B /* ImageViewController.m */,
-				D32A64FF14717B4800F77A3F /* KCSAppDelegate.m */,
 				D32A650114717B4800F77A3F /* KCSViewController.h */,
 				D32A650214717B4800F77A3F /* KCSViewController.m */,
 				D3C5E6A81474B930002D8F2B /* RootViewController.h */,
@@ -152,6 +157,9 @@
 				D3C5E6AA1474B930002D8F2B /* RootViewController.xib */,
 				D32A650414717B4800F77A3F /* KCSViewController.xib */,
 				D3C5E6A61474B61A002D8F2B /* ImageView.xib */,
+				2770A9ED156451DE00D619B3 /* CachingViewController.h */,
+				2770A9EE156451DE00D619B3 /* CachingViewController.m */,
+				2770A9EF156451DE00D619B3 /* CachingViewController.xib */,
 				D32A64F614717B4800F77A3F /* Supporting Files */,
 				D35E07E11471D75700DD9E41 /* KitTestObject.h */,
 				D35E07E21471D75700DD9E41 /* KitTestObject.m */,
@@ -230,6 +238,7 @@
 				D30F7DDE14743C2F0005D2EC /* metal_kinvey_1280x800.png in Resources */,
 				D3C5E6A71474B61A002D8F2B /* ImageView.xib in Resources */,
 				D3C5E6AC1474B930002D8F2B /* RootViewController.xib in Resources */,
+				2770A9F1156451DF00D619B3 /* CachingViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,6 +255,7 @@
 				D35E07E31471D75700DD9E41 /* KitTestObject.m in Sources */,
 				D3C5E6A51474B595002D8F2B /* ImageViewController.m in Sources */,
 				D3C5E6AB1474B930002D8F2B /* RootViewController.m in Sources */,
+				2770A9F0156451DF00D619B3 /* CachingViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

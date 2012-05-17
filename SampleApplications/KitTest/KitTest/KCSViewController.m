@@ -25,7 +25,7 @@
 @synthesize updatedName = _updatedName;
 @synthesize updatedCount = _updatedCount;
 @synthesize networkActivity = _networkActivity;
-@synthesize testObjects=_testObjects;
+@synthesize testStore = _testStore;
 @synthesize lastObject=_lastObject;
 
 @synthesize viewShiftedForKeyboard=_viewShiftedForKeyboard;
@@ -33,6 +33,15 @@
 @synthesize keyboardSlideDuration=_keyboardSlideDuration;
 
 @synthesize rootViewController=_rootViewController;
+
+- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        self.title = @"Basic";
+    }
+    return self;
+}
 
 - (void)didReceiveMemoryWarning
 {
@@ -57,13 +66,13 @@
     // START OF KINVEY CODE
     //////////////////////////
     self.collectionCount = 0; // Indicate 0 items @ kinvey
-
-    self.testObjects = nil;
-
+    
+    self.testStore = nil;
+    
     ///////////////////////////
     // END OF KINVEY CODE
     //////////////////////////
-
+    
 }
 
 - (void)viewDidUnload
@@ -85,15 +94,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver: self
-                                             selector: @selector(shiftViewUpForKeyboard:)
-                                                 name: UIKeyboardWillShowNotification
-                                               object: nil];
-    [[NSNotificationCenter defaultCenter] addObserver: self
-                                             selector: @selector(shiftViewDownAfterKeyboard)
-                                                 name: UIKeyboardWillHideNotification
-                                               object: nil];
-
+    [self prepareDataForView];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -110,7 +111,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver: self
                                                     name: UIKeyboardWillHideNotification
                                                   object: nil];
-
+    
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -165,63 +166,45 @@
     }
 }
 
-
+- (void) fetchAll
+{
+    // Update the last entity
+    KCSQuery *q = [KCSQuery query];
+    KCSQuerySortModifier *sm = [[KCSQuerySortModifier alloc] initWithField:@"_id" inDirection:kKCSDescending];
+    [q addSortModifier:sm];
+    [sm release];
+    [self.testStore queryWithQuery:q withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if (errorOrNil) {
+            NSLog(@"Fetch Failed: %@", errorOrNil);
+            [self.networkActivity stopAnimating];
+        } else {
+            NSLog(@"Fetch succeeded: %@", objectsOrNil);
+            [self.networkActivity stopAnimating];                    
+            
+            _lastObject = [[objectsOrNil lastObject] retain];
+            
+            self.lastName.text = [_lastObject name];
+            self.lastCount.text = [NSString stringWithFormat:@"%d", [_lastObject count]];
+            self.lastObjectId.text = [_lastObject objectId];
+        }
+    } withProgressBlock:nil];
+}
 
 - (void)refreshAllFields
 {
     // Update the count
-    [self.testObjects entityCountWithDelegate:self];
-
+    [self.testStore countWithBlock:^(unsigned long count, NSError *errorOrNil) {
+        if (errorOrNil) {
+            NSLog(@"Information Operation failed: %@", errorOrNil);
+            [self.networkActivity stopAnimating]; 
+        } else {
+            NSLog(@"Information Operation succeeded: %lu", count);
+            self.currentCount.text = [NSString stringWithFormat:@"%d", count];
+            
+            [self fetchAll];
+        }
+    }];
 }
-
-- (void)entity:(id)entity operationDidFailWithError:(NSError *)error
-{
-    NSLog(@"Persist failed: %@", error);
-    [self.networkActivity stopAnimating];
-}
-
-- (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
-{
-    NSLog(@"Persist Succeeded: %@", result);
-    [self refreshAllFields];
-}
-
-- (void)collection:(KCSCollection *)collection didFailWithError:(NSError *)error
-{
-    NSLog(@"Fetch Failed: %@", error);
-    [self.networkActivity stopAnimating];
-}
-
-- (void)collection:(KCSCollection *)collection didCompleteWithResult:(NSArray *)result
-{
-    NSArray *objects = (NSArray *)result;
-    _lastObject = [[objects lastObject] retain];
-    
-    self.lastName.text = [_lastObject name];
-    self.lastCount.text = [NSString stringWithFormat:@"%d", [_lastObject count]];
-    self.lastObjectId.text = [_lastObject objectId];
-    
-    NSLog(@"Fetch succeeded: %@", result);
-    [self.networkActivity stopAnimating];
-
-}
-
-- (void)collection:(KCSCollection *)collection informationOperationFailedWithError:(NSError *)error
-{
-    NSLog(@"Information Operation failed: %@", error);
-    [self.networkActivity stopAnimating];
-}
-
-- (void)collection:(KCSCollection *)collection informationOperationDidCompleteWithResult:(int)result
-{
-    NSLog(@"Information Operation succeeded: %d", result);
-    self.currentCount.text = [NSString stringWithFormat:@"%d", result];
-
-    // Update the last entity
-    [self.testObjects fetchWithDelegate:self];
-}
-
-
 
 - (void)dealloc {
     [_lastName release];
@@ -234,15 +217,28 @@
     [super dealloc];
 }
 - (IBAction)refreshData:(id)sender {
-
+    
     [self.networkActivity startAnimating];
     [self refreshAllFields];
+}
+
+- (void) saveTestObject
+{
+    [self.testStore saveObject:self.testObject withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if (errorOrNil) {
+            NSLog(@"Persist failed: %@", errorOrNil);
+            [self.networkActivity stopAnimating];
+        } else {
+            NSLog(@"Persist Succeeded: %@", objectsOrNil);
+            [self refreshAllFields];
+        }
+    } withProgressBlock:nil];
 }
 
 - (IBAction)populateData:(id)sender {
     NSLog(@"Populating Data");
     [self.networkActivity startAnimating];
-    [self.testObject saveToCollection:_testObjects withDelegate:self];
+    [self saveTestObject];
 }
 
 - (void)persistNewValues: (BOOL)isUpdate
@@ -258,8 +254,8 @@
         // Having a legit object id causes an update instead of a new value
         test.objectId = self.lastObject.objectId;
     }
-    [test saveToCollection:_testObjects withDelegate:self];
-
+    [self saveTestObject];
+    
 }
 
 - (IBAction)addEntry:(id)sender {
@@ -272,7 +268,15 @@
 
 - (IBAction)deleteLast:(id)sender {
     [self.networkActivity startAnimating];
-    [self.lastObject deleteFromCollection:_testObjects withDelegate:self];
+    [self.testStore removeObject:self.lastObject withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if (errorOrNil) {
+            NSLog(@"Delete failed: %@", errorOrNil);
+            [self.networkActivity stopAnimating];
+        } else {
+            NSLog(@"Delet Succeeded: %@", objectsOrNil);
+            [self refreshAllFields];
+        }
+    } withProgressBlock:nil];
 }
 
 - (IBAction)flipView:(id)sender {
@@ -285,22 +289,14 @@
     return YES;
 }
 
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-//{
-//	[textField resignFirstResponder];
-//}
-
 - (void)prepareDataForView
 {
-    if (self.testObjects == nil){
+    if (self.testStore == nil){
         KCSCollection *collection = [[KCSClient sharedClient] collectionFromString:@"test_objects" withClass:[KitTestObject class]];
-        self.testObjects = collection;
-        KCSQuery *q = [KCSQuery query];
-        KCSQuerySortModifier *sm = [[KCSQuerySortModifier alloc] initWithField:@"_id" inDirection:kKCSDescending];
-        [q addSortModifier:sm];
-        [sm release];
-        self.testObjects.query = q;
-        [self.testObject saveToCollection:_testObjects withDelegate:self];
+        
+        self.testStore = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:KCSCachePolicyNone], KCSStoreKeyCachePolicy, collection, kKCSStoreKeyResource, nil]];
+        
+        [self saveTestObject];
         [self.networkActivity startAnimating];
     }    
 }

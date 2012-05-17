@@ -135,7 +135,7 @@
 #pragma mark Information
 - (void)countWithBlock:(KCSCountBlock)countBlock
 {
-    
+    [self.backingCollection entityCountWithBlock:countBlock];
 }
 
 
