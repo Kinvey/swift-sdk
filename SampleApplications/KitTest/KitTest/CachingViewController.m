@@ -61,8 +61,6 @@
 }
 - (IBAction)performQuery:(id)sender {
     KCSCachePolicy policy = self.cachePolicy.selectedSegmentIndex;
-    KCSQuery* q = [KCSQuery query];
-    NSString* s = [q JSONStringRepresentation];
     [self.store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         self.countLabel.text = [NSString stringWithFormat:@"%d",[objectsOrNil count]];
     } withProgressBlock:nil cachePolicy:policy];
