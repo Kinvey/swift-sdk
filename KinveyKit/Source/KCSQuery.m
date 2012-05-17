@@ -607,6 +607,10 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     return [NSString stringWithFormat:@"query=%@", [NSString stringByPercentEncodingString:[self JSONStringRepresentation]]];
 }
 
+- (NSString*)debugDescription
+{
+    return [self JSONStringRepresentation];
+}
 
 #pragma mark -
 #pragma mark Getting our sort keys
@@ -627,12 +631,12 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 #pragma mark - Equality / hashing for comparison
 - (BOOL) isEqual:(id)object
 {
-    return [object isKindOfClass:[KCSQuery class]] && [[self JSONRepresentation] isEqualToString:[object JSONRepresentation]];
+    return [object isKindOfClass:[KCSQuery class]] && [[self JSONStringRepresentation] isEqualToString:[object JSONStringRepresentation]];
 }
 
 - (NSUInteger)hash
 {
-    return [[self JSONRepresentation] hash];
+    return [[self JSONStringRepresentation] hash];
 }
 
 @end

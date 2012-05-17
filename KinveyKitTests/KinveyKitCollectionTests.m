@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/19/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitCollectionTests.h"
@@ -17,6 +17,7 @@
 #import "KinveyPersistable.h"
 #import "KinveyEntity.h"
 #import "KCSConnectionPool.h"
+#import "KCSQuery.h"
 
 
 typedef BOOL(^SuccessAction)(NSArray *);
@@ -176,6 +177,43 @@ typedef BOOL(^InfoSuccessAction)(int);
 
     STAssertTrue(self.testPassed, self.message);
     [conn release];
+}
+
+- (void) testQueryWithDelegate
+{
+    NSDictionary *dict = [NSDictionary dictionaryWithObject:self.completeDataSet forKey:@"items"];
+    KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
+                                                                           responseData:[self.writer dataWithObject:dict]
+                                                                             headerData:nil
+                                                                               userData:nil];
+    
+    KCSMockConnection *conn = [[KCSMockConnection alloc] init];
+    conn.responseForSuccess = response;
+    
+    conn.connectionShouldFail = NO;
+    conn.connectionShouldReturnNow = YES;
+    
+    self.onSuccess = ^(NSArray *results){
+        
+        NSArray *expected = self.completeDataSet;
+        SimpleClass *data = [results objectAtIndex:0];
+        NSArray *actual = [data items];
+        self.message = [NSString stringWithFormat:@"Received: %@\n\n\nExpected: %@", actual, expected];
+        
+        BOOL areTheyEqual = [actual isEqualToArray:expected];
+        return areTheyEqual;
+    };
+    
+    [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
+    
+    KCSCollection* collection = [[KCSClient sharedClient] collectionFromString:@"testCollection" withClass:[SimpleClass class]];
+    [collection fetchWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        self.testPassed = self.onSuccess(objectsOrNil);
+    } withProgressBlock:nil];
+    
+    STAssertTrue(self.testPassed, self.message);
+    [conn release];
+
 }
 
 - (void)testFetchEmptyCollectionReturns0SizedArray
