@@ -179,10 +179,10 @@ int reachable = -1;
 
 - (void) cacheQuery:(id)query value:(NSArray*)objectsOrNil error:(NSError*)errorOrNil
 {
-    if (objectsOrNil == nil || (errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO)) {
+    if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
         //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
         [_cache removeObjectForKey:query];
-    } else {
+    } else if (objectsOrNil != nil) {
         [_cache setObject:objectsOrNil forKey:query];
     }
 }
