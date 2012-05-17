@@ -334,7 +334,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     }
     
     // Here we know that we're working with a query, so now we just check each of the params...
-    if (query == nil){
+    if (query != nil){
         resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
         
         // NB: All of the modifiers are optional and may be combined in any order.  However, we ended up here

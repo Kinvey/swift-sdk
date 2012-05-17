@@ -120,7 +120,7 @@
 		D3BE9C501551ECEE00ED0FDF /* KCSBlocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C4E1551ECEE00ED0FDF /* KCSBlocks.h */; };
 		D3BE9C511551ECEE00ED0FDF /* KCSBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = D3BE9C4F1551ECEE00ED0FDF /* KCSBlocks.m */; };
 		D3BE9C541551ED2900ED0FDF /* KCSBlockDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C531551ED2900ED0FDF /* KCSBlockDefs.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3BE9C5B15524C6100ED0FDF /* KCSResourceStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C5915524C6100ED0FDF /* KCSResourceStore.h */; };
+		D3BE9C5B15524C6100ED0FDF /* KCSResourceStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C5915524C6100ED0FDF /* KCSResourceStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3BE9C5C15524C6100ED0FDF /* KCSResourceStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D3BE9C5A15524C6100ED0FDF /* KCSResourceStore.m */; };
 		D3C5E67A14745E39002D8F2B /* libUAirship-1.1.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A643E147174C300F77A3F /* libUAirship-1.1.1.a */; };
 		D3C5E67D14745E6E002D8F2B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */; };

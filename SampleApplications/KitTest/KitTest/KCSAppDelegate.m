@@ -10,6 +10,7 @@
 
 #import "KCSViewController.h"
 #import "ImageViewController.h"
+#import "CachingViewController.h"
 #import "RootViewController.h"
 
 #import <KinveyKit/KinveyKit.h>
@@ -39,11 +40,18 @@
     self.viewController = [[[KCSViewController alloc] initWithNibName:@"KCSViewController" bundle:nil] autorelease];
     self.imageViewController = [[[ImageViewController alloc] initWithNibName:@"ImageView" bundle:nil] autorelease];
     self.rootViewController = [[[RootViewController alloc] initWithNibName:@"RootViewController" bundle:nil] autorelease];
+    
+    self.rootViewController.viewControllers = [NSArray arrayWithObjects:self.viewController, nil];
+    
+    CachingViewController* cachingView = [[[CachingViewController alloc] initWithNibName:@"CachingViewController" bundle:nil] autorelease];
+    
+    UITabBarController* tabBarController = [[[UITabBarController alloc] init] autorelease];
+    tabBarController.viewControllers = [NSArray arrayWithObjects:self.viewController, self.imageViewController, cachingView, nil];
 
-    self.window.rootViewController = self.rootViewController;
+    self.window.rootViewController = tabBarController;
     
     // Add our primary as a subview of the rootViewController.
-    [self.rootViewController.view insertSubview:self.viewController.view atIndex:0];
+   // [self.rootViewController.view insertSubview:self.viewController.view atIndex:0];
     
     ///////////////////////////
     // START OF KINVEY CODE
