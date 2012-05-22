@@ -31,5 +31,7 @@
 #import "KCSAppdataStore.h"
 #import "KCSResourceStore.h"
 #import "KCSCachedStore.h"
+#import "KCSGroup.h"
+#import "KCSReduceFunction.h"
 
 #endif

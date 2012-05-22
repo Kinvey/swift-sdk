@@ -2,7 +2,6 @@
 //  KCSAppdataStore.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 5/1/12.
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 

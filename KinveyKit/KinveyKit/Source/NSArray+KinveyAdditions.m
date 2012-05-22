@@ -21,4 +21,9 @@
     }
 }
 
++ (NSArray*) arrayWithObjectOrNil:(id) object
+{
+    return object == nil ? [NSArray array] : [NSArray arrayWithObject:object];
+}
+
 @end

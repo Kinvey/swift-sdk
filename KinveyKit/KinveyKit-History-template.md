@@ -6,6 +6,7 @@
 ** Release Date: ** TBD
 
 * Added`KCSCachedStore` for caching queries to collections. 
+* Added aggregation support (`groupBy:`) to `KCSStore` for app data collections. 
 
 ## 1.3
 

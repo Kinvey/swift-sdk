@@ -2,8 +2,7 @@
 //  KCSCachedStore.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 5/10/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012 Kinvey, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -66,6 +65,9 @@ typedef enum KCSCachePolicy {
  @param cachePolicy the policy for to use for this query only. 
  */
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
+
+
+- (void)group:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
 
 #if BUILD_FOR_UNIT_TEST
 - (void) setReachable:(BOOL)reachOverwrite;

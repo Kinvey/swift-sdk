@@ -21,6 +21,7 @@
 #import "KCSErrorUtilities.h"
 #import "KCSObjectMapper.h"
 #import "KCSLogManager.h"
+#import "NSArray+KinveyAdditions.h"
 
 //#import "KinveyCollection.h"
 //
@@ -460,7 +461,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
             
             onCompletion(nil, error);
         } else {
-            onCompletion([NSArray arrayWithObject:responseToReturn], nil);
+            onCompletion([NSArray arrayWithObjectOrNil:responseToReturn], nil);
         }
     };
     
