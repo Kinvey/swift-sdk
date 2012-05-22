@@ -9,5 +9,6 @@
 @interface NSArray (KinveyAdditions)
 
 + (NSArray*) wrapIfNotArray:(id)object;
++ (NSArray*) arrayWithObjectOrNil:(id) object;
 
 @end

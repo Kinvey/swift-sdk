@@ -237,7 +237,9 @@
         // Probably want to handle this differently, since now the caller needs to know what's going
         // on, but I think that at a minimum, we need progress + data.
         self.lastPercentage = downloadPercent; // Update to the current value
-        self.progressBlock([[[KCSConnectionProgress alloc] init] autorelease]);
+        KCSConnectionProgress* progress = [[[KCSConnectionProgress alloc] init] autorelease];
+        progress.percentComplete = downloadPercent;
+        self.progressBlock(progress);
     }
 }
 

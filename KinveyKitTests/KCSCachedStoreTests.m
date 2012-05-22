@@ -100,6 +100,11 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     _callbackCount = 0;
 }
 
+- (void) tearDown
+{
+    [[KCSConnectionPool sharedPool] drainPools];
+}
+
 - (void) testCachedStoreNoCache
 {
     pollTime = 2.;

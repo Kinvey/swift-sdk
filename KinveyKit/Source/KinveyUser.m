@@ -305,10 +305,9 @@
 }
 
 + (void)loginWithUsername: (NSString *)username
-                 password: (NSString *)password
-             withDelegate: (id<KCSUserActionDelegate>)delegate
+                 password: (NSString *)password 
+             withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
-    
     KCSClient *client = [KCSClient sharedClient];
     
     // Just log-in and set currentUser
@@ -334,7 +333,7 @@
                                                                                  withRecoveryOptions:nil];
                 NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
                 // Delegate must retain createdUser
-                [delegate user:createdUser actionDidFailWithError:error];
+                completionBlock(createdUser, error, 0);
                 [createdUser release];
                 [parser release];
                 return;
@@ -376,7 +375,7 @@
             client.userAuthenticationInProgress = NO;
             
             // Delegate must retain createdUser
-            [delegate user:createdUser actionDidCompleteWithResult:KCSUserFound];
+            completionBlock(createdUser, nil, KCSUserFound);
             
             // Clean up
             [createdUser release];
@@ -391,17 +390,17 @@
             client.userAuthenticationInProgress = NO;
             client.currentUser = nil;
             
-            [delegate user:nil actionDidFailWithError:error];
+            completionBlock(nil, error, 0);
         };
         
         KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
         
-
+        
         KCSRESTRequest *request = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"_me"] usingMethod:kGetRESTMethod];
-
+        
         // We need to init the current user to something before trying this
         client.userAuthenticationInProgress = YES;
-
+        
         // Create a temp user with uname/password and use it it init currentUser
         KCSUser *tmpCurrentUser = [[[KCSUser alloc] init] autorelease];
         tmpCurrentUser.username = username;
@@ -410,8 +409,8 @@
         
         [request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
         [request start];
-
-    
+        
+        
     } else {
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to reach Kinvey"
                                                                            withFailureReason:@"Reachability determined that  Kinvey was not reachable, login cannot proceed."
@@ -420,10 +419,22 @@
         NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
                                              code:KCSKinveyUnreachableError
                                          userInfo:userInfo];
-        
-        [delegate user:nil actionDidFailWithError:error];
+        completionBlock(nil, error, 0);
     }
+}
 
+
++ (void)loginWithUsername: (NSString *)username
+                 password: (NSString *)password
+             withDelegate: (id<KCSUserActionDelegate>)delegate
+{
+    [self loginWithUsername:username password:password withCompletionBlock:^(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result) {
+        if (errorOrNil != nil) {
+            [delegate user:nil actionDidFailWithError:errorOrNil];
+        } else {
+            [delegate user:user actionDidCompleteWithResult:result];
+        }
+    }];
 }
 
 

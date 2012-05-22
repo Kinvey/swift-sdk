@@ -20,4 +20,8 @@
  */
 @interface KCSConnectionProgress : NSObject
 
+@property (nonatomic, copy) NSArray* objects;
+@property (nonatomic) double percentComplete;
+
+
 @end

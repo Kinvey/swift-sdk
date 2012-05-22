@@ -10,6 +10,8 @@
 #define HC_SHORTHAND
 #import <OCHamcrestIOS/OCHamcrestIOS.h>
 
-@interface KinveyAppdataStoreTests : SenTestCase
+@interface KinveyAppdataStoreTests : SenTestCase {
+    BOOL done;
+}
 
 @end
