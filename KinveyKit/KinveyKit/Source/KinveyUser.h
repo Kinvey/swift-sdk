@@ -29,6 +29,8 @@ enum {
     KCSUSerNotFound = 4
 };
 
+typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result);
+
 /*!  Describes required methods for an object wishing to be notified about the status of user actions.
  *
  * This Protocol should be implemented by a client for processing the results of any User Actions against the Kinvey
@@ -142,6 +144,15 @@ enum {
  * @param delegate The delegate to inform once the action is complete
 */
 + (void)loginWithUsername: (NSString *)username password: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate;
+
+/*! Login an existing user, generates an error if the user doesn't exist
+ * @param username The username of the user
+ * @param password The user's password
+ * @param completionBlock The block that is called when the action is complete
+ */
++ (void)loginWithUsername: (NSString *)username
+                 password: (NSString *)password 
+      withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 /*! Removes a user and their data from Kinvey
  * @param delegate The delegate to inform once the action is complete.
