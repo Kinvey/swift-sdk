@@ -1,4 +1,4 @@
-//
+    //
 //  NSArray+KinveyAdditions.m
 //  KinveyKit
 //
@@ -9,6 +9,19 @@
 #import "NSArray+KinveyAdditions.h"
 
 @implementation NSArray (KinveyAdditions)
+
+- (NSString *)join:(NSString *)delimiter
+{
+    NSMutableString* string = [NSMutableString string];
+    for (int i=0; i <= self.count; i++) {
+        if (i < self.count - 1) {
+            [string appendFormat:@"%@%@",delimiter,[self objectAtIndex:i]];
+        } else {
+            [string appendFormat:@"%@",[self objectAtIndex:i]];
+        }
+    }
+    return string;
+}
 
 + (NSArray*) wrapIfNotArray:(id)object
 {
@@ -30,7 +43,7 @@
 {
     if ([object isKindOfClass:[NSArray class]]){
         return (NSArray *)object;
-    } else if ([(NSDictionary *)object count] == 0){
+    } else if ([(NSDictionary *)object count] == 0) {
             return [NSArray array];
         } else {
             return [NSArray arrayWithObject:(NSDictionary *)object];

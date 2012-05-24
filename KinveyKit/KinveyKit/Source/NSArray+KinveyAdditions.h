@@ -12,4 +12,6 @@
 + (NSArray*) arrayWithObjectOrNil:(id) object;
 + (NSArray*) arrayIfDictionary:(id)object;
 
+- (NSString*) join:(NSString*)delimiter;
+
 @end

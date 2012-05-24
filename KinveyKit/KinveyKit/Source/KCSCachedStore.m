@@ -15,6 +15,7 @@
 
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
+#import "NSArray+KinveyAdditions.h"
 
 #import "KinveyCollection.h"
 #import "KCSReduceFunction.h"
@@ -49,7 +50,8 @@
 {
     self = [super init];
     if (self) {
-        _representation = [[NSString stringWithFormat:@"objectid=%@",objectId] retain];
+        NSString* idRepresentation = ([objectId isKindOfClass:[NSArray class]] == YES) ? [(NSArray*)objectId join:@","] : objectId;
+        _representation = [[NSString stringWithFormat:@"objectid=%@",idRepresentation] retain];
     }
     return self;
 }
