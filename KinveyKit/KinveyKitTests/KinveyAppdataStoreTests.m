@@ -31,7 +31,7 @@
     [[[KCSClient sharedClient] currentUser] logout];
     [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:YES];
     
-    //    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
+    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     
     done = NO;
     [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
@@ -68,14 +68,48 @@
 
 -(void)testSaveOne
 {
-    ASTTestClass *obj = [[ASTTestClass alloc] init];
+    done = NO;
+    [_store loadObjectWithID:@"testobj" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNotNil(objectsOrNil, @"expecting a non-nil objects");
+        STAssertEquals((int) [objectsOrNil count], 0, @"expecting no object of id 'testobj' to be found");
+        done = YES;
+    } withProgressBlock:nil];
+    [self poll];
     
+    ASTTestClass *obj = [self makeObject:@"description" count:-88 objId:@"testobj"];
     
+    done = NO;
+    [_store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    done = NO;
+    [_store loadObjectWithID:@"testobj" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNotNil(objectsOrNil, @"expecting a non-nil objects");
+        STAssertEquals((int) [objectsOrNil count], 1, @"expecting one object of id 'testobj' to be found");
+        STAssertEquals((int) [[objectsOrNil objectAtIndex:0] objCount], -88, @"expecting save to have completed sucessfully");
+        done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
 
 -(void)testSaveMany
 {
+    NSMutableArray* baseObjs = [NSMutableArray array];
+    [baseObjs addObject:[self makeObject:@"one" count:10]];
+    [baseObjs addObject:[self makeObject:@"two" count:10]];
+    [baseObjs addObject:[self makeObject:@"two" count:30]];
+    [baseObjs addObject:[self makeObject:@"two" count:70]];
+    [baseObjs addObject:[self makeObject:@"one" count:5]];
     
+    done = NO;
+    [_store saveObject:baseObjs withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        done = YES;
+        STAssertNotNil(objectsOrNil, @"expecting a non-nil objects");
+        STAssertEquals((int) [objectsOrNil count], 5, @"expecting five objects returned for saving five objects");
+    } withProgressBlock:nil];
+    [self poll];
 }
 
 - (void)testQuery
