@@ -112,9 +112,7 @@
 #pragma mark - Block Making
 // Avoid compiler warning by prototyping here...
 KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock onComplete, NSString* key, NSArray* fields);
-//KCSConnectionCompletionBlock makeQueryCompletionBlock(KCSCollection *collection, KCSCompletionBlock onComplete);
 KCSConnectionFailureBlock    makeGroupFailureBlock(KCSGroupCompletionBlock onComplete);
-//KCSConnectionFailureBlock    makeQueryFailureBlock(KCSCompletionBlock onComplete);
 KCSConnectionProgressBlock   makeProgressBlock(KCSProgressBlock onProgress);
 
 KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock onComplete, NSString* key, NSArray* fields)
@@ -165,70 +163,12 @@ KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock on
     } copy] autorelease];
 }
 
-//KCSConnectionCompletionBlock makeQueryCompletionBlock(KCSCollection *collection, KCSCompletionBlock onComplete)
-//{
-//    return [[^(KCSConnectionResponse *response){
-//        KCSLogTrace(@"In collection callback with response: %@", response);
-//        NSMutableArray *processedData = [[NSMutableArray alloc] init];
-//        
-//        // New KCS behavior, not ready yet
-//#if 0
-//        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
-//        NSObject *jsonData = [jsonResponse valueForKey:@"result"];
-//#else  
-//        KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-//        NSObject *jsonData = [parser objectWithData:response.responseData];
-//        [parser release];
-//#endif        
-//        NSArray *jsonArray;
-//        if (response.responseCode != KCS_HTTP_STATUS_OK){
-//            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Collection fetch was unsuccessful."
-//                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
-//                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
-//                                                                             withRecoveryOptions:nil];
-//            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
-//                                                 code:[response responseCode]
-//                                             userInfo:userInfo];
-//            onComplete(nil, error);
-//            
-//            [processedData release];
-//            return;
-//        }
-//        
-//        if ([jsonData isKindOfClass:[NSArray class]]){
-//            jsonArray = (NSArray *)jsonData;
-//        } else {
-//            if ([(NSDictionary *)jsonData count] == 0){
-//                jsonArray = [NSArray array];
-//            } else {
-//                jsonArray = [NSArray arrayWithObjects:(NSDictionary *)jsonData, nil];
-//            }
-//        }
-//        
-//        for (NSDictionary *dict in jsonArray) {
-//            [processedData addObject:[KCSObjectMapper makeObjectOfType:collection.objectTemplate withData:dict]];
-//        }
-//        onComplete(processedData, nil);
-//
-//        [processedData release];
-//    } copy] autorelease];
-//}
-//
-
 KCSConnectionFailureBlock makeGroupFailureBlock(KCSGroupCompletionBlock onComplete)
 {
     return [[^(NSError *error){
         onComplete(nil, error);
     } copy] autorelease];        
 }
-
-//
-//KCSConnectionFailureBlock makeQueryFailureBlock(KCSCompletionBlock onComplete)
-//{
-//    return [[^(NSError *error){
-//        onComplete(nil, error);
-//    } copy] autorelease];        
-//}
 
 KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 {
@@ -262,8 +202,6 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 
 #pragma mark - handling reponses
 NSObject* parseJSON(NSData* data);
-id processData(KCSConnectionResponse* response, KCSCollection* collection, NSError** error);
-
 NSObject* parseJSON(NSData* data)
 {
 #if NEVER && NEW_KCS_BEHAVIOR_READY
@@ -275,33 +213,6 @@ NSObject* parseJSON(NSData* data)
     [parser release];
 #endif 
     return jsonData;
-}
-
-NSArray* processData(KCSConnectionResponse* response, KCSCollection* collection, NSError** error)
-{
-    NSObject* jsonData = parseJSON(response.responseData);
-    
-    if (response.responseCode != KCS_HTTP_STATUS_OK){
-        if (error != NULL) {
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Collection fetch was unsuccessful."
-                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
-                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
-                                                                             withRecoveryOptions:nil];
-            *error = [NSError errorWithDomain:KCSAppDataErrorDomain
-                                         code:[response responseCode]
-                                     userInfo:userInfo];
-        }
-        
-        return nil;
-    }
-    
-    NSArray *jsonArray = [NSArray arrayIfDictionary:jsonData];
-    NSMutableArray *processedData = [NSMutableArray arrayWithCapacity:jsonArray.count];
-    
-    for (NSDictionary *dict in jsonArray) {
-        [processedData addObject:[KCSObjectMapper makeObjectOfType:collection.objectTemplate withData:dict]];
-    }
-    return processedData;
 }
 
 #pragma mark - Querying/Fetching
@@ -316,11 +227,7 @@ NSArray* processData(KCSConnectionResponse* response, KCSCollection* collection,
     
     KCSCollection* collection = self.backingCollection;
     
-    NSArray* objectsToLoad = [NSArray wrapIfNotArray:objectID];
-    NSMutableArray* objects = [NSMutableArray arrayWithCapacity:objectsToLoad.count];
-    
-    __block NSError* topError = nil;
-    [objectsToLoad enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    RestRequestForObjBlock_t requestBlock = ^KCSRESTRequest *(id obj) {
         NSString *resource = nil;
         // create a link: baas.kinvey.com/:appid/:collection/:id
         if ([collection.collectionName isEqualToString:@""]){
@@ -329,40 +236,35 @@ NSArray* processData(KCSConnectionResponse* response, KCSCollection* collection,
             resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, obj];
         }
         KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-        [request setContentType:@"application/json"];
+        [request setContentType:@"application/json"];        
+        return request;
+    };
+    
+    ProcessDataBlock_t processBlock = ^NSArray* (KCSConnectionResponse *response, NSError** error){
+        NSObject* jsonData = parseJSON(response.responseData);
+        if (response.responseCode != KCS_HTTP_STATUS_OK){
+            if (error != NULL) {
+                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Collection fetch was unsuccessful."
+                                                                                   withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
+                                                                              withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                                 withRecoveryOptions:nil];
+                *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                             code:[response responseCode]
+                                         userInfo:userInfo];
+            }            
+            return nil;
+        }
         
-        [[request withCompletionAction:^(KCSConnectionResponse* response) {
-            KCSLogTrace(@"In collection callback with response: %@", response);
-            NSError* error = nil;
-            NSArray* thisObject = processData(response, collection, &error);
-            if (error != nil) {
-                topError = error;
-                if (self.treatSingleFailureAsGroupFailure == YES) {
-                    *stop = YES;
-                }
-            }
-            [objects addObjectsFromArray:thisObject];
-            if (progressBlock != nil) {
-                progressBlock(objects, (double) objectsToLoad.count / (idx+1));
-            }
-            
-            if (*stop || idx == objectsToLoad.count - 1) {
-                completionBlock(objects, error);
-            }
-        } failureAction:^(NSError* error) {
-            topError = error;
-            if (self.treatSingleFailureAsGroupFailure == YES) {
-                *stop = YES;
-            }
-            if (*stop || idx == objectsToLoad.count - 1) {
-                completionBlock(objects, error);
-            }
-        } progressAction:^(KCSConnectionProgress* progress) {
-            if (progressBlock != nil) {
-                progressBlock(progress.objects, ((double) (objectsToLoad.count - 1) / (idx+1)) + progress.percentComplete);
-            }
-        }] start];
-    }];
+        NSArray *jsonArray = [NSArray arrayIfDictionary:jsonData];
+        NSMutableArray *processedData = [NSMutableArray arrayWithCapacity:jsonArray.count];
+        
+        for (NSDictionary *dict in jsonArray) {
+            [processedData addObject:[KCSObjectMapper makeObjectOfType:collection.objectTemplate withData:dict]];
+        }
+        return processedData;
+    };
+    
+    [self operation:objectID RESTRequest:requestBlock dataHandler:processBlock completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 - (void)queryWithQuery: (id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
@@ -465,16 +367,127 @@ NSArray* processData(KCSConnectionResponse* response, KCSCollection* collection,
     }
 }
 
-#pragma mark - Adding/Updating
-- (void)saveObject: (id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
-{
-    NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
-    double totalCount = objectsToProcess.count;
+//TODO: remove perform: after remove: is cut over to this operation
+
+typedef KCSRESTRequest* (^RestRequestForObjBlock_t)(id obj);
+typedef NSArray* (^ProcessDataBlock_t)(KCSConnectionResponse* response, NSError** error);
+
+- (void) operation:(id)object RESTRequest:(RestRequestForObjBlock_t)requestBlock dataHandler:(ProcessDataBlock_t)processBlock completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+{    
+    NSArray* objectsToOperateOn = [NSArray wrapIfNotArray:object];
+    NSMutableArray* objectsToReturn = [NSMutableArray arrayWithCapacity:objectsToOperateOn.count];
+    NSUInteger totalCount = objectsToOperateOn.count;
     
-    NSMutableArray* outstandingObjects = [NSMutableArray arrayWithArray:objectsToProcess];
-    [self perform:^(id entity, KCSCompletionBlock completionBlock, KCSProgressBlock progressBlock) {
-        [entity saveToCollection:self.backingCollection withCompletionBlock:completionBlock withProgressBlock:progressBlock];
-    } onNext:outstandingObjects prevComplete:0 count:totalCount withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+    __block NSError* topError = nil;
+    [objectsToOperateOn enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+
+        KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
+            KCSLogTrace(@"In collection callback with response: %@", response);
+            NSError* error = nil;
+            NSArray* thisObject = processBlock(response, &error);
+            if (error != nil) {
+                topError = error;
+                if (self.treatSingleFailureAsGroupFailure == YES) {
+                    *stop = YES;
+                }
+            }
+            [objectsToReturn addObjectsFromArray:thisObject];
+            if (progressBlock != nil) {
+                progressBlock(objectsToReturn, (double) totalCount / ((double) idx + 1));
+            }
+            
+            if (*stop == YES || idx == totalCount - 1) {
+                completionBlock(objectsToReturn, error);
+            }
+        };    
+        
+        KCSConnectionFailureBlock failureAction = ^(NSError* error) {
+            topError = error;
+            if (self.treatSingleFailureAsGroupFailure == YES) {
+                *stop = YES;
+            }
+            if (*stop || idx == totalCount - 1) {
+                completionBlock(objectsToReturn, error);
+            }
+        };
+        
+        KCSRESTRequest* request = requestBlock(obj);                     
+        [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* progress) {
+            if (progressBlock != nil) {
+                progressBlock(progress.objects, ((double) totalCount - 1) / ((double) idx + 1) + progress.percentComplete);
+            }
+        }] start];
+    }];
+}
+
+//TODO: do the same for remove
+
+#pragma mark - Adding/Updating
+- (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
+    if (okayToProceed == NO) {
+        return;
+    }
+    
+    RestRequestForObjBlock_t requestBlock = ^KCSRESTRequest *(id obj) {
+        KCSSerializedObject* serializedObj = [KCSObjectMapper makeKinveyDictionaryFromObject:obj];
+        BOOL isPostRequest = serializedObj.isPostRequest;
+        NSString *objectId = serializedObj.objectId;
+        NSDictionary *dictionaryToMap = [serializedObj.dataToSerialize retain];
+        
+        KCSCollection* collection = self.backingCollection;
+        NSString *resource = nil;
+        if ([collection.collectionName isEqualToString:@""]){
+            resource = [collection.baseURL stringByAppendingFormat:@"%@", objectId];        
+        } else {
+            resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
+        }
+        
+        // If we need to post this, then do so
+        NSInteger HTTPMethod = (isPostRequest) ? kPostRESTMethod : kPutRESTMethod;
+        
+        // Prepare our request
+        KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:HTTPMethod];
+        
+        // This is a JSON request
+        [request setContentType:KCS_JSON_TYPE];
+        
+        // Make sure to include the UTF-8 encoded JSONData...
+        KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+        [request addBody:[writer dataWithObject:dictionaryToMap]];
+        [dictionaryToMap release];
+        return request;
+    };
+    
+    
+    ProcessDataBlock_t processBlock = ^NSArray* (KCSConnectionResponse *response, NSError** error){
+        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
+#if NEVER && KCS_SUPPORTS_THIS_FEATURE
+        // Needs KCS update for this feature
+        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
+#else
+        NSDictionary *responseToReturn = jsonResponse;
+#endif
+        NSArray* returnVal = nil;
+        if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
+            if (error != NULL) {
+                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Entity operation was unsuccessful."
+                                                                                   withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
+                                                                              withRecoverySuggestion:@"Retry request based on information in JSON Error"
+                                                                                 withRecoveryOptions:nil];
+                *error = [NSError errorWithDomain:KCSAppDataErrorDomain
+                                                     code:[response responseCode]
+                                                 userInfo:userInfo];
+            }
+        } else {
+            returnVal = [NSArray arrayWithObject:responseToReturn];
+        }
+        return returnVal;
+    };
+      
+    [self operation:object RESTRequest:requestBlock dataHandler:processBlock completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 #pragma mark - Removing
