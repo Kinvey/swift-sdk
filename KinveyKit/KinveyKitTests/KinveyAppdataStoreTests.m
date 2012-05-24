@@ -40,15 +40,15 @@
     }];
     [self poll];
     
-    KCSCollection* collection = [[KCSCollection alloc] init];
-    collection.collectionName = @"testObjects";
-    collection.objectTemplate = [ASTTestClass class];
+    _collection = [[KCSCollection alloc] init];
+    _collection.collectionName = @"testObjects";
+    _collection.objectTemplate = [ASTTestClass class];
     
-    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, kKCSStoreKeyResource, nil]];
+    _store = [KCSAppdataStore storeWithCollection:_collection options:nil];
     
     __block NSMutableArray* allObjs = [NSMutableArray array];
     done = NO;
-    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [_store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"%@", errorOrNil);
         if (objectsOrNil != nil) {
             [allObjs addObjectsFromArray:objectsOrNil];
@@ -57,8 +57,13 @@
     } withProgressBlock:nil];
     [self poll];
     
-    [store removeObject:allObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
+    [_store removeObject:allObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
     [self poll];
+}
+
+- (void) tearDown
+{
+    [_collection release];
 }
 
 -(void)testSaveOne
@@ -139,6 +144,14 @@
     return obj;
 }
 
+- (ASTTestClass*)makeObject:(NSString*)desc count:(int)count objId:(NSString*)objId
+{
+    ASTTestClass *obj = [[ASTTestClass alloc] init];
+    obj.objDescription = desc;
+    obj.objCount = count;
+    obj.objId = objId;
+    return obj;
+}
 
 - (void) testGroupBy
 {
@@ -149,7 +162,7 @@
     KCSCollection* collection = [[KCSCollection alloc] init];
     collection.collectionName = @"testObjects";
     collection.objectTemplate = [ASTTestClass class];
-    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, kKCSStoreKeyResource, nil]];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
     [store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
     [self poll];
     
@@ -194,7 +207,7 @@
     KCSCollection* collection = [[KCSCollection alloc] init];
     collection.collectionName = @"testObjects";
     collection.objectTemplate = [ASTTestClass class];
-    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, kKCSStoreKeyResource, nil]];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
     [store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
     [self poll];
     
@@ -239,17 +252,13 @@
     [baseObjs addObject:[self makeObject:@"two" count:30]];
     [baseObjs addObject:[self makeObject:@"two" count:70]];
     [baseObjs addObject:[self makeObject:@"one" count:5]];
-    [baseObjs addObject:[self makeObject:@"two" count:70]];
-    KCSCollection* collection = [[KCSCollection alloc] init];
-    collection.collectionName = @"testObjects";
-    collection.objectTemplate = [ASTTestClass class];
-    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, kKCSStoreKeyResource, nil]];
-    [store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
+    [baseObjs addObject:[self makeObject:@"two" count:70]];    
+    [_store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
     [self poll];
     
     
     done = NO;
-    [store group:[NSArray arrayWithObjects:@"objDescription", @"objCount", nil] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+    [_store group:[NSArray arrayWithObjects:@"objDescription", @"objCount", nil] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", [NSNumber numberWithInt:10], @"objCount", nil]];
@@ -264,7 +273,7 @@
     
     done = NO;
     KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThanOrEqual forValue:[NSNumber numberWithInt:10]];
-    [store group:[NSArray arrayWithObjects:@"objDescription", @"objCount", nil] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+    [_store group:[NSArray arrayWithObjects:@"objDescription", @"objCount", nil] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", [NSNumber numberWithInt:10], @"objCount", nil]];
@@ -279,4 +288,42 @@
     
 }
 
+- (void) testLoadById
+{
+    NSMutableArray* baseObjs = [NSMutableArray array];
+    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a1"]];
+    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a2"]];
+    [baseObjs addObject:[self makeObject:@"two" count:10 objId:@"a3"]];
+    [baseObjs addObject:[self makeObject:@"two" count:30 objId:@"a4"]];
+    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a5"]];
+    [baseObjs addObject:[self makeObject:@"one" count:5  objId:@"a6"]];
+    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a7"]];    
+    [_store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
+    [self poll];
+    
+    done = NO;
+    __block NSArray* objs = nil;
+    [_store loadObjectWithID:@"a6" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"%@", errorOrNil);
+        objs = objectsOrNil;
+        done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+
+    STAssertNotNil(objs, @"expecting to load some objects");
+    STAssertEquals((int) [objs count], 1, @"should only load one object");
+    STAssertEquals((int) [[objs objectAtIndex:0] objCount], 5, @"epecting 6 from a6");
+    
+    done = NO;
+    objs = nil;
+    [_store loadObjectWithID:[NSArray arrayWithObjects:@"a1",@"a2",@"a3", nil] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"%@", errorOrNil);
+        objs = objectsOrNil;
+        done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    STAssertNotNil(objs, @"expecting to load some objects");
+    STAssertEquals((int) [objs count], 3, @"should only load one object");
+}
+//TODO: test progress as failure completion blocks;
 @end

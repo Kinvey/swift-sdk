@@ -10,8 +10,12 @@
 #define HC_SHORTHAND
 #import <OCHamcrestIOS/OCHamcrestIOS.h>
 
+@class KCSCollection;
+@class KCSAppdataStore;
 @interface KinveyAppdataStoreTests : SenTestCase {
     BOOL done;
+    KCSCollection* _collection;
+    KCSAppdataStore* _store;
 }
 
 @end

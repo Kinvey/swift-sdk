@@ -26,4 +26,15 @@
     return object == nil ? [NSArray array] : [NSArray arrayWithObject:object];
 }
 
++ (NSArray *) arrayIfDictionary:(id)object
+{
+    if ([object isKindOfClass:[NSArray class]]){
+        return (NSArray *)object;
+    } else if ([(NSDictionary *)object count] == 0){
+            return [NSArray array];
+        } else {
+            return [NSArray arrayWithObject:(NSDictionary *)object];
+        }
+}
+
 @end
