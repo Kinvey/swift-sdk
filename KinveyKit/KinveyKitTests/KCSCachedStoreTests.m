@@ -29,6 +29,10 @@
 }
 @end
 
+@interface KCSCachedStore ()
+- (void) setReachable:(BOOL)reachable;
+@end
+
 @implementation KCSCachedStoreTests
 
 static float pollTime;
@@ -89,7 +93,7 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     KCSCollection* collection = [[KCSCollection alloc] init];
     collection.collectionName = [NSString stringWithFormat:@"lists%@",[NSDate date]];
     collection.objectTemplate = [TestEntity class];
-    KCSCachedStore* store = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, kKCSStoreKeyResource, [NSNumber numberWithInt:cachePolicy], KCSStoreKeyCachePolicy, nil]];
+    KCSCachedStore* store = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, [NSNumber numberWithInt:cachePolicy], KCSStoreKeyCachePolicy, nil]];
     return store;
 }
 
@@ -182,12 +186,12 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     KCSCollection* collection1 = [[KCSCollection alloc] init];
     collection1.collectionName = @"lists";
     collection1.objectTemplate = [TestEntity class];
-    KCSCachedStore* store1 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection1, kKCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst],KCSStoreKeyCachePolicy, nil]];
+    KCSCachedStore* store1 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection1, KCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst],KCSStoreKeyCachePolicy, nil]];
     
     KCSCollection* collection2 = [[KCSCollection alloc] init];
     collection2.collectionName = @"fists";
     collection2.objectTemplate = [TestEntity class];
-    KCSCachedStore* store2 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection2, kKCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst], KCSStoreKeyCachePolicy, nil]];
+    KCSCachedStore* store2 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection2, KCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst], KCSStoreKeyCachePolicy, nil]];
     
     STAssertTrue([self queryServer:store1], @"expecting to call server for first time");    
     STAssertFalse([self queryServer:store1], @"expecting to use cache, not server on repeat call");
@@ -200,12 +204,12 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     KCSCollection* collection1 = [[KCSCollection alloc] init];
     collection1.collectionName = @"reusecachelists";
     collection1.objectTemplate = [TestEntity class];
-    KCSCachedStore* store1 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection1, kKCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst],KCSStoreKeyCachePolicy, nil]];
+    KCSCachedStore* store1 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection1, KCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst],KCSStoreKeyCachePolicy, nil]];
     
     KCSCollection* collection2 = [[KCSCollection alloc] init];
     collection2.collectionName = @"reusecachelists";
     collection2.objectTemplate = [TestEntity class];
-    KCSCachedStore* store2 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection2, kKCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst], KCSStoreKeyCachePolicy, nil]];
+    KCSCachedStore* store2 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection2, KCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst], KCSStoreKeyCachePolicy, nil]];
     
     STAssertTrue([self queryServer:store1], @"expecting to call server for first time");    
     STAssertFalse([self queryServer:store1], @"expecting to use cache, not server on repeat call");

@@ -45,6 +45,16 @@
     return self;
 }
 
+- (id) initWithObjectId:(id)objectId
+{
+    self = [super init];
+    if (self) {
+        _representation = [[NSString stringWithFormat:@"objectid=%@",objectId] retain];
+    }
+    return self;
+}
+
+
 - (void) dealloc
 {
     [_representation release];
@@ -328,12 +338,68 @@ int reachable = -1;
             });
         }
     }
-
 }
 
 - (void)group:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     [self group:fields reduce:function condition:condition completionBlock:completionBlock progressBlock:progressBlock cachePolicy:_cachePolicy];
+}
+
+#pragma mark Load Entity
+
+- (void) loadEntityFromNetwork:(id)objectID withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    [super loadObjectWithID:objectID withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        KCSCacheKey* key = [[[KCSCacheKey alloc] initWithObjectId:objectID] autorelease];
+        [self cacheQuery:key value:objectsOrNil error:errorOrNil];
+        completionBlock(objectsOrNil, errorOrNil);
+    } withProgressBlock:progressBlock];
+}
+
+- (void) completeLoad:(id)obj withCompletionBlock:(KCSCompletionBlock)completionBlock
+{
+    dispatch_async(dispatch_get_current_queue(), ^{
+        NSError* error = nil;
+        if (obj == nil) {
+            NSDictionary* userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Grouping query not in cache" 
+                                                                               withFailureReason:@"The specified query could not be found in the cache" 
+                                                                          withRecoverySuggestion:@"Resend query with cache policy that allows network connectivity" 
+                                                                             withRecoveryOptions:nil];
+            error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSNotFoundError userInfo:userInfo];
+        }
+        completionBlock(obj, error); 
+    });
+}
+
+- (void)loadObjectWithID:(id)objectID 
+     withCompletionBlock:(KCSCompletionBlock)completionBlock
+       withProgressBlock:(KCSProgressBlock)progressBlock
+             cachePolicy:(KCSCachePolicy)cachePolicy
+{
+    //TODO: update or combine logic
+    KCSCacheKey* key = [[[KCSCacheKey alloc] initWithObjectId:objectID] autorelease];
+    id obj = [_cache objectForKey:key]; //Hold on the to the object first, in case the cache is cleared during this process
+    if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
+        [self loadEntityFromNetwork:objectID withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+    } else {
+        [self completeLoad:obj withCompletionBlock:completionBlock];
+        if ([self shouldUpdateInBackground:cachePolicy] == YES) {
+            dispatch_async(dispatch_get_current_queue(), ^{
+                [self loadEntityFromNetwork:objectID withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                    if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
+                        completionBlock(objectsOrNil, errorOrNil);
+                    }
+                } withProgressBlock:nil];
+            });
+        }
+    }
+}
+
+- (void)loadObjectWithID: (id)objectID 
+     withCompletionBlock: (KCSCompletionBlock)completionBlock
+       withProgressBlock: (KCSProgressBlock)progressBlock
+{
+    [self loadObjectWithID:objectID withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:_cachePolicy];
 }
 
 @end

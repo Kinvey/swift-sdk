@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "KinveyPersistable.h"
+#import <KinveyKit/KinveyKit.h>
 
 @interface ASTTestClass : NSObject <KCSPersistable>
 

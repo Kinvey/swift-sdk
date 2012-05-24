@@ -17,12 +17,6 @@
 @interface KCSAllObjects : KCSQuery
 @end
 
-/**
- KCSStore options dictionary key for the backing resource
- */
-#define kKCSStoreKeyResource @"resource"
-
-
 /*! Kinvey Store Protocol
  
  A Kinvey Store is a representation of a group of backend items,
@@ -109,6 +103,17 @@
 ///---------------------------------------------------------------------------------------
 /// @name Querying/Fetching
 ///---------------------------------------------------------------------------------------
+
+/** Load objects from the store with the given IDs.
+ 
+ @param objectID this is an individual ID or an array of IDs to load
+ @param completionBlock A block that gets invoked when all objects are loaded
+ @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
+ */
+- (void)loadObjectWithID: (id)objectID 
+     withCompletionBlock: (KCSCompletionBlock)completionBlock
+       withProgressBlock: (KCSProgressBlock)progressBlock;
+
 /*! Query or fetch an object (or objects) in the store.
  
  This method takes a query object and calls the store to provide an array of objects that satisfies the query.
@@ -117,7 +122,8 @@
  @param completionBlock A block that gets invoked when the query/fetch is "complete" (as defined by the store)
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  
- */
+*/
+
 - (void)queryWithQuery: (id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock;
 
 /*! Aggregate objects in the store and apply a function to all members in that group.

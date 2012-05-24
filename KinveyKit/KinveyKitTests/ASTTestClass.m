@@ -7,6 +7,7 @@
 //
 
 #import "ASTTestClass.h"
+#import <KinveyKit/KinveyKit.h>
 
 @implementation ASTTestClass
 

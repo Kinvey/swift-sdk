@@ -10,5 +10,6 @@
 
 + (NSArray*) wrapIfNotArray:(id)object;
 + (NSArray*) arrayWithObjectOrNil:(id) object;
++ (NSArray*) arrayIfDictionary:(id)object;
 
 @end
