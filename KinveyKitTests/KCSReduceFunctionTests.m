@@ -38,7 +38,7 @@
     collection.collectionName = @"testObjects";
     collection.objectTemplate = [ASTTestClass class];
     
-    store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, kKCSStoreKeyResource, nil]];
+    store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
     
     __block NSMutableArray* allObjs = [NSMutableArray array];
     done = NO;
