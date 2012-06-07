@@ -7,30 +7,73 @@
 //
 
 #import "KCSObjectMapper.h"
+
+#import <UIKit/UIKit.h>
+#import "PropertyUtil.h" //TODO: KCSPRopertyUTIL
+
 #import "KinveyPersistable.h"
 #import "KCSClient.h"
 #import "KinveyEntity.h"
 #import "KCSLogManager.h"
+#import "KCSResource.h"
+
+@protocol KCSDataTypeBuilder <NSObject>
+
++ (id) JSONCompatabileValueForObject:(id)object;
++ (id) objectForJSONObject:(id)object;
+
+@end
+@interface DateBuilder : NSObject <KCSDataTypeBuilder>
+@end
+#import "NSDate+ISO8601.h"
+@implementation DateBuilder
++ (id) JSONCompatabileValueForObject:(id)object
+{
+    return [NSString stringWithFormat:@"ISODate(%c%@%c)", '"', [object stringWithISO8601Encoding], '"'];
+}
++ (id) objectForJSONObject:(id)object
+{
+    if ([object isKindOfClass:[NSDate class]]) {
+        return object;
+    } else if ([object isKindOfClass:[NSString class]]) {
+        NSString *tmp = [(NSString *)object stringByReplacingOccurrencesOfString:@"ISODate(\"" withString:@""];
+        tmp = [tmp stringByReplacingOccurrencesOfString:@"\")" withString:@""];
+        NSDate *date = [NSDate dateFromISO8601EncodedString:tmp];
+        return date;
+    }
+    return [NSNull null];
+}
+
+@end
+
+NSDictionary* builderOptions(id object);
+NSDictionary* builderOptions(id object) 
+{
+    return  [[object class] kinveyObjectBuilderOptions];
+}
 
 @implementation KCSSerializedObject
 
 @synthesize isPostRequest = _isPostRequest;
 @synthesize dataToSerialize = _dataToSerialize;
 @synthesize objectId = _objectId;
+@synthesize resourcesToSave = _resourcesToSave;
 
-- (id)initWithObjectId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize isPostRequest:(BOOL)isPostRequest
+- (id)initWithObjectId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize isPostRequest:(BOOL)isPostRequest resources:(NSArray*)resources
 {
     self = [super init];
     if (self){
         _isPostRequest = isPostRequest;
         _dataToSerialize = [dataToSerialize retain];
         _objectId = [objectId retain];
+        _resourcesToSave = [resources retain];
     }
     return self;
 }
 
 - (void)dealloc
 {
+    [_resourcesToSave release];
     [_dataToSerialize release];
     [_objectId release];
     [super dealloc];
@@ -39,13 +82,16 @@
 @end
 
 @implementation KCSObjectMapper
++ (id)populateObject:(id)object withData: (NSDictionary *)data {
+    return [self populateObjectWithLinkedResources:object withData:data resourceDictionary:nil];
+}
 
-+ (id)populateObject:(id)object withData: (NSDictionary *)data
++ (id)populateObjectWithLinkedResources:(id)object withData: (NSDictionary *)data resourceDictionary:(NSMutableDictionary*)resources
 {
     BOOL hasFlatMap = NO;
     NSString *dictName = nil;
     
-    NSDictionary *specialOptions = [[object class] kinveyObjectBuilderOptions];
+    NSDictionary *specialOptions = builderOptions(object);
     
     if (specialOptions != nil){
         dictName = [specialOptions objectForKey:KCS_DICTIONARY_NAME_KEY];
@@ -53,21 +99,34 @@
             hasFlatMap = YES;
         }
     }
-
+    
     // Get the instructions for how to map the JSON to the object
     NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
     
-    // For every mapped item, we need to find the mapped itme in the JSON, then pull it into our object
+    NSDictionary* properties = [PropertyUtil classPropsFor:[object class]];
+    
+    // For every mapped item, we need to find the mapped item in the JSON, then pull it into our object
     for (NSString *hostKey in hostToJsonMap) {
         NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
         
         //            KCSLogDebug(@"Mapping from %@ to %@ (using value: %@)", jsonKey, hostKey, [dict valueForKey:jsonKey]);
-        if ([data valueForKey:jsonKey] == nil){
+        id value = [data valueForKey:jsonKey];
+        if (value == nil){
             KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key %@ (Host Key %@).  Object not 100%% valid.", jsonKey, hostKey);
             continue;
+        } else {
+            NSString* valueType = [properties valueForKey:hostKey];
+            if (resources != nil && [KCSResource isResourceDictionary:value]) {
+                //this is a linked resource
+                [resources setValue:value forKey:hostKey];
+            } else if (resources != nil && isComplexJSONType(object, valueType) == YES) {
+                id complexObject = [builderForComplexType(object, valueType) objectForJSONObject:value];
+                [object setValue:complexObject forKey:hostKey];
+            } else {
+                [object setValue:value forKey:hostKey];
+            }
+            //            KCSLogDebug(@"Copied Object: %@", copiedObject);
         }
-        [object setValue:[data valueForKey:jsonKey] forKey:hostKey];
-        //            KCSLogDebug(@"Copied Object: %@", copiedObject);
     }
     
     // We've processed all the known keys, let's put the rest in our "dictionary" if required
@@ -89,13 +148,18 @@
     
     // Not necessary, just convienient
     return object;
-
 }
+
 
 
 + (id)makeObjectOfType:(Class)objectClass withData: (NSDictionary *)data
 {
+    return [self makeObjectWithResorucesOfType:objectClass withData:data withDictionary:nil];
+}
 
++ (id)makeObjectWithResorucesOfType:(Class)objectClass withData:(NSDictionary *)data withDictionary:(NSMutableDictionary*)resources
+{
+    
     // Check for special options to building this class
     NSDictionary *specialOptions = [objectClass kinveyObjectBuilderOptions];
     BOOL hasDesignatedInit = NO;
@@ -105,7 +169,7 @@
             hasDesignatedInit = YES;
         }
     }
-
+    
     // Actually generate the instance of the class
     id copiedObject = nil;
     if (hasDesignatedInit){
@@ -115,9 +179,132 @@
         // Normal path
         copiedObject = [[[objectClass alloc] init] autorelease];
     }
+    
+    return [KCSObjectMapper populateObjectWithLinkedResources:copiedObject withData:data resourceDictionary:resources];
+}
 
-    return [KCSObjectMapper populateObject:copiedObject withData:data];
+//TODO: move to common area
+#define ifNotNil(x,val) (x == nil) ? nil : val;
 
+//TODO: builder options
+BOOL isResourceType(id object);
+BOOL isResourceType(id object)
+{
+    return [object isKindOfClass:[UIImage class]];
+}
+
+NSString* extensionForResource(id object);
+NSString* extensionForResource(id object)
+{
+    if ([object isKindOfClass:[UIImage class]]) {
+        return @".png";
+    } 
+    return @"";
+}
+
+static NSDictionary* _defaultBuilders;
+NSDictionary* defaultBuilders();
+NSDictionary* defaultBuilders()
+{
+    return _defaultBuilders;
+}
+
++ (void)initialize
+{
+    if (!_defaultBuilders) {
+        _defaultBuilders = [[NSDictionary dictionaryWithObjectsAndKeys:[DateBuilder class], NSStringFromClass([NSDate class]), nil] retain];
+    }
+}
+
+
+Class<KCSDataTypeBuilder> builderForComplexType(id object, NSString* valueType);
+Class<KCSDataTypeBuilder> builderForComplexType(id object, NSString* valueType)
+{
+    NSDictionary* options = builderOptions(object);
+    NSDictionary* builders = [options objectForKey:kCS_DICTIONARY_DATATYPE_BUILDER];
+    Class<KCSDataTypeBuilder> builderClass = ifNotNil(builders, [builders objectForKey:valueType]);
+    if (builderClass == nil) {
+        NSDictionary* d = defaultBuilders();
+        builderClass = [d valueForKey:valueType];
+    }
+    return ifNotNil(builderClass, builderClass);
+}
+
+BOOL isComplexJSONType(id object, NSString* valueType);
+BOOL isComplexJSONType(id object, NSString* valueType)
+{
+    return builderForComplexType(object, valueType) != nil;
+}
+
++ (KCSSerializedObject *)makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName
+{
+    NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
+    NSMutableArray *resourcesToSave = [NSMutableArray array];
+    NSDictionary *kinveyMapping = [object hostToKinveyPropertyMapping];
+    NSString *objectId = nil;
+    BOOL isPostRequest = NO;
+    
+    
+    NSDictionary* properties = [PropertyUtil classPropsFor:[object class]];
+    
+    NSString *key;
+    for (key in kinveyMapping){
+        NSString *jsonName = [kinveyMapping valueForKey:key];
+        id value = [object valueForKey:key];
+        if (value != nil) {
+            NSString* valueType = [properties valueForKey:key];
+            if (isResourceType(value) == YES) { //TODO: do with separate method (for bw compat)
+                NSString* objname = [kinveyMapping valueForKey:@"_id"];
+                if (objname == nil) {
+                    CFUUIDRef uuid = CFUUIDCreate(NULL);
+                    
+                    if (uuid){
+                        objname = (NSString *)CFUUIDCreateString(NULL, uuid);
+                        CFRelease(uuid);
+                    }
+                }
+                NSString* filename = [NSString stringWithFormat:@"%@-%@-%@%@", collectionName, objname, key, extensionForResource(value)];
+                KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
+                [resourcesToSave addObject:resourceWrapper];
+                [dictionaryToMap setValue:[resourceWrapper dictionaryRepresentation] forKey:jsonName];
+            } else if (isComplexJSONType(object, valueType) == YES) {
+                id jsonType = [builderForComplexType(object, valueType) JSONCompatabileValueForObject:value];
+                [dictionaryToMap setValue:jsonType forKey:jsonName];
+            }
+            else {
+                [dictionaryToMap setValue:value forKey:jsonName];
+            }
+        }
+        
+        if ([jsonName isEqualToString:@"_id"]){
+            objectId = value;
+            if (objectId == nil){
+                isPostRequest = YES;
+                objectId = @""; // Set to the empty string for the document path
+            } else {
+                isPostRequest = NO;
+            }
+        }
+    }
+    
+    // We've handled all the built-in keys, we need to just store the dict if there is one
+    BOOL useDictionary = [[builderOptions(object) objectForKey:KCS_USE_DICTIONARY_KEY] boolValue];
+    
+    if (useDictionary){
+        // Get the name of the dictionary to store
+        NSString *dictionaryName = [builderOptions(object) objectForKey:KCS_DICTIONARY_NAME_KEY];
+        
+        NSDictionary *subDict = (NSDictionary *)[object valueForKey:dictionaryName];
+        for (NSString *key in subDict) {
+            [dictionaryToMap setObject:[subDict objectForKey:key] forKey:key];
+        }
+    }
+    
+    KCSSerializedObject *sObject = [[[KCSSerializedObject alloc] initWithObjectId:objectId dataToSerialize:dictionaryToMap isPostRequest:isPostRequest resources:resourcesToSave] autorelease];
+    
+    [dictionaryToMap release];
+    return sObject;
+    
 }
 
 + (KCSSerializedObject *)makeKinveyDictionaryFromObject: (id)object
@@ -145,24 +332,24 @@
     }
     
     // We've handled all the built-in keys, we need to just store the dict if there is one
-    BOOL useDictionary = [[[[object class] kinveyObjectBuilderOptions] objectForKey:KCS_USE_DICTIONARY_KEY] boolValue];
+    BOOL useDictionary = [[builderOptions(object) objectForKey:KCS_USE_DICTIONARY_KEY] boolValue];
     
     if (useDictionary){
         // Get the name of the dictionary to store
-        NSString *dictionaryName = [[[object class] kinveyObjectBuilderOptions] objectForKey:KCS_DICTIONARY_NAME_KEY];
-
+        NSString *dictionaryName = [builderOptions(object) objectForKey:KCS_DICTIONARY_NAME_KEY];
+        
         NSDictionary *subDict = (NSDictionary *)[object valueForKey:dictionaryName];
         for (NSString *key in subDict) {
             [dictionaryToMap setObject:[subDict objectForKey:key] forKey:key];
         }
     }
     
-    KCSSerializedObject *sObject = [[[KCSSerializedObject alloc] initWithObjectId:objectId dataToSerialize:dictionaryToMap isPostRequest:isPostRequest] autorelease];
+    KCSSerializedObject *sObject = [[[KCSSerializedObject alloc] initWithObjectId:objectId dataToSerialize:dictionaryToMap isPostRequest:isPostRequest resources:nil] autorelease];
     
     [dictionaryToMap release];
-    return sObject;
-
+    return sObject;    
 }
+
 
 
 @end

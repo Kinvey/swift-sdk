@@ -9,6 +9,11 @@
 #import "KCSResourceStore.h"
 #import "KCSBlobService.h"
 #import "KCSBlockDefs.h"
+#import "KCSResource.h"
+
+#import "NSArray+KinveyAdditions.h"
+#import "KCSErrorUtilities.h"
+#import "KinveyErrorCodes.h"
 
 @interface KCSResourceStore ()
 
@@ -36,19 +41,25 @@
     return self;
 }
 
+- (void) dealloc
+{
+    [_authHandler release];
+    [super dealloc];
+}
+
 + (id)store
 {
-    return [KCSResourceStore storeWithAuthHandler:nil withOptions:nil];
+    return [self storeWithAuthHandler:nil withOptions:nil];
 }
 
 + (id)storeWithOptions: (NSDictionary *)options
 {
-    return [KCSResourceStore storeWithAuthHandler:nil withOptions:options];
+    return [self storeWithAuthHandler:nil withOptions:options];
 }
 
 + (id)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
 {
-    KCSResourceStore *store = [[[KCSResourceStore alloc] initWithAuth:authHandler] autorelease];
+    KCSResourceStore *store = [[[self alloc] initWithAuth:authHandler] autorelease];
     
     [store configureWithOptions:options];
     
@@ -56,94 +67,199 @@
 }
 
 
-#pragma mark -
-#pragma mark Adding/Updating
+#pragma mark - Adding/Updating
 - (void)saveObject: (id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    NSArray *objectsToProcess;
-    // If we're given a class that is not an array, then we need to wrap the object
-    // as an array so we do a single unified processing
-    if (![object isKindOfClass:[NSArray class]]){
-        objectsToProcess = [NSArray arrayWithObject:object];
-    } else {
-        objectsToProcess = object;
+    NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
+    
+    int totalObjects = objectsToProcess.count;
+    if (totalObjects == 0) {
+        completionBlock(nil, nil);
     }
     
+    __block int completedCount = 0;
+    NSMutableArray* completedObjects = [NSMutableArray arrayWithCapacity:totalObjects];
+    __block NSError* topError = nil;
+    
     for (id entity in objectsToProcess) {
-        if (![entity isKindOfClass:[NSURL class]]){
-            // Error processing
-            // Handle the error
-                break;
+        if ([entity isKindOfClass:[KCSResource class]]) {
+            [KCSResourceService saveData:[(KCSResource*)entity data] toResource:[(KCSResource*)entity blobName] completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                if (errorOrNil != nil) {
+                    topError = errorOrNil;
+                }
+                if (objectsOrNil != nil) {
+                    [completedObjects addObjectsFromArray:objectsOrNil];
+                }
+                completedCount++;
+                if (completedCount == totalObjects) {
+                    completionBlock(completedObjects, topError);
+                }
+            } progressBlock:^(NSArray *objects, double percentComplete) {
+                if (progressBlock != nil) {
+                    progressBlock(objects, completedCount / (double) totalObjects + percentComplete /(double) totalObjects);
+                }
+            }];
+        } else if ([entity isKindOfClass:[NSURL class]]) {
+            // This is where the work will be required...
+            [KCSResourceService saveLocalResourceWithURL:entity completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                if (errorOrNil != nil) {
+                    topError = errorOrNil;
+                }
+                if (objectsOrNil != nil) {
+                    [completedObjects addObjectsFromArray:objectsOrNil];
+                }
+                completedCount++;
+                if (completedCount == totalObjects) {
+                    completionBlock(completedObjects, topError);
+                }
+            } progressBlock:^(NSArray *objects, double percentComplete) {
+                if (progressBlock != nil) {
+                    progressBlock(objects, completedCount / (double) totalObjects + percentComplete /(double) totalObjects);
+                }
+            }];
+        } else {
+            //not a NSURL (only accepted type in 1.4), generate error and continue
+            completedCount++;
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource save was unsuccessful."
+                                                                               withFailureReason:@"Object was not a NSURL-type"
+                                                                          withRecoverySuggestion:@"saveObject: requires a NSURL to a local resource"
+                                                                             withRecoveryOptions:nil];
+            topError = [NSError errorWithDomain:KCSResourceErrorDomain
+                                           code:KCSPrecondFailedError
+                                       userInfo:userInfo];
+            
+            if (completedCount == totalObjects) {
+                completionBlock(completedObjects, topError);
+            }
         }
-        
-        // This is where the work will be required...
-        [KCSResourceService saveLocalResourceWithURL:entity
-                                     completionBlock:completionBlock
-                                       progressBlock:progressBlock];
     }
+    
+}
+
+- (void)saveData:(NSData*)data toFile:(NSString*)file withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+{
+    [KCSResourceService saveData:data toResource:file completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 #pragma mark -
 #pragma mark Querying/Fetching
-- (void)queryWithQuery: (id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+- (void)loadObjectWithID:(id)objectID withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    NSArray *objectsToProcess;
-    // If we're given a class that is not an array, then we need to wrap the object
-    // as an array so we do a single unified processing
-    if (![query isKindOfClass:[NSArray class]]){
-        objectsToProcess = [NSArray arrayWithObject:query];
-    } else {
-        objectsToProcess = query;
+    [KCSResourceService downloadResource:objectID completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        NSMutableArray* newObjects = nil;
+        if (objectsOrNil != nil && [objectsOrNil count] > 0) {
+            newObjects = [NSMutableArray arrayWithCapacity:[objectsOrNil count]];
+            for (KCSResourceResponse* response in objectsOrNil) {
+                id responseObj = response.resource;
+                [newObjects addObject:responseObj];
+            }
+        }
+        completionBlock(newObjects, errorOrNil);
+    } progressBlock:progressBlock];
+}
+
+- (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+{
+    NSArray *objectsToProcess = [NSArray wrapIfNotArray:query];
+    int totalObjects = objectsToProcess.count;
+    if (totalObjects == 0) {
+        completionBlock(nil, nil);
     }
     
-    for (id entity in objectsToProcess) {
-        if (![entity isKindOfClass:[NSString class]]){
-            // Error processing
-            // Handle the error
-            break;
-        }
-        
-        // This is where the work will be required...
-        [KCSResourceService downloadResource:entity completionBlock:completionBlock progressBlock:progressBlock];
-    }
-
-}
-
-#pragma mark -
-#pragma mark Removing
-- (void)removeObject: (id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
-{
-    NSArray *objectsToProcess;
-    // If we're given a class that is not an array, then we need to wrap the object
-    // as an array so we do a single unified processing
-    if (![object isKindOfClass:[NSArray class]]){
-        objectsToProcess = [NSArray arrayWithObject:object];
-    } else {
-        objectsToProcess = object;
-    }
+    __block int completedCount = 0;
+    NSMutableArray* completedObjects = [NSMutableArray arrayWithCapacity:totalObjects];
+    __block NSError* topError = nil;
     
     for (id entity in objectsToProcess) {
-        if (![entity isKindOfClass:[NSString class]]){
-            // Error processing
-            // Handle the error
-            break;
+        if ([entity isKindOfClass:[NSString class]]) {
+            
+            // This is where the work will be required...
+            [KCSResourceService downloadResource:entity completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                if (errorOrNil != nil) {
+                    topError = errorOrNil;
+                }
+                if (objectsOrNil != nil) {
+                    [completedObjects addObjectsFromArray:objectsOrNil];
+                }
+                completedCount++;
+                if (completedCount == totalObjects) {
+                    completionBlock(completedObjects, topError);
+                }
+            } progressBlock:^(NSArray *objects, double percentComplete) {
+                if (progressBlock != nil) {
+                    progressBlock(objects, completedCount / (double) totalObjects + percentComplete /(double) totalObjects);
+                }
+            }];
+        } else {
+            //not a NSString (only accepted type in 1.4), generate error and continue
+            completedCount++;
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource load was unsuccessful."
+                                                                               withFailureReason:@"Object was not a NSString filename"
+                                                                          withRecoverySuggestion:@"queryWithQuery: requires a NSString representing a resource"
+                                                                             withRecoveryOptions:nil];
+            topError = [NSError errorWithDomain:KCSResourceErrorDomain
+                                           code:KCSPrecondFailedError
+                                       userInfo:userInfo];
+            
+            if (completedCount == totalObjects) {
+                completionBlock(completedObjects, topError);
+            } 
         }
-        
-        // This is where the work will be required...
-        [KCSResourceService deleteResource:entity completionBlock:completionBlock progressBlock:progressBlock];
     }
 }
 
-#pragma mark -
-#pragma mark Information
-- (void)countWithBlock:(KCSCountBlock)countBlock
+#pragma mark - Removing
+- (void)removeObject:(id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    countBlock(0, nil);
+    NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
+    int totalObjects = objectsToProcess.count;
+    if (totalObjects == 0) {
+        completionBlock(nil, nil);
+    }
+    
+    __block int completedCount = 0;
+    NSMutableArray* completedObjects = [NSMutableArray arrayWithCapacity:totalObjects];
+    __block NSError* topError = nil;
+    
+    for (id entity in objectsToProcess) {
+        if ([entity isKindOfClass:[NSString class]]) {
+            
+            // This is where the work will be required...
+            [KCSResourceService deleteResource:entity completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                if (errorOrNil != nil) {
+                    topError = errorOrNil;
+                }
+                if (objectsOrNil != nil) {
+                    [completedObjects addObjectsFromArray:objectsOrNil];
+                }
+                completedCount++;
+                if (completedCount == totalObjects) {
+                    completionBlock(completedObjects, topError);
+                }
+            } progressBlock:^(NSArray *objects, double percentComplete) {
+                if (progressBlock != nil) {
+                    progressBlock(objects, completedCount / (double) totalObjects + percentComplete /(double) totalObjects);
+                }
+            }];
+        } else {
+            //not a NSString (only accepted type in 1.4), generate error and continue
+            completedCount++;
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource delete was unsuccessful."
+                                                                               withFailureReason:@"Object was not a NSString filename"
+                                                                          withRecoverySuggestion:@"remove: requires a NSString representing a resource"
+                                                                             withRecoveryOptions:nil];
+            topError = [NSError errorWithDomain:KCSResourceErrorDomain
+                                           code:KCSPrecondFailedError
+                                       userInfo:userInfo];
+            
+            if (completedCount == totalObjects) {
+                completionBlock(completedObjects, topError);
+            } 
+        }
+    }
 }
 
-
-#pragma mark -
-#pragma mark Configuring
+#pragma mark - Configuring
 - (BOOL)configureWithOptions: (NSDictionary *)options
 {
     if (options) {
@@ -152,10 +268,5 @@
     // Even if nothing happened we return YES (as it's not a failure)
     return YES;
 }
-
-
-#pragma mark -
-#pragma mark Authentication
-
-
+//TODO: unit tests
 @end

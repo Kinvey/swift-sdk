@@ -12,15 +12,17 @@
 @property (nonatomic, readonly) BOOL isPostRequest;
 @property (nonatomic, readonly) NSString *objectId;
 @property (nonatomic, readonly) NSDictionary *dataToSerialize;
+@property (nonatomic, readonly) NSArray* resourcesToSave;
 
-- (id)initWithObjectId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize isPostRequest:(BOOL)isPostRequest;
+- (id)initWithObjectId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize isPostRequest:(BOOL)isPostRequest resources:(NSArray*)resources;
 @end
 
 @interface KCSObjectMapper : NSObject
 
 + (id)populateObject:(id)object withData: (NSDictionary *)data;
 + (id)makeObjectOfType:(Class)objectClass withData: (NSDictionary *)data;
++ (id)makeObjectWithResorucesOfType:(Class)objectClass withData:(NSDictionary *)data withDictionary:(NSMutableDictionary*)resources;
 + (KCSSerializedObject *)makeKinveyDictionaryFromObject: (id)object;
-
++ (KCSSerializedObject *)makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName;
 
 @end

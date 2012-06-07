@@ -10,7 +10,6 @@
 
 @class KCSAppdataStore;
 @interface KCSReduceFunctionTests : SenTestCase {
-    BOOL done;
     KCSAppdataStore* store;
 }
 
