@@ -92,7 +92,7 @@
         _lastResponse = nil;
         _request = nil;
         _connection = nil;
-        _percentNotificationThreshold = 1; // Default to 1%
+        _percentNotificationThreshold = .01; // Default to 1%
         _lastPercentage = 0; // Start @ 0%
         self.followRedirects = YES;
         // Don't cache the Auth, just in case we switch it up later...
@@ -110,7 +110,7 @@
     if (self.contentLength <= 0){
         return 0;
     } else {
-        return (([self.downloadedData length] * 1.0) / self.contentLength) * 100;
+        return (([self.downloadedData length] * 1.0) / self.contentLength);
     }
     
 }
@@ -230,12 +230,25 @@
     
 
     // Update download percent and call the progress block
-    double downloadPercent = floor(self.percentComplete);
+    double downloadPercent = self.percentComplete;
     // TODO: Need to check percent complete threshold...
     if (self.progressBlock != NULL &&
         ((self.lastPercentage + self.percentNotificationThreshold) <= downloadPercent)){
         // Probably want to handle this differently, since now the caller needs to know what's going
         // on, but I think that at a minimum, we need progress + data.
+        self.lastPercentage = downloadPercent; // Update to the current value
+        KCSConnectionProgress* progress = [[[KCSConnectionProgress alloc] init] autorelease];
+        progress.percentComplete = downloadPercent;
+        self.progressBlock(progress);
+    }
+}
+
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
+{
+    double downloadPercent = totalBytesWritten / (double) totalBytesExpectedToWrite;
+    // TODO: Need to check percent complete threshold...
+    if (self.progressBlock != NULL &&
+        ((self.lastPercentage + self.percentNotificationThreshold) <= downloadPercent)){
         self.lastPercentage = downloadPercent; // Update to the current value
         KCSConnectionProgress* progress = [[[KCSConnectionProgress alloc] init] autorelease];
         progress.percentComplete = downloadPercent;

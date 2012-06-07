@@ -3,7 +3,7 @@
 //  SampleApp
 //
 //  Created by Brian Wilson on 11/9/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KinveyHTTPStatusCodes.h"
@@ -14,6 +14,7 @@
 #import "KCSConnectionResponse.h"
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
+#import "KCSConnectionProgress.h"
 
 @implementation KCSResourceResponse
 
@@ -423,7 +424,11 @@
         }
     };
     
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
+    KCSConnectionProgressBlock pBlock = (progressBlock == nil) ? nil : ^(KCSConnectionProgress *connection){
+        if (progressBlock != nil) {
+            progressBlock(connection.objects, connection.percentComplete);
+        }
+    };
     
     KCSConnectionCompletionBlock userCallback = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_CREATED){
@@ -479,7 +484,8 @@
         }
     };
 
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+    //Change this progress block to nil - only update progress on the actually sending not the getting of the new URIs 
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:nil] start];
 
 }
 

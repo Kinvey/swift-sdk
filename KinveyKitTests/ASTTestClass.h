@@ -15,5 +15,6 @@
 @property (nonatomic, retain) NSString *objId;
 @property (nonatomic) int objCount;
 @property (nonatomic, retain) NSString *objDescription;
+@property (nonatomic, retain) NSDate* date;
 
 @end

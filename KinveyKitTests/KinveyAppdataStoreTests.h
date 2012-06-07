@@ -13,7 +13,6 @@
 @class KCSCollection;
 @class KCSAppdataStore;
 @interface KinveyAppdataStoreTests : SenTestCase {
-    BOOL done;
     KCSCollection* _collection;
     KCSAppdataStore* _store;
 }

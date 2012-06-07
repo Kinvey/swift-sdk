@@ -11,6 +11,7 @@
 #import <KinveyKit/KinveyKit.h>
 
 #import "ASTTestClass.h"
+#import "TestUtils.h"
 
 @interface KCSUser ()
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
@@ -19,20 +20,31 @@
 
 @implementation KCSReduceFunctionTests
 
-- (void) setUp
+- (void) clearAll
 {
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1667" withAppSecret:@"2495d9ae77a04604acf73876e9b84fff" usingOptions:nil];
-    [[[KCSClient sharedClient] currentUser] logout];
-    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:YES];
-    
-    //    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
-    
-    done = NO;
-    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
-        STAssertTrue(result.pingWasSuccessful, result.description);
-        done = YES;
+    __block NSMutableArray* allObjs = [NSMutableArray array];
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"%@", errorOrNil);
+        if (objectsOrNil != nil) {
+            [allObjs addObjectsFromArray:objectsOrNil];
+        }
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"clear all query all = %f",percentComplete);
     }];
     [self poll];
+    
+    [store removeObject:allObjs withCompletionBlock:[self pollBlock] withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"clear all delete = %f",percentComplete);
+    }];
+    [self poll];
+}
+
+- (void) setUp
+{
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    STAssertTrue(setup, @"should be up and running");
     
     KCSCollection* collection = [[KCSCollection alloc] init];
     collection.collectionName = @"testObjects";
@@ -40,20 +52,7 @@
     
     store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
     
-    __block NSMutableArray* allObjs = [NSMutableArray array];
-    done = NO;
-    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"%@", errorOrNil);
-        if (objectsOrNil != nil) {
-            [allObjs addObjectsFromArray:objectsOrNil];
-        }
-        done = YES;
-    } withProgressBlock:nil];
-    [self poll];
-    
-    [store removeObject:allObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
-    [self poll];
-    
+    [self clearAll];
     
     NSMutableArray* baseObjs = [NSMutableArray array];
     [baseObjs addObject:[self makeObject:@"one" count:10]];
@@ -67,34 +66,6 @@
 
 }
 
-
-#define MAX_POLL_COUNT 20
-
-- (void) poll
-{
-    int pollCount = 0;
-    while (done == NO && pollCount < MAX_POLL_COUNT) {
-        NSLog(@"polling... %i", pollCount);
-        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
-        pollCount++;
-    }
-    //TODO: pollcount failure
-    if (pollCount == MAX_POLL_COUNT) {
-        STFail(@"polling timed out");
-    }
-}
-
-- (KCSCompletionBlock) pollBlock
-{
-    done = NO;
-    return [^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        if (errorOrNil != nil) {
-            STFail(@"%@", errorOrNil);
-        }
-        done = YES;
-    } copy];
-}
-
 - (ASTTestClass*)makeObject:(NSString*)desc count:(int)count
 {
     ASTTestClass *obj = [[ASTTestClass alloc] init];
@@ -106,7 +77,7 @@
 
 - (void) testGroupByCOUNT
 {
-    done = NO;
+    self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -116,14 +87,14 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
         STAssertEquals([value intValue], 2, @"expecting two objects of 'two'");
         
-        done = YES;
+        self.done = YES;
     } progressBlock:nil];
     [self poll];
 }
 
 - (void) testGroupBySUM
 {
-    done = NO;
+    self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -133,14 +104,14 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
         STAssertEquals([value intValue], 20, @"expecting two objects of 'two'");
         
-        done = YES;
+        self.done = YES;
     } progressBlock:nil];
     [self poll];
 }
 
 - (void) testGroupBySUMNonNumeric
 {
-    done = NO;
+    self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objDescription"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -150,14 +121,14 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
         STAssertEquals([value intValue], 0, @"expecting 0 for a non-numeric");
         
-        done = YES;
+        self.done = YES;
     } progressBlock:nil];
     [self poll];
 }
 
 - (void) testGroupByMIN
 {
-    done = NO;
+    self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction MIN:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -167,7 +138,7 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
         STAssertEquals([value intValue], -30, @"expecting 10 as the min for objects of 'math'");
         
-        done = YES;
+        self.done = YES;
     } progressBlock:nil];
     [self poll];
 }
@@ -175,7 +146,7 @@
 
 - (void) testGroupByMAX
 {
-    done = NO;
+    self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction MAX:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -185,14 +156,14 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
         STAssertEquals([value intValue], 100, @"expecting 100 as the max for objects of 'math'");
         
-        done = YES;
+        self.done = YES;
     } progressBlock:nil];
     [self poll];
 }
 
 - (void) testGroupByAverage
 {
-    done = NO;
+    self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction AVERAGE:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -202,7 +173,7 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
         STAssertEquals([value intValue], 24, @"expecting 24 as the avg for objects of 'math'");
         
-        done = YES;
+        self.done = YES;
     } progressBlock:nil];
     [self poll];
 }
