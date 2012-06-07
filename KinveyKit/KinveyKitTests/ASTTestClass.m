@@ -14,6 +14,16 @@
 @synthesize objId = _objId;
 @synthesize objCount = _objCount;
 @synthesize objDescription = _objDescription;
+@synthesize date = _date;
+
+- (id) init
+{
+    self = [super init];
+    if (self) {
+        _date = [[NSDate date] retain];
+    }
+    return self;
+}
 
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
@@ -23,7 +33,8 @@
         map = [NSDictionary dictionaryWithObjectsAndKeys:
                @"_id", @"objId",
                @"objCount", @"objCount",
-               @"objDescription", @"objDescription", nil];
+               @"objDescription", @"objDescription", 
+               @"date", @"date", nil];
     }
     
     return map;

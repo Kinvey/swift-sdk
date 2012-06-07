@@ -35,7 +35,7 @@ typedef void (^RunBlock_t)();
 
 @property (nonatomic, readonly) NSInteger contentLength;
 @property (nonatomic, readonly) double percentComplete;
-@property (nonatomic) NSUInteger percentNotificationThreshold;
+@property (nonatomic) double percentNotificationThreshold;
 
 
 

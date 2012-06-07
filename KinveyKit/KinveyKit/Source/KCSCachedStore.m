@@ -166,23 +166,6 @@ static KCSCachedStoreCaching* sCaching;
     return self;
 }
 
-+ (id)store
-{
-    return [KCSCachedStore storeWithAuthHandler:nil withOptions:nil];
-}
-
-+ (id)storeWithOptions:(NSDictionary *)options
-{
-    return [KCSCachedStore storeWithAuthHandler:nil withOptions:options];
-}
-
-+ (id)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
-{
-    KCSCachedStore* store = [[[KCSCachedStore alloc] initWithAuth:authHandler] autorelease];  
-    [store configureWithOptions:options];
-    return store;
-}
-
 - (void) dealloc
 {
     [_cache release];
@@ -322,8 +305,9 @@ int reachable = -1;
     });
 }
 
-- (void)group:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
+- (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
 {
+    NSArray* fields = [NSArray wrapIfNotArray:fieldOrFields];
     KCSCacheKey* key = [[[KCSCacheKey alloc] initWithFields:fields reduce:function condition:condition] autorelease];
     id obj = [_cache objectForKey:key]; //Hold on the to the object first, in case the cache is cleared during this process
     if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
@@ -342,9 +326,9 @@ int reachable = -1;
     }
 }
 
-- (void)group:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+- (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
-    [self group:fields reduce:function condition:condition completionBlock:completionBlock progressBlock:progressBlock cachePolicy:_cachePolicy];
+    [self group:fieldOrFields reduce:function condition:condition completionBlock:completionBlock progressBlock:progressBlock cachePolicy:_cachePolicy];
 }
 
 #pragma mark Load Entity
@@ -402,6 +386,16 @@ int reachable = -1;
        withProgressBlock: (KCSProgressBlock)progressBlock
 {
     [self loadObjectWithID:objectID withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:_cachePolicy];
+}
+
+#pragma mark - Saving
+- (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    if ([[KCSClient sharedClient].kinveyReachability isReachable]) {
+        [super saveObject:object withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+    } else {
+        
+    }
 }
 
 @end

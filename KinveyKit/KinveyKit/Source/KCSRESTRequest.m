@@ -17,11 +17,12 @@
 #import "KCSReachability.h"
 #import "KinveyAnalytics.h"
 
-// *cough* hack *cough*
-#define MAX_DATE_STRING_LENGTH_K 40 
-#define MAX_NUMBER_OF_RETRIES_K 10
 // This is in Seconds!
 #define KCS_RETRY_DELAY 0.05
+
+// *cough* hack *cough*
+#define MAX_DATE_STRING_LENGTH_K 40 
+#define MAX_NUMBER_OF_RETRIES_K 10 / KCS_RETRY_DELAY
 
 // KINVEY KCS API VERSION
 #define KINVEY_KCS_API_VERSION_HEADER @"X-Kinvey-API-Version"
