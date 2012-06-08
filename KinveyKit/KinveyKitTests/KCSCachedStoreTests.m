@@ -144,6 +144,7 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     STAssertTrue(1 == _callbackCount, @"expecting callback to be called only once");    
 }
 
+#if BUILD_FOR_UNIT_TEST
 - (void) testCachedStoreNetworkFirst
 {
     pollTime = 2.;
@@ -163,6 +164,7 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     STAssertFalse([self queryServer:store], @"expecting to use cache, not server on repeat call");
 
 }
+#endif
 
 - (void) testCachedStoreBoth
 {
