@@ -391,11 +391,7 @@ int reachable = -1;
 #pragma mark - Saving
 - (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    if ([[KCSClient sharedClient].kinveyReachability isReachable]) {
-        [super saveObject:object withCompletionBlock:completionBlock withProgressBlock:progressBlock];
-    } else {
-        
-    }
+    [super saveObject:object withCompletionBlock:completionBlock withProgressBlock:progressBlock];
 }
 
 @end
