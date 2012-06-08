@@ -30,22 +30,20 @@
     
     _store = [KCSAppdataStore storeWithCollection:_collection options:nil];
 
+    __block NSMutableArray* allObjs = [NSMutableArray array];
+    self.done = NO;
+    [_store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"%@", errorOrNil);
+        if (objectsOrNil != nil) {
+            [allObjs addObjectsFromArray:objectsOrNil];
+        }
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
     
-    
-//    __block NSMutableArray* allObjs = [NSMutableArray array];
-//    self.done = NO;
-//    [_store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-//        STAssertNil(errorOrNil, @"%@", errorOrNil);
-//        if (objectsOrNil != nil) {
-//            [allObjs addObjectsFromArray:objectsOrNil];
-//        }
-//        self.done = YES;
-//    } withProgressBlock:nil];
-//    [self poll];
-//    
-//    self.done = NO;
-//    [_store removeObject:allObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
-//    [self poll];
+    self.done = NO;
+    [_store removeObject:allObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
+    [self poll];
 }
 
 - (void) tearDown

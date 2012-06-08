@@ -3,10 +3,10 @@
 ## 1.4
 
 ### 1.4.0
-** Release Date: ** TBD
+** Release Date: ** June 7th, 2012
 
 * Added`KCSCachedStore` for caching queries to collections. 
-* Added aggregation support (`groupBy:`) to `KCSStore` for app data collections. 
+* Added aggregation support (`groupBy:`) to `KCSAppdataStore` for app data collections. 
 
 ## 1.3
 

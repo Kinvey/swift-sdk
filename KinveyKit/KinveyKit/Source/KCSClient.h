@@ -2,7 +2,7 @@
 //  KCSClient.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -11,7 +11,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define MINIMUM_KCS_VERSION_SUPPORTED @"TAG-ME"
+#define MINIMUM_KCS_VERSION_SUPPORTED @"0.10.0"
 
 @class KCSAnalytics;
 @class UIApplication;
