@@ -9,7 +9,7 @@
 #import "KCSObjectMapper.h"
 
 #import <UIKit/UIKit.h>
-#import "PropertyUtil.h" //TODO: KCSPRopertyUTIL
+#import "KCSPropertyUtil.h"
 
 #import "KinveyPersistable.h"
 #import "KCSClient.h"
@@ -103,7 +103,7 @@ NSDictionary* builderOptions(id object)
     // Get the instructions for how to map the JSON to the object
     NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
     
-    NSDictionary* properties = [PropertyUtil classPropsFor:[object class]];
+    NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
     
     // For every mapped item, we need to find the mapped item in the JSON, then pull it into our object
     for (NSString *hostKey in hostToJsonMap) {
@@ -183,9 +183,6 @@ NSDictionary* builderOptions(id object)
     return [KCSObjectMapper populateObjectWithLinkedResources:copiedObject withData:data resourceDictionary:resources];
 }
 
-//TODO: move to common area
-#define ifNotNil(x,val) (x == nil) ? nil : val;
-
 //TODO: builder options
 BOOL isResourceType(id object);
 BOOL isResourceType(id object)
@@ -245,7 +242,7 @@ BOOL isComplexJSONType(id object, NSString* valueType)
     BOOL isPostRequest = NO;
     
     
-    NSDictionary* properties = [PropertyUtil classPropsFor:[object class]];
+    NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
     
     NSString *key;
     for (key in kinveyMapping){
@@ -253,13 +250,16 @@ BOOL isComplexJSONType(id object, NSString* valueType)
         id value = [object valueForKey:key];
         if (value != nil) {
             NSString* valueType = [properties valueForKey:key];
-            if (isResourceType(value) == YES) { //TODO: do with separate method (for bw compat)
-                NSString* objname = [kinveyMapping valueForKey:@"_id"];
+            if (isResourceType(value) == YES) { 
+                NSSet* set = [kinveyMapping keysOfEntriesPassingTest:^BOOL(id key, id obj, BOOL *stop) {
+                    return [obj isEqualToString:@"_id"];
+                }];
+                NSString* objname = set.count == 0 ? nil: [object valueForKey:[set anyObject]];
                 if (objname == nil) {
                     CFUUIDRef uuid = CFUUIDCreate(NULL);
                     
                     if (uuid){
-                        objname = (NSString *)CFUUIDCreateString(NULL, uuid);
+                        objname = [(NSString *)CFUUIDCreateString(NULL, uuid) autorelease];
                         CFRelease(uuid);
                     }
                 }
@@ -267,6 +267,7 @@ BOOL isComplexJSONType(id object, NSString* valueType)
                 KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
                 [resourcesToSave addObject:resourceWrapper];
                 [dictionaryToMap setValue:[resourceWrapper dictionaryRepresentation] forKey:jsonName];
+                [resourceWrapper release];
             } else if (isComplexJSONType(object, valueType) == YES) {
                 id jsonType = [builderForComplexType(object, valueType) JSONCompatabileValueForObject:value];
                 [dictionaryToMap setValue:jsonType forKey:jsonName];

@@ -13,7 +13,7 @@
 - (NSString *)join:(NSString *)delimiter
 {
     NSMutableString* string = [NSMutableString string];
-    for (int i=0; i <= self.count; i++) {
+    for (int i=0; i < self.count; i++) {
         if (i < self.count - 1) {
             [string appendFormat:@"%@%@",delimiter,[self objectAtIndex:i]];
         } else {

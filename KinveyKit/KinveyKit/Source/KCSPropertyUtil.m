@@ -8,10 +8,10 @@
 
 
 // PropertyUtil.m
-#import "PropertyUtil.h"
+#import "KCSPropertyUtil.h"
 #import "objc/runtime.h"
 
-@implementation PropertyUtil
+@implementation KCSPropertyUtil
 
 static const char * getPropertyType(objc_property_t property) {
     const char *attributes = property_getAttributes(property);

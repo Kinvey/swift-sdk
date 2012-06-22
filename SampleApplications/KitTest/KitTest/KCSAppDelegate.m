@@ -12,6 +12,7 @@
 #import "ImageViewController.h"
 #import "CachingViewController.h"
 #import "RootViewController.h"
+#import "LinkedResourceViewController.h"
 
 #import <KinveyKit/KinveyKit.h>
 
@@ -44,9 +45,10 @@
     self.rootViewController.viewControllers = [NSArray arrayWithObjects:self.viewController, nil];
     
     CachingViewController* cachingView = [[[CachingViewController alloc] initWithNibName:@"CachingViewController" bundle:nil] autorelease];
+    LinkedResourceViewController* linkedView = [[[LinkedResourceViewController alloc] initWithNibName:@"LinkedResourceViewController" bundle:nil] autorelease];
     
     UITabBarController* tabBarController = [[[UITabBarController alloc] init] autorelease];
-    tabBarController.viewControllers = [NSArray arrayWithObjects:self.viewController, self.imageViewController, cachingView, nil];
+    tabBarController.viewControllers = [NSArray arrayWithObjects:self.viewController, self.imageViewController, cachingView, linkedView, nil];
 
     self.window.rootViewController = tabBarController;
     

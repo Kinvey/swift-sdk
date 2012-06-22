@@ -121,7 +121,6 @@ typedef NSArray* (^ProcessDataBlock_t)(KCSConnectionResponse* response, NSError*
 
 @implementation KCSLinkedAppdataStore
 
-//TODO: optimize by not doing byte count if no progress block
 #pragma mark - Saving
 - (void) buildObjectFromJSON:(NSDictionary*)dictValue withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
@@ -132,11 +131,10 @@ typedef NSArray* (^ProcessDataBlock_t)(KCSConnectionResponse* response, NSError*
         KCSResourceStore* resourceStore = [KCSResourceStore store];
         for (NSString* key in [resources allKeys]) {
                 NSDictionary* resource = [resources valueForKey:key];
-                [resourceStore loadObjectWithID:[resource valueForKey:@"_loc"] /*TODO: constant this */ withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                [resourceStore loadObjectWithID:[resource valueForKey:kKCSResourceLocationKey] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
                     if (errorOrNil == nil && objectsOrNil != nil) {
                         NSData* response = [objectsOrNil objectAtIndex:0];
-                        id realResource = [KCSResource resourceObjectFromData:response type:[resource valueForKey:@"_mime-type"]]; /*TODO: constant this*/ 
-                        [obj setValue:realResource forKey:key];
+                        id realResource = [KCSResource resourceObjectFromData:response type:[resource valueForKey:kKCSResourceMimeTypeKey]];                         [obj setValue:realResource forKey:key];
                         if (--resourceCount == 0) {
                             completionBlock([NSArray arrayWithObject:obj], nil);
                         }
@@ -198,10 +196,11 @@ unsigned long int countBytes(NSArray* objectsToSave)
     unsigned long int bytecount = 0;
     
     for (id <KCSPersistable> singleEntity in objectsToSave) {
-        KCSSerializedObject* serializedObj = [KCSObjectMapper makeResourceEntityDictionaryFromObject:singleEntity forCollection:@""]; //TODO: deal with mapping
+        KCSSerializedObject* serializedObj = [KCSObjectMapper makeResourceEntityDictionaryFromObject:singleEntity forCollection:@""];
         NSDictionary *dictionaryToMap = [serializedObj.dataToSerialize retain];
         KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
         NSData* data = [writer dataWithObject:dictionaryToMap];
+        [dictionaryToMap release];
         bytecount += [data length];
         
         
@@ -225,12 +224,12 @@ unsigned long int countBytes(NSArray* objectsToSave)
     
     NSArray* objectsToSave = [NSArray wrapIfNotArray:object];
     int totalItemCount = [objectsToSave count];
-    unsigned long int bytecount = countBytes(objectsToSave);
+    unsigned long int bytecount = progressBlock == nil ? LONG_MAX : countBytes(objectsToSave); //don't go through the work to count the bytes if no progress block
     
     __block int completedItemCount = 0;
     NSMutableArray* completedObjects = [NSMutableArray arrayWithCapacity:totalItemCount];
     
-    DoubleHolder* progress = [[DoubleHolder alloc] init];
+    DoubleHolder* progress = [[[DoubleHolder alloc] init] autorelease];
     progress.doubleVal = 0.;
     
     __block NSError* topError = nil;
