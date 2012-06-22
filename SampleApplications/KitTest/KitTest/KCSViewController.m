@@ -294,7 +294,7 @@
     if (self.testStore == nil){
         KCSCollection *collection = [[KCSClient sharedClient] collectionFromString:@"test_objects" withClass:[KitTestObject class]];
         
-        self.testStore = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:KCSCachePolicyNone], KCSStoreKeyCachePolicy, collection, kKCSStoreKeyResource, nil]];
+        self.testStore = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:KCSCachePolicyNone], KCSStoreKeyCachePolicy, collection, KCSStoreKeyResource, nil]];
         
         [self saveTestObject];
         [self.networkActivity startAnimating];

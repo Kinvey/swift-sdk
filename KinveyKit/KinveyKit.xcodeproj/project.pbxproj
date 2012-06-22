@@ -21,8 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		271E8242157D70B3000AF9EF /* PropertyUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 271E8240157D70B3000AF9EF /* PropertyUtil.h */; };
-		271E8243157D70B3000AF9EF /* PropertyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 271E8241157D70B3000AF9EF /* PropertyUtil.m */; };
+		271E8242157D70B3000AF9EF /* KCSPropertyUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */; };
+		271E8243157D70B3000AF9EF /* KCSPropertyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */; };
 		27223E1C157E7A3200656BCC /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
 		27302CBC155C66B300A0183E /* KCSCachedStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CBA155C66B300A0183E /* KCSCachedStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27302CBD155C66B300A0183E /* KCSCachedStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CBB155C66B300A0183E /* KCSCachedStore.m */; };
@@ -31,7 +31,7 @@
 		27302CC4155D4B4100A0183E /* NSArray+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */; };
 		27302CCB155D614B00A0183E /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC9155D614B00A0183E /* KCSStore.m */; };
 		2735B2461578E84A0063EE62 /* KCSResourceStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */; };
-		27433012156ED63B00B2BF37 /* KCSLinkedAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */; };
+		27433012156ED63B00B2BF37 /* KCSLinkedAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27433013156ED63C00B2BF37 /* KCSLinkedAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27433011156ED63B00B2BF37 /* KCSLinkedAppdataStore.m */; };
 		274330211575227000B2BF37 /* KCSResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSResource.h */; };
 		274330221575227000B2BF37 /* KCSResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330201575227000B2BF37 /* KCSResource.m */; };
@@ -205,8 +205,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		271E8240157D70B3000AF9EF /* PropertyUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyUtil.h; sourceTree = "<group>"; };
-		271E8241157D70B3000AF9EF /* PropertyUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyUtil.m; sourceTree = "<group>"; };
+		271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPropertyUtil.h; sourceTree = "<group>"; };
+		271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPropertyUtil.m; sourceTree = "<group>"; };
 		27223E1A157E7A3200656BCC /* TestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtils.h; sourceTree = "<group>"; };
 		27223E1B157E7A3200656BCC /* TestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtils.m; sourceTree = "<group>"; };
 		27302CBA155C66B300A0183E /* KCSCachedStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCachedStore.h; sourceTree = "<group>"; };
@@ -731,8 +731,8 @@
 				D3EA22C61486B0BD00666259 /* KinveyPing.m */,
 				D3E7326214C879A4002972B8 /* KCSObjectMapper.h */,
 				D3E7326314C879A4002972B8 /* KCSObjectMapper.m */,
-				271E8240157D70B3000AF9EF /* PropertyUtil.h */,
-				271E8241157D70B3000AF9EF /* PropertyUtil.m */,
+				271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */,
+				271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */,
 			);
 			name = appdataService;
 			sourceTree = "<group>";
@@ -1707,7 +1707,7 @@
 				27E4CE00156A803300B5DF55 /* KCSGroup.h in Headers */,
 				27433012156ED63B00B2BF37 /* KCSLinkedAppdataStore.h in Headers */,
 				274330211575227000B2BF37 /* KCSResource.h in Headers */,
-				271E8242157D70B3000AF9EF /* PropertyUtil.h in Headers */,
+				271E8242157D70B3000AF9EF /* KCSPropertyUtil.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1915,7 +1915,7 @@
 				27E4CE01156A803300B5DF55 /* KCSGroup.m in Sources */,
 				27433013156ED63C00B2BF37 /* KCSLinkedAppdataStore.m in Sources */,
 				274330221575227000B2BF37 /* KCSResource.m in Sources */,
-				271E8243157D70B3000AF9EF /* PropertyUtil.m in Sources */,
+				271E8243157D70B3000AF9EF /* KCSPropertyUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

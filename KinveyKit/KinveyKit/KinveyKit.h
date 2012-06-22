@@ -33,5 +33,6 @@
 #import "KCSCachedStore.h"
 #import "KCSGroup.h"
 #import "KCSReduceFunction.h"
+#import "KCSLinkedAppdataStore.h"
 
 #endif

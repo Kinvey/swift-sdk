@@ -61,8 +61,8 @@
     
     __block BOOL loaded = NO;
     
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1281" withAppSecret:@"441c9a5ac98f4583a399b7609c060cce" usingOptions:nil];
-    [[KCSClient sharedClient] setServiceHostname:@"v3yk1n"]; //TODO: encapsulate in TEST Utils
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1880" withAppSecret:@"6414992408f04132bd467746f7ecbdcf" usingOptions:nil];
+   // [[KCSClient sharedClient] setServiceHostname:@"v3yk1n"]; //TODO: encapsulate in TEST Utils
     [[[KCSClient sharedClient] currentUser] logout];
     [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:YES];
     

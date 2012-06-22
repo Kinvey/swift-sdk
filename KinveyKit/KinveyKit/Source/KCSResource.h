@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+#define kKCSResourceMimeTypeKey @"_mime-type"
+#define kKCSResourceLocationKey @"_loc"
+
 @interface KCSResource : NSObject {
     NSString* _blobName;
 }

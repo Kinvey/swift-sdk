@@ -43,7 +43,7 @@
     // Custom initialization
     KCSCollection *collection = [[KCSClient sharedClient] collectionFromString:@"test_objects" withClass:[KitTestObject class]];
     
-    self.store = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:KCSCachePolicyNone], KCSStoreKeyCachePolicy, collection, kKCSStoreKeyResource, nil]];
+    self.store = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:KCSCachePolicyNone], KCSStoreKeyCachePolicy, collection, KCSStoreKeyResource, nil]];
     self.queryButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 }
 
