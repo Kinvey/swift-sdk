@@ -87,6 +87,8 @@ implementing these methods.
 ///---------------------------------------------------------------------------------------
 /// @name Map from Local to Kinvey property names
 ///---------------------------------------------------------------------------------------
+
+#define KCSEntityKeyId @"_id"
 /*! Provide the mapping from an Entity's representation to the Native Objective-C representation.
  
  

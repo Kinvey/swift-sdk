@@ -240,7 +240,8 @@ getLogDate(void)
         connection = [[KCSConnectionPool asyncConnection] retain];
     }
     
-    [self.request  setHTTPMethod: [self getHTTPMethodForConstant: self.method]];
+    [self.request setHTTPMethod: [self getHTTPMethodForConstant: self.method]];
+    [self.request setHTTPShouldUsePipelining:YES];
     
     for (NSString *key in [self.headers allKeys]) {
         [self.request setValue:[self.headers objectForKey:key] forHTTPHeaderField:key];

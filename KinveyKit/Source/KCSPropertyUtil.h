@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "PropertyUtil.h"
+#import "KCSPropertyUtil.h"
 
-@interface PropertyUtil : NSObject
+@interface KCSPropertyUtil : NSObject
 
 + (NSDictionary *)classPropsFor:(Class)klass;
 

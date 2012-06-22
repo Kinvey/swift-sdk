@@ -310,6 +310,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     NSArray* objectsToOperateOn = [NSArray wrapIfNotArray:object];
     NSMutableArray* objectsToReturn = [NSMutableArray arrayWithCapacity:objectsToOperateOn.count];
     NSUInteger totalCount = objectsToOperateOn.count;
+    __block NSUInteger outstandingCount = totalCount;
     
     __block NSError* topError = nil;
     [objectsToOperateOn enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -325,7 +326,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
                 }
                 [objectsToReturn addObjectsFromArray:objectsOrNil];
                 
-                if (*stop == YES || idx == totalCount - 1) {
+                if (*stop == YES || --outstandingCount == 0) {
                     completionBlock(objectsToReturn, error);
                 }
 
@@ -339,7 +340,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
             if (self.treatSingleFailureAsGroupFailure == YES) {
                 *stop = YES;
             }
-            if (*stop || idx == totalCount - 1) {
+            if (*stop || --outstandingCount == 0) {
                 completionBlock(objectsToReturn, error);
             }
         };

@@ -109,7 +109,6 @@ NSString* mimeType(id obj)
             } else if ([_resource isKindOfClass:[NSString class]]) {
                 location = [_resource lastPathComponent];
             } else if ([_resource isKindOfClass:[UIImage class]]) {
-                //TODO: unique image name
                 CFUUIDRef uuid = CFUUIDCreate(NULL);
                 NSString *uuidString = nil;
                 
@@ -127,18 +126,5 @@ NSString* mimeType(id obj)
     return _blobName;
 }
 
-//- (NSString*) toResource //TODO: specify name
-//{
-//    NSString* location = nil;
-//    if ([_resource isKindOfClass:[NSURL class]]) {
-//        location = [_resource lastPathComponent];
-//    } else if ([_resource isKindOfClass:[NSString class]]) {
-//        location = [_resource lastPathComponent];
-//    } else if ([_resource isKindOfClass:[UIImage class]]) {
-//        //TODO: unique image name
-//        location = [NSString stringWithFormat:@"%@.%@", @"image", @"png"];
-//    } //TODO: general
-//    return location;
-//}
 
 @end
