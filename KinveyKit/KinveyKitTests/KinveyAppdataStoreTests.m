@@ -25,7 +25,7 @@
     STAssertTrue(setup, @"should be set-up");
     
     _collection = [[KCSCollection alloc] init];
-    _collection.collectionName = @"testObjects";
+    _collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
     _collection.objectTemplate = [ASTTestClass class];
     
     _store = [KCSAppdataStore storeWithCollection:_collection options:nil];
@@ -147,7 +147,30 @@ NSArray* largeArray()
 
 - (void)testRemoveOne
 {
+    self.done = NO;
+    __block ASTTestClass* obj = [self makeObject:@"abc" count:100];
+    [_store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        obj = [objectsOrNil objectAtIndex:0];
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
     
+    NSString* objId = obj.objId;
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:4]];
+    
+    self.done = NO;
+    [_store removeObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"Should not have any error, %@", errorOrNil);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [_store loadObjectWithID:objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        NSLog(@"--- %@ -- %@", objectsOrNil, errorOrNil);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
 
 - (void)testRemoveAll
@@ -190,16 +213,16 @@ NSArray* largeArray()
     [baseObjs addObject:[self makeObject:@"one" count:10]];
     [baseObjs addObject:[self makeObject:@"two" count:10]];
     [baseObjs addObject:[self makeObject:@"two" count:10]];
-    KCSCollection* collection = [[KCSCollection alloc] init];
-    collection.collectionName = @"testObjects";
-    collection.objectTemplate = [ASTTestClass class];
-    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
-    [store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
+//    KCSCollection* collection = [[KCSCollection alloc] init];
+//    collection.collectionName = @"testObjects";
+//    collection.objectTemplate = [ASTTestClass class];
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
+    [_store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
     [self poll];
     
     
     self.done = NO;
-    [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
@@ -213,7 +236,7 @@ NSArray* largeArray()
     [self poll];
     
     self.done = NO;
-    [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
@@ -235,17 +258,17 @@ NSArray* largeArray()
     [baseObjs addObject:[self makeObject:@"two" count:30]];
     [baseObjs addObject:[self makeObject:@"two" count:70]];
     [baseObjs addObject:[self makeObject:@"one" count:5]];
-    KCSCollection* collection = [[KCSCollection alloc] init];
-    collection.collectionName = @"testObjects";
-    collection.objectTemplate = [ASTTestClass class];
-    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
-    [store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
+//    KCSCollection* collection = [[KCSCollection alloc] init];
+//    collection.collectionName = @"testObjects";
+//    collection.objectTemplate = [ASTTestClass class];
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
+    [_store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
     [self poll];
     
     
     self.done = NO;
     KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThan forValue:[NSNumber numberWithInt:10]];
-    [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
@@ -259,7 +282,7 @@ NSArray* largeArray()
     [self poll];
     
     self.done = NO;
-    [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];

@@ -16,6 +16,15 @@
 #import "KinveyEntity.h"
 #import "KCSLogManager.h"
 #import "KCSResource.h"
+#import "KCSMetadata.h"
+
+#define kKMDKey @"_kmd"
+#define kACLKey @"_acl"
+
+@interface KCSMetadata ()
+- (id) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)acl;
+- (NSDictionary*) aclValue;
+@end
 
 @protocol KCSDataTypeBuilder <NSObject>
 
@@ -110,7 +119,17 @@ NSDictionary* builderOptions(id object)
         NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
         
         //            KCSLogDebug(@"Mapping from %@ to %@ (using value: %@)", jsonKey, hostKey, [dict valueForKey:jsonKey]);
-        id value = [data valueForKey:jsonKey];
+        
+        id value = nil;
+        if ([jsonKey isEqualToString:KCSEntityKeyMetadata]) {
+            NSDictionary* kmd = [data objectForKey:kKMDKey];
+            NSDictionary* acl = [data objectForKey:kACLKey];
+            KCSMetadata* metadata = [[[KCSMetadata alloc] initWithKMD:kmd acl:acl] autorelease];
+            value = metadata;
+        } else {        
+            value = [data valueForKey:jsonKey];
+        }
+        
         if (value == nil){
             KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key %@ (Host Key %@).  Object not 100%% valid.", jsonKey, hostKey);
             continue;
@@ -248,36 +267,44 @@ BOOL isComplexJSONType(id object, NSString* valueType)
     for (key in kinveyMapping){
         NSString *jsonName = [kinveyMapping valueForKey:key];
         id value = [object valueForKey:key];
-        if (value != nil) {
-            NSString* valueType = [properties valueForKey:key];
-            if (isResourceType(value) == YES) { 
-                NSSet* set = [kinveyMapping keysOfEntriesPassingTest:^BOOL(id key, id obj, BOOL *stop) {
-                    return [obj isEqualToString:@"_id"];
-                }];
-                NSString* objname = set.count == 0 ? nil: [object valueForKey:[set anyObject]];
-                if (objname == nil) {
-                    CFUUIDRef uuid = CFUUIDCreate(NULL);
-                    
-                    if (uuid){
-                        objname = [(NSString *)CFUUIDCreateString(NULL, uuid) autorelease];
-                        CFRelease(uuid);
-                    }
-                }
-                NSString* filename = [NSString stringWithFormat:@"%@-%@-%@%@", collectionName, objname, key, extensionForResource(value)];
-                KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
-                [resourcesToSave addObject:resourceWrapper];
-                [dictionaryToMap setValue:[resourceWrapper dictionaryRepresentation] forKey:jsonName];
-                [resourceWrapper release];
-            } else if (isComplexJSONType(object, valueType) == YES) {
-                id jsonType = [builderForComplexType(object, valueType) JSONCompatabileValueForObject:value];
-                [dictionaryToMap setValue:jsonType forKey:jsonName];
+        
+        if ([jsonName isEqualToString:KCSEntityKeyMetadata]) {
+            KCSMetadata* metadata = value;
+            if (value != nil) {
+                [dictionaryToMap setValue:[metadata aclValue] forKey:kACLKey];
             }
-            else {
-                [dictionaryToMap setValue:value forKey:jsonName];
+        } else {
+            if (value != nil) {
+                NSString* valueType = [properties valueForKey:key];
+                if (isResourceType(value) == YES) { 
+                    NSSet* set = [kinveyMapping keysOfEntriesPassingTest:^BOOL(id key, id obj, BOOL *stop) {
+                        return [obj isEqualToString:@"_id"];
+                    }];
+                    NSString* objname = set.count == 0 ? nil: [object valueForKey:[set anyObject]];
+                    if (objname == nil) {
+                        CFUUIDRef uuid = CFUUIDCreate(NULL);
+                        
+                        if (uuid){
+                            objname = [(NSString *)CFUUIDCreateString(NULL, uuid) autorelease];
+                            CFRelease(uuid);
+                        }
+                    }
+                    NSString* filename = [NSString stringWithFormat:@"%@-%@-%@%@", collectionName, objname, key, extensionForResource(value)];
+                    KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
+                    [resourcesToSave addObject:resourceWrapper];
+                    [dictionaryToMap setValue:[resourceWrapper dictionaryRepresentation] forKey:jsonName];
+                    [resourceWrapper release];
+                } else if (isComplexJSONType(object, valueType) == YES) {
+                    id jsonType = [builderForComplexType(object, valueType) JSONCompatabileValueForObject:value];
+                    [dictionaryToMap setValue:jsonType forKey:jsonName];
+                }
+                else {
+                    [dictionaryToMap setValue:value forKey:jsonName];
+                }
             }
         }
         
-        if ([jsonName isEqualToString:@"_id"]){
+        if ([jsonName isEqualToString:KCSEntityKeyId]){
             objectId = value;
             if (objectId == nil){
                 isPostRequest = YES;
@@ -319,9 +346,17 @@ BOOL isComplexJSONType(id object, NSString* valueType)
     NSString *key;
     for (key in kinveyMapping){
         NSString *jsonName = [kinveyMapping valueForKey:key];
-        [dictionaryToMap setValue:[object valueForKey:key] forKey:jsonName];
         
-        if ([jsonName isEqualToString:@"_id"]){
+        if ([jsonName isEqualToString:KCSEntityKeyMetadata]) {
+            KCSMetadata* metadata = [object valueForKey:key];
+            if (metadata != nil) {
+                [dictionaryToMap setValue:[metadata aclValue] forKey:kACLKey];
+            }
+        } else {
+            [dictionaryToMap setValue:[object valueForKey:key] forKey:jsonName];
+        }
+        
+        if ([jsonName isEqualToString:KCSEntityKeyId]){
             objectId = [object valueForKey:key];
             if (objectId == nil){
                 isPostRequest = YES;

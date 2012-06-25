@@ -16,5 +16,6 @@
 @property (nonatomic) int objCount;
 @property (nonatomic, retain) NSString *objDescription;
 @property (nonatomic, retain) NSDate* date;
+@property (nonatomic, retain) KCSMetadata* meta;
 
 @end
