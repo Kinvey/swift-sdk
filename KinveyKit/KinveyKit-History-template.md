@@ -1,9 +1,17 @@
 # KinveyKit Release History
 
+## 1.5
+
+### 1.5.0
+** Release Date: ** TBD
+
+* Added `KCSMetadata` for entities to map by `KCSEntityKeyMetadata` in `hostToKinveyPropertyMapping`. This provides metadata about the entity and allows for fine-grained read/write permissions. 
+* Added `KCSLinkedAppdataStore` to allow for the saving/loading of `UIImage` properties automatically from our resource service. 
+
 ## 1.4
 
 ### 1.4.0
-** Release Date: ** TBD
+** Release Date: ** June 7th, 2012
 
 * Added`KCSCachedStore` for caching queries to collections. 
 * Added aggregation support (`groupBy:`) to `KCSStore` for app data collections. 

@@ -20,6 +20,7 @@
 #import "KinveyCollection.h"
 #import "KinveyEntity.h"
 #import "KinveyPersistable.h"
+#import "KCSMetadata.h"
 #import "KCSBlobService.h"
 #import "KinveyPing.h"
 #import "KinveyUser.h"
