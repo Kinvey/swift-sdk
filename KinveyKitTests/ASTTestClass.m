@@ -15,6 +15,7 @@
 @synthesize objCount = _objCount;
 @synthesize objDescription = _objDescription;
 @synthesize date = _date;
+@synthesize meta = _meta;
 
 - (id) init
 {
@@ -32,6 +33,7 @@
     if (map == nil){
         map = [NSDictionary dictionaryWithObjectsAndKeys:
                @"_id", @"objId",
+               KCSEntityKeyMetadata, @"meta",
                @"objCount", @"objCount",
                @"objDescription", @"objDescription", 
                @"date", @"date", nil];
