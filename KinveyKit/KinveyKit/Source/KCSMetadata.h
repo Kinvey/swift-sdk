@@ -62,12 +62,12 @@
  @see usersWithWriteAccess
  @see setGloballyWritable:
  */
-- (void) setUsersWithWriteAccess:(NSArray*) readers;
+- (void) setUsersWithWriteAccess:(NSArray*) writers;
 
 /** The global read permission for the associated entity. This could be broader or more restrictive than its collection's permissions.
  @return `YES` if the entity can be read by any user
  @see usersWithReadAccess
- @see setGloballyReadable
+ @see setGloballyReadable:
  */
 - (BOOL) isGloballyReadable;
 
@@ -83,7 +83,7 @@
 /** The global write permission for the associated entity. This could be broader or more restrictive than its collection's permissions.
  @return `YES` if the entity can be modified by any user
  @see usersWithWriteAccess
- @see setGloballyWritable
+ @see setGloballyWritable:
  */
 - (BOOL) isGloballyWritable;
 
