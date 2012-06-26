@@ -67,13 +67,13 @@
 
 - (NSArray*) usersWithWriteAccess
 {
-    NSArray* readers = [acl objectForKey:kACLWritersKey];
-    return readers == nil ? [NSArray array] : readers;
+    NSArray* writers = [acl objectForKey:kACLWritersKey];
+    return writers == nil ? [NSArray array] : writers;
 }
 
-- (void) setUsersWithWriteAccess:(NSArray*) readers
+- (void) setUsersWithWriteAccess:(NSArray*) writers
 {
-    [acl setObject:readers forKey:kACLWritersKey];
+    [acl setObject:writers forKey:kACLWritersKey];
 }
 
 - (BOOL) isGloballyReadable
