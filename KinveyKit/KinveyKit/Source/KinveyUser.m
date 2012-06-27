@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/1/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KinveyUser.h"
@@ -23,11 +23,15 @@
 #import "KCSPush.h"
 
 
+#define kKeychainPasswordKey @"password"
+#define kKeychainUsernameKey @"username"
+#define kKeychainUserIdKey @"_id"
+
 @interface KCSUser()
 @property (nonatomic, retain) NSString *userId;
 @property (nonatomic, retain) NSMutableDictionary *userAttributes;
 
-+ (void)registerUserWithUsername: (NSString *)uname withPassword: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate forceNew: (BOOL)forceNew;
++ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew;
 @end
 
 @implementation KCSUser
@@ -62,7 +66,12 @@
     [super dealloc];
 }
 
-+ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew
++ (BOOL) hasSavedCredentials
+{
+    return [KCSKeyChain getStringForKey:kKeychainPasswordKey] && [KCSKeyChain getStringForKey:kKeychainUsernameKey];
+}
+
++ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew
 {
     BOOL localInitInProgress = NO;
     KCSClient *client = [KCSClient sharedClient];
@@ -89,7 +98,7 @@
             if ([now compare:timeoutTime] == NSOrderedDescending){
                 // TIMEOUT!  Give up!
                 // We're not in a critical section and we don't have anything locked, so do some work before we quit.
-                if (delegate != nil){
+                if (completionBlock != nil){
                     // We're going to Make a failure happen here...
                     NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
                                                                                        withFailureReason:@"User creation timed out with one request holding the lock." 
@@ -97,9 +106,10 @@
                                                                                      withRecoveryOptions:nil];
 
                     // No user, it's during creation
-                    [delegate user:nil actionDidFailWithError:[NSError errorWithDomain:KCSUserErrorDomain
-                                                                                   code:KCSUserCreationContentionTimeoutError
-                                                                               userInfo:userInfo]];
+                    NSError* error = [NSError errorWithDomain:KCSUserErrorDomain 
+                                                         code:KCSUserCreationContentionTimeoutError
+                                                     userInfo:userInfo];
+                    completionBlock(nil, error, 0);
                     return;
                 } else {
                     // There is no request, the current user was not initialized by us, but someone was initializing the user, so we can
@@ -117,13 +127,14 @@
     // If we didn't, we need to check to see if there are keychain items.
 
     if (forceNew){
-        [KCSKeyChain removeStringForKey: @"username"];
-        [KCSKeyChain removeStringForKey: @"password"];
+        [KCSKeyChain removeStringForKey: kKeychainUsernameKey];
+        [KCSKeyChain removeStringForKey: kKeychainPasswordKey];
+        [KCSKeyChain removeStringForKey: kKeychainUserIdKey];
     }
     
     __block KCSUser *createdUser = [[KCSUser alloc] init];
     
-    createdUser.username = [KCSKeyChain getStringForKey:@"username"];
+    createdUser.username = [KCSKeyChain getStringForKey:kKeychainUsernameKey];
     
     if (createdUser.username == nil){
         // No user, generate it, note, use the APP KEY/APP SECRET!
@@ -186,9 +197,10 @@
                                                                                  withRecoveryOptions:nil];
                 
                 // No user, it's during creation
-                [delegate user:nil actionDidFailWithError:[NSError errorWithDomain:KCSUserErrorDomain
-                                                                              code:KCSUnexpectedError
-                                                                          userInfo:userInfo]];
+                NSError* error = [NSError errorWithDomain:KCSUserErrorDomain
+                                                     code:KCSUnexpectedError
+                                                 userInfo:userInfo];
+                completionBlock(nil, error, 0);
                 // This must be released in all paths
                 [createdUser release];
                 return;
@@ -203,9 +215,9 @@
             
             assert(createdUser.username != nil && createdUser.password != nil && createdUser.userId != nil);
             
-            [KCSKeyChain setString:createdUser.username forKey:@"username"];
-            [KCSKeyChain setString:createdUser.password forKey:@"password"];
-            [KCSKeyChain setString:createdUser.userId forKey:@"userId"];
+            [KCSKeyChain setString:createdUser.username forKey:kKeychainUsernameKey];
+            [KCSKeyChain setString:createdUser.password forKey:kKeychainPasswordKey];
+            [KCSKeyChain setString:createdUser.userId forKey:kKeychainUserIdKey];
             
             [[KCSClient sharedClient] setAuthCredentials:[NSURLCredential credentialWithUser:createdUser.username password:createdUser.password persistence:NSURLCredentialPersistenceNone]];
             [[KCSClient sharedClient] setCurrentUser:createdUser];
@@ -215,7 +227,7 @@
             client.userAuthenticationInProgress = NO;
             
             // NB: The delegate MUST retain created user!
-            [delegate user:createdUser actionDidCompleteWithResult:KCSUserCreated];
+            completionBlock(createdUser, nil, KCSUserCreated);
 
             // This must be released in all paths
             [createdUser release];
@@ -239,9 +251,10 @@
                                                                              withRecoveryOptions:nil];
             
             // No user, it's during creation
-            [delegate user:nil actionDidFailWithError:[NSError errorWithDomain:KCSUserErrorDomain
-                                                                          code:KCSUnexpectedError
-                                                                      userInfo:userInfo]];
+            NSError* newError = [NSError errorWithDomain:KCSUserErrorDomain
+                                                 code:KCSUnexpectedError
+                                             userInfo:userInfo];
+            completionBlock(nil, newError, 0);
 
             // This must be released in all paths
             [createdUser release];
@@ -255,14 +268,15 @@
         
         
     } else {
-        createdUser.password = [KCSKeyChain getStringForKey:@"password"];
+        createdUser.password = [KCSKeyChain getStringForKey:kKeychainPasswordKey];
+        createdUser.userId = [KCSKeyChain getStringForKey:kKeychainUserIdKey];
         [[KCSClient sharedClient] setAuthCredentials:[NSURLCredential credentialWithUser:createdUser.username password:createdUser.password persistence:NSURLCredentialPersistenceNone]];
         client.userIsAuthenticated = YES;
         client.userAuthenticationInProgress = NO;
         [[KCSClient sharedClient] setCurrentUser:createdUser];
         
         // Delegate must retain createdUser
-        [delegate user:createdUser actionDidCompleteWithResult:KCSUserFound];
+        completionBlock(createdUser, nil, KCSUserFound);
 
         // This must be released in all paths
         [createdUser release];
@@ -280,7 +294,9 @@
 // These routines all do similar work, but the first two are for legacy support
 - (void)initializeCurrentUserWithRequest: (KCSRESTRequest *)request
 {
-    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:NO];
+    [KCSUser registerUserWithUsername:nil withPassword:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        //... do nothing with result
+    } forceNew:NO];
     if (request){
         [request start];
     }
@@ -293,7 +309,9 @@
 
 + (void)initCurrentUser
 {
-    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:NO];
+    [KCSUser registerUserWithUsername:nil withPassword:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        //... do nothing with result
+    } forceNew:NO];
 }
 
 + (void)userWithUsername: (NSString *)username
@@ -301,7 +319,20 @@
             withDelegate: (id<KCSUserActionDelegate>)delegate
 {
     // Ensure the old user is gone...
-    [KCSUser registerUserWithUsername:username withPassword:password withDelegate:delegate forceNew:YES];
+    [KCSUser registerUserWithUsername:username withPassword:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        if (delegate != nil) {
+            if (errorOrNil != nil) {
+                [delegate user:user actionDidFailWithError:errorOrNil];
+            } else {
+                [delegate user:user actionDidCompleteWithResult:result];
+            }
+        }
+    } forceNew:YES];
+}
+
++ (void) userWithUsername:(NSString *)username password:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    [KCSUser registerUserWithUsername:username withPassword:password withCompletionBlock:completionBlock forceNew:YES];
 }
 
 + (void)loginWithUsername: (NSString *)username
@@ -363,9 +394,9 @@
             
             assert(createdUser.username != nil && createdUser.password != nil && createdUser.userId != nil);
             
-            [KCSKeyChain setString:createdUser.username forKey:@"username"];
-            [KCSKeyChain setString:createdUser.password forKey:@"password"];
-            [KCSKeyChain setString:createdUser.userId forKey:@"userId"];
+            [KCSKeyChain setString:createdUser.username forKey:kKeychainUsernameKey];
+            [KCSKeyChain setString:createdUser.password forKey:kKeychainPasswordKey];
+            [KCSKeyChain setString:createdUser.userId forKey:kKeychainUserIdKey];
             
             [[KCSClient sharedClient] setAuthCredentials:[NSURLCredential credentialWithUser:createdUser.username password:createdUser.password persistence:NSURLCredentialPersistenceNone]];
             [[KCSClient sharedClient] setCurrentUser:createdUser];
@@ -449,9 +480,9 @@
         self.password = nil;
         self.userId = nil;
         
-        [KCSKeyChain removeStringForKey:@"username"];
-        [KCSKeyChain removeStringForKey:@"password"];
-        [KCSKeyChain removeStringForKey:@"_id"];
+        [KCSKeyChain removeStringForKey:kKeychainUsernameKey];
+        [KCSKeyChain removeStringForKey:kKeychainUsernameKey];
+        [KCSKeyChain removeStringForKey:kKeychainUserIdKey];
         
         // Set the currentUser to nil
         [[KCSClient sharedClient] setCurrentUser:nil];

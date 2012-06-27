@@ -225,6 +225,18 @@ NSObject* parseJSON(NSData* data)
     }
     
     KCSCollection* collection = self.backingCollection;
+    NSArray* array = [NSArray wrapIfNotArray:objectID];
+    if ([array containsObject:@""]) {
+        dispatch_async(dispatch_get_current_queue(), ^{
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID." 
+                                                                               withFailureReason:@"Object id cannot be empty."
+                                                                          withRecoverySuggestion:nil
+                                                                             withRecoveryOptions:nil];
+            NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
+            completionBlock(nil, error);
+        });
+        return;
+    }
     
     RestRequestForObjBlock_t requestBlock = ^KCSRESTRequest *(id obj) {
         NSString *resource = nil;

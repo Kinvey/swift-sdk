@@ -201,6 +201,21 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 - (void)loadObjectWithID:(NSString *)objectID fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
 {
+    if (objectID == nil || [objectID isEqualToString:@""]) {
+        //id cannot be nil, check first
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID." 
+                                                                           withFailureReason:@"Object id cannot be empty."
+                                                                      withRecoverySuggestion:nil
+                                                                         withRecoveryOptions:nil];
+        NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
+        if (delegate != nil) {
+            [delegate entity:nil fetchDidFailWithError:error];
+        }
+        return;
+    }
+
+    
+    
     NSString *resource = nil;
     // This is the user collection...
     if ([collection.collectionName isEqualToString:@""]){
