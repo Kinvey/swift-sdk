@@ -2,7 +2,7 @@
 //  KinveyUser.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -92,6 +92,9 @@ typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUs
 /*! Device Tokens of this User */
 @property (nonatomic, copy) NSArray *deviceTokens;
 
+
++ (BOOL) hasSavedCredentials;
+
 ///---------------------------------------------------------------------------------------
 /// @name KinveyKit Internal Services
 ///---------------------------------------------------------------------------------------
@@ -134,6 +137,13 @@ typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUs
  * @param delegate The delegate to inform once creation completes
 */
 + (void)userWithUsername: (NSString *)username password: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate;
+
+
+/** 
+ @param
+ */
++ (void) userWithUsername:(NSString *)username password:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
 
 ///---------------------------------------------------------------------------------------
 /// @name Managing the Current User
