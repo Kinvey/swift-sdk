@@ -31,12 +31,21 @@
 @synthesize lastModifiedTime;
 @synthesize acl;
 
+- (id) init
+{
+    self = [super init];
+    if (self) {
+        acl = [[NSMutableDictionary dictionary] retain];
+    }
+    return self;
+}
+
 - (id) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)pACL
 {
     self = [super init];
     if (self) {
         NSString* lmt = [kmd objectForKey:kKMDLMTKey];
-        lastModifiedTime = [[NSDate dateFromISO8601EncodedString:lmt] retain];
+        lastModifiedTime = [[NSDate dateFromISO8601EncodedString:lmt] retain];     
         acl = [[NSMutableDictionary dictionaryWithDictionary:pACL] retain];
     }
     return self;
