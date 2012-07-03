@@ -10,6 +10,10 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import <KinveyKit/KinveyKit.h>
 
+@interface KCSUser (TestUtils)
++ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
+@end
+
 @interface SenTestCase (TestUtils)
 @property (nonatomic) BOOL done;
 - (void) poll;

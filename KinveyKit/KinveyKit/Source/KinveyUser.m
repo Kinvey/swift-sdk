@@ -286,9 +286,19 @@
     // NB: We don't release here since the blocks won't have a chance to retain this value until WAAAAAAY later
     // NB: I expect this is a good use for an autorelease pool.
     // [createdUser release];
-    
-    
-    
+}
+
++ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew
+{
+    [self registerUserWithUsername:uname withPassword:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        if (delegate != nil) {
+            if (errorOrNil != nil) {
+                [delegate user:user actionDidFailWithError:errorOrNil];
+            } else {
+                [delegate user:user actionDidCompleteWithResult:result];
+            }
+        }
+    } forceNew:forceNew];
 }
 
 // These routines all do similar work, but the first two are for legacy support
