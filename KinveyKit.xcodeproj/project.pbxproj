@@ -2049,6 +2049,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 				);
+				LIBRARY_VERSION = "1.5-SANDBOX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
@@ -2142,6 +2143,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 				);
+				LIBRARY_VERSION = "1.5-SANDBOX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
@@ -2162,6 +2164,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 				);
+				LIBRARY_VERSION = "1.5-SANDBOX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;

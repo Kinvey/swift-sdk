@@ -24,5 +24,7 @@
 	<string>1</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
+	<key>KCSLibraryVersion</key>
+	<string>${LIBRARY_VERSION}</string>
 </dict>
 </plist>
