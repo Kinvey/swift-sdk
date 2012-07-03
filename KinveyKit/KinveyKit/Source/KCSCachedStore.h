@@ -29,8 +29,8 @@ typedef enum KCSCachePolicy {
  - `KCSCachePolicyNone` - No caching, all queries are sent to the server.
  - `KCSCachePolicyLocalOnly` - Only the cache is queried, the server is never called. If a result is not in the cache, an error is returned.
  - `KCSCachePolicyLocalFirst` - The cache is queried and if the result is stored, the `completionBlock` is called with that value. The cache is then updated in the background. If the cache does not contain a result for the query, then the server is queried first.
- - `KCSCahcePolicyNetworkFirst` - The network is queried and the cache is updated with each result. The cached value is only returned when the network is unavailable. 
- - `KCSCahcePolicyBoth` - If available, the cached value is returned to `completionBlock`. The network is then queried and cache updated, afterwards. The `completionBlock` will be called again with the updated result from the server.
+ - `KCSCachePolicyNetworkFirst` - The network is queried and the cache is updated with each result. The cached value is only returned when the network is unavailable. 
+ - `KCSCachePolicyBoth` - If available, the cached value is returned to `completionBlock`. The network is then queried and cache updated, afterwards. The `completionBlock` will be called again with the updated result from the server.
  
  For an individual store, the chace policy can inherit from the defaultCachePolicy, be set using storeWithOptions: factory constructor, supplying the enum for the key `KCSStoreKeyCahcePolicy`.
  */
