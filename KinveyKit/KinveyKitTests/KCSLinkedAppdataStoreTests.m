@@ -137,6 +137,38 @@
     [self poll];
 }
 
+
+- (void) testWithQuery
+{
+    __block TestClass* obj = [[TestClass alloc] init];
+    obj.objDescription = @"test load";
+    obj.resource = [self makeImage];
+    
+    self.done = NO;
+    
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"should not be any errors");
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        
+        obj = [objectsOrNil objectAtIndex:0];
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:obj.kinveyObjectId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"should not be any errors");
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        
+        TestClass* loaded = [objectsOrNil objectAtIndex:0];
+        STAssertNotNil(loaded.resource, @"need a resource filled out");
+        STAssertTrue([loaded.resource isKindOfClass:[UIImage class]], @"expecting an UIImage out");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+    }];
+    [self poll];
+    
+}
 //TODO: TEST1000, TEST MAGNITUTDE DIFFERENCE
 
 
