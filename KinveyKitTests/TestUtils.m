@@ -11,6 +11,12 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import <objc/runtime.h>
 
+NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
+{
+    return [NSDictionary dictionaryWithObjectsAndKeys:originalResponse, @"result", nil];
+}
+
+
 @implementation SenTestCase (TestUtils)
 @dynamic done;
 #define MAX_POLL_COUNT 20

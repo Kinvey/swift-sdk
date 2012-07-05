@@ -260,9 +260,7 @@ getLogDate(void)
     [self.request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
     
     // Let the server know we want wrapped json erors
-#if NEVER && KCS_FEATURE_SUPPORT
     [self.request setValue:@"true" forHTTPHeaderField:@"X-Kinvey-ResponseWrapper"];
-#endif 
     
     KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
     if (cred.requiresAuthentication){

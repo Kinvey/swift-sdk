@@ -258,10 +258,6 @@ NSArray* largeArray()
     [baseObjs addObject:[self makeObject:@"two" count:30]];
     [baseObjs addObject:[self makeObject:@"two" count:70]];
     [baseObjs addObject:[self makeObject:@"one" count:5]];
-//    KCSCollection* collection = [[KCSCollection alloc] init];
-//    collection.collectionName = @"testObjects";
-//    collection.objectTemplate = [ASTTestClass class];
-//    KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
     [_store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
     [self poll];
     

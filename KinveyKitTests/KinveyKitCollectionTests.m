@@ -18,6 +18,7 @@
 #import "KinveyEntity.h"
 #import "KCSConnectionPool.h"
 #import "KCSQuery.h"
+#import "TestUtils.h"
 
 
 typedef BOOL(^SuccessAction)(NSArray *);
@@ -148,7 +149,7 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 - (void)testFetchAll
 {
-    NSDictionary *dict = [NSDictionary dictionaryWithObject:self.completeDataSet forKey:@"items"];
+    NSDictionary *dict = wrapResponseDictionary([NSDictionary dictionaryWithObject:self.completeDataSet forKey:@"items"]);
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
                                                                            responseData:[self.writer dataWithObject:dict]
                                                                              headerData:nil
@@ -181,7 +182,7 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 - (void) testQueryWithDelegate
 {
-    NSDictionary *dict = [NSDictionary dictionaryWithObject:self.completeDataSet forKey:@"items"];
+    NSDictionary *dict = wrapResponseDictionary([NSDictionary dictionaryWithObject:self.completeDataSet forKey:@"items"]);
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
                                                                            responseData:[self.writer dataWithObject:dict]
                                                                              headerData:nil
@@ -252,11 +253,11 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 - (void)testCountFunction
 {
-    NSDictionary *zero = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:0] forKey:@"count"];
-    NSDictionary *one  = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:1] forKey:@"count"];
-    NSDictionary *bigNum = [NSDictionary dictionaryWithObject:[NSNumber numberWithLongLong:0x7fffffffffffffffLL] forKey:@"count"];
-    NSDictionary *negative = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:-1] forKey:@"count"];
-    NSDictionary *fraction = [NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:3.14156] forKey:@"count"];
+    NSDictionary *zero = wrapResponseDictionary([NSDictionary dictionaryWithObject:[NSNumber numberWithInt:0] forKey:@"count"]);
+    NSDictionary *one  =  wrapResponseDictionary([NSDictionary dictionaryWithObject:[NSNumber numberWithInt:1] forKey:@"count"]);
+    NSDictionary *bigNum =  wrapResponseDictionary([NSDictionary dictionaryWithObject:[NSNumber numberWithLongLong:0x7fffffffffffffffLL] forKey:@"count"]);
+    NSDictionary *negative =  wrapResponseDictionary([NSDictionary dictionaryWithObject:[NSNumber numberWithInt:-1] forKey:@"count"]);
+    NSDictionary *fraction =  wrapResponseDictionary([NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:3.14156] forKey:@"count"]);
 
     KCSClient *client = [KCSClient sharedClient];
     KCSCollection *collection = [client collectionFromString:@"test" withClass:[SimpleClass class]];
