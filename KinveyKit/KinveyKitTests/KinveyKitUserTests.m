@@ -105,9 +105,9 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     connection.delayInMSecs = 0.0;
     
     // Success dictionary
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"brian", @"username",
+    NSDictionary *dictionary = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:@"brian", @"username",
                                 @"12345", @"password",
-                                @"hello", @"_id", nil];
+                                @"hello", @"_id", nil]);
     
     connection.responseForSuccess = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_CREATED
                                                                          responseData:[self.writer dataWithObject:dictionary]
@@ -205,9 +205,9 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     connection.connectionShouldFail = NO;
     
     // Success dictionary
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:testUsername, @"username",
+    NSDictionary *dictionary = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:testUsername, @"username",
                                 testPassword, @"password",
-                                @"hello", @"_id", nil];
+                                @"hello", @"_id", nil]);
     
     connection.responseForSuccess = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_CREATED
                                                                          responseData:[self.writer dataWithObject:dictionary]
@@ -242,10 +242,10 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     connection.connectionShouldFail = NO;
     
     // Success dictionary
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+    NSDictionary *dictionary = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:
                                 testPassword, @"password",
                                 testUsername, @"password",
-                                @"28hjkshafkh982kjh", @"_id", nil];
+                                @"28hjkshafkh982kjh", @"_id", nil]);
 
     connection.responseForSuccess = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_OK
                                                                          responseData:[self.writer dataWithObject:dictionary]
@@ -306,9 +306,9 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     
     // Success dictionary
     // Success dictionary
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:testUsername, @"username",
+    NSDictionary *dictionary = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:testUsername, @"username",
                                 testPassword, @"password",
-                                @"hello", @"_id", nil];
+                                @"hello", @"_id", nil]);
     
     connection.responseForSuccess = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_CREATED
                                                                          responseData:[self.writer dataWithObject:dictionary]
@@ -404,12 +404,12 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     assertThat([currentUser getValueForAttribute:cKey], is(equalToBool([alive boolValue])));
     
     // Prepare request
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"brian", @"username",
+    NSDictionary *dictionary = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:@"brian", @"username",
                                 @"12345", @"password",
                                 @"That's the combination for my luggage", @"_id",
                                 age_, aKey,
                                 bPlace_, bKey,
-                                alive_, cKey, nil];
+                                alive_, cKey, nil]);
     
     KCSMockConnection *connection = [[KCSMockConnection alloc] init];
     

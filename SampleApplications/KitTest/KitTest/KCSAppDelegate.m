@@ -58,24 +58,25 @@
     ///////////////////////////
     // START OF KINVEY CODE
     //////////////////////////
-//    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-//                             @"kid1089", KCS_APP_KEY_KEY,
-//                             @"ad8f7ea0538147f89a7f75dd95491fdf", KCS_APP_SECRET_KEY,
-//                             @"OzPSPvSJTyq0LTOIdff_dA", KCS_PUSH_KEY_KEY,
-//                             @"ETHhR_GCRsq5QqhRLCp0ew", KCS_PUSH_SECRET_KEY,
-//                             @"NO", KCS_PUSH_IS_ENABLED_KEY,
-//                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
-
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             @"kid1095", KCS_APP_KEY_KEY,                             
-                             @"f1d070d7fc1e4470bedb0b07a1fd3253", KCS_APP_SECRET_KEY,
-                             @"vUxZ0EX0RLG2vxnfGJEgRg", KCS_PUSH_KEY_KEY,
-                             @"-SfD84xsTay1ufWXbaGwZQ", KCS_PUSH_SECRET_KEY,
-                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
+                             @"kid1089", KCS_APP_KEY_KEY,
+                             @"ad8f7ea0538147f89a7f75dd95491fdf", KCS_APP_SECRET_KEY,
+                             @"OzPSPvSJTyq0LTOIdff_dA", KCS_PUSH_KEY_KEY,
+                             @"ETHhR_GCRsq5QqhRLCp0ew", KCS_PUSH_SECRET_KEY,
+                             @"NO", KCS_PUSH_IS_ENABLED_KEY,
                              KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
+
+//    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+//                             @"kid1095", KCS_APP_KEY_KEY,                             
+//                             @"f1d070d7fc1e4470bedb0b07a1fd3253", KCS_APP_SECRET_KEY,
+//                             @"vUxZ0EX0RLG2vxnfGJEgRg", KCS_PUSH_KEY_KEY,
+//                             @"-SfD84xsTay1ufWXbaGwZQ", KCS_PUSH_SECRET_KEY,
+//                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
+//                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
 
     
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
+    [KCSClient sharedClient].serviceHostname = @"v3yk1n";
     [[KCSPush sharedPush] onLoadHelper:options];
 //    [[KCSClient sharedClient] setServiceHostname:@"console-staging"];
 

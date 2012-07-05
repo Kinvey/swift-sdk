@@ -16,6 +16,7 @@
 #import "KCSMockConnection.h"
 #import "KCSConnectionPool.h"
 #import "KCS_SBJsonWriter.h"
+#import "TestUtils.h"
 
 @interface TestEntity : NSObject
 @property (nonatomic, retain) NSString* key;
@@ -42,10 +43,8 @@ static float pollTime;
     if (store == nil) {
         return false;
     }
-    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"val", @"key",
-                          nil];
-    
-    
+    NSDictionary *dict = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:@"val", @"key",
+                          nil]);
     
     KCS_SBJsonWriter* jsonwriter = [[KCS_SBJsonWriter alloc] init];
     NSData* data = [jsonwriter dataWithObject:dict];
