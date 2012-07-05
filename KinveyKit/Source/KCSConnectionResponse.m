@@ -3,10 +3,11 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/23/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KCSConnectionResponse.h"
+#import "KCS_SBJsonParser.h"
 
 @implementation KCSConnectionResponse
 
@@ -45,5 +46,24 @@
     [super dealloc];
 }
 
+
+- (NSString*) stringValue
+{
+    return [[[NSString alloc] initWithData:self.responseData encoding:NSUTF8StringEncoding] autorelease];
+}
+
+- (NSObject*) jsonResponseValue 
+{
+    // New KCS behavior, not ready yet
+#if NEVER && KCS_NEW_BEHAVIOR_READY
+    NSDictionary *jsonResponse = [self.responseData objectFromJSONData];
+    NSObject *jsonData = [jsonResponse valueForKey:@"result"];
+#else  
+    KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+    NSObject *jsonData = [parser objectWithData:self.responseData];
+    [parser release];
+#endif   
+    return jsonData;
+}
 
 @end

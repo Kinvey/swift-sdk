@@ -85,8 +85,7 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
             if (response.responseCode == KCS_HTTP_STATUS_OK){
                 onComplete(YES, response, nil);                
             } else {
-                KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
-                NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
+                NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
                 NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Unable to Ping Kinvey" errorCode:response.responseCode domain:KCSNetworkErrorDomain];
                 onComplete(NO, nil, error);
             }
@@ -147,9 +146,7 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
     KCSCommonPingBlock cpb = ^(BOOL didSucceed, KCSConnectionResponse *response, NSError *error){
         NSString *description = nil;
         if (didSucceed){
-            KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-            NSDictionary *jsonData = [parser objectWithData:response.responseData];
-            [parser release];
+            NSDictionary *jsonData = (NSDictionary*) [response jsonResponseValue];
             NSNumber *useOldStyle = [[[KCSClient sharedClient] options] valueForKey:KCS_USE_OLD_PING_STYLE_KEY];
             if ([useOldStyle boolValue]){
                 description = [jsonData description];

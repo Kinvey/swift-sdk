@@ -10,7 +10,6 @@
 #import "KinveyCollection.h"
 #import "KCSClient.h"
 #import "NSString+KinveyAdditions.h"
-#import "SBJson.h"
 #import "KCSRESTRequest.h"
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSConnectionResponse.h"
@@ -45,18 +44,9 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
         
         KCSLogTrace(@"In collection callback with response: %@", response);
         NSMutableArray *processedData = [[NSMutableArray alloc] init];
-        
-        
-        // New KCS behavior, not ready yet
-#if 0
-        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
-        NSObject *jsonData = [jsonResponse valueForKey:@"result"];
-#else  
-        KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-        NSObject *jsonData = [parser objectWithData:response.responseData];
-        [parser release];
-#endif        
-        NSArray *jsonArray;
+
+        NSObject* jsonData = [response jsonResponseValue];
+        NSArray *jsonArray = nil;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:(NSDictionary*) jsonData description:@"Collection fetch was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             if (delegate){
@@ -452,15 +442,8 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
-        [parser release];
-#if 0
-        // Needs KCS update for this feature
-        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
-#else
-        NSDictionary *responseToReturn = jsonResponse;
-#endif
+        NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
+
         int count;
 
         if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -470,7 +453,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
             return;
         }
 
-        NSString *val = [responseToReturn valueForKey:@"count"];
+        NSString *val = [jsonResponse valueForKey:@"count"];
         
         if (val){
             count = [val intValue];
@@ -501,15 +484,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
-        [parser release];
-#if 0
-        // Needs KCS update for this feature
-        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
-#else
-        NSDictionary *responseToReturn = jsonResponse;
-#endif
+        NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         int count;
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -518,7 +493,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
             return;
         }
         
-        NSString *val = [responseToReturn valueForKey:@"count"];
+        NSString *val = [jsonResponse valueForKey:@"count"];
         
         if (val){
             count = [val intValue];

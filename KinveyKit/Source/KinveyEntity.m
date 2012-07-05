@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/13/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KinveyEntity.h"
@@ -22,11 +22,6 @@
 #import "KCSObjectMapper.h"
 #import "KCSLogManager.h"
 #import "NSArray+KinveyAdditions.h"
-
-//#import "KinveyCollection.h"
-//
-
-//#import "KinveyPersistable.h"
 
 // For assoc storage
 #import <Foundation/Foundation.h>
@@ -48,14 +43,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      id <KCSEntityDelegate> delegate)
 {
      *cBlock = [^(KCSConnectionResponse *response){
-         KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
-        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
-#if 0
-        // Needs KCS update for this feature
-//        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
-#else
-//        NSDictionary *responseToReturn = jsonResponse;
-#endif
+         NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity fetch operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
@@ -266,22 +254,15 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     [request addBody:[writer dataWithObject:dictionaryToMap]];
     
     // Prepare our handlers
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
-        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
-#if 0
-        // Needs KCS update for this feature
-        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
-#else
-        NSDictionary *responseToReturn = jsonResponse;
-#endif
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
+        NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
 
             [delegate entity:self operationDidFailWithError:error];
         } else {
-            [delegate entity:self operationDidCompleteWithResult:responseToReturn];
+            [delegate entity:self operationDidCompleteWithResult:jsonResponse];
         }
     };
 
@@ -336,21 +317,14 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     [request addBody:[writer dataWithObject:dictionaryToMap]];
     
     // Prepare our handlers
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
-        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
-#if 0
-        // Needs KCS update for this feature
-        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
-#else
-        NSDictionary *responseToReturn = jsonResponse;
-#endif
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
+        NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             onCompletion(nil, error);
         } else {
-            onCompletion([NSArray arrayWithObject:responseToReturn], nil);
+            onCompletion([NSArray arrayWithObject:jsonResponse], nil);
         }
     };
     
@@ -384,20 +358,13 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
     // Prepare our handlers
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
-        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
-#if 0
-        // Needs KCS update for this feature
-        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
-#else
-        NSDictionary *responseToReturn = jsonResponse;
-#endif
+        NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
             NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             [delegate entity:self operationDidFailWithError:error];
         } else {
-            [delegate entity:self operationDidCompleteWithResult:responseToReturn];
+            [delegate entity:self operationDidCompleteWithResult:jsonResponse];
         }
     };
     
@@ -426,21 +393,14 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kDeleteRESTMethod];
     
     // Prepare our handlers
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
-        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
-#if 0
-        // Needs KCS update for this feature
-        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
-#else
-        NSDictionary *responseToReturn = jsonResponse;
-#endif
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
+        NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
             NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             onCompletion(nil, error);
         } else {
-            onCompletion([NSArray arrayWithObjectOrNil:responseToReturn], nil);
+            onCompletion([NSArray arrayWithObjectOrNil:jsonResponse], nil);
         }
     };
     
