@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/28/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KCSRESTRequest.h"
@@ -26,10 +26,7 @@
 
 // KINVEY KCS API VERSION
 #define KINVEY_KCS_API_VERSION_HEADER @"X-Kinvey-API-Version"
-
-// For when api 1 is complete
-// #define KINVEY_KCS_API_VERSION @"1"
-#define KINVEY_KCS_API_VERSION @"0"
+#define KINVEY_KCS_API_VERSION @"1"
 
 
 void clogResource(NSString *resource, NSInteger requestMethod);
@@ -261,7 +258,12 @@ getLogDate(void)
 
     // Let the server know that we support GZip.
     [self.request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
-
+    
+    // Let the server know we want wrapped json erors
+#if NEVER && KCS_FEATURE_SUPPORT
+    [self.request setValue:@"true" forHTTPHeaderField:@"X-Kinvey-ResponseWrapper"];
+#endif 
+    
     KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
     if (cred.requiresAuthentication){
         NSString *authString = [cred HTTPBasicAuthString];

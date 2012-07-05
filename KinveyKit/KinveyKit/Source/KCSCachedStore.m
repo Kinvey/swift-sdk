@@ -187,6 +187,14 @@ static KCSCachePolicy sDefaultCachePolicy = KCSCachePolicyNone;
 }
 
 #pragma mark - Querying/Fetching
+NSError* createCacheError(NSString* message) 
+{
+    NSDictionary* userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:message
+                                                                       withFailureReason:@"The specified query could not be found in the cache" 
+                                                                  withRecoverySuggestion:@"Resend query with cache policy that allows network connectivity" 
+                                                                     withRecoveryOptions:nil];
+    return [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSNotFoundError userInfo:userInfo];
+}
 
 #if BUILD_FOR_UNIT_TEST
 int reachable = -1;
@@ -243,14 +251,7 @@ int reachable = -1;
 - (void) completeQuery:(id)obj withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     dispatch_async(dispatch_get_current_queue(), ^{
-        NSError* error = nil;
-        if (obj == nil) {
-            NSDictionary* userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Query not in cache" 
-                                                                               withFailureReason:@"The specified query could not be found in the cache" 
-                                                                          withRecoverySuggestion:@"Resend query with cache policy that allows network connectivity" 
-                                                                             withRecoveryOptions:nil];
-            error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSNotFoundError userInfo:userInfo];
-        }
+        NSError* error = (obj == nil) ? createCacheError(@"Query not in cache") : nil;
         completionBlock(obj, error); 
     });
 }
@@ -293,14 +294,7 @@ int reachable = -1;
 - (void) completeGroup:(id)obj withCompletionBlock:(KCSGroupCompletionBlock)completionBlock
 {
     dispatch_async(dispatch_get_current_queue(), ^{
-        NSError* error = nil;
-        if (obj == nil) {
-            NSDictionary* userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Grouping query not in cache" 
-                                                                               withFailureReason:@"The specified query could not be found in the cache" 
-                                                                          withRecoverySuggestion:@"Resend query with cache policy that allows network connectivity" 
-                                                                             withRecoveryOptions:nil];
-            error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSNotFoundError userInfo:userInfo];
-        }
+        NSError* error = (obj == nil) ? createCacheError(@"Grouping query not in cache") : nil;
         completionBlock(obj, error); 
     });
 }
@@ -345,14 +339,7 @@ int reachable = -1;
 - (void) completeLoad:(id)obj withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     dispatch_async(dispatch_get_current_queue(), ^{
-        NSError* error = nil;
-        if (obj == nil) {
-            NSDictionary* userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Grouping query not in cache" 
-                                                                               withFailureReason:@"The specified query could not be found in the cache" 
-                                                                          withRecoverySuggestion:@"Resend query with cache policy that allows network connectivity" 
-                                                                             withRecoveryOptions:nil];
-            error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSNotFoundError userInfo:userInfo];
-        }
+        NSError* error = (obj == nil) ? createCacheError(@"Load query not in cache" ) : nil;
         completionBlock(obj, error); 
     });
 }

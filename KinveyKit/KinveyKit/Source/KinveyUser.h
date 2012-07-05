@@ -139,8 +139,10 @@ typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUs
 + (void)userWithUsername: (NSString *)username password: (NSString *)password withDelegate: (id<KCSUserActionDelegate>)delegate;
 
 
-/** 
- @param
+/** Create a new Kinvey user and register them with the backend.
+ * @param username The username to create, if it already exists on the back-end an error will be returned.
+ * @param password The user's password
+ * @param completionBlock The callback to perform when the creation completes (or errors).
  */
 + (void) userWithUsername:(NSString *)username password:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
