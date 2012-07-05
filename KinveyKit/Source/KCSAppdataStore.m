@@ -133,13 +133,7 @@ KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock on
 #endif        
         NSArray *jsonArray;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Collection grouping was unsuccessful."
-                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
-                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
-                                                                             withRecoveryOptions:nil];
-            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
-                                                 code:[response responseCode]
-                                             userInfo:userInfo];
+            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Collection grouping was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             onComplete(nil, error);
             
             [processedData release];
@@ -442,15 +436,8 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 #else
         NSDictionary *responseToReturn = jsonResponse;
 #endif
-        NSError* error = nil;
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Entity operation was unsuccessful."
-                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
-                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
-                                                                             withRecoveryOptions:nil];
-            error = [NSError errorWithDomain:KCSAppDataErrorDomain
-                                        code:[response responseCode]
-                                    userInfo:userInfo];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             completionBlock(nil, error);
         } else {
             if (responseToReturn) {
@@ -462,7 +449,6 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
                 completionBlock(nil, nil);
             }
         }
-        // return returnVal;
     };
     return [[processBlock copy] autorelease];
 }
@@ -480,15 +466,8 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         NSObject *jsonData = [parser objectWithData:response.responseData];
 #endif
 
-        NSError* error = nil;
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Entity operation was unsuccessful."
-                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
-                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
-                                                                             withRecoveryOptions:nil];
-            error = [NSError errorWithDomain:KCSAppDataErrorDomain
-                                        code:[response responseCode]
-                                    userInfo:userInfo];
+            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             completionBlock(nil, error);
         } else {
             if (jsonData) {

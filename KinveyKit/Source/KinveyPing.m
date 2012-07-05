@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/30/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KinveyPing.h"
@@ -15,6 +15,7 @@
 #import "KCSReachability.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
+#import "KinveyHTTPStatusCodes.h"
 
 typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *response, NSError *error);
 
@@ -81,22 +82,12 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
     if ([KCSPing networkIsReachable] && [KCSPing kinveyServiceIsReachable]){
         
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-            if (response.responseCode == 200){
+            if (response.responseCode == KCS_HTTP_STATUS_OK){
                 onComplete(YES, response, nil);                
             } else {
-                
-                // Convert the possibly JSON body to a string
-                NSString *errData = [[[NSString alloc] initWithData:response.responseData encoding:NSUTF8StringEncoding] autorelease];
-                
-                // Create our user dictionary from the error
-                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to Ping Kinvey"
-                                                                                   withFailureReason:errData
-                                                                              withRecoverySuggestion:@"Check failure reason for details"
-                                                                                 withRecoveryOptions:nil];
-                // Turn it into an NSError
-                NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
-                                                     code:response.responseCode
-                                                 userInfo:userInfo];
+                KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
+                NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
+                NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Unable to Ping Kinvey" errorCode:response.responseCode domain:KCSNetworkErrorDomain];
                 onComplete(NO, nil, error);
             }
 

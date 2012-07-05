@@ -14,4 +14,8 @@
                                     withRecoverySuggestion: (NSString *)suggestion
                                        withRecoveryOptions: (NSArray *)options;
 
++ (NSError*) createError:(NSDictionary*)jsonErrorDictionary 
+             description:(NSString*) description 
+               errorCode:(NSInteger)errorCode
+                  domain:(NSString*)domain;
 @end
