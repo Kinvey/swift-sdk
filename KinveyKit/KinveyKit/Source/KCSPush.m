@@ -9,6 +9,7 @@
 
 #import "KCSPush.h"
 #import "KCSClient.h"
+#import "KinveyUser.h"
 
 #import "UAirship.h"
 #import "UAPush.h"
@@ -124,6 +125,12 @@
     self.deviceToken = deviceToken;
     // Updates the device token and registers the token with UA
     [[UAPush shared] registerDeviceToken:deviceToken];
+    
+    if ([[KCSClient sharedClient] currentUser] != nil) {
+        //if we have a current user, saving it will register the device token with the user collection on the backend
+        //nil delegate because this is a silent try, and there's nothing to do if error
+        [[[KCSClient sharedClient] currentUser] saveWithDelegate:nil];
+    }
 }
 
 - (void)setPushBadgeNumber: (int)number

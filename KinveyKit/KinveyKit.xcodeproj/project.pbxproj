@@ -839,7 +839,7 @@
 				D3715ABA14B68E2D0030F5E9 /* Push */,
 				D3715AB914B68E240030F5E9 /* KinveyService */,
 				D3715AB814B68E1C0030F5E9 /* Analytics */,
-				D3715AB714B68E0F0030F5E9 /* appdataService */,
+				D3715AB714B68E0F0030F5E9 /* AppdataService */,
 				D3715AB614B68E050030F5E9 /* ResourceService */,
 				D3715AB514B68DFD0030F5E9 /* Utils */,
 				D3715AB414B68DF50030F5E9 /* Network */,
@@ -1480,7 +1480,7 @@
 			name = ResourceService;
 			sourceTree = "<group>";
 		};
-		D3715AB714B68E0F0030F5E9 /* appdataService */ = {
+		D3715AB714B68E0F0030F5E9 /* AppdataService */ = {
 			isa = PBXGroup;
 			children = (
 				D34E85BE149F75EC007D5E98 /* KinveyKitCollectionTests.h */,
@@ -1494,7 +1494,7 @@
 				27F3609E1598C250006B699E /* KCSMetadataTests.h */,
 				27F3609F1598C250006B699E /* KCSMetadataTests.m */,
 			);
-			name = appdataService;
+			name = AppdataService;
 			sourceTree = "<group>";
 		};
 		D3715AB814B68E1C0030F5E9 /* Analytics */ = {

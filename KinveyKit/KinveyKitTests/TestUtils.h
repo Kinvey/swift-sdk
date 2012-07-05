@@ -23,6 +23,7 @@
 @interface TestUtils : NSObject
 
 + (BOOL) setUpKinveyUnittestBackend;
++ (void) justInitServer;
 + (NSURL*) randomFileUrl:(NSString*)extension;
 
 @end

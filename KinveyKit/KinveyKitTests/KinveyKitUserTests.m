@@ -21,6 +21,8 @@
 #import "KCSRESTRequest.h"
 #import "KinveyCollection.h"
 
+#import "TestUtils.h"
+
 typedef BOOL(^KCSUserSuccessAction)(KCSUser *, KCSUserActionResult);
 typedef BOOL(^KCSUserFailureAction)(KCSUser *, NSError *);
 typedef BOOL(^KCSEntitySuccessAction)(id, NSObject *);
@@ -129,8 +131,9 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 }
 
 
-- (void)testAAADDInitializeCurrentUserWithRequestPerformsRequest{
-
+- (void)testAAADDInitializeCurrentUserWithRequestPerformsRequest
+{
+    [TestUtils justInitServer];
     // Ensure user is logged out
     [[[KCSClient sharedClient] currentUser] logout];
 
@@ -153,20 +156,25 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"brian", @"username",
                                 @"12345", @"password",
                                 @"hello", @"_id", nil];
-    
     connection.responseForSuccess = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_CREATED
                                                                          responseData:[self.writer dataWithObject:dictionary]
                                                                            headerData:nil
                                                                              userData:nil];
     
-    [[KCSConnectionPool sharedPool] topPoolsWithConnection:connection];
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:realRequest];
+    [[KCSConnectionPool sharedPool] topPoolsWithConnection:connection];
     
     __block BOOL pingWorked = NO;
     __block NSString *description = nil;
     
     // Run the request
-    [KCSPing pingKinveyWithBlock:^(KCSPingResult *res){ pingWorked = res.pingWasSuccessful; description = res.description;}];
+    self.done = NO;
+    [KCSPing pingKinveyWithBlock:^(KCSPingResult *res){
+        pingWorked = res.pingWasSuccessful; 
+        description = [res.description retain];
+        self.done = YES;
+    }];
+    [self poll];
     
     // This test CANNOT work with the existing KCS REST framework.  There's a built-in 0.05 second delay that we cannot compensate for here...
     // at the moment...
@@ -177,8 +185,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     KCSUser *cUser = [[KCSClient sharedClient] currentUser];
     assertThat(cUser.username, is(notNilValue()));
     assertThat(cUser.password, is(notNilValue()));
-    assertThat(cUser.username, is(equalTo(@"brian")));
-    assertThat(cUser.password, is(equalTo(@"12345")));
+    assertThat(cUser.username, isNot(equalTo(@"brian")));
+    assertThat(cUser.password, isNot(equalTo(@"12345")));
     
     // Make sure we log-out
     [cUser logout];
