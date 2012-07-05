@@ -47,12 +47,12 @@
     STAssertTrue(setup, @"should be up and running");
     
     KCSCollection* collection = [[KCSCollection alloc] init];
-    collection.collectionName = @"testObjects";
+    collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
     collection.objectTemplate = [ASTTestClass class];
     
     store = [KCSAppdataStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil]];
     
-    [self clearAll];
+    //TODO: no need to clear all since it's a new collection each time[self clearAll];
     
     NSMutableArray* baseObjs = [NSMutableArray array];
     [baseObjs addObject:[self makeObject:@"one" count:10]];

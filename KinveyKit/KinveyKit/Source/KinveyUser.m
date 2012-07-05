@@ -485,7 +485,7 @@
         self.userId = nil;
         
         [KCSKeyChain removeStringForKey:kKeychainUsernameKey];
-        [KCSKeyChain removeStringForKey:kKeychainUsernameKey];
+        [KCSKeyChain removeStringForKey:kKeychainPasswordKey];
         [KCSKeyChain removeStringForKey:kKeychainUserIdKey];
         
         // Set the currentUser to nil

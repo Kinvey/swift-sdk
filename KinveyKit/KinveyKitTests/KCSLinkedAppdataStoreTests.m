@@ -43,7 +43,7 @@
     STAssertTrue(loaded, @"should be loaded");
     
     KCSCollection* collection = [[KCSCollection alloc] init];
-    collection.collectionName = @"testObjects";
+    collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
     collection.objectTemplate = [TestClass class];
     store = [KCSLinkedAppdataStore storeWithCollection:collection options:nil];
 }
@@ -68,7 +68,7 @@
     self.done = NO;
     
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should not be any errors");
+        STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         self.done = YES;
     } withProgressBlock:nil];
@@ -89,7 +89,7 @@
     self.done = NO;
     
     [store saveObject:[NSArray arrayWithObjects:obj1, obj2,  nil] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should not be any errors");
+        STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         STAssertEquals(2, (int) [objectsOrNil count], @"Should have saved two objects");
         self.done = YES;
@@ -114,7 +114,7 @@
     self.done = NO;
     
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should not be any errors");
+        STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         
         obj = [objectsOrNil objectAtIndex:0];
@@ -147,7 +147,7 @@
     self.done = NO;
     
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should not be any errors");
+        STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         
         obj = [objectsOrNil objectAtIndex:0];
@@ -157,7 +157,7 @@
     
     self.done = NO;
     [store queryWithQuery:[KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:obj.kinveyObjectId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should not be any errors");
+        STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         
         TestClass* loaded = [objectsOrNil objectAtIndex:0];
