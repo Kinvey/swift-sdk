@@ -54,15 +54,10 @@
 
 - (NSObject*) jsonResponseValue 
 {
-    // New KCS behavior, not ready yet
-#if NEVER && KCS_NEW_BEHAVIOR_READY
-    NSDictionary *jsonResponse = [self.responseData objectFromJSONData];
-    NSObject *jsonData = [jsonResponse valueForKey:@"result"];
-#else  
+    //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-    NSObject *jsonData = [parser objectWithData:self.responseData];
-    [parser release];
-#endif   
+    NSDictionary *jsonResponse = [parser objectWithData:self.responseData];
+    NSObject *jsonData = [jsonResponse valueForKey:@"result"];
     return jsonData;
 }
 

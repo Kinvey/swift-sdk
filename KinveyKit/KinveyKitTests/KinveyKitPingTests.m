@@ -17,6 +17,7 @@
 #import "KinveyPing.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
+#import "TestUtils.h"
 
 @interface KinveyKitPingTests()
 @property (nonatomic, retain) KCS_SBJsonParser *parser;
@@ -68,7 +69,7 @@
         pingWasSuccessful = result.pingWasSuccessful;
     };
     
-    NSDictionary *pingResponse = [NSDictionary dictionaryWithObjectsAndKeys:@"0.6.6", @"version", @"hello", @"kinvey", nil];
+    NSDictionary *pingResponse = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:@"0.6.6", @"version", @"hello", @"kinvey", nil]);
     KCSMockConnection *conn = [[KCSMockConnection alloc] init];
 
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
@@ -116,7 +117,7 @@
         pingWasSuccessful = result.pingWasSuccessful;
     };
     
-    NSDictionary *pingResponse = [NSDictionary dictionaryWithObjectsAndKeys:@"0.6.6", @"version", @"hello", @"kinvey", nil];
+    NSDictionary *pingResponse = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:@"0.6.6", @"version", @"hello", @"kinvey", nil]);
     KCSMockConnection *conn = [[KCSMockConnection alloc] init];
     
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
@@ -159,7 +160,7 @@
         pingWasSuccessful = result.pingWasSuccessful;
     };
     
-    NSDictionary *pingResponse = [NSDictionary dictionaryWithObjectsAndKeys:@"0.6.6", @"version", @"hello", @"kinvey", nil];
+    NSDictionary *pingResponse = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:@"0.6.6", @"version", @"hello", @"kinvey", nil]);
     KCSMockConnection *conn = [[KCSMockConnection alloc] init];
     
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200

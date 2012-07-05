@@ -10,6 +10,8 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import <KinveyKit/KinveyKit.h>
 
+NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
+
 @interface KCSUser (TestUtils)
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
 @end
