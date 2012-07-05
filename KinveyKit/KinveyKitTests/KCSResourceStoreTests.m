@@ -109,4 +109,20 @@
     [self poll];
 }
 
+- (void) testError
+{
+    KCSResourceStore* store = [KCSResourceStore store];
+    
+    
+    self.done = NO;
+    [store queryWithQuery:@"nonexstent" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNotNil(errorOrNil, @"should have an error");
+        STAssertEqualObjects(@"BlobNotFound", [[errorOrNil userInfo] valueForKey:KCSErrorCode], @"error should be Blob Not Found");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"-- %f",percentComplete);
+    }];    
+    [self poll];
+}
+
 @end

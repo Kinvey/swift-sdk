@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/13/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KinveyPersistable.h"
@@ -58,13 +58,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
 #endif        
         NSArray *jsonArray;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Collection fetch was unsuccessful."
-                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
-                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
-                                                                             withRecoveryOptions:nil];
-            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
-                                                 code:[response responseCode]
-                                             userInfo:userInfo];
+            NSError* error = [KCSErrorUtilities createError:(NSDictionary*) jsonData description:@"Collection fetch was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             if (delegate){
                 [delegate collection:collection didFailWithError:error];
             } else {
@@ -470,13 +464,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         int count;
 
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Information request was unsuccessful."
-                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
-                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
-                                                                             withRecoveryOptions:nil];
-            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
-                                                 code:[response responseCode]
-                                             userInfo:userInfo];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Information request  was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             
             [delegate collection:self informationOperationFailedWithError:error];
             return;
@@ -525,14 +513,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         int count;
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Information request was unsuccessful."
-                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", responseToReturn]
-                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
-                                                                             withRecoveryOptions:nil];
-            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
-                                                 code:[response responseCode]
-                                             userInfo:userInfo];
-            
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Information request  was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             countBlock(0, error);
             return;
         }
