@@ -173,7 +173,6 @@
         
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-            KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
 
             // Don't need to retain, as we're not releasing until this block
             // [createdUser retain];
@@ -182,14 +181,13 @@
             if (response.responseCode != KCS_HTTP_STATUS_CREATED){
                 // Crap, authentication failed, not really sure how to proceed here!!!
                 // I really don't know what to do here, we can't continue... Something died...
-                KCSLogError(@"Received Response code %d, but expected %d with response: %@", response.responseCode, KCS_HTTP_STATUS_CREATED, [[parser objectWithData:response.responseData] JSONRepresentation]);
+                KCSLogError(@"Received Response code %d, but expected %d with response: %@", response.responseCode, KCS_HTTP_STATUS_CREATED, [response stringValue]);
                 
                 client.userIsAuthenticated = NO;
                 client.userAuthenticationInProgress = NO;
                 
                 // Execution is expected to terminate, but if it does not, make sure that parser is freed
-                NSDictionary *errorDict = [NSDictionary dictionaryWithObject:[[parser objectWithData:response.responseData] JSONRepresentation] forKey:@"error"];
-                [parser release];
+                NSDictionary *errorDict = [NSDictionary dictionaryWithObject:[response stringValue] forKey:@"error"];
                 
                 NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
                                                                                    withFailureReason:[errorDict description]
@@ -207,7 +205,7 @@
             }
             
             // Ok, we're really authd
-            NSDictionary *dictionary = [parser objectWithData:response.responseData];
+            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
             createdUser.username = [dictionary objectForKey:@"username"];
             createdUser.password = [dictionary objectForKey:@"password"];
             createdUser.userId   = [dictionary objectForKey:@"_id"];
@@ -232,7 +230,6 @@
             // This must be released in all paths
             [createdUser release];
 
-            [parser release];
         };
         
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
@@ -359,7 +356,6 @@
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
             // Ok, we're probably authenticated
-            KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
             KCSUser *createdUser = [[KCSUser alloc] init];
             createdUser.username = username;
             createdUser.password = password;
@@ -376,12 +372,11 @@
                 // Delegate must retain createdUser
                 completionBlock(createdUser, error, 0);
                 [createdUser release];
-                [parser release];
                 return;
             }
             
             // Ok, we're really authd
-            NSDictionary *dictionary = [parser objectWithData:response.responseData];
+            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
             createdUser.userId   = [dictionary objectForKey:@"_id"];
             createdUser.deviceTokens = [dictionary objectForKey:@"_deviceTokens"];
             
@@ -420,7 +415,6 @@
             
             // Clean up
             [createdUser release];
-            [parser release];
         };
         
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
