@@ -121,17 +121,9 @@ KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock on
         
         KCSLogTrace(@"In collection callback with response: %@", response);
         NSMutableArray *processedData = [[NSMutableArray alloc] init];
-        
-        // New KCS behavior, not ready yet
-#if NEVER && KCS_NEW_BEHAVIOR_READY
-        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
-        NSObject *jsonData = [jsonResponse valueForKey:@"result"];
-#else  
-        KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-        NSObject *jsonData = [parser objectWithData:response.responseData];
-        [parser release];
-#endif        
-        NSArray *jsonArray;
+        NSObject* jsonData = [response jsonResponseValue];
+
+        NSArray *jsonArray = nil;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Collection grouping was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             onComplete(nil, error);
@@ -428,20 +420,14 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 - (ProcessDataBlock_t) makeProcessDictBlock
 {
     ProcessDataBlock_t processBlock = ^(KCSConnectionResponse *response, KCSCompletionBlock completionBlock) {
-        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
-        NSDictionary *jsonResponse = [parser objectWithData:response.responseData];
-#if NEVER && KCS_SUPPORTS_THIS_FEATURE
-        // Needs KCS update for this feature
-        NSDictionary *responseToReturn = [jsonResponse valueForKey:@"result"];
-#else
-        NSDictionary *responseToReturn = jsonResponse;
-#endif
+        NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
+        
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             completionBlock(nil, error);
         } else {
-            if (responseToReturn) {
-                [self buildObjectFromJSON:responseToReturn withCompletionBlock:^(NSArray* objectsOrNil, NSError* errorOrNil){
+            if (jsonResponse) {
+                [self buildObjectFromJSON:jsonResponse withCompletionBlock:^(NSArray* objectsOrNil, NSError* errorOrNil){
                     completionBlock(objectsOrNil, errorOrNil);
                 }];
                 
@@ -456,15 +442,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 - (ProcessDataBlock_t) makeProcessArrayBlock
 {
     ProcessDataBlock_t processBlock = ^(KCSConnectionResponse *response, KCSCompletionBlock completionBlock) {
-        KCS_SBJsonParser *parser = [[[KCS_SBJsonParser alloc] init] autorelease];
-        
-#if NEVER && KCS_SUPPORTS_THIS_FEATURE
-        // Needs KCS update for this feature  
-        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
-        NSObject *jsonData = [jsonResponse valueForKey:@"result"];
-#else  
-        NSObject *jsonData = [parser objectWithData:response.responseData];
-#endif
+        NSObject* jsonData = [response jsonResponseValue];
 
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
