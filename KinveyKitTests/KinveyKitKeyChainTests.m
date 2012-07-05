@@ -15,8 +15,6 @@
 - (void)setUp{
     [KCSKeyChain setString:@"Test String" forKey:@"getTest"];
     [KCSKeyChain setString:@"Delete Test" forKey:@"rmTest"];
-    [self explode];
-    [self blowUp];
 }
 
 - (void)tearDown{
