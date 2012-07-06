@@ -168,14 +168,43 @@ NSArray* largeArray()
     self.done = NO;
     [_store loadObjectWithID:objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         NSLog(@"--- %@ -- %@", objectsOrNil, errorOrNil);
+        STAssertNotNil(errorOrNil, @"should have an error");
+        STAssertEquals((int)KCSNotFoundError, [errorOrNil code], @"should have been not found");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
 }
 
-- (void)testRemoveAll
+- (void)testRemoveXAll
 {
+    self.done = NO;
+    NSMutableArray* all = [NSMutableArray arrayWithCapacity:10];
+    for (int i=0; i < 10; i++) {
+        ASTTestClass* obj = [self makeObject:@"testRemoveAll" count:i];
+        [all addObject:obj];
+    }
+    __block NSArray* vals = nil;
+    [_store saveObject:all withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"Should not have any error, %@", errorOrNil);
+        vals = objectsOrNil;
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
     
+    
+    self.done = NO;
+    [_store removeObject:vals withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"Should not have any error, %@", errorOrNil);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [_store countWithBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertEquals((unsigned long) 0, count, @"should have deleted all");
+        self.done = YES;
+    }];
+    [self poll];
 }
 
 
