@@ -190,7 +190,9 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
             if (fieldname == nil || queries == nil){
                 return nil;
             }
-            
+            if (queries.count >0 && [[queries objectAtIndex:0] isKindOfClass:[NSArray class]]) {
+                queries = [queries objectAtIndex:0];
+            }
             NSDictionary *innerQ = [NSDictionary dictionaryWithObject:queries forKey:opName];
             query = [NSDictionary dictionaryWithObject:innerQ forKey:fieldname];
 
