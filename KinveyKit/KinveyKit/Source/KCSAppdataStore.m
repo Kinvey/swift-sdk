@@ -26,6 +26,7 @@
 #import "KCSErrorUtilities.h"
 #import "KCSConnectionProgress.h"
 #import "KCSQuery.h"
+#import "KinveyEntity.h"
 
 #import "NSArray+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
@@ -595,7 +596,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 #pragma mark - Removing
 
-- (void)removeObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+- (void)removeObject_old:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
     if (okayToProceed == NO) {
@@ -646,6 +647,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     }
 }
 /* TO ENABLE WHEN $IN supported for _id
+ */
 - (void) removeObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
     BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
@@ -653,25 +655,27 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         return;
     }
     
-    NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];   
-    if (objectsToProcess.count == 0) {
-        completionBlock(nil, nil);
-        return;
-    }
+    KCSQuery* deleteQuery = nil;
+    if ([object isKindOfClass:[KCSQuery class]]) {
+        deleteQuery = object;
+    } else {
     
-    NSMutableArray* ids = [NSMutableArray arrayWithCapacity:objectsToProcess.count];
-    [objectsToProcess enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        NSDictionary* mapping = [obj hostToKinveyPropertyMapping];
-        NSSet* set = [mapping keysOfEntriesPassingTest:^BOOL(id key, id obj, BOOL *stop) {
-            return [obj isEqualToString:@"_id"];
-        }];
-        NSString* objname = set.count == 0 ? nil: [object valueForKey:[set anyObject]];
-        if (objname) {
-            [ids addObject:objname];
+        NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];   
+        if (objectsToProcess.count == 0) {
+            completionBlock(nil, nil);
+            return;
         }
-    }];
-    
-    KCSQuery* deleteQuery = [KCSQuery queryOnField:@"_id" usingConditional:kKCSIn forValue:ids];
+        
+        NSMutableArray* ids = [NSMutableArray arrayWithCapacity:objectsToProcess.count];
+        [objectsToProcess enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NSString* _id = [obj kinveyObjectId];
+            if (_id != nil) {
+                [ids addObject:_id];
+            }
+        }];
+        
+        deleteQuery = [KCSQuery queryOnField:@"_id" usingConditional:kKCSIn forValue:ids];
+    }
     NSString *resource = nil;
     NSString *format = nil;
     
@@ -696,32 +700,14 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         
         KCSLogTrace(@"In collection callback with response: %@", response);
-        NSMutableArray *processedData = [[NSMutableArray alloc] init];
-        
-        // New KCS behavior, not ready yet
-#if NEVER && KCS_NEW_BEHAVIOR_READY
-        NSDictionary *jsonResponse = [response.responseData objectFromJSONData];
-        NSObject *jsonData = [jsonResponse valueForKey:@"result"];
-#else  
-        KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-        NSObject *jsonData = [parser objectWithData:response.responseData];
-        [parser release];
-#endif        
-        NSArray *jsonArray;
-        if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Deletion was unsuccessful."
-                                                                               withFailureReason:[NSString stringWithFormat:@"JSON Error: %@", jsonData]
-                                                                          withRecoverySuggestion:@"Retry request based on information in JSON Error"
-                                                                             withRecoveryOptions:nil];
-            NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
-                                                 code:[response responseCode]
-                                             userInfo:userInfo];
+        NSObject* jsonData = [response jsonResponseValue];
+
+        if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
+            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Deletion was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             completionBlock(nil, error);
-            
-            [processedData release];
             return;
         }
-        
+        NSArray* jsonArray = nil;
         if ([jsonData isKindOfClass:[NSArray class]]){
             jsonArray = (NSArray *)jsonData;
         } else {
@@ -733,7 +719,6 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         }        
         
         completionBlock(jsonArray, nil);
-        [processedData release];
     };
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
         completionBlock(nil, error);
@@ -743,7 +728,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
-*/
+
 #pragma mark - Information
 - (void)countWithBlock:(KCSCountBlock)countBlock
 {
