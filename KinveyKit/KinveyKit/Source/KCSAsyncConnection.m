@@ -12,7 +12,7 @@
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
 #import "KCSLogManager.h"
-
+#import "KCSClient.h"
 
 @interface KCSAsyncConnection()
 
@@ -319,8 +319,25 @@
            redirectResponse:(NSURLResponse *)redirectResponse
 {
     NSURLRequest *newRequest = request;
-    if (redirectResponse && !self.followRedirects) {
-        newRequest = nil;
+    if (redirectResponse != nil) { 
+        if (self.followRedirects && [[newRequest HTTPMethod] isEqualToString:@"GET"]) {
+            //Test that the if the redirect host is not Kinvey,
+            //create a new url request that does not copy over the headers (bug with connecting to azure with iOS 4.3, where authentication was copied over).
+            NSURL* newurl = request.URL;
+            NSString* newHost = newurl.host;
+            NSString* resourceURLString = [[KCSClient sharedClient] resourceBaseURL];
+            NSURL* resourceURL = [NSURL URLWithString:resourceURLString];
+            if (![newHost isEqualToString:[resourceURL host]]) {
+                newRequest = [[[NSMutableURLRequest alloc] initWithURL:newurl] autorelease];
+                //get date from old request
+                NSString* date = [[request allHTTPHeaderFields] objectForKey:@"Date"];
+                [(NSMutableURLRequest*)newRequest setValue:date forHTTPHeaderField:@"Date"];
+                // Let the server know that we support GZip.
+                [(NSMutableURLRequest*)newRequest setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
+            }
+        } else {
+            newRequest = nil;
+        }
     }
     return newRequest;
 }
