@@ -306,7 +306,7 @@
         NSInteger statusCode = [(NSHTTPURLResponse *)self.lastResponse statusCode];
         NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
         KCSLogNetwork(@"Response completed with code %d and response headers: %@", statusCode, headers);
-        KCSLogDebug(@"Kinvey Request ID: %@", [headers objectForKey:@"X-Kinvey-Request-Id"]);
+        KCSLogRequestId(@"Kinvey Request ID: %@", [headers objectForKey:@"X-Kinvey-Request-Id"]);
         self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:nil]);    
         
         [self cleanUp]; 

@@ -50,6 +50,9 @@ withFormat:(format),##__VA_ARGS__]
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kForcedChannel] file:__FILE__ lineNumber:__LINE__ \
 withFormat:(format),##__VA_ARGS__]
 
+#define KCSLogRequestId(format,...) \
+[[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kNetworkChannel] file:__FILE__ lineNumber:__LINE__ \
+withFormat:(format),##__VA_ARGS__]
 
 @class KCSLogChannel;
 
