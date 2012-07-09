@@ -61,9 +61,9 @@
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
                              @"kid1089", KCS_APP_KEY_KEY,
                              @"ad8f7ea0538147f89a7f75dd95491fdf", KCS_APP_SECRET_KEY,
-                             @"OzPSPvSJTyq0LTOIdff_dA", KCS_PUSH_KEY_KEY,
-                             @"ETHhR_GCRsq5QqhRLCp0ew", KCS_PUSH_SECRET_KEY,
-                             @"NO", KCS_PUSH_IS_ENABLED_KEY,
+                             @"CFtR0JwxT3uVipC2YiRutA", KCS_PUSH_KEY_KEY,
+                             @"S3sloGMtS8yC_lNBSHQHlQ", KCS_PUSH_SECRET_KEY,
+                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
                              KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
 
 //    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -125,11 +125,13 @@
                                               otherButtonTitles: nil];
         [alert show];
         [alert release];
+        [self dosave];
+        
     }];
     
     NSLog(@"X-Kinvey-Device-Information: %@", [[[KCSClient sharedClient] analytics] deviceInformation]);
 
-        
+
     return YES;
 
 }
@@ -189,4 +191,19 @@
      */
 }
 
+- (void) dosave
+{
+    [[[KCSClient sharedClient] currentUser] saveWithDelegate:self];
+
+}
+
+- (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
+{
+    NSLog(@"result %@", result);
+}
+
+- (void)entity:(id)entity operationDidFailWithError:(NSError *)error
+{
+    NSLog(@"%@",error);
+}
 @end

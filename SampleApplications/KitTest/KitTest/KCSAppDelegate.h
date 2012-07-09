@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import <KinveyKit/KinveyKit.h>
 @class ImageViewController;
 @class KCSViewController;
 @class RootViewController;
 @class KCSClient;
 
-@interface KCSAppDelegate : UIResponder <UIApplicationDelegate>
+@interface KCSAppDelegate : UIResponder <UIApplicationDelegate, KCSPersistableDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
