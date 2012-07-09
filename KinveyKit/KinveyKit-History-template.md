@@ -3,7 +3,7 @@
 ## 1.5
 
 ### 1.5.0
-** Release Date: ** TBD
+** Release Date: ** July 10th, 2012
 
 * Added `KCSMetadata` for entities to map by `KCSEntityKeyMetadata` in `hostToKinveyPropertyMapping`. This provides metadata about the entity and allows for fine-grained read/write permissions. 
 * Added `KCSLinkedAppdataStore` to allow for the saving/loading of `UIImage` properties automatically from our resource service. 
