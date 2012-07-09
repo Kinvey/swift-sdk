@@ -543,7 +543,7 @@
         
         if (sp.deviceToken != nil){
             NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
-            [tmpSet addObject:[[KCSPush sharedPush] deviceToken]];
+            [tmpSet addObject:[[KCSPush sharedPush] deviceTokenString]];
             self.deviceTokens = [tmpSet allObjects];
         }
         [self saveToCollection:[self userCollection] withDelegate:delegate];
