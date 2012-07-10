@@ -95,6 +95,10 @@ typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUs
 
 + (BOOL) hasSavedCredentials;
 
+/** Clears and saved credentials from the keychain.
+ */
++ (void) clearSavedCredentials;
+
 ///---------------------------------------------------------------------------------------
 /// @name KinveyKit Internal Services
 ///---------------------------------------------------------------------------------------
