@@ -7,8 +7,12 @@
 //
 
 #import "KinveyKitQueryTests.h"
-#import "KCSQuery.h"
 #import "NSString+KinveyAdditions.h"
+#import "KinveyKit.h"
+#import "TestUtils.h"
+#import "ASTTestClass.h"
+
+@compatibility_alias TestClass ASTTestClass;
 
 @implementation KinveyKitQueryTests
 
@@ -106,4 +110,64 @@
     assertThat([q3 JSONStringRepresentation], is(equalTo(r3)));
 
 }
+
+- (void) testAscendingDecending
+{
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    STAssertTrue(setup, @"Backend should be good to go");
+    
+    KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
+    
+    NSMutableArray* arr = [NSMutableArray arrayWithCapacity:20];
+    for (int i=0; i < 20; i++) {
+        TestClass* a = [[[TestClass alloc] init] autorelease];
+        a.objCount = i;
+        [arr addObject:a];
+    }
+    
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
+    self.done = NO;
+    [store saveObject:arr withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"not expecting error: %@");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    KCSQuery* query = [KCSQuery query];
+    query.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:10];
+    
+    [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"objCount" inDirection:kKCSAscending]];
+    
+    self.done = NO;
+    [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"not expecting error: %@");
+        STAssertEquals((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
+        int count = 0;
+        for (TestClass* a in objectsOrNil) {
+            count += a.objCount;
+        }
+        STAssertEquals(count, (int) 45, @"count should match");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    query = [KCSQuery query];
+    query.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:10];
+    
+    [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"objCount" inDirection:kKCSDescending]];
+    
+    self.done = NO;
+    [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"not expecting error: %@");
+        STAssertEquals((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
+        int count = 0;
+        for (TestClass* a in objectsOrNil) {
+            count += a.objCount;
+        }
+        STAssertEquals(count, (int) 145, @"count should match");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
+
 @end

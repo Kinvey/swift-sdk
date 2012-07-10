@@ -620,7 +620,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:self.sortModifiers.count];
     for (KCSQuerySortModifier *sortKey in self.sortModifiers) {
-        NSNumber *direction = [NSNumber numberWithInt:(sortKey.direction - 1)];
+        NSNumber *direction = [NSNumber numberWithInt:sortKey.direction];
         [dict setValue:direction forKey:sortKey.field];
     }
     

@@ -71,6 +71,13 @@
     return [KCSKeyChain getStringForKey:kKeychainPasswordKey] && [KCSKeyChain getStringForKey:kKeychainUsernameKey];
 }
 
++ (void) clearSavedCredentials
+{
+    [KCSKeyChain removeStringForKey: kKeychainUsernameKey];
+    [KCSKeyChain removeStringForKey: kKeychainPasswordKey];
+    [KCSKeyChain removeStringForKey: kKeychainUserIdKey];
+}
+
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew
 {
     BOOL localInitInProgress = NO;
@@ -127,9 +134,7 @@
     // If we didn't, we need to check to see if there are keychain items.
 
     if (forceNew){
-        [KCSKeyChain removeStringForKey: kKeychainUsernameKey];
-        [KCSKeyChain removeStringForKey: kKeychainPasswordKey];
-        [KCSKeyChain removeStringForKey: kKeychainUserIdKey];
+        [KCSUser clearSavedCredentials];
     }
     
     __block KCSUser *createdUser = [[KCSUser alloc] init];
@@ -484,9 +489,7 @@
         self.password = nil;
         self.userId = nil;
         
-        [KCSKeyChain removeStringForKey:kKeychainUsernameKey];
-        [KCSKeyChain removeStringForKey:kKeychainPasswordKey];
-        [KCSKeyChain removeStringForKey:kKeychainUserIdKey];
+        [KCSUser clearSavedCredentials];
         
         // Set the currentUser to nil
         [[KCSClient sharedClient] setCurrentUser:nil];

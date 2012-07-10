@@ -112,4 +112,12 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     return [NSURL fileURLWithPath:path];
 }
 
++ (KCSCollection*) randomCollection:(Class)objClass
+{
+    KCSCollection* collection = [[[KCSCollection alloc] init] autorelease];
+    collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
+    collection.objectTemplate = objClass;
+    return collection;
+}
+
 @end
