@@ -28,4 +28,5 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 + (void) justInitServer;
 + (NSURL*) randomFileUrl:(NSString*)extension;
 
++ (KCSCollection*) randomCollection:(Class)objClass;
 @end

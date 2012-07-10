@@ -51,8 +51,8 @@ typedef enum
 
 // DO NOT CHANGE THE VALUES IN THIS ENUM.  They're meaningful to the implementation of this class
 typedef enum {
-    kKCSAscending = 0,
-    kKCSDescending = 2
+    kKCSAscending = 1,
+    kKCSDescending = -1
 } KCSSortDirection;
 
 /*! Representation of a sorting directive
