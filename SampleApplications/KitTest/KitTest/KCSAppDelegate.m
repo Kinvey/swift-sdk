@@ -3,7 +3,7 @@
 //  KitTest
 //
 //  Created by Brian Wilson on 11/14/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KCSAppDelegate.h"
@@ -13,6 +13,7 @@
 #import "CachingViewController.h"
 #import "RootViewController.h"
 #import "LinkedResourceViewController.h"
+#import "UserDiscoveryViewController.h"
 
 #import <KinveyKit/KinveyKit.h>
 
@@ -47,8 +48,10 @@
     CachingViewController* cachingView = [[[CachingViewController alloc] initWithNibName:@"CachingViewController" bundle:nil] autorelease];
     LinkedResourceViewController* linkedView = [[[LinkedResourceViewController alloc] initWithNibName:@"LinkedResourceViewController" bundle:nil] autorelease];
     
+    UserDiscoveryViewController* userDiscView = [[[UserDiscoveryViewController alloc] initWithNibName:@"UserDiscoveryViewController" bundle:nil] autorelease];
+    
     UITabBarController* tabBarController = [[[UITabBarController alloc] init] autorelease];
-    tabBarController.viewControllers = [NSArray arrayWithObjects:self.viewController, self.imageViewController, cachingView, linkedView, nil];
+    tabBarController.viewControllers = [NSArray arrayWithObjects:self.viewController, self.imageViewController, cachingView, linkedView, userDiscView, nil];
 
     self.window.rootViewController = tabBarController;
     
@@ -78,7 +81,6 @@
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
     [KCSClient sharedClient].serviceHostname = @"v3yk1n";
     [[KCSPush sharedPush] onLoadHelper:options];
-//    [[KCSClient sharedClient] setServiceHostname:@"console-staging"];
 
     
 //    [[[KCSClient sharedClient] currentUser] logout];
