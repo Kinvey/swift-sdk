@@ -30,14 +30,20 @@
 		27302CC3155D4B4100A0183E /* NSArray+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */; };
 		27302CC4155D4B4100A0183E /* NSArray+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */; };
 		27302CCB155D614B00A0183E /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC9155D614B00A0183E /* KCSStore.m */; };
+		27347F7215B4665800133F64 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7115B4665800133F64 /* CoreLocation.framework */; };
 		2735B2461578E84A0063EE62 /* KCSResourceStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */; };
 		27433012156ED63B00B2BF37 /* KCSLinkedAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27433013156ED63C00B2BF37 /* KCSLinkedAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27433011156ED63B00B2BF37 /* KCSLinkedAppdataStore.m */; };
 		274330211575227000B2BF37 /* KCSResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSResource.h */; };
 		274330221575227000B2BF37 /* KCSResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330201575227000B2BF37 /* KCSResource.m */; };
 		274330251575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */; };
+		2794ACAC15B455400031D505 /* libUAirship-1.2.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2794ACAB15B455400031D505 /* libUAirship-1.2.2.a */; };
 		27A93B53156AD14800810B88 /* KCSReduceFunctionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */; };
 		27A93B57156AD2D500810B88 /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
+		27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B1FDC615B0C49F003CC4C6 /* KCSUserDiscovery.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */; };
+		27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */; };
+		27BBD91615ADD3A2005E27E1 /* TestThreads.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BBD91515ADD3A2005E27E1 /* TestThreads.m */; };
 		27E4CDFB156A801A00B5DF55 /* KCSReduceFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4CDF9156A801A00B5DF55 /* KCSReduceFunction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E4CDFC156A801A00B5DF55 /* KCSReduceFunction.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFA156A801A00B5DF55 /* KCSReduceFunction.m */; };
 		27E4CE00156A803300B5DF55 /* KCSGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4CDFE156A803300B5DF55 /* KCSGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -135,12 +141,9 @@
 		D38FC3E714C94252009A95E7 /* KCS_SBJsonStreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3CE14C94252009A95E7 /* KCS_SBJsonStreamWriterState.m */; };
 		D39CDF9714D1E67F00E40D19 /* KCSQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = D39CDF9514D1E67F00E40D19 /* KCSQuery.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D39CDF9814D1E67F00E40D19 /* KCSQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = D39CDF9614D1E67F00E40D19 /* KCSQuery.m */; };
-		D3BE9C501551ECEE00ED0FDF /* KCSBlocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C4E1551ECEE00ED0FDF /* KCSBlocks.h */; };
-		D3BE9C511551ECEE00ED0FDF /* KCSBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = D3BE9C4F1551ECEE00ED0FDF /* KCSBlocks.m */; };
 		D3BE9C541551ED2900ED0FDF /* KCSBlockDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C531551ED2900ED0FDF /* KCSBlockDefs.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3BE9C5B15524C6100ED0FDF /* KCSResourceStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C5915524C6100ED0FDF /* KCSResourceStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3BE9C5C15524C6100ED0FDF /* KCSResourceStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D3BE9C5A15524C6100ED0FDF /* KCSResourceStore.m */; };
-		D3C5E67A14745E39002D8F2B /* libUAirship-1.1.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A643E147174C300F77A3F /* libUAirship-1.1.1.a */; };
 		D3C5E67D14745E6E002D8F2B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */; };
 		D3C5E68114745EEE002D8F2B /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */; };
 		D3C5E68214745EEE002D8F2B /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
@@ -219,6 +222,7 @@
 		27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+KinveyAdditions.h"; sourceTree = "<group>"; };
 		27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+KinveyAdditions.m"; sourceTree = "<group>"; };
 		27302CC9155D614B00A0183E /* KCSStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSStore.m; sourceTree = "<group>"; };
+		27347F7115B4665800133F64 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		2735B2441578E84A0063EE62 /* KCSResourceStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSResourceStoreTests.h; sourceTree = "<group>"; };
 		2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSResourceStoreTests.m; sourceTree = "<group>"; };
 		27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLinkedAppdataStore.h; sourceTree = "<group>"; };
@@ -227,10 +231,18 @@
 		274330201575227000B2BF37 /* KCSResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSResource.m; sourceTree = "<group>"; };
 		274330231575262A00B2BF37 /* KCSLinkedAppdataStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLinkedAppdataStoreTests.h; sourceTree = "<group>"; };
 		274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLinkedAppdataStoreTests.m; sourceTree = "<group>"; };
+		2794ACAB15B455400031D505 /* libUAirship-1.2.2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libUAirship-1.2.2.a"; sourceTree = "<group>"; };
 		27A93B51156AD14800810B88 /* KCSReduceFunctionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReduceFunctionTests.h; sourceTree = "<group>"; };
 		27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReduceFunctionTests.m; sourceTree = "<group>"; };
 		27A93B55156AD2D500810B88 /* ASTTestClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASTTestClass.h; sourceTree = "<group>"; };
 		27A93B56156AD2D500810B88 /* ASTTestClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASTTestClass.m; sourceTree = "<group>"; };
+		27B1FDC615B0C49F003CC4C6 /* KCSUserDiscovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSUserDiscovery.h; sourceTree = "<group>"; };
+		27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSUserDiscovery.m; sourceTree = "<group>"; };
+		27B1FDCB15B0D3B0003CC4C6 /* KCSHiddenMethods.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSHiddenMethods.h; sourceTree = "<group>"; };
+		27B1FDCD15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyUserDiscoveryTests.h; sourceTree = "<group>"; };
+		27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyUserDiscoveryTests.m; sourceTree = "<group>"; };
+		27BBD91415ADD3A2005E27E1 /* TestThreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestThreads.h; sourceTree = "<group>"; };
+		27BBD91515ADD3A2005E27E1 /* TestThreads.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestThreads.m; sourceTree = "<group>"; };
 		27E4CDF9156A801A00B5DF55 /* KCSReduceFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReduceFunction.h; sourceTree = "<group>"; };
 		27E4CDFA156A801A00B5DF55 /* KCSReduceFunction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReduceFunction.m; sourceTree = "<group>"; };
 		27E4CDFE156A803300B5DF55 /* KCSGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSGroup.h; sourceTree = "<group>"; };
@@ -344,7 +356,6 @@
 		D32A643B147174C300F77A3F /* UASubscriptionManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionManager.h; sourceTree = "<group>"; };
 		D32A643C147174C300F77A3F /* UASubscriptionObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionObserver.h; sourceTree = "<group>"; };
 		D32A643D147174C300F77A3F /* UASubscriptionProduct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionProduct.h; sourceTree = "<group>"; };
-		D32A643E147174C300F77A3F /* libUAirship-1.1.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libUAirship-1.1.1.a"; sourceTree = "<group>"; };
 		D32A643F147174C300F77A3F /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		D32A6440147174C300F77A3F /* README.rst */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.rst; sourceTree = "<group>"; };
 		D32A6446147174C300F77A3F /* UABeveledLoadingIndicator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UABeveledLoadingIndicator.h; sourceTree = "<group>"; };
@@ -562,8 +573,6 @@
 		D38FC3CE14C94252009A95E7 /* KCS_SBJsonStreamWriterState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamWriterState.m; sourceTree = "<group>"; };
 		D39CDF9514D1E67F00E40D19 /* KCSQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQuery.h; sourceTree = "<group>"; };
 		D39CDF9614D1E67F00E40D19 /* KCSQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQuery.m; sourceTree = "<group>"; };
-		D3BE9C4E1551ECEE00ED0FDF /* KCSBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBlocks.h; sourceTree = "<group>"; };
-		D3BE9C4F1551ECEE00ED0FDF /* KCSBlocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBlocks.m; sourceTree = "<group>"; };
 		D3BE9C531551ED2900ED0FDF /* KCSBlockDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBlockDefs.h; sourceTree = "<group>"; };
 		D3BE9C5915524C6100ED0FDF /* KCSResourceStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSResourceStore.h; sourceTree = "<group>"; };
 		D3BE9C5A15524C6100ED0FDF /* KCSResourceStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSResourceStore.m; sourceTree = "<group>"; };
@@ -624,6 +633,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2794ACAC15B455400031D505 /* libUAirship-1.2.2.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -631,6 +641,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27347F7215B4665800133F64 /* CoreLocation.framework in Frameworks */,
 				D3F340AC14BCCEBB00DB6C37 /* CoreGraphics.framework in Frameworks */,
 				D3F340AA14BCCEA600DB6C37 /* StoreKit.framework in Frameworks */,
 				D3C5E68714745F09002D8F2B /* MobileCoreServices.framework in Frameworks */,
@@ -640,7 +651,6 @@
 				D3C5E68214745EEE002D8F2B /* libsqlite3.dylib in Frameworks */,
 				D3C5E68314745EEE002D8F2B /* libz.dylib in Frameworks */,
 				D3C5E67D14745E6E002D8F2B /* CFNetwork.framework in Frameworks */,
-				D3C5E67A14745E39002D8F2B /* libUAirship-1.1.1.a in Frameworks */,
 				D32A60DB14716EE300F77A3F /* SenTestingKit.framework in Frameworks */,
 				D32A60DD14716EE300F77A3F /* UIKit.framework in Frameworks */,
 				D32A60DE14716EE300F77A3F /* Foundation.framework in Frameworks */,
@@ -693,8 +703,6 @@
 		D312B3F6147EA5DE007F48B9 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				D3BE9C4E1551ECEE00ED0FDF /* KCSBlocks.h */,
-				D3BE9C4F1551ECEE00ED0FDF /* KCSBlocks.m */,
 				D32A610414716F2D00F77A3F /* NSString+KinveyAdditions.h */,
 				D32A610514716F2D00F77A3F /* NSString+KinveyAdditions.m */,
 				D32A610614716F2D00F77A3F /* NSURL+KinveyAdditions.h */,
@@ -709,6 +717,7 @@
 				D3FF5FE214C6373C00680BD2 /* KCSBase64.m */,
 				27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */,
 				27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */,
+				27B1FDCB15B0D3B0003CC4C6 /* KCSHiddenMethods.h */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -772,6 +781,7 @@
 		D32A60BA14716EE300F77A3F = {
 			isa = PBXGroup;
 			children = (
+				27347F7115B4665800133F64 /* CoreLocation.framework */,
 				D32A60CD14716EE300F77A3F /* KinveyKit */,
 				D32A60E514716EE300F77A3F /* KinveyKitTests */,
 				D32A60CA14716EE300F77A3F /* Frameworks */,
@@ -896,7 +906,7 @@
 				D32A63EC147174C300F77A3F /* Common */,
 				D32A63FE147174C300F77A3F /* External */,
 				D32A641D147174C300F77A3F /* Library */,
-				D32A643E147174C300F77A3F /* libUAirship-1.1.1.a */,
+				2794ACAB15B455400031D505 /* libUAirship-1.2.2.a */,
 				D32A643F147174C300F77A3F /* LICENSE */,
 				D32A6440147174C300F77A3F /* README.rst */,
 				D32A6441147174C300F77A3F /* UI */,
@@ -1450,6 +1460,8 @@
 				D3715AD614B696F30030F5E9 /* KinveyKitConnectionResponseTests.m */,
 				D3715AD814B6970C0030F5E9 /* KinveyKitConnectionProgressTests.h */,
 				D3715AD914B6970C0030F5E9 /* KinveyKitConnectionProgressTests.m */,
+				27BBD91415ADD3A2005E27E1 /* TestThreads.h */,
+				27BBD91515ADD3A2005E27E1 /* TestThreads.m */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -1531,6 +1543,8 @@
 				D3715AAF14B652350030F5E9 /* KinveyKitKeyChainTests.m */,
 				D3715ABD14B690BD0030F5E9 /* KinveyKitUserTests.h */,
 				D3715ABE14B690BD0030F5E9 /* KinveyKitUserTests.m */,
+				27B1FDCD15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.h */,
+				27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */,
 			);
 			name = UserService;
 			sourceTree = "<group>";
@@ -1647,6 +1661,8 @@
 				D3F7E8741488084D0044F1E8 /* KinveyUser.m */,
 				D3FF5FD914C6178600680BD2 /* KCSAuthCredential.h */,
 				D3FF5FDA14C6178600680BD2 /* KCSAuthCredential.m */,
+				27B1FDC615B0C49F003CC4C6 /* KCSUserDiscovery.h */,
+				27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */,
 			);
 			name = UserService;
 			sourceTree = "<group>";
@@ -1709,7 +1725,6 @@
 				D32D28BB1523B567008C74DD /* KCSSecureUDID.h in Headers */,
 				D306B58E154F847C00A52CB8 /* KCSStore.h in Headers */,
 				D306B5A61550B29100A52CB8 /* KCSAppdataStore.h in Headers */,
-				D3BE9C501551ECEE00ED0FDF /* KCSBlocks.h in Headers */,
 				D3BE9C541551ED2900ED0FDF /* KCSBlockDefs.h in Headers */,
 				D3BE9C5B15524C6100ED0FDF /* KCSResourceStore.h in Headers */,
 				27302CBC155C66B300A0183E /* KCSCachedStore.h in Headers */,
@@ -1720,6 +1735,7 @@
 				274330211575227000B2BF37 /* KCSResource.h in Headers */,
 				271E8242157D70B3000AF9EF /* KCSPropertyUtil.h in Headers */,
 				27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */,
+				27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1918,7 +1934,6 @@
 				D32D28B81523B547008C74DD /* KCSOpenUDID.m in Sources */,
 				D32D28BC1523B567008C74DD /* KCSSecureUDID.m in Sources */,
 				D306B5A71550B29100A52CB8 /* KCSAppdataStore.m in Sources */,
-				D3BE9C511551ECEE00ED0FDF /* KCSBlocks.m in Sources */,
 				D3BE9C5C15524C6100ED0FDF /* KCSResourceStore.m in Sources */,
 				27302CBD155C66B300A0183E /* KCSCachedStore.m in Sources */,
 				27302CC4155D4B4100A0183E /* NSArray+KinveyAdditions.m in Sources */,
@@ -1929,6 +1944,7 @@
 				274330221575227000B2BF37 /* KCSResource.m in Sources */,
 				271E8243157D70B3000AF9EF /* KCSPropertyUtil.m in Sources */,
 				27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */,
+				27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1968,6 +1984,8 @@
 				2735B2461578E84A0063EE62 /* KCSResourceStoreTests.m in Sources */,
 				27223E1C157E7A3200656BCC /* TestUtils.m in Sources */,
 				27F360A01598C250006B699E /* KCSMetadataTests.m in Sources */,
+				27BBD91615ADD3A2005E27E1 /* TestThreads.m in Sources */,
+				27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

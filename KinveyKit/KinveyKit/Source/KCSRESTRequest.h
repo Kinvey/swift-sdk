@@ -2,7 +2,7 @@
 //  KCSRESTRequest.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -11,12 +11,12 @@
 
 #import "KCSConnection.h"
 
-enum {
+typedef enum {
     kGetRESTMethod     = 0,
     kPutRESTMethod     = 1,
     kPostRESTMethod    = 2,
     kDeleteRESTMethod  = 3
-};
+} KCSRESTMethod;
 
 // Switch to static...
 #define KCS_JSON_TYPE @"application/json; charset=utf-8"
@@ -43,6 +43,7 @@ enum {
 - (id)withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failue progressAction: (KCSConnectionProgressBlock)progress;
 
 // Modify known headers
+- (void) setJsonBody:(id)bodyObject;
 - (void)setContentType: (NSString *)contentType;
 - (void)setContentLength: (NSInteger)contentLength;
 

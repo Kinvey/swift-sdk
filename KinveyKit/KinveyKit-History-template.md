@@ -3,7 +3,10 @@
 ## 1.6
 ### 1.6.0
 ** Release Date: ** TBD
+* Added `KCSUserDiscovery` to provide a method to lookup other users based upon criteria like name and email address. 
 * Upgraded Urban Airship library to 1.2.2.
+* Bug Fix(es).
+ * Changed `KCSSortDirection` constants `kKCSAscending` and `kKCSDescending` to sort in the proscribed orders. If you were using the constants as intended, no change is needed. If you swaped them or modified their values to work around the bug, plus update to use the new constants. 
 
 ## 1.5
 

@@ -11,6 +11,8 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import <objc/runtime.h>
 
+
+
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 {
     return [NSDictionary dictionaryWithObjectsAndKeys:originalResponse, @"result", nil];
@@ -71,7 +73,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 + (BOOL) setUpKinveyUnittestBackend
 {
-    //   [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
+       [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     [self justInitServer];
     __block BOOL loaded = NO;
     
