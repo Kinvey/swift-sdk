@@ -10,6 +10,8 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import <KinveyKit/KinveyKit.h>
 
+#define STAssertNoError STAssertNil(errorOrNil,@"Should not get error: %@", errorOrNil);
+
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 
 @interface KCSUser (TestUtils)

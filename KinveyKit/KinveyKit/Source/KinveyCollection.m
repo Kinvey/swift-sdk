@@ -200,6 +200,20 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 
 #pragma mark Basic Methods
+- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoind:(NSString*)endpoint
+{
+    NSString *resource = nil;
+    // create a link: baas.kinvey.com/:appid/:collection/:id
+    if ([self.collectionName isEqualToString:@""]){
+        resource = [self.baseURL stringByAppendingFormat:@"%@", endpoint];
+    } else {
+        resource = [self.baseURL stringByAppendingFormat:@"%@/%@", self.collectionName, endpoint];
+    }
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:method];
+    [request setContentType:KCS_JSON_TYPE];        
+    return request;
+}
+
 
 - (void)fetchAllWithDelegate:(id<KCSCollectionDelegate>)delegate
 {

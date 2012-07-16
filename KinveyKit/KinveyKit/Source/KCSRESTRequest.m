@@ -16,6 +16,7 @@
 #import "KCSErrorUtilities.h"
 #import "KCSReachability.h"
 #import "KinveyAnalytics.h"
+#import "SBJson.h"
 
 // This is in Seconds!
 #define KCS_RETRY_DELAY 0.05
@@ -151,6 +152,12 @@ getLogDate(void)
     }
     
     return self;
+}
+
+- (void) setJsonBody:(id)bodyObject
+{
+    KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+    [self addBody:[writer dataWithObject:bodyObject]];
 }
 
 - (id)addBody:(NSData *)theBody
@@ -296,7 +303,6 @@ getLogDate(void)
     }
     
     [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:nil];    
-     
     [connection release];
 }
 

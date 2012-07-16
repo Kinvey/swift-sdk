@@ -33,6 +33,8 @@
 #import "KCS_SBJsonWriter.h"
 #import "KCSObjectMapper.h"
 
+#import "KCSHiddenMethods.h"
+
 @interface KCSAppdataStore ()
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
@@ -227,15 +229,7 @@ NSObject* parseJSON(NSData* data)
     }
     
     RestRequestForObjBlock_t requestBlock = ^KCSRESTRequest *(id obj) {
-        NSString *resource = nil;
-        // create a link: baas.kinvey.com/:appid/:collection/:id
-        if ([collection.collectionName isEqualToString:@""]){
-            resource = [collection.baseURL stringByAppendingFormat:@"%@", obj];
-        } else {
-            resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, obj];
-        }
-        KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-        [request setContentType:@"application/json"];        
+        KCSRESTRequest* request = [collection restRequestForMethod:kGetRESTMethod apiEndpoind:obj];
         return request;
     };
     
