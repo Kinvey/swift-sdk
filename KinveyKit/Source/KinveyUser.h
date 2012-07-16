@@ -15,6 +15,7 @@
 
 @class KCSCollection;
 @class KCSRESTRequest;
+@class KCSMetadata;
 
 // Need to predefine our classes here
 @class KCSUser;
@@ -69,6 +70,15 @@ typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUs
 
 @end
 
+/** Constant for use in querying the username field */
+#define KCSUserAttributeUsername @"username"
+/** Constant for use in querying the surname field */
+#define KCSUserAttributeSurname @"last_name"
+/** Constant for use in querying the given name field */
+#define KCSUserAttributeGivenname @"first_name"
+/** Constant for use in querying the email field */
+#define KCSUserAttributeEmail @"email"
+
 
 /*! User in the Kinvey System
  
@@ -79,19 +89,34 @@ typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUs
  Since all requests *must* be made through a user, the library maintains the concept of a current user, which is the
  user used to make all requests.  Convienience routines are available to manage the state of this Current User.
  
+ Like other entities, KCSUsers can have different levels of access control. The `user` collection can be made private in the Kinvey console; if it is private, users will still have four fields that can be queried publicly: username, surname, given name, and email. These can be discovered with ... 
+ 
+ Like other entities, the `metadata` property can be modified to control access on a user-by-user basis, beyond the `user` collection-wide settings. 
+ 
+ @see KCSMetadata
+ @see KCSPersistable
  */
 @interface KCSUser : NSObject <KCSPersistable>
 
 ///---------------------------------------------------------------------------------------
 /// @name User Information
 ///---------------------------------------------------------------------------------------
-/*! Username of this Kinvey User */
+/*! Username of this Kinvey User. Publicly queryable be default. */
 @property (nonatomic, copy) NSString *username;
 /*! Password of this Kinvey User */
 @property (nonatomic, copy) NSString *password;
 /*! Device Tokens of this User */
 @property (nonatomic, copy) NSArray *deviceTokens;
-
+/*! Access Control Metadata of this User 
+ @see KCSPersistable
+ */
+@property (nonatomic, retain) KCSMetadata *metadata;
+/** Optional surname for the user. Publicly queryable be default. */
+@property (nonatomic, copy) NSString *surname;
+/** Optional given (first) name for the user. Publicly queryable be default. */
+@property (nonatomic, copy) NSString *givenName;
+/** Optional email address for the user. Publicly queryable be default. */
+@property (nonatomic, copy) NSString *email;
 
 + (BOOL) hasSavedCredentials;
 

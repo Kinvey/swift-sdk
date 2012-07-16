@@ -24,6 +24,7 @@
 #import "KCSBlobService.h"
 #import "KinveyPing.h"
 #import "KinveyUser.h"
+#import "KCSUserDiscovery.h"
 #import "KCSReachability.h"
 #import "KinveyErrorCodes.h"
 #import "KCSQuery.h"

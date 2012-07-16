@@ -41,7 +41,10 @@
 @synthesize userId=_userId;
 @synthesize userAttributes = _userAttributes;
 @synthesize deviceTokens = _deviceTokens;
-
+@synthesize metadata = _metadata;
+@synthesize email = _email;
+@synthesize surname = _surname;
+@synthesize givenName = _givenName;
 
 - (id)init
 {
@@ -82,7 +85,7 @@
 {
     BOOL localInitInProgress = NO;
     KCSClient *client = [KCSClient sharedClient];
-
+    
     @synchronized(client){
         if (client.userAuthenticationInProgress == NO){
             client.userAuthenticationInProgress = YES;
@@ -93,7 +96,7 @@
     // Note!!! This is a spin lock!  If we hold the lock for 10 seconds we're hosed, so this timeout
     // is REALLY big, hopefully we only hit it when the network is down (likely a minute timeout, so these guys will start timing out early...)
     NSDate *timeoutTime = [NSDate dateWithTimeIntervalSinceNow:10];
-
+    
     if (!localInitInProgress && !client.userIsAuthenticated){
         while (!client.userIsAuthenticated) {
             NSDate *now = [NSDate dateWithTimeIntervalSinceNow:0];
@@ -111,7 +114,7 @@
                                                                                        withFailureReason:@"User creation timed out with one request holding the lock." 
                                                                                   withRecoverySuggestion:@"Try request again later."
                                                                                      withRecoveryOptions:nil];
-
+                    
                     // No user, it's during creation
                     NSError* error = [NSError errorWithDomain:KCSUserErrorDomain 
                                                          code:KCSUserCreationContentionTimeoutError
@@ -129,10 +132,10 @@
         }
     }
     
-
+    
     // Did we get a username and password?  If we did, then we're not interested in being already logged in
     // If we didn't, we need to check to see if there are keychain items.
-
+    
     if (forceNew){
         [KCSUser clearSavedCredentials];
     }
@@ -144,8 +147,8 @@
     if (createdUser.username == nil){
         // No user, generate it, note, use the APP KEY/APP SECRET!
         KCSAnalytics *analytics = [client analytics];
-
-
+        
+        
         // Build the dictionary that will be JSON-ified here
         
         // We have three optional, internal fields and 2 manditory fields
@@ -178,7 +181,7 @@
         
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-
+            
             // Don't need to retain, as we're not releasing until this block
             // [createdUser retain];
             
@@ -191,18 +194,14 @@
                 client.userIsAuthenticated = NO;
                 client.userAuthenticationInProgress = NO;
                 
-                // Execution is expected to terminate, but if it does not, make sure that parser is freed
-                NSDictionary *errorDict = [NSDictionary dictionaryWithObject:[response stringValue] forKey:@"error"];
+                NSError* error = nil;
+                if (response.responseCode == KCS_HTTP_STATUS_CONFLICT) {
+                    error = [KCSErrorUtilities createError:(NSDictionary*)[response jsonResponseValue] description:@"User already exists" errorCode:KCSConflictError domain:KCSUserErrorDomain];
+                } else {
+                    error = [KCSErrorUtilities createError:(NSDictionary*)[response jsonResponseValue] description:@"Unable to create user" errorCode:response.responseCode domain:KCSUserErrorDomain];
+                    
+                }
                 
-                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
-                                                                                   withFailureReason:[errorDict description]
-                                                                              withRecoverySuggestion:@"Contact support."
-                                                                                 withRecoveryOptions:nil];
-                
-                // No user, it's during creation
-                NSError* error = [NSError errorWithDomain:KCSUserErrorDomain
-                                                     code:KCSUnexpectedError
-                                                 userInfo:userInfo];
                 completionBlock(nil, error, 0);
                 // This must be released in all paths
                 [createdUser release];
@@ -231,19 +230,19 @@
             
             // NB: The delegate MUST retain created user!
             completionBlock(createdUser, nil, KCSUserCreated);
-
+            
             // This must be released in all paths
             [createdUser release];
-
+            
         };
         
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
             // I really don't know what to do here, we can't continue... Something died...
             KCSLogError(@"Internal Error: %@", error);
-
+            
             client.userIsAuthenticated = NO;
             client.userAuthenticationInProgress = NO;
-
+            
             NSDictionary *errorDict = [NSDictionary dictionaryWithObjectsAndKeys:error, @"error",
                                        @"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo", @"reason", nil];
             
@@ -254,10 +253,10 @@
             
             // No user, it's during creation
             NSError* newError = [NSError errorWithDomain:KCSUserErrorDomain
-                                                 code:KCSUnexpectedError
-                                             userInfo:userInfo];
+                                                    code:KCSUnexpectedError
+                                                userInfo:userInfo];
             completionBlock(nil, newError, 0);
-
+            
             // This must be released in all paths
             [createdUser release];
             return;
@@ -279,12 +278,12 @@
         
         // Delegate must retain createdUser
         completionBlock(createdUser, nil, KCSUserFound);
-
+        
         // This must be released in all paths
         [createdUser release];
-
+        
     }
-
+    
     // NB: We don't release here since the blocks won't have a chance to retain this value until WAAAAAAY later
     // NB: I expect this is a good use for an autorelease pool.
     // [createdUser release];
@@ -349,7 +348,7 @@
 
 + (void)loginWithUsername: (NSString *)username
                  password: (NSString *)password 
-             withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+      withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
     KCSClient *client = [KCSClient sharedClient];
     
@@ -398,7 +397,15 @@
                     // This is an "internal" property
                     continue;
                 } else {
+                    if ([property isEqualToString:KCSUserAttributeSurname]) {
+                        createdUser.surname = [dictionary objectForKey:property];
+                    } else if ([property isEqualToString:KCSUserAttributeGivenname]) {
+                        createdUser.givenName = [dictionary objectForKey:property];
+                    } else if ([property isEqualToString:KCSUserAttributeEmail]) {
+                        createdUser.email = [dictionary objectForKey:property];
+                    } else {
                     [createdUser setValue:[dictionary objectForKey:property] forAttribute:property];
+                    }
                 }
             }
             
@@ -580,7 +587,7 @@
     } else {
         [self.userAttributes setObject:value forKey:attribute];
     }
-
+    
 }
 
 - (KCSCollection *)userCollection
@@ -613,12 +620,21 @@
     
     if (mappedDict == nil){
         mappedDict = [[NSDictionary dictionaryWithObjectsAndKeys:
-                      @"_id", @"userId",
-                      @"_deviceTokens", @"deviceTokens",
-                      @"username", @"username",
-                      @"password", @"password", nil] retain];
+                       KCSEntityKeyId, @"userId",
+                       @"_deviceTokens", @"deviceTokens",
+                       KCSUserAttributeUsername, @"username",
+                       @"password", @"password", 
+                       KCSUserAttributeEmail, @"email",
+                       KCSUserAttributeGivenname, @"givenName",
+                       KCSUserAttributeSurname, @"surname",
+                       KCSEntityKeyMetadata, @"metadata", nil] retain];
     }
     
     return mappedDict;
+}
+
+- (NSString*) debugDescription
+{
+    return [NSString stringWithFormat:@"KCSUser: %@",[NSDictionary dictionaryWithObjectsAndKeys:self.username, @"username", self.email, @"email", self.givenName, @"given name", self.surname, @"surname", nil]];
 }
 @end
