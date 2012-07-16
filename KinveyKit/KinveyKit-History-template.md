@@ -1,5 +1,10 @@
 # KinveyKit Release History
 
+## 1.6
+### 1.6.0
+** Release Date: ** TBD
+* Upgraded Urban Airship library to 1.2.2.
+
 ## 1.5
 
 ### 1.5.0
