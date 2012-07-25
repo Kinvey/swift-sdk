@@ -437,7 +437,8 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 - (ProcessDataBlock_t) makeProcessArrayBlock
 {
     ProcessDataBlock_t processBlock = ^(KCSConnectionResponse *response, KCSCompletionBlock completionBlock) {
-        NSObject* jsonData = [response jsonResponseValue];
+        NSError* error = nil;
+        NSObject* jsonData = [response jsonResponseValue:&error];
 
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];

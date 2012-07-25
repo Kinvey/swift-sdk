@@ -23,5 +23,7 @@
 
 - (NSString*) stringValue;
 - (NSObject*) jsonResponseValue;
+- (NSObject*) jsonResponseValue:(NSError**) anError;
+
 
 @end

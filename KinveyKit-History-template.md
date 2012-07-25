@@ -2,11 +2,15 @@
 
 ## 1.6
 ### 1.6.0
-** Release Date: ** TBD
+** Release Date: ** July 27th, 2012
+
 * Added `KCSUserDiscovery` to provide a method to lookup other users based upon criteria like name and email address. 
 * Upgraded Urban Airship library to 1.2.2.
+* Documentation Updates.
+    * Added API difference lists for KinveyKit versions 1.4.0, 1.5.0, and 1.6.0
+    * Added tutorial for using 3rd Party APIs with OAuth 2.0
 * Bug Fix(es).
- * Changed `KCSSortDirection` constants `kKCSAscending` and `kKCSDescending` to sort in the proscribed orders. If you were using the constants as intended, no change is needed. If you swaped them or modified their values to work around the bug, plus update to use the new constants. 
+    * Changed `KCSSortDirection` constants `kKCSAscending` and `kKCSDescending` to sort in the proscribed orders. If you were using the constants as intended, no change is needed. If you swaped them or modified their values to work around the bug, plus update to use the new constants. 
 
 ## 1.5
 
