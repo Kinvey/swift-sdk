@@ -64,6 +64,7 @@ enum {
     KCSUnexpectedError = 60010,
     KCSFileError = 60011,
     KCSInvalidArgumentError = 60012,
+    KCSInvalidJSONFormatError = 60013,
     
     
     // For testing only, no user should ever see this!
