@@ -27,9 +27,13 @@
 #define kKeychainUsernameKey @"username"
 #define kKeychainUserIdKey @"_id"
 
+#define KCSUserAttributeOAuthTokens @"_oauth"
+@class GTMOAuth2Authentication;
+
 @interface KCSUser()
 @property (nonatomic, retain) NSString *userId;
 @property (nonatomic, retain) NSMutableDictionary *userAttributes;
+@property (nonatomic, retain) NSDictionary* oauthTokens;
 
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew;
 @end
@@ -45,6 +49,7 @@
 @synthesize email = _email;
 @synthesize surname = _surname;
 @synthesize givenName = _givenName;
+@synthesize oauthTokens = _oauthTokens;
 
 - (id)init
 {
@@ -55,6 +60,7 @@
         _userId = [[NSString string] retain];
         _userAttributes = [[NSMutableDictionary dictionary] retain];
         _deviceTokens = nil;
+        _oauthTokens = [[NSMutableDictionary dictionary] retain];
     }
     return self;
 }
@@ -66,6 +72,7 @@
     [_userId release];
     [_userAttributes release];
     [_deviceTokens release];
+    [_oauthTokens release];
     [super dealloc];
 }
 
@@ -403,8 +410,10 @@
                         createdUser.givenName = [dictionary objectForKey:property];
                     } else if ([property isEqualToString:KCSUserAttributeEmail]) {
                         createdUser.email = [dictionary objectForKey:property];
+                    }  else if ([property isEqualToString:KCSUserAttributeOAuthTokens]) {
+                        createdUser.oauthTokens = [dictionary objectForKey:property];
                     } else {
-                    [createdUser setValue:[dictionary objectForKey:property] forAttribute:property];
+                        [createdUser setValue:[dictionary objectForKey:property] forAttribute:property];
                     }
                 }
             }
@@ -627,10 +636,33 @@
                        KCSUserAttributeEmail, @"email",
                        KCSUserAttributeGivenname, @"givenName",
                        KCSUserAttributeSurname, @"surname",
-                       KCSEntityKeyMetadata, @"metadata", nil] retain];
+                       KCSEntityKeyMetadata, @"metadata", 
+                       KCSUserAttributeOAuthTokens, @"oauthTokens", nil] retain];
     }
     
     return mappedDict;
+}
+
+- (void) setOAuthToken:(NSString*)token forService:(NSString*)service 
+{
+    [_oauthTokens setValue:token forKey:service];
+}
+
+- (BOOL)authorizeFromKeychainForName:(NSString *)serviceName
+                      oauth2Authentication:(GTMOAuth2Authentication *)newAuth {
+    [newAuth setAccessToken:nil];
+    
+    BOOL didGetTokens = NO;
+//    GTMOAuth2Keychain *keychain = [GTMOAuth2Keychain defaultKeychain];
+//    NSString *password = [keychain passwordForService:keychainItemName
+//                                              account:kGTMOAuth2AccountName
+//                                                error:nil];
+    NSString* token = [_oauthTokens valueForKey:serviceName];
+    if (token != nil) {
+        [newAuth setKeysForResponseString:token];
+        didGetTokens = YES;
+    }
+    return didGetTokens;
 }
 
 - (NSString*) debugDescription
