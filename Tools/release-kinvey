@@ -1,0 +1,71 @@
+#!/bin/bash
+
+## Prepare the ios-lib documentation.  Right now just use appledoc, but soon-ish
+## use both appledoc and doxygen.
+
+## The output/input locations are passed in via command line
+if [ $# -lt 2 ]
+then
+	echo "Usage: release-kinvey <KinveyKit Location> <release location> <optional release number>"
+	exit
+fi
+
+KINVEYKITLOC=$1
+RELEASEDIR=$2
+
+if [ $# -lt 3 ]
+then
+    RELEASENO=`date "+%Y%m%d-%H%M%S"`
+else
+    RELEASENO=$3
+fi
+
+KK=KinveyKit-${RELEASENO}
+API=KinveyKit-API-Reference-${RELEASENO}
+RKK=${RELEASEDIR}/${KK}
+RAPI=${RELEASEDIR}/${API}
+
+echo "Building KinveyKit ($RELEASENO) release media in ${RELEASEDIR} for ${KINVEYKITLOC}..."
+
+
+if [ ! -d ${RELEASEDIR} ]
+then
+    mkdir ${RELEASEDIR}
+fi
+
+
+## Cleanup
+if [ -d  ${RKK} ]
+then
+  rm -r ${RKK}
+fi
+
+if [ -d  ${RAPI} ]
+then
+  rm -r ${RAPI}
+fi
+
+## Make output dirs
+mkdir ${RKK}
+mkdir ${RAPI}
+
+# This needs to be an option...
+
+# Copy KinveyKit.framework
+( cd ${KINVEYKITLOC}/build/Debug-iphoneos/ && tar cf - ./KinveyKit.framework )| ( cd ${RKK}/ && tar -xf - )
+( cd ${KINVEYKITLOC} && tar cf - ./Airship ) | ( cd ${RKK}/ && tar -xf - )
+#cp -R ${KINVEYKITLOC}/build/Debug-iphoneos/KinveyKit.framework  ${RELEASEDIR}/KinveyKit-${RELEASENO}/
+#cp -R ${KINVEYKITLOC}/Airship ${RELEASEDIR}/KinveyKit-${RELEASENO}/
+
+# Copy Docs
+( cd ${KINVEYKITLOC}/doc/built-docs/ && tar cf - ./com.kinvey.KinveyKit.docset ) | ( cd ${RAPI}/ && tar -xf - )
+#cp -R ${KINVEYKITLOC}/doc/built-docs/com.kinvey.KinveyKit.docset ${RELEASEDIR}/KinveyKit-API-Reference-${RELEASENO}/
+
+
+# Clean up SVN
+find ${RELEASEDIR}/ -name '.svn' -print | xargs rm -r
+
+
+# Build zipfiles
+(cd ${RELEASEDIR} && ditto -c -k --sequesterRsrc --keepParent ${KK} ${KK}.zip)
+(cd ${RELEASEDIR} && ditto -c -k --sequesterRsrc --keepParent ${API} ${API}.zip)
