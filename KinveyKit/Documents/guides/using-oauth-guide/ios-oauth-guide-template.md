@@ -1,7 +1,10 @@
+## How to Use OAuth 2 with Kinvey
 This guide explains how to use OAuth 2.0 based services with Kinvey's Data Integration feature. You'll need to follow this guide in order to integrate your application with many 3rd party web services. 
 
 ## What is OAuth 2?
 [OAuth 2.0](http://oauth.net/2/) is an open protocol to allow secure and controlled access to web services. As an application developer, services that provide HTTP APIs supporting OAuth 2.0, let you access parts of their service on behalf of your users. For example, when accessing a social network site, if your user gives you permission to access his account, you might be able to import pictures, friends lists, or contact information to your application. 
+
+OAuth 2.0 is a still-evolving standard and implementations will vary between service providers. Be sure to read their developer documentation closely. 
 
 ### What web services support OAuth 2?
 Many popular services such as Google, Instagram, Foursquare, Facebook, and GitHub use OAuth 2. A non-comprehensive list can be found at this [Wikipedia article](http://en.wikipedia.org/wiki/OAuth). To find out if your favorite web site provides an API that can be accessed with OAuth 2, look for a "Developers" or "API" link on the front page. 
@@ -102,7 +105,7 @@ Obtaining an authorized OAuth 2 token is not a trivial task. In addition to the 
         [self.navigationController pushViewController:viewController animated:YES];
     }</pre>
     
-3. Once the callback is called, the `auth	` object will valid and ready for use by the app or there will be an error. For the rest of the example, I will leave gtm-oauth2 behind and just the authorized token string for use with the backend. The string can be obtained with the `- [GTMOAuth2Authentication accessToken]` method. 
+3. Once the callback is called, the `auth` object will be valid and ready for use by the app or there will be an error. For the rest of the example, I will leave gtm-oauth2 behind and just the authorized token string for use with the backend. The string can be obtained with the `- [GTMOAuth2Authentication accessToken]` method. 
     <pre>- (void)viewController:(GTMOAuth2ViewControllerTouch * )viewController
           finishedWithAuth:(GTMOAuth2Authentication * )auth
                      error:(NSError * )error
