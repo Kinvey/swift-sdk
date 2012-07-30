@@ -33,7 +33,8 @@ echo ${HTMLFOOTER} >> ${KINVEYKITLOC}/LICENSES.html
 
 echo "Building docs for ${KINVEYKITLOC}..."
 
-APPLEDOC=/Users/mike/Library/Developer/Xcode/DerivedData/appledoc-dbpuscstfpupnxfbevymysrpdquv/Build/Products/Debug/appledoc
+APPLEDOC=${HOME}/bin/appledoc
+#/Users/mike/Library/Developer/Xcode/DerivedData/appledoc-dbpuscstfpupnxfbevymysrpdquv/Build/Products/Debug/appledoc
 #${HOME}/bin/appledoc
 COMPANY=Kinvey
 PROJECT=KinveyKit

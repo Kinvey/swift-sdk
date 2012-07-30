@@ -2,7 +2,7 @@
 
 ## 1.6
 ### 1.6.0
-** Release Date: ** July 27th, 2012
+** Release Date: ** July 30th, 2012
 
 * Added `KCSUserDiscovery` to provide a method to lookup other users based upon criteria like name and email address. 
 * Upgraded Urban Airship library to 1.2.2.
