@@ -404,5 +404,18 @@ NSArray* largeArray()
     STAssertNotNil(objs, @"expecting to load some objects");
     STAssertEquals((int) [objs count], 3, @"should only load one object");
 }
+
 //TODO: test progress as failure completion blocks;
+
+- (void) testEmptyResponse
+{
+    self.done = NO;
+    [_store queryWithQuery:[KCSQuery queryOnField:@"count" withExactMatchForValue:@"NEVER MATCH"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertEquals((NSUInteger)0, objectsOrNil.count, @"should be empty array");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
+
 @end
