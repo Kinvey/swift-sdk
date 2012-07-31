@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.6
+### 1.6.1
+** Release Date: ** July 31st, 2012
+
+* Bug Fix(es).
+    * Fix issue with hang on no results using `KCSAppdataStore`.
+
 ### 1.6.0
 ** Release Date: ** July 30th, 2012
 
