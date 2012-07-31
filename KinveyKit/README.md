@@ -1,4 +1,4 @@
-KinveyKit (TAG-ME, DATE)
+KinveyKit (TAG-ME, CHANGE-ME-DATE)
 ==========
 
 ## Welcome
