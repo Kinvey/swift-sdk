@@ -136,8 +136,8 @@
 
     
     // If our connection has been cleaned up, then we need to make sure that we get it back before using it.
-    if (self.connection == nil){ //TOOD: use piplining"
-        self.connection = [NSURLConnection connectionWithRequest:self.request delegate:self]; // Retained due to accessor
+    if (self.connection == nil){ //TODO: use piplining"
+        self.connection = [NSURLConnection connectionWithRequest:self.request delegate:self];  // Retained due to accessor
     } else {
         // This method only starts the connection if it's not been started, if we somehow end up here
         // without a started connection... well... we need to start it.

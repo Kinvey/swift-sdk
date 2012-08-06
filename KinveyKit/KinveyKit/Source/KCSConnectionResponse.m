@@ -80,7 +80,9 @@
     if (parser.error) {
         KCSLogError(@"JSON Serialization failed: %@", parser.error);
         if ([parser.error isEqualToString:@"Broken Unicode encoding"]) {
-            return [self jsonResponseValue:anError format:NSASCIIStringEncoding];
+            NSObject* reevaluatedObject = [self jsonResponseValue:anError format:NSASCIIStringEncoding];
+            [parser release];
+            return reevaluatedObject;
         } else {
             if (anError != NULL) {
                 *anError = [KCSErrorUtilities createError:nil description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain];
