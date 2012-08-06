@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/9/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -27,7 +27,7 @@
     if (self){
         _UDID = [[KCSKinveyUDID uniqueIdentifier] retain];//[[[UIDevice currentDevice] uniqueIdentifier] retain];
         _UUID = nil;
-        _analyticsHeaderName = [[NSString stringWithString:@"X-Kinvey-Device-Information"] retain];
+        _analyticsHeaderName = [@"X-Kinvey-Device-Information" retain];
     }
     return self;
 }
