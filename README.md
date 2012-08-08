@@ -20,7 +20,7 @@ provides out of the box Content Distribution Network (CDN) capabilities.
 * __Push Notifications__ -- Our partnership with Urban Airship gives you awesome push features without the headache of managing them yourself.
 * __Location-Aware Queries__ -- Query your data for entities that are near other entities.
 
-For more details on how to use these features read the [Kinvey Service Overview](https://console.kinvey.com/#docs/kinvey/service-overview).
+For more details on how to use these features read the [Kinvey Service Overview](http://docs.kinvey.com/service-overview.html).
 
 ## Other Documentation
 
