@@ -31,12 +31,11 @@
     NSDictionary *map = nil;
     
     if (map == nil){
-        map = [NSDictionary dictionaryWithObjectsAndKeys:
-               @"_id", @"objId",
-               KCSEntityKeyMetadata, @"meta",
-               @"objCount", @"objCount",
-               @"objDescription", @"objDescription", 
-               @"date", @"date", nil];
+        map = @{@"objId" : KCSEntityKeyId,
+                @"meta" : KCSEntityKeyMetadata,
+                @"objCount" : @"objCount",
+                @"objDescription" : @"objDescription",
+                @"date" : @"date"};
     }
     
     return map;

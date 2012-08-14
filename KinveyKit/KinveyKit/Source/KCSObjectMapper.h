@@ -21,7 +21,7 @@
 
 + (id)populateObject:(id)object withData: (NSDictionary *)data;
 + (id)makeObjectOfType:(Class)objectClass withData: (NSDictionary *)data;
-+ (id)makeObjectWithResorucesOfType:(Class)objectClass withData:(NSDictionary *)data withDictionary:(NSMutableDictionary*)resources;
++ (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withDictionary:(NSMutableDictionary*)resources;
 + (KCSSerializedObject *)makeKinveyDictionaryFromObject: (id)object;
 + (KCSSerializedObject *)makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName;
 

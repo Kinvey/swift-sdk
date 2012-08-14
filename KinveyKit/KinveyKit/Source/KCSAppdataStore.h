@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KCSStore.h"
+#import "KCSOfflineSaveStore.h"
 
 @class KCSCollection;
 
@@ -106,7 +107,5 @@
  @param countBlock the block that receives the response 
  */
 - (void)countWithBlock: (KCSCountBlock)countBlock;
-
-
 
 @end

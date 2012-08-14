@@ -64,7 +64,7 @@
         return NO;
     } else {
         res = SecItemDelete((CFDictionaryRef)existsQueryDictionary);
-        NSAssert1(res == errSecSuccess, @"Recieved %d from SecItemDelete!", res);
+        NSAssert1(res == errSecSuccess, @"Recieved %ld from SecItemDelete!", res);
     }
     
     return YES;
@@ -96,7 +96,7 @@
 			[addDict setObject:data forKey:(id)kSecValueData];
             
 			res = SecItemAdd((CFDictionaryRef)addDict, NULL);
-			NSAssert1(res == errSecSuccess, @"Recieved %d from SecItemAdd!", res);
+			NSAssert1(res == errSecSuccess, @"Recieved %ld from SecItemAdd!", res);
 		}
 	} else if (res == errSecSuccess) {
 		// Modify an existing one
@@ -104,10 +104,10 @@
 		NSDictionary *attributeDict = [NSDictionary dictionaryWithObject:data forKey:(id)kSecValueData];
         
 		res = SecItemUpdate((CFDictionaryRef)existsQueryDictionary, (CFDictionaryRef)attributeDict);
-		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %d!", res);
+		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %ld!", res);
 		
 	} else {
-		NSAssert1(NO, @"Received %d from SecItemCopyMatching!", res);
+		NSAssert1(NO, @"Received %ld from SecItemCopyMatching!", res);
 	}
 	
 	return YES;
@@ -136,7 +136,7 @@
 		NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 		return string;
 	} else {
-		NSAssert1(res == errSecItemNotFound, @"SecItemCopyMatching returned %d!", res);
+		NSAssert1(res == errSecItemNotFound, @"SecItemCopyMatching returned %ld!", res);
 	}		
 	
 	return nil;

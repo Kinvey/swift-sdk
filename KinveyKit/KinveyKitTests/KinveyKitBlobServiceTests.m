@@ -98,12 +98,12 @@ typedef BOOL(^FailureAction)(NSError *);
 - (void)testTestFramework
 {
     self.onFailure = ^(NSError *err){
-        self.message = [NSString stringWithString:@"Yes, the test passed"];
+        self.message = @"Yes, the test passed";
         return YES;
     };
     
     self.onSuccess = ^(KCSResourceResponse *response){
-        self.message = [NSString stringWithString:@"Yes, the test passed"];
+        self.message = @"Yes, the test passed";
         return YES;
     };
     
@@ -372,7 +372,7 @@ typedef BOOL(^FailureAction)(NSError *);
     
     KCSLogDebug(@"Conn: %@", kinvey.providedRequest);
     KCSClient *client = [KCSClient sharedClient];
-    NSString *expectedString = [NSString stringWithFormat:@"%remove-loc/blah",
+    NSString *expectedString = [NSString stringWithFormat:@"%@remove-loc/blah",
                                 client.resourceBaseURL];
     
     assertThat([kinvey.providedRequest.URL absoluteString], endsWith(expectedString));
@@ -392,10 +392,10 @@ typedef BOOL(^FailureAction)(NSError *);
     self.onFailure = ^(NSError *err){
         if (err){
             NSLog(@"Got Error: %@", err);
-            self.message = [NSString stringWithString:@"Yes, We did actually handle the error"];
+            self.message = @"Yes, We did actually handle the error";
             return YES;
         } else {
-            self.message = [NSString stringWithString:@"Nope, epic fail trying to handle error"];
+            self.message = @"Nope, epic fail trying to handle error";
             return NO;
         }
     };

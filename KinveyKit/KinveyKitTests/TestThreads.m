@@ -122,9 +122,6 @@
     dispatch_async(myq, block);
     dispatch_retain(myq);
     [self poll];
-    char* l = dispatch_queue_get_label(myq);
-    NSLog(@"%@",myq);
-//    [self poll];
 }
 
 - (void) runthis

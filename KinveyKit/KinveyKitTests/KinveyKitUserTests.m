@@ -57,8 +57,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     _onEntitySuccess = [^(id u, NSObject *obj){ return NO; } copy];
     _onEntityFailure = [^(id u, NSError *error){ return NO; } copy];
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
-    [[[KCSClient sharedClient] currentUser] logout];
-    
+
     _parser = [[[KCS_SBJsonParser alloc] init] retain];
     _writer = [[[KCS_SBJsonWriter alloc] init] retain];
 }
@@ -67,6 +66,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 // These tests are ordered and must be run first, hence the AAAXX
 
 - (void)testAAAAAInitializeCurrentUserInitializesCurrentUserNoNetwork{
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     KCSUser *cUser = [[KCSClient sharedClient] currentUser];
     assertThat(cUser.username, is(nilValue()));
     assertThat(cUser.password, is(nilValue()));
@@ -86,6 +87,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 }
 
 - (void)testAAABBLogoutLogsOutCurrentUser{
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     KCSUser *cUser = [[KCSClient sharedClient] currentUser];
     [cUser logout];
     assertThat(cUser.username, is(nilValue()));
@@ -93,7 +96,10 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     
 }
 
-- (void)testAAACCInitializeCurrentUserInitializesCurrentUserNetwork{
+- (void)testAAACCInitializeCurrentUserInitializesCurrentUserNetwork
+{
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     KCSUser *cUser = [[KCSClient sharedClient] currentUser];
     assertThat(cUser.username, is(nilValue()));
     assertThat(cUser.password, is(nilValue()));
@@ -197,6 +203,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanCreateArbitraryUser
 {
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     NSString *testUsername = @"arbitrary";
     NSString *testPassword = @"54321";
     KCSMockConnection *connection = [[KCSMockConnection alloc] init];
@@ -234,6 +242,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanLoginExistingUser
 {
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     NSString *testUsername = @"existing";
     NSString *testPassword = @"56789";
     KCSMockConnection *connection = [[KCSMockConnection alloc] init];
@@ -274,6 +284,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanLogoutUser
 {
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     [KCSKeyChain setString:@"logout" forKey:@"username"];
     [KCSKeyChain setString:@"98765" forKey:@"password"];
     [KCSKeyChain setString:@"That's the combination for my luggage" forKey:@"_id"];
@@ -297,6 +309,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testAnonymousUserCreatedIfNoNamedUser
 {
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     NSString *testUsername = @"anon";
     NSString *testPassword = @"72727";
     KCSMockConnection *connection = [[KCSMockConnection alloc] init];
@@ -344,6 +358,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanAddArbitraryDataToUser
 {
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     // Make sure we have a user
     if ([[KCSClient sharedClient] currentUser] == nil){
         [KCSKeyChain setString:@"brian" forKey:@"username"];
@@ -372,6 +388,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanGetCurrentUser
 {
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     
     // Make sure we have a user
     if ([[KCSClient sharedClient] currentUser] == nil){
@@ -441,6 +459,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanTreatUsersAsCollection
 {
+    [[[KCSClient sharedClient] currentUser] logout];
+    
     // Make sure we have a user
     if ([[KCSClient sharedClient] currentUser] == nil){
         [KCSKeyChain setString:@"brian" forKey:@"username"];
@@ -482,5 +502,45 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     self.testPassed = self.onEntityFailure(entity, error);
 }
 
+
+static NSString* lastUser;
+static NSString* access_token = @"AAAD30ogoDZCYBAKwwcWRETWXcwE1aC7bSVMZALl5mG1WPSZCCVYKizWGPZALwhnnJ73gHUFky4rOnPkXZBxxayv2saVu4e9j3ZCXzQeOGowOANNQ5QZBCbR";
+
+- (void) testLoginWithFacebook
+{
+    [TestUtils justInitServer];
+    // Ensure user is logged out
+    [[[KCSClient sharedClient] currentUser] logout];
+    self.done = NO;
+    [KCSUser loginWithFacebookAccessToken:access_token withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNotNil(user, @"user should not be nil");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    self.done = NO;
+    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
+        STAssertTrue(result.pingWasSuccessful, @"should have been a success.");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    lastUser = [KCSClient sharedClient].currentUser.username;
+}
+
+/* function named this way to follow the login with FB */
+- (void) testLoginWithFacebookPersists
+{
+    [TestUtils justInitServer];
+    
+    self.done = NO;
+    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
+        STAssertTrue(result.pingWasSuccessful, @"should have been a success.");
+        STAssertEqualObjects(lastUser, [KCSClient sharedClient].currentUser.username, @"user names should match");
+        STAssertNotNil([KCSClient sharedClient].currentUser.sessionAuth, @"should have a valid session token");
+        self.done = YES;
+    }];
+    [self poll];
+}
 
 @end

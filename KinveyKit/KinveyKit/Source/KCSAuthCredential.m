@@ -34,7 +34,8 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
         // We need auth, but we're not sure what type yet
         // Per the user API if we're POSTING to the ROOT of the user API,
         // then we need App Key auth, otherwise we need user auth
-        if (method == kPostRESTMethod && [URL isEqualToString:client.userBaseURL]){
+#warning TODO fix with brian & sandeep
+        if (method == kPostRESTMethod && [URL hasPrefix:client.userBaseURL]){
             authType = KCSAuthBasicAuthAppKey;
         } else {
             authType = KCSAuthBasicAuthUser;
@@ -132,8 +133,14 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
             }
             return nil;
         } else {
-            NSString *authString = KCSbasicAuthString(curUser.username, curUser.password);
-            KCSLogDebug(@"Current user found (%@, %@) => (%@)", curUser.username, curUser.password, authString);
+            NSString *authString = nil;
+            if (curUser.sessionAuth) {
+                authString = [@"Kinvey " stringByAppendingString: curUser.sessionAuth];//KCSbase64EncodedStringFromData([curUser.sessionAuth dataUsingEncoding:NSUTF8StringEncoding]);
+                KCSLogDebug(@"Current user found (%@) => (%@)", curUser.username, authString);                
+            } else {
+                authString = KCSbasicAuthString(curUser.username, curUser.password);
+                KCSLogDebug(@"Current user found (%@, %@) => (%@)", curUser.username, curUser.password, authString);
+            }
             return authString;
         }
     }
