@@ -56,7 +56,9 @@ The way around this is to set up your own operation queue on this background thr
             }];
           }];
     }
-    
+
+## Summary
+It's best to use KinveyKit from  the main thread or in a `NSOperation`. Using `dispatch_async` to send KinveyKit calls to a background queue might clean up the operating context before callbacks can be fired.
 
 ## More Reference
 The following WWDC videos cover networking and GCD best practices. An Apple iPhone Developer account is required to view them.
