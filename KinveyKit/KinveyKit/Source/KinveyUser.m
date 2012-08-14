@@ -26,6 +26,7 @@
 #define kKeychainPasswordKey @"password"
 #define kKeychainUsernameKey @"username"
 #define kKeychainUserIdKey @"_id"
+#define kKeychainAuthTokenKey @"authtoken"
 
 #define KCSUserAttributeOAuthTokens @"_oauth"
 @class GTMOAuth2Authentication;
@@ -50,6 +51,7 @@
 @synthesize surname = _surname;
 @synthesize givenName = _givenName;
 @synthesize oauthTokens = _oauthTokens;
+@synthesize sessionAuth = _sessionAuth;
 
 - (id)init
 {
@@ -61,6 +63,7 @@
         _userAttributes = [[NSMutableDictionary dictionary] retain];
         _deviceTokens = nil;
         _oauthTokens = [[NSMutableDictionary dictionary] retain];
+        _sessionAuth = nil;
     }
     return self;
 }
@@ -73,12 +76,13 @@
     [_userAttributes release];
     [_deviceTokens release];
     [_oauthTokens release];
+    [_sessionAuth release];
     [super dealloc];
 }
 
 + (BOOL) hasSavedCredentials
 {
-    return [KCSKeyChain getStringForKey:kKeychainPasswordKey] && [KCSKeyChain getStringForKey:kKeychainUsernameKey];
+    return ([KCSKeyChain getStringForKey:kKeychainPasswordKey] && [KCSKeyChain getStringForKey:kKeychainUsernameKey]) || ([KCSKeyChain getStringForKey:kKeychainAuthTokenKey]);
 }
 
 + (void) clearSavedCredentials
@@ -86,6 +90,7 @@
     [KCSKeyChain removeStringForKey: kKeychainUsernameKey];
     [KCSKeyChain removeStringForKey: kKeychainPasswordKey];
     [KCSKeyChain removeStringForKey: kKeychainUserIdKey];
+    [KCSKeyChain removeStringForKey: kKeychainAuthTokenKey];
 }
 
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew
@@ -118,12 +123,12 @@
                 if (completionBlock != nil){
                     // We're going to Make a failure happen here...
                     NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
-                                                                                       withFailureReason:@"User creation timed out with one request holding the lock." 
+                                                                                       withFailureReason:@"User creation timed out with one request holding the lock."
                                                                                   withRecoverySuggestion:@"Try request again later."
                                                                                      withRecoveryOptions:nil];
                     
                     // No user, it's during creation
-                    NSError* error = [NSError errorWithDomain:KCSUserErrorDomain 
+                    NSError* error = [NSError errorWithDomain:KCSUserErrorDomain
                                                          code:KCSUserCreationContentionTimeoutError
                                                      userInfo:userInfo];
                     completionBlock(nil, error, 0);
@@ -173,7 +178,7 @@
         // so we just need to set the one value, no merging/etc
         KCSPush *sp = [KCSPush sharedPush];
         if (sp.deviceToken != nil){
-            [userJSONPaylod setObject:[NSArray arrayWithObject:sp.deviceToken] forKey:@"_deviceTokens"];
+            [userJSONPaylod setObject:@[sp.deviceToken] forKey:@"_deviceTokens"];
         }
         
         NSDictionary *userData = [NSDictionary dictionaryWithDictionary:userJSONPaylod];
@@ -278,6 +283,7 @@
     } else {
         createdUser.password = [KCSKeyChain getStringForKey:kKeychainPasswordKey];
         createdUser.userId = [KCSKeyChain getStringForKey:kKeychainUserIdKey];
+        createdUser.sessionAuth = [KCSKeyChain getStringForKey:kKeychainAuthTokenKey];
         [[KCSClient sharedClient] setAuthCredentials:[NSURLCredential credentialWithUser:createdUser.username password:createdUser.password persistence:NSURLCredentialPersistenceNone]];
         client.userIsAuthenticated = YES;
         client.userAuthenticationInProgress = NO;
@@ -354,13 +360,13 @@
 }
 
 + (void)loginWithUsername: (NSString *)username
-                 password: (NSString *)password 
+                 password: (NSString *)password
       withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
     KCSClient *client = [KCSClient sharedClient];
     
     // Just log-in and set currentUser
-    // Note that isReachable is slightly redundant here, as 
+    // Note that isReachable is slightly redundant here, as
     // the actual request also does the reachable check, however we'd like to know
     // here before branching to the blocks
     if ([client.kinveyReachability isReachable]){
@@ -385,98 +391,97 @@
                 [createdUser release];
                 return;
             }
-            
-            // Ok, we're really authd
-            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-            createdUser.userId   = [dictionary objectForKey:@"_id"];
-            createdUser.deviceTokens = [dictionary objectForKey:@"_deviceTokens"];
-            
-            // We need to ignore the known properties, some are not stored with the user (UUID/UDID)
-            // Somer are stored elsewhere, the rest get set as attributes.
-            for (NSString *property in dictionary) {
-                if ([property isEqualToString:@"_id"]      ||
-                    [property isEqualToString:@"username"] ||
-                    [property isEqualToString:@"password"] ||
-                    [property isEqualToString:@"UUID"]     ||
-                    [property isEqualToString:@"UDID"]     ||
-                    [property isEqualToString:@"_deviceTokens"])
-                {
-                    // This is an "internal" property
-                    continue;
+        // Ok, we're really authd
+        NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
+        createdUser.userId   = [dictionary objectForKey:@"_id"];
+        createdUser.deviceTokens = [dictionary objectForKey:@"_deviceTokens"];
+        
+        // We need to ignore the known properties, some are not stored with the user (UUID/UDID)
+        // Somer are stored elsewhere, the rest get set as attributes.
+        for (NSString *property in dictionary) {
+            if ([property isEqualToString:@"_id"]      ||
+                [property isEqualToString:@"username"] ||
+                [property isEqualToString:@"password"] ||
+                [property isEqualToString:@"UUID"]     ||
+                [property isEqualToString:@"UDID"]     ||
+                [property isEqualToString:@"_deviceTokens"])
+            {
+                // This is an "internal" property
+                continue;
+            } else {
+                if ([property isEqualToString:KCSUserAttributeSurname]) {
+                    createdUser.surname = [dictionary objectForKey:property];
+                } else if ([property isEqualToString:KCSUserAttributeGivenname]) {
+                    createdUser.givenName = [dictionary objectForKey:property];
+                } else if ([property isEqualToString:KCSUserAttributeEmail]) {
+                    createdUser.email = [dictionary objectForKey:property];
+                }  else if ([property isEqualToString:KCSUserAttributeOAuthTokens]) {
+                    createdUser.oauthTokens = [dictionary objectForKey:property];
                 } else {
-                    if ([property isEqualToString:KCSUserAttributeSurname]) {
-                        createdUser.surname = [dictionary objectForKey:property];
-                    } else if ([property isEqualToString:KCSUserAttributeGivenname]) {
-                        createdUser.givenName = [dictionary objectForKey:property];
-                    } else if ([property isEqualToString:KCSUserAttributeEmail]) {
-                        createdUser.email = [dictionary objectForKey:property];
-                    }  else if ([property isEqualToString:KCSUserAttributeOAuthTokens]) {
-                        createdUser.oauthTokens = [dictionary objectForKey:property];
-                    } else {
-                        [createdUser setValue:[dictionary objectForKey:property] forAttribute:property];
-                    }
+                    [createdUser setValue:[dictionary objectForKey:property] forAttribute:property];
                 }
             }
-            
-            assert(createdUser.username != nil && createdUser.password != nil && createdUser.userId != nil);
-            
-            [KCSKeyChain setString:createdUser.username forKey:kKeychainUsernameKey];
-            [KCSKeyChain setString:createdUser.password forKey:kKeychainPasswordKey];
-            [KCSKeyChain setString:createdUser.userId forKey:kKeychainUserIdKey];
-            
-            [[KCSClient sharedClient] setAuthCredentials:[NSURLCredential credentialWithUser:createdUser.username password:createdUser.password persistence:NSURLCredentialPersistenceNone]];
-            [[KCSClient sharedClient] setCurrentUser:createdUser];
-            
-            // Indicate that threads are free to proceed
-            client.userIsAuthenticated = YES;
-            client.userAuthenticationInProgress = NO;
-            
-            // Delegate must retain createdUser
-            completionBlock(createdUser, nil, KCSUserFound);
-            
-            // Clean up
-            [createdUser release];
-        };
+        }
         
-        KCSConnectionFailureBlock fBlock = ^(NSError *error){
-            // I really don't know what to do here, we can't continue... Something died...
-            KCSLogError(@"Internal Error: %@", error);
-            
-            client.userIsAuthenticated = NO;
-            client.userAuthenticationInProgress = NO;
-            client.currentUser = nil;
-            
-            completionBlock(nil, error, 0);
-        };
+        assert(createdUser.username != nil && createdUser.password != nil && createdUser.userId != nil);
         
-        KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
+        [KCSKeyChain setString:createdUser.username forKey:kKeychainUsernameKey];
+        [KCSKeyChain setString:createdUser.password forKey:kKeychainPasswordKey];
+        [KCSKeyChain setString:createdUser.userId forKey:kKeychainUserIdKey];
         
+        [[KCSClient sharedClient] setAuthCredentials:[NSURLCredential credentialWithUser:createdUser.username password:createdUser.password persistence:NSURLCredentialPersistenceNone]];
+        [[KCSClient sharedClient] setCurrentUser:createdUser];
         
-        KCSRESTRequest *request = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"_me"] usingMethod:kGetRESTMethod];
+        // Indicate that threads are free to proceed
+        client.userIsAuthenticated = YES;
+        client.userAuthenticationInProgress = NO;
         
-        // We need to init the current user to something before trying this
-        client.userAuthenticationInProgress = YES;
+        // Delegate must retain createdUser
+        completionBlock(createdUser, nil, KCSUserFound);
         
-        // Create a temp user with uname/password and use it it init currentUser
-        KCSUser *tmpCurrentUser = [[[KCSUser alloc] init] autorelease];
-        tmpCurrentUser.username = username;
-        tmpCurrentUser.password = password;
-        client.currentUser = tmpCurrentUser;
+        // Clean up
+        [createdUser release];
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        // I really don't know what to do here, we can't continue... Something died...
+        KCSLogError(@"Internal Error: %@", error);
         
-        [request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
-        [request start];
+        client.userIsAuthenticated = NO;
+        client.userAuthenticationInProgress = NO;
+        client.currentUser = nil;
         
-        
-    } else {
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to reach Kinvey"
-                                                                           withFailureReason:@"Reachability determined that  Kinvey was not reachable, login cannot proceed."
-                                                                      withRecoverySuggestion:@"Check to make sure device is not in Airplane mode and has a signal or try again later"
-                                                                         withRecoveryOptions:nil];
-        NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
-                                             code:KCSKinveyUnreachableError
-                                         userInfo:userInfo];
         completionBlock(nil, error, 0);
-    }
+    };
+    
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
+    
+    
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"_me"] usingMethod:kGetRESTMethod];
+    
+    // We need to init the current user to something before trying this
+    client.userAuthenticationInProgress = YES;
+    
+    // Create a temp user with uname/password and use it it init currentUser
+    KCSUser *tmpCurrentUser = [[[KCSUser alloc] init] autorelease];
+    tmpCurrentUser.username = username;
+    tmpCurrentUser.password = password;
+    client.currentUser = tmpCurrentUser;
+    
+    [request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
+    [request start];
+    
+    
+} else {
+    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to reach Kinvey"
+                                                                       withFailureReason:@"Reachability determined that  Kinvey was not reachable, login cannot proceed."
+                                                                  withRecoverySuggestion:@"Check to make sure device is not in Airplane mode and has a signal or try again later"
+                                                                     withRecoveryOptions:nil];
+    NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
+                                         code:KCSKinveyUnreachableError
+                                     userInfo:userInfo];
+    completionBlock(nil, error, 0);
+}
 }
 
 
@@ -491,6 +496,172 @@
             [delegate user:user actionDidCompleteWithResult:result];
         }
     }];
+}
+
++ (void) setupSessionAuthUser:(KCSConnectionResponse*)response client:(KCSClient*)client completionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    // Ok, we're really authd
+    [self clearSavedCredentials];
+    NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
+    KCSUser* createdUser = [[KCSUser alloc] init];
+    createdUser.userId   = [dictionary objectForKey:@"_id"];
+    createdUser.deviceTokens = [dictionary objectForKey:@"_deviceTokens"];
+    createdUser.username = [dictionary objectForKey:@"username"];
+    
+    // We need to ignore the known properties, some are not stored with the user (UUID/UDID)
+    // Somer are stored elsewhere, the rest get set as attributes.
+    for (NSString *property in dictionary) {
+        if ([property isEqualToString:@"_id"]      ||
+            [property isEqualToString:@"username"] ||
+            [property isEqualToString:@"password"] ||
+            [property isEqualToString:@"UUID"]     ||
+            [property isEqualToString:@"UDID"]     ||
+            [property isEqualToString:@"_deviceTokens"])
+        {
+            // This is an "internal" property
+            continue;
+        } else {
+            if ([property isEqualToString:KCSUserAttributeSurname]) {
+                createdUser.surname = [dictionary objectForKey:property];
+            } else if ([property isEqualToString:KCSUserAttributeGivenname]) {
+                createdUser.givenName = [dictionary objectForKey:property];
+            } else if ([property isEqualToString:KCSUserAttributeEmail]) {
+                createdUser.email = [dictionary objectForKey:property];
+            }  else if ([property isEqualToString:KCSUserAttributeOAuthTokens]) {
+                createdUser.oauthTokens = [dictionary objectForKey:property];
+            } else if ([property isEqualToString:@"_kmd"]) {
+                createdUser.sessionAuth = [[dictionary objectForKey:property] objectForKey:@"authtoken"]; //get the session auth
+            } else {
+                [createdUser setValue:[dictionary objectForKey:property] forAttribute:property];
+            }
+        }
+    }
+    
+    NSError* error = nil;
+    int status = 0;
+    if (createdUser.sessionAuth != nil) {
+        [[KCSClient sharedClient] setAuthCredentials:[NSURLCredential credentialWithUser:createdUser.username password:createdUser.sessionAuth persistence:NSURLCredentialPersistenceNone]];
+        [[KCSClient sharedClient] setCurrentUser:createdUser];
+        client.userIsAuthenticated = YES;
+        status = KCSUserFound;
+        
+        [KCSKeyChain setString:createdUser.username forKey:kKeychainUsernameKey];
+        [KCSKeyChain setString:createdUser.userId forKey:kKeychainUserIdKey];
+        [KCSKeyChain setString:createdUser.sessionAuth forKey:kKeychainAuthTokenKey];
+        
+    } else {
+        client.userIsAuthenticated = NO;
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
+                                                                           withFailureReason:@"User could not be authorized"
+                                                                      withRecoverySuggestion:@"Try again with different access token"
+                                                                         withRecoveryOptions:nil];
+        error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
+    }
+    
+    // Indicate that threads are free to proceed
+    client.userAuthenticationInProgress = NO;
+    
+    // Delegate must retain createdUser
+    completionBlock(createdUser, error, status);
+    
+    // Clean up
+    [createdUser release];
+
+}
+
++ (void)registerUserWithFacebookAcccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    //TODO: combine with below
+    KCSClient *client = [KCSClient sharedClient];
+    KCSRESTRequest *loginRequest = [KCSRESTRequest requestForResource:client.userBaseURL usingMethod:kPostRESTMethod];
+    NSDictionary* facebooklogin = @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken}}};
+    [loginRequest setJsonBody:facebooklogin];
+    
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        // I really don't know what to do here, we can't continue... Something died...
+        KCSLogError(@"Internal Error: %@", error);
+        
+        client.userIsAuthenticated = NO;
+        client.userAuthenticationInProgress = NO;
+        client.currentUser = nil;
+        
+        completionBlock(nil, error, 0);
+    };
+    
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
+    
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
+        if ([response responseCode] != KCS_HTTP_STATUS_OK) {
+            KCSUser *createdUser = [[KCSUser alloc] init];
+            
+            client.userIsAuthenticated = NO;
+            client.userAuthenticationInProgress = NO;
+            client.currentUser = nil;
+            // This is expected here, user auth failed, do the right thing
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
+                                                                               withFailureReason:@"Invalid Facebook credentials"
+                                                                          withRecoverySuggestion:@"Try again with access token"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
+            // Delegate must retain createdUser
+            completionBlock(createdUser, error, 0);
+            [createdUser release];
+            return;
+        } else { //successful
+            [self setupSessionAuthUser:response client:client completionBlock:completionBlock];
+        }
+
+    };
+
+    client.userAuthenticationInProgress = YES;
+    [loginRequest setContentType:KCS_JSON_TYPE];
+    [loginRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
+    [loginRequest start];
+}
+
++ (void)loginWithFacebookAccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    KCSClient *client = [KCSClient sharedClient];
+    KCSRESTRequest *loginRequest = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"login"] usingMethod:kPostRESTMethod];
+    NSDictionary* facebooklogin = @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken}}};
+    [loginRequest setJsonBody:facebooklogin];
+    
+    // We need to init the current user to something before trying this
+    client.userAuthenticationInProgress = YES;
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        // I really don't know what to do here, we can't continue... Something died...
+        KCSLogError(@"Internal Error: %@", error);
+        
+        client.userIsAuthenticated = NO;
+        client.userAuthenticationInProgress = NO;
+        client.currentUser = nil;
+        
+        completionBlock(nil, error, 0);
+    };
+    
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
+    
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
+        if ([response responseCode] != KCS_HTTP_STATUS_OK) {
+            //This is new user, log in
+            dispatch_async(dispatch_get_current_queue(), ^{
+                [KCSUser registerUserWithFacebookAcccessToken:accessToken withCompletionBlock:completionBlock];
+            });
+        } else { //successful
+            [self setupSessionAuthUser:response client:client completionBlock:completionBlock];
+        }
+    };
+    
+    KCSUser *tmpCurrentUser = [[[KCSUser alloc] init] autorelease];
+    tmpCurrentUser.username = @"";
+    tmpCurrentUser.password = @"";
+    client.currentUser = tmpCurrentUser;
+    
+    [loginRequest setContentType:KCS_JSON_TYPE];
+    [loginRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
+    [loginRequest start];
 }
 
 
@@ -613,12 +784,11 @@
 + (NSDictionary *)kinveyObjectBuilderOptions
 {
     static NSDictionary *options = nil;
-    
-    if (options == nil){
-        options = [[NSDictionary dictionaryWithObjectsAndKeys:
-                    [NSNumber numberWithBool:YES], KCS_USE_DICTIONARY_KEY,
-                    @"userAttributes", KCS_DICTIONARY_NAME_KEY, nil] retain];
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        options = @{KCS_USE_DICTIONARY_KEY : @(YES),
+        KCS_DICTIONARY_NAME_KEY : @"userAttributes"};
+    });
     
     return options;
 }
@@ -626,37 +796,38 @@
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
     static NSDictionary *mappedDict = nil;
-    
-    if (mappedDict == nil){
-        mappedDict = [[NSDictionary dictionaryWithObjectsAndKeys:
-                       KCSEntityKeyId, @"userId",
-                       @"_deviceTokens", @"deviceTokens",
-                       KCSUserAttributeUsername, @"username",
-                       @"password", @"password", 
-                       KCSUserAttributeEmail, @"email",
-                       KCSUserAttributeGivenname, @"givenName",
-                       KCSUserAttributeSurname, @"surname",
-                       KCSEntityKeyMetadata, @"metadata", 
-                       KCSUserAttributeOAuthTokens, @"oauthTokens", nil] retain];
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        mappedDict = @{@"userId" : KCSEntityKeyId,
+        @"deviceTokens" : @"_deviceTokens",
+        @"username" : KCSUserAttributeUsername,
+        @"password" : @"password",
+        @"email" : KCSUserAttributeEmail,
+        @"givenName" : KCSUserAttributeGivenname,
+        @"surname" : KCSUserAttributeSurname,
+        @"metadata" : KCSEntityKeyMetadata,
+        @"oauthTokens" : KCSUserAttributeOAuthTokens,
+        };
+    });
     
     return mappedDict;
 }
 
-- (void) setOAuthToken:(NSString*)token forService:(NSString*)service 
+- (void) setOAuthToken:(NSString*)token forService:(NSString*)service
 {
     [_oauthTokens setValue:token forKey:service];
 }
 
+#if NEVER
 - (BOOL)authorizeFromKeychainForName:(NSString *)serviceName
-                      oauth2Authentication:(GTMOAuth2Authentication *)newAuth {
+                oauth2Authentication:(GTMOAuth2Authentication *)newAuth {
     [newAuth setAccessToken:nil];
     
     BOOL didGetTokens = NO;
-//    GTMOAuth2Keychain *keychain = [GTMOAuth2Keychain defaultKeychain];
-//    NSString *password = [keychain passwordForService:keychainItemName
-//                                              account:kGTMOAuth2AccountName
-//                                                error:nil];
+    //    GTMOAuth2Keychain *keychain = [GTMOAuth2Keychain defaultKeychain];
+    //    NSString *password = [keychain passwordForService:keychainItemName
+    //                                              account:kGTMOAuth2AccountName
+    //                                                error:nil];
     NSString* token = [_oauthTokens valueForKey:serviceName];
     if (token != nil) {
         [newAuth setKeysForResponseString:token];
@@ -664,6 +835,7 @@
     }
     return didGetTokens;
 }
+#endif
 
 - (NSString*) debugDescription
 {

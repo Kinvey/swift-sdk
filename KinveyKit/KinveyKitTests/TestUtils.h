@@ -11,6 +11,7 @@
 #import <KinveyKit/KinveyKit.h>
 
 #define STAssertNoError STAssertNil(errorOrNil,@"Should not get error: %@", errorOrNil);
+#define STAssertError(error, cd) STAssertNotNil(error, @"should have an error"); STAssertEquals((int)cd, (int)[error code], @"error codes should match.");
 
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 

@@ -170,14 +170,16 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     id<KCSStore> store = createStore(KCSCachePolicyBoth);
     STAssertNotNil(store, @"must make a store");
     
-    STAssertTrue([self queryServer:store], @"expecting to call server for first time");
+    BOOL useServer = [self queryServer:store];
+    STAssertTrue(useServer, @"expecting to call server for first time");
     
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]]; //wait for everything to flush
+ //   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]]; //wait for everything to flush
 
     NSLog(@"0");
     _callbackCount = 0;
     
-    STAssertFalse([self queryServer:store], @"expecting to use cache, not server on repeat call");
+    useServer = [self queryServer:store];
+    STAssertFalse(useServer, @"expecting to use cache, not server on repeat call");
     STAssertTrue(_conn.wasCalled, @"expecting to call server after cache");
     STAssertTrue(2 == _callbackCount, @"expecting callback to be called twice");
 }

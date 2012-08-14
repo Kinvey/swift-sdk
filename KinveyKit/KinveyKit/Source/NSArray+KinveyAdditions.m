@@ -30,13 +30,13 @@
     if ([object isKindOfClass:[NSArray class]]){
         return object;
     } else {
-        return object == nil? [NSArray array] : [NSArray arrayWithObject:object];
+        return object == nil? @[] : @[object];
     }
 }
 
 + (NSArray*) arrayWithObjectOrNil:(id) object
 {
-    return object == nil ? [NSArray array] : [NSArray arrayWithObject:object];
+    return object == nil ? @[] : @[object];
 }
 
 + (NSArray *) arrayIfDictionary:(id)object
@@ -44,9 +44,9 @@
     if ([object isKindOfClass:[NSArray class]]){
         return (NSArray *)object;
     } else if ([(NSDictionary *)object count] == 0) {
-            return [NSArray array];
+            return @[];
         } else {
-            return [NSArray arrayWithObject:(NSDictionary *)object];
+            return @[object];
         }
 }
 

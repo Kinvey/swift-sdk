@@ -266,7 +266,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     __block long long expectedResult = 0;
     
     self.onInfoSuccess = ^(int res){
-        self.message = [NSString stringWithFormat:@"Value mismatch, got %d, expected %d", res, expectedResult];
+        self.message = [NSString stringWithFormat:@"Value mismatch, got %d, expected %lld", res, expectedResult];
         if (res != expectedResult){
             return NO;
         } else {
@@ -280,7 +280,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     conn.connectionShouldReturnNow = YES;
 
     // ZERO
-    self.testID = [NSString stringWithString:@"Count: 0"];
+    self.testID = @"Count: 0";
     response = [KCSConnectionResponse connectionResponseWithCode:200
                                                     responseData:[self.writer dataWithObject:zero]
                                                       headerData:nil
@@ -294,7 +294,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // END ZERO
     
     // ONE
-    self.testID = [NSString stringWithString:@"Count: 1"];
+    self.testID = @"Count: 1";
     response = [KCSConnectionResponse connectionResponseWithCode:200
                                                     responseData:[self.writer dataWithObject:one]
                                                       headerData:nil
@@ -308,7 +308,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // END ONE
     
     // BIGNUM
-    self.testID = [NSString stringWithString:@"Count: HUGE"];
+    self.testID = @"Count: HUGE";
     response = [KCSConnectionResponse connectionResponseWithCode:200
                                                     responseData:[self.writer dataWithObject:bigNum]
                                                       headerData:nil
@@ -328,7 +328,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // END BIGNUM
     
     // NEGATIVE
-    self.testID = [NSString stringWithString:@"Count: -1"];
+    self.testID = @"Count: -1";
     response = [KCSConnectionResponse connectionResponseWithCode:200
                                                     responseData:[self.writer dataWithObject:negative]
                                                       headerData:nil
@@ -342,7 +342,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // END NEGATIVE
 
     // FRACTION
-    self.testID = [NSString stringWithString:@"Count: 1/2"];
+    self.testID = @"Count: 1/2";
     response = [KCSConnectionResponse connectionResponseWithCode:200
                                                     responseData:[self.writer dataWithObject:fraction]
                                                       headerData:nil

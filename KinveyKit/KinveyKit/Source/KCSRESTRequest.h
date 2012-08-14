@@ -33,6 +33,7 @@ typedef enum {
 @property (nonatomic) NSInteger method;
 @property (nonatomic) BOOL isSyncRequest;
 @property (nonatomic) BOOL followRedirects;
+@property (nonatomic) NSInteger authNeeded;
 
 + (KCSRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod;
 

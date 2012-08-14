@@ -125,7 +125,7 @@ typedef NSArray* (^ProcessDataBlock_t)(KCSConnectionResponse* response, NSError*
 - (void) buildObjectFromJSON:(NSDictionary*)dictValue withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     NSMutableDictionary* resources = [NSMutableDictionary dictionary];
-    id obj = [KCSObjectMapper makeObjectWithResorucesOfType:self.backingCollection.objectTemplate withData:dictValue withDictionary:resources];
+    id obj = [KCSObjectMapper makeObjectWithResourcesOfType:self.backingCollection.objectTemplate withData:dictValue withDictionary:resources];
     __block NSUInteger resourceCount = resources.count;
     if (resourceCount > 0) {
         KCSResourceStore* resourceStore = [KCSResourceStore store];
