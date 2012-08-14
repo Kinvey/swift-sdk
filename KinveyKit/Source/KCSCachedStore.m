@@ -10,15 +10,14 @@
 
 #import "KCSAppdataStore.h"
 
-#import "KCSClient.h"
-#import "KCSReachability.h"
-
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
 #import "NSArray+KinveyAdditions.h"
 
 #import "KinveyCollection.h"
 #import "KCSReduceFunction.h"
+
+#import "KCSHiddenMethods.h"
 
 //Offload equality of group queries to simple object that uses a string representation
 @interface KCSCacheKey : NSObject
@@ -194,23 +193,6 @@ NSError* createCacheError(NSString* message)
                                                                   withRecoverySuggestion:@"Resend query with cache policy that allows network connectivity" 
                                                                      withRecoveryOptions:nil];
     return [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSNotFoundError userInfo:userInfo];
-}
-
-#if BUILD_FOR_UNIT_TEST
-int reachable = -1;
-- (void) setReachable:(BOOL)reachOverwrite
-{
-    reachable = reachOverwrite;
-}
-#endif
-
-- (BOOL) isKinveyReachable
-{
-#if BUILD_FOR_UNIT_TEST
-    return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
-#else
-    return [[KCSClient sharedClient] kinveyReachability].isReachable;
-#endif
 }
 
 - (BOOL) shouldCallNetworkFirst:(id)cachedResult cachePolicy:(KCSCachePolicy)cachePolicy

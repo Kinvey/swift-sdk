@@ -378,7 +378,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 - (void)fetchWithDelegate:(id<KCSCollectionDelegate>)delegate
 {
     // Guard against an empty filter
-    if (self.filters.count == 0 && self.query == nil){
+    if (_filters.count == 0 && self.query == nil){
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to fetch with an empty query."
                                                                            withFailureReason:@"No query or filter was supplied to fetchWithDelegate:"
                                                                       withRecoverySuggestion:@"Provide a query or filter, or use fetchAllWithDelegate:"
@@ -429,7 +429,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         
     } else {
         resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
-        resource = [resource stringByAppendingQueryString:[NSString stringWithFormat:@"query=%@", [NSString stringByPercentEncodingString:[self buildQueryForFilters:[self filters]]]]];
+        resource = [resource stringByAppendingQueryString:[NSString stringWithFormat:@"query=%@", [NSString stringByPercentEncodingString:[self buildQueryForFilters:_filters]]]];
     }
 
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];

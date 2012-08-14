@@ -35,7 +35,14 @@
 
 #import "KCSHiddenMethods.h"
 
-@interface KCSAppdataStore ()
+#import "KCSClient.h"
+#import "KCSReachability.h"
+
+#import "SaveQueue.h"
+
+@interface KCSAppdataStore () {
+    SaveQueue* _saveQueue;
+}
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
 @property (nonatomic, retain) KCSCollection *backingCollection;
@@ -68,6 +75,13 @@
     return self;
 }
 
+- (void) dealloc
+{
+    [_authHandler release];
+    [_saveQueue release];
+    [super dealloc];
+}
+
 + (id)store
 {
     return [self storeWithAuthHandler:nil withOptions:nil];
@@ -93,7 +107,7 @@
 + (id)storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options {
     
     if (options == nil) {
-        options = [NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, nil];
+        options = @{ KCSStoreKeyResource : collection };
     } else {
         options= [NSMutableDictionary dictionaryWithDictionary:options];
         [options setValue:collection forKey:KCSStoreKeyResource];
@@ -106,6 +120,7 @@
     if (options) {
         // Configure
         self.backingCollection = [options objectForKey:KCSStoreKeyResource];
+        _saveQueue = [SaveQueue saveQueueForCollection:self.backingCollection.collectionName];
     }
     
     // Even if nothing happened we return YES (as it's not a failure)
@@ -141,7 +156,7 @@ KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock on
             if ([(NSDictionary *)jsonData count] == 0){
                 jsonArray = [NSArray array];
             } else {
-                jsonArray = [NSArray arrayWithObjects:(NSDictionary *)jsonData, nil];
+                jsonArray = @[jsonData];
             }
         }
         
@@ -450,9 +465,9 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
                     jsonArray = (NSArray *)jsonData;
                 } else {
                     if ([(NSDictionary *)jsonData count] == 0){
-                        jsonArray = [NSArray array];
+                        jsonArray = @[];
                     } else {
-                        jsonArray = [NSArray arrayWithObjects:(NSDictionary *)jsonData, nil];
+                        jsonArray = @[jsonData];
                     }
                 }
                 
@@ -490,11 +505,39 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     };
     return [[processBlock copy] autorelease];
 }
+#pragma mark - Reachability
+#if BUILD_FOR_UNIT_TEST
+int reachable = -1;
+- (void) setReachable:(BOOL)reachOverwrite
+{
+    reachable = reachOverwrite;
+}
+#endif
+
+- (BOOL) isKinveyReachable
+{
+#if BUILD_FOR_UNIT_TEST
+    return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
+#else
+    return [[KCSClient sharedClient] kinveyReachability].isReachable;
+#endif
+}
+
 //TODO: !!! stuff in order
 #pragma mark - Adding/Updating
+- (BOOL) offlineSaveEnabled
+{
+    return YES; //TODO:
+}
+
+- (NSUInteger) numberOfPendingSaves
+{
+    return [_saveQueue count];
+}
+
 - (void) buildObjectFromJSON:(NSDictionary*)dictValue withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
-    completionBlock([NSArray arrayWithObject:[KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:dictValue]], nil);
+    completionBlock(@[[KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:dictValue]], nil);
 }
 
 - (void) saveEntity:(KCSSerializedObject*)serializedObj withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
@@ -548,6 +591,28 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     }] start];
 }
 
+- (void) enqueSave:(KCSSerializedObject*)obj
+{    
+    [_saveQueue addObject:obj];
+}
+
+- (void) drainQueueWithCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    if ([self offlineSaveEnabled] && [self isKinveyReachable] == NO) {
+        NSDictionary* info = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Could not reach Kinvey" withFailureReason:@"Application is offline" withRecoverySuggestion:@"Try again when app is online" withRecoveryOptions:nil];
+        NSMutableDictionary* offlineErrorInfo = [NSMutableDictionary dictionaryWithDictionary:info];
+        [offlineErrorInfo setObject:[_saveQueue ids] forKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
+        NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSKinveyUnreachableError userInfo:offlineErrorInfo];
+        completionBlock(nil,error);
+    } else {
+        for (SaveQueueItem* item in [_saveQueue set]) {
+            KCSSerializedObject* serializedObj = item.object;
+            [self saveEntity:serializedObj withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+            
+        }
+    }
+}
+
 - (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
     BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
@@ -571,8 +636,9 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     __block BOOL done = NO;
     for (id <KCSPersistable> singleEntity in objectsToSave) {
         KCSSerializedObject* serializedObj = [KCSObjectMapper makeKinveyDictionaryFromObject:singleEntity];
-        
-        [self saveEntity:serializedObj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        [self enqueSave:serializedObj];
+        //TODO: compress queue=
+        [self drainQueueWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
             if (done) {
                 //don't do the completion blocks for all the objects if its previously finished
                 return;
@@ -712,9 +778,9 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
             jsonArray = (NSArray *)jsonData;
         } else {
             if ([(NSDictionary *)jsonData count] == 0){
-                jsonArray = [NSArray array];
+                jsonArray = @[];
             } else {
-                jsonArray = [NSArray arrayWithObjects:(NSDictionary *)jsonData, nil];
+                jsonArray = @[jsonData];
             }
         }
         

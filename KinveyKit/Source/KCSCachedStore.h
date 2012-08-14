@@ -93,7 +93,4 @@ typedef enum KCSCachePolicy {
  */
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
 
-#if BUILD_FOR_UNIT_TEST
-- (void) setReachable:(BOOL)reachOverwrite;
-#endif
 @end

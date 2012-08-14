@@ -76,6 +76,7 @@ getLogDate(void)
 @synthesize request=_request;
 @synthesize followRedirects=_followRedirects;
 @synthesize retriesAttempted = _retriesAttempted;
+@synthesize authNeeded = _authNeeded;
 
 - (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod
 {
@@ -90,6 +91,7 @@ getLogDate(void)
         _isMockRequest = NO;
         _followRedirects = YES;
         _retriesAttempted = 0;
+        _authNeeded = -1;
         _headers = [[NSMutableDictionary dictionary] retain];
 
         // Prepare to generate the request...
@@ -270,7 +272,7 @@ getLogDate(void)
     [self.request setValue:@"true" forHTTPHeaderField:@"X-Kinvey-ResponseWrapper"];
     
     KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
-    if (cred.requiresAuthentication){
+    if (_authNeeded != 0 && cred.requiresAuthentication){
         NSString *authString = [cred HTTPBasicAuthString];
         // If authString is nil and we needed it (requiresAuthentication is true),
         // then there is no current user, so we need to retry this "later", say 500 msec

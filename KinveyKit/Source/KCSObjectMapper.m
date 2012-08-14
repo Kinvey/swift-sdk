@@ -173,10 +173,10 @@ NSDictionary* builderOptions(id object)
 
 + (id)makeObjectOfType:(Class)objectClass withData: (NSDictionary *)data
 {
-    return [self makeObjectWithResorucesOfType:objectClass withData:data withDictionary:nil];
+    return [self makeObjectWithResourcesOfType:objectClass withData:data withDictionary:nil];
 }
 
-+ (id)makeObjectWithResorucesOfType:(Class)objectClass withData:(NSDictionary *)data withDictionary:(NSMutableDictionary*)resources
++ (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withDictionary:(NSMutableDictionary*)resources
 {
     
     // Check for special options to building this class

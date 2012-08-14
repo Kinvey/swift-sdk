@@ -28,7 +28,7 @@
     
     // Test Value + empty string
     testURL = [NSURL URLWithString:@"http://www.kinvey.com/"];
-    NSString *testString = [NSString stringWithString:@"http://www.kinvey.com/"];
+    NSString *testString = @"http://www.kinvey.com/";
     assertThat([testString URLByAppendingQueryString:@""], is(equalTo(testURL)));
     
     // Test simple query
@@ -50,16 +50,16 @@
     assertThat([emptyString stringByAppendingQueryString:@""], is(equalTo(emptyString)));
     
     // Test empty string + value
-    NSString *testURL = [NSString stringWithString:@"?value"];
+    NSString *testURL = @"?value";
     assertThat([emptyString stringByAppendingQueryString:@"value"], is(equalTo(testURL)));
     
     // Test Value + empty string
-    testURL = [NSString stringWithString:@"http://www.kinvey.com/"];
-    NSString *testString = [NSString stringWithString:@"http://www.kinvey.com/"];
+    testURL = @"http://www.kinvey.com/";
+    NSString *testString = @"http://www.kinvey.com/";
     assertThat([testString stringByAppendingQueryString:@""], is(equalTo(testURL)));
     
     // Test simple query
-    testURL = [NSString stringWithString:@"http://www.kinvey.com/?test"];
+    testURL = @"http://www.kinvey.com/?test";
     assertThat([testString stringByAppendingQueryString:@"test"], is(equalTo(testURL)));
 
     // Test nil
@@ -68,7 +68,7 @@
 
     
     // Test double append
-    testURL = [NSString stringWithString:@"http://www.kinvey.com/?one=1&two=2"];
+    testURL = @"http://www.kinvey.com/?one=1&two=2";
     assertThat([[testString stringByAppendingQueryString:@"one=1"] stringByAppendingQueryString:@"two=2"], is(equalTo(testURL)));
 
 }
