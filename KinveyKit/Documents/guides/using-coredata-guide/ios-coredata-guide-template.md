@@ -6,7 +6,7 @@ With Core Data you have to define your data model up-front and persist it locall
 ## Concepts
 
 ### Managed Objects
-Core Data manages object lifecycle and tracks changes. This means that you don't have to worry about initializing objects, or being notified upon changes. KinveyKit has made the tradeoff of allowing you to persist any `NSObject` to the backend. This means to add a new object to the backend, you have to create an instance, set the appropriate data, and save it. Queries to the backend will return initialized objects of the appropriate type, but saves still have to be triggered by your code. 
+Core Data manages object lifecycle and tracks changes. This means that you don't have to worry about initializing objects, or being notified upon changes. KinveyKit has made the tradeoff of allowing you to persist any `NSObject` to the backend. This means to add a new object to the backend, you have to create an instance, set the appropriate data, and save it. Queries to the backend will return initialized objects of the appropriate type. Saves still have to be triggered per object, since changes are not tracked.
 
 ### Querying
 Core Data queries are performed using an `NSFetchRequest` with an `NSPredicate`. KinveyKit uses a `KCSQuery` object. KCSQueries are built using explicit methods like `addQueryOnField:usingConditional:forValue:` rather than a string using the predicate language of Core Data. The two languages aren't equivalent, but overlap conceptually. KCSQueries provide additional features for geographic location queries as well as logical and arithmetic queries on fields. 
@@ -14,17 +14,14 @@ Core Data queries are performed using an `NSFetchRequest` with an `NSPredicate`.
 ### Relationships 
 One of Core Data's main features is the object graph, which allows developers to express relationships between entities, usually as a one-to-one or one-to-many (and occasionally a many-to-many). With these relationships, you can load related objects from the parent object, and cascade deletes. Kinvey uses MongoDB on the backend, which only supports independent collections.  The way we get around this limitation is to store the unique `_id` of the relationship object(s) in the appropriate parent object field. When the object is fetched from the backend, we have to then perform a second `GET` from the related object's collection (and so on) to load the entire object graph. The inverse is true for saves and deletes.
 
-TODO replace with KinveyRef discussion next iteration.
-
 ### Notifications
 Using Core Data provides notifications when an object's data is changed or in the case of `NSFetchedResultsController` when any of its returned objects is changed. When you load objects from Kinvey's backend, the default behavior matches properties to collection field names through property names. This means collection data can be observed through Key-Value Observing (KVO), in a similar way that you would observe NSManagedObjects.
 
-Core Data persistent stores are local to the device, and are thus unlikely to change without direct action of the user. Because you have the ability to make common entities on the backend, it is possible for data to change on the backend and making the fetched objects out-of-date. We do not have the ability at this time to automatically notify an app when such data changes. If you have data that is expected to change frequently, refresh it as-needed. 
+Core Data persistent stores are local to the device, and are thus unlikely to change without direct action of the user. Because you have the ability to make common entities on the backend, it is possible for data to change on the backend, thus making the fetched objects out-of-date. We do not have the ability at this time to automatically notify an app when such data changes. If you have data that is expected to change frequently, refresh it as-needed. 
 
 ## Migrating from Core Data to KinveyKit
-
 ### Entities and Collections
-Kinvey's database does not use schemas so your object model becomes a convention rather than an enforceable contract. There's a lot of ways to architect your data, we recommend that you map Core Data Entities to individual collections in your backend, and an entity's attributes become the fields of the collection.
+Kinvey's database does not use schemas, so your object model becomes a convention rather than an enforceable contract. There's a lot of ways to architect your data, but when coming from a Core Data model, we recommend that you map Core Data Entities to individual collections in your backend. This way, the entity's attributes become the fields of the collection.
 
 For example, let's say we're building a cookbook app. We have Recipe and Ingredient entities, where a Recipe is made up of multiple Ingredients:
 
@@ -70,14 +67,38 @@ Continuing our example:
     } withProgressBlock:nil];
     
 ### Fetching
-TODO
+In Core Data, entities are fetched using a `NSFetchRequest` given an entity name and a predicate. With Kinvey, instead of querying the backend in general, you select entities by choosing which Collection is queried; and instead of using `NSPredicate`s, `KCSQuery` objects are used instead. `KCSQuery`s are conceptually similar to `NSPredicates`: you'll choose the fields to query by name, and the logical expression to filter the results.  
+
+The complete instructions and options available for KCSQuery can be found in the [API Reference](http://docs.kinvey.com/API/iOS-API-docs/Classes/KCSQuery.html). Some example queries:
+
+| Description                        | NSPredicate | KCSQuery |
+|:-----------------------------------|-------------|----------|
+| Get everything | `[NSPredicate predicateWithValue:YES];` | `[KCSQuery query];` |
+| Get Ingredients named "beef" | `[NSPredicate predicateWithFormat:@"name LIKE %@", @"hamburger"];` | `[KCSQuery queryOnField:@"name" withExactMatchForValue:@"hamburger"];`|
+| Find ingredients that need more than 1 cup | `[NSPredicate predicateWithFormat:@"(units LIKE cup) AND (quantity > 1)"];` | `[[KCSQuery queryOnField:@"units" withExactMatchForValue:@"cup"] addQueryOnField:@"quantity" usingConditional:kKCSGreaterThan forValue:@1];` |
+
+There are no Joins available, so relationships can only be queries by their `_id`s, and not by their fields. 
+
+#### Sorting
+`KCSQuery` provides sorting mechanism just like `NSFetchRequest`. 
+
+| Description                        | NSFetchRequest | KCSQuery |
+|:-----------------------------------|-------------|----------|
+| Sort Recipes by name, ascending | `NSFetchRequest* req = [NSFetchRequest fetchRequestWithEntityName:@"Recipe"];`<br>`NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];`<br>`[req setSortDescriptors:@[sortDescriptor]];` |`KCSQuery* query = [KCSQuery query];` <br> `KCSQuerySortModifier* sort = [[KCSQuerySortModifier alloc] initWithField:@"name" inDirection:kKCSAscending];` <br> `[query addSortModifier:sort];`|
+
+#### Batching
+When your collections are large, you may not want to fetch all of the entities at once. This is a common case when using table views. `KCSQuery` takes a limit modifier to limit the number of returned object and a skip modifier to set an offset. Used together you can obtain entities in batches. 
+
+| Description                        | NSFetchRequest | KCSQuery |
+|:-----------------------------------|-------------|----------|
+| Get 40 recipes at a time, starting with # 40 | `NSFetchRequest* req = [NSFetchRequest fetchRequestWithEntityName:@"Recipe"];` <br> `req.fetchLimit = 40;` <br> `req.fetchOffset = 40;` | `KCSQuery* query = [KCSQuery query];` <br> `KCSQueryLimitModifier* limit = [[KCSQueryLimitModifier alloc] initWithLimit:40];` <br> `KCSQuerySkipModifier* skip = [[KCSQuerySkipModifier alloc] initWithcount:40];` <br> `[query setLimitModifer:limit];` <br> `[query setSkipModifier:skip];`
 
 ### Handling Relationships
 
 #### Saves
-Since the new objects span multiple collections, we want to save their relationships. Since the object graph cannot persisted at the same time, when serializing the object we want to store just the ids not the whole object. 
+If new objects span multiple collections, we want to save their relationships. Since the object graph cannot persisted at the same time, when serializing the object, we will to store just the related objects' ids and not the whole object. 
 
-In this example, I've specified a substitution. When the `hostToKinveyPropertyMapping` is called by KinveyKit at save time, instead of saving the "ingredients" set, it'll call this method instead, which generats an array of ingredients object ids. This is what will be saved on the backend. When the Recipe entity is fetched from the server, we can just load the ingredients by id. 
+In this example, I've specified a substitution. When the `hostToKinveyPropertyMapping` is called by KinveyKit at save time, instead of saving the "ingredients" set, it'll call this method instead, which generates an array of ingredients object ids (see example above). This is what will be saved on the backend. When the Recipe entity is fetched from the server, we can just load the ingredients by id. In this example, `ingredients` is a set of `Ingredient` entity objects, and `ingredientIds` is an array of their `_id` values; the first set is the client-facing property, and the second is the server-facing one. 
 
     - (NSArray*) ingredientIds
     {
@@ -88,12 +109,14 @@ In this example, I've specified a substitution. When the `hostToKinveyPropertyMa
         return ids;
      }
 
-NOTE: If an id is manually assigned, it will be assigned by the backend when the object is saved. This means that the child elements should be saved first in order to make sure they have their id fields set before saving the parent object.
+{% callout NOTE %}
+If an `_id` is not manually assigned by the client, it will be assigned by the backend when the object is saved. This means that the child elements should be saved first in order to make sure they have their id fields set before saving the parent object.
+{% endcallout %}
 
 #### Loads
 Because entities are stored in different collections, we will have to query associated objects separately from the parent object. 
 
-In our example, when the `Recipe` object is loaded, we get back the array of `Ingredient` ids previously stored there. Most of the time the application will want those Ingredient objects and not just the ids, this example will fetch those silently in the background and update the `ingredients` set property. 
+In our example, when the `Recipe` object is loaded, we get back the array of `Ingredient` ids previously stored there. Most of the time the application will want those Ingredient objects and not just the ids; this example will fetch those silently in the background and update the `ingredients` set property. 
 
     - (void) setIngredientIds:(NSArray *)ingredientIds
     {
@@ -105,13 +128,13 @@ In our example, when the `Recipe` object is loaded, we get back the array of `In
                 self.ingredients = [NSMutableOrderedSet orderedSet];
             } else {
                 self.ingredients = [NSMutableOrderedSet orderedSetWithArray:objectsOrNil];
-                // the ordering will be in the array order, which is the same as we saved it in. This would be a good place to sort them, if necessary.
+                // the ordering will be in the array order, which is the same as we saved it in. This would be a good place to sort them differently, if necessary.
             }
         } withProgressBlock:nil];
     }
     
 #### Deletes
-Just like load and save, delete operations need to be applied to each collection, individually. For a nil-ing delete the relationship field can just be set to an empty array, but to cascade a delete, we can do something similar to save.
+Just like load and save, delete operations need to be applied to each collection individually. For a nil-ing delete the relationship field can just be set to an empty array, but to cascade a delete, we can do something similar to save: deleting the child objects and then deleting the parent.
 
 This method will delete the related ingredients first and then delete the recipe object.
 
@@ -140,5 +163,20 @@ This method will delete the related ingredients first and then delete the recipe
     } 
 
 
-### Migrating Saved Data
-TODO
+### Migrating Existing Data to the Cloud
+In the case where you have an existing app where users have their data stored in a local Core Data persistent store, you'll want to upload that data to the cloud so they can access that data along with whatever new data you add to the backend. 
+
+Using the techniques highlighted above for migrating the object model and `NSManagedObject` subclasses to their Kinvey equivalents you can upload the data wholesale. This can be done once the application finishes launching or at an appropriate time, like when a table view is loaded that displays a list of entities. 
+
+Here's the procedure, assuming a relatively small amount of stored data:
+
+1. Before the data is needed, fetch all appropriate entities.
+2. Save the array of fetched entities to Kinvey, being sure to preserve relationships, as necessary.
+3. Delete those entities from the the store and/or set a flag in the `NSUserDefaults` or the persistent store metadata to indicate that those sets of entities have been uploaded.
+4. Next time the app runs, check that flag and do nothing if it's been set. 
+    * There may be some trickiness here regarding iCloud-backed up apps. Contact support if you run into trouble.
+    
+If your app stores a lot of data in the database, you can do the migration on a background thread.
+
+1. Using Apple's [Core Data/Concurrency guide](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CoreData/Articles/cdConcurrency.html), create a separate managed object context on a background thread. 
+2. Follow the steps above to copy the data to Kinvey. You should be able to use KinveyKit from the main thread, even in this case, because there should not be a lot actually done on the main thread. Consult our [GCD guide](http://docs.kinvey.com/ios-gcd-guide.html) for instructions on how to call KinveyKit in the background, if it still blocks the main thread too long.
