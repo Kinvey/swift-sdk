@@ -260,7 +260,7 @@
 }
 
 #pragma mark - Configuring
-- (BOOL)configureWithOptions: (NSDictionary *)options
+- (BOOL) configureWithOptions: (NSDictionary *)options
 {
     if (options) {
     }
@@ -268,5 +268,5 @@
     // Even if nothing happened we return YES (as it's not a failure)
     return YES;
 }
-//TODO: unit tests
+
 @end

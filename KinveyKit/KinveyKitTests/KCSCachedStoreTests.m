@@ -17,6 +17,7 @@
 #import "KCSConnectionPool.h"
 #import "KCS_SBJsonWriter.h"
 #import "TestUtils.h"
+#import "KCSHiddenMethods.h"
 
 @interface TestEntity : NSObject
 @property (nonatomic, retain) NSString* key;
@@ -28,10 +29,6 @@
 {
     return [NSDictionary dictionaryWithObject:@"key" forKey:@"key"];
 }
-@end
-
-@interface KCSCachedStore ()
-- (void) setReachable:(BOOL)reachable;
 @end
 
 @implementation KCSCachedStoreTests

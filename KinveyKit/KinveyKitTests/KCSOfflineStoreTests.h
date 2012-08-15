@@ -7,7 +7,8 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
+#import "KCSOfflineSaveStore.h"
 
-@interface KCSOfflineStoreTests : SenTestCase
+@interface KCSOfflineStoreTests : SenTestCase <KCSOfflineSaveDelegate>
 
 @end

@@ -17,6 +17,7 @@
 
 @interface SaveQueue () <KCSPersistableDelegate> {
     NSMutableOrderedSet* _q;
+    id<KCSOfflineSaveDelegate> _delegate;
 }
 @property (nonatomic, retain) KCSCollection* collection;
 @end
@@ -210,9 +211,7 @@ static KCSSaveQueues* sQueues;
 #pragma mark - Save Stuff
 - (id<KCSPersistable>) objForItem: (SaveQueueItem*) item
 {
-    //tODO:    [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:dictValue]
-    id<KCSPersistable> obj = nil; //TODO
-    return obj;
+    return item.object;
 }
 
 - (void) startSaving
