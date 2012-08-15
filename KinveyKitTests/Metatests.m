@@ -133,7 +133,35 @@ typedef struct {
     [pool release];
     
 }
+#if NEVER
+- (void) predtests
+{
+    [NSPredicate predicateWithFormat:@"name LIKE %@", @"hamburger"];
+    [KCSQuery queryOnField:@"name" withExactMatchForValue:@"hamburger"];
+    [NSPredicate predicateWithFormat:@"(units LIKE cup) AND (quantity > 1)"];
+    [[KCSQuery queryOnField:@"units" withExactMatchForValue:@"cup"] addQueryOnField:@"quantity" usingConditional:kKCSGreaterThan forValue:@1];
+    
+    NSFetchRequest* req = [NSFetchRequest fetchRequestWithEntityName:@"Recipe"];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    [req setSortDescriptors:@[sortDescriptor]];
+    
+    [NSPredicate predicateWithValue:YES];
+    KCSQuery* query = [KCSQuery query]; //get everything query
+    KCSQuerySortModifier* sort = [[KCSQuerySortModifier alloc] initWithField:@"name" inDirection:kKCSAscending];
+    [query addSortModifier:sort];
+    
+  //  NSFetchRequest* req = [NSFetchRequest fetchRequestWithEntityName:@"Recipe"];
+    req.fetchLimit = 40;
+    req.fetchOffset = 40;
 
+//    KCSQuery* query = [KCSQuery query];
+    KCSQueryLimitModifier* limit = [[KCSQueryLimitModifier alloc] initWithLimit:40];
+    KCSQuerySkipModifier* skip = [[KCSQuerySkipModifier alloc] initWithcount:40];
+    [query setLimitModifer:limit];
+    [query setSkipModifier:skip];
+    
+}
+#endif
 - (void) yy
 {
     //    KCSCachedStore* store;

@@ -16,7 +16,6 @@
 
 #define KCS_ERROR_UNSAVED_OBJECT_IDS_KEY @"KCSStore.OfflineSave.UnsavedObjectIds"
 
-#warning NEED TO DOC
 @protocol KCSOfflineSaveStore <KCSStore> //Install by setting KCSStoreKeyUniqueOfflineSaveIdentifier, optional id<KCSOfflineSaveDelegate> KCSStoreKeyOfflineSaveDelegate
 - (NSUInteger) numberOfPendingSaves;
 @end
