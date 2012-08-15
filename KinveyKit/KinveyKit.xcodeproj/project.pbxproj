@@ -686,6 +686,8 @@
 				274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */,
 				2735B2441578E84A0063EE62 /* KCSResourceStoreTests.h */,
 				2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */,
+				273DB2E115D171E80072A444 /* KCSOfflineStoreTests.h */,
+				273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */,
 			);
 			name = KinveyStore;
 			sourceTree = "<group>";
@@ -1520,8 +1522,6 @@
 				D3715ACA14B695820030F5E9 /* KinveyKitPingTests.m */,
 				27F3609E1598C250006B699E /* KCSMetadataTests.h */,
 				27F3609F1598C250006B699E /* KCSMetadataTests.m */,
-				273DB2E115D171E80072A444 /* KCSOfflineStoreTests.h */,
-				273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */,
 			);
 			name = AppdataService;
 			sourceTree = "<group>";

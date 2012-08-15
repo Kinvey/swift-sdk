@@ -42,6 +42,7 @@
 
 @interface KCSAppdataStore () {
     SaveQueue* _saveQueue;
+    BOOL _offlineSaveEnabled;
 }
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
@@ -118,11 +119,15 @@
 
 - (BOOL)configureWithOptions: (NSDictionary *)options
 {
+
+    
     if (options) {
         // Configure
         self.backingCollection = [options objectForKey:KCSStoreKeyResource];
-        //TODO: check for enablement of save queue
         _saveQueue = [[SaveQueue saveQueueForCollection:self.backingCollection] retain];
+        _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
+        id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
+        _saveQueue.delegate = del;
     }
     
     // Even if nothing happened we return YES (as it's not a failure)
@@ -513,6 +518,9 @@ int reachable = -1;
 - (void) setReachable:(BOOL)reachOverwrite
 {
     reachable = reachOverwrite;
+    SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithName(NULL, [(reachable ? @"127.0.0.1" : @"nevernever") UTF8String]); //TODO: based on ref
+    KCSReachability* testReachability = [[KCSReachability alloc] initWithReachabilityRef:ref];
+    [[NSNotificationCenter defaultCenter] postNotificationName: kKCSReachabilityChangedNotification object:testReachability];
 }
 #endif
 
@@ -525,11 +533,10 @@ int reachable = -1;
 #endif
 }
 
-//TODO: !!! stuff in order
 #pragma mark - Adding/Updating
 - (BOOL) offlineSaveEnabled
 {
-    return YES; //TODO:
+    return _offlineSaveEnabled;
 }
 
 - (NSUInteger) numberOfPendingSaves
