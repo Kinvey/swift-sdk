@@ -165,12 +165,14 @@ enum {
         file=[[NSString alloc] initWithBytes:sourceFile 
                                       length:strlen(sourceFile) 
                                     encoding:NSUTF8StringEncoding];
-        print=[[NSString alloc] initWithFormat:format arguments:ap];
+        print = [[[NSString alloc] initWithFormat:format arguments:ap] autorelease];
         va_end(ap);
+        if ([print length] > 1000) {
+            print = [[print substringToIndex:1000] stringByAppendingString:@"...(truncated)"];
+        }
         //NSLog handles synchronization issues
         NSLog(@"%s:%d %@ %@",[[file lastPathComponent] UTF8String],
               lineNumber, channel.displayString,print);
-        [print release];
         [file release];
     }
 }

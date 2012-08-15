@@ -798,7 +798,7 @@
     static NSDictionary *mappedDict = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mappedDict = @{@"userId" : KCSEntityKeyId,
+        mappedDict = [@{@"userId" : KCSEntityKeyId,
         @"deviceTokens" : @"_deviceTokens",
         @"username" : KCSUserAttributeUsername,
         @"password" : @"password",
@@ -807,7 +807,7 @@
         @"surname" : KCSUserAttributeSurname,
         @"metadata" : KCSEntityKeyMetadata,
         @"oauthTokens" : KCSUserAttributeOAuthTokens,
-        };
+        } retain];
     });
     
     return mappedDict;

@@ -28,17 +28,11 @@
 
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
-    NSDictionary *map = nil;
-    
-    if (map == nil){
-        map = @{@"objId" : KCSEntityKeyId,
+    return @{@"objId" : KCSEntityKeyId,
                 @"meta" : KCSEntityKeyMetadata,
                 @"objCount" : @"objCount",
                 @"objDescription" : @"objDescription",
                 @"date" : @"date"};
-    }
-    
-    return map;
 }
 
 @end

@@ -1,5 +1,14 @@
 # KinveyKit Release History
 
+## 1.7
+** Release date: ** TBD
+* Added login with Facebook to `KCSUser`, allowing you to use a Facebook access token to login in to Kinvey.
+* Documentation Updates.
+     * Added [Threading Guide](guides/gcd-guide/Using KinveyKit with GCD.html).
+     * Added [Core Data Migration Guide](guides/using-coredata-guide/ios-coredata-guide.html)
+* Bug Fix(es).
+     * Updated our reachability aliases to make the KinveyKit more compatible with other frameworks. 
+
 ## 1.6
 ### 1.6.1
 ** Release Date: ** July 31st, 2012
