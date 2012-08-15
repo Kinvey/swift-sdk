@@ -422,7 +422,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 //         WiFi turned on:   Reachability Flag Status: -R ------- Reachable.
 // Local   WiFi turned on:   Reachability Flag Status: -R xxxxxxd Reachable.
 //         WiFi turned on:   Reachability Flag Status: -R ct----- Connection down. (Non-intuitive, empirically determined answer.)
-const SCNetworkReachabilityFlags kConnectionDown =  kSCNetworkReachabilityFlagsConnectionRequired | 
+const SCNetworkReachabilityFlags kKCSConnectionDown =  kSCNetworkReachabilityFlagsConnectionRequired |
 												    kSCNetworkReachabilityFlagsTransientConnection;
 //         WiFi turned on:   Reachability Flag Status: -R ct-i--- Reachable but it will require user intervention (e.g. enter a WiFi password).
 //         WiFi turned on:   Reachability Flag Status: -R -t----- Reachable via VPN.
@@ -458,7 +458,7 @@ const SCNetworkReachabilityFlags kConnectionDown =  kSCNetworkReachabilityFlagsC
 		flags &= ~kSCNetworkReachabilityFlagsIsLocalAddress; // kInternetConnection is local.
 		
 		// Reachability Flag Status: -R ct---xx Connection down.
-		if (flags == kConnectionDown) { return kKCSNotReachable; }
+		if (flags == kKCSConnectionDown) { return kKCSNotReachable; }
 		
 		// Reachability Flag Status: -R -t---xx Reachable. WiFi + VPN(is up) (Thank you Ling Wang)
 		if (flags & kSCNetworkReachabilityFlagsTransientConnection)  { return kKCSReachableViaWiFi; }
@@ -563,10 +563,10 @@ const SCNetworkReachabilityFlags kConnectionDown =  kSCNetworkReachabilityFlagsC
 
 
 #if (__IPHONE_OS_VERSION_MIN_REQUIRED >= 30000)
-static const SCNetworkReachabilityFlags kOnDemandConnection = kSCNetworkReachabilityFlagsConnectionOnTraffic | 
+static const SCNetworkReachabilityFlags kKCSOnDemandConnection = kSCNetworkReachabilityFlagsConnectionOnTraffic |
                                                               kSCNetworkReachabilityFlagsConnectionOnDemand;
 #else
-static const SCNetworkReachabilityFlags kOnDemandConnection = kSCNetworkReachabilityFlagsConnectionAutomatic;
+static const SCNetworkReachabilityFlags kKCSOnDemandConnection = kSCNetworkReachabilityFlagsConnectionAutomatic;
 #endif
 
 - (BOOL) isConnectionOnDemand {
@@ -580,7 +580,7 @@ static const SCNetworkReachabilityFlags kOnDemandConnection = kSCNetworkReachabi
 		logReachabilityFlags(flags);
 		
 		return ((flags & kSCNetworkReachabilityFlagsConnectionRequired) &&
-				(flags & kOnDemandConnection));
+				(flags & kKCSOnDemandConnection));
 		
 	}
 	
