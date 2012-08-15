@@ -10,11 +10,15 @@
 
 #import "KCSObjectMapper.h"
 #import "KCSReachability.h"
+#import "KinveyCollection.h"
+#import "KinveyEntity.h"
+#import "KinveyErrorCodes.h"
+#import "KinveyPersistable.h"
 
-@interface SaveQueue () {
+@interface SaveQueue () <KCSPersistableDelegate> {
     NSMutableOrderedSet* _q;
 }
-@property (nonatomic, copy) NSString* collectionName;
+@property (nonatomic, retain) KCSCollection* collection;
 @end
 
 
@@ -24,7 +28,7 @@
 
 + (KCSSaveQueues*)sharedQueues;
 
-- (SaveQueue*)queueForCollection:(NSString*)collection;
+- (SaveQueue*)queueForCollection:(KCSCollection*)collection;
 
 @end
 @implementation KCSSaveQueues
@@ -56,15 +60,15 @@ static KCSSaveQueues* sQueues;
     [super dealloc];
 }
 
-- (SaveQueue*)queueForCollection:(NSString*)collection
+- (SaveQueue*)queueForCollection:(KCSCollection*)collection
 {
     SaveQueue* q = nil;
     @synchronized(self) {
-        q = [_queues objectForKey:collection];
+        q = [_queues objectForKey:collection.collectionName];
         if (!q) {
             q = [[[SaveQueue alloc] init] autorelease];
-            q.collectionName = collection;
-            [_queues setObject:q forKey:collection];
+            q.collection = collection;
+            [_queues setObject:q forKey:collection.collectionName];
         }
     }
     return q;
@@ -75,10 +79,7 @@ static KCSSaveQueues* sQueues;
 
 @implementation SaveQueueItem
 @synthesize mostRecentSaveDate, object;
-
-
-
-- (id) initWithObject:(KCSSerializedObject*)obj
+- (id) initWithObject:(id<KCSPersistable>)obj
 {
     self = [super init];
     if (self) {
@@ -95,17 +96,17 @@ static KCSSaveQueues* sQueues;
     [super dealloc];
 }
 
-- (BOOL)isEqual:(id)obj
+- (BOOL)isEqual:(id)other
 {
-    return [object isKindOfClass:[SaveQueueItem class]] &&
+    return [other isKindOfClass:[SaveQueueItem class]] &&
     [self objectId] != nil &&
-    [obj objectId] != nil &&
-    [[self objectId] isEqual:[obj objectId]];
+    [other objectId] != nil &&
+    [[self objectId] isEqualToString:[other objectId]];
 }
 
 - (NSString*) objectId
 {
-    return [object objectId];
+    return [(NSObject*)self.object kinveyObjectId];
 }
 
 - (NSUInteger)hash
@@ -135,11 +136,11 @@ static KCSSaveQueues* sQueues;
 
 @implementation SaveQueue
 @synthesize delegate = _delegate;
-@synthesize collectionName = _collectionName;
+@synthesize collection = _collection;
 
-+ (SaveQueue*) saveQueueForCollection:(NSString*)collectionName
++ (SaveQueue*) saveQueueForCollection:(KCSCollection*)collection
 {
-    return [[KCSSaveQueues sharedQueues] queueForCollection:collectionName];
+    return [[KCSSaveQueues sharedQueues] queueForCollection:collection];
 }
 
 - (id)init
@@ -156,11 +157,11 @@ static KCSSaveQueues* sQueues;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kKCSReachabilityChangedNotification object:nil];
     [_q release];
-    [_collectionName release];
+    [_collection release];
     [super dealloc];
 }
 
-- (void) addObject:(KCSSerializedObject*)obj
+- (void) addObject:(id<KCSPersistable>)obj
 {
     SaveQueueItem* item = [[SaveQueueItem alloc] initWithObject:obj];
     @synchronized(_q) {
@@ -207,26 +208,66 @@ static KCSSaveQueues* sQueues;
 }
 
 #pragma mark - Save Stuff
+- (id<KCSPersistable>) objForItem: (SaveQueueItem*) item
+{
+    //tODO:    [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:dictValue]
+    id<KCSPersistable> obj = nil; //TODO
+    return obj;
+}
+
 - (void) startSaving
 {
     if ([self count] > 0) {
         SaveQueueItem* item = [self pop];
-    //tODO:    [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:dictValue]
-        id<KCSPersistable> obj = nil; //TODO
+        id obj = [self objForItem:item];
         if (_delegate && [_delegate respondsToSelector:@selector(shouldSave:lastSaveTime:)]) {
             //test the delegate, if available
             if ([_delegate shouldSave:obj lastSaveTime:item.mostRecentSaveDate]) {
-                [self saveObject:obj];
+                [self saveObject:item];
             }
         } else {
             //otherwise client doesn't care about shouldSave: and then we should default the save
-            [self saveObject:obj];
+            [self saveObject:item];
         }
     }
 }
 
-- (void) saveObject:(id<KCSPersistable>)obj
+- (void) saveObject:(SaveQueueItem*)item
 {
+    id<KCSPersistable> obj = [self objForItem:item];
+    if (_delegate && [_delegate respondsToSelector:@selector(willSave:lastSaveTime:)]) {
+        [_delegate willSave:obj lastSaveTime:item.mostRecentSaveDate];
+    }
+    [obj saveToCollection:_collection withDelegate:self];
+
+}
+//TODO: blob saves
+//TODO: kinveyrefs
+//TODO: kickoff saves on app restore and with reachability
+
+#pragma mark - Persistable Delegate
+- (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
+{
+    //result is json dictionary
     
+    if (_delegate && [_delegate respondsToSelector:@selector(didSave:)]) {
+        [_delegate didSave:entity];
+    }
+}
+
+- (void)entity:(id)entity operationDidFailWithError:(NSError *)error
+{
+    if (error) {
+        if ([error.domain isEqualToString:KCSAppDataErrorDomain]) {
+            //KCS Error
+            if (_delegate && [_delegate respondsToSelector:@selector(errorSaving:error:)]) {
+                [_delegate errorSaving:entity error:error];
+            }
+        } else {
+            //Other error, like networking
+            //requeue error
+            [self addObject:entity]; //TODO: use serialized obj
+        }
+    }
 }
 @end

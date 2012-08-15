@@ -112,7 +112,6 @@ NSString* largeString()
     self.done = NO;
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:largeString()];
     [_store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        NSLog(@"%@",objectsOrNil);
         STAssertNil(errorOrNil, @"should not generate an error");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
@@ -136,7 +135,6 @@ NSArray* largeArray()
     self.done = NO;
     KCSQuery* query = [KCSQuery queryOnField:@"foo" usingConditional:kKCSIn forValue:largeArray()];
     [_store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        NSLog(@"%@",objectsOrNil);
         STAssertNil(errorOrNil, @"should not generate an error");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
@@ -391,7 +389,7 @@ NSArray* largeArray()
 
     STAssertNotNil(objs, @"expecting to load some objects");
     STAssertEquals((int) [objs count], 1, @"should only load one object");
-    STAssertEquals((int) [[objs objectAtIndex:0] objCount], 5, @"epecting 6 from a6");
+    STAssertEquals((int) [[objs objectAtIndex:0] objCount], 5, @"expecting 6 from a6");
     
     self.done = NO;
     objs = nil;

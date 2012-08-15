@@ -77,6 +77,7 @@
     //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
     NSDictionary *jsonResponse = [parser objectWithData:self.responseData];
+    NSObject *jsonData = nil;
     if (parser.error) {
         KCSLogError(@"JSON Serialization failed: %@", parser.error);
         if ([parser.error isEqualToString:@"Broken Unicode encoding"]) {
@@ -88,9 +89,11 @@
                 *anError = [KCSErrorUtilities createError:nil description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain];
             }
         }
+    } else {
+        jsonData = [jsonResponse valueForKey:@"result"];
     }
     [parser release];
-    NSObject *jsonData = [jsonResponse valueForKey:@"result"];
+    
     return jsonData;
 }
 

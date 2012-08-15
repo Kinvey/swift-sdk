@@ -71,6 +71,7 @@
     if (self) {
         _authHandler = [auth retain];
         _treatSingleFailureAsGroupFailure = YES;
+        _saveQueue = nil;
     }
     return self;
 }
@@ -120,7 +121,8 @@
     if (options) {
         // Configure
         self.backingCollection = [options objectForKey:KCSStoreKeyResource];
-        _saveQueue = [SaveQueue saveQueueForCollection:self.backingCollection.collectionName];
+        //TODO: check for enablement of save queue
+        _saveQueue = [[SaveQueue saveQueueForCollection:self.backingCollection] retain];
     }
     
     // Even if nothing happened we return YES (as it's not a failure)
@@ -591,7 +593,7 @@ int reachable = -1;
     }] start];
 }
 
-- (void) enqueSave:(KCSSerializedObject*)obj
+- (void) enqueSave:(id<KCSPersistable>)obj
 {    
     [_saveQueue addObject:obj];
 }
@@ -606,7 +608,8 @@ int reachable = -1;
         completionBlock(nil,error);
     } else {
         for (SaveQueueItem* item in [_saveQueue set]) {
-            KCSSerializedObject* serializedObj = item.object;
+            id<KCSPersistable> obj = item.object;
+            KCSSerializedObject* serializedObj = [KCSObjectMapper makeKinveyDictionaryFromObject:obj];
             [self saveEntity:serializedObj withCompletionBlock:completionBlock withProgressBlock:progressBlock];
             
         }
@@ -635,29 +638,29 @@ int reachable = -1;
     __block NSError* topError = nil;
     __block BOOL done = NO;
     for (id <KCSPersistable> singleEntity in objectsToSave) {
-        KCSSerializedObject* serializedObj = [KCSObjectMapper makeKinveyDictionaryFromObject:singleEntity];
-        [self enqueSave:serializedObj];
-        //TODO: compress queue=
-        [self drainQueueWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            if (done) {
-                //don't do the completion blocks for all the objects if its previously finished
-                return;
-            }
-            if (errorOrNil != nil) {
-                topError = errorOrNil;
-            }
-            if (objectsOrNil != nil) {
-                [completedObjects addObjectsFromArray:objectsOrNil];
-            }
-            completedItemCount++;
-            BOOL shouldStop = errorOrNil != nil && self.treatSingleFailureAsGroupFailure;
-            if (completedItemCount == totalItemCount || shouldStop) {
-                done = YES;
-                completionBlock(completedObjects, topError);
-            }
-            
-        } withProgressBlock:progressBlock];
+        [self enqueSave:singleEntity];
     }
+    //TODO: compress queue=
+    [self drainQueueWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if (done) {
+            //don't do the completion blocks for all the objects if its previously finished
+            return;
+        }
+        if (errorOrNil != nil) {
+            topError = errorOrNil;
+        }
+        if (objectsOrNil != nil) {
+            [completedObjects addObjectsFromArray:objectsOrNil];
+        }
+        completedItemCount++;
+        BOOL shouldStop = errorOrNil != nil && self.treatSingleFailureAsGroupFailure;
+        if (completedItemCount == totalItemCount || shouldStop) {
+            done = YES;
+            completionBlock(completedObjects, topError);
+        }
+        
+    } withProgressBlock:progressBlock];
+
 }
 
 #pragma mark - Removing

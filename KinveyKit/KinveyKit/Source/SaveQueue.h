@@ -10,20 +10,20 @@
 #import "KCSBlockDefs.h"
 #import "KCSOfflineSaveStore.h"
 
-@class KCSSerializedObject;
+@class KCSCollection;
 
 //TODO: 
 @interface SaveQueueItem : NSObject
 @property (nonatomic, retain) NSDate* mostRecentSaveDate;
-@property (nonatomic, retain) KCSSerializedObject* object;
+@property (nonatomic, retain) id<KCSPersistable> object;
 @end
 
 @interface SaveQueue : NSObject
 @property (nonatomic, assign) id<KCSOfflineSaveDelegate> delegate;
 
-+ (SaveQueue*) saveQueueForCollection:(NSString*)collectionName;
++ (SaveQueue*) saveQueueForCollection:(KCSCollection*)collection;
 
-- (void) addObject:(KCSSerializedObject*)obj;
+- (void) addObject:(id<KCSPersistable>)obj;
 - (NSArray*) ids;
 - (NSOrderedSet*) set;
 - (NSUInteger) count;

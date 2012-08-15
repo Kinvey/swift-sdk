@@ -34,8 +34,7 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
         // We need auth, but we're not sure what type yet
         // Per the user API if we're POSTING to the ROOT of the user API,
         // then we need App Key auth, otherwise we need user auth
-#warning TODO fix with brian & sandeep
-        if (method == kPostRESTMethod && [URL hasPrefix:client.userBaseURL]){
+        if (method == kPostRESTMethod && ([URL isEqualToString:client.userBaseURL] || [URL isEqualToString:[client.userBaseURL stringByAppendingString:@"login"]])) {
             authType = KCSAuthBasicAuthAppKey;
         } else {
             authType = KCSAuthBasicAuthUser;
