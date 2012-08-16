@@ -8,6 +8,8 @@
 
 #import "SaveQueue.h"
 
+#import <UIKit/UIKit.h>
+
 #import "KCSObjectMapper.h"
 #import "KCSReachability.h"
 #import "KinveyCollection.h"
@@ -18,6 +20,7 @@
 @interface SaveQueue () <KCSPersistableDelegate> {
     NSMutableArray* _q;
     id<KCSOfflineSaveDelegate> _delegate;
+    UIBackgroundTaskIdentifier _bgTask;
 }
 @property (nonatomic, retain) KCSCollection* collection;
 @end
@@ -160,6 +163,8 @@ static KCSSaveQueues* sQueues;
     if (self) {
         _q = [[NSMutableArray array] retain];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(online:) name:kKCSReachabilityChangedNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willBackground:) name:UIApplicationWillResignActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
     }
     return self;
 }
@@ -167,6 +172,8 @@ static KCSSaveQueues* sQueues;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kKCSReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
     [_q release];
     [_collection release];
     [super dealloc];
@@ -210,12 +217,42 @@ static KCSSaveQueues* sQueues;
 //    return item;
 //}
 
+- (void) removeItem:(SaveQueueItem*)item
+{
+    [_q removeObject:item];
+}
+
+#pragma mark - respond to events
+
 - (void) online:(NSNotification*)note
 {
     KCSReachability* reachability = [note object];
     if (reachability.isReachable == YES) {
         [self saveNext];
     }
+}
+
+- (void) invalidateBgTask
+{
+    UIApplication* application = [UIApplication sharedApplication];
+    [application endBackgroundTask:_bgTask];
+    _bgTask = UIBackgroundTaskInvalid;
+}
+
+- (void) willBackground:(NSNotification*)note
+{
+    UIApplication* application = [UIApplication sharedApplication];
+    _bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+        // Clean up any unfinished task business by marking where you.
+        // stopped or ending the task outright.
+        //TODO: [self.connection cancel];
+        [self invalidateBgTask];
+    }];
+}
+
+- (void) didBecomeActive:(NSNotification*)note
+{
+    [self saveNext];
 }
 
 #pragma mark - Save Stuff
@@ -226,7 +263,8 @@ static KCSSaveQueues* sQueues;
 
 - (void) saveNext
 {
-    if ([KCSClient sharedClient].kinveyReachability.isReachable == NO) {
+    if ([KCSClient sharedClient].kinveyReachability.isReachable == NO ||
+        [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
         return;
     }
     if ([self count] > 0) {
