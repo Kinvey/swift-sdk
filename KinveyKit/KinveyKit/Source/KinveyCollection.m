@@ -529,5 +529,9 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 // AVG is not in the REST docs anymore
 
+- (NSString *)debugDescription
+{
+    return [NSString stringWithFormat:@"KCSCollection: %@", _collectionName];
+}
 
 @end
