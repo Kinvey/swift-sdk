@@ -265,7 +265,7 @@ static KCSSaveQueues* sQueues;
         } else {
             //Other error, like networking
             //requeue error
-            [self addObject:entity]; //TODO: use serialized obj
+            [self addObject:entity];
         }
     }
 }
