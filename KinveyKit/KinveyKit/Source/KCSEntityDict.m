@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/21/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KCSEntityDict.h"
@@ -25,7 +25,7 @@
     self = [super init];
     if (self) {
         _entityProperties = [[NSMutableDictionary alloc] init];
-        _objectId = [[NSString alloc] init];
+        _objectId = nil;
     }
     return self;
 }
@@ -47,17 +47,15 @@
     [self.entityProperties setObject:value forKey:property];
 }
 
-
-
 + (NSDictionary *)kinveyObjectBuilderOptions
 {
     static NSDictionary *options = nil;
-    
-    if (options == nil){
-        options = [[NSDictionary dictionaryWithObjectsAndKeys:
-                    [NSNumber numberWithBool:YES], KCS_USE_DICTIONARY_KEY,
-                    @"entityProperties", KCS_DICTIONARY_NAME_KEY, nil] retain];
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        options = [@{KCS_USE_DICTIONARY_KEY : @(YES),
+                     KCS_DICTIONARY_NAME_KEY : @"entityProperties"
+                    } retain];
+    });
     
     return options;
 }
@@ -68,7 +66,7 @@
     
     if (mappedDict == nil){
         mappedDict = [[NSDictionary dictionaryWithObjectsAndKeys:
-                       @"_id", @"objectId", nil] retain];
+                       KCSEntityKeyId, @"objectId", nil] retain];
     }
     
     return mappedDict;
