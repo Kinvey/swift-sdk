@@ -20,6 +20,9 @@
 {
     BOOL _shouldSaveCalled;
     BOOL _shouldSaveReturn;
+    BOOL _willSaveCalled;
+    BOOL _didSaveCalled;
+    NSError* _errorCalled;
 }
 
 @end
@@ -33,6 +36,9 @@
     
     _shouldSaveCalled = NO;
     _shouldSaveReturn = YES;
+    _willSaveCalled = NO;
+    _errorCalled = nil;
+    _didSaveCalled = NO;
 }
 
 - (void) testErrorOnOffline
@@ -77,7 +83,7 @@
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertError(errorOrNil, KCSKinveyUnreachableError);
         NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
-        STAssertEquals((int)1, objs.count, @"should have one unsaved obj, from above");
+        STAssertEquals((int)1, (int)objs.count, @"should have one unsaved obj, from above");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"%f", percentComplete);
@@ -90,6 +96,11 @@
     [store setReachable:YES];
     
     [self poll];
+    
+    STAssertTrue(_shouldSaveCalled, @"shouldsave: should have been called");
+    STAssertTrue(_willSaveCalled, @"willsave: should have been called");
+    STAssertTrue(_didSaveCalled, @"didsave: should have been called");
+    STAssertNil(_errorCalled, @"should have had a nil error %@", _errorCalled);
 }
 
 #pragma mark - Offline Save Delegate
@@ -98,8 +109,25 @@
     _shouldSaveCalled = YES;
     ASTTestClass* obj = entity;
     STAssertEquals((int)79000, obj.objCount, @"should have the right obj to save");
-    self.done = YES;
+    
     return _shouldSaveReturn;
+}
+
+- (void) willSave:(id<KCSPersistable>)entity lastSaveTime:(NSDate *)timeSaved
+{
+    _willSaveCalled = YES;
+}
+
+- (void) didSave:(id<KCSPersistable>)entity
+{
+    _didSaveCalled = YES;
+    self.done = YES;
+}
+
+- (void) errorSaving:(id<KCSPersistable>)entity error:(NSError *)error
+{
+    _errorCalled = error;
+    self.done = YES;
 }
 
 @end
