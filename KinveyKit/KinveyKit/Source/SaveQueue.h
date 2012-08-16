@@ -24,6 +24,7 @@
 + (SaveQueue*) saveQueueForCollection:(KCSCollection*)collection;
 
 - (void) addObject:(id<KCSPersistable>)obj;
+- (void) removeItem:(SaveQueueItem*)item;
 - (NSArray*) ids;
 - (NSArray*) array;
 - (NSUInteger) count;

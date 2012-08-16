@@ -616,6 +616,7 @@ int reachable = -1;
     } else {
         for (SaveQueueItem* item in [_saveQueue array]) {
             id<KCSPersistable> obj = item.object;
+            [_saveQueue removeItem:item];
             KCSSerializedObject* serializedObj = [KCSObjectMapper makeKinveyDictionaryFromObject:obj];
             [self saveEntity:serializedObj withCompletionBlock:completionBlock withProgressBlock:progressBlock];
             
