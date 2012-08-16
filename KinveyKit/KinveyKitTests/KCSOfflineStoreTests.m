@@ -19,10 +19,13 @@
 @interface KCSOfflineStoreTests ()
 {
     BOOL _shouldSaveCalled;
+    BOOL _testShouldSave;
     BOOL _shouldSaveReturn;
     BOOL _willSaveCalled;
     BOOL _didSaveCalled;
     NSError* _errorCalled;
+    NSUInteger _didSaveCount;
+    NSUInteger _expSaveCount;
 }
 
 @end
@@ -35,10 +38,13 @@
     STAssertTrue(up, @"should be setup");
     
     _shouldSaveCalled = NO;
+    _testShouldSave = NO;
     _shouldSaveReturn = YES;
     _willSaveCalled = NO;
     _errorCalled = nil;
     _didSaveCalled = NO;
+    _didSaveCount = 0;
+    _expSaveCount = 1;
 }
 
 - (void) testErrorOnOffline
@@ -92,7 +98,7 @@
     [self poll];
     
     self.done = NO;
-    
+    _testShouldSave = YES;
     [store setReachable:YES];
     
     [self poll];
@@ -103,12 +109,53 @@
     STAssertNil(_errorCalled, @"should have had a nil error %@", _errorCalled);
 }
 
+- (void) testSaveMultiple
+{
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.date = [NSDate date];
+    obj1.objCount = 79000;
+    
+    ASTTestClass* obj2 = [[ASTTestClass alloc] init];
+    obj2.date = [NSDate date];
+    obj2.objCount = 10;
+    
+    ASTTestClass* obj3 = [[ASTTestClass alloc] init];
+    obj3.date = [NSDate date];
+    obj3.objCount = 1279000;
+    
+    KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
+    KCSOfflineStoreTests* o = self;
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{KCSStoreKeyUniqueOfflineSaveIdentifier : @"x", KCSStoreKeyOfflineSaveDelegate : o}];
+    
+    [store setReachable:NO];
+    
+    self.done = NO;
+    [store saveObject:@[obj1,obj2,obj3] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertError(errorOrNil, KCSKinveyUnreachableError);
+        NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
+        STAssertEquals((int)3, (int)objs.count, @"should have one unsaved obj, from above");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"%f", percentComplete);
+    }];
+    [self poll];
+    
+    self.done = NO;
+    _expSaveCount = 3;
+    [store setReachable:YES];
+    
+    [self poll];
+    STAssertEquals((int)3, (int)_didSaveCount, @"Should have been called for each item");
+}
+
 #pragma mark - Offline Save Delegate
 - (BOOL)shouldSave:(id<KCSPersistable>)entity lastSaveTime:(NSDate *)timeSaved
 {
     _shouldSaveCalled = YES;
-    ASTTestClass* obj = entity;
-    STAssertEquals((int)79000, obj.objCount, @"should have the right obj to save");
+    if (_testShouldSave) {
+        ASTTestClass* obj = entity;
+        STAssertEquals((int)79000, obj.objCount, @"should have the right obj to save");
+    }
     
     return _shouldSaveReturn;
 }
@@ -121,7 +168,8 @@
 - (void) didSave:(id<KCSPersistable>)entity
 {
     _didSaveCalled = YES;
-    self.done = YES;
+    _didSaveCount++;
+    self.done = _expSaveCount == _didSaveCount;
 }
 
 - (void) errorSaving:(id<KCSPersistable>)entity error:(NSError *)error

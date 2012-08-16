@@ -16,7 +16,7 @@
 #import "KinveyPersistable.h"
 
 @interface SaveQueue () <KCSPersistableDelegate> {
-    NSMutableOrderedSet* _q;
+    NSMutableArray* _q;
     id<KCSOfflineSaveDelegate> _delegate;
 }
 @property (nonatomic, retain) KCSCollection* collection;
@@ -99,10 +99,11 @@ static KCSSaveQueues* sQueues;
 
 - (BOOL)isEqual:(id)other
 {
-    return [other isKindOfClass:[SaveQueueItem class]] &&
-    [self objectId] != nil &&
-    [other objectId] != nil &&
-    [[self objectId] isEqualToString:[other objectId]];
+    //objects are equal if their ids are equal, or if there is no id, if the objects themselves are equal. This preserves the set integrity if an object is saved twice but the first save never went through and id hasn't been assigned.
+    BOOL isASaveItem = [other isKindOfClass:[SaveQueueItem class]];
+    BOOL idsEqual = [self objectId] != nil && [other objectId] != nil && [[self objectId] isEqualToString:[other objectId]];
+    BOOL objectsEqual = [self.object isEqual:[other object]];
+    return isASaveItem && (idsEqual || objectsEqual);
 }
 
 - (NSString*) objectId
@@ -117,10 +118,10 @@ static KCSSaveQueues* sQueues;
 
 @end
 
-@interface NSMutableOrderedSet (SaveQueue)
+@interface NSMutableArray (SaveQueue)
 - (NSArray*) ids;
 @end
-@implementation NSMutableOrderedSet (SaveQueue)
+@implementation NSMutableArray (SaveQueue)
 - (NSArray*) ids
 {
     NSMutableArray* array = [NSMutableArray arrayWithCapacity:self.count];
@@ -131,6 +132,15 @@ static KCSSaveQueues* sQueues;
         }
     }
     return array;
+}
+
+- (void) insertItem:(id)item
+{
+    // using the above sense of equals, this moves resaved items to the back of the queue
+    if ([self containsObject:item]) {
+        [self removeObject:item];
+    }
+    [self addObject:item];
 }
 @end
 
@@ -148,7 +158,7 @@ static KCSSaveQueues* sQueues;
 {
     self = [super init];
     if (self) {
-        _q = [[NSMutableOrderedSet orderedSet] retain];
+        _q = [[NSMutableArray array] retain];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(online:) name:kKCSReachabilityChangedNotification object:nil];
     }
     return self;
@@ -176,9 +186,9 @@ static KCSSaveQueues* sQueues;
     return [_q ids];
 }
 
-- (NSOrderedSet *)set
+- (NSArray *)array
 {
-    return _q;
+    return [NSArray arrayWithArray:_q];
 }
 
 - (NSUInteger) count
@@ -190,21 +200,21 @@ static KCSSaveQueues* sQueues;
     return count;
 }
 
-- (SaveQueueItem*) pop //must check count first
-{
-    SaveQueueItem* item = nil;
-    @synchronized(_q) {
-        item = [_q objectAtIndex:0];
-        [_q removeObjectAtIndex:0];
-    }
-    return item;
-}
+//- (SaveQueueItem*) pop //must check count first
+//{
+//    SaveQueueItem* item = nil;
+//    @synchronized(_q) {
+//        item = [_q objectAtIndex:0];
+//        [_q removeObjectAtIndex:0];
+//    }
+//    return item;
+//}
 
 - (void) online:(NSNotification*)note
 {
     KCSReachability* reachability = [note object];
     if (reachability.isReachable == YES) {
-        [self startSaving];
+        [self saveNext];
     }
 }
 
@@ -214,10 +224,13 @@ static KCSSaveQueues* sQueues;
     return item.object;
 }
 
-- (void) startSaving
+- (void) saveNext
 {
+    if ([KCSClient sharedClient].kinveyReachability.isReachable == NO) {
+        return;
+    }
     if ([self count] > 0) {
-        SaveQueueItem* item = [self pop];
+        SaveQueueItem* item = [_q objectAtIndex:0];
         id obj = [self objForItem:item];
         if (_delegate && [_delegate respondsToSelector:@selector(shouldSave:lastSaveTime:)]) {
             //test the delegate, if available
@@ -247,11 +260,12 @@ static KCSSaveQueues* sQueues;
 #pragma mark - Persistable Delegate
 - (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
 {
+    [_q removeObjectAtIndex:0]; //pop off the stack
     //result is json dictionary
-    
     if (_delegate && [_delegate respondsToSelector:@selector(didSave:)]) {
         [_delegate didSave:entity];
     }
+    [self saveNext];
 }
 
 - (void)entity:(id)entity operationDidFailWithError:(NSError *)error
@@ -259,13 +273,15 @@ static KCSSaveQueues* sQueues;
     if (error) {
         if ([error.domain isEqualToString:KCSAppDataErrorDomain]) {
             //KCS Error
+            [_q removeObjectAtIndex:0]; //pop off the stack
             if (_delegate && [_delegate respondsToSelector:@selector(errorSaving:error:)]) {
                 [_delegate errorSaving:entity error:error];
             }
+            [self saveNext];
         } else {
             //Other error, like networking
             //requeue error
-            [self addObject:entity];
+            [self saveNext];
         }
     }
 }

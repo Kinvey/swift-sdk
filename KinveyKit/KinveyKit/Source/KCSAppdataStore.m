@@ -614,7 +614,7 @@ int reachable = -1;
         NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSKinveyUnreachableError userInfo:offlineErrorInfo];
         completionBlock(nil,error);
     } else {
-        for (SaveQueueItem* item in [_saveQueue set]) {
+        for (SaveQueueItem* item in [_saveQueue array]) {
             id<KCSPersistable> obj = item.object;
             KCSSerializedObject* serializedObj = [KCSObjectMapper makeKinveyDictionaryFromObject:obj];
             [self saveEntity:serializedObj withCompletionBlock:completionBlock withProgressBlock:progressBlock];

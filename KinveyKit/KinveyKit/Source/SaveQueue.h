@@ -25,6 +25,6 @@
 
 - (void) addObject:(id<KCSPersistable>)obj;
 - (NSArray*) ids;
-- (NSOrderedSet*) set;
+- (NSArray*) array;
 - (NSUInteger) count;
 @end
