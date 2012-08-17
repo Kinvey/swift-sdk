@@ -120,11 +120,13 @@
 - (BOOL)configureWithOptions: (NSDictionary *)options
 {
 
-    
     if (options) {
         // Configure
         self.backingCollection = [options objectForKey:KCSStoreKeyResource];
-        _saveQueue = [[SaveQueue saveQueueForCollection:self.backingCollection] retain];
+        NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
+        if (queueId == nil)
+            queueId = [self description];
+        _saveQueue = [[SaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId] retain];
         _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
         id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
         _saveQueue.delegate = del;

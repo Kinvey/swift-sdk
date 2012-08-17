@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <KinveyKit/KinveyKit.h>
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController  <KCSOfflineSaveDelegate>
 @property (retain, nonatomic) IBOutlet UILabel *nSavesLabel;
 - (IBAction)addSave:(id)sender;
 

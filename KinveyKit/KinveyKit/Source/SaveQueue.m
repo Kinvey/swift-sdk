@@ -9,6 +9,7 @@
 #import "SaveQueue.h"
 
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
 
 #import "KCSObjectMapper.h"
 #import "KCSReachability.h"
@@ -16,23 +17,31 @@
 #import "KinveyEntity.h"
 #import "KinveyErrorCodes.h"
 #import "KinveyPersistable.h"
+#import "KCSLogManager.h"
+#import "NSDate+ISO8601.h"
 
-@interface SaveQueue () <KCSPersistableDelegate> {
+
+@protocol SaveQueueUpdateDelegate <NSObject>
+- (void)queueUpdated;
+@end
+
+@interface SaveQueue () <KCSPersistableDelegate, NSCoding> {
     NSMutableArray* _q;
     id<KCSOfflineSaveDelegate> _delegate;
     UIBackgroundTaskIdentifier _bgTask;
 }
 @property (nonatomic, retain) KCSCollection* collection;
+@property (nonatomic, retain) NSMutableArray* q;
+@property (nonatomic, assign) id<SaveQueueUpdateDelegate> updateDelegate;
+- (void) saveNext;
 @end
 
 
-@interface KCSSaveQueues : NSObject {
+@interface KCSSaveQueues : NSObject <SaveQueueUpdateDelegate> {
     NSMutableDictionary* _queues;
 }
 
 + (KCSSaveQueues*)sharedQueues;
-
-- (SaveQueue*)queueForCollection:(KCSCollection*)collection;
 
 @end
 @implementation KCSSaveQueues
@@ -44,6 +53,7 @@ static KCSSaveQueues* sQueues;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sQueues = [[KCSSaveQueues alloc] init];
+        [sQueues restoreQueues];
     });
     return sQueues;
 }
@@ -64,18 +74,78 @@ static KCSSaveQueues* sQueues;
     [super dealloc];
 }
 
-- (SaveQueue*)queueForCollection:(KCSCollection*)collection
+- (SaveQueue*)queueForCollection:(KCSCollection*)collection identifier:(NSString*)queueIdentifier
 {
     SaveQueue* q = nil;
     @synchronized(self) {
-        q = [_queues objectForKey:collection.collectionName];
+        q = [_queues objectForKey:queueIdentifier];
         if (!q) {
             q = [[[SaveQueue alloc] init] autorelease];
             q.collection = collection;
-            [_queues setObject:q forKey:collection.collectionName];
+            [_queues setObject:q forKey:queueIdentifier];
+            q.updateDelegate = self;
         }
     }
     return q;
+}
+- (NSString*) savefile
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    //    if ([paths count] == 0) {
+    //        [self createDemoData];
+    //    } else {
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString* filename = [NSString stringWithFormat:@"com.kinvey.%@.abc", [KCSClient sharedClient].appKey];
+    NSString *cacheFile = [documentsDirectory stringByAppendingPathComponent:filename];
+    return cacheFile;
+}
+
+- (NSDictionary*) cachedQueues
+{
+    NSData* d = [NSData dataWithContentsOfFile:[self savefile]];
+    NSKeyedUnarchiver* ua = [[NSKeyedUnarchiver alloc] initForReadingWithData:d];
+    NSDictionary* dict = [ua decodeObject];
+    [ua release];
+    return dict;
+}
+
+- (void) restoreQueues
+{
+    NSDictionary* qs = [self cachedQueues];
+    _queues = [[NSMutableDictionary dictionaryWithDictionary:qs] retain];
+    for (SaveQueue* q in [_queues allValues]) {
+        q.updateDelegate = self;
+        dispatch_async(dispatch_get_current_queue(), ^{
+            [q saveNext];
+        });
+    }
+}
+
+- (void) persistQueues
+{
+    NSMutableData* data = [NSMutableData data];
+    NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+    [archiver encodeObject:_queues];
+    [archiver finishEncoding];
+    NSError* error = nil;
+    [data writeToFile:[self savefile] options:NSDataWritingAtomic error:&error];
+    [archiver release];
+    if (error) {
+        KCSLogError(@"error saving queues %@", error);
+    }
+}
+
+- (void) doSave
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        [self persistQueues];
+    });
+}
+
+- (void) queueUpdated
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(doSave) object:nil];
+    [self performSelector:@selector(doSave) withObject:nil afterDelay:0.1];
 }
 
 @end
@@ -151,10 +221,12 @@ static KCSSaveQueues* sQueues;
 @implementation SaveQueue
 @synthesize delegate = _delegate;
 @synthesize collection = _collection;
+@synthesize q = _q;
+@synthesize updateDelegate;
 
-+ (SaveQueue*) saveQueueForCollection:(KCSCollection*)collection
++ (SaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier
 {
-    return [[KCSSaveQueues sharedQueues] queueForCollection:collection];
+    return [[KCSSaveQueues sharedQueues] queueForCollection:collection identifier:identifier];
 }
 
 - (id)init
@@ -162,11 +234,54 @@ static KCSSaveQueues* sQueues;
     self = [super init];
     if (self) {
         _q = [[NSMutableArray array] retain];
+        [[KCSClient sharedClient].kinveyReachability startNotifier];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(online:) name:kKCSReachabilityChangedNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willBackground:) name:UIApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
     }
     return self;
+}
+
+- (id) initWithCoder:(NSCoder *)aDecoder
+{
+    self = [self init];
+    if (self) {
+        NSString* cn = [aDecoder decodeObjectForKey:@"cn"];
+        NSString* cc = [aDecoder decodeObjectForKey:@"cc"];
+        NSArray* o = [aDecoder decodeObjectForKey:@"o"];
+        Class klass = NSClassFromString(cc);
+        self.collection = [KCSCollection collectionFromString:cn ofClass:klass];
+        
+        for (NSDictionary* d in o) {
+            NSDate* date = [NSDate dateFromISO8601EncodedString:[d objectForKey:@"d"]];
+            NSDictionary* p = [d objectForKey:@"i"];
+            id<KCSPersistable> obj = [KCSObjectMapper makeObjectOfType:klass withData:p];
+            SaveQueueItem* item = [[SaveQueueItem alloc] init];
+            item.object = obj;
+            item.mostRecentSaveDate = date;
+            [_q addObject:item];
+            [item release];
+        }
+    }
+    return self;
+}
+
+- (void) encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.collection.collectionName forKey:@"cn"];
+    Class template = self.collection.objectTemplate;
+    const char* tname = class_getName(template);
+    NSString* className = [NSString stringWithCString: tname encoding:NSUTF8StringEncoding];
+    [aCoder encodeObject:className forKey:@"cc"];
+    
+    NSMutableArray* objs = [NSMutableArray arrayWithCapacity:_q.count];
+    for (SaveQueueItem* i in _q) {
+        NSDictionary *d = @{ @"d" : [i.mostRecentSaveDate stringWithISO8601Encoding],
+        @"i" : [KCSObjectMapper makeKinveyDictionaryFromObject:i.object].dataToSerialize
+        };
+        [objs addObject:d];
+    }
+    [aCoder encodeObject:objs forKey:@"o"];
 }
 
 - (void)dealloc
@@ -186,6 +301,7 @@ static KCSSaveQueues* sQueues;
         [_q addObject:item];
     }
     [item release];
+    [self.updateDelegate queueUpdated];
 }
 
 - (NSArray*) ids
@@ -220,6 +336,13 @@ static KCSSaveQueues* sQueues;
 - (void) removeItem:(SaveQueueItem*)item
 {
     [_q removeObject:item];
+    [self.updateDelegate queueUpdated];
+}
+
+- (void) removeFirstItem
+{
+    [_q removeObjectAtIndex:0];
+    [self.updateDelegate queueUpdated];
 }
 
 #pragma mark - respond to events
@@ -289,7 +412,7 @@ static KCSSaveQueues* sQueues;
         [_delegate willSave:obj lastSaveTime:item.mostRecentSaveDate];
     }
     [obj saveToCollection:_collection withDelegate:self];
-
+    
 }
 //TODO: blob saves
 //TODO: kinveyrefs
@@ -298,7 +421,7 @@ static KCSSaveQueues* sQueues;
 #pragma mark - Persistable Delegate
 - (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
 {
-    [_q removeObjectAtIndex:0]; //pop off the stack
+    [self removeFirstItem]; //pop off the stack
     //result is json dictionary
     if (_delegate && [_delegate respondsToSelector:@selector(didSave:)]) {
         [_delegate didSave:entity];
@@ -311,7 +434,7 @@ static KCSSaveQueues* sQueues;
     if (error) {
         if ([error.domain isEqualToString:KCSAppDataErrorDomain]) {
             //KCS Error
-            [_q removeObjectAtIndex:0]; //pop off the stack
+            [self removeFirstItem]; //pop off the stack
             if (_delegate && [_delegate respondsToSelector:@selector(errorSaving:error:)]) {
                 [_delegate errorSaving:entity error:error];
             }
