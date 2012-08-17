@@ -1,4 +1,4 @@
-KinveyKit (TAG-ME, CHANGE-ME-DATE)
+KinveyKit (1.7.0, Aug 17, 2012)
 ==========
 
 ## Welcome
@@ -24,12 +24,12 @@ For more details on how to use these features read the [Kinvey Service Overview]
 
 ## Other Documentation
 
-* For an overview of the service, see the [Kinvey Service Overview](https://console.kinvey.com/#docs/kinvey/service-overview).
-* For a quickstart, see the [iOS Quickstart Tutorial](https://console.kinvey.com/#docs/iOS/iOS-Quickstart-Tutorial).
-* For a more detail, see the [iOS Developer's Guide](https://console.kinvey.com/#docs/iOS/iOS-Developers-Guide).
-* For other libraries, behind-the-scenes REST action and useful articles, see the [Kinvey Documentation Overview](https://console.kinvey.com/#docs/kinvey/Overview).
-* The Kinvey Blog has a good collection of technical how-to's, check-out [Kinvey Blog](http://www.kinvey.com/index.php/Kinvey-Blog).
-* If you prefer a Sample Application check Kinvey's [GitHub](https://github.com/Kinvey) for our samples.
+* For an overview of the service, see the [Kinvey Service Overview](http://docs.kinvey.com/service-overview.html).
+* For a quickstart, see the [iOS Quickstart Tutorial](http://docs.kinvey.com/ios-quickstart-tutorial.html).
+* For a more detail, see the [iOS Developer's Guide](http://docs.kinvey.com/ios-developers-guide.html).
+* For other libraries, behind-the-scenes REST action and useful articles, see the [Kinvey Documentation Overview](http://docs.kinvey.com/overview.html).
+* The Kinvey Blog has a good collection of technical how-to's, check-out [Kinvey Blog](http://www.kinvey.com/blog).
+* If you prefer a Sample Application check Kinvey's [GitHub](https://github.com/Kinvey) and [GitHub SampleApps](https://github.com/KinveyApps) for our samples.
 
 We are very interested in your feedback and questions please send an e-mail to <support@kinvey.com> and we'll help you out.
 
