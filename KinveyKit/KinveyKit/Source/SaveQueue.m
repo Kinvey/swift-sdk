@@ -91,9 +91,6 @@ static KCSSaveQueues* sQueues;
 - (NSString*) savefile
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    //    if ([paths count] == 0) {
-    //        [self createDemoData];
-    //    } else {
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString* filename = [NSString stringWithFormat:@"com.kinvey.%@.abc", [KCSClient sharedClient].appKey];
     NSString *cacheFile = [documentsDirectory stringByAppendingPathComponent:filename];
@@ -128,6 +125,7 @@ static KCSSaveQueues* sQueues;
     [archiver encodeObject:_queues];
     [archiver finishEncoding];
     NSError* error = nil;
+    //TODO: enable security
     [data writeToFile:[self savefile] options:NSDataWritingAtomic error:&error];
     [archiver release];
     if (error) {
@@ -323,16 +321,6 @@ static KCSSaveQueues* sQueues;
     return count;
 }
 
-//- (SaveQueueItem*) pop //must check count first
-//{
-//    SaveQueueItem* item = nil;
-//    @synchronized(_q) {
-//        item = [_q objectAtIndex:0];
-//        [_q removeObjectAtIndex:0];
-//    }
-//    return item;
-//}
-
 - (void) removeItem:(SaveQueueItem*)item
 {
     [_q removeObject:item];
@@ -368,7 +356,6 @@ static KCSSaveQueues* sQueues;
     _bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
         // Clean up any unfinished task business by marking where you.
         // stopped or ending the task outright.
-        //TODO: [self.connection cancel];
         [self invalidateBgTask];
     }];
 }
@@ -397,6 +384,8 @@ static KCSSaveQueues* sQueues;
             //test the delegate, if available
             if ([_delegate shouldSave:obj lastSaveTime:item.mostRecentSaveDate]) {
                 [self saveObject:item];
+            } else {
+                [self removeItem:item];
             }
         } else {
             //otherwise client doesn't care about shouldSave: and then we should default the save
@@ -416,7 +405,6 @@ static KCSSaveQueues* sQueues;
 }
 //TODO: blob saves
 //TODO: kinveyrefs
-//TODO: kickoff saves on app restore and with reachability
 
 #pragma mark - Persistable Delegate
 - (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result

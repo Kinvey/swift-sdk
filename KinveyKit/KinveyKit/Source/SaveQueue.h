@@ -12,7 +12,6 @@
 
 @class KCSCollection;
 
-//TODO: 
 @interface SaveQueueItem : NSObject
 @property (nonatomic, retain) NSDate* mostRecentSaveDate;
 @property (nonatomic, retain) id<KCSPersistable> object;
