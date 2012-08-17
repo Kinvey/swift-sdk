@@ -42,7 +42,7 @@ To reuse a NSManagedObject subclass:
 1. Turn NSManagedObject into a `NSObject <KCSPersistable>`
 2. Turn any `@dynamic` properties into `@synthesize` ones. 
 3. Add a `NSString` property for the objectId. NSManagedObjects have their own ids, but they are rarely used by the application code because the object context deals with relating them to the store. Since the objects now have to be managed by the application, KinveyKit needs a unique id to map the object to the backend. 
-4. Implement [`hostToKinveyPropertyMapping`](http://docs.kinvey.com/ios-developers-guide.html#preparing_objects). Basically, the dictionary returned by this method becomes an entity-level schema. 
+4. Implement `[hostToKinveyPropertyMapping](http://docs.kinvey.com/ios-developers-guide.html#preparing_objects)`. Basically, the dictionary returned by this method becomes an entity-level schema. 
 
     For our Recipe object, it will look something like this. The name is the same as before, we've added the `objId` to map to the `_id` field on the the backend, and the list of related ingredients (see [below](#Handling_Relationships)). 
     
