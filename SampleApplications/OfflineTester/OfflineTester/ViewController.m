@@ -68,4 +68,10 @@
     } withProgressBlock:nil];
     [self update];
 }
+
+#pragma mark -
+- (void)didSave:(id<KCSPersistable>)entity
+{
+    [self update];
+}
 @end

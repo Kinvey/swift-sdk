@@ -21,7 +21,7 @@
 @interface SaveQueue : NSObject
 @property (nonatomic, assign) id<KCSOfflineSaveDelegate> delegate;
 
-+ (SaveQueue*) saveQueueForCollection:(KCSCollection*)collection;
++ (SaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier;
 
 - (void) addObject:(id<KCSPersistable>)obj;
 - (void) removeItem:(SaveQueueItem*)item;
