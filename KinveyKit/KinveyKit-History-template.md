@@ -1,7 +1,7 @@
 # KinveyKit Release History
 
 ## 1.7
-** Release date: ** TBD
+** Release date: ** Aug 17, 2012
 
 * `KCSCachedStore` now provides the ability to persist saves when the application is offline, and then to save them when the application regains connectivity. See also `KCSOfflineSaveStore`.
 * Added login with Facebook to `KCSUser`, allowing you to use a Facebook access token to login in to Kinvey.
