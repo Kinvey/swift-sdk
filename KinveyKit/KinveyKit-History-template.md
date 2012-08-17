@@ -2,13 +2,14 @@
 
 ## 1.7
 ** Release date: ** TBD
+
 * `KCSCachedStore` now provides the ability to persist saves when the application is offline, and then to save them when the application regains connectivity. See also `KCSOfflineSaveStore`.
 * Added login with Facebook to `KCSUser`, allowing you to use a Facebook access token to login in to Kinvey.
 * Documentation Updates.
-     * Added [Threading Guide](guides/gcd-guide/Using KinveyKit with GCD.html).
-     * Added [Core Data Migration Guide](guides/using-coredata-guide/ios-coredata-guide.html)
+    * Added [Threading Guide](Documents/guides/gcd-guide/Using%20KinveyKit%20with%20GCD.html).
+    * Added [Core Data Migration Guide](Documents/guides/using-coredata-guide/KinveyKit%20CoreData%20Guide.html)
 * Bug Fix(es).
-     * Updated our reachability aliases to make the KinveyKit more compatible with other frameworks. 
+    * Updated our reachability aliases to make the KinveyKit more compatible with other frameworks. 
 
 ## 1.6
 ### 1.6.1
