@@ -99,7 +99,17 @@
 
 - (NSObject*) jsonResponseValue
 {
-    return [self jsonResponseValue:nil];
+    NSString* cytpe = [_responseHeaders valueForKey:@"Content-Type"];
+    if (cytpe == nil || [cytpe hasPrefix:@"application/json"]) {
+        return [self jsonResponseValue:nil];
+    } else {
+        if (_responseData.length == 0) {
+            return @{};
+        } else {
+            KCSLogWarning(@"not a json repsonse");
+            return @{};
+        }
+    }
 }
 
 @end
