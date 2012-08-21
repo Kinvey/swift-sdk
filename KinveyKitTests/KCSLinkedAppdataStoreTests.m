@@ -68,7 +68,7 @@
     self.done = NO;
     
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
+        STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         self.done = YES;
     } withProgressBlock:nil];
@@ -89,7 +89,7 @@
     self.done = NO;
     
     [store saveObject:[NSArray arrayWithObjects:obj1, obj2,  nil] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
+        STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         STAssertEquals(2, (int) [objectsOrNil count], @"Should have saved two objects");
         self.done = YES;
@@ -114,7 +114,7 @@
     self.done = NO;
     
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
+        STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         
         obj = [objectsOrNil objectAtIndex:0];
@@ -124,7 +124,7 @@
     
     self.done = NO;
     [store loadObjectWithID:obj.objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should not be any errors");
+        STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         
         TestClass* loaded = [objectsOrNil objectAtIndex:0];
