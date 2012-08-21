@@ -54,6 +54,11 @@ static KCSSaveQueues* sQueues;
     dispatch_once(&onceToken, ^{
         sQueues = [[KCSSaveQueues alloc] init];
         [sQueues restoreQueues];
+        
+#warning FIXME
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[KCSClient sharedClient].kinveyReachability startNotifier];
+        });
     });
     return sQueues;
 }
@@ -232,8 +237,6 @@ static KCSSaveQueues* sQueues;
     self = [super init];
     if (self) {
         _q = [[NSMutableArray array] retain];
-#warning FIXME
-     //   [[KCSClient sharedClient].kinveyReachability startNotifier];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(online:) name:kKCSReachabilityChangedNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willBackground:) name:UIApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];

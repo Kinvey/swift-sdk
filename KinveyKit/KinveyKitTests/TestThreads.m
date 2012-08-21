@@ -176,7 +176,7 @@
 //            [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
 //        }
         NSLog(@"-");
-        
+        self.done = YES;
     });
     [self poll];
 }
