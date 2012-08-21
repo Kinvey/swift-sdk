@@ -36,5 +36,6 @@
 #import "KCSGroup.h"
 #import "KCSReduceFunction.h"
 #import "KCSLinkedAppdataStore.h"
+#import "KCSOfflineSaveStore.h"
 
 #endif
