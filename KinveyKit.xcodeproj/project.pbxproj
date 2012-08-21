@@ -36,8 +36,8 @@
 		27347F7215B4665800133F64 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7115B4665800133F64 /* CoreLocation.framework */; };
 		2735B2461578E84A0063EE62 /* KCSResourceStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */; };
 		273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */; };
-		273DB2E715D191A00072A444 /* SaveQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 273DB2E515D191A00072A444 /* SaveQueue.h */; };
-		273DB2E815D191A00072A444 /* SaveQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E615D191A00072A444 /* SaveQueue.m */; };
+		273DB2E715D191A00072A444 /* KCSSaveQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 273DB2E515D191A00072A444 /* KCSSaveQueue.h */; };
+		273DB2E815D191A00072A444 /* KCSSaveQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E615D191A00072A444 /* KCSSaveQueue.m */; };
 		27433012156ED63B00B2BF37 /* KCSLinkedAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27433013156ED63C00B2BF37 /* KCSLinkedAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27433011156ED63B00B2BF37 /* KCSLinkedAppdataStore.m */; };
 		274330211575227000B2BF37 /* KCSResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSResource.h */; };
@@ -238,8 +238,8 @@
 		2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSResourceStoreTests.m; sourceTree = "<group>"; };
 		273DB2E115D171E80072A444 /* KCSOfflineStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSOfflineStoreTests.h; sourceTree = "<group>"; };
 		273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSOfflineStoreTests.m; sourceTree = "<group>"; };
-		273DB2E515D191A00072A444 /* SaveQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveQueue.h; sourceTree = "<group>"; };
-		273DB2E615D191A00072A444 /* SaveQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveQueue.m; sourceTree = "<group>"; };
+		273DB2E515D191A00072A444 /* KCSSaveQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSaveQueue.h; sourceTree = "<group>"; };
+		273DB2E615D191A00072A444 /* KCSSaveQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSaveQueue.m; sourceTree = "<group>"; };
 		27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLinkedAppdataStore.h; sourceTree = "<group>"; };
 		27433011156ED63B00B2BF37 /* KCSLinkedAppdataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLinkedAppdataStore.m; sourceTree = "<group>"; };
 		2743301F1575227000B2BF37 /* KCSResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSResource.h; sourceTree = "<group>"; };
@@ -1474,8 +1474,8 @@
 				27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */,
 				27433011156ED63B00B2BF37 /* KCSLinkedAppdataStore.m */,
 				2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */,
-				273DB2E515D191A00072A444 /* SaveQueue.h */,
-				273DB2E615D191A00072A444 /* SaveQueue.m */,
+				273DB2E515D191A00072A444 /* KCSSaveQueue.h */,
+				273DB2E615D191A00072A444 /* KCSSaveQueue.m */,
 			);
 			name = KinveyStore;
 			sourceTree = "<group>";
@@ -1772,7 +1772,7 @@
 				27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */,
 				27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */,
 				2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */,
-				273DB2E715D191A00072A444 /* SaveQueue.h in Headers */,
+				273DB2E715D191A00072A444 /* KCSSaveQueue.h in Headers */,
 				272EF18815E2BA4E008E3F68 /* CLLocation+Kinvey.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1983,7 +1983,7 @@
 				271E8243157D70B3000AF9EF /* KCSPropertyUtil.m in Sources */,
 				27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */,
 				27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */,
-				273DB2E815D191A00072A444 /* SaveQueue.m in Sources */,
+				273DB2E815D191A00072A444 /* KCSSaveQueue.m in Sources */,
 				272EF18915E2BA4E008E3F68 /* CLLocation+Kinvey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

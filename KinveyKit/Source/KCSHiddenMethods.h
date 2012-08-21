@@ -22,6 +22,7 @@
 
 @interface KCSAppdataStore (KCSHiddenMethods)
 - (BOOL) isKinveyReachable;
+- (NSUInteger) numberOfPendingSaves;
 #if BUILD_FOR_UNIT_TEST
 - (void) setReachable:(BOOL)reachOverwrite;
 #endif
