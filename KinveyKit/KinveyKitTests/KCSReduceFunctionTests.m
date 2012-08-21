@@ -41,7 +41,7 @@
     __block NSMutableArray* allObjs = [NSMutableArray array];
     self.done = NO;
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"%@", errorOrNil);
+        STAssertNoError
         if (objectsOrNil != nil) {
             [allObjs addObjectsFromArray:objectsOrNil];
         }
