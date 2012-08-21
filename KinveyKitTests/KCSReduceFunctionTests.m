@@ -213,6 +213,7 @@
         STAssertNoError;
         NSNumber* value = [valuesOrNil reducedValueForFields:@{@"objDict.food" : @"orange"}];
         STAssertEquals([value intValue], 2, @"should be two oranges");
+        self.done = YES;
     } progressBlock:nil];
     [self poll];
 }
