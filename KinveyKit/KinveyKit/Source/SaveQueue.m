@@ -232,7 +232,8 @@ static KCSSaveQueues* sQueues;
     self = [super init];
     if (self) {
         _q = [[NSMutableArray array] retain];
-        [[KCSClient sharedClient].kinveyReachability startNotifier];
+#warning FIXME
+     //   [[KCSClient sharedClient].kinveyReachability startNotifier];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(online:) name:kKCSReachabilityChangedNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willBackground:) name:UIApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];

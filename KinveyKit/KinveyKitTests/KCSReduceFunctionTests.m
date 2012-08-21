@@ -13,6 +13,22 @@
 #import "ASTTestClass.h"
 #import "TestUtils.h"
 
+@interface GroupTestClass : ASTTestClass
+@property (nonatomic, retain) NSDictionary* objDict;
+@end
+@implementation GroupTestClass
+@synthesize objDict;
+
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:[super hostToKinveyPropertyMapping]];
+    [d setObject:@"objDict" forKey:@"objDict"];
+    return d;
+}
+
+@end
+
+
 @interface KCSUser ()
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
 @end
@@ -68,7 +84,7 @@
 
 - (ASTTestClass*)makeObject:(NSString*)desc count:(int)count
 {
-    ASTTestClass *obj = [[ASTTestClass alloc] init];
+    ASTTestClass *obj = [[GroupTestClass alloc] init];
     obj.objDescription = desc;
     obj.objCount = count;
     return obj;
@@ -174,6 +190,29 @@
         STAssertEquals([value intValue], 24, @"expecting 24 as the avg for objects of 'math'");
         
         self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+}
+
+- (void) testGroupByObjectField
+{
+    GroupTestClass* t1 = (GroupTestClass*)[self makeObject:@"withDict" count:100];
+    t1.objDict = @{@"food" : @"cherry"};
+    GroupTestClass* t2 = (GroupTestClass*)[self makeObject:@"withDict" count:200];
+    t2.objDict = @{@"food" : @"orange"};
+    GroupTestClass* t3 = (GroupTestClass*)[self makeObject:@"withDict" count:200];
+    t3.objDict = @{@"food" : @"orange", @"drink" : @"coffee"};
+
+    NSArray* objs = @[t1,t2,t3];
+    self.done = NO;
+    [store saveObject:objs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [store group:@[@"objDict.food"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        NSNumber* value = [valuesOrNil reducedValueForFields:@{@"objDict.food" : @"orange"}];
+        STAssertEquals([value intValue], 2, @"should be two oranges");
     } progressBlock:nil];
     [self poll];
 }
