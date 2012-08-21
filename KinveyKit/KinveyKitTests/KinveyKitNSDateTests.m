@@ -20,7 +20,7 @@
     NSDate *then = [NSDate dateFromISO8601EncodedString:ISO];
     
     NSTimeInterval deltaDate = [now timeIntervalSinceDate:then];
-    KCSLogDebug(@"Then: %@, Now: %@, delta: %d, inRange? %s", then, now, deltaDate, (fabs(deltaDate) < 0.001)?"YES":"NO");
+    NSLog(@"Then: %@, Now: %@, delta: %f, inRange? %@", then, now, deltaDate, (fabs(deltaDate) < 0.001)?@"YES":@"NO");
     
     assertThat([NSNumber numberWithDouble:deltaDate], is(closeTo(0, 0.001)));
 }

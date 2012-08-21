@@ -786,8 +786,8 @@
     static NSDictionary *options = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        options = @{KCS_USE_DICTIONARY_KEY : @(YES),
-        KCS_DICTIONARY_NAME_KEY : @"userAttributes"};
+        options = [@{KCS_USE_DICTIONARY_KEY : @(YES),
+        KCS_DICTIONARY_NAME_KEY : @"userAttributes"} retain];
     });
     
     return options;
