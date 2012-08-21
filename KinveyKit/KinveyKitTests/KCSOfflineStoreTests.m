@@ -11,7 +11,7 @@
 #import <KinveyKit/KinveyKit.h>
 #import "ASTTestClass.h"
 #import "KCSHiddenMethods.h"
-#import "SaveQueue.h"
+#import "KCSSaveQueue.h"
 
 @interface KCSSaveQueues;
 + (KCSSaveQueues*)sharedQueues;
@@ -173,11 +173,11 @@
     
     
     NSDictionary* d = [qs cachedQueues];
-    SaveQueue* s = [d objectForKey:@"x4"];
+    KCSSaveQueue* s = [d objectForKey:@"x4"];
     STAssertNotNil(s, @"should have saved an x4");
     int count = [s count];
     STAssertEquals((int)1, count, @"should have loaded one object");
-    SaveQueueItem* t = [[s array] objectAtIndex:0];
+    KCSSaveQueueItem* t = [[s array] objectAtIndex:0];
     ASTTestClass* atc = [t object];
     STAssertEquals((int)79000, (int)atc.objCount, @"should match");
 }

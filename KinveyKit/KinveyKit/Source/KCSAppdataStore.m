@@ -38,10 +38,10 @@
 #import "KCSClient.h"
 #import "KCSReachability.h"
 
-#import "SaveQueue.h"
+#import "KCSSaveQueue.h"
 
 @interface KCSAppdataStore () {
-    SaveQueue* _saveQueue;
+    KCSSaveQueue* _saveQueue;
     BOOL _offlineSaveEnabled;
 }
 
@@ -126,7 +126,7 @@
         NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
         if (queueId == nil)
             queueId = [self description];
-        _saveQueue = [[SaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId] retain];
+        _saveQueue = [[KCSSaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId] retain];
         _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
         id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
         _saveQueue.delegate = del;
@@ -616,7 +616,7 @@ int reachable = -1;
         NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSKinveyUnreachableError userInfo:offlineErrorInfo];
         completionBlock(nil,error);
     } else {
-        for (SaveQueueItem* item in [_saveQueue array]) {
+        for (KCSSaveQueueItem* item in [_saveQueue array]) {
             id<KCSPersistable> obj = item.object;
             [_saveQueue removeItem:item];
             KCSSerializedObject* serializedObj = [KCSObjectMapper makeKinveyDictionaryFromObject:obj];

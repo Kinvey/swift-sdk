@@ -12,18 +12,18 @@
 
 @class KCSCollection;
 
-@interface SaveQueueItem : NSObject
+@interface KCSSaveQueueItem : NSObject
 @property (nonatomic, retain) NSDate* mostRecentSaveDate;
 @property (nonatomic, retain) id<KCSPersistable> object;
 @end
 
-@interface SaveQueue : NSObject
+@interface KCSSaveQueue : NSObject
 @property (nonatomic, assign) id<KCSOfflineSaveDelegate> delegate;
 
-+ (SaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier;
++ (KCSSaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier;
 
 - (void) addObject:(id<KCSPersistable>)obj;
-- (void) removeItem:(SaveQueueItem*)item;
+- (void) removeItem:(KCSSaveQueueItem*)item;
 - (NSArray*) ids;
 - (NSArray*) array;
 - (NSUInteger) count;

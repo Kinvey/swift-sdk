@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 
-#import "SaveQueue.h"
+#import "KCSSaveQueue.h"
 
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
@@ -21,23 +21,23 @@
 #import "NSDate+ISO8601.h"
 
 
-@protocol SaveQueueUpdateDelegate <NSObject>
+@protocol KCSSaveQueueUpdateDelegate <NSObject>
 - (void)queueUpdated;
 @end
 
-@interface SaveQueue () <KCSPersistableDelegate, NSCoding> {
+@interface KCSSaveQueue () <KCSPersistableDelegate, NSCoding> {
     NSMutableArray* _q;
     id<KCSOfflineSaveDelegate> _delegate;
     UIBackgroundTaskIdentifier _bgTask;
 }
 @property (nonatomic, retain) KCSCollection* collection;
 @property (nonatomic, retain) NSMutableArray* q;
-@property (nonatomic, assign) id<SaveQueueUpdateDelegate> updateDelegate;
+@property (nonatomic, assign) id<KCSSaveQueueUpdateDelegate> updateDelegate;
 - (void) saveNext;
 @end
 
 
-@interface KCSSaveQueues : NSObject <SaveQueueUpdateDelegate> {
+@interface KCSSaveQueues : NSObject <KCSSaveQueueUpdateDelegate> {
     NSMutableDictionary* _queues;
 }
 
@@ -55,7 +55,6 @@ static KCSSaveQueues* sQueues;
         sQueues = [[KCSSaveQueues alloc] init];
         [sQueues restoreQueues];
         
-#warning FIXME
         dispatch_async(dispatch_get_main_queue(), ^{
             [[KCSClient sharedClient].kinveyReachability startNotifier];
         });
@@ -79,13 +78,13 @@ static KCSSaveQueues* sQueues;
     [super dealloc];
 }
 
-- (SaveQueue*)queueForCollection:(KCSCollection*)collection identifier:(NSString*)queueIdentifier
+- (KCSSaveQueue*)queueForCollection:(KCSCollection*)collection identifier:(NSString*)queueIdentifier
 {
-    SaveQueue* q = nil;
+    KCSSaveQueue* q = nil;
     @synchronized(self) {
         q = [_queues objectForKey:queueIdentifier];
         if (!q) {
-            q = [[[SaveQueue alloc] init] autorelease];
+            q = [[[KCSSaveQueue alloc] init] autorelease];
             q.collection = collection;
             [_queues setObject:q forKey:queueIdentifier];
             q.updateDelegate = self;
@@ -115,7 +114,7 @@ static KCSSaveQueues* sQueues;
 {
     NSDictionary* qs = [self cachedQueues];
     _queues = [[NSMutableDictionary dictionaryWithDictionary:qs] retain];
-    for (SaveQueue* q in [_queues allValues]) {
+    for (KCSSaveQueue* q in [_queues allValues]) {
         q.updateDelegate = self;
         dispatch_async(dispatch_get_current_queue(), ^{
             [q saveNext];
@@ -154,7 +153,7 @@ static KCSSaveQueues* sQueues;
 @end
 
 
-@implementation SaveQueueItem
+@implementation KCSSaveQueueItem
 @synthesize mostRecentSaveDate, object;
 - (id) initWithObject:(id<KCSPersistable>)obj
 {
@@ -176,7 +175,7 @@ static KCSSaveQueues* sQueues;
 - (BOOL)isEqual:(id)other
 {
     //objects are equal if their ids are equal, or if there is no id, if the objects themselves are equal. This preserves the set integrity if an object is saved twice but the first save never went through and id hasn't been assigned.
-    BOOL isASaveItem = [other isKindOfClass:[SaveQueueItem class]];
+    BOOL isASaveItem = [other isKindOfClass:[KCSSaveQueueItem class]];
     BOOL idsEqual = [self objectId] != nil && [other objectId] != nil && [[self objectId] isEqualToString:[other objectId]];
     BOOL objectsEqual = [self.object isEqual:[other object]];
     return isASaveItem && (idsEqual || objectsEqual);
@@ -202,7 +201,7 @@ static KCSSaveQueues* sQueues;
 {
     NSMutableArray* array = [NSMutableArray arrayWithCapacity:self.count];
     @synchronized(self) {
-        for (SaveQueueItem* item in self) {
+        for (KCSSaveQueueItem* item in self) {
             NSString* objId = [item objectId];
             [array addObject:objId != nil ? objId : [NSNull null]];
         }
@@ -221,13 +220,13 @@ static KCSSaveQueues* sQueues;
 @end
 
 
-@implementation SaveQueue
+@implementation KCSSaveQueue
 @synthesize delegate = _delegate;
 @synthesize collection = _collection;
 @synthesize q = _q;
 @synthesize updateDelegate;
 
-+ (SaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier
++ (KCSSaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier
 {
     return [[KCSSaveQueues sharedQueues] queueForCollection:collection identifier:identifier];
 }
@@ -258,7 +257,7 @@ static KCSSaveQueues* sQueues;
             NSDate* date = [NSDate dateFromISO8601EncodedString:[d objectForKey:@"d"]];
             NSDictionary* p = [d objectForKey:@"i"];
             id<KCSPersistable> obj = [KCSObjectMapper makeObjectOfType:klass withData:p];
-            SaveQueueItem* item = [[SaveQueueItem alloc] init];
+            KCSSaveQueueItem* item = [[KCSSaveQueueItem alloc] init];
             item.object = obj;
             item.mostRecentSaveDate = date;
             [_q addObject:item];
@@ -277,7 +276,7 @@ static KCSSaveQueues* sQueues;
     [aCoder encodeObject:className forKey:@"cc"];
     
     NSMutableArray* objs = [NSMutableArray arrayWithCapacity:_q.count];
-    for (SaveQueueItem* i in _q) {
+    for (KCSSaveQueueItem* i in _q) {
         NSDictionary *d = @{ @"d" : [i.mostRecentSaveDate stringWithISO8601Encoding],
         @"i" : [KCSObjectMapper makeKinveyDictionaryFromObject:i.object].dataToSerialize
         };
@@ -298,7 +297,7 @@ static KCSSaveQueues* sQueues;
 
 - (void) addObject:(id<KCSPersistable>)obj
 {
-    SaveQueueItem* item = [[SaveQueueItem alloc] initWithObject:obj];
+    KCSSaveQueueItem* item = [[KCSSaveQueueItem alloc] initWithObject:obj];
     @synchronized(_q) {
         [_q addObject:item];
     }
@@ -325,7 +324,7 @@ static KCSSaveQueues* sQueues;
     return count;
 }
 
-- (void) removeItem:(SaveQueueItem*)item
+- (void) removeItem:(KCSSaveQueueItem*)item
 {
     [_q removeObject:item];
     [self.updateDelegate queueUpdated];
@@ -370,7 +369,7 @@ static KCSSaveQueues* sQueues;
 }
 
 #pragma mark - Save Stuff
-- (id<KCSPersistable>) objForItem: (SaveQueueItem*) item
+- (id<KCSPersistable>) objForItem: (KCSSaveQueueItem*) item
 {
     return item.object;
 }
@@ -382,7 +381,7 @@ static KCSSaveQueues* sQueues;
         return;
     }
     if ([self count] > 0) {
-        SaveQueueItem* item = [_q objectAtIndex:0];
+        KCSSaveQueueItem* item = [_q objectAtIndex:0];
         id obj = [self objForItem:item];
         if (_delegate && [_delegate respondsToSelector:@selector(shouldSave:lastSaveTime:)]) {
             //test the delegate, if available
@@ -398,7 +397,7 @@ static KCSSaveQueues* sQueues;
     }
 }
 
-- (void) saveObject:(SaveQueueItem*)item
+- (void) saveObject:(KCSSaveQueueItem*)item
 {
     id<KCSPersistable> obj = [self objForItem:item];
     if (_delegate && [_delegate respondsToSelector:@selector(willSave:lastSaveTime:)]) {

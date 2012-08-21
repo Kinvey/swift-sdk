@@ -11,6 +11,8 @@
 
 #import "TestUtils.h"
 #import "ASTTestClass.h"
+@interface KCSMetadataTests () <KCSUserActionDelegate>
+@end
 
 @implementation KCSMetadataTests
 
@@ -90,7 +92,9 @@
     STAssertEqualObjects([obj.meta creatorId], [[[KCSClient sharedClient] currentUser] kinveyObjectId], @"this user should be the creator");
     STAssertFalse([obj.meta isGloballyReadable], @"expecting to have set that value");
     
-    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:YES];
+    self.done = NO;
+    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:self forceNew:YES];
+    [self poll];
 
     self.done = NO;
     [store loadObjectWithID:obj.kinveyObjectId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -99,6 +103,16 @@
     } withProgressBlock:nil];
     [self poll];
     
+}
+
+- (void) user:(KCSUser *)user actionDidCompleteWithResult:(KCSUserActionResult)result
+{
+    self.done = YES;
+}
+
+- (void)user:(KCSUser *)user actionDidFailWithError:(NSError *)error
+{
+    self.done = YES;
 }
 
 @end
