@@ -69,7 +69,7 @@
     
     self.done = NO;
     [store saveObject:fileUrl withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should be no errors");
+        STAssertNoError
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"-- %f",percentComplete);
@@ -80,7 +80,7 @@
     
     self.done = NO;
     [store queryWithQuery:fileName withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should be no errors");
+        STAssertNoError
         NSData* responseData = (NSData*)[(KCSResourceResponse*)[objectsOrNil objectAtIndex:0] resource];
         STAssertEqualObjects(responseData, data, @"Data should match");
         self.done = YES;
@@ -91,7 +91,7 @@
     
     self.done = NO;
     [store removeObject:fileName withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"should be no errors");
+        STAssertNoError
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"-- %f",percentComplete);
