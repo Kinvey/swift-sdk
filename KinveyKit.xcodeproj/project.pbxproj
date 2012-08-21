@@ -24,6 +24,8 @@
 		271E8242157D70B3000AF9EF /* KCSPropertyUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */; };
 		271E8243157D70B3000AF9EF /* KCSPropertyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */; };
 		27223E1C157E7A3200656BCC /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
+		272EF18815E2BA4E008E3F68 /* CLLocation+Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		272EF18915E2BA4E008E3F68 /* CLLocation+Kinvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */; };
 		27302CBC155C66B300A0183E /* KCSCachedStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CBA155C66B300A0183E /* KCSCachedStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27302CBD155C66B300A0183E /* KCSCachedStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CBB155C66B300A0183E /* KCSCachedStore.m */; };
 		27302CC0155C66FF00A0183E /* KCSCachedStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CBF155C66FF00A0183E /* KCSCachedStoreTests.m */; };
@@ -221,6 +223,8 @@
 		271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPropertyUtil.m; sourceTree = "<group>"; };
 		27223E1A157E7A3200656BCC /* TestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtils.h; sourceTree = "<group>"; };
 		27223E1B157E7A3200656BCC /* TestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtils.m; sourceTree = "<group>"; };
+		272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Kinvey.h"; sourceTree = "<group>"; };
+		272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CLLocation+Kinvey.m"; sourceTree = "<group>"; };
 		27302CBA155C66B300A0183E /* KCSCachedStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCachedStore.h; sourceTree = "<group>"; };
 		27302CBB155C66B300A0183E /* KCSCachedStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCachedStore.m; sourceTree = "<group>"; };
 		27302CBE155C66FF00A0183E /* KCSCachedStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCachedStoreTests.h; sourceTree = "<group>"; };
@@ -676,6 +680,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		272EF18215E2BA11008E3F68 /* UI Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */,
+				272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */,
+			);
+			name = "UI Helpers";
+			sourceTree = "<group>";
+		};
 		D306B59F1550948300A52CB8 /* KinveyStore */ = {
 			isa = PBXGroup;
 			children = (
@@ -893,6 +906,7 @@
 		D32A60F614716F2D00F77A3F /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				272EF18215E2BA11008E3F68 /* UI Helpers */,
 				D36118EB154F44E80001BB41 /* KinveyStore */,
 				D39CDF9314D1E65400E40D19 /* Query */,
 				D3F340FA14BD2A2900DB6C37 /* Headers */,
@@ -1759,6 +1773,7 @@
 				27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */,
 				2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */,
 				273DB2E715D191A00072A444 /* SaveQueue.h in Headers */,
+				272EF18815E2BA4E008E3F68 /* CLLocation+Kinvey.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1969,6 +1984,7 @@
 				27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */,
 				27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */,
 				273DB2E815D191A00072A444 /* SaveQueue.m in Sources */,
+				272EF18915E2BA4E008E3F68 /* CLLocation+Kinvey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

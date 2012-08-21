@@ -231,4 +231,26 @@ typedef struct {
     }];
 }
 
+
+- (void) xys
+{
+  //  I'm having trouble getting past the first step of the setup. I'm trying to simply ping the service using the tutorial and I keep getting a "invalid credentials" response.
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_eVWJLDiR0"
+                                                 withAppSecret:@"e124b851ba7146628ce25d7b6d35910b"
+                                                  usingOptions:nil];
+  //  I checked them 100 times, seems right to me. Here's the pinging code, directly from the tutorial:
+//    - (void)viewDidLoad{ [super viewDidLoad]; // Do any additional setup after loading the view, typically from a nib.
+        // Ping Kinvey
+        [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) { // This block gets executed when the ping completes
+            NSString *title; if (result.pingWasSuccessful){ title = @"Kinvey Ping Success :)"; } else { title = @"Kinvey Ping Failed :("; }
+            // Log the result
+            NSLog(@"%@", result.description);
+            // Display an alert stating the result
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle: title message: [result description] delegate: nil cancelButtonTitle: @"OK" otherButtonTitles: nil];
+            [alert show];
+        }];
+  //  }
+    //    If you can assist in anyway it will be most helpful. Thanks,Frankie
+    
+}
 @end
