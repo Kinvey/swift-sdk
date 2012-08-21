@@ -10,6 +10,7 @@
 #import "KCSLogManager.h"
 #import "SBJson.h"
 #import "NSString+KinveyAdditions.h"
+#import "KinveyPersistable.h"
 
 #pragma mark -
 #pragma mark KCSQuerySortModifier
@@ -108,8 +109,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     if (KCSOperationStringLookup == nil){
         KCSOperationStringLookup = [[NSDictionary dictionaryWithObjectsAndKeys:
                                      // Basic Queries                                                                                                                                                                                                                                                                
-                                     @"$lt", [NSNumber numberWithInt:kKCSLessThan],                                                                                                                                                                                                                                  
-                                     @"$lte", [NSNumber numberWithInt:kKCSLessThanOrEqual],                                                                                                                                                                                                                          
+                                     @"$lt", @(kKCSLessThan),
+                                     @"$lte", @(kKCSLessThanOrEqual),
                                      @"$gt", [NSNumber numberWithInt:kKCSGreaterThan],                                                                                                                                                                                                                               
                                      @"$gte", [NSNumber numberWithInt:kKCSGreaterThanOrEqual],                                                                                                                                                                                                                       
                                      @"$ne", [NSNumber numberWithInt:kKCSNotEqual],                                                                                                                                                                                                                                  
@@ -139,7 +140,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
                                      @"$within", [NSNumber numberWithInt:kKCSWithin], nil] retain];
     }
     
-    return [KCSOperationStringLookup objectForKey:[NSNumber numberWithInt:conditional]];
+    return [KCSOperationStringLookup objectForKey:@(conditional)];
 }
 
 + (NSDictionary *)queryDictionaryWithFieldname: (NSString *)fieldname operation:(KCSQueryConditional)op forQueries:(NSArray *)queries useQueriesForOps: (BOOL)useQueriesForOps
@@ -175,9 +176,9 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 ///// For right now Kinvey has _geoloc as a free indexed property, if the user is using a geoquery now, then we
 ////  rewrite to the correct property, in the future use their passed in property
 #if 0
-            query = [NSDictionary dictionaryWithObject:geoQ forKey:fieldname];
+            query = @{fieldname : geoQ};
 #else
-            query = [NSDictionary dictionaryWithObject:geoQ forKey:@"_geoloc"];
+            query = @{KCSEntityKeyGeolocation : geoQ};
 #endif
 ////            
 //////////// HACK //////////////
@@ -270,9 +271,9 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
                     ///// For right now Kinvey has _geoloc as a free indexed property, if the user is using a geoquery now, then we
                     ////  rewrite to the correct property, in the future use their passed in property
 #if 0
-                    query = [NSDictionary dictionaryWithObject:tmp forKey:fieldname];
+                    query = @{fieldname : tmp};
 #else
-                    query = [NSDictionary dictionaryWithObject:tmp forKey:@"_geoloc"];
+                    query = @{KCSEntityKeyGeolocation : tmp};
 #endif
                     ////            
                     //////////// HACK //////////////

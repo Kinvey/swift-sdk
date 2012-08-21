@@ -1,5 +1,10 @@
 # KinveyKit Release History
 
+## 1.8
+** Release date: ** TBD
+* Added `KCSEntityKeyGeolocation` constant to KinveyPersistable.h as a convience from using the `_geoloc` geo-location field. 
+* Added `CLLocation` category methods `- [CLLocation kinveyValue]` and `+ [CLLocation  locationFromKinveyValue:]` to aid in the use of geo data.
+
 ## 1.7
 ** Release date: ** Aug 17, 2012
 

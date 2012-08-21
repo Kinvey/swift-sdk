@@ -66,7 +66,7 @@
 - (NSArray*) usersWithReadAccess
 {
     NSArray* readers = [acl objectForKey:kACLReadersKey];
-    return readers == nil ? [NSArray array] : readers;
+    return readers == nil ? @[] : readers;
 }
 
 - (void) setUsersWithReadAccess:(NSArray*) readers
@@ -77,7 +77,7 @@
 - (NSArray*) usersWithWriteAccess
 {
     NSArray* writers = [acl objectForKey:kACLWritersKey];
-    return writers == nil ? [NSArray array] : writers;
+    return writers == nil ? @[] : writers;
 }
 
 - (void) setUsersWithWriteAccess:(NSArray*) writers
@@ -92,7 +92,7 @@
 
 - (void) setGloballyReadable:(BOOL)readable
 {
-    [acl setObject:[NSNumber numberWithBool:readable] forKey:kACLGlobalReadKey];
+    [acl setObject:@(readable) forKey:kACLGlobalReadKey];
 }
 
 - (BOOL) isGloballyWritable
@@ -102,7 +102,7 @@
 
 - (void) setGloballyWritable:(BOOL)writable
 {
-    [acl setObject:[NSNumber numberWithBool:writable] forKey:kACLGlobalWriteKey];
+    [acl setObject:@(writable) forKey:kACLGlobalWriteKey];
 }
 
 - (NSDictionary*) aclValue
