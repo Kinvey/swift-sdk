@@ -1,11 +1,14 @@
 # KinveyKit Release History
 
 ## 1.8
+### 1.8.0
 ** Release date: ** TBD
 * Added `KCSEntityKeyGeolocation` constant to KinveyPersistable.h as a convience from using the `_geoloc` geo-location field. 
 * Added `CLLocation` category methods `- [CLLocation kinveyValue]` and `+ [CLLocation  locationFromKinveyValue:]` to aid in the use of geo data.
+* Support for `NSSet` and `NSOrderedSet` property types. These are saved as arrays on the backend. 
 
 ## 1.7
+### 1.7.0
 ** Release date: ** Aug 17, 2012
 
 * `KCSCachedStore` now provides the ability to persist saves when the application is offline, and then to save them when the application regains connectivity. See also `KCSOfflineSaveStore`.
