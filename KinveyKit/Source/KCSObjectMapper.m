@@ -19,77 +19,14 @@
 #import "KCSResource.h"
 #import "KCSMetadata.h"
 
+#import "KCSBuilders.h"
+
 #define kKMDKey @"_kmd"
 #define kACLKey @"_acl"
 
 @interface KCSMetadata ()
 - (id) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)acl;
 - (NSDictionary*) aclValue;
-@end
-
-@protocol KCSDataTypeBuilder <NSObject>
-+ (id) JSONCompatabileValueForObject:(id)object;
-+ (id) objectForJSONObject:(id)object;
-@end
-
-@interface KCSDateBuilder : NSObject <KCSDataTypeBuilder>
-@end
-#import "NSDate+ISO8601.h"
-@implementation KCSDateBuilder
-+ (id) JSONCompatabileValueForObject:(id)object
-{
-    return [NSString stringWithFormat:@"ISODate(%c%@%c)", '"', [object stringWithISO8601Encoding], '"'];
-}
-+ (id) objectForJSONObject:(id)object
-{
-    if ([object isKindOfClass:[NSDate class]]) {
-        return object;
-    } else if ([object isKindOfClass:[NSString class]]) {
-        NSString *tmp = [(NSString *)object stringByReplacingOccurrencesOfString:@"ISODate(\"" withString:@""];
-        tmp = [tmp stringByReplacingOccurrencesOfString:@"\")" withString:@""];
-        NSDate *date = [NSDate dateFromISO8601EncodedString:tmp];
-        return date;
-    }
-    return [NSNull null];
-}
-@end
-
-@interface KCSSetBuilder : NSObject <KCSDataTypeBuilder>
-@end
-@implementation KCSSetBuilder
-+ (id)JSONCompatabileValueForObject:(id)object
-{
-    return [(NSSet*)object allObjects];
-}
-+ (id) objectForJSONObject:(id)object
-{
-    if ([object isKindOfClass:[NSSet class]]) {
-        return object;
-    } else if ([object isKindOfClass:[NSArray class]]) {
-        return [NSSet setWithArray:object];
-    }
-    return [NSNull null];
-}
-@end
-
-@interface KCSOrderedSetBuilder : NSObject <KCSDataTypeBuilder>
-@end
-@implementation KCSOrderedSetBuilder
-+ (id)JSONCompatabileValueForObject:(id)object
-{
-    return [(NSOrderedSet*)object array];
-}
-+ (id) objectForJSONObject:(id)object
-{
-    if ([object isKindOfClass:[NSOrderedSet class]]) {
-        return object;
-    } else if ([object isKindOfClass:[NSArray class]]) {
-        return [NSOrderedSet orderedSetWithArray:object];
-    } else if ([object isKindOfClass:[NSSet class]]) {
-        return [NSOrderedSet orderedSetWithSet:object];
-    }
-    return [NSNull null];
-}
 @end
 
 NSDictionary* builderOptions(id object);
@@ -123,6 +60,11 @@ NSDictionary* builderOptions(id object)
     [_dataToSerialize release];
     [_objectId release];
     [super dealloc];
+}
+
+- (NSString *)debugDescription
+{
+    return [self.dataToSerialize description];
 }
 
 @end
@@ -269,10 +211,14 @@ NSDictionary* defaultBuilders()
 + (void)initialize
 {
     if (!_defaultBuilders) {
-        _defaultBuilders = [@{[NSDate class] : [KCSDateBuilder class],
-                             [NSSet class] : [KCSSetBuilder class],
-                             [NSOrderedSet class] : [KCSOrderedSetBuilder class]} retain];
-    }
+        _defaultBuilders = [@{(id)[NSDate class] : [KCSDateBuilder class],
+                            (id)[NSSet class] : [KCSSetBuilder class],
+                            (id)[NSMutableSet class] : [KCSMSetBuilder class],
+                            (id)[NSOrderedSet class] : [KCSOrderedSetBuilder class],
+                            (id)[NSMutableOrderedSet class] : [KCSMOrderedSetBuilder class],
+                            (id)[NSMutableAttributedString class] : [KCSMAttributedStringBuilder class],
+                            (id)[NSAttributedString class] : [KCSAttributedStringBuilder class]} retain];
+}
 }
 
 Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass);
@@ -296,12 +242,6 @@ Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass)
     BOOL isPostRequest = NO;
     
     NSMutableArray* resourcesToSave = nil;
-    NSDictionary* properties = nil;
-    if (withProps) {
-        resourcesToSave = [NSMutableArray array];
-        properties = [KCSPropertyUtil classPropsFor:[object class]];
-    }
-    
     
     for (NSString* key in kinveyMapping) {
         NSString *jsonName = [kinveyMapping valueForKey:key];
@@ -330,19 +270,19 @@ Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass)
         } else {
             if (withProps == YES && isResourceType(value) == YES) {
                 NSString* objname = [object kinveyObjectId];//set.count == 0 ? nil: [object valueForKey:[set anyObject]];
-                    if (objname == nil) {
-                        CFUUIDRef uuid = CFUUIDCreate(NULL);
-                        
-                        if (uuid){
-                            objname = [(NSString *)CFUUIDCreateString(NULL, uuid) autorelease];
-                            CFRelease(uuid);
-                        }
+                if (objname == nil) {
+                    CFUUIDRef uuid = CFUUIDCreate(NULL);
+                    
+                    if (uuid){
+                        objname = [(NSString *)CFUUIDCreateString(NULL, uuid) autorelease];
+                        CFRelease(uuid);
                     }
-                    NSString* filename = [NSString stringWithFormat:@"%@-%@-%@%@", collectionName, objname, key, extensionForResource(value)];
-                    KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
-                    [resourcesToSave addObject:resourceWrapper];
-                    [dictionaryToMap setValue:[resourceWrapper dictionaryRepresentation] forKey:jsonName];
-                    [resourceWrapper release];
+                }
+                NSString* filename = [NSString stringWithFormat:@"%@-%@-%@%@", collectionName, objname, key, extensionForResource(value)];
+                KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
+                [resourcesToSave addObject:resourceWrapper];
+                [dictionaryToMap setValue:[resourceWrapper dictionaryRepresentation] forKey:jsonName];
+                [resourceWrapper release];
             } else {
                 Class valClass = [value classForCoder];
                 Class<KCSDataTypeBuilder> builder = builderForComplexType(object, valClass);

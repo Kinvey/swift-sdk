@@ -22,8 +22,8 @@
 + (KCSConnectionResponse *)connectionResponseWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData; 
 
 - (NSString*) stringValue;
-- (NSObject*) jsonResponseValue;
-- (NSObject*) jsonResponseValue:(NSError**) anError;
+- (id) jsonResponseValue;
+- (id) jsonResponseValue:(NSError**) anError;
 
 
 @end

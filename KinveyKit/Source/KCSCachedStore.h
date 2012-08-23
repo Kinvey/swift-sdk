@@ -17,10 +17,12 @@ typedef enum KCSCachePolicy {
     KCSCachePolicyLocalOnly,
     KCSCachePolicyLocalFirst,
     KCSCachePolicyNetworkFirst,
-    KCSCachePolicyBoth
+    KCSCachePolicyBoth,
+    KCSCachePolicyReadOnceAndSaveLocal_Xperimental //for caching assests that change infrequently (e.g. ui assets, names of presidents, etc)
 } KCSCachePolicy;
 
 #define KCSStoreKeyCachePolicy @"cachePolicy"
+#define KCSStoreKeyLocalCacheTimeout @"localcache.timeout"
 
 /**
  This application data store caches queries, depending on the policy.

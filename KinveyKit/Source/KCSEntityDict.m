@@ -72,5 +72,8 @@
     return mappedDict;
 }
 
-
+- (NSString *)debugDescription
+{
+    return [self.entityProperties description];
+}
 @end

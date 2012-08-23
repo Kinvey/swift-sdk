@@ -198,8 +198,8 @@ NSError* createCacheError(NSString* message)
 - (BOOL) shouldCallNetworkFirst:(id)cachedResult cachePolicy:(KCSCachePolicy)cachePolicy
 {
     return cachePolicy == KCSCachePolicyNone || 
-          (cachePolicy == KCSCachePolicyNetworkFirst  && [self isKinveyReachable]) || 
-          ((cachePolicy == KCSCachePolicyLocalFirst || cachePolicy == KCSCachePolicyBoth) && cachedResult == nil);
+          (cachePolicy == KCSCachePolicyNetworkFirst && [self isKinveyReachable]) || 
+          (cachePolicy != KCSCachePolicyLocalOnly && cachedResult == nil);
 }
 
 - (BOOL) shouldUpdateInBackground:(KCSCachePolicy)cachePolicy
