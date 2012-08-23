@@ -8,8 +8,35 @@
 
 #import "Metatests.h"
 #import <KinveyKit/KinveyKit.h>
+#import "SBJson.h"
 
 #import "TestUtils.h"
+
+// RectangleHolder.h
+@interface RectangleHolder : NSObject <KCSPersistable>
+@property (nonatomic) CGRect rect;
+@end
+// RectangleHolder.m
+@interface RectangleHolder ()
+@property (nonatomic, assign) NSArray* rectArray;
+@end
+@implementation RectangleHolder
+@synthesize rect;
+- (NSDictionary *)hostToKinveyPropertyMapping {
+    return @{ @"rectArray" : @"rect"};
+}
+- (void) setRectArray:(NSArray *)rectArray {
+    self.rect = CGRectMake([[rectArray objectAtIndex:0] floatValue], //x
+                           [[rectArray objectAtIndex:1] floatValue], //y
+                           [[rectArray objectAtIndex:2] floatValue], //w
+                           [[rectArray objectAtIndex:3] floatValue]); //h
+}
+- (NSArray*) rectArray {
+    return @[@(self.rect.origin.x), @(self.rect.origin.y), @(self.rect.size.width), @(self.rect.size.height)];
+}
+
+@end
+
 
 typedef struct {
     int x;
@@ -24,9 +51,15 @@ typedef struct {
     ab.y = 2;
     KCSCollection* c = [KCSCollection collectionFromString:@"COLLECTION" ofClass:[KCSEntityDict class]];
     NSLog(@"%@",c);
+    
+    NSAttributedString* e = [[NSAttributedString alloc] initWithString:@"A"];
+    KCS_SBJsonWriter* s = [[KCS_SBJsonWriter alloc] init];
+    NSData* d = [s dataWithObject:@[e]];
+    NSLog(@"%@",d);
+    
 }
 
-- (void) testE
+- (void) ntestE
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
     STAssertTrue(setup, @"should be setup");

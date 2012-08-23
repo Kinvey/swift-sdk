@@ -11,6 +11,7 @@
 #import "KCSLogManager.h"
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
+#import "NSString+KinveyAdditions.h"
 
 @implementation KCSConnectionResponse
 
@@ -55,7 +56,7 @@
     return [[[NSString alloc] initWithData:self.responseData encoding:NSUTF8StringEncoding] autorelease];
 }
 
-- (NSObject*) jsonResponseValue:(NSError**) anError format:(NSStringEncoding)format
+- (id) jsonResponseValue:(NSError**) anError format:(NSStringEncoding)format
 {
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
     NSString* string = [[NSString alloc] initWithData:self.responseData encoding:format];
@@ -72,7 +73,7 @@
     return jsonData;
 }
 
-- (NSObject*) jsonResponseValue:(NSError**) anError
+- (id) jsonResponseValue:(NSError**) anError
 {
     //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
@@ -91,16 +92,18 @@
         }
     } else {
         jsonData = [jsonResponse valueForKey:@"result"];
+        jsonData = jsonData ? jsonData : jsonResponse;
     }
     [parser release];
     
     return jsonData;
 }
 
-- (NSObject*) jsonResponseValue
+- (id) jsonResponseValue
 {
     NSString* cytpe = [_responseHeaders valueForKey:@"Content-Type"];
-    if (cytpe == nil || [cytpe hasPrefix:@"application/json"]) {
+    
+    if (cytpe == nil || [cytpe containsStringCaseInsensitive:@"json"]) {
         return [self jsonResponseValue:nil];
     } else {
         if (_responseData.length == 0) {

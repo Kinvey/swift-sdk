@@ -1,14 +1,17 @@
 # KinveyKit Release History
 
 ## 1.8
-### 1.8.0
+### 1.8.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit180APIDiffs.html)
 ** Release date: ** TBD
 * Added `KCSEntityKeyGeolocation` constant to KinveyPersistable.h as a convience from using the `_geoloc` geo-location field. 
 * Added `CLLocation` category methods `- [CLLocation kinveyValue]` and `+ [CLLocation  locationFromKinveyValue:]` to aid in the use of geo data.
-* Support for `NSSet` and `NSOrderedSet` property types. These are saved as arrays on the backend. 
+* Support for `NSSet`, `NSOrderedSet`, and `NSAttributedString` property types. These are saved as arrays on the backend.  See [Datatypes in KinveyKit](Documents/guides/datatype-guide/Datatypes%20In%20KinveyKit.html) for more information.
+* Documentation Updates.
+    * Added [Datatypes in KinveyKit](Documents/guides/datatype-guide/Datatypes%20In%20KinveyKit.html) Guide.
+    * Added links to the api differences to this document.
 
 ## 1.7
-### 1.7.0
+### 1.7.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit170APIDiffs/KinveyKit170APIDiffs.html)
 ** Release date: ** Aug 17, 2012
 
 * `KCSCachedStore` now provides the ability to persist saves when the application is offline, and then to save them when the application regains connectivity. See also `KCSOfflineSaveStore`.
@@ -20,13 +23,13 @@
     * Updated our reachability aliases to make the KinveyKit more compatible with other frameworks. 
 
 ## 1.6
-### 1.6.1
+### 1.6.1 
 ** Release Date: ** July 31st, 2012
 
 * Bug Fix(es).
     * Fix issue with hang on no results using `KCSAppdataStore`.
 
-### 1.6.0
+### 1.6.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit160APIDiffs/KinveyKit160APIDiffs.html)
 ** Release Date: ** July 30th, 2012
 
 * Added `KCSUserDiscovery` to provide a method to lookup other users based upon criteria like name and email address. 
@@ -39,7 +42,7 @@
 
 ## 1.5
 
-### 1.5.0
+### 1.5.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit150APIDiffs/KinveyKit150APIDiffs.html)
 ** Release Date: ** July 10th, 2012
 
 * Added `KCSMetadata` for entities to map by `KCSEntityKeyMetadata` in `hostToKinveyPropertyMapping`. This provides metadata about the entity and allows for fine-grained read/write permissions. 
@@ -47,7 +50,7 @@
 
 ## 1.4
 
-### 1.4.0
+### 1.4.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit140APIDiffs/KinveyKit140APIDiffs.html)
 ** Release Date: ** June 7th, 2012
 
 * Added`KCSCachedStore` for caching queries to collections. 
