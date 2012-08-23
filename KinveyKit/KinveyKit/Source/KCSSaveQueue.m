@@ -47,6 +47,8 @@
 @implementation KCSSaveQueues
 
 static KCSSaveQueues* sQueues;
+static KCSReachability* sReachability;
+static BOOL sFirstReached;
 
 + (KCSSaveQueues*)sharedQueues
 {
@@ -54,10 +56,13 @@ static KCSSaveQueues* sQueues;
     dispatch_once(&onceToken, ^{
         sQueues = [[KCSSaveQueues alloc] init];
         [sQueues restoreQueues];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[KCSClient sharedClient].kinveyReachability startNotifier];
-        });
+        KCSClient* client = [KCSClient sharedClient];
+        sFirstReached = NO;
+        sReachability = [[KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", client.serviceHostname, [client kinveyDomain]]] retain];
+        [sReachability startNotifier];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [[KCSClient sharedClient].kinveyReachability startNotifier];
+//        });
     });
     return sQueues;
 }
@@ -340,6 +345,7 @@ static KCSSaveQueues* sQueues;
 
 - (void) online:(NSNotification*)note
 {
+    sFirstReached = YES;
     KCSReachability* reachability = [note object];
     if (reachability.isReachable == YES) {
         [self saveNext];
@@ -376,7 +382,7 @@ static KCSSaveQueues* sQueues;
 
 - (void) saveNext
 {
-    if ([KCSClient sharedClient].kinveyReachability.isReachable == NO ||
+    if ((sFirstReached && [sReachability isReachable] == NO) ||
         [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
         return;
     }

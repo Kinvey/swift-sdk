@@ -55,4 +55,9 @@
     return [self stringByAppendingString:[NSString stringByPercentEncodingString:string]];
 }
 
+- (BOOL) containsStringCaseInsensitive:(NSString*)substring
+{
+    return [self rangeOfString:substring options:NSCaseInsensitiveSearch].location != NSNotFound;
+}
+
 @end
