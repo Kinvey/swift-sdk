@@ -212,7 +212,7 @@ NSError* createCacheError(NSString* message)
     return cachePolicy == KCSCachePolicyBoth;
 }
 
-- (void) cacheQuery:(id)query value:(id)objectsOrNil error:(NSError*)errorOrNil
+- (void) cacheQuery:(id)query value:(id)objectsOrNil error:(NSError*)errorOrNil policy:(KCSCachePolicy)cachePolicy
 {
     if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
         //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
@@ -222,10 +222,10 @@ NSError* createCacheError(NSString* message)
     }
 }
 
-- (void) queryNetwork:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void) queryNetwork:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
 {
     [super queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        [self cacheQuery:query value:objectsOrNil error:errorOrNil];
+        [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
         completionBlock(objectsOrNil, errorOrNil);
     } withProgressBlock:progressBlock];
 }
@@ -242,7 +242,7 @@ NSError* createCacheError(NSString* message)
 {
     id obj = [_cache objectForKey:query]; //Hold on the to the object first, in case the cache is cleared during this process
     if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
-        [self queryNetwork:query withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+        [self queryNetwork:query withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
     } else {
         [self completeQuery:obj withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy] == YES) {
@@ -251,7 +251,7 @@ NSError* createCacheError(NSString* message)
                     if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
                         completionBlock(objectsOrNil, errorOrNil);
                     }
-                } withProgressBlock:nil];
+                } withProgressBlock:nil policy:cachePolicy];
             });
         }
     }
@@ -264,11 +264,11 @@ NSError* createCacheError(NSString* message)
 }
 
 #pragma mark - Group Caching Support
-- (void)groupNetwork:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+- (void)groupNetwork:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
 {
     [super group:fields reduce:function condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         KCSCacheKey* key = [[[KCSCacheKey alloc] initWithFields:fields reduce:function condition:condition] autorelease];
-        [self cacheQuery:key value:valuesOrNil error:errorOrNil];
+        [self cacheQuery:key value:valuesOrNil error:errorOrNil policy:cachePolicy];
         completionBlock(valuesOrNil, errorOrNil);
     } progressBlock:progressBlock];
 }
@@ -287,7 +287,7 @@ NSError* createCacheError(NSString* message)
     KCSCacheKey* key = [[[KCSCacheKey alloc] initWithFields:fields reduce:function condition:condition] autorelease];
     id obj = [_cache objectForKey:key]; //Hold on the to the object first, in case the cache is cleared during this process
     if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
-        [self groupNetwork:fields reduce:function condition:condition completionBlock:completionBlock progressBlock:progressBlock];
+        [self groupNetwork:fields reduce:function condition:condition completionBlock:completionBlock progressBlock:progressBlock policy:cachePolicy];
     } else {
         [self completeGroup:obj withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy] == YES) {
@@ -296,7 +296,7 @@ NSError* createCacheError(NSString* message)
                     if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
                         completionBlock(valuesOrNil, errorOrNil);
                     }
-                } progressBlock:nil];
+                } progressBlock:nil policy:cachePolicy];
             });
         }
     }
@@ -309,11 +309,11 @@ NSError* createCacheError(NSString* message)
 
 #pragma mark Load Entity
 
-- (void) loadEntityFromNetwork:(id)objectID withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void) loadEntityFromNetwork:(id)objectID withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
 {
     [super loadObjectWithID:objectID withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         KCSCacheKey* key = [[[KCSCacheKey alloc] initWithObjectId:objectID] autorelease];
-        [self cacheQuery:key value:objectsOrNil error:errorOrNil];
+        [self cacheQuery:key value:objectsOrNil error:errorOrNil policy:cachePolicy];
         completionBlock(objectsOrNil, errorOrNil);
     } withProgressBlock:progressBlock];
 }
@@ -335,7 +335,7 @@ NSError* createCacheError(NSString* message)
     KCSCacheKey* key = [[[KCSCacheKey alloc] initWithObjectId:objectID] autorelease];
     id obj = [_cache objectForKey:key]; //Hold on the to the object first, in case the cache is cleared during this process
     if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
-        [self loadEntityFromNetwork:objectID withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+        [self loadEntityFromNetwork:objectID withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
     } else {
         [self completeLoad:obj withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy] == YES) {
@@ -344,7 +344,7 @@ NSError* createCacheError(NSString* message)
                     if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
                         completionBlock(objectsOrNil, errorOrNil);
                     }
-                } withProgressBlock:nil];
+                } withProgressBlock:nil policy:cachePolicy];
             });
         }
     }

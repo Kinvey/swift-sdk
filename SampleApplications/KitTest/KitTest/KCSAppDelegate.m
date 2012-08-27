@@ -113,9 +113,9 @@
         NSString *title;
         
         if (result.pingWasSuccessful){
-            title = [NSString stringWithString:@"Kinvey Ping Success :)"];
+            title = @"Kinvey Ping Success :)";
         } else {
-            title = [NSString stringWithString:@"Kinvey Ping Failed :("];            
+            title = @"Kinvey Ping Failed :(";            
         }
 
         NSLog(@"%@", result.description);

@@ -18,6 +18,7 @@
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
 #import "KCSLogManager.h"
+#import "TestUtils.h"
 
 typedef BOOL(^SuccessAction)(KCSResourceResponse *);
 typedef BOOL(^FailureAction)(NSError *);
@@ -78,8 +79,6 @@ typedef BOOL(^FailureAction)(NSError *);
 - (void)tearDown
 {
     [[[KCSClient sharedClient] currentUser] logout];
-//    [KCSKeyChain removeStringForKey:@"username"];
-//    [KCSKeyChain removeStringForKey:@"password"];
 }
 
 - (void)resourceServiceDidCompleteWithResult:(KCSResourceResponse *)result
@@ -99,11 +98,13 @@ typedef BOOL(^FailureAction)(NSError *);
 {
     self.onFailure = ^(NSError *err){
         self.message = @"Yes, the test passed";
+        self.done = YES;
         return YES;
     };
     
     self.onSuccess = ^(KCSResourceResponse *response){
         self.message = @"Yes, the test passed";
+        self.done = YES;
         return YES;
     };
     
@@ -127,7 +128,9 @@ typedef BOOL(^FailureAction)(NSError *);
     
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     
+    self.done = NO;
     [KCSResourceService downloadResource:@"blah" withResourceDelegate:self];
+    [self poll];
     STAssertTrue(self.testPassed, self.message);
 
     conn.connectionShouldFail = YES;
