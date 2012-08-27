@@ -158,7 +158,7 @@ NSArray* largeArray()
     
     self.done = NO;
     [_store removeObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"Should not have any error, %@", errorOrNil);
+        STAssertNoError;
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -183,7 +183,7 @@ NSArray* largeArray()
     }
     __block NSArray* vals = nil;
     [_store saveObject:all withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"Should not have any error, %@", errorOrNil);
+        STAssertNoError;
         vals = objectsOrNil;
         self.done = YES;
     } withProgressBlock:nil];
@@ -192,7 +192,7 @@ NSArray* largeArray()
     
     self.done = NO;
     [_store removeObject:vals withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"Should not have any error, %@", errorOrNil);
+        STAssertNoError;
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
