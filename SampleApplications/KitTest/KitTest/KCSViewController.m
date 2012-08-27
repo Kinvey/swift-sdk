@@ -199,7 +199,7 @@
             [self.networkActivity stopAnimating]; 
         } else {
             NSLog(@"Information Operation succeeded: %lu", count);
-            self.currentCount.text = [NSString stringWithFormat:@"%d", count];
+            self.currentCount.text = [NSString stringWithFormat:@"%ld", count];
             
             [self fetchAll];
         }

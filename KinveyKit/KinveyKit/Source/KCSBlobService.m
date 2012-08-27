@@ -51,24 +51,57 @@
 
 @implementation KCSResourceService
 
++ (void) postError:(NSError*)error fromResponse:(KCSConnectionResponse*)response toDelegate: (id<KCSResourceDelegate>)delegate orCompletionBlock: (KCSCompletionBlock)completionBlock
+{
+    if (response) {
+        NSDictionary* failureDict = (NSDictionary*) [response jsonResponseValue];
+        error = [KCSErrorUtilities createError:failureDict description:@"Resource download failed." errorCode:response.responseCode domain:KCSResourceErrorDomain];
+    }
+    
+    if (delegate){
+        [delegate resourceServiceDidFailWithError:error];
+    } else {
+        completionBlock(nil, error);
+    }
+}
+
++ (void)getResource: (NSString *)resourceId
+withResourceDelegate: (id<KCSResourceDelegate>)delegate
+    completionBlock: (KCSCompletionBlock)completionBlock
+      progressBlock: (KCSProgressBlock)progressBlock
+         innerBlock: (KCSConnectionCompletionBlock)innerCBlock
+{
+    NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"download-loc/%@", resourceId];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        [self postError:error fromResponse:nil toDelegate:delegate orCompletionBlock:completionBlock];
+    };
+    
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
+    
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        if (response.responseCode != KCS_HTTP_STATUS_OK){
+            [self postError:nil fromResponse:response toDelegate:delegate orCompletionBlock:completionBlock];
+        } else {            
+            NSDictionary* jsonData = (NSDictionary*) [response jsonResponseValue];
+            NSString *newResource = [jsonData valueForKey:@"URI"];
+            KCSRESTRequest *newRequest = [KCSRESTRequest requestForResource:newResource usingMethod:kGetRESTMethod];
+            [[newRequest withCompletionAction:innerCBlock failureAction:fBlock progressAction:pBlock] start];
+        }
+    };
+    
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+}
+
 + (void)downloadResource: (NSString *)resourceId
     withResourceDelegate: (id<KCSResourceDelegate>)delegate
          completionBlock: (KCSCompletionBlock)completionBlock
            progressBlock: (KCSProgressBlock)progressBlock
 {
-    NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"download-loc/%@", resourceId];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-    
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+    [self getResource:resourceId withResourceDelegate:delegate completionBlock:completionBlock progressBlock:progressBlock innerBlock:^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSDictionary* failureDict = (NSDictionary*) [response jsonResponseValue];
-            NSError* error = [KCSErrorUtilities createError:failureDict description:@"Resource download failed." errorCode:response.responseCode domain:KCSResourceErrorDomain];
-            
-            if (delegate){
-                [delegate resourceServiceDidFailWithError:error];
-            } else {
-                completionBlock(nil, error);
-            }
+            [self postError:nil fromResponse:response toDelegate:delegate orCompletionBlock:completionBlock];
         } else {
             KCSResourceResponse *resourceResponse = [KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:nil withData:response.responseData withLength:[response.responseData length]];
             if (delegate){
@@ -77,19 +110,7 @@
                 completionBlock([NSArray arrayWithObject:resourceResponse], nil);
             }
         }
-    };
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        if (delegate){
-            [delegate resourceServiceDidFailWithError:error];
-        } else {
-            completionBlock(nil, error);
-        }
-    };
-    
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
-    
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+    }];
 }
 
 + (void)downloadResource: (NSString *)resourceId withResourceDelegate: (id<KCSResourceDelegate>)delegate
@@ -108,27 +129,15 @@
                            progressBlock:progressBlock];
 }
 
-
 + (void)downloadResource:(NSString *)resourceId
                   toFile:(NSString *)filename
     withResourceDelegate:(id<KCSResourceDelegate>)delegate
          completionBlock:(KCSCompletionBlock)completionBlock
            progressBlock:(KCSProgressBlock)progressBlock
 {
-    NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"download-loc/%@", resourceId];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-    
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+    [self getResource:resourceId withResourceDelegate:delegate completionBlock:completionBlock progressBlock:progressBlock innerBlock:^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            
-            NSDictionary* failureDict = (NSDictionary*) [response jsonResponseValue];
-            NSError* error = [KCSErrorUtilities createError:failureDict description:@"Resource download to file failed." errorCode:response.responseCode domain:KCSResourceErrorDomain];
-            
-            if (delegate){
-                [delegate resourceServiceDidFailWithError:error];
-            } else {
-                completionBlock(nil, error);
-            }
+            [self postError:nil fromResponse:response toDelegate:delegate orCompletionBlock:completionBlock];
         } else {
             // We have a valid NSData object, right now this is the only way I know to complete this request...
             NSError *fileError = nil;
@@ -137,8 +146,8 @@
                                                                      error:&fileError];
             
             if (didWriteSuccessfully){
-                KCSResourceResponse *resourceResponse = [KCSResourceResponse responseWithFileName:filename 
-                                                                                   withResourceId:resourceId 
+                KCSResourceResponse *resourceResponse = [KCSResourceResponse responseWithFileName:filename
+                                                                                   withResourceId:resourceId
                                                                                  withStreamingURL:nil
                                                                                          withData:nil
                                                                                        withLength:[response.responseData length]];
@@ -148,27 +157,10 @@
                     completionBlock([NSArray arrayWithObject:resourceResponse], nil);
                 }
             } else {
-                if (delegate){
-                    // We failed to write the file
-                    [delegate resourceServiceDidFailWithError:fileError];
-                } else {
-                    completionBlock(nil, fileError);
-                }
+                [self postError:fileError fromResponse:nil toDelegate:delegate orCompletionBlock:completionBlock];
             }
         }
-    };
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        if (delegate){
-            [delegate resourceServiceDidFailWithError:error];
-        } else {
-            completionBlock(nil, error);
-        }
-    };
-    
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
-    
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+    }];
 }
 
 + (void)downloadResource:(NSString *)resourceId toFile:(NSString *)filename withResourceDelegate:(id<KCSResourceDelegate>)delegate
@@ -188,6 +180,8 @@
                          completionBlock:completionBlock
                            progressBlock:progressBlock];
 }
+
+#pragma mark - Save
 
 + (void)saveLocalResource:(NSString *)filename withDelegate:(id<KCSResourceDelegate>)delegate
 {
@@ -232,7 +226,7 @@
             completionBlock(nil, err);
         }
     }
-
+    
 }
 
 + (void)saveLocalResourceWithURL:(NSURL *)URL toResource:(NSString *)resourceId withDelegate:(id<KCSResourceDelegate>)delegate
@@ -280,7 +274,7 @@
         if (response.responseCode != KCS_HTTP_STATUS_REDIRECT){
             NSDictionary* failureDict = (NSDictionary*) [response jsonResponseValue];
             NSError* error = [KCSErrorUtilities createError:failureDict description:@"Get streaming URL failed." errorCode:response.responseCode domain:KCSResourceErrorDomain];
-                        
+            
             if (error){
                 [delegate resourceServiceDidFailWithError:error];
             } else {
@@ -329,7 +323,7 @@
     request.followRedirects = NO;
     
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-
+    
 }
 
 + (void)getStreamingURLForResource:(NSString *)resourceId withResourceDelegate:(id<KCSResourceDelegate>)delegate
@@ -345,9 +339,9 @@
 
 
 + (void)saveLocalResource:(NSString *)filename
-               toResource:(NSString *)resourceId 
+               toResource:(NSString *)resourceId
              withDelegate:(id<KCSResourceDelegate>)delegate
-          completionBlock:(KCSCompletionBlock)completionBlock 
+          completionBlock:(KCSCompletionBlock)completionBlock
             progressBlock:(KCSProgressBlock)progressBlock
 {
     NSError *fileOpError = nil;
@@ -371,29 +365,29 @@
 }
 
 + (void)saveLocalResource:(NSString *)filename
-               toResource:(NSString *)resourceId 
+               toResource:(NSString *)resourceId
              withDelegate:(id<KCSResourceDelegate>)delegate
 {
     [KCSResourceService saveLocalResource:filename toResource:resourceId withDelegate:delegate completionBlock:nil progressBlock:nil];
 }
 
 + (void)saveLocalResource:(NSString *)filename
-               toResource:(NSString *)resourceId 
-          completionBlock:(KCSCompletionBlock)completionBlock 
+               toResource:(NSString *)resourceId
+          completionBlock:(KCSCompletionBlock)completionBlock
             progressBlock:(KCSProgressBlock)progressBlock
 {
     [KCSResourceService saveLocalResource:filename toResource:resourceId withDelegate:nil completionBlock:completionBlock progressBlock:progressBlock];
 }
 
-+ (void)saveData:(NSData *)data 
-      toResource:(NSString *)resourceId 
++ (void)saveData:(NSData *)data
+      toResource:(NSString *)resourceId
     withDelegate:(id<KCSResourceDelegate>)delegate
- completionBlock:(KCSCompletionBlock)completionBlock 
+ completionBlock:(KCSCompletionBlock)completionBlock
    progressBlock:(KCSProgressBlock)progressBlock
 {
     NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"upload-loc/%@", resourceId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-
+    
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
         if (delegate){
             [delegate resourceServiceDidFailWithError:error];
@@ -424,7 +418,7 @@
             } else {
                 completionBlock(nil, error);
             }
-
+            
         } else {
             // I feel like we should have a length here, but I might not be saving that response...
             KCSResourceResponse *resourceResponse = [KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:nil withData:nil withLength:0];
@@ -454,35 +448,35 @@
             [[newRequest withCompletionAction:userCallback failureAction:fBlock progressAction:pBlock] start];
         }
     };
-
-    //Change this progress block to nil - only update progress on the actually sending not the getting of the new URIs 
+    
+    //Change this progress block to nil - only update progress on the actually sending not the getting of the new URIs
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:nil] start];
-
+    
 }
 
-+ (void)saveData:(NSData *)data 
-      toResource:(NSString *)resourceId 
++ (void)saveData:(NSData *)data
+      toResource:(NSString *)resourceId
     withDelegate:(id<KCSResourceDelegate>)delegate
 {
     [KCSResourceService saveData:data toResource:resourceId withDelegate:delegate completionBlock:nil progressBlock:nil];
 }
 
-+ (void)saveData:(NSData *)data 
-      toResource:(NSString *)resourceId 
- completionBlock:(KCSCompletionBlock)completionBlock 
++ (void)saveData:(NSData *)data
+      toResource:(NSString *)resourceId
+ completionBlock:(KCSCompletionBlock)completionBlock
    progressBlock:(KCSProgressBlock)progressBlock
 {
     [KCSResourceService saveData:data toResource:resourceId withDelegate:nil completionBlock:completionBlock progressBlock:progressBlock];
 }
 
-+ (void)deleteResource:(NSString *)resourceId 
++ (void)deleteResource:(NSString *)resourceId
           withDelegate:(id<KCSResourceDelegate>)delegate
-       completionBlock:(KCSCompletionBlock)completionBlock 
+       completionBlock:(KCSCompletionBlock)completionBlock
          progressBlock:(KCSProgressBlock)progressBlock
 {
     NSString *resource = [[[KCSClient sharedClient] resourceBaseURL] stringByAppendingFormat:@"remove-loc/%@", resourceId];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-
+    
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
         if (delegate){
@@ -510,7 +504,7 @@
             } else {
                 completionBlock(nil, error);
             }
-
+            
         } else {
             // I feel like we should have a length here, but I might not be saving that response...
             KCSResourceResponse *resourceResponse = [KCSResourceResponse responseWithFileName:nil withResourceId:nil withStreamingURL:nil withData:nil withLength:0];
@@ -520,7 +514,7 @@
                 completionBlock([NSArray arrayWithObject:resourceResponse], nil);
             }
         }
-
+        
     };
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
@@ -539,18 +533,18 @@
             [[newRequest withCompletionAction:userCallback failureAction:fBlock progressAction:pBlock] start];
         }
     };
-
+    
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
-+ (void)deleteResource:(NSString *)resourceId 
++ (void)deleteResource:(NSString *)resourceId
           withDelegate:(id<KCSResourceDelegate>)delegate
 {
     [KCSResourceService deleteResource:resourceId withDelegate:delegate completionBlock:nil progressBlock:nil];
 }
 
-+ (void)deleteResource:(NSString *)resourceId 
-       completionBlock:(KCSCompletionBlock)completionBlock 
++ (void)deleteResource:(NSString *)resourceId
+       completionBlock:(KCSCompletionBlock)completionBlock
          progressBlock:(KCSProgressBlock)progressBlock
 {
     [KCSResourceService deleteResource:resourceId withDelegate:nil completionBlock:completionBlock progressBlock:progressBlock];

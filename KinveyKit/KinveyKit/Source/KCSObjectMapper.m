@@ -241,7 +241,7 @@ Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass)
     NSString *objectId = nil;
     BOOL isPostRequest = NO;
     
-    NSMutableArray* resourcesToSave = nil;
+    NSMutableArray* resourcesToSave = withProps ? [NSMutableArray array] : nil;
     
     for (NSString* key in kinveyMapping) {
         NSString *jsonName = [kinveyMapping valueForKey:key];
