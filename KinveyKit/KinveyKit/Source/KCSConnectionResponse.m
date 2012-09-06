@@ -110,7 +110,7 @@
             return @{};
         } else {
             KCSLogWarning(@"not a json repsonse");
-            return @{};
+            return @{@"debug" : [self stringValue]};
         }
     }
 }

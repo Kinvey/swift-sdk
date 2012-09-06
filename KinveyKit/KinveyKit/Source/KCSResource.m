@@ -12,6 +12,8 @@
 
 #define kTypeResourceValue @"resource"
 #define kTypeKey @"_type"
+#define kLocationKey @"_loc"
+#define kMimeKey @"_mime-type"
 
 #define kImageMimeType @"image/png"
 
@@ -21,7 +23,7 @@
 
 + (BOOL) isResourceDictionary:(id)value
 {
-    return [value isKindOfClass:[NSDictionary class]] && [value valueForKey:@"_type"] != nil && [[value valueForKey:@"_type"] isEqualToString:kTypeResourceValue];
+    return [value isKindOfClass:[NSDictionary class]] && [value valueForKey:kTypeKey] != nil && [[value valueForKey:kTypeKey] isEqualToString:kTypeResourceValue];
 }
 
 + (id) resourceObjectFromData:(NSData*)data type:(NSString*)mimeType
@@ -71,10 +73,11 @@ NSString* mimeType(id obj)
     return @"application/octet-stream";
 }
 
-- (NSDictionary*) dictionaryRepresentation
+- (id)proxyForJson
 {
-    NSDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:kTypeResourceValue, kTypeKey, [self blobName], @"_loc", mimeType(_resource), @"_mime-type", nil];
-    return dictionary;
+    return @{kTypeKey : kTypeResourceValue,
+    kLocationKey : [self blobName],
+    kMimeKey : mimeType(_resource)};
 }
 
 - (NSData*) data
@@ -126,5 +129,20 @@ NSString* mimeType(id obj)
     return _blobName;
 }
 
+- (BOOL)isEqualDict:(NSDictionary*)dict
+{
+    return [[dict objectForKey:kTypeKey] isEqualToString:kTypeResourceValue] && [[dict objectForKey:kLocationKey] isEqualToString:[self blobName]] && [[dict objectForKey:kMimeKey] isEqualToString:mimeType(_resource)];
+}
+
+- (BOOL)isEqual:(id)obj
+{
+    if ([obj isKindOfClass:[KCSResource class]]) {
+        return [self isEqualDict:[obj proxyForJson]];
+    } else if ([obj isKindOfClass:[NSDictionary class]]) {
+        return [self isEqualDict:obj];
+    } else {
+        return NO;
+    }
+}
 
 @end

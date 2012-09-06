@@ -15,11 +15,11 @@ typedef enum {
     kDeleteRESTMethod  = 3
 } KCSRESTMethod;
 
-// Switch to static...
+//TODO: Switch to static...
 #define KCS_JSON_TYPE @"application/json; charset=utf-8"
 #define KCS_DATA_TYPE @"application/octet-stream"
 
-#warning make KinveyBlocks, KCSConnectionResponse, private and wrap reqfor resource
+//TODO: make KinveyBlocks, KCSConnectionResponse, private and wrap reqfor resource
 
 @interface KCSGenericRESTRequest : NSObject
 
@@ -28,6 +28,8 @@ typedef enum {
 @property (nonatomic) NSInteger method;
 @property (nonatomic) BOOL isSyncRequest;
 @property (nonatomic) BOOL followRedirects;
+
+- (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod;
 
 + (KCSGenericRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failure progressAction: (KCSConnectionProgressBlock)progress;
 

@@ -28,6 +28,8 @@
 		2726F98C15E6CE370087099D /* KCSBuilders.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F98A15E6CE370087099D /* KCSBuilders.m */; };
 		272EF18815E2BA4E008E3F68 /* CLLocation+Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		272EF18915E2BA4E008E3F68 /* CLLocation+Kinvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */; };
+		272FBE5315F90FB600EC7031 /* KCSSaveGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */; };
+		272FBE5415F90FB600EC7031 /* KCSSaveGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 272FBE5215F90FB500EC7031 /* KCSSaveGraph.m */; };
 		27302CBC155C66B300A0183E /* KCSCachedStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CBA155C66B300A0183E /* KCSCachedStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27302CBD155C66B300A0183E /* KCSCachedStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CBB155C66B300A0183E /* KCSCachedStore.m */; };
 		27302CC0155C66FF00A0183E /* KCSCachedStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CBF155C66FF00A0183E /* KCSCachedStoreTests.m */; };
@@ -119,7 +121,6 @@
 		D3715AC814B695680030F5E9 /* KinveyKitEntityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AC714B695680030F5E9 /* KinveyKitEntityTests.m */; };
 		D3715ACB14B695820030F5E9 /* KinveyKitPingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ACA14B695820030F5E9 /* KinveyKitPingTests.m */; };
 		D3715ACE14B695B00030F5E9 /* KinveyKitBlobServiceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ACD14B695B00030F5E9 /* KinveyKitBlobServiceTests.m */; };
-		D3715AD114B696C60030F5E9 /* KinveyKitSyncConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AD014B696C60030F5E9 /* KinveyKitSyncConnectionTests.m */; };
 		D3715AD414B696D80030F5E9 /* KinveyKitConnectionPoolTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AD314B696D80030F5E9 /* KinveyKitConnectionPoolTests.m */; };
 		D3715AD714B696F30030F5E9 /* KinveyKitConnectionResponseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AD614B696F30030F5E9 /* KinveyKitConnectionResponseTests.m */; };
 		D3715ADA14B6970C0030F5E9 /* KinveyKitConnectionProgressTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AD914B6970C0030F5E9 /* KinveyKitConnectionProgressTests.m */; };
@@ -232,6 +233,8 @@
 		2726F98A15E6CE370087099D /* KCSBuilders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBuilders.m; sourceTree = "<group>"; };
 		272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Kinvey.h"; sourceTree = "<group>"; };
 		272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CLLocation+Kinvey.m"; sourceTree = "<group>"; };
+		272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSaveGraph.h; sourceTree = "<group>"; };
+		272FBE5215F90FB500EC7031 /* KCSSaveGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSaveGraph.m; sourceTree = "<group>"; };
 		27302CBA155C66B300A0183E /* KCSCachedStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCachedStore.h; sourceTree = "<group>"; };
 		27302CBB155C66B300A0183E /* KCSCachedStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCachedStore.m; sourceTree = "<group>"; };
 		27302CBE155C66FF00A0183E /* KCSCachedStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCachedStoreTests.h; sourceTree = "<group>"; };
@@ -558,8 +561,6 @@
 		D3715ACA14B695820030F5E9 /* KinveyKitPingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitPingTests.m; sourceTree = "<group>"; };
 		D3715ACC14B695B00030F5E9 /* KinveyKitBlobServiceTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitBlobServiceTests.h; sourceTree = "<group>"; };
 		D3715ACD14B695B00030F5E9 /* KinveyKitBlobServiceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitBlobServiceTests.m; sourceTree = "<group>"; };
-		D3715ACF14B696C60030F5E9 /* KinveyKitSyncConnectionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitSyncConnectionTests.h; sourceTree = "<group>"; };
-		D3715AD014B696C60030F5E9 /* KinveyKitSyncConnectionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitSyncConnectionTests.m; sourceTree = "<group>"; };
 		D3715AD214B696D80030F5E9 /* KinveyKitConnectionPoolTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitConnectionPoolTests.h; sourceTree = "<group>"; };
 		D3715AD314B696D80030F5E9 /* KinveyKitConnectionPoolTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitConnectionPoolTests.m; sourceTree = "<group>"; };
 		D3715AD514B696F30030F5E9 /* KinveyKitConnectionResponseTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitConnectionResponseTests.h; sourceTree = "<group>"; };
@@ -825,7 +826,6 @@
 		D32A60BA14716EE300F77A3F = {
 			isa = PBXGroup;
 			children = (
-				2764B53C15DD9242003964D1 /* libobjc.dylib */,
 				D32A60CD14716EE300F77A3F /* KinveyKit */,
 				D32A60E514716EE300F77A3F /* KinveyKitTests */,
 				D32A60CA14716EE300F77A3F /* Frameworks */,
@@ -845,6 +845,7 @@
 		D32A60CA14716EE300F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2764B53C15DD9242003964D1 /* libobjc.dylib */,
 				27347F7115B4665800133F64 /* CoreLocation.framework */,
 				27332CDA15C2FF7400C9A960 /* libUAirship-1.2.2.a */,
 				D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */,
@@ -1491,6 +1492,8 @@
 				2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */,
 				273DB2E515D191A00072A444 /* KCSSaveQueue.h */,
 				273DB2E615D191A00072A444 /* KCSSaveQueue.m */,
+				272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */,
+				272FBE5215F90FB500EC7031 /* KCSSaveGraph.m */,
 			);
 			name = KinveyStore;
 			sourceTree = "<group>";
@@ -1502,8 +1505,6 @@
 				D3650FF01496916800945F7D /* KinveyKitAsyncConnectionTests.m */,
 				D3EA226C148529A400666259 /* KinveyKitRESTRequestTests.h */,
 				D3EA226D148529A400666259 /* KinveyKitRESTRequestTests.m */,
-				D3715ACF14B696C60030F5E9 /* KinveyKitSyncConnectionTests.h */,
-				D3715AD014B696C60030F5E9 /* KinveyKitSyncConnectionTests.m */,
 				D3715AD214B696D80030F5E9 /* KinveyKitConnectionPoolTests.h */,
 				D3715AD314B696D80030F5E9 /* KinveyKitConnectionPoolTests.m */,
 				D3715AD514B696F30030F5E9 /* KinveyKitConnectionResponseTests.h */,
@@ -1793,6 +1794,7 @@
 				272EF18815E2BA4E008E3F68 /* CLLocation+Kinvey.h in Headers */,
 				27E0B35F15E51F3700B83E72 /* KCSGenericRESTRequest.h in Headers */,
 				2726F98B15E6CE370087099D /* KCSBuilders.h in Headers */,
+				272FBE5315F90FB600EC7031 /* KCSSaveGraph.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2006,6 +2008,7 @@
 				272EF18915E2BA4E008E3F68 /* CLLocation+Kinvey.m in Sources */,
 				27E0B36015E51F3700B83E72 /* KCSGenericRESTRequest.m in Sources */,
 				2726F98C15E6CE370087099D /* KCSBuilders.m in Sources */,
+				272FBE5415F90FB600EC7031 /* KCSSaveGraph.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2028,7 +2031,6 @@
 				D3715AC814B695680030F5E9 /* KinveyKitEntityTests.m in Sources */,
 				D3715ACB14B695820030F5E9 /* KinveyKitPingTests.m in Sources */,
 				D3715ACE14B695B00030F5E9 /* KinveyKitBlobServiceTests.m in Sources */,
-				D3715AD114B696C60030F5E9 /* KinveyKitSyncConnectionTests.m in Sources */,
 				D3715AD414B696D80030F5E9 /* KinveyKitConnectionPoolTests.m in Sources */,
 				D3715AD714B696F30030F5E9 /* KinveyKitConnectionResponseTests.m in Sources */,
 				D3715ADA14B6970C0030F5E9 /* KinveyKitConnectionProgressTests.m in Sources */,

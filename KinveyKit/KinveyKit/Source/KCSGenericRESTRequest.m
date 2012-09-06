@@ -21,6 +21,7 @@
 #import "SBJson.h"
 
 @interface KCSGenericRESTRequest()
+
 @property (nonatomic, retain) NSMutableURLRequest *request;
 @property (nonatomic) BOOL isMockRequest;
 @property (nonatomic, retain) Class mockConnection;
@@ -84,7 +85,21 @@
     return self;
 }
 
-#warning dealloc
+- (void) dealloc
+{
+    [_resourceLocation release];
+    [_headers release];
+    
+    _resourceLocation = nil;
+    _headers = nil;
+    
+    [_request release];
+    self.completionAction = NULL;
+    self.progressAction = NULL;
+    self.failureAction = NULL;
+    
+    [super dealloc];
+}
 
 #pragma mark -
 // Prototype is to make compiler happy
@@ -110,6 +125,7 @@
     }
 }
 
+//TODO: cleanup and integrate with KCSRestRequest
 - (void)start
 {
     KCSConnection *connection;

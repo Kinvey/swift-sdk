@@ -8,3 +8,9 @@
 
 
 #define ifNotNil(x,val) (x == nil) ? nil : val;
+
+#ifdef BUILD_FOR_UNIT_TEST
+#define DBAssert(condition,description, ...) NSAssert(condition, description, ##__VA_ARGS__)
+#else
+#define DBAssert(condition,description, ...)
+#endif

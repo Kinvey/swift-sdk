@@ -16,6 +16,9 @@
  */
 #define KCSStoreKeyResource @"resource"
 
+//internal key
+#define KCSStoreKeyOngoingProgress @"referenceprogress"
+
 /**
  Basic Store for loading Application Data from a Collection in the Kinvey backend. 
  
@@ -23,7 +26,7 @@
  
  @see KCSCachedStore
  */
-@interface KCSAppdataStore : NSObject <KCSStore>
+@interface KCSAppdataStore : NSObject <KCSStore> 
 
 @property (nonatomic, retain) KCSAuthHandler *authHandler;
 

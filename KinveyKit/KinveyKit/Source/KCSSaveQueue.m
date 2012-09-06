@@ -20,6 +20,9 @@
 #import "KCSLogManager.h"
 #import "NSDate+ISO8601.h"
 
+@interface KCSClient (KCSSaveQueue)
+- (id) kinveyDomain;
+@end
 
 @protocol KCSSaveQueueUpdateDelegate <NSObject>
 - (void)queueUpdated;
@@ -60,9 +63,6 @@ static BOOL sFirstReached;
         sFirstReached = NO;
         sReachability = [[KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", client.serviceHostname, [client kinveyDomain]]] retain];
         [sReachability startNotifier];
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [[KCSClient sharedClient].kinveyReachability startNotifier];
-//        });
     });
     return sQueues;
 }

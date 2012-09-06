@@ -246,12 +246,12 @@
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 {
     double downloadPercent = totalBytesWritten / (double) totalBytesExpectedToWrite;
-    // TODO: Need to check percent complete threshold...
     if (self.progressBlock != NULL &&
         ((self.lastPercentage + self.percentNotificationThreshold) <= downloadPercent)){
         self.lastPercentage = downloadPercent; // Update to the current value
         KCSConnectionProgress* progress = [[[KCSConnectionProgress alloc] init] autorelease];
-        progress.percentComplete = downloadPercent;
+        //min the percent in the case where the command is sometimes sent twice (automatically)
+        progress.percentComplete = MIN(downloadPercent, 1.0);
         self.progressBlock(progress);
     }
 }

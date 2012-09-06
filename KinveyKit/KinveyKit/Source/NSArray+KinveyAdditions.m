@@ -14,7 +14,7 @@
 {
     NSMutableString* string = [NSMutableString string];
     for (int i=0; i < self.count; i++) {
-        if (i < self.count - 1) {
+        if (i > 0) {
             [string appendFormat:@"%@%@",delimiter,[self objectAtIndex:i]];
         } else {
             [string appendFormat:@"%@",[self objectAtIndex:i]];

@@ -170,4 +170,48 @@
     [self poll];
 }
 
+
+#define AssertQuery STAssertEqualObjects([query JSONStringRepresentation], expectedJSON, @"should match");
+- (void) testRegex
+{
+    NSString* expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\"}}";
+    KCSQuery* query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef"];
+    AssertQuery
+    
+    query = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexepDefault];
+    AssertQuery
+    
+    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"i\"}}";
+    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpCaseInsensitive];
+    AssertQuery
+    
+    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"x\"}}";
+    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpAllowCommentsAndWhitespace];
+    AssertQuery
+    
+    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"s\"}}";
+    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpDotMatchesAll];
+    AssertQuery
+    
+    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"m\"}}";
+    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpAnchorsMatchLines];
+    AssertQuery
+
+    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"ix\"}}";
+    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpCaseInsensitive | kKCSRegexpAllowCommentsAndWhitespace];
+    AssertQuery
+    
+    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"ixsm\"}}";
+    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpCaseInsensitive | kKCSRegexpAllowCommentsAndWhitespace | kKCSRegexpDotMatchesAll | kKCSRegexpAnchorsMatchLines];
+    AssertQuery
+    
+    expectedJSON = @"{\"field\":{\"$not\":{\"$regex\":\"abcdef\",\"$options\":\"ixsm\"}}}";
+    [query negateQuery];
+    AssertQuery
+    
+    expectedJSON = @"{\"age\":{\"$lt\":10},\"field\":{\"$not\":{\"$regex\":\"abcdef\",\"$options\":\"ixsm\"}}}";
+    [query addQuery:[KCSQuery queryOnField:@"age" usingConditionalsForValues:kKCSLessThan, @(10), nil]];
+    AssertQuery
+}
+
 @end

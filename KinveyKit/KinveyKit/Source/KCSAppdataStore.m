@@ -7,17 +7,14 @@
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 
-#import "KCSAppdataStore.h"
-#import "KinveyPersistable.h"
-#import "KinveyCollection.h"
-#import "KinveyEntity.h"
-#import "KCSBlockDefs.h"
+//TODO: check headers
 
-#import "KCSQuery.h"
+
+#import "KCSAppdataStore.h"
+
 #import "KCSGroup.h"
 #import "KCSReduceFunction.h"
-
-#import "KCS_SBJsonParser.h"
+#import "SBJson.h"
 #import "KCSRESTRequest.h"
 #import "KCSConnectionResponse.h"
 #import "KCSLogManager.h"
@@ -27,20 +24,26 @@
 #import "KCSConnectionProgress.h"
 #import "KCSQuery.h"
 #import "KinveyEntity.h"
-
 #import "NSArray+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
-#import "KCS_SBJsonWriter.h"
 #import "KCSObjectMapper.h"
-
 #import "KCSHiddenMethods.h"
-
-#import "KCSClient.h"
 #import "KCSReachability.h"
-
 #import "KCSSaveQueue.h"
+#import "KCSSaveGraph.h"
+#import "KCSResourceStore.h"
+#import "KCSResource.h"
+
+#define KCSSTORE_VALIDATE_PRECONDITION BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock]; \
+if (okayToProceed == NO) { \
+return; \
+}
+
+typedef KCSRESTRequest* (^RestRequestForObjBlock_t)(id obj);
+typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletionBlock completion);
 
 @interface KCSAppdataStore () {
+    KCSSaveGraph* _previousProgress;
     KCSSaveQueue* _saveQueue;
     BOOL _offlineSaveEnabled;
 }
@@ -81,6 +84,7 @@
 {
     [_authHandler release];
     [_saveQueue release];
+    [_previousProgress release];
     [super dealloc];
 }
 
@@ -119,7 +123,7 @@
 
 - (BOOL)configureWithOptions: (NSDictionary *)options
 {
-
+    
     if (options) {
         // Configure
         self.backingCollection = [options objectForKey:KCSStoreKeyResource];
@@ -130,6 +134,8 @@
         _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
         id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
         _saveQueue.delegate = del;
+        
+        _previousProgress = [options objectForKey:KCSStoreKeyOngoingProgress];
     }
     
     // Even if nothing happened we return YES (as it's not a failure)
@@ -213,30 +219,139 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     return okay;
 }
 
-#pragma mark - handling reponses
-NSObject* parseJSON(NSData* data);
-NSObject* parseJSON(NSData* data)
+#pragma mark - Querying/Fetching
+//for overriding by subclasses (simpler than strategy, for now)
+- (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources
 {
-#if NEVER && NEW_KCS_BEHAVIOR_READY
-    NSDictionary *jsonResponse = [data objectFromJSONData];
-    NSObject *jsonData = [jsonResponse valueForKey:@"result"];
-#else
-    KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-    NSObject *jsonData = [parser objectWithData:data];
-    [parser release];
-#endif
-    return jsonData;
+    return [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:jsonDict];
 }
 
-#pragma mark - Querying/Fetching
+- (ProcessDataBlock_t) makeProcessDictBlockForNewObject
+{
+    ProcessDataBlock_t processBlock = ^(KCSConnectionResponse *response, KCSCompletionBlock completionBlock) {
+        NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
+        
+        if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            completionBlock(nil, error);
+        } else {
+            if (jsonResponse) {
+                NSArray* jsonArray = [NSArray wrapIfNotArray:jsonResponse];
+                NSUInteger itemCount = jsonArray.count;
+                if (itemCount == 0) {
+                    completionBlock(@[], nil);
+                }
+                __block NSUInteger completedCount = 0;
+                __block NSError* resourceError = nil;
+                NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:itemCount];
+                for (NSDictionary* jsonDict in jsonArray) {
+                    NSMutableDictionary* resources = [NSMutableDictionary dictionary];
+                    id newobj = [self manufactureNewObject:jsonDict resourcesOrNil:resources];
+                    [returnObjects addObject:newobj];
+                    NSUInteger resourceCount = resources.count;
+                    if ( resourceCount > 0 ) {
+                        //need to load the resources
+                        __block NSUInteger completedResourceCount = 0;
+                        [resources enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                            KCSResourceStore* resourceStore = [KCSResourceStore store];
+                            [resourceStore loadObjectWithID:[obj objectForKey:@"_loc"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                                completedResourceCount++;
+                                if (errorOrNil != nil) {
+                                    resourceError = errorOrNil;
+                                }
+                                if (objectsOrNil != nil && objectsOrNil.count > 0) {
+                                    NSData* resourceData = [objectsOrNil objectAtIndex:0];
+                                    id loadedResource = [KCSResource resourceObjectFromData:resourceData type:[obj objectForKey:@"_mime-type"]];
+                                    [newobj setValue:loadedResource forKey:key];
+                                }
+                                if (completedResourceCount == resourceCount) {
+                                    //all resources loaded
+                                    completedCount++;
+                                    if (completedCount == itemCount) {
+                                        completionBlock(returnObjects, resourceError);
+                                    }
+                                }
+                            } withProgressBlock:^(NSArray *objects, double percentComplete) {
+                                //TODO: sub progress
+                            }];
+                        }];
+                    } else {
+                        //no linked resources
+                        completedCount++;
+                        if (completedCount == itemCount) {
+                            completionBlock(returnObjects, resourceError);
+                        }
+                    }
+                }
+                
+            } else {
+                completionBlock(nil, nil);
+            }
+        }
+    };
+    return [[processBlock copy] autorelease];
+}
+
+- (void) loadObjectsWithRESTRequest:(KCSRESTRequest*)request dataHandler:(ProcessDataBlock_t)processBlock completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+{
+    KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
+        KCSLogTrace(@"In collection callback with response: %@", [response jsonResponseValue]);
+        processBlock(response, ^(NSArray* objectsOrNil, NSError* error) {
+            completionBlock(objectsOrNil, error);
+        });
+    };
+    
+    KCSConnectionFailureBlock failureAction = ^(NSError* error) {
+        completionBlock(nil, error);
+    };
+    [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* progress) {
+        if (progressBlock != nil) {
+            progressBlock(progress.objects, progress.percentComplete);
+        }
+    }] start];
+}
+
+- (NSString*) getObjIdFromObject:(id)object completionBlock:(KCSCompletionBlock)completionBlock
+{
+    NSString* theId = nil;
+    if ([object isKindOfClass:[NSString class]]) {
+        theId = object;
+    } else if ([object conformsToProtocol:@protocol(KCSPersistable)]) {
+        theId = [object kinveyObjectId];
+        if (theId == nil) {
+            dispatch_async(dispatch_get_current_queue(), ^{
+                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
+                                                                                   withFailureReason:@"Object id cannot be empty."
+                                                                              withRecoverySuggestion:nil
+                                                                                 withRecoveryOptions:nil];
+                NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
+                completionBlock(nil, error);
+            });
+        }
+    } else {
+        dispatch_async(dispatch_get_current_queue(), ^{
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
+                                                                               withFailureReason:@"Object id must be a NSString."
+                                                                          withRecoverySuggestion:nil
+                                                                             withRecoveryOptions:nil];
+            NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
+            completionBlock(nil, error);
+        });
+    }
+    return theId;
+}
+
+//for overriding by subclasses (simpler than strategy, for now)
+- (NSString*) modifyLoadQuery:(NSString*)query ids:(NSArray*)array
+{
+    return query;
+}
+
 - (void)loadObjectWithID: (id)objectID
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
 {
-    BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
-    if (okayToProceed == NO) {
-        return;
-    }
+    KCSSTORE_VALIDATE_PRECONDITION
     
     KCSCollection* collection = self.backingCollection;
     NSArray* array = [NSArray wrapIfNotArray:objectID];
@@ -252,23 +367,39 @@ NSObject* parseJSON(NSData* data)
         return;
     }
     
-    RestRequestForObjBlock_t requestBlock = ^KCSRESTRequest *(id obj) {
-        KCSRESTRequest* request = [collection restRequestForMethod:kGetRESTMethod apiEndpoind:obj];
-        return request;
-    };
+    NSString* query = @"";
+    if (array.count == 1) {
+        query = [self getObjIdFromObject:[array objectAtIndex:0] completionBlock:completionBlock];
+        if (query == nil) {
+            //already sent an error;
+            return;
+        }
+    } else {
+        NSMutableArray* objIds = [NSMutableArray arrayWithCapacity:array.count];
+        for (id object in array) {
+            NSString* anId = [self getObjIdFromObject:object completionBlock:completionBlock];
+            if (anId == nil) {
+                //already sent an error;
+                return;
+            } else {
+                [objIds addObject:[NSString stringWithFormat:@"\"%@\"", anId]];
+            }
+        }
+        query = [NSString stringWithFormat:@"{\"_id\" : { \"$in\" : [%@]}}", [objIds join:@","]];
+        query = [NSString stringWithFormat:@"?query=%@",[query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    }
     
-    ProcessDataBlock_t processBlock = [self makeProcessDictBlock];
+    query = [self modifyLoadQuery:query ids:array];
     
-    [self operation:objectID RESTRequest:requestBlock dataHandler:processBlock completionBlock:completionBlock progressBlock:progressBlock];
+    KCSRESTRequest* request = [collection restRequestForMethod:kGetRESTMethod apiEndpoint:query];
+    ProcessDataBlock_t processBlock = [self makeProcessDictBlockForNewObject];
+    
+    [self loadObjectsWithRESTRequest:request dataHandler:processBlock completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 - (void)queryWithQuery: (id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
-    if (okayToProceed == NO) {
-        return;
-    }
-    
+    KCSSTORE_VALIDATE_PRECONDITION
     KCSCollection* collection = self.backingCollection;
     
     NSString *resource = nil;
@@ -285,33 +416,11 @@ NSObject* parseJSON(NSData* data)
     // Here we know that we're working with a query, so now we just check each of the params...
     if (kcsQuery != nil){
         resource = [collection.baseURL stringByAppendingFormat:format, collection.collectionName];
-        
-        // NB: All of the modifiers are optional and may be combined in any order.  However, we ended up here
-        //     so the user made an attempt to set some...
-        
-        // Add the Query portion of the request
-        if (kcsQuery.query != nil && kcsQuery.query.count > 0){
-            resource = [resource stringByAppendingQueryString:[query parameterStringRepresentation]];
-        }
-        
-        // Add any sort modifiers
-        if (kcsQuery.sortModifiers.count > 0){
-            resource = [resource stringByAppendingQueryString:[query parameterStringForSortKeys]];
-        }
-        
-        // Add any limit modifiers
-        if (kcsQuery.limitModifer != nil){
-            resource = [resource stringByAppendingQueryString:[kcsQuery.limitModifer parameterStringRepresentation]];
-        }
-        
-        // Add any skip modifiers
-        if (kcsQuery.skipModifier != nil){
-            resource = [resource stringByAppendingQueryString:[kcsQuery.skipModifier parameterStringRepresentation]];
-        }
+        resource = [resource stringByAppendingString:[query parameterStringRepresentation]];
     }
     
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-    ProcessDataBlock_t processBlock = [self makeProcessArrayBlock];
+    ProcessDataBlock_t processBlock = [self makeProcessDictBlockForNewObject];
     
     KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
         KCSLogTrace(@"In collection callback with response: %@", response);
@@ -383,137 +492,6 @@ NSObject* parseJSON(NSData* data)
     [self group:fieldOrFields reduce:function condition:[KCSQuery query] completionBlock:completionBlock progressBlock:progressBlock];
 }
 
-#pragma mark - Perform single entity objects on arrays
-typedef KCSRESTRequest* (^RestRequestForObjBlock_t)(id obj);
-typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletionBlock completion);
-
-- (void) operation:(id)object RESTRequest:(RestRequestForObjBlock_t)requestBlock dataHandler:(ProcessDataBlock_t)processBlock completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    NSArray* objectsToOperateOn = [NSArray wrapIfNotArray:object];
-    NSMutableArray* objectsToReturn = [NSMutableArray arrayWithCapacity:objectsToOperateOn.count];
-    NSUInteger totalCount = objectsToOperateOn.count;
-    __block NSUInteger outstandingCount = totalCount;
-    
-    __block NSError* topError = nil;
-    [objectsToOperateOn enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        
-        KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
-            KCSLogTrace(@"In collection callback with response: %@", response);
-            processBlock(response, ^(NSArray* objectsOrNil, NSError* error) {
-                if (error != nil) {
-                    topError = error;
-                    if (self.treatSingleFailureAsGroupFailure == YES) {
-                        *stop = YES;
-                    }
-                }
-                [objectsToReturn addObjectsFromArray:objectsOrNil];
-                
-                if (*stop == YES || --outstandingCount == 0) {
-                    completionBlock(objectsToReturn, error);
-                }
-                
-            });
-            
-            
-        };
-        
-        KCSConnectionFailureBlock failureAction = ^(NSError* error) {
-            topError = error;
-            if (self.treatSingleFailureAsGroupFailure == YES) {
-                *stop = YES;
-            }
-            if (*stop || --outstandingCount == 0) {
-                completionBlock(objectsToReturn, error);
-            }
-        };
-        
-        KCSRESTRequest* request = requestBlock(obj);
-        [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* progress) {
-            if (progressBlock != nil) {
-                progressBlock(progress.objects, ((double) totalCount - 1) / ((double) idx + 1) + progress.percentComplete);
-            }
-        }] start];
-    }];
-}
-
-- (ProcessDataBlock_t) makeProcessDictBlock
-{
-    ProcessDataBlock_t processBlock = ^(KCSConnectionResponse *response, KCSCompletionBlock completionBlock) {
-        NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
-        
-        if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
-            completionBlock(nil, error);
-        } else {
-            if (jsonResponse) {
-                [self buildObjectFromJSON:jsonResponse withCompletionBlock:^(NSArray* objectsOrNil, NSError* errorOrNil){
-                    completionBlock(objectsOrNil, errorOrNil);
-                }];
-                
-            } else {
-                completionBlock(nil, nil);
-            }
-        }
-    };
-    return [[processBlock copy] autorelease];
-}
-
-- (ProcessDataBlock_t) makeProcessArrayBlock
-{
-    ProcessDataBlock_t processBlock = ^(KCSConnectionResponse *response, KCSCompletionBlock completionBlock) {
-        NSError* error = nil;
-        NSObject* jsonData = [response jsonResponseValue:&error];
-        
-        if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
-            completionBlock(nil, error);
-        } else {
-            if (jsonData) {
-                NSArray* jsonArray = nil;
-                if ([jsonData isKindOfClass:[NSArray class]]){
-                    jsonArray = (NSArray *)jsonData;
-                } else {
-                    if ([(NSDictionary *)jsonData count] == 0){
-                        jsonArray = @[];
-                    } else {
-                        jsonArray = @[jsonData];
-                    }
-                }
-                
-                __block NSError* topError = nil;
-                NSMutableArray *processedData = [NSMutableArray arrayWithCapacity:jsonArray.count];
-                for (int i=0; i < jsonArray.count; i++) {
-                    //pre-pop with nulls
-                    [processedData addObject:[NSNull null]];
-                }
-                __block int returnCount = 0;
-                if (jsonArray.count > 0) {
-                    [jsonArray enumerateObjectsUsingBlock:^(id dict, NSUInteger idx, BOOL *stop) {
-                        [self buildObjectFromJSON:dict withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                            returnCount++;
-                            if (objectsOrNil) {
-                                id builtObj = [objectsOrNil objectAtIndex:0];
-                                [processedData replaceObjectAtIndex:idx withObject:builtObj];
-                            }
-                            if (errorOrNil) {
-                                topError = errorOrNil;
-                            }
-                            if (errorOrNil || returnCount == jsonArray.count) {
-                                completionBlock(processedData, topError);
-                            }
-                        }];
-                    }];
-                } else {
-                   //empty response
-                    completionBlock(jsonArray, nil);
-                }
-            } else {
-                completionBlock(nil, nil);
-            }
-        }
-    };
-    return [[processBlock copy] autorelease];
-}
 #pragma mark - Reachability
 #if BUILD_FOR_UNIT_TEST
 int reachable = -1;
@@ -546,13 +524,29 @@ int reachable = -1;
     return [_saveQueue count];
 }
 
-- (void) buildObjectFromJSON:(NSDictionary*)dictValue withCompletionBlock:(KCSCompletionBlock)completionBlock
+- (ProcessDataBlock_t) makeProcessDictBlock:(KCSSerializedObject*)serializedObject
 {
-    completionBlock(@[[KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:dictValue]], nil);
+    ProcessDataBlock_t processBlock = ^(KCSConnectionResponse *response, KCSCompletionBlock completionBlock) {
+        NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
+        
+        if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            completionBlock(nil, error);
+        } else {
+            if (jsonResponse != nil && serializedObject != nil) {
+                id newObj = [KCSObjectMapper populateExistingObject:serializedObject withNewData:jsonResponse];
+                completionBlock(@[newObj], nil);
+            } else {
+                completionBlock(nil, nil);
+            }
+        }
+    };
+    return [[processBlock copy] autorelease];
 }
 
-- (void) saveEntity:(KCSSerializedObject*)serializedObj withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    //Step 3: save entity
     RestRequestForObjBlock_t requestBlock = ^KCSRESTRequest *(id obj) {
         BOOL isPostRequest = serializedObj.isPostRequest;
         NSString *objectId = serializedObj.objectId;
@@ -577,13 +571,18 @@ int reachable = -1;
         
         // Make sure to include the UTF-8 encoded JSONData...
         KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
-        [request addBody:[writer dataWithObject:dictionaryToMap]];
+        NSData* bodyData = [writer dataWithObject:dictionaryToMap];
+        if (!bodyData && [writer error]) {
+            request = (id) [writer error];
+        } else {
+            [request addBody:[writer dataWithObject:dictionaryToMap]];
+        }
         [dictionaryToMap release];
         return request;
     };
     
     
-    ProcessDataBlock_t processBlock = [self makeProcessDictBlock];
+    ProcessDataBlock_t processBlock = [self makeProcessDictBlock:serializedObj];
     
     KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
         KCSLogTrace(@"In collection callback with response: %@", response);
@@ -595,55 +594,100 @@ int reachable = -1;
     };
     
     KCSRESTRequest* request = requestBlock(nil);
-    [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* progress) {
-        if (progressBlock != nil) {
-            progressBlock(progress.objects, progress.percentComplete);
-        }
-    }] start];
+    if ([request isKindOfClass:[NSString class]]) {
+        NSError* error = [KCSErrorUtilities createError:nil description:(NSString*)request errorCode:KCSBadRequestError domain:KCSAppDataErrorDomain];
+        completionBlock(nil, error);
+    } else {
+        id objKey = [[serializedObj userInfo] objectForKey:@"entityProgress"];
+        
+        [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* cxnProgress) {
+            [objKey setPc:cxnProgress.percentComplete];
+            if (progressBlock != nil) {
+                progressBlock(cxnProgress.objects, progress.percentDone);
+            }
+        }] start];
+    }
+}
+
+- (void) saveEntityWithResources:(KCSSerializedObject*)so progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    //just go right on to main entity here sine this store does not do resources
+    [self saveMainEntity:so progress:progress withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+}
+
+- (KCSSerializedObject*) makeSO:(id<KCSPersistable>)object
+{
+    return [KCSObjectMapper makeKinveyDictionaryFromObject:object];
+}
+
+- (void) saveEntity:(id<KCSPersistable>)objToSave progressGraph:(KCSSaveGraph*)progress doSaveBlock:(KCSCompletionBlock)doSaveblock alreadySavedBlock:(KCSCompletionWrapperBlock_t)alreadySavedBlock withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    //Step 0: Serialize Object
+    KCSSerializedObject* so = [self makeSO:objToSave];
+    id objKey = [progress markEntity:so];
+    DBAssert(objKey != nil, @"should have a valid obj key here");
+    [objKey ifNotLoaded:^{
+        [self saveEntityWithResources:so progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+            [objKey finished];
+            [objKey doAfterWaitingResaves:^{
+                doSaveblock(objectsOrNil, errorOrNil);
+            }];
+            
+        } withProgressBlock:progressBlock];
+        
+    } otherwiseWhenLoaded:alreadySavedBlock andResaveAfterReferencesSaved:^{
+        KCSSerializedObject* soPrime = [KCSObjectMapper makeResourceEntityDictionaryFromObject:objToSave forCollection:self.backingCollection.collectionName];
+        [soPrime restoreReferences:so];
+        [self saveMainEntity:soPrime progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+            [objKey resaveComplete];
+        } withProgressBlock:^(NSArray *objects, double percentComplete) {
+            //TODO: as above
+        }];
+    }];
 }
 
 - (void) enqueSave:(id<KCSPersistable>)obj
-{    
+{
     [_saveQueue addObject:obj];
 }
 
-- (void) drainQueueWithCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void) drainQueueWithProgressGraph:(KCSSaveGraph*)progress doSaveBlock:(KCSCompletionBlock)doSaveblock alreadySavedBlock:(KCSCompletionBlock)alreadySavedBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
     if ([self offlineSaveEnabled] && [self isKinveyReachable] == NO) {
         NSDictionary* info = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Could not reach Kinvey" withFailureReason:@"Application is offline" withRecoverySuggestion:@"Try again when app is online" withRecoveryOptions:nil];
         NSMutableDictionary* offlineErrorInfo = [NSMutableDictionary dictionaryWithDictionary:info];
         [offlineErrorInfo setObject:[_saveQueue ids] forKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
         NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSKinveyUnreachableError userInfo:offlineErrorInfo];
-        completionBlock(nil,error);
+        doSaveblock(nil,error);
     } else {
         for (KCSSaveQueueItem* item in [_saveQueue array]) {
             id<KCSPersistable> obj = item.object;
             [_saveQueue removeItem:item];
-            KCSSerializedObject* serializedObj = [KCSObjectMapper makeKinveyDictionaryFromObject:obj];
-            [self saveEntity:serializedObj withCompletionBlock:completionBlock withProgressBlock:progressBlock];
-            
+            //Step 0: Serialize Object
+            [self saveEntity:obj progressGraph:progress doSaveBlock:doSaveblock
+           alreadySavedBlock:^{
+               alreadySavedBlock(@[obj], nil);
+           } withProgressBlock:progressBlock];
         }
     }
 }
 
 - (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
-    if (okayToProceed == NO) {
-        return;
-    }
+    KCSSTORE_VALIDATE_PRECONDITION
     
     NSArray* objectsToSave = [NSArray wrapIfNotArray:object];
-    if (objectsToSave.count == 0) {
-        completionBlock(nil, nil);
-        return;
-    }
-    
     int totalItemCount = [objectsToSave count];
+    
+    if (totalItemCount == 0) {
+        //TODO: does this need an error?
+        completionBlock(nil, nil);
+    }
     
     __block int completedItemCount = 0;
     NSMutableArray* completedObjects = [NSMutableArray arrayWithCapacity:totalItemCount];
     
+    KCSSaveGraph* progress = _previousProgress == nil ? [[[KCSSaveGraph alloc] initWithEntityCount:totalItemCount] autorelease] : _previousProgress;
     
     __block NSError* topError = nil;
     __block BOOL done = NO;
@@ -651,7 +695,7 @@ int reachable = -1;
         [self enqueSave:singleEntity];
     }
     //TODO: compress queue=
-    [self drainQueueWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [self drainQueueWithProgressGraph:progress doSaveBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (done) {
             //don't do the completion blocks for all the objects if its previously finished
             return;
@@ -669,64 +713,21 @@ int reachable = -1;
             completionBlock(completedObjects, topError);
         }
         
+    } alreadySavedBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if (done) {
+            //don't do the completion blocks for all the objects if its previously finished
+            return;
+        }
+        [completedObjects addObjectsFromArray:objectsOrNil];
+        completedItemCount++;
+        if (completedItemCount == totalItemCount) {
+            done = YES;
+            completionBlock(completedObjects, topError);
+        }
     } withProgressBlock:progressBlock];
-
 }
 
 #pragma mark - Removing
-
-- (void)removeObject_old:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
-{
-    BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
-    if (okayToProceed == NO) {
-        return;
-    }
-    
-    NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
-    if (objectsToProcess.count == 0) {
-        completionBlock(nil, nil);
-        return;
-    }
-    
-    NSMutableArray* outstandingObjects = [NSMutableArray arrayWithArray:objectsToProcess];
-    
-    int totalItemCount = [outstandingObjects count];
-    __block int completedItemCount = 0;
-    __block BOOL done = NO;
-    __block
-    
-    NSMutableArray* returnedObjects = [NSMutableArray arrayWithCapacity:totalItemCount];
-    __block NSError* topError = nil;
-    
-    for (NSObject* entity in objectsToProcess) {
-        [entity deleteFromCollection:self.backingCollection withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            if (done) {
-                //don't do the completion blocks for all the objects if its previously finished
-                return;
-            }
-            if (errorOrNil != nil) {
-                topError = errorOrNil;
-            }
-            if (errorOrNil != nil && self.treatSingleFailureAsGroupFailure == YES) {
-                done = YES;
-            }
-            if (objectsOrNil != nil) {
-                [returnedObjects addObjectsFromArray:objectsOrNil];
-            }
-            completedItemCount++;
-            if (done || completedItemCount == totalItemCount) {
-                completionBlock(returnedObjects, topError);
-            }
-            
-        } withProgressBlock:^(NSArray* objectsOrNil, double percentComplete) {
-            progressBlock(objectsOrNil, completedItemCount/(double) totalItemCount + percentComplete * 1 / (double) totalItemCount);
-            
-        }];
-        
-    }
-}
-/* TO ENABLE WHEN $IN supported for _id
- */
 - (void) removeObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
     BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
