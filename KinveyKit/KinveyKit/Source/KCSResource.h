@@ -21,7 +21,6 @@
 - (id) initWithResource:(id)resource;
 - (id) initWithResource:(id)resource name:(NSString*)name;
 
-- (NSDictionary*) dictionaryRepresentation;
 - (NSData*) data;
 
 + (BOOL) isResourceDictionary:(id)value;

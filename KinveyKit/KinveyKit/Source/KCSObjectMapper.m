@@ -24,6 +24,48 @@
 #define kKMDKey @"_kmd"
 #define kACLKey @"_acl"
 
+@implementation KCSKinveyRef
+@synthesize object, collectionName;
+- (id) initWithObj:(id<KCSPersistable>)obj andCollection:(NSString*)collection
+{
+    self = [super init];
+    if (self) {
+        obj = [obj isEqual:[NSNull null]] ? nil : obj;
+        self.object = obj;
+        self.collectionName = collection;
+    }
+    return self;
+}
+
+- (id)proxyForJson
+{
+    NSString* objId = [(id)self.object kinveyObjectId];
+    return objId ? @{@"_type" : @"KinveyRef", @"_collection" : self.collectionName, @"_id" : objId } : [NSNull null];
+}
+
+- (BOOL)isEqualDict:(NSDictionary*)dict
+{
+    return [[dict objectForKey:@"_type"] isEqualToString:@"KinveyRef"] && [[dict objectForKey:@"_collection"] isEqualToString:self.collectionName] && [[dict objectForKey:@"_id"] isEqualToString:[(id)self.object kinveyObjectId]];
+}
+
+- (BOOL)isEqual:(id)obj
+{
+    if ([obj isKindOfClass:[KCSKinveyRef class]]) {
+        return [self isEqualDict:[obj proxyForJson]];
+    } else if ([obj isKindOfClass:[NSDictionary class]]) {
+        return [self isEqualDict:obj];
+    } else {
+        return NO;
+    }
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<KCSKinveyRef: { objId : '%@', _collection : '%@'}>", [(id)self.object kinveyObjectId], self.collectionName];
+}
+
+@end
+
 @interface KCSMetadata ()
 - (id) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)acl;
 - (NSDictionary*) aclValue;
@@ -41,8 +83,11 @@ NSDictionary* builderOptions(id object)
 @synthesize dataToSerialize = _dataToSerialize;
 @synthesize objectId = _objectId;
 @synthesize resourcesToSave = _resourcesToSave;
+@synthesize referencesToSave = _referencesToSave;
+@synthesize handleToOriginalObject = _handleToOriginalObject;
+@synthesize userInfo = _userInfo;
 
-- (id)initWithObjectId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize isPostRequest:(BOOL)isPostRequest resources:(NSArray*)resources
+- (id)initWithObject:(id<KCSPersistable>)object ofId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize isPostRequest:(BOOL)isPostRequest resources:(NSArray*)resources references:(NSArray *)references
 {
     self = [super init];
     if (self){
@@ -50,21 +95,42 @@ NSDictionary* builderOptions(id object)
         _dataToSerialize = [dataToSerialize retain];
         _objectId = [objectId retain];
         _resourcesToSave = [resources retain];
+        _referencesToSave = [references retain];
+        _handleToOriginalObject = [object retain];
     }
     return self;
 }
 
 - (void)dealloc
 {
+    [_referencesToSave release];
     [_resourcesToSave release];
     [_dataToSerialize release];
     [_objectId release];
+    [_handleToOriginalObject release];
     [super dealloc];
 }
 
 - (NSString *)debugDescription
 {
     return [self.dataToSerialize description];
+}
+
+- (void) restoreReferences:(KCSSerializedObject*)previousObject
+{
+    //should be okay to overwrite except for id
+    //this will put the object in an state not good execept for saving
+    //anything that was updated in between will be refreshed by the subsequent save
+    NSDictionary* old = previousObject.dataToSerialize;
+    NSDictionary* new = [NSMutableDictionary dictionaryWithDictionary:self.dataToSerialize];
+    for (NSString* key in [old allKeys]) {
+        [new setValue:[old valueForKey:key] forKey:key];
+    }
+    [_dataToSerialize release];
+    _dataToSerialize = [new retain];
+    
+    [_referencesToSave release];
+    _referencesToSave = [previousObject.referencesToSave retain];
 }
 
 @end
@@ -74,8 +140,21 @@ NSDictionary* builderOptions(id object)
     return [self populateObjectWithLinkedResources:object withData:data resourceDictionary:nil];
 }
 
-+ (id)populateObjectWithLinkedResources:(id)object withData: (NSDictionary *)data resourceDictionary:(NSMutableDictionary*)resources
+NSString* specialTypeOfValue(id value)
 {
+    NSString* type = nil;
+    if ([value isKindOfClass:[NSDictionary class]]) {
+        type = [value objectForKey:@"_type"];
+    } else if ([value isKindOfClass:[NSArray class]] && [value count] > 0) {
+        type = specialTypeOfValue([value objectAtIndex:0]);
+    }
+    return type;
+}
+
++ (id)populateExistingObject:(KCSSerializedObject*)serializedObject withNewData:(NSDictionary*)data
+{
+    id object = serializedObject.handleToOriginalObject;
+    
     BOOL hasFlatMap = NO;
     NSString *dictName = nil;
     
@@ -88,18 +167,14 @@ NSDictionary* builderOptions(id object)
         }
     }
     
-    // Get the instructions for how to map the JSON to the object
     NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
-    
     NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
     
-    // For every mapped item, we need to find the mapped item in the JSON, then pull it into our object
+    
     for (NSString *hostKey in hostToJsonMap) {
         NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
-        
-        //            KCSLogDebug(@"Mapping from %@ to %@ (using value: %@)", jsonKey, hostKey, [dict valueForKey:jsonKey]);
-        
         id value = nil;
+        
         if ([jsonKey isEqualToString:KCSEntityKeyMetadata]) {
             NSDictionary* kmd = [data objectForKey:kKMDKey];
             NSDictionary* acl = [data objectForKey:kACLKey];
@@ -110,13 +185,55 @@ NSDictionary* builderOptions(id object)
         }
         
         if (value == nil){
-            KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key %@ (Host Key %@).  Object not 100%% valid.", jsonKey, hostKey);
+            KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Host Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
             continue;
         } else {
-            if (resources != nil && [KCSResource isResourceDictionary:value]) {
-                //this is a linked resource
-                [resources setValue:value forKey:hostKey];
-            } else if (YES) {
+            NSString* maybeType = specialTypeOfValue(value);
+            if (maybeType && [maybeType isEqualToString:@"resource"]) {
+                //this is a linked resource; TODO: should support array?
+                NSArray* resources = serializedObject.resourcesToSave;
+                NSUInteger resIdx = [resources indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                    return [obj isEqual:value];
+                }];
+                if (resIdx != NSNotFound) {
+                    [object setValue:[[resources objectAtIndex:resIdx] resource] forKey:hostKey];
+                } else {
+                    [object setValue:value forKey:hostKey];
+                }
+            } else if (maybeType && [maybeType isEqualToString:@"KinveyRef"]) {
+                //this is a reference
+                NSArray* references = serializedObject.referencesToSave;
+                if ([value isKindOfClass:[NSArray class]]) {
+                    NSString* valueType = [properties valueForKey:hostKey];
+                    Class valClass = objc_getClass([valueType UTF8String]);
+                    id objVals = [NSMutableArray arrayWithCapacity:[value count]];
+                    if (valClass != nil) {
+                        objVals = [[[[[valClass alloc] init] autorelease] mutableCopy] autorelease];
+                    }
+                    
+                   
+                    for (id arVal in value) {
+                        NSUInteger refIdx = [references indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                            return [obj isEqual:arVal];
+                        }];
+                        if (refIdx == NSNotFound) {
+                            [objVals addObject:arVal];
+                        } else {
+                            [objVals addObject:[[references objectAtIndex:refIdx] object]];
+                        }
+                    }
+                    [object setValue:objVals forKey:hostKey];
+                } else {
+                    NSUInteger refIdx = [references indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                        return [obj isEqual:value];
+                    }];
+                    if (refIdx != NSNotFound) {
+                        [object setValue:[[references objectAtIndex:refIdx] object] forKey:hostKey];
+                    } else {
+                        [object setValue:value forKey:hostKey];
+                    }
+                }
+            } else {
                 NSString* valueType = [properties valueForKey:hostKey];
                 Class valClass = objc_getClass([valueType UTF8String]);
                 Class<KCSDataTypeBuilder> builder = builderForComplexType(object, valClass);
@@ -124,10 +241,12 @@ NSDictionary* builderOptions(id object)
                     id builtValue = [builder objectForJSONObject:value];
                     [object setValue:builtValue forKey:hostKey];
                 } else {
+                    if ([jsonKey isEqualToString:KCSEntityKeyId] && [object kinveyObjectId] != nil) {
+                        KCSLogWarning(@"%@ is having it's id overwritten.", object);
+                    }
                     [object setValue:value forKey:hostKey];
                 }
             }
-            //            KCSLogDebug(@"Copied Object: %@", copiedObject);
         }
     }
     
@@ -148,20 +267,142 @@ NSDictionary* builderOptions(id object)
         }
     }
     
-    // Not necessary, just convienient
     return object;
 }
 
-
-
-+ (id)makeObjectOfType:(Class)objectClass withData: (NSDictionary *)data
++ (id) makeObjectFromKinveyRef:(id)refDict forClass:(Class) valClass
 {
-    return [self makeObjectWithResourcesOfType:objectClass withData:data withDictionary:nil];
+    if ([refDict isEqual:[NSNull null]]) {
+        return [NSNull null];
+    }
+    id referencedObj = [refDict objectForKey:@"_obj"];
+    
+    //TODO: how to handle resources!
+    id newObj = refDict;
+    if (referencedObj != nil) {
+        BOOL isAKCSPersistable = [valClass conformsToProtocol:@protocol(KCSPersistable)];
+        if (isAKCSPersistable == YES) {
+            newObj = [self makeObjectWithResourcesOfType:valClass withData:referencedObj withResourceDictionary:nil];
+        } else {
+            newObj = referencedObj;
+        }
+    }
+    return newObj;
+    
 }
 
-+ (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withDictionary:(NSMutableDictionary*)resources
+//TODO: figure out how to combine with above
++ (id)populateObjectWithLinkedResources:(id)object withData: (NSDictionary *)data resourceDictionary:(NSMutableDictionary*)resourcesToLoad
 {
+    BOOL hasFlatMap = NO;
+    NSString *dictName = nil;
+    NSDictionary* referencesClasses = @{};
     
+    NSDictionary *specialOptions = builderOptions(object);
+    
+    if (specialOptions != nil){
+        dictName = [specialOptions objectForKey:KCS_DICTIONARY_NAME_KEY];
+        if ([specialOptions objectForKey:KCS_USE_DICTIONARY_KEY]){
+            hasFlatMap = YES;
+        }
+        if ([specialOptions objectForKey:KCS_REFERENCE_MAP_KEY] != nil) {
+            referencesClasses = [specialOptions objectForKey:KCS_REFERENCE_MAP_KEY];
+        }
+    }
+    
+    NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
+    NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
+    
+    
+    for (NSString *hostKey in hostToJsonMap) {
+        NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
+        id value = nil;
+        
+        if ([jsonKey isEqualToString:KCSEntityKeyMetadata]) {
+            NSDictionary* kmd = [data objectForKey:kKMDKey];
+            NSDictionary* acl = [data objectForKey:kACLKey];
+            KCSMetadata* metadata = [[[KCSMetadata alloc] initWithKMD:kmd acl:acl] autorelease];
+            value = metadata;
+        } else {
+            value = [data valueForKey:jsonKey];
+        }
+        
+        if (value == nil){
+            KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Host Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
+            continue;
+        } else {
+            NSString* maybeType = specialTypeOfValue(value);
+            if (maybeType && [maybeType isEqualToString:@"resource"]) {
+                //this is a linked resource; TODO: should support array?
+                //TODO: DIFF-----
+                [resourcesToLoad setObject:value forKey:hostKey];
+            } else if (maybeType && [maybeType isEqualToString:@"KinveyRef"]) {
+                //this is a reference
+                //TODO: DIFF-----
+                //TODO: update sig
+                
+                Class valClass = [referencesClasses objectForKey:hostKey];
+                if (!valClass) {
+                    NSString* valueType = [properties valueForKey:hostKey];
+                    valClass = objc_getClass([valueType UTF8String]);
+                }
+                
+                if ([value isKindOfClass:[NSArray class]]) {
+                    NSString* valueType = [properties valueForKey:hostKey];
+                    Class collectionClass = objc_getClass([valueType UTF8String]);
+                    id objVals = [NSMutableArray arrayWithCapacity:[value count]];
+                    if (collectionClass != nil) {
+                        objVals = [[[[[collectionClass alloc] init] autorelease] mutableCopy] autorelease];
+                    }
+                    for (id arVal in value) {
+                        [objVals addObject:[self makeObjectFromKinveyRef:arVal forClass:valClass]];
+                    }
+                    [object setValue:objVals forKey:hostKey];
+                } else {
+                    [object setValue:[self makeObjectFromKinveyRef:value forClass:valClass] forKey:hostKey];
+                }
+                
+            } else {
+                NSString* valueType = [properties valueForKey:hostKey];
+                Class valClass = objc_getClass([valueType UTF8String]);
+                Class<KCSDataTypeBuilder> builder = builderForComplexType(object, valClass);
+                if (builder != nil) {
+                    id builtValue = [builder objectForJSONObject:value];
+                    [object setValue:builtValue forKey:hostKey];
+                } else {
+                    [object setValue:value forKey:hostKey];
+                }
+            }
+        }
+    }
+    
+    // We've processed all the known keys, let's put the rest in our "dictionary" if required
+    if (hasFlatMap){
+        if (dictName){
+            NSArray *knownJsonProps = [hostToJsonMap allValues];
+            for (NSString *property in data) {
+                // Check if in known set
+                if ([knownJsonProps containsObject:property]){
+                    continue;
+                } else {
+                    // otherwise build key path and insert.
+                    NSString *keyPath = [dictName stringByAppendingFormat:@".%@", property];
+                    [object setValue:[data objectForKey:property] forKeyPath:keyPath];
+                }
+            }
+        }
+    }
+    
+    return object;
+}
+
++ (id)makeObjectOfType:(Class)objectClass withData:(NSDictionary *)data
+{
+    return [self makeObjectWithResourcesOfType:objectClass withData:data withResourceDictionary:nil];
+}
+
++ (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withResourceDictionary:(NSMutableDictionary*)resources;
+{
     // Check for special options to building this class
     NSDictionary *specialOptions = [objectClass kinveyObjectBuilderOptions];
     BOOL hasDesignatedInit = NO;
@@ -218,20 +459,25 @@ NSDictionary* defaultBuilders()
                             (id)[NSMutableOrderedSet class] : [KCSMOrderedSetBuilder class],
                             (id)[NSMutableAttributedString class] : [KCSMAttributedStringBuilder class],
                             (id)[NSAttributedString class] : [KCSAttributedStringBuilder class]} retain];
-}
+    }
 }
 
 Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass);
 Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass)
 {
     NSDictionary* options = builderOptions(object);
-    NSDictionary* builders = [options objectForKey:kCS_DICTIONARY_DATATYPE_BUILDER];
+    NSDictionary* builders = [options objectForKey:KCS_DICTIONARY_DATATYPE_BUILDER];
     Class<KCSDataTypeBuilder> builderClass = ifNotNil(builders, [builders objectForKey:valClass]);
     if (builderClass == nil) {
         NSDictionary* d = defaultBuilders();
         builderClass = [d objectForKey:valClass];
     }
     return ifNotNil(builderClass, builderClass);
+}
+
+BOOL isCollection(id obj)
+{
+    return [obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSSet class]] || [obj isKindOfClass:[NSOrderedSet class]];
 }
 
 + (KCSSerializedObject*) makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName withProps:(BOOL)withProps
@@ -241,7 +487,17 @@ Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass)
     NSString *objectId = nil;
     BOOL isPostRequest = NO;
     
-    NSMutableArray* resourcesToSave = withProps ? [NSMutableArray array] : nil;
+    NSMutableArray* resourcesToSave = nil;
+    NSMutableArray* referencesToSave = nil;
+    NSDictionary* kinveyRefMapping = nil;
+    
+    if (withProps == YES) {
+        resourcesToSave = [NSMutableArray array];
+        if ([[object class] respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
+            referencesToSave = [NSMutableArray array];
+            kinveyRefMapping = [[object class] kinveyPropertyToCollectionMapping];
+        }
+    }
     
     for (NSString* key in kinveyMapping) {
         NSString *jsonName = [kinveyMapping valueForKey:key];
@@ -269,7 +525,7 @@ Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass)
             [dictionaryToMap setValue:[(KCSMetadata*)value aclValue] forKey:kACLKey];
         } else {
             if (withProps == YES && isResourceType(value) == YES) {
-                NSString* objname = [object kinveyObjectId];//set.count == 0 ? nil: [object valueForKey:[set anyObject]];
+                NSString* objname = [object kinveyObjectId];
                 if (objname == nil) {
                     CFUUIDRef uuid = CFUUIDCreate(NULL);
                     
@@ -281,8 +537,28 @@ Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass)
                 NSString* filename = [NSString stringWithFormat:@"%@-%@-%@%@", collectionName, objname, key, extensionForResource(value)];
                 KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
                 [resourcesToSave addObject:resourceWrapper];
-                [dictionaryToMap setValue:[resourceWrapper dictionaryRepresentation] forKey:jsonName];
+                [dictionaryToMap setValue:resourceWrapper forKey:jsonName];
                 [resourceWrapper release];
+            } else if (withProps == YES && [kinveyRefMapping objectForKey:jsonName] != nil) {
+                // have a kinvey ref
+                if (isCollection(value)) {
+                    NSArray* arrayValue = value;
+                    Class<KCSDataTypeBuilder> builder = builderForComplexType(object, [value classForCoder]);
+                    if (builder != nil) {
+                        arrayValue = [builder JSONCompatabileValueForObject:value];
+                    }
+                    NSMutableArray* refArray = [NSMutableArray arrayWithCapacity:[arrayValue count]];
+                    for (id arrayVal in arrayValue) {
+                        KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:arrayVal andCollection:[kinveyRefMapping objectForKey:jsonName]];
+                        [refArray addObject:ref];
+                    }
+                    [referencesToSave addObjectsFromArray:refArray];
+                    [dictionaryToMap setValue:refArray forKey:jsonName];
+                } else {
+                    KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:value andCollection:[kinveyRefMapping objectForKey:jsonName]];
+                    [dictionaryToMap setValue:ref forKey:jsonName];
+                    [referencesToSave addObject:ref];
+                }
             } else {
                 Class valClass = [value classForCoder];
                 Class<KCSDataTypeBuilder> builder = builderForComplexType(object, valClass);
@@ -290,7 +566,7 @@ Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass)
                     id jsonType = [builder JSONCompatabileValueForObject:value];
                     [dictionaryToMap setValue:jsonType forKey:jsonName];
                 } else {
-                    //TODO handle complex types
+                    //TODO: handle complex types
                     //don't need to look at type, just save
                     [dictionaryToMap setValue:value forKey:jsonName];
                 }
@@ -311,7 +587,7 @@ Class<KCSDataTypeBuilder> builderForComplexType(id object, Class valClass)
         }
     }
     
-    KCSSerializedObject *sObject = [[[KCSSerializedObject alloc] initWithObjectId:objectId dataToSerialize:dictionaryToMap isPostRequest:isPostRequest resources:resourcesToSave] autorelease];
+    KCSSerializedObject *sObject = [[[KCSSerializedObject alloc] initWithObject:object ofId:objectId dataToSerialize:dictionaryToMap isPostRequest:isPostRequest resources:resourcesToSave references:referencesToSave] autorelease];
     
     [dictionaryToMap release];
     return sObject;

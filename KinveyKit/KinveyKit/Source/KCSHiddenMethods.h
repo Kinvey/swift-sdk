@@ -14,9 +14,14 @@
 #import "KCSRESTRequest.h"
 
 
+@interface KCSQuery (KCSHiddenMethods)
+@property (nonatomic, retain) NSArray* referenceFieldsToResolve;
+
+@end
+
 @interface KCSCollection (KCSHiddenMethods)
 
-- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoind:(NSString*)endpoint;
+- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint;
 
 @end
 

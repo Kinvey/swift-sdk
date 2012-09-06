@@ -9,9 +9,11 @@
 #import <SenTestingKit/SenTestingKit.h>
  
 @class KCSLinkedAppdataStore;
+@class KCSCollection;
 
 @interface KCSLinkedAppdataStoreTests : SenTestCase {
     KCSLinkedAppdataStore* store;
+    KCSCollection* collection;
 }
 
 @end

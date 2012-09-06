@@ -200,7 +200,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 
 #pragma mark Basic Methods
-- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoind:(NSString*)endpoint
+- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint
 {
     NSString *resource = nil;
     // create a link: baas.kinvey.com/:appid/:collection/:id

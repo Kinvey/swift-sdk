@@ -26,6 +26,7 @@
         
         
         NSArray* m = [d objectForKey:@"Messages"];
+        STAssertNotNil(m, @"should have some messages");
         
     } failureAction:^(NSError *error) {
         STAssertNil(error, @"shoul have no error: %@", error);

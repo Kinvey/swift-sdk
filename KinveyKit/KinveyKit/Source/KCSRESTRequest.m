@@ -53,72 +53,15 @@ getLogDate(void)
     return [NSString stringWithCString:timestring encoding:NSASCIIStringEncoding];
 }
 
-
-@interface KCSRESTRequest()
+@interface KCSGenericRESTRequest (KCSRestRequest)
 @property (nonatomic, retain) NSMutableURLRequest *request;
 @property (nonatomic) BOOL isMockRequest;
 @property (nonatomic, retain) Class mockConnection;
 @property (nonatomic) NSInteger retriesAttempted;
-- (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod;
+- (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
 @end
 
 @implementation KCSRESTRequest
-
-@synthesize resourceLocation=_resourceLocation;
-@synthesize completionAction=_completionAction;
-@synthesize failureAction=_failureAction;
-@synthesize progressAction=_progressAction;
-@synthesize headers=_headers;
-@synthesize method=_method;
-@synthesize isSyncRequest=_isSyncRequest;
-@synthesize isMockRequest=_isMockRequest;
-@synthesize mockConnection=_mockConnection;
-@synthesize request=_request;
-@synthesize followRedirects=_followRedirects;
-@synthesize retriesAttempted = _retriesAttempted;
-
-- (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod
-{
-    self = [super init];
-    if (self){
-        self.resourceLocation = resource; // I own this!
-        _method = requestMethod;
-        _completionAction = NULL;
-        _progressAction = NULL;
-        _failureAction = NULL;
-        _isSyncRequest = NO;
-        _isMockRequest = NO;
-        _followRedirects = YES;
-        _retriesAttempted = 0;
-        _headers = [[NSMutableDictionary dictionary] retain];
-
-        // Prepare to generate the request...
-        KCSClient *kinveyClient = [KCSClient sharedClient];
-
-        // NB: Not retained as it is only used in the building of _request
-        NSURL *url = [NSURL URLWithString:resource];
-        
-        KCSLogNetwork(@"Requesting resource: %@", resource);
-        _request = [[NSMutableURLRequest requestWithURL:url cachePolicy:kinveyClient.cachePolicy timeoutInterval:kinveyClient.connectionTimeout] retain];
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    [_resourceLocation release]; 
-    [_headers release];
-
-    _resourceLocation = nil;
-    _headers = nil;
-    
-    [_request release];
-    self.completionAction = NULL;
-    self.progressAction = NULL;
-    self.failureAction = NULL;
-    
-    [super dealloc];
-}
 
 - (void)logResource: (NSString *)resource usingMethod: (NSInteger)requestMethod
 {
@@ -186,30 +129,6 @@ getLogDate(void)
 {
     [self.headers setObject:[NSNumber numberWithInt:contentLength] forKey:@"Content-Length"];    
 }
-
-// Prototype is to make compiler happy
-- (NSString *)getHTTPMethodForConstant:(NSInteger)constant
-{
-    switch (constant) {
-        case kGetRESTMethod:
-            return @"GET";
-            break;
-        case kPutRESTMethod:
-            return @"PUT";
-            break;
-        case kPostRESTMethod:
-            return @"POST";
-            break;
-        case kDeleteRESTMethod:
-            return @"DELETE";
-            break;
-            
-        default:
-            return @"";
-            break;
-    }
-}
-
 
 - (void)start
 {

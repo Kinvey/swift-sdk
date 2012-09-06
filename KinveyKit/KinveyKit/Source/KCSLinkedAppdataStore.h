@@ -17,5 +17,6 @@
  @since 1.5
  */
 @interface KCSLinkedAppdataStore : KCSCachedStore
-
+//TODO: doc reference saving - new properties 
+//TODO: doc limitation - homogenous array properties
 @end

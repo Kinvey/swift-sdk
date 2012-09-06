@@ -132,10 +132,18 @@ implementing these methods.
  */
 - (NSDictionary*)hostToKinveyPropertyMapping;
 
+
+@optional
+#warning document
++ (NSDictionary*) kinveyPropertyToCollectionMapping;
+
+
 #define KCS_USE_DESIGNATED_INITIALIZER_MAPPING_KEY @"KCS_DESIGNATED_INITIALIZER_MAPPING_KEY"
 #define KCS_USE_DICTIONARY_KEY @"KCS_DICTIONARY_MAPPER_KEY"
 #define KCS_DICTIONARY_NAME_KEY @"KCS_DICTIONARY_NAME_KEY"
-#define kCS_DICTIONARY_DATATYPE_BUILDER @"KCS_DICTIONARY_DATATYPE_BUILDER"
+#define KCS_DICTIONARY_DATATYPE_BUILDER @"KCS_DICTIONARY_DATATYPE_BUILDER"
+#define KCS_REFERENCE_MAP_KEY @"KinveyObjectBuilder_REFERENCE_MAP_KEY"
+
 
 ///---------------------------------------------------------------------------------------
 /// @name Advanced Options (Here Be Dragons!)
