@@ -142,16 +142,22 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
 }
 
-- (NSString *)kinveyObjectId
+- (NSString *)kinveyObjectIdHostProperty
 {
     NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
     for (NSString *key in kinveyMapping){
         NSString *jsonName = [kinveyMapping valueForKey:key];
-        if ([jsonName isEqualToString:@"_id"]){
-            return [self valueForKey:key];
+        if ([jsonName isEqualToString:KCSEntityKeyId]){
+            return key;
         }
     }
     return nil;
+}
+
+- (NSString *)kinveyObjectId
+{
+    NSString* objKey = [self kinveyObjectIdHostProperty];
+    return ifNotNil(objKey, [self valueForKey:objKey]);
 }
 
 

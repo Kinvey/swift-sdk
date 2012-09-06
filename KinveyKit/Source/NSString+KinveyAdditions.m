@@ -33,8 +33,12 @@
     // rangeOfString returns an NSRange, which is {location/length}, so
     // if .length > 0, then we've found a '?' somewhere in the string so
     // we need to append the next string with a '&'
+    NSString* prefix = [self rangeOfString:@"?"].length > 0 ? @"&" : @"?";
+    if ([queryString hasPrefix:@"?"] || [queryString hasPrefix:@"&"]) {
+        prefix = @"";
+    }
     return [NSString stringWithFormat:@"%@%@%@", self,
-            [self rangeOfString:@"?"].length > 0 ? @"&" : @"?", queryString];
+           prefix, queryString];
 }
 
 + (NSString *)stringByPercentEncodingString:(NSString *)string

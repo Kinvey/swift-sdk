@@ -88,6 +88,7 @@
 - (void) XtestDispatch
 {
     bool status = [TestUtils setUpKinveyUnittestBackend];
+    STAssertTrue(status, @"backend needs to be set up");
     
     self.done = NO;
     __block NSRunLoop* loop;
@@ -163,7 +164,7 @@
         [NSOperationQueue currentQueue];
         //[[NSOperationQueue alloc] init];
         [q addOperation:xyz];
-        NSUInteger c = [q operationCount];
+//        NSUInteger c = [q operationCount];
 //        NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.yahoo.com"]];
 //        NSURLConnection* cxn = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
 //        [cxn scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];

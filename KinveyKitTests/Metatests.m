@@ -226,6 +226,11 @@ typedef struct {
 	                         withDelegate:self];
     
     
+    NSString* o = KCS_DICTIONARY_DATATYPE_BUILDER;
+  //  o = abcd;
+    
+    
+    
     NSDictionary *options2 = [NSDictionary dictionaryWithObjectsAndKeys:
                               @"YES",         KCS_PUSH_IS_ENABLED_KEY,
                               @"push key",    KCS_PUSH_KEY_KEY,

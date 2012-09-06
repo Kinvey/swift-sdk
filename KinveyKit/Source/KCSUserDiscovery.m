@@ -22,7 +22,7 @@
 + (void) lookupUsersForFieldsAndValues:(NSDictionary*)fieldMatchDictionary completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     KCSCollection* userCollection = [[[KCSClient sharedClient] currentUser] userCollection];
-    KCSRESTRequest* request = [userCollection restRequestForMethod:kPostRESTMethod apiEndpoind:@"_lookup"];
+    KCSRESTRequest* request = [userCollection restRequestForMethod:kPostRESTMethod apiEndpoint:@"_lookup"];
     [request setJsonBody:fieldMatchDictionary];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
