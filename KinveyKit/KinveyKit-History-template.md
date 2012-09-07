@@ -3,6 +3,7 @@
 ## 1.8
 ### 1.8.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit180APIDiffs.html)
 ** Release date: ** TBD
+* `KCSLinkedAppdataStore` now supports object relations through saving/loading entities with named fields of other entities.
 * Added `kKCSRegex` regular expression querying to `KCSQuery`.
 * Added `KCSEntityKeyGeolocation` constant to KinveyPersistable.h as a convience from using the `_geoloc` geo-location field. 
 * Added `CLLocation` category methods `- [CLLocation kinveyValue]` and `+ [CLLocation  locationFromKinveyValue:]` to aid in the use of geo data.

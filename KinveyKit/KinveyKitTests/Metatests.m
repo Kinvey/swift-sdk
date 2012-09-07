@@ -293,3 +293,93 @@ typedef struct {
 }
 
 @end
+
+@class Employer;
+
+//Person.h - entity in the 'People' collection
+@interface Person : NSObject <KCSPersistable>
+@property (nonatomic, retain) NSString* name;
+@property (nonatomic, retain) Person* spouse;
+@property (nonatomic, retain) Employer* employer;
+@end
+
+//Person.m
+@implementation Person
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    return @{@"name" : @"name" , @"spouse" : @"spouse", @"employer" : @"employer"};
+}
++(NSDictionary *)kinveyPropertyToCollectionMapping
+{
+    return @{@"employer" : @"Companies"};
+}
+@end
+
+//Employer.h - entity in the 'Companies' collection
+@interface Employer : NSObject <KCSPersistable>
+@property (nonatomic, retain) NSString* companyName;
+@property (nonatomic, retain) NSArray* employees;
+@end
+
+//Employer.m
+@implementation Employer
+@synthesize employees;
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    return @{ @"employees" : @"employees", @"companyName" : @"name" };
+}
++ (NSDictionary *)kinveyPropertyToCollectionMapping
+{
+    return @{@"employees" : @"People"};
+}
++ (NSDictionary *)kinveyObjectBuilderOptions
+{
+    return @{KCS_REFERENCE_MAP_KEY : @{@"employees" : [Person class]}};
+}
+@end
+
+@interface Maybe :NSObject
+
+@end
+
+@implementation Maybe
+
+- (void)ex1
+{
+    Person* john = [[Person alloc] init];
+    john.name = @"John";
+    
+    Person* tony = [[Person alloc] init];
+    tony.name = @"Tony";
+    john.spouse = tony;
+    tony.spouse = john;
+    
+    Employer* kinvey = [[Employer alloc] init];
+    kinvey.companyName = @"Kinvey";
+    kinvey.employees = @[john];
+    
+    KCSCollection* companies = [KCSCollection collectionFromString:@"Companies" ofClass:[Employer class]];
+    KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:companies options:nil];
+    
+    [store saveObject:kinvey withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        //notify user save is complete
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        //show progress
+    }];
+    
+    //query to find john and load its related objects
+    //note: in this case the Employer object will be loaded with its data,
+    //       but it will not resolve its "employees" array -
+    //               it will be an array of NSDictionary reference values.
+    KCSQuery* johnQuery = [KCSQuery queryOnField:@"name" withRegex:@"john" options:kKCSRegexpCaseInsensitive];
+    [store queryWithQuery:johnQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        //do something with john
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        //show progress;
+    }];
+}
+
+@end
+
+
+
