@@ -4,6 +4,11 @@
 //
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
+//  This software contains valuable confidential and proprietary information of
+//  KINVEY, INC and is subject to applicable licensing agreements.
+//  Unauthorized reproduction, transmission or distribution of this file and its
+//  contents is a violation of applicable laws.
+
 
 #import <Foundation/Foundation.h>
 #import "KinveyBlocks.h"
@@ -15,11 +20,8 @@ typedef enum {
     kDeleteRESTMethod  = 3
 } KCSRESTMethod;
 
-//TODO: Switch to static...
 #define KCS_JSON_TYPE @"application/json; charset=utf-8"
 #define KCS_DATA_TYPE @"application/octet-stream"
-
-//TODO: make KinveyBlocks, KCSConnectionResponse, private and wrap reqfor resource
 
 @interface KCSGenericRESTRequest : NSObject
 

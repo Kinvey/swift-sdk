@@ -22,13 +22,13 @@ typedef void (^RunBlock_t)();
 }
 
 
-/*! The (HTTP) response from the server.  We only store the final responding server in a redirect chain */
+/* The (HTTP) response from the server.  We only store the final responding server in a redirect chain */
 @property (retain) NSURLResponse *lastResponse;
 
-/*! Stored credentials for Kinvey access */
+/* Stored credentials for Kinvey access */
 @property (retain) NSURLCredential *basicAuthCred;
 
-/*! How long to wait for a response before timing out */
+/* How long to wait for a response before timing out */
 @property (readonly) double connectionTimeout;
 
 @property (nonatomic, copy) NSURLRequest *request;
