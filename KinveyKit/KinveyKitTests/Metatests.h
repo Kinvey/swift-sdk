@@ -7,7 +7,8 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
-
+#import <KinveyKit/KinveyKit.h>
 @interface Metatests : SenTestCase
 
 @end
+

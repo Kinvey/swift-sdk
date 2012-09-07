@@ -303,18 +303,17 @@ typedef enum {
  
   This query will return entities where the field values match the regular expression. By default, the match is case-sensitive and new-lines do not match anchors.
  
- Available options are (and can be or'ed together)
+ Available options are (and can be or'ed together):
  
- * kKCSRegexepDefault - Default Options
- * kKCSRegexpCaseInsensitive - Match letters in the pattern independent of case.
- * kKCSRegexpAllowCommentsAndWhitespace - Ignore whitespace and #-prefixed comments in the pattern.
- * kKCSRegexpDotMatchesAll - Allow . to match all characters, including newlines.
- * kKCSRegexpAnchorsMatchLines - Allow ^ and $ to match the start and end of lines.
+ * `kKCSRegexepDefault` - Default Options
+ * `kKCSRegexpCaseInsensitive` - Match letters in the pattern independent of case.
+ * `kKCSRegexpAllowCommentsAndWhitespace` - Ignore whitespace and #-prefixed comments in the pattern.
+ * `kKCSRegexpDotMatchesAll` - Allow . to match all characters, including newlines.
+ * `kKCSRegexpAnchorsMatchLines` - Allow ^ and $ to match the start and end of lines.
  
  @param field The field in Kinvey to query on.
  @param expression the regular expression string
  @param options regular expression options
- @see KCSRegexpQueryOptions
  @see queryOnField:withRegex:
  @return The new KCSQuery object (autoreleased).
  @since 1.8
@@ -327,7 +326,6 @@ typedef enum {
  
  @param field The field in Kinvey to query on.
  @param expression the regular expression string
- @see KCSRegexpQueryOptions
  @see queryOnField:withRegex:options:
  @return The new KCSQuery object (autoreleased).
  @since 1.8
