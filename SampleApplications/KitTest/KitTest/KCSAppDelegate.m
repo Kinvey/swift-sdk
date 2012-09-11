@@ -14,6 +14,7 @@
 #import "RootViewController.h"
 #import "LinkedResourceViewController.h"
 #import "UserDiscoveryViewController.h"
+#import "KinveyRefViewController.h"
 
 #import <KinveyKit/KinveyKit.h>
 
@@ -49,9 +50,11 @@
     LinkedResourceViewController* linkedView = [[[LinkedResourceViewController alloc] initWithNibName:@"LinkedResourceViewController" bundle:nil] autorelease];
     
     UserDiscoveryViewController* userDiscView = [[[UserDiscoveryViewController alloc] initWithNibName:@"UserDiscoveryViewController" bundle:nil] autorelease];
+
+    KinveyRefViewController* refView = [[[KinveyRefViewController alloc] initWithNibName:@"KinveyRefViewController" bundle:nil] autorelease];
     
     UITabBarController* tabBarController = [[[UITabBarController alloc] init] autorelease];
-    tabBarController.viewControllers = [NSArray arrayWithObjects:self.viewController, self.imageViewController, cachingView, linkedView, userDiscView, nil];
+    tabBarController.viewControllers = @[self.viewController, self.imageViewController, cachingView, linkedView, userDiscView, refView];
 
     self.window.rootViewController = tabBarController;
     
@@ -61,25 +64,26 @@
     ///////////////////////////
     // START OF KINVEY CODE
     //////////////////////////
-    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             @"kid1089", KCS_APP_KEY_KEY,
-                             @"ad8f7ea0538147f89a7f75dd95491fdf", KCS_APP_SECRET_KEY,
-                             @"CFtR0JwxT3uVipC2YiRutA", KCS_PUSH_KEY_KEY,
-                             @"S3sloGMtS8yC_lNBSHQHlQ", KCS_PUSH_SECRET_KEY,
-                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
-                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
-
 //    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-//                             @"kid1095", KCS_APP_KEY_KEY,                             
-//                             @"f1d070d7fc1e4470bedb0b07a1fd3253", KCS_APP_SECRET_KEY,
-//                             @"vUxZ0EX0RLG2vxnfGJEgRg", KCS_PUSH_KEY_KEY,
-//                             @"-SfD84xsTay1ufWXbaGwZQ", KCS_PUSH_SECRET_KEY,
+//                             @"kid1089", KCS_APP_KEY_KEY,
+//                             @"ad8f7ea0538147f89a7f75dd95491fdf", KCS_APP_SECRET_KEY,
+//                             @"CFtR0JwxT3uVipC2YiRutA", KCS_PUSH_KEY_KEY,
+//                             @"S3sloGMtS8yC_lNBSHQHlQ", KCS_PUSH_SECRET_KEY,
 //                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
 //                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
 
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             @"kid1095", KCS_APP_KEY_KEY,                             
+                             @"f1d070d7fc1e4470bedb0b07a1fd3253", KCS_APP_SECRET_KEY,
+                             @"vUxZ0EX0RLG2vxnfGJEgRg", KCS_PUSH_KEY_KEY,
+                             @"-SfD84xsTay1ufWXbaGwZQ", KCS_PUSH_SECRET_KEY,
+                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
+                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
+
+//      [KCSUser clearSavedCredentials];
     
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
-    [KCSClient sharedClient].serviceHostname = @"v3yk1n";
+//    [KCSClient sharedClient].serviceHostname = @"v3yk1n";
     [[KCSPush sharedPush] onLoadHelper:options];
 
     
