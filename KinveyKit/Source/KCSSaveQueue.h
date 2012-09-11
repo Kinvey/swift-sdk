@@ -20,7 +20,7 @@
 @property (nonatomic, retain) id<KCSPersistable> object;
 @end
 
-@interface KCSSaveQueue : NSObject
+@interface KCSSaveQueue : NSObject <NSCoding>
 @property (nonatomic, assign) id<KCSOfflineSaveDelegate> delegate;
 
 + (KCSSaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier;

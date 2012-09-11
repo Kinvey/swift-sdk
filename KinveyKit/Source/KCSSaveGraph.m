@@ -286,14 +286,15 @@ double countBytesRf(id referenceObj)
         KCSLogDebug(@"circular reference found between: %@ and %@", w.handle, wp.handle);
         
         [w.waitingObjects removeObject:w];
+        BOOL needToSave = NO;
         if ([wp.handle respondsToSelector:@selector(kinveyObjectId)] == NO || [wp.handle kinveyObjectId] == nil) {
             //need to resave to record the entity
             [w.waitingBlocks addObject:[[^{
                 [wp doResaves];
             } copy] autorelease]];
-            
+            needToSave = YES;
         }
-        return nil;
+        return [NSNumber numberWithBool:needToSave];
     }
     return w;
 }

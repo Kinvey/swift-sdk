@@ -110,8 +110,16 @@ static BOOL sFirstReached;
 {
     NSData* d = [NSData dataWithContentsOfFile:[self savefile]];
     NSKeyedUnarchiver* ua = [[NSKeyedUnarchiver alloc] initForReadingWithData:d];
-    NSDictionary* dict = [ua decodeObject];
-    [ua release];
+    NSDictionary* dict = @{};
+    @try {
+        dict = [ua decodeObject];
+    }
+    @catch (NSException *exception) {
+        KCSLogError(@"error restoring queues: %@",exception);
+    }
+    @finally {
+        [ua release];
+    }
     return dict;
 }
 

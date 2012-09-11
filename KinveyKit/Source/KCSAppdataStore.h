@@ -22,6 +22,7 @@
 
 //internal key
 #define KCSStoreKeyOngoingProgress @"referenceprogress"
+#define KCSStoreKeyTitle @"storetitle"
 
 /**
  Basic Store for loading Application Data from a Collection in the Kinvey backend. 

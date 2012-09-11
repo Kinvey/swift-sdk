@@ -39,8 +39,8 @@
         
         for (KCSKinveyRef* reference in references) {
             id objKey = [progress addReference:reference.object entity:[so.userInfo objectForKey:@"entityProgress"]];
-            if (objKey != nil) {
-                KCSLinkedAppdataStore* appdataStore = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:reference.collectionName ofClass:[reference.object class]] options: @{KCSStoreKeyOngoingProgress : progress}];
+            if ([objKey isKindOfClass:[NSNumber class]] == NO) {
+                KCSLinkedAppdataStore* appdataStore = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:reference.collectionName ofClass:[reference.object class]] options: @{KCSStoreKeyOngoingProgress : progress, KCSStoreKeyTitle : [NSString stringWithFormat:@"sub-save for: %@",reference.object]}];
                 [appdataStore saveObject:reference.object withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
                     if (errorOrNil != nil) {
                         completionBlock(nil, errorOrNil);
@@ -70,7 +70,10 @@
                     }
                 }];
             } else {
-                [progress tell:reference.object toWaitForResave:so.handleToOriginalObject];
+                bool needToWait = [objKey boolValue];
+                if (needToWait == YES) {
+                    [progress tell:reference.object toWaitForResave:so.handleToOriginalObject];
+                }
                 //already sent object to be saved
                 completedCount++;
                 if (completedCount == totalReferences) {
