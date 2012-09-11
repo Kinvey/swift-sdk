@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		272FBE5C15FA8CE700EC7031 /* KinveyRefViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 272FBE5A15FA8CE700EC7031 /* KinveyRefViewController.m */; };
+		272FBE5D15FA8CE700EC7031 /* KinveyRefViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 272FBE5B15FA8CE700EC7031 /* KinveyRefViewController.xib */; };
 		27347F7915B482C600133F64 /* libUAirship-1.2.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7815B482C600133F64 /* libUAirship-1.2.2.a */; };
 		27347F7F15B4839500133F64 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7E15B4839500133F64 /* CoreLocation.framework */; };
 		27347F8315B484E400133F64 /* UserDiscoveryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27347F8115B484E300133F64 /* UserDiscoveryViewController.m */; };
@@ -45,6 +47,9 @@
 
 /* Begin PBXFileReference section */
 		27272D4115A364640009037B /* KitTest.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = KitTest.entitlements; sourceTree = "<group>"; };
+		272FBE5915FA8CE700EC7031 /* KinveyRefViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyRefViewController.h; sourceTree = "<group>"; };
+		272FBE5A15FA8CE700EC7031 /* KinveyRefViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyRefViewController.m; sourceTree = "<group>"; };
+		272FBE5B15FA8CE700EC7031 /* KinveyRefViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KinveyRefViewController.xib; sourceTree = "<group>"; };
 		27347F7815B482C600133F64 /* libUAirship-1.2.2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.2.2.a"; path = "Airship/libUAirship-1.2.2.a"; sourceTree = "<group>"; };
 		27347F7E15B4839500133F64 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		27347F8015B484E300133F64 /* UserDiscoveryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserDiscoveryViewController.h; sourceTree = "<group>"; };
@@ -182,6 +187,9 @@
 				27347F8015B484E300133F64 /* UserDiscoveryViewController.h */,
 				27347F8115B484E300133F64 /* UserDiscoveryViewController.m */,
 				27347F8215B484E400133F64 /* UserDiscoveryViewController.xib */,
+				272FBE5915FA8CE700EC7031 /* KinveyRefViewController.h */,
+				272FBE5A15FA8CE700EC7031 /* KinveyRefViewController.m */,
+				272FBE5B15FA8CE700EC7031 /* KinveyRefViewController.xib */,
 				D32A64F614717B4800F77A3F /* Supporting Files */,
 				D35E07E11471D75700DD9E41 /* KitTestObject.h */,
 				D35E07E21471D75700DD9E41 /* KitTestObject.m */,
@@ -263,6 +271,7 @@
 				2770A9F1156451DF00D619B3 /* CachingViewController.xib in Resources */,
 				274EBF741594A4BD004A29C7 /* LinkedResourceViewController.xib in Resources */,
 				27347F8415B484E400133F64 /* UserDiscoveryViewController.xib in Resources */,
+				272FBE5D15FA8CE700EC7031 /* KinveyRefViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,6 +291,7 @@
 				2770A9F0156451DF00D619B3 /* CachingViewController.m in Sources */,
 				274EBF731594A4BD004A29C7 /* LinkedResourceViewController.m in Sources */,
 				27347F8315B484E400133F64 /* UserDiscoveryViewController.m in Sources */,
+				272FBE5C15FA8CE700EC7031 /* KinveyRefViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

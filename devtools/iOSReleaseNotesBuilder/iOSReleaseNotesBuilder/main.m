@@ -263,6 +263,7 @@ void buildAPIXML(NSString* kinveyKitDir, NSString* version) {
     
     outurl = [outurl URLByAppendingPathComponent:[NSString stringWithFormat:kApiXmlFileName, version]];
     BOOL wrote = [[apiDocument XMLDataWithOptions:NSXMLNodePrettyPrint | NSXMLDocumentIncludeContentTypeDeclaration] writeToFile:[outurl path] atomically:YES];
+    assert(wrote);
 }
 
 int main(int argc, const char * argv[])

@@ -739,6 +739,66 @@ TestClass* randomTestClass(NSString* description)
     [self poll];
 }
 
+- (void) testCircularRefArrayNoPost
+{
+    ReffedTestClass* obj1 = [[ReffedTestClass alloc] init];
+    obj1.objDescription = @"Test circular (array) - 1";
+    obj1.objCount = 1;
+    obj1.objId = @"OBJECT1";
+    
+    ReffedTestClass* obj2 = [[ReffedTestClass alloc] init];
+    obj2.objDescription = @"Test circular (array) - 2";
+    obj2.thisOther = obj1;
+    obj1.thisOther = obj2;
+    obj2.objCount = 2;
+    obj2.objId = @"OBJECT2";
+    
+    self.done = NO;
+    __block double done = -1;
+    
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    [store saveObject:@[obj1, obj2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        STAssertEquals((int) [objectsOrNil count], (int) 2, @"should have saved two objects");
+        STAssertTrue([objectsOrNil containsObject:obj1], @"should get our object back");
+        STAssertTrue([objectsOrNil containsObject:obj2], @"should get our other object back");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
+        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        done = percentComplete;
+    }];
+    [self poll];
+    
+    
+    self.done = NO;
+    done = -1;
+    
+    KCSQuery* query = [KCSQuery query];
+    [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        STAssertEquals((int) [objectsOrNil count], (int) 2, @"should have loaded just one objects");
+        [objectsOrNil enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NSString* thisId = [obj objId];
+            NSArray* arr = @[obj1.objId, obj2.objId];
+            BOOL inArray = [arr containsObject:thisId];
+            STAssertTrue(inArray, @"%@ should be in the return: %@",thisId, arr);
+            //TODO: 1->A, 2->A ==> 1->A, 2->A, not 1->A',2->A''obj1.thisOther = obj2, obj2.thisOther = obj1
+        }];
+        STAssertEqualObjects(obj2.thisOther.objId, obj1.objId, @"Should get back the original reference object");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
+        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        done = percentComplete;
+    }];
+    [self poll];
+}
+
 - (void) testCircularChain
 {
     ReffedTestClass* obj1 = [[ReffedTestClass alloc] init];

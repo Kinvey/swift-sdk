@@ -46,6 +46,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     KCSSaveGraph* _previousProgress;
     KCSSaveQueue* _saveQueue;
     BOOL _offlineSaveEnabled;
+    NSString* _title;
 }
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
@@ -76,6 +77,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         _authHandler = [auth retain];
         _treatSingleFailureAsGroupFailure = YES;
         _saveQueue = nil;
+        _title = nil;
     }
     return self;
 }
@@ -85,6 +87,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     [_authHandler release];
     [_saveQueue release];
     [_previousProgress release];
+    [_title release];
     [super dealloc];
 }
 
@@ -135,7 +138,8 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
         _saveQueue.delegate = del;
         
-        _previousProgress = [options objectForKey:KCSStoreKeyOngoingProgress];
+        _previousProgress = [[options objectForKey:KCSStoreKeyOngoingProgress] retain];
+        _title = [[options objectForKey:KCSStoreKeyTitle] retain];
     }
     
     // Even if nothing happened we return YES (as it's not a failure)
@@ -546,6 +550,8 @@ int reachable = -1;
 
 - (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    //TODO: remove!
+    KCSLogDebug(@"About to save: %@", serializedObj.handleToOriginalObject);
     //Step 3: save entity
     RestRequestForObjBlock_t requestBlock = ^KCSRESTRequest *(id obj) {
         BOOL isPostRequest = serializedObj.isPostRequest;
