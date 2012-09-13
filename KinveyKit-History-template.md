@@ -1,6 +1,10 @@
 # KinveyKit Release History
 
 ## 1.8
+### 1.8.1 
+** Release Date: ** September 13, 2012
+* Added `KCSUniqueNumber` entities to provide monotonically increasing numerical sequences across a collection.
+
 ### 1.8.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit180APIDiffs.html)
 ** Release date: ** September 11, 2012
 * `KCSLinkedAppdataStore` now supports object relations through saving/loading entities with named fields of other entities.
