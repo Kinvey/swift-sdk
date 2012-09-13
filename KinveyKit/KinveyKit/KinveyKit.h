@@ -28,6 +28,8 @@
 #import "KCSReachability.h"
 #import "KinveyErrorCodes.h"
 #import "KCSQuery.h"
+#import "KCSUniqueNumber.h"
+#import "KCSStore.h"
 
 #import "KCSStore.h"
 #import "KCSAppdataStore.h"

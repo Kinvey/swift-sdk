@@ -18,11 +18,13 @@
 #import "KCSLogManager.h"
 #import "KCSResource.h"
 #import "KCSMetadata.h"
+#import "KCSUniqueNumber.h"
 
 #import "KCSBuilders.h"
 
 #define kKMDKey @"_kmd"
 #define kACLKey @"_acl"
+#define kTypeKey @"_type"
 
 @implementation KCSKinveyRef
 @synthesize object, collectionName;
@@ -40,12 +42,12 @@
 - (id)proxyForJson
 {
     NSString* objId = [(id)self.object kinveyObjectId];
-    return objId ? @{@"_type" : @"KinveyRef", @"_collection" : self.collectionName, @"_id" : objId } : [NSNull null];
+    return objId ? @{kTypeKey : @"KinveyRef", @"_collection" : self.collectionName, @"_id" : objId } : [NSNull null];
 }
 
 - (BOOL)isEqualDict:(NSDictionary*)dict
 {
-    return [[dict objectForKey:@"_type"] isEqualToString:@"KinveyRef"] && [[dict objectForKey:@"_collection"] isEqualToString:self.collectionName] && [[dict objectForKey:@"_id"] isEqualToString:[(id)self.object kinveyObjectId]];
+    return [[dict objectForKey:kTypeKey] isEqualToString:@"KinveyRef"] && [[dict objectForKey:@"_collection"] isEqualToString:self.collectionName] && [[dict objectForKey:@"_id"] isEqualToString:[(id)self.object kinveyObjectId]];
 }
 
 - (BOOL)isEqual:(id)obj
@@ -144,7 +146,7 @@ NSString* specialTypeOfValue(id value)
 {
     NSString* type = nil;
     if ([value isKindOfClass:[NSDictionary class]]) {
-        type = [value objectForKey:@"_type"];
+        type = [value objectForKey:kTypeKey];
     } else if ([value isKindOfClass:[NSArray class]] && [value count] > 0) {
         type = specialTypeOfValue([value objectAtIndex:0]);
     }
@@ -241,7 +243,7 @@ NSString* specialTypeOfValue(id value)
                     id builtValue = [builder objectForJSONObject:value];
                     [object setValue:builtValue forKey:hostKey];
                 } else {
-                    if ([jsonKey isEqualToString:KCSEntityKeyId] && [object kinveyObjectId] != nil) {
+                    if ([jsonKey isEqualToString:KCSEntityKeyId] && [[object kinveyObjectId] isEqualToString:value] == NO) {
                         KCSLogWarning(@"%@ is having it's id overwritten.", object);
                     }
                     [object setValue:value forKey:hostKey];
@@ -396,13 +398,21 @@ NSString* specialTypeOfValue(id value)
     return object;
 }
 
-+ (id)makeObjectOfType:(Class)objectClass withData:(NSDictionary *)data
++ (Class) swapObjectClassIfNecessary:(Class)originalClass forData:(NSDictionary*)data
 {
-    return [self makeObjectWithResourcesOfType:objectClass withData:data withResourceDictionary:nil];
+    id type = [data objectForKey:kTypeKey];
+    if (type && [type isKindOfClass:[NSString class]]) {
+        if ([type isEqualToString:KCSSequenceType]) {
+            originalClass = [KCSUniqueNumber class];
+        }
+    }
+    return originalClass;
 }
 
 + (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withResourceDictionary:(NSMutableDictionary*)resources;
 {
+    objectClass = [self swapObjectClassIfNecessary:objectClass forData:data];
+    
     // Check for special options to building this class
     NSDictionary *specialOptions = [objectClass kinveyObjectBuilderOptions];
     BOOL hasDesignatedInit = NO;
@@ -424,6 +434,11 @@ NSString* specialTypeOfValue(id value)
     }
     
     return [KCSObjectMapper populateObjectWithLinkedResources:copiedObject withData:data resourceDictionary:resources];
+}
+
++ (id)makeObjectOfType:(Class)objectClass withData:(NSDictionary *)data
+{
+    return [self makeObjectWithResourcesOfType:objectClass withData:data withResourceDictionary:nil];
 }
 
 //TODO: builder options
