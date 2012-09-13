@@ -47,11 +47,13 @@
 		274330211575227000B2BF37 /* KCSResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSResource.h */; };
 		274330221575227000B2BF37 /* KCSResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330201575227000B2BF37 /* KCSResource.m */; };
 		274330251575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */; };
+		27592BC71602211600AC2A69 /* KCSUniqueNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 27592BC51602211600AC2A69 /* KCSUniqueNumber.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27592BC81602211600AC2A69 /* KCSUniqueNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BC61602211600AC2A69 /* KCSUniqueNumber.m */; };
+		27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BCB160228D100AC2A69 /* KCSCounterTests.m */; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
 		27A93B53156AD14800810B88 /* KCSReduceFunctionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */; };
 		27A93B57156AD2D500810B88 /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
-		27AFD4D015C8866D00A44F4F /* Metatests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AFD4CF15C8866D00A44F4F /* Metatests.m */; };
 		27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B1FDC615B0C49F003CC4C6 /* KCSUserDiscovery.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */; };
 		27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */; };
@@ -256,6 +258,10 @@
 		274330201575227000B2BF37 /* KCSResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSResource.m; sourceTree = "<group>"; };
 		274330231575262A00B2BF37 /* KCSLinkedAppdataStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLinkedAppdataStoreTests.h; sourceTree = "<group>"; };
 		274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLinkedAppdataStoreTests.m; sourceTree = "<group>"; };
+		27592BC51602211600AC2A69 /* KCSUniqueNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSUniqueNumber.h; sourceTree = "<group>"; };
+		27592BC61602211600AC2A69 /* KCSUniqueNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSUniqueNumber.m; sourceTree = "<group>"; };
+		27592BCA160228D100AC2A69 /* KCSCounterTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCounterTests.h; sourceTree = "<group>"; };
+		27592BCB160228D100AC2A69 /* KCSCounterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCounterTests.m; sourceTree = "<group>"; };
 		2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSOfflineSaveStore.h; sourceTree = "<group>"; };
 		2764B53C15DD9242003964D1 /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = usr/lib/libobjc.dylib; sourceTree = SDKROOT; };
 		27A93B51156AD14800810B88 /* KCSReduceFunctionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReduceFunctionTests.h; sourceTree = "<group>"; };
@@ -796,6 +802,8 @@
 				271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */,
 				27F360981598BF5C006B699E /* KCSMetadata.h */,
 				27F3609C1598C1CB006B699E /* KCSMetadata.m */,
+				27592BC51602211600AC2A69 /* KCSUniqueNumber.h */,
+				27592BC61602211600AC2A69 /* KCSUniqueNumber.m */,
 			);
 			name = appdataService;
 			sourceTree = "<group>";
@@ -1558,6 +1566,8 @@
 				D3715ACA14B695820030F5E9 /* KinveyKitPingTests.m */,
 				27F3609E1598C250006B699E /* KCSMetadataTests.h */,
 				27F3609F1598C250006B699E /* KCSMetadataTests.m */,
+				27592BCA160228D100AC2A69 /* KCSCounterTests.h */,
+				27592BCB160228D100AC2A69 /* KCSCounterTests.m */,
 			);
 			name = AppdataService;
 			sourceTree = "<group>";
@@ -1795,6 +1805,7 @@
 				27E0B35F15E51F3700B83E72 /* KCSGenericRESTRequest.h in Headers */,
 				2726F98B15E6CE370087099D /* KCSBuilders.h in Headers */,
 				272FBE5315F90FB600EC7031 /* KCSSaveGraph.h in Headers */,
+				27592BC71602211600AC2A69 /* KCSUniqueNumber.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2009,6 +2020,7 @@
 				27E0B36015E51F3700B83E72 /* KCSGenericRESTRequest.m in Sources */,
 				2726F98C15E6CE370087099D /* KCSBuilders.m in Sources */,
 				272FBE5415F90FB600EC7031 /* KCSSaveGraph.m in Sources */,
+				27592BC81602211600AC2A69 /* KCSUniqueNumber.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2049,9 +2061,9 @@
 				27F360A01598C250006B699E /* KCSMetadataTests.m in Sources */,
 				27BBD91615ADD3A2005E27E1 /* TestThreads.m in Sources */,
 				27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */,
-				27AFD4D015C8866D00A44F4F /* Metatests.m in Sources */,
 				273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */,
 				27E0B36415E523B400B83E72 /* KCSGenericRestTests.m in Sources */,
+				27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
