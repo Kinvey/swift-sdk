@@ -1,6 +1,10 @@
 # KinveyKit Release History
 
 ## 1.8
+### 1.8.2
+** Release Date: ** September 14, 2012
+* Bug fix(es): Fix sporadic crash on restore from background.
+
 ### 1.8.1 
 ** Release Date: ** September 13, 2012
 * Added `KCSUniqueNumber` entities to provide monotonically increasing numerical sequences across a collection.
