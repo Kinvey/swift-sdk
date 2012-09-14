@@ -550,8 +550,6 @@ int reachable = -1;
 
 - (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    //TODO: remove!
-    KCSLogDebug(@"About to save: %@", serializedObj.handleToOriginalObject);
     //Step 3: save entity
     RestRequestForObjBlock_t requestBlock = ^KCSRESTRequest *(id obj) {
         BOOL isPostRequest = serializedObj.isPostRequest;
@@ -591,7 +589,7 @@ int reachable = -1;
     ProcessDataBlock_t processBlock = [self makeProcessDictBlock:serializedObj];
     
     KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
-        KCSLogTrace(@"In collection callback with response: %@", response);
+        KCSLogTrace(@"In collection callback with response: %@", [response jsonResponseValue]);
         processBlock(response, completionBlock);
     };
     

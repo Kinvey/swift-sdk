@@ -377,6 +377,7 @@ typedef struct {
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         //show progress;
     }];
+    [store loadObjectWithID:]
 }
 
 @end
