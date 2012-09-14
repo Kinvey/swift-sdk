@@ -97,6 +97,7 @@
         self.followRedirects = YES;
         // Don't cache the Auth, just in case we switch it up later...
         _basicAuthCred = nil;
+        _blockToRun = nil;
     }
     return self;
 }
@@ -279,6 +280,7 @@
         block();
     } else {
         _blockToRun = Block_copy(block);
+        NSLog(@"what? %@", _blockToRun);
     }
 }
 
@@ -365,9 +367,14 @@
 
 - (void) didBecomeActive:(NSNotification*)note
 {
-    RunBlock_t block = Block_copy(_blockToRun);
-    Block_release(_blockToRun);
-    block();
-    Block_release(block);
+    if (_blockToRun != nil) {
+        //check for nil first in case the app went to the background during transmission. This is only needed if the background happens after the completion delegate methods.
+        //to keep app from being killed by watchdog.
+        RunBlock_t block = Block_copy(_blockToRun);
+        NSLog(@"block: %@", block);
+        Block_release(_blockToRun);
+        block();
+        Block_release(block);
+    }
 }
 @end
