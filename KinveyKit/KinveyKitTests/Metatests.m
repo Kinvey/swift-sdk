@@ -377,7 +377,18 @@ typedef struct {
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         //show progress;
     }];
-    [store loadObjectWithID:]
+//    [store loadObjectWithID:]
+    
+    [KCSUser getAccessDictionaryFromTwitterFromPrimaryAccount:^(NSDictionary *accessDictOrNil, NSError *errorOrNil) {
+        if (accessDictOrNil) {
+            [KCSUser loginWithWithSocialIdentity:KCSSocialIDTwitter accessDictionary:accessDictOrNil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                if (errorOrNil) {
+                    //handle error
+                }
+            }];
+        }
+    }];
+
 }
 
 @end
