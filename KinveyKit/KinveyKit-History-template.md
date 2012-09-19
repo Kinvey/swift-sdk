@@ -1,16 +1,27 @@
 # KinveyKit Release History
 
+## 1.9
+### 1.9.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit190APIDiffs.html)
+** Release Date: ** TBD
+
+* Added support for log-in with twitter
+  * Deprecate Facebook-specific methods and replace with generic social identity. See `KCSUser`.
+  * Requires linking Twitter.framework and Accounts.framework.
+
 ## 1.8
 ### 1.8.2
 ** Release Date: ** September 14, 2012
+
 * Bug fix(es): Fix sporadic crash on restore from background.
 
 ### 1.8.1 
 ** Release Date: ** September 13, 2012
+
 * Added `KCSUniqueNumber` entities to provide monotonically increasing numerical sequences across a collection.
 
 ### 1.8.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit180APIDiffs.html)
 ** Release date: ** September 11, 2012
+
 * `KCSLinkedAppdataStore` now supports object relations through saving/loading entities with named fields of other entities.
 * Added `kKCSRegex` regular expression querying to `KCSQuery`.
 * Added `KCSEntityKeyGeolocation` constant to KinveyPersistable.h as a convience from using the `_geoloc` geo-location field. 
