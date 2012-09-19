@@ -58,7 +58,7 @@ getLogDate(void)
 @property (nonatomic) BOOL isMockRequest;
 @property (nonatomic, retain) Class mockConnection;
 @property (nonatomic) NSInteger retriesAttempted;
-- (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
++ (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
 @end
 
 @implementation KCSRESTRequest
@@ -158,7 +158,7 @@ getLogDate(void)
         connection = [[KCSConnectionPool asyncConnection] retain];
     }
     
-    [self.request setHTTPMethod: [self getHTTPMethodForConstant: self.method]];
+    [self.request setHTTPMethod: [KCSGenericRESTRequest getHTTPMethodForConstant: self.method]];
     [self.request setHTTPShouldUsePipelining:YES];
     
     for (NSString *key in [self.headers allKeys]) {

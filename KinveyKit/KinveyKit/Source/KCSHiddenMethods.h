@@ -13,6 +13,9 @@
 #import "KinveyCollection.h"
 #import "KCSRESTRequest.h"
 
+@interface KCSGenericRESTRequest (KCSHiddenMethods)
++ (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
+@end
 
 @interface KCSQuery (KCSHiddenMethods)
 @property (nonatomic, retain) NSArray* referenceFieldsToResolve;

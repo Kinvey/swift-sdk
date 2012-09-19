@@ -42,5 +42,6 @@
 
 //UI & Framework Helpers
 #import "CLLocation+Kinvey.h"
+#import "KinveyKitExtras.h"
 
 #endif

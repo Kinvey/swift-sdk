@@ -301,7 +301,7 @@ NSData *KCSdataFromBase64String(NSString *aString)
 //
 NSString *KCSbase64EncodedStringFromData(NSData *data)
 {
-	size_t outputLength;
+	size_t outputLength = 0;
 	char *outputBuffer =
     KCSNewBase64Encode([data bytes], [data length], true, &outputLength);
 	

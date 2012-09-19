@@ -506,13 +506,35 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 static NSString* lastUser;
 static NSString* access_token = @"AAAD30ogoDZCYBAKwwcWRETWXcwE1aC7bSVMZALl5mG1WPSZCCVYKizWGPZALwhnnJ73gHUFky4rOnPkXZBxxayv2saVu4e9j3ZCXzQeOGowOANNQ5QZBCbR";
 
-- (void) testLoginWithFacebook
+- (void) testLoginWithFacebookOld
 {
     [TestUtils justInitServer];
     // Ensure user is logged out
     [[[KCSClient sharedClient] currentUser] logout];
     self.done = NO;
     [KCSUser loginWithFacebookAccessToken:access_token withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNotNil(user, @"user should not be nil");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    self.done = NO;
+    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
+        STAssertTrue(result.pingWasSuccessful, @"should have been a success.");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    lastUser = [KCSClient sharedClient].currentUser.username;
+}
+
+- (void) testLoginWithFacebookNew
+{
+    [TestUtils justInitServer];
+    // Ensure user is logged out
+    [[[KCSClient sharedClient] currentUser] logout];
+    self.done = NO;
+    [KCSUser loginWithWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : access_token} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNotNil(user, @"user should not be nil");
         self.done = YES;
     }];
@@ -542,5 +564,32 @@ static NSString* access_token = @"AAAD30ogoDZCYBAKwwcWRETWXcwE1aC7bSVMZALl5mG1WP
     }];
     [self poll];
 }
+
+- (void) testLoginWithTwitter
+{
+    [TestUtils justInitServer];
+    // Ensure user is logged out
+    [[[KCSClient sharedClient] currentUser] logout];
+    self.done = NO;
+    
+    [KCSUser loginWithWithSocialIdentity:KCSSocialIDTwitter accessDictionary:@{@"access_token" : @"823982046-Z0OrwAWQO3Ys2jtGM1k7hDnD6Ty9f54T1JRaDHHi",         @"access_token_secret" : @"3yIDGXVZV67m3G480stFgYk5eHZ7UCOSlOVHxh5RQ3g"}
+     withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+         STAssertNotNil(user, @"user should not be nil");
+         self.done = YES;
+     }];
+    
+    [self poll];
+    
+    self.done = NO;
+    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
+        STAssertTrue(result.pingWasSuccessful, @"should have been a success.");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    lastUser = [KCSClient sharedClient].currentUser.username;
+}
+
+
 
 @end
