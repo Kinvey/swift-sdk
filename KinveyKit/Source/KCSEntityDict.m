@@ -77,3 +77,22 @@
     return [self.entityProperties description];
 }
 @end
+
+@implementation NSDictionary (KCSEntityDict)
+
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    return [NSDictionary dictionaryWithObjects:[self allKeys] forKeys:[self allKeys]];
+}
+
++ (NSDictionary *)kinveyObjectBuilderOptions
+{
+    return @{KCS_USE_DESIGNATED_INITIALIZER_MAPPING_KEY : @(YES)};
+}
+
++ (id)kinveyDesignatedInitializer
+{
+    return [NSMutableDictionary dictionary];
+}
+
+@end

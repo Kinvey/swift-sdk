@@ -280,7 +280,6 @@
         block();
     } else {
         _blockToRun = Block_copy(block);
-        NSLog(@"what? %@", _blockToRun);
     }
 }
 
@@ -371,7 +370,6 @@
         //check for nil first in case the app went to the background during transmission. This is only needed if the background happens after the completion delegate methods.
         //to keep app from being killed by watchdog.
         RunBlock_t block = Block_copy(_blockToRun);
-        NSLog(@"block: %@", block);
         Block_release(_blockToRun);
         block();
         Block_release(block);

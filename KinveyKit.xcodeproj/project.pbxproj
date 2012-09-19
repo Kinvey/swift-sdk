@@ -39,6 +39,16 @@
 		27332CDE15C2FFF700C9A960 /* libUAirship-1.2.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27332CDA15C2FF7400C9A960 /* libUAirship-1.2.2.a */; };
 		27347F7215B4665800133F64 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7115B4665800133F64 /* CoreLocation.framework */; };
 		2735B2461578E84A0063EE62 /* KCSResourceStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */; };
+		273A3E93160A1A9F00F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
+		273A3E95160A1AA900F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
+		273A3E96160A254900F3742C /* KCS_TWSignedRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E33EB21609525600D01C97 /* KCS_TWSignedRequest.m */; };
+		273A3E97160A254C00F3742C /* KCS_OAuthCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD086C16095D7D009473A3 /* KCS_OAuthCore.m */; };
+		273A3E98160A254F00F3742C /* KCS_OAuth+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD087016095E62009473A3 /* KCS_OAuth+Additions.m */; };
+		273A3E99160A255500F3742C /* KCSUser+SocialExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */; };
+		273A3E9A160A255900F3742C /* KCSUser+SocialExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 2795FC3A160915A1002ED162 /* KCSUser+SocialExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		273A3E9B160A256100F3742C /* KinveyKitExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD0876160A03A8009473A3 /* KinveyKitExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		273A3E9C160A384C00F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
+		273A3E9D160A385100F3742C /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
 		273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */; };
 		273DB2E715D191A00072A444 /* KCSSaveQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 273DB2E515D191A00072A444 /* KCSSaveQueue.h */; };
 		273DB2E815D191A00072A444 /* KCSSaveQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E615D191A00072A444 /* KCSSaveQueue.m */; };
@@ -52,15 +62,47 @@
 		27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BCB160228D100AC2A69 /* KCSCounterTests.m */; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
+		2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
+		2785F5351609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5331609179E004AA410 /* InfoPlist.strings */; };
+		2785F53D1609179E004AA410 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
+		2785F53E1609179E004AA410 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DC14716EE300F77A3F /* UIKit.framework */; };
+		2785F54B1609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5491609179E004AA410 /* InfoPlist.strings */; };
+		2785F557160917AF004AA410 /* KCSUser+SocialExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */; };
+		2785F55B160917C9004AA410 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
 		27A93B53156AD14800810B88 /* KCSReduceFunctionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */; };
 		27A93B57156AD2D500810B88 /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
 		27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B1FDC615B0C49F003CC4C6 /* KCSUserDiscovery.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */; };
 		27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */; };
 		27BBD91615ADD3A2005E27E1 /* TestThreads.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BBD91515ADD3A2005E27E1 /* TestThreads.m */; };
+		27BD086D16095D7D009473A3 /* KCS_OAuthCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD086B16095D7D009473A3 /* KCS_OAuthCore.h */; };
+		27BD086E16095D7D009473A3 /* KCS_OAuthCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD086C16095D7D009473A3 /* KCS_OAuthCore.m */; };
+		27BD087116095E62009473A3 /* KCS_OAuth+Additions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD086F16095E62009473A3 /* KCS_OAuth+Additions.h */; };
+		27BD087216095E62009473A3 /* KCS_OAuth+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD087016095E62009473A3 /* KCS_OAuth+Additions.m */; };
+		27BD0875160A038B009473A3 /* KCSUserSocialExtrasTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */; };
+		27BD0877160A03BD009473A3 /* KinveyKitExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD0876160A03A8009473A3 /* KinveyKitExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27BD087C160A0B2B009473A3 /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60C814716EE300F77A3F /* KinveyKit.framework */; };
+		27BD087D160A0B4F009473A3 /* libUAirship-1.2.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27332CDA15C2FF7400C9A960 /* libUAirship-1.2.2.a */; };
+		27BD087E160A0B6A009473A3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */; };
+		27BD087F160A0B6A009473A3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
+		27BD0880160A0B73009473A3 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F340A914BCCEA500DB6C37 /* StoreKit.framework */; };
+		27BD0881160A0B75009473A3 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68514745F09002D8F2B /* Security.framework */; };
+		27BD0882160A0B78009473A3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68614745F09002D8F2B /* SystemConfiguration.framework */; };
+		27BD0883160A0B83009473A3 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7115B4665800133F64 /* CoreLocation.framework */; };
+		27BD0884160A0B8E009473A3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */; };
+		27BD0885160A0B94009473A3 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68414745F09002D8F2B /* MobileCoreServices.framework */; };
+		27BD0886160A0BA4009473A3 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
+		27BD0887160A0BA6009473A3 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68014745EEE002D8F2B /* libz.dylib */; };
+		27BD0888160A0BB2009473A3 /* KinveyKitTests.octest in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60D914716EE300F77A3F /* KinveyKitTests.octest */; };
+		27BD0889160A0BBE009473A3 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */; };
+		27BD088D160A0C27009473A3 /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD088C160A0C27009473A3 /* TestUtils.m */; };
+		27BD088F160A0DC5009473A3 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
 		27E0B35F15E51F3700B83E72 /* KCSGenericRESTRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E0B35D15E51F3600B83E72 /* KCSGenericRESTRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E0B36015E51F3700B83E72 /* KCSGenericRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E0B35E15E51F3600B83E72 /* KCSGenericRESTRequest.m */; };
 		27E0B36415E523B400B83E72 /* KCSGenericRestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E0B36315E523B400B83E72 /* KCSGenericRestTests.m */; };
+		27E33EB31609525600D01C97 /* KCS_TWSignedRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E33EB11609525600D01C97 /* KCS_TWSignedRequest.h */; };
+		27E33EB41609525600D01C97 /* KCS_TWSignedRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E33EB21609525600D01C97 /* KCS_TWSignedRequest.m */; };
+		27E33EB51609529000D01C97 /* KCSUser+SocialExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 2795FC3A160915A1002ED162 /* KCSUser+SocialExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E4CDFB156A801A00B5DF55 /* KCSReduceFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4CDF9156A801A00B5DF55 /* KCSReduceFunction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E4CDFC156A801A00B5DF55 /* KCSReduceFunction.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFA156A801A00B5DF55 /* KCSReduceFunction.m */; };
 		27E4CE00156A803300B5DF55 /* KCSGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4CDFE156A803300B5DF55 /* KCSGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -210,6 +252,34 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2785F5421609179E004AA410 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2785F52D1609179E004AA410;
+			remoteInfo = KinveyKitExtras;
+		};
+		2785F558160917C3004AA410 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D32A60C714716EE300F77A3F;
+			remoteInfo = KinveyKit;
+		};
+		27BD0878160A098E009473A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D32A60D814716EE300F77A3F;
+			remoteInfo = KinveyKitTests;
+		};
+		27BD087A160A09E1009473A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D32A60C714716EE300F77A3F;
+			remoteInfo = KinveyKit;
+		};
 		D32A60DF14716EE300F77A3F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
@@ -248,6 +318,7 @@
 		27347F7115B4665800133F64 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		2735B2441578E84A0063EE62 /* KCSResourceStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSResourceStoreTests.h; sourceTree = "<group>"; };
 		2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSResourceStoreTests.m; sourceTree = "<group>"; };
+		273A3E92160A1A9F00F3742C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		273DB2E115D171E80072A444 /* KCSOfflineStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSOfflineStoreTests.h; sourceTree = "<group>"; };
 		273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSOfflineStoreTests.m; sourceTree = "<group>"; };
 		273DB2E515D191A00072A444 /* KCSSaveQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSaveQueue.h; sourceTree = "<group>"; };
@@ -264,6 +335,19 @@
 		27592BCB160228D100AC2A69 /* KCSCounterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCounterTests.m; sourceTree = "<group>"; };
 		2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSOfflineSaveStore.h; sourceTree = "<group>"; };
 		2764B53C15DD9242003964D1 /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = usr/lib/libobjc.dylib; sourceTree = SDKROOT; };
+		2785F52E1609179E004AA410 /* KinveyKitExtras.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; includeInIndex = 0; path = KinveyKitExtras.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2785F5321609179E004AA410 /* KinveyKitExtras-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KinveyKitExtras-Info.plist"; sourceTree = "<group>"; };
+		2785F5341609179E004AA410 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2785F5361609179E004AA410 /* KinveyKitExtras-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyKitExtras-Prefix.pch"; sourceTree = "<group>"; };
+		2785F53C1609179E004AA410 /* KinveyKitExtrasTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyKitExtrasTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2785F5481609179E004AA410 /* KinveyKitExtrasTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KinveyKitExtrasTests-Info.plist"; sourceTree = "<group>"; };
+		2785F54A1609179E004AA410 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2785F55A160917C9004AA410 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
+		2795FC1016091570002ED162 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		2795FC1116091570002ED162 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		2795FC1216091570002ED162 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		2795FC3A160915A1002ED162 /* KCSUser+SocialExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSUser+SocialExtras.h"; sourceTree = "<group>"; };
+		2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSUser+SocialExtras.m"; sourceTree = "<group>"; };
 		27A93B51156AD14800810B88 /* KCSReduceFunctionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReduceFunctionTests.h; sourceTree = "<group>"; };
 		27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReduceFunctionTests.m; sourceTree = "<group>"; };
 		27A93B55156AD2D500810B88 /* ASTTestClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASTTestClass.h; sourceTree = "<group>"; };
@@ -277,10 +361,21 @@
 		27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyUserDiscoveryTests.m; sourceTree = "<group>"; };
 		27BBD91415ADD3A2005E27E1 /* TestThreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestThreads.h; sourceTree = "<group>"; };
 		27BBD91515ADD3A2005E27E1 /* TestThreads.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestThreads.m; sourceTree = "<group>"; };
+		27BD086B16095D7D009473A3 /* KCS_OAuthCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_OAuthCore.h; sourceTree = "<group>"; };
+		27BD086C16095D7D009473A3 /* KCS_OAuthCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_OAuthCore.m; sourceTree = "<group>"; };
+		27BD086F16095E62009473A3 /* KCS_OAuth+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCS_OAuth+Additions.h"; sourceTree = "<group>"; };
+		27BD087016095E62009473A3 /* KCS_OAuth+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCS_OAuth+Additions.m"; sourceTree = "<group>"; };
+		27BD0873160A038B009473A3 /* KCSUserSocialExtrasTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSUserSocialExtrasTest.h; sourceTree = "<group>"; };
+		27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSUserSocialExtrasTest.m; sourceTree = "<group>"; };
+		27BD0876160A03A8009473A3 /* KinveyKitExtras.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyKitExtras.h; sourceTree = "<group>"; };
+		27BD088B160A0C27009473A3 /* TestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestUtils.h; path = ../KinveyKitExtras/TestUtils.h; sourceTree = "<group>"; };
+		27BD088C160A0C27009473A3 /* TestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestUtils.m; path = ../KinveyKitExtras/TestUtils.m; sourceTree = "<group>"; };
 		27E0B35D15E51F3600B83E72 /* KCSGenericRESTRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSGenericRESTRequest.h; sourceTree = "<group>"; };
 		27E0B35E15E51F3600B83E72 /* KCSGenericRESTRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSGenericRESTRequest.m; sourceTree = "<group>"; };
 		27E0B36215E523B400B83E72 /* KCSGenericRestTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSGenericRestTests.h; sourceTree = "<group>"; };
 		27E0B36315E523B400B83E72 /* KCSGenericRestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSGenericRestTests.m; sourceTree = "<group>"; };
+		27E33EB11609525600D01C97 /* KCS_TWSignedRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_TWSignedRequest.h; sourceTree = "<group>"; };
+		27E33EB21609525600D01C97 /* KCS_TWSignedRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_TWSignedRequest.m; sourceTree = "<group>"; };
 		27E4CDF9156A801A00B5DF55 /* KCSReduceFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReduceFunction.h; sourceTree = "<group>"; };
 		27E4CDFA156A801A00B5DF55 /* KCSReduceFunction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReduceFunction.m; sourceTree = "<group>"; };
 		27E4CDFE156A803300B5DF55 /* KCSGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSGroup.h; sourceTree = "<group>"; };
@@ -664,6 +759,41 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2785F5281609179E004AA410 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				273A3E93160A1A9F00F3742C /* Accounts.framework in Frameworks */,
+				2785F55B160917C9004AA410 /* Twitter.framework in Frameworks */,
+				2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2785F5381609179E004AA410 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				273A3E95160A1AA900F3742C /* Accounts.framework in Frameworks */,
+				27BD088F160A0DC5009473A3 /* Twitter.framework in Frameworks */,
+				27BD087D160A0B4F009473A3 /* libUAirship-1.2.2.a in Frameworks */,
+				27BD087C160A0B2B009473A3 /* KinveyKit.framework in Frameworks */,
+				27BD087E160A0B6A009473A3 /* CFNetwork.framework in Frameworks */,
+				27BD0880160A0B73009473A3 /* StoreKit.framework in Frameworks */,
+				27BD087F160A0B6A009473A3 /* Foundation.framework in Frameworks */,
+				27BD0882160A0B78009473A3 /* SystemConfiguration.framework in Frameworks */,
+				27BD0881160A0B75009473A3 /* Security.framework in Frameworks */,
+				27BD0884160A0B8E009473A3 /* CoreGraphics.framework in Frameworks */,
+				27BD0887160A0BA6009473A3 /* libz.dylib in Frameworks */,
+				27BD0889160A0BBE009473A3 /* CoreTelephony.framework in Frameworks */,
+				27BD0886160A0BA4009473A3 /* libsqlite3.dylib in Frameworks */,
+				27BD0885160A0B94009473A3 /* MobileCoreServices.framework in Frameworks */,
+				2785F53D1609179E004AA410 /* SenTestingKit.framework in Frameworks */,
+				27BD0888160A0BB2009473A3 /* KinveyKitTests.octest in Frameworks */,
+				27BD0883160A0B83009473A3 /* CoreLocation.framework in Frameworks */,
+				2785F53E1609179E004AA410 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D32A60C314716EE300F77A3F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -675,6 +805,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				273A3E9D160A385100F3742C /* Twitter.framework in Frameworks */,
+				273A3E9C160A384C00F3742C /* Accounts.framework in Frameworks */,
 				2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */,
 				27347F7215B4665800133F64 /* CoreLocation.framework in Frameworks */,
 				D3F340AC14BCCEBB00DB6C37 /* CoreGraphics.framework in Frameworks */,
@@ -705,6 +837,72 @@
 				272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */,
 			);
 			name = "UI Helpers";
+			sourceTree = "<group>";
+		};
+		2785F5301609179E004AA410 /* KinveyKitExtras */ = {
+			isa = PBXGroup;
+			children = (
+				27BD0876160A03A8009473A3 /* KinveyKitExtras.h */,
+				27E33EAF160950D500D01C97 /* 3rdParty */,
+				2795FC3A160915A1002ED162 /* KCSUser+SocialExtras.h */,
+				2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */,
+				2785F5311609179E004AA410 /* Supporting Files */,
+			);
+			path = KinveyKitExtras;
+			sourceTree = "<group>";
+		};
+		2785F5311609179E004AA410 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2785F5321609179E004AA410 /* KinveyKitExtras-Info.plist */,
+				2785F5331609179E004AA410 /* InfoPlist.strings */,
+				2785F5361609179E004AA410 /* KinveyKitExtras-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2785F5461609179E004AA410 /* KinveyKitExtrasTests */ = {
+			isa = PBXGroup;
+			children = (
+				2785F5471609179E004AA410 /* Supporting Files */,
+				27BD0873160A038B009473A3 /* KCSUserSocialExtrasTest.h */,
+				27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */,
+			);
+			path = KinveyKitExtrasTests;
+			sourceTree = "<group>";
+		};
+		2785F5471609179E004AA410 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				27BD088B160A0C27009473A3 /* TestUtils.h */,
+				27BD088C160A0C27009473A3 /* TestUtils.m */,
+				2785F5481609179E004AA410 /* KinveyKitExtrasTests-Info.plist */,
+				2785F5491609179E004AA410 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2795FC0F16091570002ED162 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2795FC1016091570002ED162 /* AppKit.framework */,
+				2795FC1116091570002ED162 /* CoreData.framework */,
+				2795FC1216091570002ED162 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		27E33EAF160950D500D01C97 /* 3rdParty */ = {
+			isa = PBXGroup;
+			children = (
+				27BD086F16095E62009473A3 /* KCS_OAuth+Additions.h */,
+				27BD087016095E62009473A3 /* KCS_OAuth+Additions.m */,
+				27BD086B16095D7D009473A3 /* KCS_OAuthCore.h */,
+				27BD086C16095D7D009473A3 /* KCS_OAuthCore.m */,
+				27E33EB11609525600D01C97 /* KCS_TWSignedRequest.h */,
+				27E33EB21609525600D01C97 /* KCS_TWSignedRequest.m */,
+			);
+			path = 3rdParty;
 			sourceTree = "<group>";
 		};
 		D306B59F1550948300A52CB8 /* KinveyStore */ = {
@@ -836,6 +1034,8 @@
 			children = (
 				D32A60CD14716EE300F77A3F /* KinveyKit */,
 				D32A60E514716EE300F77A3F /* KinveyKitTests */,
+				2785F5301609179E004AA410 /* KinveyKitExtras */,
+				2785F5461609179E004AA410 /* KinveyKitExtrasTests */,
 				D32A60CA14716EE300F77A3F /* Frameworks */,
 				D32A60C914716EE300F77A3F /* Products */,
 			);
@@ -846,6 +1046,8 @@
 			children = (
 				D32A60C814716EE300F77A3F /* KinveyKit.framework */,
 				D32A60D914716EE300F77A3F /* KinveyKitTests.octest */,
+				2785F52E1609179E004AA410 /* KinveyKitExtras.framework */,
+				2785F53C1609179E004AA410 /* KinveyKitExtrasTests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -853,6 +1055,8 @@
 		D32A60CA14716EE300F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				273A3E92160A1A9F00F3742C /* Accounts.framework */,
+				2785F55A160917C9004AA410 /* Twitter.framework */,
 				2764B53C15DD9242003964D1 /* libobjc.dylib */,
 				27347F7115B4665800133F64 /* CoreLocation.framework */,
 				27332CDA15C2FF7400C9A960 /* libUAirship-1.2.2.a */,
@@ -869,6 +1073,7 @@
 				D32A60CB14716EE300F77A3F /* Foundation.framework */,
 				D32A60DA14716EE300F77A3F /* SenTestingKit.framework */,
 				D32A60DC14716EE300F77A3F /* UIKit.framework */,
+				2795FC0F16091570002ED162 /* Other Frameworks */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1733,6 +1938,18 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		2785F5291609179E004AA410 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27E33EB31609525600D01C97 /* KCS_TWSignedRequest.h in Headers */,
+				27E33EB51609529000D01C97 /* KCSUser+SocialExtras.h in Headers */,
+				27BD086D16095D7D009473A3 /* KCS_OAuthCore.h in Headers */,
+				27BD087116095E62009473A3 /* KCS_OAuth+Additions.h in Headers */,
+				27BD0877160A03BD009473A3 /* KinveyKitExtras.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D32A60C414716EE300F77A3F /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1806,12 +2023,57 @@
 				2726F98B15E6CE370087099D /* KCSBuilders.h in Headers */,
 				272FBE5315F90FB600EC7031 /* KCSSaveGraph.h in Headers */,
 				27592BC71602211600AC2A69 /* KCSUniqueNumber.h in Headers */,
+				273A3E9A160A255900F3742C /* KCSUser+SocialExtras.h in Headers */,
+				273A3E9B160A256100F3742C /* KinveyKitExtras.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		2785F52D1609179E004AA410 /* KinveyKitExtras */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2785F54F1609179F004AA410 /* Build configuration list for PBXNativeTarget "KinveyKitExtras" */;
+			buildPhases = (
+				2785F5261609179E004AA410 /* ShellScript */,
+				2785F5271609179E004AA410 /* Sources */,
+				2785F5281609179E004AA410 /* Frameworks */,
+				2785F5291609179E004AA410 /* Headers */,
+				2785F52A1609179E004AA410 /* Resources */,
+				2785F52B1609179E004AA410 /* ShellScript */,
+				2785F52C1609179E004AA410 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2785F559160917C3004AA410 /* PBXTargetDependency */,
+			);
+			name = KinveyKitExtras;
+			productName = KinveyKitExtras;
+			productReference = 2785F52E1609179E004AA410 /* KinveyKitExtras.framework */;
+			productType = "com.apple.product-type.framework.static";
+		};
+		2785F53B1609179E004AA410 /* KinveyKitExtrasTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2785F5531609179F004AA410 /* Build configuration list for PBXNativeTarget "KinveyKitExtrasTests" */;
+			buildPhases = (
+				2785F5371609179E004AA410 /* Sources */,
+				2785F5381609179E004AA410 /* Frameworks */,
+				2785F5391609179E004AA410 /* Resources */,
+				2785F53A1609179E004AA410 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				27BD087B160A09E1009473A3 /* PBXTargetDependency */,
+				27BD0879160A098E009473A3 /* PBXTargetDependency */,
+				2785F5431609179E004AA410 /* PBXTargetDependency */,
+			);
+			name = KinveyKitExtrasTests;
+			productName = KinveyKitExtrasTests;
+			productReference = 2785F53C1609179E004AA410 /* KinveyKitExtrasTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
 		D32A60C714716EE300F77A3F /* KinveyKit */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D32A60F014716EE300F77A3F /* Build configuration list for PBXNativeTarget "KinveyKit" */;
@@ -1876,11 +2138,29 @@
 				D32A60C714716EE300F77A3F /* KinveyKit */,
 				D32A60D814716EE300F77A3F /* KinveyKitTests */,
 				D3F7E88D148D7C770044F1E8 /* KinveyKit Documentation */,
+				2785F52D1609179E004AA410 /* KinveyKitExtras */,
+				2785F53B1609179E004AA410 /* KinveyKitExtrasTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2785F52A1609179E004AA410 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2785F5351609179E004AA410 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2785F5391609179E004AA410 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2785F54B1609179E004AA410 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D32A60C514716EE300F77A3F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1901,6 +2181,58 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		2785F5261609179E004AA410 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nset +u\nif [[ $UFW_MASTER_SCRIPT_RUNNING ]]\nthen\n    # Nothing for the slave script to do\n    exit 0\nfi\nset -u\n\nif [[ \"$SDK_NAME\" =~ ([A-Za-z]+) ]]\nthen\n    UFW_SDK_PLATFORM=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find platform name from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$SDK_NAME\" =~ ([0-9]+.*$) ]]\nthen\n\tUFW_SDK_VERSION=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find sdk version  from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$UFW_SDK_PLATFORM\" = \"iphoneos\" ]]\nthen\n    UFW_OTHER_PLATFORM=iphonesimulator\nelse\n    UFW_OTHER_PLATFORM=iphoneos\nfi\n\nif [[ \"$BUILT_PRODUCTS_DIR\" =~ (.*)$UFW_SDK_PLATFORM$ ]]\nthen\n    UFW_OTHER_BUILT_PRODUCTS_DIR=\"${BASH_REMATCH[1]}${UFW_OTHER_PLATFORM}\"\nelse\n    echo \"Could not find $UFW_SDK_PLATFORM in $BUILT_PRODUCTS_DIR\"\n    exit 1\nfi\n\nONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM:-$ONLY_ACTIVE_ARCH}\n\n# Short-circuit if all binaries are up to date\n\nif [[ -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && \\\n   [[ -f \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && \\\n   [[ ! \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -nt \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && \\\n  ([[ \"${ONLY_ACTIVE_PLATFORM}\" == \"YES\" ]] || \\\n    ([[ -f \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && \\\n     [[ -f \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && \\\n     [[ ! \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -nt \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]]\n    )\n  )\nthen\n    exit 0\nfi\n\n\n# Clean other platform if needed\n\nif [[ ! -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && [[ \"${ONLY_ACTIVE_PLATFORM}\" != \"YES\" ]]\nthen\n\techo \"Platform \\\"$UFW_SDK_PLATFORM\\\" was cleaned recently. Cleaning \\\"$UFW_OTHER_PLATFORM\\\" as well\"\n\techo xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" clean\n\txcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" clean\nfi\n\n\n# Make sure we are building from fresh binaries\n\nrm -rf \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\nrm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\n\nif [[ \"${ONLY_ACTIVE_PLATFORM}\" != \"YES\" ]]\nthen\n    rm -rf \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\n    rm -rf \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\nfi\n";
+		};
+		2785F52B1609179E004AA410 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "HEADERS_ROOT=$SRCROOT/$PRODUCT_NAME\nFRAMEWORK_HEADERS_DIR=\"$BUILT_PRODUCTS_DIR/$WRAPPER_NAME/Versions/$FRAMEWORK_VERSION/Headers\"\n\n## only header files expected at this point\nPUBLIC_HEADERS=$(find $FRAMEWORK_HEADERS_DIR/. -not -type d 2> /dev/null | sed -e \"s@.*/@@g\")\n\nFIND_OPTS=\"\"\nfor PUBLIC_HEADER in $PUBLIC_HEADERS; do\n  if [ -n \"$FIND_OPTS\" ]; then\n    FIND_OPTS=\"$FIND_OPTS -o\"\n  fi\n  FIND_OPTS=\"$FIND_OPTS -name '$PUBLIC_HEADER'\"\ndone\n\nif [ -n \"$FIND_OPTS\" ]; then\n  for ORIG_HEADER in $(eval \"find $HEADERS_ROOT/. $FIND_OPTS\" 2> /dev/null | sed -e \"s@^$HEADERS_ROOT/./@@g\"); do\n    PUBLIC_HEADER=$(basename $ORIG_HEADER)\n    RELATIVE_PATH=$(dirname $ORIG_HEADER)\n    if [ -e $FRAMEWORK_HEADERS_DIR/$PUBLIC_HEADER ]; then\n      mkdir -p \"$FRAMEWORK_HEADERS_DIR/$RELATIVE_PATH\"\n      mv \"$FRAMEWORK_HEADERS_DIR/$PUBLIC_HEADER\" \"$FRAMEWORK_HEADERS_DIR/$RELATIVE_PATH/$PUBLIC_HEADER\"\n    fi\n  done\nfi\n";
+		};
+		2785F52C1609179E004AA410 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nset +u\nif [[ $UFW_MASTER_SCRIPT_RUNNING ]]\nthen\n    # Nothing for the slave script to do\n    exit 0\nfi\nset -u\nexport UFW_MASTER_SCRIPT_RUNNING=1\n\n\n# Functions\n\n## List files in the specified directory, storing to the specified array.\n#\n# @param $1 The path to list\n# @param $2 The name of the array to fill\n#\n##\nlist_files ()\n{\n    filelist=$(ls \"$1\")\n    while read line\n    do\n        eval \"$2[\\${#$2[*]}]=\\\"\\$line\\\"\"\n    done <<< \"$filelist\"\n}\n\n\n# Sanity check\n\nif [[ ! -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]]\nthen\n    echo \"Framework target \\\"${TARGET_NAME}\\\" had no source files to build from. Make sure your source files have the correct target membership\"\n    exit 1\nfi\n\n\n# Gather information\n\nif [[ \"$SDK_NAME\" =~ ([A-Za-z]+) ]]\nthen\n    UFW_SDK_PLATFORM=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find platform name from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$SDK_NAME\" =~ ([0-9]+.*$) ]]\nthen\n    UFW_SDK_VERSION=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find sdk version from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$UFW_SDK_PLATFORM\" = \"iphoneos\" ]]\nthen\n    UFW_OTHER_PLATFORM=iphonesimulator\nelse\n    UFW_OTHER_PLATFORM=iphoneos\nfi\n\nif [[ \"$BUILT_PRODUCTS_DIR\" =~ (.*)$UFW_SDK_PLATFORM$ ]]\nthen\n    UFW_OTHER_BUILT_PRODUCTS_DIR=\"${BASH_REMATCH[1]}${UFW_OTHER_PLATFORM}\"\nelse\n    echo \"Could not find $UFW_SDK_PLATFORM in $BUILT_PRODUCTS_DIR\"\n    exit 1\nfi\n\nONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM:-$ONLY_ACTIVE_ARCH}\n\n# Short-circuit if all binaries are up to date.\n# We already checked the other platform in the prerun script.\n\nif [[ -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && [[ -f \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && [[ ! \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -nt \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]]\nthen\n    exit 0\nfi\n\nif [ \"${ONLY_ACTIVE_PLATFORM}\" == \"YES\" ]\nthen\n    echo \"ONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM}: Skipping other platform build\"\nelse\n    # Make sure the other platform gets built\n    \n    echo \"Build other platform\"\n    \n    echo xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" $ACTION\n    xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" $ACTION\n    \n    \n    # Build the fat static library binary\n    \n    echo \"Create universal static library\"\n    \n    echo \"$PLATFORM_DEVELOPER_BIN_DIR/libtool\" -static \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -o \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\"\n    \"$PLATFORM_DEVELOPER_BIN_DIR/libtool\" -static \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -o \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\"\n    \n    echo mv \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\n    mv \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\nfi\n\n# Build embedded framework structure\n\necho \"Build Embedded Framework\"\n\necho rm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\nrm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\necho mkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources\"\nmkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources\"\necho cp -a \"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/\"\ncp -a \"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/\"\n\ndeclare -a UFW_FILE_LIST\nlist_files \"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\" UFW_FILE_LIST\nfor filename in \"${UFW_FILE_LIST[@]}\"\ndo\n    if [[ \"${filename}\" != \"Info.plist\" ]] && [[ ! \"${filename}\" =~ .*\\.lproj$ ]]\n    then\n        echo ln -sfh \"../${WRAPPER_NAME}/Resources/${filename}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources/${filename}\"\n        ln -sfh \"../${WRAPPER_NAME}/Resources/${filename}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources/${filename}\"\n    fi\ndone\n\n\nif [ \"${ONLY_ACTIVE_PLATFORM}\" != \"YES\" ]\nthen\n    # Replace other platform's framework with a copy of this one (so that both have the same universal binary)\n    \n    echo \"Copy from $UFW_SDK_PLATFORM to $UFW_OTHER_PLATFORM\"\n    \n    echo rm -rf \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    rm -rf \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    echo cp -a \"${BUILD_DIR}/${CONFIGURATION}-${UFW_SDK_PLATFORM}\" \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    cp -a \"${BUILD_DIR}/${CONFIGURATION}-${UFW_SDK_PLATFORM}\" \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\nfi\n";
+		};
+		2785F53A1609179E004AA410 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
 		D32A60C114716EE300F77A3F /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1956,6 +2288,26 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2785F5271609179E004AA410 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2785F557160917AF004AA410 /* KCSUser+SocialExtras.m in Sources */,
+				27E33EB41609525600D01C97 /* KCS_TWSignedRequest.m in Sources */,
+				27BD086E16095D7D009473A3 /* KCS_OAuthCore.m in Sources */,
+				27BD087216095E62009473A3 /* KCS_OAuth+Additions.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2785F5371609179E004AA410 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27BD0875160A038B009473A3 /* KCSUserSocialExtrasTest.m in Sources */,
+				27BD088D160A0C27009473A3 /* TestUtils.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D32A60C214716EE300F77A3F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2021,6 +2373,10 @@
 				2726F98C15E6CE370087099D /* KCSBuilders.m in Sources */,
 				272FBE5415F90FB600EC7031 /* KCSSaveGraph.m in Sources */,
 				27592BC81602211600AC2A69 /* KCSUniqueNumber.m in Sources */,
+				273A3E96160A254900F3742C /* KCS_TWSignedRequest.m in Sources */,
+				273A3E97160A254C00F3742C /* KCS_OAuthCore.m in Sources */,
+				273A3E98160A254F00F3742C /* KCS_OAuth+Additions.m in Sources */,
+				273A3E99160A255500F3742C /* KCSUser+SocialExtras.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2070,6 +2426,26 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		2785F5431609179E004AA410 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2785F52D1609179E004AA410 /* KinveyKitExtras */;
+			targetProxy = 2785F5421609179E004AA410 /* PBXContainerItemProxy */;
+		};
+		2785F559160917C3004AA410 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D32A60C714716EE300F77A3F /* KinveyKit */;
+			targetProxy = 2785F558160917C3004AA410 /* PBXContainerItemProxy */;
+		};
+		27BD0879160A098E009473A3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D32A60D814716EE300F77A3F /* KinveyKitTests */;
+			targetProxy = 27BD0878160A098E009473A3 /* PBXContainerItemProxy */;
+		};
+		27BD087B160A09E1009473A3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D32A60C714716EE300F77A3F /* KinveyKit */;
+			targetProxy = 27BD087A160A09E1009473A3 /* PBXContainerItemProxy */;
+		};
 		D32A60E014716EE300F77A3F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D32A60C714716EE300F77A3F /* KinveyKit */;
@@ -2083,6 +2459,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		2785F5331609179E004AA410 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2785F5341609179E004AA410 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		2785F5491609179E004AA410 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2785F54A1609179E004AA410 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		D32A60D014716EE300F77A3F /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -2102,6 +2494,153 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		2785F5501609179F004AA410 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					armv6,
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		2785F5511609179F004AA410 /* DebugForTest */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					armv6,
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = DebugForTest;
+		};
+		2785F5521609179F004AA410 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					armv6,
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
+		2785F5541609179F004AA410 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKitExtrasTests/KinveyKitExtrasTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Airship\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		2785F5551609179F004AA410 /* DebugForTest */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKitExtrasTests/KinveyKitExtrasTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Airship\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = DebugForTest;
+		};
+		2785F5561609179F004AA410 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKitExtrasTests/KinveyKitExtrasTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Airship\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
 		D30E55E01476FD3C00F0EC04 /* DebugForTest */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2348,6 +2887,26 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2785F54F1609179F004AA410 /* Build configuration list for PBXNativeTarget "KinveyKitExtras" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2785F5501609179F004AA410 /* Debug */,
+				2785F5511609179F004AA410 /* DebugForTest */,
+				2785F5521609179F004AA410 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2785F5531609179F004AA410 /* Build configuration list for PBXNativeTarget "KinveyKitExtrasTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2785F5541609179F004AA410 /* Debug */,
+				2785F5551609179F004AA410 /* DebugForTest */,
+				2785F5561609179F004AA410 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D32A60BF14716EE300F77A3F /* Build configuration list for PBXProject "KinveyKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -78,7 +78,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 + (void) justInitServer
 {
-    NSDictionary* opts = @{KCS_TWITTER_CLIENT_SECRET : @"rLUxyvve0neLqO8P8pWY6S8fOToXtL7qcNzxNMaUSA", KCS_TWITTER_CLIENT_KEY : @"5sCifD1tKCjA6zQD5jE6A"};
+    NSDictionary* opts = @{KCS_TWITTER_CLIENT_SECRET : @"u48B6AIxebTJwsDcZ3Si7SfvkJLeA9CRuR6VYtk0", KCS_TWITTER_CLIENT_KEY : @"LXRntT0sroPASCBM4p4Hw"};
     if (YES) {
         [self initStaging:opts];
     } else {
@@ -95,7 +95,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     [[[KCSClient sharedClient] currentUser] logout];
     [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:YES];
     
-    SenTestCase* pollObj = [[[SenTestCase alloc] init]autorelease];
+    SenTestCase* pollObj = [[SenTestCase alloc] init];
     pollObj.done = NO;
     [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
         loaded = result.pingWasSuccessful;
@@ -115,7 +115,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     NSString *uuidString = nil;
     
     if (uuid){
-        uuidString = (NSString *)CFUUIDCreateString(NULL, uuid);
+        uuidString = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
         CFRelease(uuid);
     }
     return uuidString;
@@ -131,7 +131,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 + (KCSCollection*) randomCollection:(Class)objClass
 {
-    KCSCollection* collection = [[[KCSCollection alloc] init] autorelease];
+    KCSCollection* collection = [[KCSCollection alloc] init];
     collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
     collection.objectTemplate = objClass;
     return collection;

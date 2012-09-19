@@ -569,14 +569,40 @@
 
 }
 
-+ (void)registerUserWithFacebookAcccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+
++ (NSDictionary*) loginDictForProvder:(KCSUserSocialIdentifyProvider)provder accessDictionary:(NSDictionary*)accessDictionary
+{
+    NSDictionary* dict = @{};
+    NSString* accessToken = [accessDictionary objectForKey:KCSUserAccessTokenKey];
+    NSString* accessTokenSecret = [accessDictionary objectForKey:KCSUserAccessTokenSecretKey];
+    switch (provder) {
+        case KCSSocialIDFacebook:
+            dict = @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken}}};
+            break;
+        case KCSSocialIDTwitter: {
+            NSString* twitterKey = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_KEY];
+            NSString* twitterSecret = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_SECRET];
+            DBAssert(twitterKey != nil && twitterSecret != nil, @"twitter info should not be nil.");
+            if (!twitterKey || !twitterSecret) {
+                dict = @{@"_socialIdentity" : @{@"twitter" : @{@"access_token" : accessToken,
+                @"access_token_secret" : accessTokenSecret,
+                @"consumer_key" : twitterKey,
+                @"consumer_secret" : twitterSecret}}};                
+            }
+        }
+            break;
+    }
+    return dict;
+}
+
+
++ (void)registerUserWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
     //TODO: combine with below
     KCSClient *client = [KCSClient sharedClient];
     KCSRESTRequest *loginRequest = [KCSRESTRequest requestForResource:client.userBaseURL usingMethod:kPostRESTMethod];
-    NSDictionary* facebooklogin = @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken}}};
-    [loginRequest setJsonBody:facebooklogin];
-    
+    NSDictionary* loginDict = [self loginDictForProvder:provider accessDictionary:accessDictionary];
+    [loginRequest setJsonBody:loginDict];    
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
         // I really don't know what to do here, we can't continue... Something died...
@@ -592,7 +618,7 @@
     KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
-        if ([response responseCode] != KCS_HTTP_STATUS_OK) {
+        if ([response responseCode] >= 400) {
             KCSUser *createdUser = [[KCSUser alloc] init];
             
             client.userIsAuthenticated = NO;
@@ -600,8 +626,7 @@
             client.currentUser = nil;
             // This is expected here, user auth failed, do the right thing
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
-                                                                               withFailureReason:@"Invalid Facebook credentials"
-                                                                          withRecoverySuggestion:@"Try again with access token"
+                                                                               withFailureReason:@"Invalid social identity credentials"                                                                          withRecoverySuggestion:@"Try again with access token"
                                                                              withRecoveryOptions:nil];
             NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
             // Delegate must retain createdUser
@@ -611,21 +636,31 @@
         } else { //successful
             [self setupSessionAuthUser:response client:client completionBlock:completionBlock];
         }
-
+        
     };
-
+    
     client.userAuthenticationInProgress = YES;
     [loginRequest setContentType:KCS_JSON_TYPE];
     [loginRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
     [loginRequest start];
 }
 
++ (void)registerUserWithFacebookAcccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    [self registerUserWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : accessToken} withCompletionBlock:completionBlock];
+}
+
 + (void)loginWithFacebookAccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    [self loginWithWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : accessToken} withCompletionBlock:completionBlock];
+}
+
++ (void)loginWithWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
     KCSClient *client = [KCSClient sharedClient];
     KCSRESTRequest *loginRequest = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"login"] usingMethod:kPostRESTMethod];
-    NSDictionary* facebooklogin = @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken}}};
-    [loginRequest setJsonBody:facebooklogin];
+    NSDictionary* loginDict = [self loginDictForProvder:provider accessDictionary:accessDictionary];
+    [loginRequest setJsonBody:loginDict];
     
     // We need to init the current user to something before trying this
     client.userAuthenticationInProgress = YES;
@@ -647,7 +682,7 @@
         if ([response responseCode] != KCS_HTTP_STATUS_OK) {
             //This is new user, log in
             dispatch_async(dispatch_get_current_queue(), ^{
-                [KCSUser registerUserWithFacebookAcccessToken:accessToken withCompletionBlock:completionBlock];
+                [KCSUser registerUserWithSocialIdentity:provider accessDictionary:accessDictionary withCompletionBlock:completionBlock];
             });
         } else { //successful
             [self setupSessionAuthUser:response client:client completionBlock:completionBlock];
@@ -663,7 +698,6 @@
     [loginRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
     [loginRequest start];
 }
-
 
 - (void)logout
 {

@@ -41,3 +41,7 @@
 
 
 @end
+
+@interface NSDictionary (KCSEntityDict) <KCSPersistable>
+
+@end
