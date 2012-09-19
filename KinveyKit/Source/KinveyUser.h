@@ -239,7 +239,7 @@ typedef enum  {
         [KCSUser loginWithSocialIdentity:KCSSocialIDTwitter accessDictionary:accessDictOrNil withCompletionBlock:<# completion block #>]
       }];
  
- When using your own method for obtaining the token, Twitter requires that you provide the `oauth_token` and `oauth_token_secret` to log-in. `[KCSUser loginWithSocialIdentity:KCSSocialIDFacebook accessDictionary:{ KCSUserAccessTokenKey : <# Twitter OAuth Token #>, KCSUserAccessTokenSecretKey : <# Twitter OAuth Token Secret #>} withCompletionBlock:<# completion block #>]`.
+ When using your own method for obtaining the token, Twitter requires that you provide the `oauth_token` and `oauth_token_secret` to log-in. `[KCSUser loginWithSocialIdentity:KCSSocialIDTwitter accessDictionary:{ KCSUserAccessTokenKey : <# Twitter OAuth Token #>, KCSUserAccessTokenSecretKey : <# Twitter OAuth Token Secret #>} withCompletionBlock:<# completion block #>]`.
  
  Regardless of the the token is obtained, your Twitter app credentials must also be supplied when creating the KCSClient. Specify the `KCS_TWITTER_CLIENT_KEY` and `KCS_TWITTER_CLIENT_SECRET` in the options dictionary when the app is launched. These credentials are used for reverse auth and on the server side to verify the token with Twitter. 
  
