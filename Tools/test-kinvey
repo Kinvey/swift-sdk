@@ -35,7 +35,7 @@ echo "Building KinveyKit in ${KINVEYKITLOC}..."
 
 if [ $CLEAN == "YES" ]
 then
-    (cd $KINVEYKITLOC && xcodebuild -sdk iphonesimulator -configuration Debug -target KinveyKitTests clean build) #| $GREP
+    (cd $KINVEYKITLOC && xcodebuild -sdk iphonesimulator -configuration Debug -target KinveyKitTests clean test) #| $GREP
 else
-    (cd $KINVEYKITLOC && xcodebuild -sdk iphonesimulator -configuration Debug -target KinveyKitTests build) #| $GREP
+    (cd $KINVEYKITLOC && xcodebuild -sdk iphonesimulator -configuration Debug -target KinveyKitTests test) #| $GREP
 fi
