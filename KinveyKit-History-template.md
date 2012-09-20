@@ -7,6 +7,9 @@
 * Added support for log-in with twitter
   * Deprecate Facebook-specific methods and replace with generic social identity. See `KCSUser`.
   * Requires linking Twitter.framework and Accounts.framework.
+* Deprecated `KCSEntityDict`. You can now just save/load `NSMutableDictionary` objects directly with the backend. Use them like any other `KCSPersistable`.
+  * Note: using a non-mutable `NSDictionary` will not have its fields updated when saving the object.
+
 
 ## 1.8
 ### 1.8.2

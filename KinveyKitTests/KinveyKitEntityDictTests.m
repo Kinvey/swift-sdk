@@ -7,14 +7,13 @@
 //
 
 #import "KinveyKitEntityDictTests.h"
-#import "KCSEntityDict.h"
-#import "SBJson.h"
+#import "KinveyKit.h"
+#import "KCSObjectMapper.h"
+
+#import "TestUtils.h"
 #import "KCSKeyChain.h"
-#import "KinveyUser.h"
-#import "KCSConnectionResponse.h"
-#import "KCSConnection.h"
-#import "KCSConnectionPool.h"
-#import "KCSMockConnection.h"
+
+#import "SBJson.h"
 
 typedef BOOL(^SuccessAction)(NSArray *);
 typedef BOOL(^FailureAction)(NSError *);
@@ -172,43 +171,93 @@ typedef BOOL(^InfoSuccessAction)(int);
    
 }
 
-- (void)testSerialize
+- (void) testSerialize
 {
-//    KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
-//                                                                           responseData:[self.writer dataWithObject:dict]
-//                                                                             headerData:nil
-//                                                                               userData:nil];
-//    
-//    KCSMockConnection *conn = [[KCSMockConnection alloc] init];
-//    conn.responseForSuccess = response;
-//    
-//    conn.connectionShouldFail = NO;
-//    conn.connectionShouldReturnNow = YES;
-//    
-//    self.onSuccess = ^(NSArray *results){
-//        
-//        self.message = [NSString stringWithFormat:@"Received: %@\n\n\nExpected: %@", actual, expected];
-//        BOOL areTheyEqual = [actual isEqualToArray:expected];
-//        return areTheyEqual;
-//    };
-//    
-//    [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
-//    
-//    
-//    STAssertTrue(self.testPassed, self.message);
-//    [conn release];
-
+    NSDictionary* myDict = @{@"_id" : @"12345", @"keyA" : @"valA", @"keyB" : @10};
+    KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:myDict];
+    NSDictionary* outDict = [so dataToSerialize];
+    STAssertFalse(so.isPostRequest, @"Should not be a post because _id is specified");
+    STAssertEqualObjects(myDict, outDict, @"dicts should be the same");
     
+    myDict = @{@"keyA" : @"valA", @"keyB" : @10};
+    so = [KCSObjectMapper makeKinveyDictionaryFromObject:myDict];
+    outDict = [so dataToSerialize];
+    STAssertTrue(so.isPostRequest, @"Should be true, no _id is specified");
+    STAssertEqualObjects(myDict, outDict, @"dicts should be the same");
 }
 
-- (void)testCRUD
+- (void) testRoundtrip
 {
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    STAssertTrue(setup, @"should be set up");
     
+    KCSCollection* testCollection = [TestUtils randomCollection:[NSDictionary class]];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:testCollection options:nil];
+    
+    NSDictionary* obj = @{@"test" : @"testRoundtrip", @"timestamp" : [NSDate date]};
+    
+    __block NSDictionary* retDict = nil;
+    
+    self.done = NO;
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        retDict = [objectsOrNil objectAtIndex:0];
+        STAssertEqualObjects(obj, retDict, @"dicts should match");
+        self.done = YES;
+    } withProgressBlock:nil];;
+    [self poll];
+    
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery queryOnField:@"test" withExactMatchForValue:@"testRoundtrip"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        retDict = [objectsOrNil objectAtIndex:0];
+        STAssertEqualObjects([obj objectForKey:@"test"], [retDict objectForKey:@"test"], @"dicts should match");
+        NSDate* oDate = [obj objectForKey:@"timestamp"];
+        NSDate* nDate = [retDict objectForKey:@"timestamp"];
+        STAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
+        STAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
 
-// All code under test must be linked into the Unit Test bundle
-- (void)testEntityDictUnimplemented{
-    STFail(@"Entity Dicts are not yet implemented");
+- (void) testRoundTripMutable
+{
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    STAssertTrue(setup, @"should be set up");
+    
+    KCSCollection* testCollection = [TestUtils randomCollection:[NSMutableDictionary class]];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:testCollection options:nil];
+    
+    NSDictionary* obj = [@{@"test" : @"testRoundtrip", @"timestamp" : [NSDate date]}  mutableCopy];
+    
+    __block NSDictionary* retDict = nil;
+    
+    self.done = NO;
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        retDict = [objectsOrNil objectAtIndex:0];
+        STAssertEqualObjects([obj objectForKey:@"test"], [retDict objectForKey:@"test"], @"dicts should match");
+        NSDate* oDate = [obj objectForKey:@"timestamp"];
+        NSDate* nDate = [retDict objectForKey:@"timestamp"];
+        STAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
+        STAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
+        self.done = YES;
+    } withProgressBlock:nil];;
+    [self poll];
+    
+    self.done = NO;
+    [store loadObjectWithID:[retDict objectForKey:@"_id"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        retDict = [objectsOrNil objectAtIndex:0];
+        STAssertEqualObjects([obj objectForKey:@"test"], [retDict objectForKey:@"test"], @"dicts should match");
+        NSDate* oDate = [obj objectForKey:@"timestamp"];
+        NSDate* nDate = [retDict objectForKey:@"timestamp"];
+        STAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
+        STAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
 
 @end
