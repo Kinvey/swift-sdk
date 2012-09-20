@@ -7,9 +7,10 @@
 //
 
 #import "KCSEntityDict.h"
+#import "KCSLogManager.h"
 
 // Private interface
-@interface KCSEntityDict ()
+@interface KCSEntityDict () 
 @property (nonatomic, retain) NSMutableDictionary *entityProperties;
 @end
 
@@ -87,12 +88,17 @@
 
 + (NSDictionary *)kinveyObjectBuilderOptions
 {
-    return @{KCS_USE_DESIGNATED_INITIALIZER_MAPPING_KEY : @(YES)};
+    return @{KCS_USE_DESIGNATED_INITIALIZER_MAPPING_KEY : @(YES), KCS_IS_DYNAMIC_ENTITY: @(YES)};
 }
 
 + (id)kinveyDesignatedInitializer
 {
     return [NSMutableDictionary dictionary];
+}
+
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key
+{
+    KCSLogWarning(@"%d cannot setValue for %@", self, key);
 }
 
 @end

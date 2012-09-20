@@ -2121,7 +2121,7 @@
 		D32A60BC14716EE300F77A3F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = Kinvey;
 			};
 			buildConfigurationList = D32A60BF14716EE300F77A3F /* Build configuration list for PBXProject "KinveyKit" */;
@@ -2511,6 +2511,7 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_THUMB_SUPPORT = NO;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
@@ -2535,6 +2536,7 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_THUMB_SUPPORT = NO;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
@@ -2559,6 +2561,7 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_THUMB_SUPPORT = NO;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;

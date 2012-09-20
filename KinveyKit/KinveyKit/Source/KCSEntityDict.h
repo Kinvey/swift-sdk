@@ -18,8 +18,12 @@
 
 	To use this object, simply treat it as a dictionary and issue a fetch/save to update it's
 	data from Kinvey.
+ 
+ KCSEntityDict has been deprecated because of it adds unnecessary overhead. Just use a `NSMutableDictionary` instead (Note: using a non-mutable `NSDictionary` will not have its fields updated when saving the object).
+ 
+ @deprecatedIn 1.9
 */
-@interface KCSEntityDict : NSObject <KCSPersistable>
+@interface KCSEntityDict : NSObject <KCSPersistable> 
 
 /*! The ObjectID for this dictionary, if the objectID is not set when saving to a collection one will be generated. */
 @property (nonatomic, retain) NSString *objectId;
@@ -38,7 +42,7 @@
  */
 - (void)setValue: (id)value forProperty:(NSString *)property;
 
-
+- (id) init __attribute__((deprecated("KCSEntityDict is deprecated, use NSMutableDictionary instead.")));
 
 @end
 

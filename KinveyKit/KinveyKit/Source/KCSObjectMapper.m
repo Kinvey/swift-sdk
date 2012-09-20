@@ -89,13 +89,13 @@ NSDictionary* builderOptions(id object)
 @synthesize handleToOriginalObject = _handleToOriginalObject;
 @synthesize userInfo = _userInfo;
 
-- (id)initWithObject:(id<KCSPersistable>)object ofId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize isPostRequest:(BOOL)isPostRequest resources:(NSArray*)resources references:(NSArray *)references
+- (id)initWithObject:(id<KCSPersistable>)object ofId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize resources:(NSArray*)resources references:(NSArray *)references
 {
     self = [super init];
     if (self){
-        _isPostRequest = isPostRequest;
         _dataToSerialize = [dataToSerialize retain];
-        _objectId = [objectId retain];
+        _objectId = [objectId copy];
+        _isPostRequest = _objectId.length == 0;
         _resourcesToSave = [resources retain];
         _referencesToSave = [references retain];
         _handleToOriginalObject = [object retain];
@@ -160,6 +160,9 @@ NSString* specialTypeOfValue(id value)
     BOOL hasFlatMap = NO;
     NSString *dictName = nil;
     
+    NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
+    NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
+    
     NSDictionary *specialOptions = builderOptions(object);
     
     if (specialOptions != nil){
@@ -167,10 +170,21 @@ NSString* specialTypeOfValue(id value)
         if ([specialOptions objectForKey:KCS_USE_DICTIONARY_KEY]){
             hasFlatMap = YES;
         }
+        
+        if ([specialOptions objectForKey:KCS_IS_DYNAMIC_ENTITY] != nil && [[specialOptions objectForKey:KCS_IS_DYNAMIC_ENTITY] boolValue] == YES) {
+            NSMutableDictionary* d  = [NSMutableDictionary dictionaryWithDictionary:hostToJsonMap];
+            [d setValuesForKeysWithDictionary:[NSDictionary dictionaryWithObjects:[data allKeys] forKeys:[data allKeys]]];
+            
+            if ([d objectForKey:kKMDKey] || [d objectForKey:kACLKey]) {
+                [d removeObjectForKey:kKMDKey];
+                [d removeObjectForKey:kACLKey];
+                [d setObject:KCSEntityKeyMetadata forKey:KCSEntityKeyMetadata];
+            }
+            hostToJsonMap = d;
+        }
+
     }
     
-    NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
-    NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
     
     
     for (NSString *hostKey in hostToJsonMap) {
@@ -246,7 +260,11 @@ NSString* specialTypeOfValue(id value)
                     if ([jsonKey isEqualToString:KCSEntityKeyId] && [[object kinveyObjectId] isEqualToString:value] == NO) {
                         KCSLogWarning(@"%@ is having it's id overwritten.", object);
                     }
-                    [object setValue:value forKey:hostKey];
+                    if ([object respondsToSelector:@selector(setValue:forKey:)]) {
+                        [object setValue:value forKey:hostKey];
+                    } else {
+                        KCSLogWarning(@"%@ cannot setValue for %@", hostKey);
+                    }
                 }
             }
         }
@@ -300,6 +318,9 @@ NSString* specialTypeOfValue(id value)
     NSString *dictName = nil;
     NSDictionary* referencesClasses = @{};
     
+    NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
+    NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
+    
     NSDictionary *specialOptions = builderOptions(object);
     
     if (specialOptions != nil){
@@ -310,11 +331,18 @@ NSString* specialTypeOfValue(id value)
         if ([specialOptions objectForKey:KCS_REFERENCE_MAP_KEY] != nil) {
             referencesClasses = [specialOptions objectForKey:KCS_REFERENCE_MAP_KEY];
         }
+        if ([specialOptions objectForKey:KCS_IS_DYNAMIC_ENTITY] != nil && [[specialOptions objectForKey:KCS_IS_DYNAMIC_ENTITY] boolValue] == YES) {
+            NSMutableDictionary* d  = [NSMutableDictionary dictionaryWithDictionary:hostToJsonMap];
+            [d setValuesForKeysWithDictionary:[NSDictionary dictionaryWithObjects:[data allKeys] forKeys:[data allKeys]]];
+            
+            if ([d objectForKey:kKMDKey] || [d objectForKey:kACLKey]) {
+                [d removeObjectForKey:kKMDKey];
+                [d removeObjectForKey:kACLKey];
+                [d setObject:KCSEntityKeyMetadata forKey:KCSEntityKeyMetadata];
+            }
+            hostToJsonMap = d;
+        }
     }
-    
-    NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
-    NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
-    
     
     for (NSString *hostKey in hostToJsonMap) {
         NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
@@ -499,8 +527,7 @@ BOOL isCollection(id obj)
 {
     NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
     NSDictionary *kinveyMapping = [object hostToKinveyPropertyMapping];
-    NSString *objectId = nil;
-    BOOL isPostRequest = NO;
+    NSString *objectId = @"";
     
     NSMutableArray* resourcesToSave = nil;
     NSMutableArray* referencesToSave = nil;
@@ -519,14 +546,8 @@ BOOL isCollection(id obj)
         id value = [object valueForKey:key];
         
         //get the id
-        if ([jsonName isEqualToString:KCSEntityKeyId]){
-            if (value == nil){
-                isPostRequest = YES;
-                objectId = @""; // Set to the empty string for the document path
-            } else {
-                isPostRequest = NO;
-                objectId = value;
-            }
+        if ([jsonName isEqualToString:KCSEntityKeyId] && value != nil){
+            objectId = value;
         }
         
         if (value == nil) {
@@ -602,7 +623,7 @@ BOOL isCollection(id obj)
         }
     }
     
-    KCSSerializedObject *sObject = [[[KCSSerializedObject alloc] initWithObject:object ofId:objectId dataToSerialize:dictionaryToMap isPostRequest:isPostRequest resources:resourcesToSave references:referencesToSave] autorelease];
+    KCSSerializedObject *sObject = [[[KCSSerializedObject alloc] initWithObject:object ofId:objectId dataToSerialize:dictionaryToMap resources:resourcesToSave references:referencesToSave] autorelease];
     
     [dictionaryToMap release];
     return sObject;
