@@ -19,7 +19,7 @@
 
 + (NSString *)uniqueIdentifier
 {
-    return [KCSKinveyUDID uniqueIdentifierFromSecureUDID];
+    return [KCSKinveyUDID uniqueIdentifierFromOpenUDID];
 }
 
 

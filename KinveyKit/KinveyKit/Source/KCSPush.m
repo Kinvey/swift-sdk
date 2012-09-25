@@ -88,8 +88,8 @@
         [airshipConfigOptions setValue:[options valueForKey:KCS_PUSH_SECRET_KEY] forKey:@"DEVELOPMENT_APP_SECRET"];
     } else {
         [airshipConfigOptions setValue:@"YES" forKey:@"APP_STORE_OR_AD_HOC_BUILD"];
-        [airshipConfigOptions setValue:@"Your production app key" forKey:@"PRODUCTION_APP_KEY"];
-        [airshipConfigOptions setValue:@"Your production app secret" forKey:@"PRODUCTION_APP_SECRET"];
+        [airshipConfigOptions setValue:[options valueForKey:KCS_PUSH_KEY_KEY] forKey:@"PRODUCTION_APP_KEY"];
+        [airshipConfigOptions setValue:[options valueForKey:KCS_PUSH_SECRET_KEY] forKey:@"PRODUCTION_APP_SECRET"];
     }
     
     [takeOffOptions setValue:airshipConfigOptions forKey:UAirshipTakeOffOptionsAirshipConfigKey];
