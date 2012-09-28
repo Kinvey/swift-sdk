@@ -257,16 +257,20 @@ typedef struct {
 
 - (void) neq
 {
-    KCSCollection* collection = [KCSCollection collectionFromString:@"<#collection name#>" ofClass:[NSObject class]];
-    
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
-    [store loadObjectWithID:@"object1" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        dispatch_async(dispatch_queue_create("com.kinvey.lotsofwork", NULL), ^{
-            [self doIntensiveWorkOn:objectsOrNil];
-        });
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        NSLog(@"percent complete = %f", percentComplete);
-    }];
+//    NSDictionary* teamRef = @{@"_type" : @"KinveyRef", @"_collection" : @"Teams", @"_id" : [self.team kinveyObjectId] }
+//    KCSQuery *query = [KCSQuery queryOnField:@"team"
+//                      withExactMatchForValue:teamRef];
+//    
+//    KCSCollection* collection = [KCSCollection collectionFromString:@"<#collection name#>" ofClass:[NSObject class]];
+//    
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
+//    [store loadObjectWithID:@"object1" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        dispatch_async(dispatch_queue_create("com.kinvey.lotsofwork", NULL), ^{
+//            [self doIntensiveWorkOn:objectsOrNil];
+//        });
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        NSLog(@"percent complete = %f", percentComplete);
+//    }];
 }
 
 
