@@ -142,6 +142,11 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
 }
 
+- (NSString*)proxyForJson
+{
+    return [self kinveyObjectId];
+}
+
 - (NSString *)kinveyObjectIdHostProperty
 {
     NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];

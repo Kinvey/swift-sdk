@@ -926,6 +926,53 @@ TestClass* randomTestClass(NSString* description)
 
     
 }
+
+- (void) testQueryHasRef
+{
+    NestingRefClass* obj1 = [[NestingRefClass alloc] init];
+    obj1.objCount = 1;
+    obj1.objDescription = @"testNestedReferences : Top Object";
+    
+    ReffedTestClass* obj2 = [[ReffedTestClass alloc] init];
+    obj2.objCount = 2;
+    obj2.objDescription = @"testNestedReferences : Middle Object";
+    obj1.relatedObject = obj2;
+    
+    self.done = NO;
+    __block double done = -1;
+    
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[NestingRefClass class]] options:nil];
+    [store saveObject:obj1 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        NestingRefClass* ret = [objectsOrNil objectAtIndex:0];
+        ReffedTestClass* newRef = ret.relatedObject;
+        STAssertEquals(newRef.objCount, obj2.objCount, @"Should be the same object back");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
+        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        done = percentComplete;
+    }];
+    [self poll];
+    
+    self.done = NO;
+    done = -1;
+
+    KCSQuery *query = [KCSQuery queryOnField:@"relatedObject"
+                      withExactMatchForValue:obj2];
+    
+    [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        NestingRefClass* ret = [objectsOrNil objectAtIndex:0];
+        ReffedTestClass* newRef = ret.relatedObject;
+        STAssertEquals(newRef.objCount, obj2.objCount, @"Should be the same object back");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
 //TODO: note different objs
 //TODO: 1->A, 2->A ==> 1->A, 2->A, not 1->A',2->A''
 @end
