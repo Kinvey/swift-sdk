@@ -384,7 +384,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
     
-    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:[NSArray arrayWithObject:value] useQueriesForOps:NO] mutableCopy] autorelease];
+    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
     
     return query;
     
@@ -394,7 +394,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
     
-    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:[NSArray arrayWithObject:value] useQueriesForOps:NO] mutableCopy] autorelease];
+    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
     
     return query;
     
@@ -489,7 +489,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 - (void)addQueryOnField:(NSString *)field usingConditional:(KCSQueryConditional)conditional forValue: (NSObject *)value
 {
-    NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:[NSArray arrayWithObject:value] useQueriesForOps:NO];
+    NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO];
     
     for (NSString *key in tmp) {
         [self.query setObject:[tmp objectForKey:key] forKey:key];
@@ -498,7 +498,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 - (void)addQueryOnField:(NSString *)field withExactMatchForValue: (NSObject *)value
 {
-    NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:[NSArray arrayWithObject:value] useQueriesForOps:NO];
+    NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[value] useQueriesForOps:NO];
     for (NSString *key in tmp) {
         [self.query setObject:[tmp objectForKey:key] forKey:key];
     }
@@ -621,11 +621,25 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 }
 
 
-#pragma mark -
-#pragma mark Query Representations
+#pragma mark - Query Representations
+- (BOOL) hasReferences
+{
+    return self.referenceFieldsToResolve != nil && self.referenceFieldsToResolve.count > 0;
+}
+
 - (NSString *)JSONStringRepresentation
 {
-    return [_query JSONRepresentation];
+    NSMutableDictionary* d = [[_query mutableCopy] autorelease];
+    if ([self hasReferences]) {
+        [_query enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            if ([self.referenceFieldsToResolve containsObject:key]) {
+                //use the _id to query for reference entities
+                [d removeObjectForKey:key];
+                [d setObject:obj forKey:[key stringByAppendingString:@"._id"]];
+            }
+        }];
+    }
+    return [d JSONRepresentation];
 }
 
 - (NSData *)UTF8JSONStringRepresentation
@@ -657,7 +671,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     if (self.skipModifier != nil){
         stringRepresentation = [stringRepresentation stringByAppendingQueryString:[self.skipModifier parameterStringRepresentation]];
     }
-    if (self.referenceFieldsToResolve != nil && self.referenceFieldsToResolve.count > 0) {
+    if ([self hasReferences]) {
         stringRepresentation = [stringRepresentation stringByAppendingQueryString:[@"resolve=" stringByAppendingString:[self.referenceFieldsToResolve join:@","]]];
     }
 
