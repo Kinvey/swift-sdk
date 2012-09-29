@@ -13,6 +13,13 @@
 
 
 ## 1.8
+### 1.8.3
+** Release Date: ** September 25, 2012
+
+* Bug fix(es):
+    * Fix issue with production push.
+    * Fix issue with analytics on libraries built with Xcode 4.5.
+
 ### 1.8.2
 ** Release Date: ** September 14, 2012
 
