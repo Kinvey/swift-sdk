@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/28/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 #ifndef NO_URBAN_AIRSHIP_PUSH
 
@@ -14,8 +14,10 @@
 #import "UAirship.h"
 #import "UAPush.h"
 
+#import "KinveyErrorCodes.h"
+
 @interface KCSPush()
-- (BOOL)initializeUrbanAirshipWithOptions: (NSDictionary *)options;
+- (BOOL)initializeUrbanAirshipWithOptions: (NSDictionary *)options error:(NSError**)error;
 @property (nonatomic, retain, readwrite) NSData  *deviceToken;
 
 @end
@@ -55,9 +57,14 @@
     return sKCSPush;
 }
 
-- (void)onLoadHelper:(NSDictionary *)options
+- (void) onLoadHelper:(NSDictionary *)options
 {
-    [self initializeUrbanAirshipWithOptions:options];
+    [self initializeUrbanAirshipWithOptions:options error:NULL];
+}
+
+- (BOOL) onLoadHelper:(NSDictionary *)options error:(NSError**)error
+{
+    return [self initializeUrbanAirshipWithOptions:options error:error];
 }
 
 - (void)onUnloadHelper
@@ -65,9 +72,8 @@
     [UAirship land];
 }
 
-- (BOOL) initializeUrbanAirshipWithOptions:(NSDictionary *)options
+- (BOOL) initializeUrbanAirshipWithOptions:(NSDictionary *)options error:(NSError**)error
 {
-    
     NSNumber *val = [options valueForKey:KCS_PUSH_IS_ENABLED_KEY];
 
     if ([val boolValue] == NO){
@@ -87,6 +93,10 @@
     NSPredicate *matchPred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"^\\S{22}+$"]; //borrowed from UAirship.m
     if (pushKey == nil || pushSecret == nil || [matchPred evaluateWithObject:pushKey] == NO || [matchPred evaluateWithObject:pushSecret] == NO) {
         //error - key not set or not set properly
+        if (error != NULL) {
+            NSDictionary *errorDictionary = @{ NSLocalizedDescriptionKey : @"KCS_PUSH_KEY_KEY and/or KCS_PUSH_SECRET KEY not set properly in options dictionary."};
+            *error = [[NSError alloc] initWithDomain:KCSPushErrorDomain code:KCSPrecondFailedError userInfo:errorDictionary];
+        }
         return NO;
     }
     

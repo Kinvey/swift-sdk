@@ -49,7 +49,6 @@
 		273A3E9B160A256100F3742C /* KinveyKitExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD0876160A03A8009473A3 /* KinveyKitExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		273A3E9C160A384C00F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
 		273A3E9D160A385100F3742C /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
-		273A3E9E160A5CC200F3742C /* Metatests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AFD4CF15C8866D00A44F4F /* Metatests.m */; };
 		273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */; };
 		273DB2E715D191A00072A444 /* KCSSaveQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 273DB2E515D191A00072A444 /* KCSSaveQueue.h */; };
 		273DB2E815D191A00072A444 /* KCSSaveQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E615D191A00072A444 /* KCSSaveQueue.m */; };
@@ -2421,7 +2420,6 @@
 				273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */,
 				27E0B36415E523B400B83E72 /* KCSGenericRestTests.m in Sources */,
 				27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */,
-				273A3E9E160A5CC200F3742C /* Metatests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
