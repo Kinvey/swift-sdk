@@ -15,7 +15,7 @@
 #import "UAPush.h"
 
 @interface KCSPush()
-- (void)initializeUrbanAirshipWithOptions: (NSDictionary *)options;
+- (BOOL)initializeUrbanAirshipWithOptions: (NSDictionary *)options;
 @property (nonatomic, retain, readwrite) NSData  *deviceToken;
 
 @end
@@ -65,14 +65,14 @@
     [UAirship land];
 }
 
-- (void)initializeUrbanAirshipWithOptions: (NSDictionary *)options
+- (BOOL) initializeUrbanAirshipWithOptions:(NSDictionary *)options
 {
     
     NSNumber *val = [options valueForKey:KCS_PUSH_IS_ENABLED_KEY];
 
     if ([val boolValue] == NO){
         // We don't want any of this code, so... we're done.
-        return;
+        return NO;
     }
     
     // Set up the UA stuff
@@ -81,15 +81,23 @@
     NSMutableDictionary *airshipConfigOptions = [[[NSMutableDictionary alloc] init] autorelease];
     NSMutableDictionary *takeOffOptions = [[[NSMutableDictionary alloc] init] autorelease];
     
+    NSString* pushKey = [options valueForKey:KCS_PUSH_KEY_KEY];
+    NSString* pushSecret = [options valueForKey:KCS_PUSH_SECRET_KEY];
+    
+    NSPredicate *matchPred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"^\\S{22}+$"]; //borrowed from UAirship.m
+    if (pushKey == nil || pushSecret == nil || [matchPred evaluateWithObject:pushKey] == NO || [matchPred evaluateWithObject:pushSecret] == NO) {
+        //error - key not set or not set properly
+        return NO;
+    }
     
     if ([[options valueForKey:KCS_PUSH_MODE_KEY] isEqualToString:KCS_PUSH_DEBUG]){
         [airshipConfigOptions setValue:@"NO" forKey:@"APP_STORE_OR_AD_HOC_BUILD"];
-        [airshipConfigOptions setValue:[options valueForKey:KCS_PUSH_KEY_KEY] forKey:@"DEVELOPMENT_APP_KEY"];
-        [airshipConfigOptions setValue:[options valueForKey:KCS_PUSH_SECRET_KEY] forKey:@"DEVELOPMENT_APP_SECRET"];
+        [airshipConfigOptions setValue:pushKey forKey:@"DEVELOPMENT_APP_KEY"];
+        [airshipConfigOptions setValue:pushSecret forKey:@"DEVELOPMENT_APP_SECRET"];
     } else {
         [airshipConfigOptions setValue:@"YES" forKey:@"APP_STORE_OR_AD_HOC_BUILD"];
-        [airshipConfigOptions setValue:[options valueForKey:KCS_PUSH_KEY_KEY] forKey:@"PRODUCTION_APP_KEY"];
-        [airshipConfigOptions setValue:[options valueForKey:KCS_PUSH_SECRET_KEY] forKey:@"PRODUCTION_APP_SECRET"];
+        [airshipConfigOptions setValue:pushKey forKey:@"PRODUCTION_APP_KEY"];
+        [airshipConfigOptions setValue:pushSecret forKey:@"PRODUCTION_APP_SECRET"];
     }
     
     [takeOffOptions setValue:airshipConfigOptions forKey:UAirshipTakeOffOptionsAirshipConfigKey];
@@ -107,7 +115,7 @@
     [[UAPush shared] enableAutobadge:YES];
     [[UAPush shared] resetBadge];//zero badge
     
-    
+    return YES;
 }
 #pragma mark Push
 // Push helpers
