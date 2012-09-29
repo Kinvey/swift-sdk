@@ -36,7 +36,6 @@
 		27302CC3155D4B4100A0183E /* NSArray+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */; };
 		27302CC4155D4B4100A0183E /* NSArray+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */; };
 		27302CCB155D614B00A0183E /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC9155D614B00A0183E /* KCSStore.m */; };
-		27332CDE15C2FFF700C9A960 /* libUAirship-1.2.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27332CDA15C2FF7400C9A960 /* libUAirship-1.2.2.a */; };
 		27347F7215B4665800133F64 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7115B4665800133F64 /* CoreLocation.framework */; };
 		2735B2461578E84A0063EE62 /* KCSResourceStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */; };
 		273A3E93160A1A9F00F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
@@ -61,6 +60,8 @@
 		27592BC81602211600AC2A69 /* KCSUniqueNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BC61602211600AC2A69 /* KCSUniqueNumber.m */; };
 		27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BCB160228D100AC2A69 /* KCSCounterTests.m */; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		275D5459161682EF003ABE40 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */; };
+		275D545A161682F0003ABE40 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
 		2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
 		2785F5351609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5331609179E004AA410 /* InfoPlist.strings */; };
@@ -82,7 +83,6 @@
 		27BD0875160A038B009473A3 /* KCSUserSocialExtrasTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */; };
 		27BD0877160A03BD009473A3 /* KinveyKitExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD0876160A03A8009473A3 /* KinveyKitExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27BD087C160A0B2B009473A3 /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60C814716EE300F77A3F /* KinveyKit.framework */; };
-		27BD087D160A0B4F009473A3 /* libUAirship-1.2.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27332CDA15C2FF7400C9A960 /* libUAirship-1.2.2.a */; };
 		27BD087E160A0B6A009473A3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */; };
 		27BD087F160A0B6A009473A3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
 		27BD0880160A0B73009473A3 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F340A914BCCEA500DB6C37 /* StoreKit.framework */; };
@@ -314,7 +314,6 @@
 		27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+KinveyAdditions.h"; sourceTree = "<group>"; };
 		27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+KinveyAdditions.m"; sourceTree = "<group>"; };
 		27302CC9155D614B00A0183E /* KCSStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSStore.m; sourceTree = "<group>"; };
-		27332CDA15C2FF7400C9A960 /* libUAirship-1.2.2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.2.2.a"; path = "Airship/libUAirship-1.2.2.a"; sourceTree = "<group>"; };
 		27347F7115B4665800133F64 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		2735B2441578E84A0063EE62 /* KCSResourceStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSResourceStoreTests.h; sourceTree = "<group>"; };
 		2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSResourceStoreTests.m; sourceTree = "<group>"; };
@@ -334,6 +333,7 @@
 		27592BCA160228D100AC2A69 /* KCSCounterTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCounterTests.h; sourceTree = "<group>"; };
 		27592BCB160228D100AC2A69 /* KCSCounterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCounterTests.m; sourceTree = "<group>"; };
 		2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSOfflineSaveStore.h; sourceTree = "<group>"; };
+		275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.3.3.a"; path = "Airship/libUAirship-1.3.3.a"; sourceTree = "<group>"; };
 		2764B53C15DD9242003964D1 /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = usr/lib/libobjc.dylib; sourceTree = SDKROOT; };
 		2785F52E1609179E004AA410 /* KinveyKitExtras.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; includeInIndex = 0; path = KinveyKitExtras.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2785F5321609179E004AA410 /* KinveyKitExtras-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KinveyKitExtras-Info.plist"; sourceTree = "<group>"; };
@@ -766,6 +766,7 @@
 				273A3E93160A1A9F00F3742C /* Accounts.framework in Frameworks */,
 				2785F55B160917C9004AA410 /* Twitter.framework in Frameworks */,
 				2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */,
+				275D545A161682F0003ABE40 /* libUAirship-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -775,7 +776,6 @@
 			files = (
 				273A3E95160A1AA900F3742C /* Accounts.framework in Frameworks */,
 				27BD088F160A0DC5009473A3 /* Twitter.framework in Frameworks */,
-				27BD087D160A0B4F009473A3 /* libUAirship-1.2.2.a in Frameworks */,
 				27BD087C160A0B2B009473A3 /* KinveyKit.framework in Frameworks */,
 				27BD087E160A0B6A009473A3 /* CFNetwork.framework in Frameworks */,
 				27BD0880160A0B73009473A3 /* StoreKit.framework in Frameworks */,
@@ -823,7 +823,7 @@
 				D32A60DE14716EE300F77A3F /* Foundation.framework in Frameworks */,
 				D32A60E314716EE300F77A3F /* KinveyKit.framework in Frameworks */,
 				D3FC21FB149A82FC00979F09 /* OCHamcrestIOS.framework in Frameworks */,
-				27332CDE15C2FFF700C9A960 /* libUAirship-1.2.2.a in Frameworks */,
+				275D5459161682EF003ABE40 /* libUAirship-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1059,7 +1059,7 @@
 				2785F55A160917C9004AA410 /* Twitter.framework */,
 				2764B53C15DD9242003964D1 /* libobjc.dylib */,
 				27347F7115B4665800133F64 /* CoreLocation.framework */,
-				27332CDA15C2FF7400C9A960 /* libUAirship-1.2.2.a */,
+				275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */,
 				D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */,
 				D3F340A914BCCEA500DB6C37 /* StoreKit.framework */,
 				D3FC21FA149A82FC00979F09 /* OCHamcrestIOS.framework */,
@@ -2513,6 +2513,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Airship\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
@@ -2538,6 +2542,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Airship\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
@@ -2563,6 +2571,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Airship\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
