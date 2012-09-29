@@ -10,6 +10,7 @@
 * Added support for `id<KCSPersistable>` objects to be used as match values in `KCSQuery` when using relationships through `KCSLinkedAppdataStore`.
 * Deprecated `KCSEntityDict`. You can now just save/load `NSMutableDictionary` objects directly with the backend. Use them like any other `KCSPersistable`.
     * Note: using a non-mutable `NSDictionary` will not have its fields updated when saving the object.
+* Upgraded Urban Airship library to 1.3.3.
 * Improved usability for Push Notifications
     * Deprecated `- [KCSPush onLoadHelper:]`; user `- [KCSPush onLoadHelper:error:]` instead to capture set-up errors.
 
