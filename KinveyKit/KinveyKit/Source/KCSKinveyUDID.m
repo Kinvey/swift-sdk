@@ -30,7 +30,7 @@
 
 + (NSString *)uniqueIdentifierFromSecureUDID
 {
-    return [KCSSecureUDID UDIDForDomain:@"com.kinvey" salt:KCS_SALT_FOR_UDID];
+    return [KCSSecureUDID UDIDForDomain:@"com.kinvey" usingKey:KCS_SALT_FOR_UDID];
 }
 
 

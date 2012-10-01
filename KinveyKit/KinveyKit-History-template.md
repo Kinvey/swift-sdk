@@ -2,17 +2,26 @@
 
 ## 1.9
 ### 1.9.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit190APIDiffs.html)
-** Release Date: ** TBD
+** Release Date: ** October 1, 2012
 
 * Added support for log-in with twitter
-  * Deprecate Facebook-specific methods and replace with generic social identity. See `KCSUser`.
-  * Requires linking Twitter.framework and Accounts.framework.
+    * Deprecate Facebook-specific methods and replace with generic social identity. See `KCSUser`.
+    * Requires linking Twitter.framework and Accounts.framework.
 * Added support for `id<KCSPersistable>` objects to be used as match values in `KCSQuery` when using relationships through `KCSLinkedAppdataStore`.
 * Deprecated `KCSEntityDict`. You can now just save/load `NSMutableDictionary` objects directly with the backend. Use them like any other `KCSPersistable`.
-  * Note: using a non-mutable `NSDictionary` will not have its fields updated when saving the object.
-
+    * Note: using a non-mutable `NSDictionary` will not have its fields updated when saving the object.
+* Upgraded Urban Airship library to 1.3.3.
+* Improved usability for Push Notifications
+    * Deprecated `- [KCSPush onLoadHelper:]`; use `- [KCSPush onLoadHelper:error:]` instead to capture set-up errors.
 
 ## 1.8
+### 1.8.3
+** Release Date: ** September 25, 2012
+
+* Bug fix(es):
+    * Fix issue with production push.
+    * Fix issue with analytics on libraries built with Xcode 4.5.
+
 ### 1.8.2
 ** Release Date: ** September 14, 2012
 
