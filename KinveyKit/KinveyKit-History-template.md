@@ -2,7 +2,7 @@
 
 ## 1.9
 ### 1.9.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit190APIDiffs.html)
-** Release Date: ** TBD
+** Release Date: ** October 1, 2012
 
 * Added support for log-in with twitter
     * Deprecate Facebook-specific methods and replace with generic social identity. See `KCSUser`.
@@ -12,7 +12,7 @@
     * Note: using a non-mutable `NSDictionary` will not have its fields updated when saving the object.
 * Upgraded Urban Airship library to 1.3.3.
 * Improved usability for Push Notifications
-    * Deprecated `- [KCSPush onLoadHelper:]`; user `- [KCSPush onLoadHelper:error:]` instead to capture set-up errors.
+    * Deprecated `- [KCSPush onLoadHelper:]`; use `- [KCSPush onLoadHelper:error:]` instead to capture set-up errors.
 
 ## 1.8
 ### 1.8.3
