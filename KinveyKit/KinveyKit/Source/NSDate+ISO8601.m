@@ -38,6 +38,11 @@
     [df setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     
     NSDate *myDate = [df dateFromString:string];
+    if (!myDate) {
+        //The string might not have milliseconds, try again w/o them
+        [df setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+        myDate = [df dateFromString:string];
+    }
     [df release];
     return myDate;
 }
