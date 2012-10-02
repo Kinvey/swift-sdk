@@ -97,7 +97,7 @@
     
     if (self){
         _kinveyDomain = @"kinvey.com";
-        _libraryVersion = @"1.9.0";
+        _libraryVersion = @"1.9.1";
         _userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
         _connectionTimeout = 10.0; // Default timeout to 10 seconds
         _analytics = [[KCSAnalytics alloc] init];

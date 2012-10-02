@@ -123,13 +123,16 @@ static int const kKCSOpenUDIDRedundancySlots = 100;
         unsigned char result[16];
         const char *cStr = [[[NSProcessInfo processInfo] globallyUniqueString] UTF8String];
         CC_MD5( cStr, strlen(cStr), result );
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat"
         _openUDID = [NSString stringWithFormat:
                 @"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%08x",
                 result[0], result[1], result[2], result[3], 
                 result[4], result[5], result[6], result[7],
                 result[8], result[9], result[10], result[11],
                 result[12], result[13], result[14], result[15],
-                arc4random() % 4294967295];  
+                arc4random() % 4294967295];
+#pragma clang diagnostic pop
     }
     
     // Call to other developers in the Open Source community:
