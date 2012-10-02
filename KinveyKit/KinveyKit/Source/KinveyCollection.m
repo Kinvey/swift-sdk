@@ -182,9 +182,12 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         return NO;
     }
     
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     if (![self.filters isEqualToArray:c.filters]){
         return NO;
     }
+#pragma clang diagnostic pop
     
     return YES;
 }

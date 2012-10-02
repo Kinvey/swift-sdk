@@ -32,7 +32,8 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 @end
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 @implementation KinveyKitEntityDictTests
 
@@ -261,3 +262,4 @@ typedef BOOL(^InfoSuccessAction)(int);
 }
 
 @end
+#pragma clang diagnostic pop
