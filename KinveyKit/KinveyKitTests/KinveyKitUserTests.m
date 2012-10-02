@@ -506,6 +506,9 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 static NSString* lastUser;
 static NSString* access_token = @"AAAD30ogoDZCYBAKwwcWRETWXcwE1aC7bSVMZALl5mG1WPSZCCVYKizWGPZALwhnnJ73gHUFky4rOnPkXZBxxayv2saVu4e9j3ZCXzQeOGowOANNQ5QZBCbR";
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (void) testLoginWithFacebookOld
 {
     [TestUtils justInitServer];
@@ -527,6 +530,8 @@ static NSString* access_token = @"AAAD30ogoDZCYBAKwwcWRETWXcwE1aC7bSVMZALl5mG1WP
     
     lastUser = [KCSClient sharedClient].currentUser.username;
 }
+
+#pragma clang diagnostic pop
 
 - (void) testLoginWithFacebookNew
 {
