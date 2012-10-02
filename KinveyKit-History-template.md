@@ -1,6 +1,11 @@
 # KinveyKit Release History
 
 ## 1.9
+### 1.9.1
+** Release Date: ** October 2, 2012
+* Bug fix(es):
+    * `KCSLinkedAppdataStore` now supports relationships when specifying an optional `cachePolicy` when querying. 
+
 ### 1.9.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit190APIDiffs.html)
 ** Release Date: ** October 1, 2012
 
