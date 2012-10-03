@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/15/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitClientTests.h"
@@ -28,10 +28,9 @@
 - (void)testUserAgentStringIsMeaningful
 {
     KCSClient *client = [KCSClient sharedClient];
-    assertThat(client.userAgent,
-               allOf(startsWith(@"ios-kinvey-http/"),
-                     endsWith([NSString stringWithFormat:@"kcs/%@", MINIMUM_KCS_VERSION_SUPPORTED]),
-                     nil));
+    STAssertTrue([client.userAgent hasPrefix:@"ios-kinvey-http/"], @"should be meaningful string: %@", client.userAgent);
+    NSString* suffix = [NSString stringWithFormat:@"kcs/%@", MINIMUM_KCS_VERSION_SUPPORTED];
+    STAssertTrue([client.userAgent hasSuffix:suffix], @"should be meaningful string: %@", client.userAgent);
 }
 
 - (void)testAppdataBaseURL
@@ -45,8 +44,7 @@
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
-    assertThat([[KCSClient sharedClient] appdataBaseURL],
-               is(urlString));
+    STAssertEqualObjects([[KCSClient sharedClient] appdataBaseURL], urlString, @"should match");
 }
 
 - (void)testResourceBaseURL
@@ -60,8 +58,7 @@
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
-    assertThat([[KCSClient sharedClient] resourceBaseURL],
-               is(urlString));
+    STAssertEqualObjects([[KCSClient sharedClient] resourceBaseURL], urlString, @"should match");
 }
 
 - (void)testUserBaseURL
@@ -75,8 +72,8 @@
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
-    assertThat([[KCSClient sharedClient] userBaseURL],
-               is(urlString));
+    
+    STAssertEqualObjects([[KCSClient sharedClient] userBaseURL], urlString, @"should match");
 }
 
 - (void)testBaseURLIsValid
@@ -86,7 +83,7 @@
                                                   usingOptions:nil];
     
     NSURL *baseURL = [NSURL URLWithString:[[KCSClient sharedClient] appdataBaseURL]];
-    assertThat(baseURL, isNot(nilValue()));
+    STAssertNotNil(baseURL, @"url should not be nil");
 }
 
 - (void)testURLOverrideWorks
@@ -103,20 +100,16 @@
                                                   usingOptions:nil];
 
     // Make sure starting value is good
-    assertThat([[KCSClient sharedClient] userBaseURL],
-               is(urlString));
+    STAssertEqualObjects([[KCSClient sharedClient] userBaseURL], urlString, @"should match");
     
     [[KCSClient sharedClient] setServiceHostname:newHost];
 
-    assertThat([[KCSClient sharedClient] appdataBaseURL],
-               is([NSString stringWithFormat:@"https://%@.kinvey.com/appdata/%@/", newHost, kidID]));
-
-    assertThat([[KCSClient sharedClient] resourceBaseURL],
-               is([NSString stringWithFormat:@"https://%@.kinvey.com/blob/%@/", newHost, kidID]));
-
-    assertThat([[KCSClient sharedClient] userBaseURL],
-               is([NSString stringWithFormat:@"https://%@.kinvey.com/user/%@/", newHost, kidID]));
-
+    NSString* testStr = [NSString stringWithFormat:@"https://%@.kinvey.com/appdata/%@/", newHost, kidID];
+    STAssertEqualObjects([[KCSClient sharedClient] appdataBaseURL], testStr, @"should match");
+    testStr = [NSString stringWithFormat:@"https://%@.kinvey.com/blob/%@/", newHost, kidID];
+    STAssertEqualObjects([[KCSClient sharedClient] resourceBaseURL], testStr, @"should match");
+    testStr = [NSString stringWithFormat:@"https://%@.kinvey.com/user/%@/", newHost, kidID];
+    STAssertEqualObjects([[KCSClient sharedClient] userBaseURL], testStr, @"should match");
 }
 
 - (void)testThatInitializeWithKeyAndSecretRejectsInvalidInput
@@ -137,8 +130,7 @@
                                                                 withClass:[NSObject class]];
     KCSCollection *coll2 = [KCSCollection collectionFromString:@"test"
                                                        ofClass:[NSObject class]];
-    
-    assertThat(coll1, is(equalTo(coll2)));
+    STAssertEqualObjects(coll1, coll2, @"should be equal");
 }
 
 - (void)testAuthCredentials
@@ -153,8 +145,7 @@
     NSURLCredential *cred = [NSURLCredential credentialWithUser:appKey
                                                        password:appSecret
                                                     persistence:NSURLCredentialPersistenceNone];
-    
-    assertThat([[KCSClient sharedClient] authCredentials], is(equalTo(cred)));
+    STAssertEqualObjects([[KCSClient sharedClient] authCredentials], cred, @"should be equal");
 }
 
 - (void)testSingletonIsSingleton
@@ -163,8 +154,7 @@
                                                                       withAppSecret:@"secret"
                                                                        usingOptions:nil];
     KCSClient *client2 = [KCSClient sharedClient];
-    
-    assertThat(client1, is(sameInstance(client2)));
+    STAssertEquals(client1, client2, @"should be same instance");
 }
 
 // Still need tests for push and initializing via plist

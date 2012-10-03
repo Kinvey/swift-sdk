@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/19/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitAnalyticsTests.h"
@@ -22,7 +22,7 @@
     KCSAnalytics *lytics = [[KCSClient sharedClient] analytics];
     
     NSString *UUID = [lytics generateUUID];
-    assertThat([lytics generateUUID], isNot(UUID));
+    STAssertFalse([[lytics generateUUID] isEqual:UUID], @"Should not match");
 }
 
 - (void)testUUIDNotUsingDeprecatedUDID
@@ -32,16 +32,15 @@
                                                   usingOptions:nil];
     
     KCSAnalytics *lytics = [[KCSClient sharedClient] analytics];
-    
-    assertThat(lytics.UUID, isNot(lytics.UDID));
+
+    STAssertFalse([lytics.UUID isEqual:lytics.UDID], @"Should not match");
 }
 
 - (void)testMACAddressGetsMACLikeAddress
 {
     NSString *kinveyUDID = [[[KCSClient sharedClient] analytics] kinveyUDID];
     NSString *macAddr = [[[KCSClient sharedClient] analytics] getMacAddress];
-    
-    assertThat(kinveyUDID, is(macAddr));
+    STAssertEqualObjects(kinveyUDID, macAddr, @"should match");
 }
 
 @end

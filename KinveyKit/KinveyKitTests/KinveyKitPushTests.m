@@ -22,7 +22,7 @@
 // All code under test must be linked into the Unit Test bundle
 - (void)testSharedPushReturnsInitializedSingleton{
     KCSPush *push = [KCSPush sharedPush];
-    assertThat(push, is(notNilValue()));
+    STAssertNotNil(push, @"should have a push value");
 }
 
 

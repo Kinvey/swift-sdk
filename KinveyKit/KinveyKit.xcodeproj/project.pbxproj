@@ -244,7 +244,6 @@
 		D3F7E8761488084D0044F1E8 /* KinveyUser.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E8741488084D0044F1E8 /* KinveyUser.m */; };
 		D3F7E88A148D64560044F1E8 /* KCSConnectionProgress.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E888148D64560044F1E8 /* KCSConnectionProgress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3F7E88B148D64560044F1E8 /* KCSConnectionProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E889148D64560044F1E8 /* KCSConnectionProgress.m */; };
-		D3FC21FB149A82FC00979F09 /* OCHamcrestIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3FC21FA149A82FC00979F09 /* OCHamcrestIOS.framework */; };
 		D3FC21FE149A833E00979F09 /* KinveyKitClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FC21FD149A833E00979F09 /* KinveyKitClientTests.m */; };
 		D3FF5FDB14C6178600680BD2 /* KCSAuthCredential.h in Headers */ = {isa = PBXBuildFile; fileRef = D3FF5FD914C6178600680BD2 /* KCSAuthCredential.h */; };
 		D3FF5FDC14C6178600680BD2 /* KCSAuthCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FF5FDA14C6178600680BD2 /* KCSAuthCredential.m */; };
@@ -751,7 +750,6 @@
 		D3F7E8741488084D0044F1E8 /* KinveyUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyUser.m; sourceTree = "<group>"; };
 		D3F7E888148D64560044F1E8 /* KCSConnectionProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSConnectionProgress.h; sourceTree = "<group>"; };
 		D3F7E889148D64560044F1E8 /* KCSConnectionProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSConnectionProgress.m; sourceTree = "<group>"; };
-		D3FC21FA149A82FC00979F09 /* OCHamcrestIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrestIOS.framework; sourceTree = "<group>"; };
 		D3FC21FC149A833E00979F09 /* KinveyKitClientTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitClientTests.h; sourceTree = "<group>"; };
 		D3FC21FD149A833E00979F09 /* KinveyKitClientTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitClientTests.m; sourceTree = "<group>"; };
 		D3FF5FD914C6178600680BD2 /* KCSAuthCredential.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAuthCredential.h; sourceTree = "<group>"; };
@@ -826,7 +824,6 @@
 				D32A60DD14716EE300F77A3F /* UIKit.framework in Frameworks */,
 				D32A60DE14716EE300F77A3F /* Foundation.framework in Frameworks */,
 				D32A60E314716EE300F77A3F /* KinveyKit.framework in Frameworks */,
-				D3FC21FB149A82FC00979F09 /* OCHamcrestIOS.framework in Frameworks */,
 				275D5459161682EF003ABE40 /* libUAirship-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1068,7 +1065,6 @@
 				275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */,
 				D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */,
 				D3F340A914BCCEA500DB6C37 /* StoreKit.framework */,
-				D3FC21FA149A82FC00979F09 /* OCHamcrestIOS.framework */,
 				D3C5E68414745F09002D8F2B /* MobileCoreServices.framework */,
 				D3C5E68514745F09002D8F2B /* Security.framework */,
 				D3C5E68614745F09002D8F2B /* SystemConfiguration.framework */,

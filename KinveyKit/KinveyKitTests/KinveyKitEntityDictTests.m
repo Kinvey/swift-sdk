@@ -89,8 +89,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     [d setValue:@"test" forProperty:@"test"];
     // CHEAT
     NSString *str = [[d performSelector:@selector(entityProperties)] objectForKey:@"test"];
-    assertThat(str, is(equalTo(@"test")));
-    
+    STAssertEqualObjects(str, @"test", @"property should match");
     
     // Verify that we're acting like a dictionary
     STAssertThrows([d setValue:nil forProperty:@"nilTest"], @"Expected throw for nil in dictionary, did not get");
@@ -98,36 +97,36 @@ typedef BOOL(^InfoSuccessAction)(int);
     [d setValue:[NSNull null] forProperty:@"nilTest"];
     // CHEAT
     NSNull *n = [[d performSelector:@selector(entityProperties)] objectForKey:@"nilTest"];
-    assertThat(n, is(equalTo([NSNull null])));
+    STAssertEqualObjects(n,[NSNull null], @"property should match");
     
     // Number
-    NSNumber *tn = [NSNumber numberWithDouble:3.14159];
+    NSNumber *tn = @3.14159;
     [d setValue:tn forProperty:@"test"];
     // CHEAT
     NSNumber *nmb = [[d performSelector:@selector(entityProperties)] objectForKey:@"test"];
-    assertThat(nmb, is(equalTo(tn)));
+    STAssertEqualObjects(nmb, tn, @"property should match");
     
     // Bool
-    tn = [NSNumber numberWithBool:YES];
+    tn = @(YES);
     [d setValue:tn forProperty:@"test"];
     // CHEAT
     nmb = [[d performSelector:@selector(entityProperties)] objectForKey:@"test"];
-    assertThat(nmb, is(equalTo(tn)));
+    STAssertEqualObjects(nmb, tn, @"property should match");
 
     // Array
     NSArray *t = [NSArray arrayWithObjects:@"one", @"two", @"three", nil];
     [d setValue:t forProperty:@"test"];
     // CHEAT
     NSArray *array = [[d performSelector:@selector(entityProperties)] objectForKey:@"test"];
-    assertThat(array, is(equalTo(t)));
+    STAssertEqualObjects(array, t, @"property should match");
 
     // Dict
     NSDictionary *td = [NSDictionary dictionaryWithObjectsAndKeys:@"1", @"one", @"2", @"two", nil];
     [d setValue:td forProperty:@"test"];
     // CHEAT
     NSDictionary *dict = [[d performSelector:@selector(entityProperties)] objectForKey:@"test"];
-    assertThat(dict, is(equalTo(td)));
-    
+    STAssertEqualObjects(dict, td, @"property should match");
+
 }
 
 - (void)testGet
@@ -135,41 +134,40 @@ typedef BOOL(^InfoSuccessAction)(int);
     KCSEntityDict *d = [[KCSEntityDict alloc] init];
     [d setValue:@"test" forProperty:@"test"];
     NSString *str = [d getValueForProperty:@"test"];
-    assertThat(str, is(equalTo(@"test")));
-    
+    STAssertEqualObjects(str, @"test", @"property should match");
     
     // Verify that we're acting like a dictionary
     STAssertThrows([d setValue:nil forProperty:@"nilTest"], @"Expected throw for nil in dictionary, did not get");
     
     [d setValue:[NSNull null] forProperty:@"nilTest"];
     NSNull *n = [d getValueForProperty:@"nilTest"];
-    assertThat(n, is(equalTo([NSNull null])));
+    STAssertEqualObjects(n, [NSNull null], @"property should match");
     
     // Number
     NSNumber *tn = [NSNumber numberWithDouble:3.14159];
     [d setValue:tn forProperty:@"test"];
     NSNumber *nmb = [d getValueForProperty:@"test"];
-    assertThat(nmb, is(equalTo(tn)));
+    STAssertEqualObjects(nmb, tn, @"property should match");
     
     // Bool
     tn = [NSNumber numberWithBool:YES];
     [d setValue:tn forProperty:@"test"];
     nmb = [d getValueForProperty:@"test"];
-    assertThat(nmb, is(equalTo(tn)));
+    STAssertEqualObjects(nmb, tn, @"property should match");
+
     
     // Array
     NSArray *t = [NSArray arrayWithObjects:@"one", @"two", @"three", nil];
     [d setValue:t forProperty:@"test"];
     NSArray *array = [d getValueForProperty:@"test"];
-    assertThat(array, is(equalTo(t)));
-    
+    STAssertEqualObjects(array, t, @"property should match");
+
     // Dict
     NSDictionary *td = [NSDictionary dictionaryWithObjectsAndKeys:@"1", @"one", @"2", @"two", nil];
     [d setValue:td forProperty:@"test"];
     NSDictionary *dict = [d getValueForProperty:@"test"];
-    assertThat(dict, is(equalTo(td)));
-    
-   
+    STAssertEqualObjects(dict, td, @"property should match");
+
 }
 
 - (void) testSerialize
