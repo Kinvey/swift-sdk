@@ -61,8 +61,8 @@
 		27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BCB160228D100AC2A69 /* KCSCounterTests.m */; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275D5459161682EF003ABE40 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */; };
-		275D545A161682F0003ABE40 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
+		2779FE06161CCAB900D3D74F /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */; };
 		2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
 		2785F5351609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5331609179E004AA410 /* InfoPlist.strings */; };
 		2785F53D1609179E004AA410 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
@@ -768,7 +768,6 @@
 				273A3E93160A1A9F00F3742C /* Accounts.framework in Frameworks */,
 				2785F55B160917C9004AA410 /* Twitter.framework in Frameworks */,
 				2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */,
-				275D545A161682F0003ABE40 /* libUAirship-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -793,6 +792,7 @@
 				27BD0888160A0BB2009473A3 /* KinveyKitTests.octest in Frameworks */,
 				27BD0883160A0B83009473A3 /* CoreLocation.framework in Frameworks */,
 				2785F53E1609179E004AA410 /* UIKit.framework in Frameworks */,
+				2779FE06161CCAB900D3D74F /* libUAirship-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2286,7 +2286,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -e /usr/local/bin/appledoc ];\nthen\n    echo \"Appledoc binary not found! Can't generate documentation!\"\n    exit 127\nfi\n\n/usr/local/bin/appledoc --project-name KinveyKit --project-company \"Kinvey\" --company-id com.kinvey --ignore \"3rdParty\" --exit-threshold 2 --logformat xcode .\n";
+			shellScript = "if [ ! -e /usr/local/bin/appledoc ];\nthen\n    echo \"Appledoc binary not found! Can't generate documentation!\"\n    exit 127\nfi\n\necho \"Starting...\"\n\n${PROJECT_DIR}/../Tools/build-kinvey ${PROJECT_DIR}\n# /usr/local/bin/appledoc --project-name KinveyKit --project-company \"Kinvey\" --company-id com.kinvey --ignore \"3rdParty\" --exit-threshold 2 --logformat xcode .\n\necho \"done...\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
