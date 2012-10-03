@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		27AC2F19161C84F6008A05E1 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27AC2F18161C84F6008A05E1 /* Accounts.framework */; };
+		27AC2F1C161C84FF008A05E1 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27AC2F1B161C84FF008A05E1 /* Twitter.framework */; };
+		27AC2F1E161C851F008A05E1 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27AC2F1D161C851F008A05E1 /* CoreLocation.framework */; };
 		D30791D014560CEB00E5A284 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D30791CF14560CEB00E5A284 /* UIKit.framework */; };
 		D30791D214560CEB00E5A284 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D30791D114560CEB00E5A284 /* Foundation.framework */; };
 		D30791D414560CEB00E5A284 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D30791D314560CEB00E5A284 /* CoreGraphics.framework */; };
@@ -65,6 +68,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		27AC2F18161C84F6008A05E1 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		27AC2F1B161C84FF008A05E1 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
+		27AC2F1D161C851F008A05E1 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		D30791CB14560CEB00E5A284 /* KinveyLists.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinveyLists.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D30791CF14560CEB00E5A284 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		D30791D114560CEB00E5A284 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -89,9 +95,9 @@
 		D30E55EF1478C3EF00F0EC04 /* KCSAddListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSAddListController.m; sourceTree = "<group>"; };
 		D30E55F21478C42B00F0EC04 /* KCSTableViewControllerAddDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSTableViewControllerAddDelegate.h; sourceTree = "<group>"; };
 		D36F10C214644B4000BB1E0C /* Lobster 1.4.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lobster 1.4.otf"; sourceTree = "<group>"; };
-		D36F10CD14647D7C00BB1E0C /* logo57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo57.png; sourceTree = "<group>"; };
-		D36F10CF14647D8300BB1E0C /* logo114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo114.png; sourceTree = "<group>"; };
-		D36F10D114647D9000BB1E0C /* logo72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo72.png; sourceTree = "<group>"; };
+		D36F10CD14647D7C00BB1E0C /* logo57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo57.png; path = ../logo57.png; sourceTree = "<group>"; };
+		D36F10CF14647D8300BB1E0C /* logo114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo114.png; path = ../logo114.png; sourceTree = "<group>"; };
+		D36F10D114647D9000BB1E0C /* logo72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo72.png; path = ../logo72.png; sourceTree = "<group>"; };
 		D37B4C5914643368000CEC45 /* KCSListOverviewTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSListOverviewTableController.h; sourceTree = "<group>"; };
 		D37B4C5A14643368000CEC45 /* KCSListOverviewTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSListOverviewTableController.m; sourceTree = "<group>"; };
 		D37B4C5D1464363D000CEC45 /* KCSListContentTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSListContentTableController.h; sourceTree = "<group>"; };
@@ -126,6 +132,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27AC2F1E161C851F008A05E1 /* CoreLocation.framework in Frameworks */,
+				27AC2F1C161C84FF008A05E1 /* Twitter.framework in Frameworks */,
+				27AC2F19161C84F6008A05E1 /* Accounts.framework in Frameworks */,
 				D3EE4A751492837E0072CA96 /* libsqlite3.dylib in Frameworks */,
 				D3EE4A761492837E0072CA96 /* libz.dylib in Frameworks */,
 				D3EE4A6F149283660072CA96 /* CFNetwork.framework in Frameworks */,
@@ -158,11 +167,6 @@
 		D30791C014560CEB00E5A284 = {
 			isa = PBXGroup;
 			children = (
-				D3EE4A731492837E0072CA96 /* libsqlite3.dylib */,
-				D3EE4A741492837E0072CA96 /* libz.dylib */,
-				D36F10D114647D9000BB1E0C /* logo72.png */,
-				D36F10CF14647D8300BB1E0C /* logo114.png */,
-				D36F10CD14647D7C00BB1E0C /* logo57.png */,
 				D30791D514560CEB00E5A284 /* KinveyLists */,
 				D30791F614560CEB00E5A284 /* SampleAppTests */,
 				D30791CE14560CEB00E5A284 /* Frameworks */,
@@ -182,6 +186,11 @@
 		D30791CE14560CEB00E5A284 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D3EE4A731492837E0072CA96 /* libsqlite3.dylib */,
+				D3EE4A741492837E0072CA96 /* libz.dylib */,
+				27AC2F1D161C851F008A05E1 /* CoreLocation.framework */,
+				27AC2F1B161C84FF008A05E1 /* Twitter.framework */,
+				27AC2F18161C84F6008A05E1 /* Accounts.framework */,
 				D3EE4A6B149283660072CA96 /* CFNetwork.framework */,
 				D3EE4A6C149283660072CA96 /* CoreTelephony.framework */,
 				D3EE4A6D149283660072CA96 /* StoreKit.framework */,
@@ -219,6 +228,9 @@
 		D30791D614560CEB00E5A284 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				D36F10D114647D9000BB1E0C /* logo72.png */,
+				D36F10CF14647D8300BB1E0C /* logo114.png */,
+				D36F10CD14647D7C00BB1E0C /* logo57.png */,
 				D36F10C214644B4000BB1E0C /* Lobster 1.4.otf */,
 				D37B4C6D14644353000CEC45 /* Kinvey_Splash.png */,
 				D30791D714560CEB00E5A284 /* KinveyLists-Info.plist */,
