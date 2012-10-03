@@ -18,65 +18,67 @@
 // All code under test must be linked into the Unit Test bundle
 
 
-- (void)testSingletonReturnsValue{
+- (void)testSingletonReturnsValue
+{
     KCSConnectionPool *pool = [KCSConnectionPool sharedPool];
-    assertThat(pool, is(notNilValue()));
-    assertThat(pool, is(instanceOf([KCSConnectionPool class])));
+    STAssertNotNil(pool, @"pool should not be nil");
+    STAssertTrue([pool isKindOfClass:[KCSConnectionPool class]], @"should be of the pool class");
 }
 
-- (void)testSingletonIsSingleton{
-    
+- (void)testSingletonIsSingleton
+{
     KCSConnectionPool *poolOne = [KCSConnectionPool sharedPool];
     KCSConnectionPool *poolTwo = [KCSConnectionPool sharedPool];
-    
-    assertThat(poolOne, is(sameInstance(poolTwo)));
+
+    STAssertEquals(poolOne, poolTwo, @"pools should be the same");
 }
 
-- (void)testFillPoolsWithArbitraryConnectionReturnsCorrectConnection{
-    
+- (void)testFillPoolsWithArbitraryConnectionReturnsCorrectConnection
+{
     // Fill async and sync pools with mock types
     [[KCSConnectionPool sharedPool] fillAsyncPoolWithConnections:[KCSMockConnection class]];
     [[KCSConnectionPool sharedPool] fillSyncPoolWithConnections:[KCSMockConnection class]];
     
     // Test correct types returned
     KCSConnection *connection = [KCSConnectionPool asyncConnection];
-    assertThat(connection, is(instanceOf([KCSMockConnection class])));
+    STAssertTrue([connection isKindOfClass:[KCSMockConnection class]], @"class should match");
 
     connection = [KCSConnectionPool syncConnection];
-    assertThat(connection, is(instanceOf([KCSMockConnection class])));    
+    STAssertTrue([connection isKindOfClass:[KCSMockConnection class]], @"class should match");
     
     // Reset connections
     [[KCSConnectionPool sharedPool] fillPools];
 
     // Test correct types returned
     connection = [KCSConnectionPool asyncConnection];
-    assertThat(connection, is(instanceOf([KCSAsyncConnection class])));
+    STAssertTrue([connection isKindOfClass:[KCSAsyncConnection class]], @"class should match");
     
     connection = [KCSConnectionPool syncConnection];
-    assertThat(connection, is(instanceOf([KCSSyncConnection class])));    
-
+    STAssertTrue([connection isKindOfClass:[KCSSyncConnection class]], @"class should match");
 }
 
-- (void)testFillPoolsFillsToDefaultValues{
+- (void)testFillPoolsFillsToDefaultValues
+{
     // Reset connections
     [[KCSConnectionPool sharedPool] fillPools];
     
     // Test correct types returned
     KCSConnection *connection = [KCSConnectionPool asyncConnection];
-    assertThat(connection, is(instanceOf([KCSAsyncConnection class])));
+    STAssertTrue([connection isKindOfClass:[KCSAsyncConnection class]], @"class should match");
     
     connection = [KCSConnectionPool syncConnection];
-    assertThat(connection, is(instanceOf([KCSSyncConnection class])));    
-
+    STAssertTrue([connection isKindOfClass:[KCSSyncConnection class]], @"class should match");
 }
 
-- (void)testArbitraryConnectionType{
+- (void)testArbitraryConnectionType
+{
     KCSConnection *connection = [KCSConnectionPool connectionWithConnectionType:[KCSMockConnection class]];
     
-    assertThat(connection, is(instanceOf([KCSMockConnection class])));
+    STAssertTrue([connection isKindOfClass:[KCSMockConnection class]], @"class should match");
 }
 
-- (void)testThatNonConnectionObjectCausesException{
+- (void)testThatNonConnectionObjectCausesException
+{
     KCSConnectionPool *pool = [KCSConnectionPool sharedPool];
     
     STAssertThrows([pool fillAsyncPoolWithConnections:[NSString class]],

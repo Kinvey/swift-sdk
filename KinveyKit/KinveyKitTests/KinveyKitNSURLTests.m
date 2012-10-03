@@ -15,34 +15,28 @@
 {
     // Test empty String + empty string
     NSURL *emptyURL = [NSURL URLWithString:@""];
-    assertThat([emptyURL URLByAppendingQueryString:@""], is(equalTo(emptyURL)));
+    STAssertEqualObjects([emptyURL URLByAppendingQueryString:@""], emptyURL, @"");
     
     
     // Test empty string + value
     NSURL *testURL = [NSURL URLWithString:@"?value"];
-    assertThat([emptyURL URLByAppendingQueryString:@"value"], is(equalTo(testURL)));
+    STAssertEqualObjects([emptyURL URLByAppendingQueryString:@"value"], testURL, @"");
     
     // Test Value + empty string
     testURL = [NSURL URLWithString:@"http://www.kinvey.com/"];
-    assertThat([testURL URLByAppendingQueryString:@""], is(equalTo(testURL)));
-    
+    STAssertEqualObjects([testURL URLByAppendingQueryString:@""], testURL, @"");
 
     // Test nil
-    assertThat([testURL URLByAppendingQueryString:nil], is(equalTo(testURL)));
+    STAssertEqualObjects([testURL URLByAppendingQueryString:nil], testURL, @"");
 
-    
     // Test simple query
     NSURL *rootURL = [NSURL URLWithString:@"http://www.kinvey.com/"];
     testURL = [NSURL URLWithString:@"http://www.kinvey.com/?test"];
-    assertThat([rootURL URLByAppendingQueryString:@"test"], is(equalTo(testURL)));
-
-
+    STAssertEqualObjects([rootURL URLByAppendingQueryString:@"test"], testURL, @"");
     
     // Test double append
-    testURL = [NSURL URLWithString:@"http://www.kinvey.com/?one=1&two=2"];
-    
-    assertThat([[rootURL URLByAppendingQueryString:@"one=1"] URLByAppendingQueryString:@"two=2"], is(equalTo(testURL)));
-    
+    testURL = [NSURL URLWithString:@"http://www.kinvey.com/?one=1&two=2"];    
+    STAssertEqualObjects([[rootURL URLByAppendingQueryString:@"one=1"] URLByAppendingQueryString:@"two=2"], testURL, @"");
 }
 
 - (void)testURLWithUnencodedString
@@ -53,7 +47,6 @@
     NSURL *one = [NSURL URLWithString:encoded];
     NSURL *two = [NSURL URLWithUnencodedString:unEncoded];
     
-    assertThat(two, is(equalTo(one)));
-
+    STAssertEqualObjects(two, one, @"");
 }
 @end

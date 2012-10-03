@@ -22,45 +22,41 @@
     [KCSKeyChain removeStringForKey:@"rmTest"];
 }
 
-
 - (void)testGetNonExistentKeyReturnsNil{
     NSString *value = [KCSKeyChain getStringForKey:@"DoesNotExist"];
-    assertThat(value, is(nilValue()));
+    STAssertNil(value, @"should be nil");
 }
 
 - (void)testNilKeyReturnsNil{
     NSString *value = [KCSKeyChain getStringForKey:nil];
-    assertThat(value, is(nilValue()));
+    STAssertNil(value, @"should be nil");
 }
 
 - (void)testRemoveNonExistentValueReturnsFalse{
-    NSNumber *retVal =
-    [NSNumber numberWithBool:[KCSKeyChain removeStringForKey:@"DoesNotExist"]];
+    BOOL retVal = [KCSKeyChain removeStringForKey:@"DoesNotExist"];
 
-    assertThat(retVal, is(equalToBool(NO)));
+    STAssertFalse(retVal, @"should be false");
 }
 
 - (void)testSetValueWithNilKeyReturnsFalse{
-    NSNumber *retVal = [NSNumber numberWithBool:
-                        [KCSKeyChain setString:@"testSetValueWithNilKeyReturnsFalse"
-                                        forKey:nil]];
-    
-    assertThat(retVal, is(equalToBool(NO)));
-
+    BOOL retVal = [KCSKeyChain setString:@"testSetValueWithNilKeyReturnsFalse" forKey:nil];
+    STAssertFalse(retVal, @"should be false");
 }
 
 - (void)testGetValue{
     NSString *retVal = [KCSKeyChain getStringForKey:@"getTest"];
-    assertThat(retVal, is(equalTo(@"Test String")));
+    STAssertEqualObjects(retVal, @"Test String", @"strings should match");
 }
 
 - (void)testRemoveValue{
     NSString *retVal = [KCSKeyChain getStringForKey:@"rmTest"];
-    assertThat(retVal, is(equalTo(@"Delete Test")));
-    NSNumber *rmRetVal = [NSNumber numberWithBool:[KCSKeyChain removeStringForKey:@"rmTest"]];
-    assertThat(rmRetVal, is(equalToBool(YES)));
+    STAssertEqualObjects(retVal, @"Delete Test", @"strings should match");
+   
+    BOOL rmRetVal = [KCSKeyChain removeStringForKey:@"rmTest"];
+    STAssertTrue(rmRetVal, @"Should be true");
+
     retVal = [KCSKeyChain getStringForKey:@"rmTest"];
-    assertThat(retVal, is(nilValue()));
+    STAssertNil(retVal, @"string should be nil after removal");
 }
 
 
@@ -70,24 +66,16 @@
     NSString *testValue = @"testSetValueSetsValue";
     
     // Set value, make sure response is YES
-    NSNumber *setRetVal = [NSNumber numberWithBool:
-                           [KCSKeyChain setString:testValue
-                                           forKey:testKey]];
-    
-    assertThat(setRetVal, is(equalToBool(YES)));
+    BOOL setRetVal = [KCSKeyChain setString:testValue forKey:testKey];
+    STAssertTrue(setRetVal, @"set should be YES");
     
     // Check value
     NSString *key = [KCSKeyChain getStringForKey:testKey];
-    assertThat(key, is(equalTo(testValue)));
+    STAssertEqualObjects(key, testValue, @"keys should match");
     
     // Remove value
-    setRetVal = [NSNumber numberWithBool:
-                 [KCSKeyChain removeStringForKey:testKey]];
-    assertThat(setRetVal, is(equalToBool(YES)));
-    
-    
+    setRetVal = [KCSKeyChain removeStringForKey:testKey];
+    STAssertTrue(setRetVal, @"remove should be YES");
 }
-
-
 
 @end

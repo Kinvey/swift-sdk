@@ -18,6 +18,7 @@
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
 #import "TestUtils.h"
+#import "NSString+KinveyAdditions.h"
 
 @interface KinveyKitPingTests()
 @property (nonatomic, retain) KCS_SBJsonParser *parser;
@@ -94,9 +95,9 @@
     
     [KCSPing pingKinveyWithBlock:pinger];
     
-    assertThat([NSNumber numberWithBool:pingWasSuccessful], is(equalToBool(YES)));
-    assertThat(description, containsString(@"kinvey = hello"));
-    assertThat(description, containsString(@"version = \"0.6.6\""));
+    STAssertTrue(pingWasSuccessful, @"ping should be successful");
+    STAssertTrue([description containsStringCaseInsensitive:@"kinvey = hello"], @"");
+    STAssertTrue([description containsStringCaseInsensitive:@"version = \"0.6.6\""], @"");
     
     [conn release];
     
@@ -142,9 +143,9 @@
     
     [KCSPing pingKinveyWithBlock:pinger];
     
-    assertThat([NSNumber numberWithBool:pingWasSuccessful], is(equalToBool(YES)));
-    assertThat(description, startsWith(@"Kinvey Service is alive, version: "));
-    assertThat(description, endsWith(@", response: hello"));
+    STAssertTrue(pingWasSuccessful, @"ping should be successful");
+    STAssertTrue([description hasPrefix:@"Kinvey Service is alive, version: "], @"");
+    STAssertTrue([description hasSuffix:@", response: hello"], @"");
     
     [conn release];
 }
@@ -185,14 +186,10 @@
     
     [KCSPing pingKinveyWithBlock:pinger];
     
-    assertThat([NSNumber numberWithBool:pingWasSuccessful], is(equalToBool(NO)));
-    assertThat(description, containsString(@"Planned Testing Error"));
-    
+    STAssertFalse(pingWasSuccessful, @"ping should be successful");
+    STAssertTrue([description containsStringCaseInsensitive:@"Planned Testing Error"], @"");
+
     [conn release];
 }
-
-
-
-
 
 @end
