@@ -19,6 +19,7 @@
 #import "KCSLogManager.h"
 
 #import "KCSStore.h"
+#import "KCSClient+ConfigurationTest.h"
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
@@ -119,6 +120,13 @@
         _kinveyReachability = [[KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]] retain];
 #endif
         
+        @try {
+            [self testCanUseCategories];
+        }
+        @catch (NSException *exception) {
+            NSException* myException = [NSException exceptionWithName:@"CategoriesNotLoaded" reason:@"KinveyKit setup: Categories could not be loaded. Be sure to set '-ObjC' in the 'Other Linker Flags'." userInfo:nil];
+            @throw myException;
+        }
     }
     
     return self;
@@ -213,6 +221,7 @@
         @synchronized (self) {
             sKCSClient = [[KCSClient alloc] init];
             assert(sKCSClient != nil);
+            
         }
     }
     
