@@ -1,5 +1,11 @@
 # KinveyKit Release History
 
+## 1.10
+### 1.10.0
+* Bug fix(es):
+    * Fixed false error when deleting entities using old `KCSCollection` interface.
+    * Fixed error when loading dates that did not specify millisecond information. 
+
 ## 1.9
 ### 1.9.1
 ** Release Date: ** October 2, 2012

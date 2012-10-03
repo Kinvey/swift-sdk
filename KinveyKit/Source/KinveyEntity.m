@@ -142,11 +142,6 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
 }
 
-- (NSString*)proxyForJson
-{
-    return [self kinveyObjectId];
-}
-
 - (NSString *)kinveyObjectIdHostProperty
 {
     NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
@@ -371,7 +366,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
-        if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
+        if (response.responseCode >= 400){
             NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             [delegate entity:self operationDidFailWithError:error];
         } else {
