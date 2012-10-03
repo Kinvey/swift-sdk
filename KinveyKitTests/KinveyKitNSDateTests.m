@@ -22,7 +22,7 @@
     
     NSLog(@"Then: %@, Now: %@, delta: %f, inRange? %@", then, now, deltaDate, (fabs(deltaDate) < 0.001)?@"YES":@"NO");
     
-    assertThat([NSNumber numberWithDouble:deltaDate], is(closeTo(0, 0.001)));
+    STAssertTrue(abs(deltaDate) < 0.001, @"should be within the delta");
 }
 
 - (NSString *)nomillis:(NSString *)rfc3339DateTimeString
@@ -54,8 +54,7 @@
     NSTimeInterval deltaDate = [now timeIntervalSinceDate:then];
     
     NSLog(@"Then: %@, Now: %@, delta: %f, inRange? %@", then, now, deltaDate, (fabs(deltaDate) < 1)?@"YES":@"NO");
-    
-    assertThat([NSNumber numberWithDouble:deltaDate], is(closeTo(0, 1)));
+    STAssertTrue(abs(deltaDate) < 1, @"should be within the delta");
 }
 
 @end

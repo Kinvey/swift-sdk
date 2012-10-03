@@ -2,8 +2,7 @@
 //  KinveyKitClientTests.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 12/15/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 //  Logic unit tests contain unit test code that is designed to be linked into an independent test executable.
@@ -11,8 +10,7 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 
-#define HC_SHORTHAND
-#import <OCHamcrestIOS/OCHamcrestIOS.h>
+
 
 @interface KinveyKitClientTests : SenTestCase
 
