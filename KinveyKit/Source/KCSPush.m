@@ -122,7 +122,7 @@
                                                          UIRemoteNotificationTypeAlert)];
     
     
-    [[UAPush shared] enableAutobadge:YES];
+    [[UAPush shared] setAutobadgeEnabled:YES];
     [[UAPush shared] resetBadge];//zero badge
     
     return YES;
