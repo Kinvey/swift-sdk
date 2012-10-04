@@ -2498,6 +2498,148 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		272B7BF0161DCC490001132C /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+			};
+			name = DebugForTest_run_tests;
+		};
+		272B7BF1161DCC490001132C /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"KINVEY_DEBUG_ENABLED=1",
+					"DEBUG=1",
+					"BUILD_FOR_UNIT_TEST=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = "Airship/**";
+				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
+					"\"$(SRCROOT)/Airship\"",
+				);
+				LIBRARY_VERSION = "1.5-SANDBOX";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TEST_AFTER_BUILD = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = DebugForTest_run_tests;
+		};
+		272B7BF2161DCC490001132C /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"KINVEY_DEBUG_ENABLED=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				INFOPLIST_FILE = "KinveyKitTests/KinveyKitTests-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
+					"\"$(SRCROOT)/Airship\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_AFTER_BUILD = YES;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = DebugForTest_run_tests;
+		};
+		272B7BF3161DCC490001132C /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = DebugForTest_run_tests;
+		};
+		272B7BF4161DCC490001132C /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					armv6,
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKitExtras/KinveyKitExtras-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Airship\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = DebugForTest_run_tests;
+		};
+		272B7BF5161DCC490001132C /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKitExtras/KinveyKitExtras-Prefix.pch";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKitExtrasTests/KinveyKitExtrasTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Airship\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = DebugForTest_run_tests;
+		};
 		2785F5501609179F004AA410 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2678,7 +2820,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 			};
 			name = DebugForTest;
@@ -2735,7 +2877,6 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_AFTER_BUILD = NO;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = DebugForTest;
@@ -2758,7 +2899,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -2774,7 +2915,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2853,7 +2994,6 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_AFTER_BUILD = NO;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -2877,7 +3017,6 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_AFTER_BUILD = NO;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
@@ -2911,60 +3050,66 @@
 			buildConfigurations = (
 				2785F5501609179F004AA410 /* Debug */,
 				2785F5511609179F004AA410 /* DebugForTest */,
+				272B7BF4161DCC490001132C /* DebugForTest_run_tests */,
 				2785F5521609179F004AA410 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = DebugForTest_run_tests;
 		};
 		2785F5531609179F004AA410 /* Build configuration list for PBXNativeTarget "KinveyKitExtrasTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2785F5541609179F004AA410 /* Debug */,
 				2785F5551609179F004AA410 /* DebugForTest */,
+				272B7BF5161DCC490001132C /* DebugForTest_run_tests */,
 				2785F5561609179F004AA410 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = DebugForTest_run_tests;
 		};
 		D32A60BF14716EE300F77A3F /* Build configuration list for PBXProject "KinveyKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D32A60EE14716EE300F77A3F /* Debug */,
 				D30E55E01476FD3C00F0EC04 /* DebugForTest */,
+				272B7BF0161DCC490001132C /* DebugForTest_run_tests */,
 				D32A60EF14716EE300F77A3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = DebugForTest_run_tests;
 		};
 		D32A60F014716EE300F77A3F /* Build configuration list for PBXNativeTarget "KinveyKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D32A60F114716EE300F77A3F /* Debug */,
 				D30E55E11476FD3C00F0EC04 /* DebugForTest */,
+				272B7BF1161DCC490001132C /* DebugForTest_run_tests */,
 				D32A60F214716EE300F77A3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = DebugForTest_run_tests;
 		};
 		D32A60F314716EE300F77A3F /* Build configuration list for PBXNativeTarget "KinveyKitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D32A60F414716EE300F77A3F /* Debug */,
 				D30E55E21476FD3C00F0EC04 /* DebugForTest */,
+				272B7BF2161DCC490001132C /* DebugForTest_run_tests */,
 				D32A60F514716EE300F77A3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = DebugForTest_run_tests;
 		};
 		D3F7E88E148D7C770044F1E8 /* Build configuration list for PBXAggregateTarget "KinveyKit Documentation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D3F7E88F148D7C770044F1E8 /* Debug */,
 				D3F7E890148D7C770044F1E8 /* DebugForTest */,
+				272B7BF3161DCC490001132C /* DebugForTest_run_tests */,
 				D3F7E891148D7C770044F1E8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = DebugForTest_run_tests;
 		};
 /* End XCConfigurationList section */
 	};

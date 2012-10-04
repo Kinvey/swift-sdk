@@ -25,7 +25,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
-#import "UAirship.h"
+#import "UAPush.h"
 
 @interface UAPushMoreSettingsViewController : UIViewController <UARegistrationObserver> {
     IBOutlet UITableView *tableView;
