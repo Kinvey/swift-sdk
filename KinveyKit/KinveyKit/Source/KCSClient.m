@@ -30,6 +30,7 @@
 @property (nonatomic, copy, readwrite) NSString *appdataBaseURL;
 @property (nonatomic, copy, readwrite) NSString *resourceBaseURL;
 @property (nonatomic, copy, readwrite) NSString *userBaseURL;
+@property (nonatomic, copy, readwrite) NSString *rpcBaseURL;
 
 @property (nonatomic, copy, readwrite) NSString *appKey;
 @property (nonatomic, copy, readwrite) NSString *appSecret;
@@ -281,7 +282,8 @@
     self.appdataBaseURL  = [NSString stringWithFormat:@"%@://%@.%@/appdata/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
     self.resourceBaseURL = [NSString stringWithFormat:@"%@://%@.%@/blob/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
     self.userBaseURL     = [NSString stringWithFormat:@"%@://%@.%@/user/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
-    
+    //rpc/:kid/:username/user-password-reset-initiate
+    self.rpcBaseURL      = [NSString stringWithFormat:@"%@://%@.%@/rpc/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
 
 }
 

@@ -476,11 +476,13 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 - (void)entity:(id)entity operationDidCompleteWithResult:(NSObject *)result
 {
     self.testPassed = self.onEntitySuccess(entity, result);
+    self.done = YES;
 }
 
 - (void)entity:(id)entity operationDidFailWithError:(NSError *)error
 {
     self.testPassed = self.onEntityFailure(entity, error);
+    self.done = YES;
 }
 
 
@@ -578,6 +580,69 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     lastUser = [KCSClient sharedClient].currentUser.username;
 }
 
+#pragma mark - Password reset
 
+- (void) testPasswordReset
+{
+    //create a test user
+    self.done = NO;
+    NSString* testUser = @"testino";
+    [KCSUser userWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNoError;
+        self.done = YES;
+    }];
+    [self poll];
+    
+    //set the email
+    [[[KCSClient sharedClient] currentUser] setValue:@"testino@kinvey.com" forAttribute:KCSUserAttributeEmail];
+    self.done = NO;
+    [[[KCSClient sharedClient] currentUser] saveWithDelegate:self];
+    [self poll];
+    
+    self.done = NO;
+    [KCSUser sendPasswordResetForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertTrue(emailSent, @"Should send email");
+    }];
+    [self poll];
+}
 
+- (void) testPasswordResetWithNoEmailDoesNotError
+{
+    //create a test user
+    self.done = NO;
+    NSString* testUser = @"testino";
+    [KCSUser userWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNoError;
+        self.done = YES;
+    }];
+    [self poll];
+    
+    self.done = NO;
+    [KCSUser sendPasswordResetForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertTrue(emailSent, @"Should have send email, anyway");
+    }];
+    [self poll];
+}
+
+- (void) testPasswordResetWithBadUserEmailDoesNotError
+{
+    //create a test user
+    self.done = NO;
+    NSString* testUser = @"BADUSER";
+    [KCSUser userWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNoError;
+        self.done = YES;
+    }];
+    [self poll];
+    
+    self.done = NO;
+    [KCSUser sendPasswordResetForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertTrue(emailSent, @"Should have send email, anyway");
+    }];
+    [self poll];
+
+}
 @end

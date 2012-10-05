@@ -12,6 +12,7 @@
 #import "KinveyUser.h"
 #import "KCSLogManager.h"
 #import "KCSBase64.h"
+#import "KCSHiddenMethods.h"
 
 enum {
     KCSAuthNoAuth = 0,
@@ -39,6 +40,9 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
         } else {
             authType = KCSAuthBasicAuthUser;
         }
+    } else if ([URL hasPrefix:client.rpcBaseURL]) {
+        // for now just use app secret until rpc endpoints are added that requier user auth
+        authType = KCSAuthBasicAuthAppKey;
     } else {
         // No auth known, this needs to be extensable in the future to add new methods
         authType = KCSAuthNoAuth;

@@ -2,6 +2,7 @@
 
 ## 1.10
 ### 1.10.0
+* Added `+ [KCSUser sendPasswordResetForUser:withCompletionBlock:]` in order to send a password reset email to the user.  
 * Bug fix(es):
     * Fixed false error when deleting entities using old `KCSCollection` interface.
     * Fixed error when loading dates that did not specify millisecond information. 

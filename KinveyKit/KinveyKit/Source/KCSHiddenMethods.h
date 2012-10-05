@@ -2,7 +2,6 @@
 //  KCSHiddenMethods.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 7/13/12.
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 
@@ -12,6 +11,7 @@
 #import "KCSAppdataStore.h"
 #import "KinveyCollection.h"
 #import "KCSRESTRequest.h"
+#import "KCSClient.h"
 
 @interface KCSGenericRESTRequest (KCSHiddenMethods)
 + (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
@@ -26,6 +26,10 @@
 
 - (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint;
 
+@end
+
+@interface KCSClient (KCSHiddenMethods)
+@property (nonatomic, copy, readonly) NSString *rpcBaseURL;
 @end
 
 @interface KCSAppdataStore (KCSHiddenMethods)
