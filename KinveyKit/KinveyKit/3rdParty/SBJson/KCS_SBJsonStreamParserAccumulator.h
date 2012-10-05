@@ -27,30 +27,11 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "KCS_SBJsonStreamWriterAccumulator.h"
+#import <Foundation/Foundation.h>
+#import "KCS_SBJsonStreamParserAdapter.h"
 
+@interface KCS_SBJsonStreamParserAccumulator : NSObject <KCS_SBJsonStreamParserAdapterDelegate>
 
-@implementation KCS_SBJsonStreamWriterAccumulator
-
-@synthesize data;
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        data = [[NSMutableData alloc] initWithCapacity:8096u];
-    }
-    return self;
-}
-
-- (void)dealloc {
-    [data release];
-    [super dealloc];
-}
-
-#pragma mark SBJsonStreamWriterDelegate
-
-- (void)writer:(KCS_SBJsonStreamWriter *)writer appendBytes:(const void *)bytes length:(NSUInteger)length {
-    [data appendBytes:bytes length:length];
-}
+@property (copy) id value;
 
 @end

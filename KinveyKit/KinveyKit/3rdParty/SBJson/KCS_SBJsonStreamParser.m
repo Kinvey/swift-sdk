@@ -33,7 +33,6 @@
 #import "KCS_SBJsonStreamParser.h"
 #import "KCS_SBJsonTokeniser.h"
 #import "KCS_SBJsonStreamParserState.h"
-#import "NSDate+ISO8601.h"
 #import <limits.h>
 
 @implementation KCS_SBJsonStreamParser
@@ -58,61 +57,54 @@
 	return self;
 }
 
-- (void)dealloc {
-	self.error = nil;
-    self.state = nil;
-	[stateStack release];
-	[tokeniser release];
-	[super dealloc];
-}
 
 #pragma mark Methods
 
-- (NSString*)tokenName:(kcs_sbjson_token_t)token {
+- (NSString*)tokenName:(KCS_sbjson_token_t)token {
 	switch (token) {
-		case kcs_sbjson_token_array_start:
+		case sbjson_token_array_start:
 			return @"start of array";
 			break;
 
-		case kcs_sbjson_token_array_end:
+		case sbjson_token_array_end:
 			return @"end of array";
 			break;
 
-		case kcs_sbjson_token_number:
+		case sbjson_token_number:
 			return @"number";
 			break;
 
-		case kcs_sbjson_token_string:
+		case sbjson_token_string:
 			return @"string";
 			break;
 
-		case kcs_sbjson_token_true:
-		case kcs_sbjson_token_false:
+		case sbjson_token_true:
+		case sbjson_token_false:
 			return @"boolean";
 			break;
 
-		case kcs_sbjson_token_null:
+		case sbjson_token_null:
 			return @"null";
 			break;
 
-		case kcs_sbjson_token_keyval_separator:
+		case sbjson_token_keyval_separator:
 			return @"key-value separator";
 			break;
 
-		case kcs_sbjson_token_separator:
+		case sbjson_token_separator:
 			return @"value separator";
 			break;
 
-		case kcs_sbjson_token_object_start:
+		case sbjson_token_object_start:
 			return @"start of object";
 			break;
 
-		case kcs_sbjson_token_object_end:
+		case sbjson_token_object_end:
 			return @"end of object";
 			break;
 
-		case kcs_sbjson_token_eof:
-		case kcs_sbjson_token_error:
+		case sbjson_token_eof:
+		case sbjson_token_error:
 			break;
 	}
 	NSAssert(NO, @"Should not get here");
@@ -120,7 +112,7 @@
 }
 
 - (void)maxDepthError {
-    self.error = [NSString stringWithFormat:@"Input depth exceeds max depth of %u", maxDepth];
+    self.error = [NSString stringWithFormat:@"Input depth exceeds max depth of %lu", (unsigned long)maxDepth];
     self.state = [KCS_SBJsonStreamParserStateError sharedInstance];
 }
 
@@ -135,6 +127,13 @@
     self.state = [KCS_SBJsonStreamParserStateObjectStart sharedInstance];
 }
 
+- (void)handleObjectEnd: (KCS_sbjson_token_t) tok  {
+    self.state = [stateStack lastObject];
+    [stateStack removeLastObject];
+    [state parser:self shouldTransitionTo:tok];
+    [delegate parserFoundObjectEnd:self];
+}
+
 - (void)handleArrayStart {
 	if (stateStack.count >= maxDepth) {
         [self maxDepthError];
@@ -146,104 +145,97 @@
     self.state = [KCS_SBJsonStreamParserStateArrayStart sharedInstance];
 }
 
+- (void)handleArrayEnd: (KCS_sbjson_token_t) tok  {
+    self.state = [stateStack lastObject];
+    [stateStack removeLastObject];
+    [state parser:self shouldTransitionTo:tok];
+    [delegate parserFoundArrayEnd:self];
+}
+
+- (void) handleTokenNotExpectedHere: (KCS_sbjson_token_t) tok  {
+    NSString *tokenName = [self tokenName:tok];
+    NSString *stateName = [state name];
+
+    self.error = [NSString stringWithFormat:@"Token '%@' not expected %@", tokenName, stateName];
+    self.state = [KCS_SBJsonStreamParserStateError sharedInstance];
+}
+
 - (KCS_SBJsonStreamParserStatus)parse:(NSData *)data_ {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    @try {
+    @autoreleasepool {
         [tokeniser appendData:data_];
         
         for (;;) {
             
-            if ([state isKindOfClass:[KCS_SBJsonStreamParserStateError class]])
-                return KCS_SBJsonStreamParserError;
+            if ([state isError])
+                return SBJsonStreamParserError;
             
             NSObject *token;
-            kcs_sbjson_token_t tok = [tokeniser getToken:&token];
+            KCS_sbjson_token_t tok = [tokeniser getToken:&token];
             switch (tok) {
-                case kcs_sbjson_token_eof:
+                case sbjson_token_eof:
                     return [state parserShouldReturn:self];
                     break;
                     
-                case kcs_sbjson_token_error:
+                case sbjson_token_error:
                     self.state = [KCS_SBJsonStreamParserStateError sharedInstance];
                     self.error = tokeniser.error;
-                    return KCS_SBJsonStreamParserError;
+                    return SBJsonStreamParserError;
                     break;
                     
                 default:
                     
                     if (![state parser:self shouldAcceptToken:tok]) {
-                        NSString *tokenName = [self tokenName:tok];
-                        NSString *stateName = [state name];
-                        
-                        self.error = [NSString stringWithFormat:@"Token '%@' not expected %@", tokenName, stateName];
-                        self.state = [KCS_SBJsonStreamParserStateError sharedInstance];
-                        return KCS_SBJsonStreamParserError;
+                        [self handleTokenNotExpectedHere: tok];
+                        return SBJsonStreamParserError;
                     }
                     
                     switch (tok) {
-                        case kcs_sbjson_token_object_start:
+                        case sbjson_token_object_start:
                             [self handleObjectStart];
                             break;
                             
-                        case kcs_sbjson_token_object_end:
-                            self.state = [stateStack lastObject];
-                            [stateStack removeLastObject];
-                            [state parser:self shouldTransitionTo:tok];
-                            [delegate parserFoundObjectEnd:self];
+                        case sbjson_token_object_end:
+                            [self handleObjectEnd: tok];
                             break;
                             
-                        case kcs_sbjson_token_array_start:
+                        case sbjson_token_array_start:
                             [self handleArrayStart];
                             break;
                             
-                        case kcs_sbjson_token_array_end:
-                            self.state = [stateStack lastObject];
-                            [stateStack removeLastObject];
-                            [state parser:self shouldTransitionTo:tok];
-                            [delegate parserFoundArrayEnd:self];
+                        case sbjson_token_array_end:
+                            [self handleArrayEnd: tok];
                             break;
                             
-                        case kcs_sbjson_token_separator:
-                        case kcs_sbjson_token_keyval_separator:
+                        case sbjson_token_separator:
+                        case sbjson_token_keyval_separator:
                             [state parser:self shouldTransitionTo:tok];
                             break;
                             
-                        case kcs_sbjson_token_true:
+                        case sbjson_token_true:
                             [delegate parser:self foundBoolean:YES];
                             [state parser:self shouldTransitionTo:tok];
                             break;
                             
-                        case kcs_sbjson_token_false:
+                        case sbjson_token_false:
                             [delegate parser:self foundBoolean:NO];
                             [state parser:self shouldTransitionTo:tok];
                             break;
                             
-                        case kcs_sbjson_token_null:
+                        case sbjson_token_null:
                             [delegate parserFoundNull:self];
                             [state parser:self shouldTransitionTo:tok];
                             break;
                             
-                        case kcs_sbjson_token_number:
+                        case sbjson_token_number:
                             [delegate parser:self foundNumber:(NSNumber*)token];
                             [state parser:self shouldTransitionTo:tok];
                             break;
                             
-                        case kcs_sbjson_token_string:
+                        case sbjson_token_string:
                             if ([state needKey])
                                 [delegate parser:self foundObjectKey:(NSString*)token];
-                            else {
-                                if ([(NSString *)token hasPrefix:@"ISODate(\""] &&
-                                    [(NSString *)token hasSuffix:@"\")"])
-                                {
-                                    // This is really just a date
-                                    NSString *tmp = [(NSString *)token stringByReplacingOccurrencesOfString:@"ISODate(\"" withString:@""];
-                                    tmp = [tmp stringByReplacingOccurrencesOfString:@"\")" withString:@""];
-                                    NSDate *date = [NSDate dateFromISO8601EncodedString:tmp];
-                                    [delegate parser:self foundDate:date];
-                                } else {
-                                    [delegate parser:self foundString:(NSString*)token];
-                                }
-                            }
+                            else
+                                [delegate parser:self foundString:(NSString*)token];
                             [state parser:self shouldTransitionTo:tok];
                             break;
                             
@@ -253,10 +245,7 @@
                     break;
             }
         }
-        return KCS_SBJsonStreamParserComplete;
-    }
-    @finally {
-        [pool drain];
+        return SBJsonStreamParserComplete;
     }
 }
 

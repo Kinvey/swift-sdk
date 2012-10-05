@@ -38,13 +38,7 @@
 
  */
 
-@interface KCS_SBJsonParser : NSObject {
-
-@private
-	NSString *error;
-    NSUInteger depth, maxDepth;
-
-}
+@interface KCS_SBJsonParser : NSObject
 
 /**
  @brief The maximum recursing depth.

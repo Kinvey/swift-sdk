@@ -9,7 +9,7 @@
 #import "KinveyKitBlobServiceTests.h"
 #import "KCSMockConnection.h"
 #import "KCSConnectionResponse.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSConnectionPool.h"
 #import "KCSKeyChain.h"

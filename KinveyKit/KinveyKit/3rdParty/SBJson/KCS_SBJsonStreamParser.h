@@ -37,9 +37,9 @@
 @class KCS_SBJsonStreamParserState;
 
 typedef enum {
-	KCS_SBJsonStreamParserComplete,
-	KCS_SBJsonStreamParserWaitingForData,
-	KCS_SBJsonStreamParserError,
+	SBJsonStreamParserComplete,
+	SBJsonStreamParserWaitingForData,
+	SBJsonStreamParserError,
 } KCS_SBJsonStreamParserStatus;
 
 
@@ -77,7 +77,6 @@ typedef enum {
 
 /// Called when a string is found
 - (void)parser:(KCS_SBJsonStreamParser*)parser foundString:(NSString*)string;
-- (void)parser:(KCS_SBJsonStreamParser*)parser foundDate:(NSDate*)date;
 
 @end
 
@@ -100,17 +99,11 @@ typedef enum {
  */
 @interface KCS_SBJsonStreamParser : NSObject {
 @private
-	BOOL supportMultipleDocuments;
-	id<KCS_SBJsonStreamParserDelegate> delegate;
 	KCS_SBJsonTokeniser *tokeniser;
-    NSMutableArray *stateStack;
-	__weak KCS_SBJsonStreamParserState *state;
-	NSUInteger maxDepth;
-	NSString *error;
 }
 
-@property (nonatomic, assign) __weak KCS_SBJsonStreamParserState *state; // Private
-@property (nonatomic, readonly, retain) NSMutableArray *stateStack; // Private
+@property (nonatomic, unsafe_unretained) KCS_SBJsonStreamParserState *state; // Private
+@property (nonatomic, readonly, strong) NSMutableArray *stateStack; // Private
 
 /**
  @brief Expect multiple documents separated by whitespace
@@ -136,7 +129,7 @@ typedef enum {
  Usually this should be an instance of SBJsonStreamParserAdapter, but you can
  substitute your own implementation of the SBJsonStreamParserDelegate protocol if you need to. 
  */
-@property (assign) id<KCS_SBJsonStreamParserDelegate> delegate;
+@property (unsafe_unretained) id<KCS_SBJsonStreamParserDelegate> delegate;
 
 /**
  @brief The max parse depth

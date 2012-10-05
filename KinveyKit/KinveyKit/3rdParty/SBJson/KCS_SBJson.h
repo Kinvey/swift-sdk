@@ -80,5 +80,5 @@
 #import "KCS_SBJsonStreamParser.h"
 #import "KCS_SBJsonStreamParserAdapter.h"
 #import "KCS_SBJsonStreamWriter.h"
-#import "NSObject+SBJson.h"
+#import "NSObject+KCS_SBJson.h"
 

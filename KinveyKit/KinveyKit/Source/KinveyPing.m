@@ -10,7 +10,7 @@
 #import "KinveyBlocks.h"
 #import "KCSRESTRequest.h"
 #import "KCSConnectionResponse.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KCSClient.h"
 #import "KCSReachability.h"
 #import "KinveyErrorCodes.h"

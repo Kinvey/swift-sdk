@@ -14,7 +14,7 @@
 #import "KCSMockConnection.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KinveyPing.h"
 #import "KCSLogManager.h"
 #import "KCSAuthCredential.h"
