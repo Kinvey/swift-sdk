@@ -99,6 +99,31 @@
 		27BD0889160A0BBE009473A3 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */; };
 		27BD088D160A0C27009473A3 /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD088C160A0C27009473A3 /* TestUtils.m */; };
 		27BD088F160A0DC5009473A3 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
+		27C22279161DE9B200D827AE /* KCS_SBJson.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22260161DE9B200D827AE /* KCS_SBJson.h */; };
+		27C2227A161DE9B200D827AE /* KCS_SBJsonParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22261161DE9B200D827AE /* KCS_SBJsonParser.h */; };
+		27C2227B161DE9B200D827AE /* KCS_SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22262161DE9B200D827AE /* KCS_SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C2227C161DE9B200D827AE /* KCS_SBJsonStreamParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22263161DE9B200D827AE /* KCS_SBJsonStreamParser.h */; };
+		27C2227D161DE9B200D827AE /* KCS_SBJsonStreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22264161DE9B200D827AE /* KCS_SBJsonStreamParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C2227E161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22265161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.h */; };
+		27C2227F161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22266161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C22280161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22267161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.h */; };
+		27C22281161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22268161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C22282161DE9B200D827AE /* KCS_SBJsonStreamParserState.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22269161DE9B200D827AE /* KCS_SBJsonStreamParserState.h */; };
+		27C22283161DE9B200D827AE /* KCS_SBJsonStreamParserState.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C2226A161DE9B200D827AE /* KCS_SBJsonStreamParserState.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C22284161DE9B200D827AE /* KCS_SBJsonStreamWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C2226B161DE9B200D827AE /* KCS_SBJsonStreamWriter.h */; };
+		27C22285161DE9B200D827AE /* KCS_SBJsonStreamWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C2226C161DE9B200D827AE /* KCS_SBJsonStreamWriter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C22286161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C2226D161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.h */; };
+		27C22287161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C2226E161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C22288161DE9B200D827AE /* KCS_SBJsonStreamWriterState.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C2226F161DE9B200D827AE /* KCS_SBJsonStreamWriterState.h */; };
+		27C22289161DE9B200D827AE /* KCS_SBJsonStreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22270161DE9B200D827AE /* KCS_SBJsonStreamWriterState.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C2228A161DE9B200D827AE /* KCS_SBJsonTokeniser.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22271161DE9B200D827AE /* KCS_SBJsonTokeniser.h */; };
+		27C2228B161DE9B200D827AE /* KCS_SBJsonTokeniser.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22272161DE9B200D827AE /* KCS_SBJsonTokeniser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C2228C161DE9B200D827AE /* KCS_SBJsonUTF8Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22273161DE9B200D827AE /* KCS_SBJsonUTF8Stream.h */; };
+		27C2228D161DE9B200D827AE /* KCS_SBJsonUTF8Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22274161DE9B200D827AE /* KCS_SBJsonUTF8Stream.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C2228E161DE9B200D827AE /* KCS_SBJsonWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22275161DE9B200D827AE /* KCS_SBJsonWriter.h */; };
+		27C2228F161DE9B200D827AE /* KCS_SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22276161DE9B200D827AE /* KCS_SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		27C22290161DE9B200D827AE /* NSObject+KCS_SBJson.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22277161DE9B200D827AE /* NSObject+KCS_SBJson.h */; };
+		27C22291161DE9B200D827AE /* NSObject+KCS_SBJson.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22278161DE9B200D827AE /* NSObject+KCS_SBJson.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
 		27E0B35F15E51F3700B83E72 /* KCSGenericRESTRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E0B35D15E51F3600B83E72 /* KCSGenericRESTRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E0B36015E51F3700B83E72 /* KCSGenericRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E0B35E15E51F3600B83E72 /* KCSGenericRESTRequest.m */; };
 		27E0B36415E523B400B83E72 /* KCSGenericRestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E0B36315E523B400B83E72 /* KCSGenericRestTests.m */; };
@@ -174,31 +199,6 @@
 		D3715AE014B697F80030F5E9 /* KinveyKitNSURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ADF14B697F80030F5E9 /* KinveyKitNSURLTests.m */; };
 		D3715AE314B698040030F5E9 /* KinveyKitNSDateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AE214B698040030F5E9 /* KinveyKitNSDateTests.m */; };
 		D3792A1F14D20C0D003D75BD /* KinveyKitQueryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3792A1E14D20C0D003D75BD /* KinveyKitQueryTests.m */; };
-		D38FC3CF14C94252009A95E7 /* KCS_SBJsonParser.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3B614C94252009A95E7 /* KCS_SBJsonParser.h */; };
-		D38FC3D014C94252009A95E7 /* KCS_SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3B714C94252009A95E7 /* KCS_SBJsonParser.m */; };
-		D38FC3D114C94252009A95E7 /* KCS_SBJsonStreamParser.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3B814C94252009A95E7 /* KCS_SBJsonStreamParser.h */; };
-		D38FC3D214C94252009A95E7 /* KCS_SBJsonStreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3B914C94252009A95E7 /* KCS_SBJsonStreamParser.m */; };
-		D38FC3D314C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3BA14C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.h */; };
-		D38FC3D414C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3BB14C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.m */; };
-		D38FC3D514C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3BC14C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.h */; };
-		D38FC3D614C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3BD14C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.m */; };
-		D38FC3D714C94252009A95E7 /* KCS_SBJsonStreamParserState.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3BE14C94252009A95E7 /* KCS_SBJsonStreamParserState.h */; };
-		D38FC3D814C94252009A95E7 /* KCS_SBJsonStreamParserState.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3BF14C94252009A95E7 /* KCS_SBJsonStreamParserState.m */; };
-		D38FC3D914C94252009A95E7 /* KCS_SBJsonStreamWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3C014C94252009A95E7 /* KCS_SBJsonStreamWriter.h */; };
-		D38FC3DA14C94252009A95E7 /* KCS_SBJsonStreamWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3C114C94252009A95E7 /* KCS_SBJsonStreamWriter.m */; };
-		D38FC3DB14C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3C214C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.h */; };
-		D38FC3DC14C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3C314C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.m */; };
-		D38FC3DD14C94252009A95E7 /* KCS_SBJsonTokeniser.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3C414C94252009A95E7 /* KCS_SBJsonTokeniser.h */; };
-		D38FC3DE14C94252009A95E7 /* KCS_SBJsonTokeniser.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3C514C94252009A95E7 /* KCS_SBJsonTokeniser.m */; };
-		D38FC3DF14C94252009A95E7 /* KCS_SBJsonUTF8Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3C614C94252009A95E7 /* KCS_SBJsonUTF8Stream.h */; };
-		D38FC3E014C94252009A95E7 /* KCS_SBJsonUTF8Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3C714C94252009A95E7 /* KCS_SBJsonUTF8Stream.m */; };
-		D38FC3E114C94252009A95E7 /* KCS_SBJsonWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3C814C94252009A95E7 /* KCS_SBJsonWriter.h */; };
-		D38FC3E214C94252009A95E7 /* KCS_SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3C914C94252009A95E7 /* KCS_SBJsonWriter.m */; };
-		D38FC3E314C94252009A95E7 /* NSObject+SBJson.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3CA14C94252009A95E7 /* NSObject+SBJson.h */; };
-		D38FC3E414C94252009A95E7 /* NSObject+SBJson.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3CB14C94252009A95E7 /* NSObject+SBJson.m */; };
-		D38FC3E514C94252009A95E7 /* SBJson.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3CC14C94252009A95E7 /* SBJson.h */; };
-		D38FC3E614C94252009A95E7 /* KCS_SBJsonStreamWriterState.h in Headers */ = {isa = PBXBuildFile; fileRef = D38FC3CD14C94252009A95E7 /* KCS_SBJsonStreamWriterState.h */; };
-		D38FC3E714C94252009A95E7 /* KCS_SBJsonStreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = D38FC3CE14C94252009A95E7 /* KCS_SBJsonStreamWriterState.m */; };
 		D39CDF9714D1E67F00E40D19 /* KCSQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = D39CDF9514D1E67F00E40D19 /* KCSQuery.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D39CDF9814D1E67F00E40D19 /* KCSQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = D39CDF9614D1E67F00E40D19 /* KCSQuery.m */; };
 		D3BE9C541551ED2900ED0FDF /* KCSBlockDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C531551ED2900ED0FDF /* KCSBlockDefs.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -373,6 +373,31 @@
 		27BD0876160A03A8009473A3 /* KinveyKitExtras.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyKitExtras.h; sourceTree = "<group>"; };
 		27BD088B160A0C27009473A3 /* TestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestUtils.h; path = ../KinveyKitExtras/TestUtils.h; sourceTree = "<group>"; };
 		27BD088C160A0C27009473A3 /* TestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestUtils.m; path = ../KinveyKitExtras/TestUtils.m; sourceTree = "<group>"; };
+		27C22260161DE9B200D827AE /* KCS_SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJson.h; sourceTree = "<group>"; };
+		27C22261161DE9B200D827AE /* KCS_SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonParser.h; sourceTree = "<group>"; };
+		27C22262161DE9B200D827AE /* KCS_SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonParser.m; sourceTree = "<group>"; };
+		27C22263161DE9B200D827AE /* KCS_SBJsonStreamParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamParser.h; sourceTree = "<group>"; };
+		27C22264161DE9B200D827AE /* KCS_SBJsonStreamParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamParser.m; sourceTree = "<group>"; };
+		27C22265161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamParserAccumulator.h; sourceTree = "<group>"; };
+		27C22266161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamParserAccumulator.m; sourceTree = "<group>"; };
+		27C22267161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamParserAdapter.h; sourceTree = "<group>"; };
+		27C22268161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamParserAdapter.m; sourceTree = "<group>"; };
+		27C22269161DE9B200D827AE /* KCS_SBJsonStreamParserState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamParserState.h; sourceTree = "<group>"; };
+		27C2226A161DE9B200D827AE /* KCS_SBJsonStreamParserState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamParserState.m; sourceTree = "<group>"; };
+		27C2226B161DE9B200D827AE /* KCS_SBJsonStreamWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamWriter.h; sourceTree = "<group>"; };
+		27C2226C161DE9B200D827AE /* KCS_SBJsonStreamWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamWriter.m; sourceTree = "<group>"; };
+		27C2226D161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamWriterAccumulator.h; sourceTree = "<group>"; };
+		27C2226E161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamWriterAccumulator.m; sourceTree = "<group>"; };
+		27C2226F161DE9B200D827AE /* KCS_SBJsonStreamWriterState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamWriterState.h; sourceTree = "<group>"; };
+		27C22270161DE9B200D827AE /* KCS_SBJsonStreamWriterState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamWriterState.m; sourceTree = "<group>"; };
+		27C22271161DE9B200D827AE /* KCS_SBJsonTokeniser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonTokeniser.h; sourceTree = "<group>"; };
+		27C22272161DE9B200D827AE /* KCS_SBJsonTokeniser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonTokeniser.m; sourceTree = "<group>"; };
+		27C22273161DE9B200D827AE /* KCS_SBJsonUTF8Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonUTF8Stream.h; sourceTree = "<group>"; };
+		27C22274161DE9B200D827AE /* KCS_SBJsonUTF8Stream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonUTF8Stream.m; sourceTree = "<group>"; };
+		27C22275161DE9B200D827AE /* KCS_SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonWriter.h; sourceTree = "<group>"; };
+		27C22276161DE9B200D827AE /* KCS_SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonWriter.m; sourceTree = "<group>"; };
+		27C22277161DE9B200D827AE /* NSObject+KCS_SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+KCS_SBJson.h"; sourceTree = "<group>"; };
+		27C22278161DE9B200D827AE /* NSObject+KCS_SBJson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+KCS_SBJson.m"; sourceTree = "<group>"; };
 		27E0B35D15E51F3600B83E72 /* KCSGenericRESTRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSGenericRESTRequest.h; sourceTree = "<group>"; };
 		27E0B35E15E51F3600B83E72 /* KCSGenericRESTRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSGenericRESTRequest.m; sourceTree = "<group>"; };
 		27E0B36215E523B400B83E72 /* KCSGenericRestTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSGenericRestTests.h; sourceTree = "<group>"; };
@@ -679,31 +704,6 @@
 		D3715AE214B698040030F5E9 /* KinveyKitNSDateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitNSDateTests.m; sourceTree = "<group>"; };
 		D3792A1D14D20C0D003D75BD /* KinveyKitQueryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitQueryTests.h; sourceTree = "<group>"; };
 		D3792A1E14D20C0D003D75BD /* KinveyKitQueryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitQueryTests.m; sourceTree = "<group>"; };
-		D38FC3B614C94252009A95E7 /* KCS_SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonParser.h; sourceTree = "<group>"; };
-		D38FC3B714C94252009A95E7 /* KCS_SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonParser.m; sourceTree = "<group>"; };
-		D38FC3B814C94252009A95E7 /* KCS_SBJsonStreamParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamParser.h; sourceTree = "<group>"; };
-		D38FC3B914C94252009A95E7 /* KCS_SBJsonStreamParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamParser.m; sourceTree = "<group>"; };
-		D38FC3BA14C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamParserAccumulator.h; sourceTree = "<group>"; };
-		D38FC3BB14C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamParserAccumulator.m; sourceTree = "<group>"; };
-		D38FC3BC14C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamParserAdapter.h; sourceTree = "<group>"; };
-		D38FC3BD14C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamParserAdapter.m; sourceTree = "<group>"; };
-		D38FC3BE14C94252009A95E7 /* KCS_SBJsonStreamParserState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamParserState.h; sourceTree = "<group>"; };
-		D38FC3BF14C94252009A95E7 /* KCS_SBJsonStreamParserState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamParserState.m; sourceTree = "<group>"; };
-		D38FC3C014C94252009A95E7 /* KCS_SBJsonStreamWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamWriter.h; sourceTree = "<group>"; };
-		D38FC3C114C94252009A95E7 /* KCS_SBJsonStreamWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamWriter.m; sourceTree = "<group>"; };
-		D38FC3C214C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamWriterAccumulator.h; sourceTree = "<group>"; };
-		D38FC3C314C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamWriterAccumulator.m; sourceTree = "<group>"; };
-		D38FC3C414C94252009A95E7 /* KCS_SBJsonTokeniser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonTokeniser.h; sourceTree = "<group>"; };
-		D38FC3C514C94252009A95E7 /* KCS_SBJsonTokeniser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonTokeniser.m; sourceTree = "<group>"; };
-		D38FC3C614C94252009A95E7 /* KCS_SBJsonUTF8Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonUTF8Stream.h; sourceTree = "<group>"; };
-		D38FC3C714C94252009A95E7 /* KCS_SBJsonUTF8Stream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonUTF8Stream.m; sourceTree = "<group>"; };
-		D38FC3C814C94252009A95E7 /* KCS_SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonWriter.h; sourceTree = "<group>"; };
-		D38FC3C914C94252009A95E7 /* KCS_SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonWriter.m; sourceTree = "<group>"; };
-		D38FC3CA14C94252009A95E7 /* NSObject+SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJson.h"; sourceTree = "<group>"; };
-		D38FC3CB14C94252009A95E7 /* NSObject+SBJson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJson.m"; sourceTree = "<group>"; };
-		D38FC3CC14C94252009A95E7 /* SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJson.h; sourceTree = "<group>"; };
-		D38FC3CD14C94252009A95E7 /* KCS_SBJsonStreamWriterState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonStreamWriterState.h; sourceTree = "<group>"; };
-		D38FC3CE14C94252009A95E7 /* KCS_SBJsonStreamWriterState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonStreamWriterState.m; sourceTree = "<group>"; };
 		D39CDF9514D1E67F00E40D19 /* KCSQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQuery.h; sourceTree = "<group>"; };
 		D39CDF9614D1E67F00E40D19 /* KCSQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQuery.m; sourceTree = "<group>"; };
 		D3BE9C531551ED2900ED0FDF /* KCSBlockDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBlockDefs.h; sourceTree = "<group>"; };
@@ -891,6 +891,38 @@
 				2795FC1216091570002ED162 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		27C2225F161DE9B200D827AE /* SBJson */ = {
+			isa = PBXGroup;
+			children = (
+				27C22260161DE9B200D827AE /* KCS_SBJson.h */,
+				27C22261161DE9B200D827AE /* KCS_SBJsonParser.h */,
+				27C22262161DE9B200D827AE /* KCS_SBJsonParser.m */,
+				27C22263161DE9B200D827AE /* KCS_SBJsonStreamParser.h */,
+				27C22264161DE9B200D827AE /* KCS_SBJsonStreamParser.m */,
+				27C22265161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.h */,
+				27C22266161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.m */,
+				27C22267161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.h */,
+				27C22268161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.m */,
+				27C22269161DE9B200D827AE /* KCS_SBJsonStreamParserState.h */,
+				27C2226A161DE9B200D827AE /* KCS_SBJsonStreamParserState.m */,
+				27C2226B161DE9B200D827AE /* KCS_SBJsonStreamWriter.h */,
+				27C2226C161DE9B200D827AE /* KCS_SBJsonStreamWriter.m */,
+				27C2226D161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.h */,
+				27C2226E161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.m */,
+				27C2226F161DE9B200D827AE /* KCS_SBJsonStreamWriterState.h */,
+				27C22270161DE9B200D827AE /* KCS_SBJsonStreamWriterState.m */,
+				27C22271161DE9B200D827AE /* KCS_SBJsonTokeniser.h */,
+				27C22272161DE9B200D827AE /* KCS_SBJsonTokeniser.m */,
+				27C22273161DE9B200D827AE /* KCS_SBJsonUTF8Stream.h */,
+				27C22274161DE9B200D827AE /* KCS_SBJsonUTF8Stream.m */,
+				27C22275161DE9B200D827AE /* KCS_SBJsonWriter.h */,
+				27C22276161DE9B200D827AE /* KCS_SBJsonWriter.m */,
+				27C22277161DE9B200D827AE /* NSObject+KCS_SBJson.h */,
+				27C22278161DE9B200D827AE /* NSObject+KCS_SBJson.m */,
+			);
+			path = SBJson;
 			sourceTree = "<group>";
 		};
 		27E33EAF160950D500D01C97 /* 3rdParty */ = {
@@ -1156,8 +1188,8 @@
 		D32A61231471700200F77A3F /* 3rdParty */ = {
 			isa = PBXGroup;
 			children = (
+				27C2225F161DE9B200D827AE /* SBJson */,
 				D32D28B41523B518008C74DD /* UDID */,
-				D38FC3B414C941EC009A95E7 /* SBJSON */,
 				D3F3409514BC8AB800DB6C37 /* Reachability */,
 				D32A63E9147174C300F77A3F /* Airship */,
 			);
@@ -1841,38 +1873,6 @@
 			name = Query;
 			sourceTree = "<group>";
 		};
-		D38FC3B414C941EC009A95E7 /* SBJSON */ = {
-			isa = PBXGroup;
-			children = (
-				D38FC3B614C94252009A95E7 /* KCS_SBJsonParser.h */,
-				D38FC3B714C94252009A95E7 /* KCS_SBJsonParser.m */,
-				D38FC3B814C94252009A95E7 /* KCS_SBJsonStreamParser.h */,
-				D38FC3B914C94252009A95E7 /* KCS_SBJsonStreamParser.m */,
-				D38FC3BA14C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.h */,
-				D38FC3BB14C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.m */,
-				D38FC3BC14C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.h */,
-				D38FC3BD14C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.m */,
-				D38FC3BE14C94252009A95E7 /* KCS_SBJsonStreamParserState.h */,
-				D38FC3BF14C94252009A95E7 /* KCS_SBJsonStreamParserState.m */,
-				D38FC3C014C94252009A95E7 /* KCS_SBJsonStreamWriter.h */,
-				D38FC3C114C94252009A95E7 /* KCS_SBJsonStreamWriter.m */,
-				D38FC3C214C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.h */,
-				D38FC3C314C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.m */,
-				D38FC3C414C94252009A95E7 /* KCS_SBJsonTokeniser.h */,
-				D38FC3C514C94252009A95E7 /* KCS_SBJsonTokeniser.m */,
-				D38FC3C614C94252009A95E7 /* KCS_SBJsonUTF8Stream.h */,
-				D38FC3C714C94252009A95E7 /* KCS_SBJsonUTF8Stream.m */,
-				D38FC3C814C94252009A95E7 /* KCS_SBJsonWriter.h */,
-				D38FC3C914C94252009A95E7 /* KCS_SBJsonWriter.m */,
-				D38FC3CA14C94252009A95E7 /* NSObject+SBJson.h */,
-				D38FC3CB14C94252009A95E7 /* NSObject+SBJson.m */,
-				D38FC3CC14C94252009A95E7 /* SBJson.h */,
-				D38FC3CD14C94252009A95E7 /* KCS_SBJsonStreamWriterState.h */,
-				D38FC3CE14C94252009A95E7 /* KCS_SBJsonStreamWriterState.m */,
-			);
-			name = SBJSON;
-			sourceTree = "<group>";
-		};
 		D39CDF9314D1E65400E40D19 /* Query */ = {
 			isa = PBXGroup;
 			children = (
@@ -1989,19 +1989,6 @@
 				D3FF5FDB14C6178600680BD2 /* KCSAuthCredential.h in Headers */,
 				D3FF5FE314C6373C00680BD2 /* KCSBase64.h in Headers */,
 				D3E7326414C879A4002972B8 /* KCSObjectMapper.h in Headers */,
-				D38FC3CF14C94252009A95E7 /* KCS_SBJsonParser.h in Headers */,
-				D38FC3D114C94252009A95E7 /* KCS_SBJsonStreamParser.h in Headers */,
-				D38FC3D314C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.h in Headers */,
-				D38FC3D514C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.h in Headers */,
-				D38FC3D714C94252009A95E7 /* KCS_SBJsonStreamParserState.h in Headers */,
-				D38FC3D914C94252009A95E7 /* KCS_SBJsonStreamWriter.h in Headers */,
-				D38FC3DB14C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.h in Headers */,
-				D38FC3DD14C94252009A95E7 /* KCS_SBJsonTokeniser.h in Headers */,
-				D38FC3DF14C94252009A95E7 /* KCS_SBJsonUTF8Stream.h in Headers */,
-				D38FC3E114C94252009A95E7 /* KCS_SBJsonWriter.h in Headers */,
-				D38FC3E314C94252009A95E7 /* NSObject+SBJson.h in Headers */,
-				D38FC3E514C94252009A95E7 /* SBJson.h in Headers */,
-				D38FC3E614C94252009A95E7 /* KCS_SBJsonStreamWriterState.h in Headers */,
 				D32D28B11523B50D008C74DD /* KCSKinveyUDID.h in Headers */,
 				D32D28B71523B547008C74DD /* KCSOpenUDID.h in Headers */,
 				D32D28BB1523B567008C74DD /* KCSSecureUDID.h in Headers */,
@@ -2028,6 +2015,19 @@
 				273A3E9A160A255900F3742C /* KCSUser+SocialExtras.h in Headers */,
 				273A3E9B160A256100F3742C /* KinveyKitExtras.h in Headers */,
 				27AC2F25161CA258008A05E1 /* KCSClient+ConfigurationTest.h in Headers */,
+				27C22279161DE9B200D827AE /* KCS_SBJson.h in Headers */,
+				27C2227A161DE9B200D827AE /* KCS_SBJsonParser.h in Headers */,
+				27C2227C161DE9B200D827AE /* KCS_SBJsonStreamParser.h in Headers */,
+				27C2227E161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.h in Headers */,
+				27C22280161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.h in Headers */,
+				27C22282161DE9B200D827AE /* KCS_SBJsonStreamParserState.h in Headers */,
+				27C22284161DE9B200D827AE /* KCS_SBJsonStreamWriter.h in Headers */,
+				27C22286161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.h in Headers */,
+				27C22288161DE9B200D827AE /* KCS_SBJsonStreamWriterState.h in Headers */,
+				27C2228A161DE9B200D827AE /* KCS_SBJsonTokeniser.h in Headers */,
+				27C2228C161DE9B200D827AE /* KCS_SBJsonUTF8Stream.h in Headers */,
+				27C2228E161DE9B200D827AE /* KCS_SBJsonWriter.h in Headers */,
+				27C22290161DE9B200D827AE /* NSObject+KCS_SBJson.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2342,18 +2342,6 @@
 				D3FF5FDC14C6178600680BD2 /* KCSAuthCredential.m in Sources */,
 				D3FF5FE414C6373C00680BD2 /* KCSBase64.m in Sources */,
 				D3E7326514C879A4002972B8 /* KCSObjectMapper.m in Sources */,
-				D38FC3D014C94252009A95E7 /* KCS_SBJsonParser.m in Sources */,
-				D38FC3D214C94252009A95E7 /* KCS_SBJsonStreamParser.m in Sources */,
-				D38FC3D414C94252009A95E7 /* KCS_SBJsonStreamParserAccumulator.m in Sources */,
-				D38FC3D614C94252009A95E7 /* KCS_SBJsonStreamParserAdapter.m in Sources */,
-				D38FC3D814C94252009A95E7 /* KCS_SBJsonStreamParserState.m in Sources */,
-				D38FC3DA14C94252009A95E7 /* KCS_SBJsonStreamWriter.m in Sources */,
-				D38FC3DC14C94252009A95E7 /* KCS_SBJsonStreamWriterAccumulator.m in Sources */,
-				D38FC3DE14C94252009A95E7 /* KCS_SBJsonTokeniser.m in Sources */,
-				D38FC3E014C94252009A95E7 /* KCS_SBJsonUTF8Stream.m in Sources */,
-				D38FC3E214C94252009A95E7 /* KCS_SBJsonWriter.m in Sources */,
-				D38FC3E414C94252009A95E7 /* NSObject+SBJson.m in Sources */,
-				D38FC3E714C94252009A95E7 /* KCS_SBJsonStreamWriterState.m in Sources */,
 				D39CDF9814D1E67F00E40D19 /* KCSQuery.m in Sources */,
 				D32D28B21523B50D008C74DD /* KCSKinveyUDID.m in Sources */,
 				D32D28B81523B547008C74DD /* KCSOpenUDID.m in Sources */,
@@ -2381,6 +2369,18 @@
 				273A3E98160A254F00F3742C /* KCS_OAuth+Additions.m in Sources */,
 				273A3E99160A255500F3742C /* KCSUser+SocialExtras.m in Sources */,
 				27AC2F26161CA258008A05E1 /* KCSClient+ConfigurationTest.m in Sources */,
+				27C2227B161DE9B200D827AE /* KCS_SBJsonParser.m in Sources */,
+				27C2227D161DE9B200D827AE /* KCS_SBJsonStreamParser.m in Sources */,
+				27C2227F161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.m in Sources */,
+				27C22281161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.m in Sources */,
+				27C22283161DE9B200D827AE /* KCS_SBJsonStreamParserState.m in Sources */,
+				27C22285161DE9B200D827AE /* KCS_SBJsonStreamWriter.m in Sources */,
+				27C22287161DE9B200D827AE /* KCS_SBJsonStreamWriterAccumulator.m in Sources */,
+				27C22289161DE9B200D827AE /* KCS_SBJsonStreamWriterState.m in Sources */,
+				27C2228B161DE9B200D827AE /* KCS_SBJsonTokeniser.m in Sources */,
+				27C2228D161DE9B200D827AE /* KCS_SBJsonUTF8Stream.m in Sources */,
+				27C2228F161DE9B200D827AE /* KCS_SBJsonWriter.m in Sources */,
+				27C22291161DE9B200D827AE /* NSObject+KCS_SBJson.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

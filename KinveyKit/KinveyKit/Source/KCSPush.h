@@ -54,7 +54,7 @@
  @deprecated Use onLoadHelper:error: instead.
  @depcratedIn 1.9
  */
-- (void)onLoadHelper: (NSDictionary *)options DEPRECATED_ATTRIBUTE;
+- (void)onLoadHelper: (NSDictionary *)options __attribute__((deprecated("use onLoadHelper:error: instead")));
 
 /*! Start the Push Service
  

@@ -8,7 +8,7 @@
 
 #import "KCSQuery.h"
 #import "KCSLogManager.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "NSString+KinveyAdditions.h"
 #import "NSArray+KinveyAdditions.h"
 #import "KinveyPersistable.h"

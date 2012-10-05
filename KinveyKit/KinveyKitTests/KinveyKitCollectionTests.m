@@ -12,7 +12,7 @@
 #import "KCSConnectionResponse.h"
 #import "KCSKeyChain.h"
 #import "KinveyUser.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KCSMockConnection.h"
 #import "KinveyPersistable.h"
 #import "KinveyEntity.h"

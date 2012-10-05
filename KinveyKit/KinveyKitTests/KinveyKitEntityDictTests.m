@@ -13,7 +13,7 @@
 #import "TestUtils.h"
 #import "KCSKeyChain.h"
 
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 
 typedef BOOL(^SuccessAction)(NSArray *);
 typedef BOOL(^FailureAction)(NSError *);
@@ -79,7 +79,7 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 - (void)tearDown
 {
-    [[[KCSClient sharedClient] currentUser] logout];    
+    [[[KCSClient sharedClient] currentUser] logout];
 }
 
 

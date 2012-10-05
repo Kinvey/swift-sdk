@@ -14,7 +14,7 @@
 
 #import "KCSGroup.h"
 #import "KCSReduceFunction.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KCSRESTRequest.h"
 #import "KCSConnectionResponse.h"
 #import "KCSLogManager.h"
