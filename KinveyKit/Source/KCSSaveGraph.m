@@ -12,7 +12,7 @@
 #import "KCSResource.h"
 #import "KinveyEntity.h"
 
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KCSLogManager.h"
 
 

@@ -37,12 +37,7 @@
  @see @ref json2objc
  */
 
-@interface KCS_SBJsonWriter : NSObject {
-@private
-    NSString *error;
-    NSUInteger maxDepth;
-    BOOL sortKeys, humanReadable;
-}
+@interface KCS_SBJsonWriter : NSObject
 
 /**
  @brief The maximum recursing depth.
@@ -79,6 +74,13 @@
  (This is useful if you need to compare two structures, for example.) The default is NO.
  */
 @property BOOL sortKeys;
+
+/**
+ @brief An optional comparator to be used if sortKeys is YES.
+ 
+ If this is nil, sorting will be done via @selector(compare:).
+ */
+@property (copy) NSComparator sortKeysComparator;
 
 /**
  @brief Return JSON representation for the given object.

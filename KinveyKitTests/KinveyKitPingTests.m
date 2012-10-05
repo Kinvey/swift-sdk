@@ -11,7 +11,7 @@
 #import "KCSKeyChain.h"
 #import "KCSConnectionPool.h"
 #import "KCSConnectionResponse.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KCSMockConnection.h"
 #import "KinveyUser.h"
 #import "KinveyPing.h"

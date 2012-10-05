@@ -16,7 +16,7 @@
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
 #import "KCSObjectMapper.h"

@@ -8,7 +8,7 @@
 
 #import "KinveyKitConnectionResponseTests.h"
 #import "KCSConnectionResponse.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 
 @implementation KinveyKitConnectionResponseTests
 

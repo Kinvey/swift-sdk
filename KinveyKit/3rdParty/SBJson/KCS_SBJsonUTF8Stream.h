@@ -1,6 +1,5 @@
 /*
- Copyright (c) 2010, Stig Brautaset.
- All rights reserved.
+ Copyright (c) 2011, Stig Brautaset. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
@@ -32,39 +31,27 @@
 
 #import <Foundation/Foundation.h>
 
-typedef enum {
-    kcs_sbjson_token_error = -1,
-    kcs_sbjson_token_eof,
-    
-    kcs_sbjson_token_array_start,
-    kcs_sbjson_token_array_end,
-    
-    kcs_sbjson_token_object_start,
-    kcs_sbjson_token_object_end,
 
-    kcs_sbjson_token_separator,
-    kcs_sbjson_token_keyval_separator,
-    
-    kcs_sbjson_token_number,
-    kcs_sbjson_token_string,
-    kcs_sbjson_token_true,
-    kcs_sbjson_token_false,
-    kcs_sbjson_token_null,
-    
-} kcs_sbjson_token_t;
-
-@class KCS_SBJsonUTF8Stream;
-
-@interface KCS_SBJsonTokeniser : NSObject {
+@interface KCS_SBJsonUTF8Stream : NSObject {
 @private
-    KCS_SBJsonUTF8Stream *_stream;
-    NSString *_error;
+    const char *_bytes;
+    NSMutableData *_data;
+    NSUInteger _length;
 }
 
-@property (copy) NSString *error;
+@property (assign) NSUInteger index;
 
 - (void)appendData:(NSData*)data_;
 
-- (kcs_sbjson_token_t)getToken:(NSObject**)token;
+- (BOOL)haveRemainingCharacters:(NSUInteger)chars;
+
+- (void)skip;
+- (void)skipWhitespace;
+- (BOOL)skipCharacters:(const char *)chars length:(NSUInteger)len;
+
+- (BOOL)getUnichar:(unichar*)ch;
+- (BOOL)getNextUnichar:(unichar*)ch;
+- (BOOL)getStringFragment:(NSString**)string;
+- (NSString*)stringWithRange:(NSRange)range;
 
 @end

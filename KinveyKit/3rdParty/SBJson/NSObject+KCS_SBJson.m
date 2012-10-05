@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2011 Stig Brautaset. All rights reserved.
+ Copyright (C) 2009 Stig Brautaset. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -27,25 +27,46 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "KCS_SBJsonStreamParserAccumulator.h"
+#import "NSObject+KCS_SBJson.h"
+#import "KCS_SBJsonWriter.h"
+#import "KCS_SBJsonParser.h"
 
-@implementation KCS_SBJsonStreamParserAccumulator
+@implementation NSObject (NSObject_KCS_SBJsonWriting)
 
-@synthesize value;
-
-- (void)dealloc {
-    [value release];
-    [super dealloc];
+- (NSString *)JSONRepresentation {
+    KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];    
+    NSString *json = [writer stringWithObject:self];
+    if (!json)
+        NSLog(@"-JSONRepresentation failed. Error is: %@", writer.error);
+    return json;
 }
 
-#pragma mark SBJsonStreamParserAdapterDelegate
+@end
 
-- (void)parser:(KCS_SBJsonStreamParser*)parser foundArray:(NSArray *)array {
-	value = [array retain];
+
+
+@implementation NSString (NSString_KCS_SBJsonParsing)
+
+- (id)JSONValue {
+    KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+    id repr = [parser objectWithString:self];
+    if (!repr)
+        NSLog(@"-JSONValue failed. Error is: %@", parser.error);
+    return repr;
 }
 
-- (void)parser:(KCS_SBJsonStreamParser*)parser foundObject:(NSDictionary *)dict {
-	value = [dict retain];
+@end
+
+
+
+@implementation NSData (NSData_SBJsonParsing)
+
+- (id)JSONValue {
+    KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+    id repr = [parser objectWithData:self];
+    if (!repr)
+        NSLog(@"-JSONValue failed. Error is: %@", parser.error);
+    return repr;
 }
 
 @end

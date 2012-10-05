@@ -11,7 +11,7 @@
 #import "KCSKeyChain.h"
 #import "KCSRESTRequest.h"
 #import "KinveyAnalytics.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
