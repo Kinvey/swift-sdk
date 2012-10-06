@@ -57,7 +57,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     _onFailure = [^(KCSUser *u, NSError *error){ return NO; } copy];
     _onEntitySuccess = [^(id u, NSObject *obj){ return NO; } copy];
     _onEntityFailure = [^(id u, NSError *error){ return NO; } copy];
-    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
+    STAssertTrue([TestUtils setUpKinveyUnittestBackend],@"");
 
     _parser = [[[KCS_SBJsonParser alloc] init] retain];
     _writer = [[[KCS_SBJsonWriter alloc] init] retain];
@@ -584,35 +584,30 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
 
 - (void) testPasswordReset
 {
-    //create a test user
+    //need to use a premade user
     self.done = NO;
     NSString* testUser = @"testino";
-    [KCSUser userWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+    [KCSUser loginWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError;
         self.done = YES;
     }];
     [self poll];
-    
-    //set the email
-    [[[KCSClient sharedClient] currentUser] setValue:@"testino@kinvey.com" forAttribute:KCSUserAttributeEmail];
-    self.done = NO;
-    [[[KCSClient sharedClient] currentUser] saveWithDelegate:self];
-    [self poll];
-    
+        
     self.done = NO;
     [KCSUser sendPasswordResetForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
         STAssertNoError;
         STAssertTrue(emailSent, @"Should send email");
+        self.done = YES;
     }];
     [self poll];
 }
 
 - (void) testPasswordResetWithNoEmailDoesNotError
 {
-    //create a test user
+    //need to use a premade user
     self.done = NO;
-    NSString* testUser = @"testino";
-    [KCSUser userWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+    NSString* testUser = @"testino2";
+    [KCSUser loginWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError;
         self.done = YES;
     }];
@@ -622,6 +617,7 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     [KCSUser sendPasswordResetForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
         STAssertNoError;
         STAssertTrue(emailSent, @"Should have send email, anyway");
+        self.done = YES;
     }];
     [self poll];
 }
@@ -629,18 +625,19 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
 - (void) testPasswordResetWithBadUserEmailDoesNotError
 {
     //create a test user
-    self.done = NO;
+//    self.done = NO;
     NSString* testUser = @"BADUSER";
-    [KCSUser userWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        STAssertNoError;
-        self.done = YES;
-    }];
-    [self poll];
+//    [KCSUser loginWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+//        STAssertNoError;
+//        self.done = YES;
+//    }];
+//    [self poll];
     
     self.done = NO;
     [KCSUser sendPasswordResetForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
         STAssertNoError;
         STAssertTrue(emailSent, @"Should have send email, anyway");
+        self.done = YES;
     }];
     [self poll];
 
