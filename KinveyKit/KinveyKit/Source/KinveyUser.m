@@ -11,7 +11,7 @@
 #import "KCSKeyChain.h"
 #import "KCSRESTRequest.h"
 #import "KinveyAnalytics.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
@@ -21,6 +21,7 @@
 #import "KinveyCollection.h"
 #import "KCSReachability.h"
 #import "KCSPush.h"
+#import "KCSHiddenMethods.h"
 
 
 #define kKeychainPasswordKey @"password"
@@ -875,4 +876,23 @@
 {
     return [NSString stringWithFormat:@"KCSUser: %@",[NSDictionary dictionaryWithObjectsAndKeys:self.username, @"username", self.email, @"email", self.givenName, @"given name", self.surname, @"surname", nil]];
 }
+
+#pragma mark - Password
+
++ (void) sendPasswordResetForUser:(NSString*)username withCompletionBlock:(void(^)(BOOL emailSent, NSError* errorOrNil))completionBlock
+{
+    ///rpc/:kid/:username/user-password-reset-initiate
+    //TODO: test non conformating username for email secaping
+    NSString* pwdReset = [[[KCSClient sharedClient] rpcBaseURL] stringByAppendingString:[NSString stringWithFormat:@"%@/user-password-reset-initiate",username]];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:pwdReset usingMethod:kPostRESTMethod];
+    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
+        //response will be a 204 if accepted by server
+        completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
+    } failureAction:^(NSError *error) {
+        //do error
+        completionBlock(NO, error);
+    } progressAction:nil];
+    [request start];
+}
+
 @end

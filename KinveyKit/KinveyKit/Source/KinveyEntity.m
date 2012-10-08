@@ -16,7 +16,7 @@
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
 #import "KCSObjectMapper.h"
@@ -140,11 +140,6 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
     [self fetchOneFromCollection:collection matchingQuery:[NSString stringByPercentEncodingString:query] withDelegate:delegate];
     
-}
-
-- (NSString*)proxyForJson
-{
-    return [self kinveyObjectId];
 }
 
 - (NSString *)kinveyObjectIdHostProperty
@@ -371,7 +366,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
-        if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
+        if (response.responseCode >= 400){
             NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
             [delegate entity:self operationDidFailWithError:error];
         } else {

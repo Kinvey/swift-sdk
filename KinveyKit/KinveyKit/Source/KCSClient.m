@@ -19,6 +19,7 @@
 #import "KCSLogManager.h"
 
 #import "KCSStore.h"
+#import "KCSClient+ConfigurationTest.h"
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
@@ -29,6 +30,7 @@
 @property (nonatomic, copy, readwrite) NSString *appdataBaseURL;
 @property (nonatomic, copy, readwrite) NSString *resourceBaseURL;
 @property (nonatomic, copy, readwrite) NSString *userBaseURL;
+@property (nonatomic, copy, readwrite) NSString *rpcBaseURL;
 
 @property (nonatomic, copy, readwrite) NSString *appKey;
 @property (nonatomic, copy, readwrite) NSString *appSecret;
@@ -119,6 +121,13 @@
         _kinveyReachability = [[KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]] retain];
 #endif
         
+        @try {
+            [self testCanUseCategories];
+        }
+        @catch (NSException *exception) {
+            NSException* myException = [NSException exceptionWithName:@"CategoriesNotLoaded" reason:@"KinveyKit setup: Categories could not be loaded. Be sure to set '-ObjC' in the 'Other Linker Flags'." userInfo:nil];
+            @throw myException;
+        }
     }
     
     return self;
@@ -213,6 +222,7 @@
         @synchronized (self) {
             sKCSClient = [[KCSClient alloc] init];
             assert(sKCSClient != nil);
+            
         }
     }
     
@@ -272,7 +282,8 @@
     self.appdataBaseURL  = [NSString stringWithFormat:@"%@://%@.%@/appdata/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
     self.resourceBaseURL = [NSString stringWithFormat:@"%@://%@.%@/blob/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
     self.userBaseURL     = [NSString stringWithFormat:@"%@://%@.%@/user/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
-    
+    //rpc/:kid/:username/user-password-reset-initiate
+    self.rpcBaseURL      = [NSString stringWithFormat:@"%@://%@.%@/rpc/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
 
 }
 

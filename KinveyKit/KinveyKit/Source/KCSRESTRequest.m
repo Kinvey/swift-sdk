@@ -16,7 +16,7 @@
 #import "KCSErrorUtilities.h"
 #import "KCSReachability.h"
 #import "KinveyAnalytics.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 
 // This is in Seconds!
 #define KCS_RETRY_DELAY 0.05

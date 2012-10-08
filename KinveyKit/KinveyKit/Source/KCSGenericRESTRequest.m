@@ -18,7 +18,7 @@
 #import "KCSErrorUtilities.h"
 #import "KCSReachability.h"
 #import "KinveyAnalytics.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 
 @interface KCSGenericRESTRequest()
 

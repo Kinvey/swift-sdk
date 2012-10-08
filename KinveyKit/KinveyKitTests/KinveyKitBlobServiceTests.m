@@ -9,7 +9,7 @@
 #import "KinveyKitBlobServiceTests.h"
 #import "KCSMockConnection.h"
 #import "KCSConnectionResponse.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSConnectionPool.h"
 #import "KCSKeyChain.h"
@@ -178,12 +178,10 @@ typedef BOOL(^FailureAction)(NSError *);
     NSString *expectedString = [NSString stringWithFormat:@"%@download-loc/blah",
                                 client.resourceBaseURL];
     
-    assertThat([conn.providedRequest.URL absoluteString], endsWith(expectedString));
-    
+    STAssertTrue([[conn.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
     [conn release];
     [[KCSConnectionPool sharedPool] drainPools];
-
 }
 
 - (void)testDownloadResourceToFile
@@ -200,8 +198,8 @@ typedef BOOL(^FailureAction)(NSError *);
     NSString *expectedString = [NSString stringWithFormat:@"%@download-loc/blah",
                                 client.resourceBaseURL];
     
-    assertThat([conn.providedRequest.URL absoluteString], endsWith(expectedString));
     
+    STAssertTrue([[conn.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
     [conn release];
     [[KCSConnectionPool sharedPool] drainPools];
@@ -283,15 +281,13 @@ typedef BOOL(^FailureAction)(NSError *);
     NSString *expectedString = [NSString stringWithFormat:@"%@upload-loc/1px.png",
                                 client.resourceBaseURL];
     
-    assertThat([kinvey.providedRequest.URL absoluteString], endsWith(expectedString));
-    
+    STAssertTrue([[kinvey.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
     [resource release];
     [kinvey release];
     [[KCSConnectionPool sharedPool] drainPools];
     
     KCSLogDebug(@"Made it out of the woods...");
-
 }
 
 - (void)testSaveData
@@ -332,19 +328,15 @@ typedef BOOL(^FailureAction)(NSError *);
     NSString *expectedString = [NSString stringWithFormat:@"%@upload-loc/blob",
                                 client.resourceBaseURL];
     
-    assertThat([kinvey.providedRequest.URL absoluteString], endsWith(expectedString));
-    
+    STAssertTrue([[kinvey.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
     [resource release];
     [kinvey release];
     [[KCSConnectionPool sharedPool] drainPools];
-    
-
 }
 
 - (void)testDeleteResource
 {
-    
     self.testID = @"Delete Resource";
     
     // This is the SECOND! connection, this one will be used to simulate
@@ -378,15 +370,12 @@ typedef BOOL(^FailureAction)(NSError *);
     NSString *expectedString = [NSString stringWithFormat:@"%@remove-loc/blah",
                                 client.resourceBaseURL];
     
-    assertThat([kinvey.providedRequest.URL absoluteString], endsWith(expectedString));
-    
+    STAssertTrue([[kinvey.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
     [resource release];
     [kinvey release];
     [[KCSConnectionPool sharedPool] drainPools];
-    
 }
-
 
 - (void)testNonexistingResrouceFailsCorrectly
 {
@@ -420,7 +409,5 @@ typedef BOOL(^FailureAction)(NSError *);
     [[KCSConnectionPool sharedPool] drainPools];
 
 }
-
-
 
 @end

@@ -31,7 +31,7 @@
     
     NSString *computedJSON = [orQuery JSONStringRepresentation];
     
-    assertThat(computedJSON, is(equalTo(expectedJSON)));
+    STAssertEqualObjects(computedJSON, expectedJSON, @"");
     
     
     KCSQuery *geoQuery = [KCSQuery queryOnField:@"location" usingConditional:kKCSNearSphere forValue:[NSArray arrayWithObjects:[NSNumber numberWithFloat:50.0], [NSNumber numberWithFloat:50.0], nil]];
@@ -48,7 +48,7 @@
 
     NSString *a = [q1 JSONStringRepresentation];
     NSString *b = [q2 JSONStringRepresentation];
-    assertThat(a, is(equalTo(b)));
+    STAssertEqualObjects(a, b, @"");
 }
 
 - (void)testMongoOps
@@ -80,8 +80,7 @@
                                  forValue: [NSArray arrayWithObjects:
                                             [NSNumber numberWithInt:-71],
                                             [NSNumber numberWithInt:41], nil]];
-
-    assertThat([q1 JSONStringRepresentation], is(equalTo(r1)));
+    STAssertEqualObjects([q1 JSONStringRepresentation], r1, @"");
 
     NSString *r2 = @"{\"_geoloc\":{\"$nearSphere\":[-71,42],\"$maxDistance\":0.5}}";
     KCSQuery *q2 = [KCSQuery queryOnField:@"coordinates"
@@ -93,7 +92,7 @@
                     kKCSMaxDistance,
                     [NSNumber numberWithFloat:0.5], nil]; // Does this need to be a string?
     
-    assertThat([q2 JSONStringRepresentation], is(equalTo(r2)));
+    STAssertEqualObjects([q2 JSONStringRepresentation], r2, @"");
     
     NSString *r3 = @"{\"_geoloc\":{\"$within\":{\"$box\":[[-70,44],[-72,42]]}}}";
     NSArray *point1 = [NSArray arrayWithObjects:[NSNumber numberWithInt:-70],
@@ -107,7 +106,7 @@
                          usingConditional:kKCSWithinBox
                                  forValue:box];
 
-    assertThat([q3 JSONStringRepresentation], is(equalTo(r3)));
+    STAssertEqualObjects([q3 JSONStringRepresentation], r3, @"");
 
 }
 

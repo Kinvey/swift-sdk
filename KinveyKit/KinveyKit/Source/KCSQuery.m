@@ -8,10 +8,11 @@
 
 #import "KCSQuery.h"
 #import "KCSLogManager.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 #import "NSString+KinveyAdditions.h"
 #import "NSArray+KinveyAdditions.h"
 #import "KinveyPersistable.h"
+#import "KinveyEntity.h"
 
 #pragma mark -
 #pragma mark KCSQuerySortModifier
@@ -351,6 +352,19 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     [oldDict release];
 }
 
++ (id) valueOrKCSPersistableId:(NSObject*) value
+{
+    if (([value isKindOfClass:[NSArray class]] || [value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSString class]] || [value isKindOfClass:[NSNumber class]]) == NO) {
+        //there's no test to determine if an object has an id since there's a NSObject category
+        @try {
+            value = [value kinveyObjectId];
+        }
+        @catch (NSException *exception) {
+            // do nothing in this case
+        }
+    }
+    return value;
+}
 
 #pragma mark - Creating Queries
 + (KCSQuery *) queryOnField:(NSString*)field withRegex:(NSString*)expression options:(KCSRegexpQueryOptions)options
@@ -383,6 +397,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 + (KCSQuery *)queryOnField:(NSString *)field usingConditional:(KCSQueryConditional)conditional forValue: (NSObject *)value
 {
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
+    value = [KCSQuery valueOrKCSPersistableId:value];
     
     query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
     
@@ -393,6 +408,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 + (KCSQuery *)queryOnField:(NSString *)field withExactMatchForValue: (NSObject *)value
 {
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
+    
+    value = [self valueOrKCSPersistableId:value];
     
     query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
     
@@ -489,6 +506,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 - (void)addQueryOnField:(NSString *)field usingConditional:(KCSQueryConditional)conditional forValue: (NSObject *)value
 {
+    value = [KCSQuery valueOrKCSPersistableId:value];
+
     NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO];
     
     for (NSString *key in tmp) {
@@ -498,6 +517,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 - (void)addQueryOnField:(NSString *)field withExactMatchForValue: (NSObject *)value
 {
+    value = [KCSQuery valueOrKCSPersistableId:value];
+
     NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[value] useQueriesForOps:NO];
     for (NSString *key in tmp) {
         [self.query setObject:[tmp objectForKey:key] forKey:key];

@@ -2,7 +2,7 @@
 //  KCSEntityDict.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -31,21 +31,28 @@
 
 /*! Return the value for an attribute for this user
  *
+ * @deprecatedIn 1.9
  * @param property The attribute to retrieve
  */
-- (id)getValueForProperty: (NSString *)property;
+- (id)getValueForProperty: (NSString *)property DEPRECATED_ATTRIBUTE;
 
 /*! Set the value for an attribute
  *
+ * @deprecatedIn 1.9
  * @param value The value to set.
  * @param property The attribute to modify.
  */
-- (void)setValue: (id)value forProperty:(NSString *)property;
+- (void)setValue: (id)value forProperty:(NSString *)property DEPRECATED_ATTRIBUTE;
 
 - (id) init __attribute__((deprecated("KCSEntityDict is deprecated, use NSMutableDictionary instead.")));
 
 @end
 
+/**
+ Category to support using NS(Mutable)Dictionary objects as first-class Kinvey Entities.
+
+ @since 1.9
+ */
 @interface NSDictionary (KCSEntityDict) <KCSPersistable>
 
 @end

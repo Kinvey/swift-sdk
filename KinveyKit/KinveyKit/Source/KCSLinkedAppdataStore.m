@@ -152,7 +152,7 @@
 
 //TODO:group resolves?
 
-- (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
 {
     
     
@@ -161,7 +161,7 @@
         NSArray* resolvesArray = [hostResolves allKeys];
         [query setReferenceFieldsToResolve:resolvesArray];
     }
-    [super queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock];    
+    [super queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:cachePolicy];
 }
 
 //override KCSAppdatastore

@@ -52,6 +52,7 @@
     NSArray *itemsToDelete = (NSArray *)result;
     for (KCSListEntry *entry in itemsToDelete) {
         if (entry.hasCustomImage){
+            NSLog(@"To delete: %@", entry.image);
             [KCSResourceService deleteResource:entry.image withDelegate:self];
         }
         [entry deleteFromCollection:self.listItemsCollection withDelegate:self];

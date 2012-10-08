@@ -8,7 +8,7 @@
 
 #import "KinveyKitConnectionResponseTests.h"
 #import "KCSConnectionResponse.h"
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 
 @implementation KinveyKitConnectionResponseTests
 
@@ -24,21 +24,21 @@
                                                                              headerData:header 
                                                                                userData:userData];
     
-    assertThat([NSNumber numberWithInt:response.responseCode], is(equalToInt(200)));
-    assertThat(response.responseData, is(data));
-    assertThat(response.responseHeaders, is(header));
-    assertThat(response.userData, is(userData));
+    STAssertEquals(response.responseCode, 200, @"expecting OK");
+    STAssertEqualObjects(response.responseData, data, @"data should match");
+    STAssertEqualObjects(response.responseHeaders, header, @"data should match");
+    STAssertEqualObjects(response.userData, userData, @"data should match");
+
     
     response = [KCSConnectionResponse connectionResponseWithCode:0
                                                     responseData:nil
                                                       headerData:nil 
                                                         userData:nil];
-    
-    assertThat([NSNumber numberWithInt:response.responseCode], is(equalToInt(0)));
-    assertThat(response.responseData, is(nilValue()));
-    assertThat(response.responseHeaders, is(nilValue()));
-    assertThat(response.userData, is(nilValue()));
-    
+
+    STAssertEquals(response.responseCode, 0, @"expecting 0");
+    STAssertNil(response.responseData, @"");
+    STAssertNil(response.responseHeaders, @"");
+    STAssertNil(response.userData, @"");
 }
 
 - (void)testThatInvalidResponseCodeGetsInternalError
@@ -48,8 +48,7 @@
                                                                              headerData:nil
                                                                                userData:nil];
     
-    assertThat([NSNumber numberWithInt:response.responseCode], is(equalToInt(-1)));
-
+    STAssertEquals(response.responseCode, -1, @"expecting -1");
 }
 
 @end

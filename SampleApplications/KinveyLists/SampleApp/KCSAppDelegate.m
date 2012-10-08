@@ -3,7 +3,7 @@
 //  SampleApp
 //
 //  Created by Brian Wilson on 10/24/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
 //
 
 #import "KCSAppDelegate.h"
@@ -30,19 +30,21 @@
     
     // At this point we start the loading sequence, and signal (later) when it's done
     // This NEEEEDS to be done here...
-//    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1081" withAppSecret:@"0d934bb1c7f549a3836e2d92fa9ec402" usingOptions:nil];
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
                              @"kid1081", KCS_APP_KEY_KEY,
                              @"0d934bb1c7f549a3836e2d92fa9ec402", KCS_APP_SECRET_KEY,
+//                             @"kid1084", KCS_APP_KEY_KEY,
+//                             @"0cb207ec9a0f4f1ca71557f76ac6396c", KCS_APP_SECRET_KEY,
                              @"hqENfOc6T82t0XTF8MVbpA", KCS_PUSH_KEY_KEY,
                              @"0vu-VwMVRFeZsrm4Clb-Ew", KCS_PUSH_SECRET_KEY,
                              @"YES", KCS_PUSH_IS_ENABLED_KEY,
                              KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
     
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
-    [[KCSPush sharedPush] onLoadHelper:options];
+    [[KCSClient sharedClient] setServiceHostname:@"v3yk1n"];
     
-    [[KCSClient sharedClient] setServiceHostname:@"console-staging"];
+    [[KCSPush sharedPush] onLoadHelper:options error:NULL];
+
     
     [KCSClient configureLoggingWithNetworkEnabled:YES
                                      debugEnabled:YES

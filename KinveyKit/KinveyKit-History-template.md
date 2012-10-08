@@ -1,18 +1,43 @@
 # KinveyKit Release History
 
+## 1.10
+### 1.10.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1100APIDiffs/KinveyKit1100APIDiffs.html)
+
+** Release Date: ** October 8, 2012
+
+* Added `+ [KCSUser sendPasswordResetForUser:withCompletionBlock:]` in order to send a password reset email to the user.  
+* Bug fix(es):
+    * Fixed false error when deleting entities using old `KCSCollection` interface.
+    * Fixed error when loading dates that did not specify millisecond information. 
+
 ## 1.9
-### 1.9.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit190APIDiffs.html)
-** Release Date: ** TBD
+### 1.9.1
+** Release Date: ** October 2, 2012
+
+* Bug fix(es):
+    * `KCSLinkedAppdataStore` now supports relationships when specifying an optional `cachePolicy` when querying. 
+
+### 1.9.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit190APIDiffs/KinveyKit190APIDiffs.html)
+** Release Date: ** October 1, 2012
 
 * Added support for log-in with twitter
-  * Deprecate Facebook-specific methods and replace with generic social identity. See `KCSUser`.
-  * Requires linking Twitter.framework and Accounts.framework.
+    * Deprecate Facebook-specific methods and replace with generic social identity. See `KCSUser`.
+    * Requires linking Twitter.framework and Accounts.framework.
 * Added support for `id<KCSPersistable>` objects to be used as match values in `KCSQuery` when using relationships through `KCSLinkedAppdataStore`.
 * Deprecated `KCSEntityDict`. You can now just save/load `NSMutableDictionary` objects directly with the backend. Use them like any other `KCSPersistable`.
-  * Note: using a non-mutable `NSDictionary` will not have its fields updated when saving the object.
-
+    * Note: using a non-mutable `NSDictionary` will not have its fields updated when saving the object.
+* Upgraded Urban Airship library to 1.3.3.
+* Improved usability for Push Notifications
+    * Deprecated `- [KCSPush onLoadHelper:]`; use `- [KCSPush onLoadHelper:error:]` instead to capture set-up errors.
 
 ## 1.8
+### 1.8.3
+** Release Date: ** September 25, 2012
+
+* Bug fix(es):
+    * Fix issue with production push.
+    * Fix issue with analytics on libraries built with Xcode 4.5.
+
 ### 1.8.2
 ** Release Date: ** September 14, 2012
 
@@ -23,7 +48,7 @@
 
 * Added `KCSUniqueNumber` entities to provide monotonically increasing numerical sequences across a collection.
 
-### 1.8.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit180APIDiffs.html)
+### 1.8.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit180APIDiffs/KinveyKit180APIDiffs.html)
 ** Release date: ** September 11, 2012
 
 * `KCSLinkedAppdataStore` now supports object relations through saving/loading entities with named fields of other entities.
@@ -37,7 +62,7 @@
     * Added links to the api differences to this document.
 
 ## 1.7
-### 1.7.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit170APIDiffs/KinveyKit170APIDiffs.html)
+### 1.7.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit170APIDiffs/KinveyKit170APIDiffs.html)
 ** Release date: ** Aug 17, 2012
 
 * `KCSCachedStore` now provides the ability to persist saves when the application is offline, and then to save them when the application regains connectivity. See also `KCSOfflineSaveStore`.
@@ -55,7 +80,7 @@
 * Bug Fix(es).
     * Fix issue with hang on no results using `KCSAppdataStore`.
 
-### 1.6.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit160APIDiffs/KinveyKit160APIDiffs.html)
+### 1.6.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit160APIDiffs/KinveyKit160APIDiffs.html)
 ** Release Date: ** July 30th, 2012
 
 * Added `KCSUserDiscovery` to provide a method to lookup other users based upon criteria like name and email address. 
@@ -68,7 +93,7 @@
 
 ## 1.5
 
-### 1.5.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit150APIDiffs/KinveyKit150APIDiffs.html)
+### 1.5.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit150APIDiffs/KinveyKit150APIDiffs.html)
 ** Release Date: ** July 10th, 2012
 
 * Added `KCSMetadata` for entities to map by `KCSEntityKeyMetadata` in `hostToKinveyPropertyMapping`. This provides metadata about the entity and allows for fine-grained read/write permissions. 
@@ -76,7 +101,7 @@
 
 ## 1.4
 
-### 1.4.0 [<sub>api diff</sub>](Documents/docs/Documents/releasenotes/General/KinveyKit140APIDiffs/KinveyKit140APIDiffs.html)
+### 1.4.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit140APIDiffs/KinveyKit140APIDiffs.html)
 ** Release Date: ** June 7th, 2012
 
 * Added`KCSCachedStore` for caching queries to collections. 
