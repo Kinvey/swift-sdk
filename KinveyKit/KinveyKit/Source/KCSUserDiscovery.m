@@ -31,7 +31,7 @@
         NSObject* jsonData = [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Deletion was unsuccessful." errorCode:response.responseCode domain:KCSUserErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Lookup was unsuccessful." errorCode:response.responseCode domain:KCSUserErrorDomain];
             completionBlock(nil, error);
             return;
         }

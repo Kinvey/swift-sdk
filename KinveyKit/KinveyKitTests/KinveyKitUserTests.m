@@ -578,6 +578,21 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     lastUser = [KCSClient sharedClient].currentUser.username;
 }
 
+- (void) testUserCollection
+{
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSClient sharedClient].currentUser.userCollection options:nil];
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if(errorOrNil) {
+            NSLog(@"Failed to load users... %@", errorOrNil);
+        } else {
+            NSLog(@"%@", objectsOrNil);
+        }
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
+
 #pragma mark - Password reset
 
 - (void) testPasswordReset

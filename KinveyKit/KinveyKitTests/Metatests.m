@@ -395,6 +395,42 @@ typedef struct {
 
 }
 
+- (void) ex2
+{
+    //create a new user with username and password and verify the email
+    [KCSUser userWithUsername:@"<#username#>" password:@"<#password#>" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        if (result == KCSUserCreated && errorOrNil == nil) {
+            //user is created - now need to add email address and save to the backend
+            user.email = @"<#email address#>"; //suggestion: use email address as user name
+            [user saveToCollection:user.userCollection withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                if (errorOrNil ==  nil) {
+                    [KCSUser sendEmailConfirmationForUser:user.username withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
+                        if (errorOrNil != nil) {
+                            //handle error
+                        }
+                    }];
+                } else {
+                    //handle error
+                }
+            } withProgressBlock:nil];
+        } else {
+            //handle error
+        }
+    }];
+    
+    KCSUser* currentUser = [[KCSClient sharedClient] currentUser];
+    if (currentUser.emailVerified == NO) {
+        //email has not yet been verified, show a button to resend
+    }
+    
+    [KCSUser sendEmailConfirmationForUser:currentUser.username withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
+        if (errorOrNil != nil) {
+            //handle error
+        }
+    }];
+
+}
+
 @end
 
 
