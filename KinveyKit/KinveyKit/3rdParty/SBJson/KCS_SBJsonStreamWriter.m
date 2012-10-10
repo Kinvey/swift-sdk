@@ -33,6 +33,8 @@
 #import "KCS_SBJsonStreamWriter.h"
 #import "KCS_SBJsonStreamWriterState.h"
 
+#import "NSDate+ISO8601.h"
+
 static NSNumber *kNotANumber;
 static NSNumber *kTrue;
 static NSNumber *kFalse;
@@ -225,6 +227,9 @@ static NSNumber *kNegativeInfinity;
 
 	} else if ([o isKindOfClass:[NSNumber class]]) {
 		return [self writeNumber:o];
+        
+    } else if ([o isKindOfClass:[NSDate class]]) {
+		return [self writeDate:o];
 
 	} else if ([o isKindOfClass:[NSNull class]]) {
 		return [self writeNull];
@@ -317,6 +322,11 @@ static const char *strForChar(int c) {
 	[delegate writer:self appendBytes:[buf bytes] length:[buf length]];
 	[state transitionState:self];
 	return YES;
+}
+
+- (BOOL)writeDate:(NSDate *)x {
+    NSString *dateStr = [NSString stringWithFormat:@"ISODate(%c%@%c)", '"', [x stringWithISO8601Encoding], '"'];
+    return [self writeString:dateStr];
 }
 
 - (BOOL)writeNumber:(NSNumber*)number {

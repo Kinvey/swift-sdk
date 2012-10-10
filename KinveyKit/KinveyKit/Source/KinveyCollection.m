@@ -21,7 +21,7 @@
 #import "KCSStore.h"
 #import "KCSBlockDefs.h"
 #import "KCSConnectionProgress.h"
-
+#import "KinveyUser.h"
 
 // Avoid compiler warning by prototyping here...
 KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collection,
@@ -137,10 +137,18 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     self = [super init];
     
     if (self){
-        _collectionName = [name retain];
+        if ([name isEqualToString:KCSUserCollectionName]) {
+            if ([theClass isSubclassOfClass:[KCSUser class]] == NO) {
+                [[NSException exceptionWithName:@"Invalid Template" reason:@"User collection must have a template that is of type 'KCSUser'" userInfo:nil] raise];
+            }
+            _collectionName = @"";
+            _baseURL = [[[KCSClient sharedClient] userBaseURL] retain]; //use user url for user collection
+        } else {
+            _collectionName = [name retain];
+            _baseURL = [[[KCSClient sharedClient] appdataBaseURL] retain]; // Initialize this to the default appdata URL
+        }
         _objectTemplate = theClass;
         _lastFetchResults = nil;
-        _baseURL = [[[KCSClient sharedClient] appdataBaseURL] retain]; // Initialize this to the default appdata URL
         _filters = [[NSMutableArray alloc] init];
         _query = nil;
     }
@@ -196,10 +204,9 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 + (KCSCollection *)collectionFromString: (NSString *)string ofClass: (Class)templateClass
 {
-    KCSCollection *collection = [[[KCSCollection alloc] initWithName:string forTemplateClass:templateClass] autorelease];
+    KCSCollection *collection = [[[self alloc] initWithName:string forTemplateClass:templateClass] autorelease];
     return collection;
 }
-
 
 
 #pragma mark Basic Methods
@@ -535,6 +542,12 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 - (NSString *)debugDescription
 {
     return [NSString stringWithFormat:@"KCSCollection: %@", _collectionName];
+}
+
+#pragma mark - User collection
++ (KCSCollection*) userCollection
+{
+    return [self collectionFromString:KCSUserCollectionName ofClass:[KCSUser class]];
 }
 
 @end

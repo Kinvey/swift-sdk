@@ -161,4 +161,7 @@
 	[self parser:parser found:string];
 }
 
+- (void)parser:(KCS_SBJsonStreamParser*)parser foundDate:(NSDate*)date {
+	[self parser:parser found:date];
+}
 @end

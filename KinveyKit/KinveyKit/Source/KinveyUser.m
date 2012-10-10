@@ -24,6 +24,7 @@
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
+#import "KinveyCollection.h"
 
 #define kKeychainPasswordKey @"password"
 #define kKeychainUsernameKey @"username"
@@ -658,7 +659,7 @@
         NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationREquiresCurrentUserError userInfo:userInfo];
         [delegate entity:self operationDidFailWithError:userError];
     } else {
-        [self deleteFromCollection:[self userCollection] withDelegate:delegate];
+        [self deleteFromCollection:[KCSCollection userCollection] withDelegate:delegate];
     }
 }
 
@@ -672,7 +673,7 @@
         NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationREquiresCurrentUserError userInfo:userInfo];
         [delegate entity:self fetchDidFailWithError:userError];
     } else {
-        [self loadObjectWithID:self.userId fromCollection:[self userCollection] withDelegate:delegate];
+        [self loadObjectWithID:self.userId fromCollection:[KCSCollection userCollection] withDelegate:delegate];
     }
     
 }
@@ -698,7 +699,7 @@
             [tmpSet addObject:[[KCSPush sharedPush] deviceTokenString]];
             self.deviceTokens = [tmpSet allObjects];
         }
-        [self saveToCollection:[self userCollection] withDelegate:delegate];
+        [self saveToCollection:[KCSCollection userCollection] withDelegate:delegate];
     }
 }
 
@@ -734,12 +735,7 @@
 
 - (KCSCollection *)userCollection
 {
-    KCSCollection *userColl =  [KCSCollection collectionFromString:@"" ofClass:[KCSUser class]];
-    
-    // Make sure requests go to the correct URL
-    [userColl setBaseURL:[[KCSClient sharedClient] userBaseURL]];
-    
-    return userColl;
+    return [KCSCollection userCollection];
 }
 
 

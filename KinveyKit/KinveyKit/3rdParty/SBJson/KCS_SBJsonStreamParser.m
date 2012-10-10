@@ -35,6 +35,8 @@
 #import "KCS_SBJsonStreamParserState.h"
 #import <limits.h>
 
+#import "NSDate+ISO8601.h"
+
 @implementation KCS_SBJsonStreamParser
 
 @synthesize supportMultipleDocuments;
@@ -234,9 +236,19 @@
                         case sbjson_token_string:
                             if ([state needKey])
                                 [delegate parser:self foundObjectKey:(NSString*)token];
-                            else
-                                [delegate parser:self foundString:(NSString*)token];
-                            [state parser:self shouldTransitionTo:tok];
+                            else {
+                                if ([(NSString *)token hasPrefix:@"ISODate(\""] &&
+                                    [(NSString *)token hasSuffix:@"\")"])
+                                {
+                                    // This is really just a date
+                                    NSString *tmp = [(NSString *)token stringByReplacingOccurrencesOfString:@"ISODate(\"" withString:@""];
+                                    tmp = [tmp stringByReplacingOccurrencesOfString:@"\")" withString:@""];
+                                    NSDate *date = [NSDate dateFromISO8601EncodedString:tmp];
+                                    [delegate parser:self foundDate:date];
+                                } else {
+                                    [delegate parser:self foundString:(NSString*)token];
+                                }
+                            }                            [state parser:self shouldTransitionTo:tok];
                             break;
                             
                         default:
