@@ -1,6 +1,11 @@
 # KinveyKit Release History
 
 ## 1.10
+### 1.10.1
+** Release Date:** October 10, 2012
+
+* Added `+ [KCSUser sendEmailConfirmationForUser:withCompletionBlock:]` in order to send an email confirmation to the user. 
+
 ### 1.10.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1100APIDiffs/KinveyKit1100APIDiffs.html)
 
 ** Release Date: ** October 8, 2012

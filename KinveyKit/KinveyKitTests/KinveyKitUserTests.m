@@ -146,7 +146,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     realRequest.connectionShouldFail = NO;
     realRequest.connectionShouldReturnNow = YES;
     realRequest.responseForSuccess = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_OK
-                                                                          responseData:[self.writer dataWithObject:[NSDictionary dictionary]]
+                                                                          responseData:[self.writer dataWithObject:@{}]
                                                                             headerData:nil
                                                                               userData:nil];
     
@@ -157,9 +157,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     connection.connectionShouldFail = NO;
     
     // Success dictionary
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"brian", @"username",
-                                @"12345", @"password",
-                                @"hello", @"_id", nil];
+    NSDictionary *dictionary = @{KCSUserAttributeUsername : @"brian", @"password" : @"password", KCSEntityKeyId : @"_id"};
     connection.responseForSuccess = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_CREATED
                                                                          responseData:[self.writer dataWithObject:dictionary]
                                                                            headerData:nil
@@ -512,7 +510,7 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     }];
     [self poll];
     
-    lastUser = [KCSClient sharedClient].currentUser.username;
+    lastUser = [[KCSClient sharedClient].currentUser.username retain];
 }
 
 #pragma clang diagnostic pop
@@ -537,7 +535,7 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     }];
     [self poll];
     
-    lastUser = [KCSClient sharedClient].currentUser.username;
+    lastUser = [[KCSClient sharedClient].currentUser.username retain];
 }
 
 /* function named this way to follow the login with FB */
@@ -578,6 +576,21 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     [self poll];
     
     lastUser = [KCSClient sharedClient].currentUser.username;
+}
+
+- (void) testUserCollection
+{
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSClient sharedClient].currentUser.userCollection options:nil];
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if(errorOrNil) {
+            NSLog(@"Failed to load users... %@", errorOrNil);
+        } else {
+            NSLog(@"%@", objectsOrNil);
+        }
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
 
 #pragma mark - Password reset
@@ -624,19 +637,43 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
 
 - (void) testPasswordResetWithBadUserEmailDoesNotError
 {
-    //create a test user
-//    self.done = NO;
     NSString* testUser = @"BADUSER";
-//    [KCSUser loginWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-//        STAssertNoError;
-//        self.done = YES;
-//    }];
-//    [self poll];
-    
     self.done = NO;
     [KCSUser sendPasswordResetForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
         STAssertNoError;
         STAssertTrue(emailSent, @"Should have send email, anyway");
+        self.done = YES;
+    }];
+    [self poll];
+
+}
+
+- (void) testEscapeUser
+{
+    NSString* testUser = @"abc . foo@foo.com";
+    self.done = NO;
+    [KCSUser sendPasswordResetForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertTrue(emailSent, @"Should have send email, anyway");
+        self.done = YES;
+    }];
+    [self poll];
+}
+
+- (void) testSendEmailConfirm
+{
+    self.done = NO;
+    NSString* testUser = @"testino";
+    [KCSUser loginWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNoError;
+        self.done = YES;
+    }];
+    [self poll];
+    
+    self.done = NO;
+    [KCSUser sendEmailConfirmationForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertTrue(emailSent, @"Should send email");
         self.done = YES;
     }];
     [self poll];
