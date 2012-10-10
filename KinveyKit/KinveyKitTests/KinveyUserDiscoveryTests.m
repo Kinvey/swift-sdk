@@ -33,7 +33,7 @@
             user.email = email;
             user.surname = lname;
             user.givenName = fname;
-            [user saveToCollection:[user userCollection] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+            [user saveToCollection:[KCSCollection userCollection] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
                 STAssertNoError
                 self.done = YES;
             } withProgressBlock:nil];

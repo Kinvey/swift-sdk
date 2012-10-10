@@ -13,6 +13,11 @@
 #import "KinveyPersistable.h"
 #import "KCSBlockDefs.h"
 
+/** The name of the special case user collection
+ @since 1.10.2
+ */
+#define KCSUserCollectionName @"user"
+
 @class JSONDecoder;
 
 
@@ -121,6 +126,12 @@
  */
 + (KCSCollection *)collectionFromString: (NSString *)string ofClass: (Class)templateClass;
 
+
+/** The special user collection
+ @return a Collection that can be used to query `KCSUser` objects.
+ @since 1.10.2
+ */
++ (KCSCollection*) userCollection;
 
 ///---------------------------------------------------------------------------------------
 /// @name Fetching Entities from Kinvey

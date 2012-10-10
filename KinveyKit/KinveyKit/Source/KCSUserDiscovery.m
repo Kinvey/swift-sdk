@@ -16,12 +16,13 @@
 #import "KinveyHTTPStatusCodes.h"
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
+#import "KinveyCollection.h"
 
 @implementation KCSUserDiscovery
 
 + (void) lookupUsersForFieldsAndValues:(NSDictionary*)fieldMatchDictionary completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
-    KCSCollection* userCollection = [[[KCSClient sharedClient] currentUser] userCollection];
+    KCSCollection* userCollection = [KCSCollection userCollection];
     KCSRESTRequest* request = [userCollection restRequestForMethod:kPostRESTMethod apiEndpoint:@"_lookup"];
     [request setJsonBody:fieldMatchDictionary];
     
