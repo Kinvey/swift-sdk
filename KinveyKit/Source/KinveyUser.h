@@ -31,6 +31,7 @@ enum {
 };
 
 typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result);
+typedef void (^KCSUserSendEmailBlock)(BOOL emailSent, NSError* errorOrNil);
 
 /** Social Network login providers supported for log-in
  */
@@ -133,6 +134,11 @@ typedef enum  {
 @property (nonatomic, copy) NSString *givenName;
 /** Optional email address for the user. Publicly queryable be default. */
 @property (nonatomic, copy) NSString *email;
+/** Checks if the user has verified email (by clicking the link in the email sent via `sendEmailConfirmationForUser:withCompletionBlock:`).
+ @see sendEmailConfirmationForUser:withCompletionBlock:
+ @since 10.1.0
+ */
+@property (nonatomic, readonly) BOOL emailVerified;
 
 + (BOOL) hasSavedCredentials;
 
@@ -291,12 +297,12 @@ typedef enum  {
 
 
 ///---------------------------------------------------------------------------------------
-/// @name Password Reset
+/// @name User email management
 ///---------------------------------------------------------------------------------------
 
 /** Sends a password reset email to the specified user.
  
- The user must have a valid email set in it's email (`KCSUserAttributeEmail`) field, on the server, for this to work. The user will receive an email with a time-bound link to a password reset web page.
+ The user must have a valid email set in its email (`KCSUserAttributeEmail`) field, on the server, for this to work. The user will receive an email with a time-bound link to a password reset web page.
  
  Until the password reset is complete, the old password remains active and valid. This allows the user to ignore the request if he remembers the old password. If too much time has passed, the email link will no longer be valid, and the user will have to initiate a new sendPasswordResetForUser:withCompletionBlock:.
  
@@ -306,7 +312,19 @@ typedef enum  {
  
  @param username the user to send the password reset link to
  @param completionBlock the request callback. `emailSent` is true if the email address is found and an email is sent (does not guarantee delivery). If `emailSent` is `NO`, then the `errorOrNil` value will have information as to what went wrong on the network. For security reasons, `emailSent` will be true even if the user is not found or the user does not have an associated email.
+ @since 1.10.0
  */
-+ (void) sendPasswordResetForUser:(NSString*)username withCompletionBlock:(void(^)(BOOL emailSent, NSError* errorOrNil))completionBlock;
++ (void) sendPasswordResetForUser:(NSString*)username withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
+
+
+/** Sends an request to confirm email address to the specified user.
+ 
+ The user must have a valid email set in its email (`KCSUserAttributeEmail`) field, on the server, for this to work. The user will receive an email with a time-bound link to a verification web page.
+ 
+ @param username the user to send the password reset link to
+ @param completionBlock the request callback. `emailSent` is true if the email address is found and an email is sent (does not guarantee delivery). If `emailSent` is `NO`, then the `errorOrNil` value will have information as to what went wrong on the network. For security reasons, `emailSent` will be true even if the user is not found or the user does not have an associated email.
+ @since 1.10.1
+ */
++ (void) sendEmailConfirmationForUser:(NSString*)username withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
 
 @end
