@@ -213,4 +213,121 @@
     AssertQuery
 }
 
+- (void) testMetadatQueryDate
+{
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    STAssertTrue(setup, @"Backend should be good to go");
+    
+    KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
+    
+    TestClass* t1 = [[TestClass alloc] init];
+    t1.objDescription = @"t1";
+    t1.objCount = 1;
+    
+    TestClass* t2 = [[TestClass alloc] init];
+    t2.objDescription = @"t2";
+    t2.objCount = 1;
+
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
+    
+    self.done = NO;
+    [store saveObject:@[t1,t2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    KCSQuery* query = [KCSQuery queryOnField:KCSMetadataFieldLastModifiedTime usingConditional:kKCSLessThan forValue:[NSDate date]];
+    self.done = NO;
+    [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertObjects(2);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
+
+- (void) loginWithUser:(NSString*)username password:(NSString*)password
+{
+    self.done = NO;
+    [KCSUser userWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        if (errorOrNil) {
+            [KCSUser loginWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                STAssertNoError
+                self.done = YES;
+            }];
+        } else {
+            self.done = YES;
+        }
+    }];
+    [self poll];
+}
+
+- (void) testMetadataQueryCreator
+{
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    STAssertTrue(setup, @"Backend should be good to go");
+    
+    //setup a test user
+    [self loginWithUser:@"testMetadataQueryCreator1" password:@"b"];    
+    NSString* origId = [[[KCSClient sharedClient].currentUser kinveyObjectId] copy];
+    
+    KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
+    
+    TestClass* t1 = [[TestClass alloc] init];
+    t1.objDescription = @"t1";
+    t1.objCount = 1;
+    
+    TestClass* t2 = [[TestClass alloc] init];
+    t2.objDescription = @"t2";
+    t2.objCount = 1;
+    
+    //create t1 as first user
+    
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
+    
+    self.done = NO;
+    [store saveObject:t1 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    //create t2 as second user
+    [self loginWithUser:@"testMetadataQueryCreator2" password:@"b"];    
+    NSString* secondId = [[KCSClient sharedClient].currentUser kinveyObjectId];
+    
+    self.done = NO;
+    [store saveObject:t2 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+
+    //do the queries
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator withExactMatchForValue:origId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertObjects(1);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator withExactMatchForValue:[KCSClient sharedClient].currentUser] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertObjects(1);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator usingConditional:kKCSIn forValue:@[origId, secondId]] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertObjects(2);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
+
 @end

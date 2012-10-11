@@ -13,13 +13,15 @@
 #import "KCSRESTRequest.h"
 #import "KCSClient.h"
 
+NSDictionary* defaultBuilders();
+
 @interface KCSGenericRESTRequest (KCSHiddenMethods)
 + (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
 @end
 
 @interface KCSQuery (KCSHiddenMethods)
 @property (nonatomic, retain) NSArray* referenceFieldsToResolve;
-
+@property (nonatomic, readwrite, copy) NSMutableDictionary *query;
 @end
 
 @interface KCSCollection (KCSHiddenMethods)
