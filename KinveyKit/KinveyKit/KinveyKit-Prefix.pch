@@ -14,5 +14,3 @@
 #else
 #define DBAssert(condition,description, ...)
 #endif
-
-#define KCS_DEPRECATED(message,version) __attribute__((deprecated(#message " Deprecated in: KinveyKit " #version ".")))

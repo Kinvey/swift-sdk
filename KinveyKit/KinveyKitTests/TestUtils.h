@@ -12,6 +12,8 @@
 
 #define STAssertNoError STAssertNil(errorOrNil,@"Should not get error: %@", errorOrNil);
 #define STAssertError(error, cd) STAssertNotNil(error, @"should have an error"); STAssertEquals((int)cd, (int)[error code], @"error codes should match.");
+#define STAssertObjects(cnt) STAssertNotNil(objectsOrNil,@"should get non-nil return objects"); \
+                               STAssertEquals((int)[objectsOrNil count], (int)cnt, @"Expecting %i items", cnt);
 
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 
