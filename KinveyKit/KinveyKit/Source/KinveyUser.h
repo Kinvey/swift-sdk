@@ -12,6 +12,7 @@
 #import <Foundation/Foundation.h>
 #import "KinveyPersistable.h"
 #import "KinveyEntity.h"
+#import "KinveyHeaderInfo.h"
 
 @class KCSCollection;
 @class KCSRESTRequest;
@@ -291,10 +292,11 @@ typedef enum  {
 - (void)setValue: (id)value forAttribute: (NSString *)attribute;
 
 /*! Called when a User Request completes successfully.
- * @return The KCSCollection to access users.
+ 
+ @return The KCSCollection to access users.
+ @deprecatedIn 1.10.2
  */
-- (KCSCollection *)userCollection;
-
+- (KCSCollection *)userCollection KCS_DEPRECATED(Use [KCSCollection userCollection] instead., 1.10.2);
 
 ///---------------------------------------------------------------------------------------
 /// @name User email management

@@ -37,6 +37,27 @@ static NSString* _collection;
 
 @end
 
+@interface UserRefTestClass : TestClass
+@property (nonatomic, retain) KCSUser* auser;
+
+@end
+
+@implementation UserRefTestClass
+
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    NSDictionary *map = [super hostToKinveyPropertyMapping];
+    NSMutableDictionary* newmap = [NSMutableDictionary dictionaryWithDictionary:map];
+    [newmap setValue:@"auserK" forKey:@"auser"];
+    return newmap;
+}
+
++ (NSDictionary*) kinveyPropertyToCollectionMapping
+{
+    return @{ @"auserK" : KCSUserCollectionName};
+}
+@end
+
 @interface ReffedTestClass : TestClass
 @property (nonatomic, retain) TestClass* other;
 @property (nonatomic, retain) NSArray* arrayOfOthers;
@@ -975,4 +996,28 @@ TestClass* randomTestClass(NSString* description)
 }
 //TODO: note different objs
 //TODO: 1->A, 2->A ==> 1->A, 2->A, not 1->A',2->A''
+
+- (void) testUserAssociation
+{
+    UserRefTestClass* obj = [[[UserRefTestClass alloc] init] autorelease];
+    obj.objCount = -3000;
+    obj.objDescription = @"auser that knows about another user";
+    obj.auser = [KCSClient sharedClient].currentUser;
+    
+    STAssertNotNil(obj.auser, @"should have a nonnull user");
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[UserRefTestClass class]] options:nil];
+    
+    self.done = NO;
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        UserRefTestClass* ret = [objectsOrNil objectAtIndex:0];
+        KCSUser* retUser = ret.auser;
+        STAssertTrue([retUser isKindOfClass:[KCSUser class]], @"should be a user");
+        STAssertEqualObjects([retUser username], [KCSClient sharedClient].currentUser.username, @"usernames should match");
+        
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
 @end

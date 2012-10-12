@@ -448,7 +448,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
         
         [KCSUser initCurrentUser];
     }
-    STAssertTrue([[[[KCSClient sharedClient] currentUser] userCollection] isKindOfClass:[KCSCollection class]], @"user collection should be a collection");
+    STAssertTrue([[KCSCollection userCollection] isKindOfClass:[KCSCollection class]], @"user collection should be a collection");
 }
 
 - (void)user:(KCSUser *)user actionDidCompleteWithResult:(KCSUserActionResult)result
@@ -580,7 +580,7 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
 
 - (void) testUserCollection
 {
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSClient sharedClient].currentUser.userCollection options:nil];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
     self.done = NO;
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if(errorOrNil) {
