@@ -1,6 +1,17 @@
 # KinveyKit Release History
 
 ## 1.10
+### 1.10.2
+** Release Date:** October 12, 2012
+
+* Improved support for querying relationships through `KCSLinkedAppdataStore` and for using objects in queries
+    * Added constants: `KCSMetadataFieldCreator` and `KCSMetadataFieldLastModifiedTime` to `KCSMetadata.h` to allow for querying for entities based on the user that created the object and the last time the entity was updated on the server.
+    * Added the ability to use `NSDate` objects in queries, supporting exact matches, greater than (or equal) and less than (or equal) comparisons.
+* Added support for establishing references to users:
+    * Added constant `KCSUserCollectionName` to allow for adding relationships to user objects from any object's `+kinveyPropertyToCollectionMapping`.
+    * Deprecated `- [KCSUser userCollection]` in favor of `+[KCSCollection userCollection]` to create a collection object to the user collection. 
+    
+
 ### 1.10.1
 ** Release Date:** October 10, 2012
 
