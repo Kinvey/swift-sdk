@@ -10,4 +10,5 @@
 
 @interface NSMutableDictionary (KinveyAdditions)
 - (id) popObjectForKey:(id) key;
+- (void) append:(NSString*)appendant ontoKeySet:(NSArray*)keys recursive:(BOOL) recursive;
 @end

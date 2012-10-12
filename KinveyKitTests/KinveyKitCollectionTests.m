@@ -60,17 +60,6 @@ typedef BOOL(^InfoSuccessAction)(int);
 @end
 
 @implementation KinveyKitCollectionTests
-@synthesize testID = _testID;
-@synthesize onFailure = _onFailure;
-@synthesize onSuccess = _onSuccess;
-@synthesize onInfoSuccess = _onInfoSuccess;
-@synthesize testPassed = _testPassed;
-@synthesize message = _message;
-@synthesize completeDataSet = _completeDataSet;
-@synthesize allTypes = _allTypes;
-@synthesize nesting = _nesting;
-@synthesize parser = _parser;
-@synthesize writer = _writer;
 
 - (void)setUp
 {
@@ -100,23 +89,22 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     // Seed data types
     _allTypes = [NSDictionary dictionaryWithObjectsAndKeys:
-                 [NSNumber numberWithInt:1], @"int",
-                 [NSNumber numberWithFloat:2.0], @"float",
-//                 [NSNumber numberWithFloat:2.0E-11], @"float",                 
-                 [NSNumber numberWithDouble:3.14159], @"double",
-                 [NSNumber numberWithBool:NO], @"boolNo",
-                 [NSNumber numberWithBool:YES], @"boolYes",
+                 @1, @"int",
+                 @2.0, @"float",
+                 @3.14159, @"double",
+                 @NO, @"boolNo",
+                 @YES, @"boolYes",
                  [NSDate dateWithTimeIntervalSince1970:0], @"date1970",
                  @"This is my string, it's OK!", @"string",
                  nil, @"nil",
                  nil];
 
     _nesting = [NSDictionary dictionaryWithObjectsAndKeys:
-                [NSArray arrayWithObjects:@"one", @"two",[NSArray arrayWithObjects:@"three", _allTypes, nil],nil],@"array",
+                @[@"one", @"two", @[@"three", _allTypes]],@"array",
                 [NSDictionary dictionaryWithObjectsAndKeys:[NSArray arrayWithObjects:@"five", @"six", @"7", nil],@"array",_allTypes,@"dict",nil],@"dict",
                 nil];
     
-    _completeDataSet = [NSArray arrayWithObjects:_allTypes, _nesting, nil];
+    self.completeDataSet = @[_allTypes, _nesting];
                  
     _writer = [[[KCS_SBJsonWriter alloc] init] retain];
     _parser = [[[KCS_SBJsonParser alloc] init] retain];
@@ -149,9 +137,10 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 - (void)testFetchAll
 {
-    NSDictionary *dict = wrapResponseDictionary([NSDictionary dictionaryWithObject:self.completeDataSet forKey:@"items"]);
+    NSDictionary *dict = wrapResponseDictionary(@{@"items" : self.completeDataSet});
+    NSData* data = [self.writer dataWithObject:dict];
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                                           responseData:[self.writer dataWithObject:dict]
+                                                                           responseData:data
                                                                              headerData:nil
                                                                                userData:nil];
     
@@ -309,8 +298,9 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     // BIGNUM
     self.testID = @"Count: HUGE";
+    NSData* data = [self.writer dataWithObject:bigNum];
     response = [KCSConnectionResponse connectionResponseWithCode:200
-                                                    responseData:[self.writer dataWithObject:bigNum]
+                                                    responseData:data
                                                       headerData:nil
                                                         userData:nil];
     // This test is a little strange, the idea was to fill a 32-bit register

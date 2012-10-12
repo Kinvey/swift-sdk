@@ -13,6 +13,11 @@
 #import "NSArray+KinveyAdditions.h"
 #import "KinveyPersistable.h"
 #import "KinveyEntity.h"
+#import "KCSHiddenMethods.h"
+#import "KCSBuilders.h"
+#import "NSMutableDictionary+KinveyAdditions.h"
+#import "KCSMetadata.h"
+#import "NSDate+ISO8601.h"
 
 #pragma mark -
 #pragma mark KCSQuerySortModifier
@@ -352,16 +357,34 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     [oldDict release];
 }
 
-+ (id) valueOrKCSPersistableId:(NSObject*) value
++ (id) valueOrKCSPersistableId:(NSObject*) value field:(NSString*)field
 {
     if (([value isKindOfClass:[NSArray class]] || [value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSString class]] || [value isKindOfClass:[NSNumber class]]) == NO) {
         //there's no test to determine if an object has an id since there's a NSObject category
         @try {
-            value = [value kinveyObjectId];
+            if ([field isEqualToString:KCSMetadataFieldLastModifiedTime] && [value isKindOfClass:[NSDate class]]) {
+                value = [(NSDate*)value stringWithISO8601Encoding];
+            } else {
+                Class<KCSDataTypeBuilder> builderClass = [defaultBuilders() objectForKey:[value classForCoder]];
+                if (builderClass) {
+                    value = [builderClass JSONCompatabileValueForObject:value];
+                } else {
+                    value = [value kinveyObjectId];
+                }
+            }
         }
         @catch (NSException *exception) {
             // do nothing in this case
         }
+    }
+    if ([value isKindOfClass:[NSArray class]]) {
+        //handle arrays of objects
+        NSMutableArray* mArray = [value mutableCopy];
+        for (NSObject* obj in [value copy]) {
+            [mArray removeObject:obj];
+            [mArray addObject:[self valueOrKCSPersistableId:obj field:field]];
+        }
+        value = mArray;
     }
     return value;
 }
@@ -397,7 +420,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 + (KCSQuery *)queryOnField:(NSString *)field usingConditional:(KCSQueryConditional)conditional forValue: (NSObject *)value
 {
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
-    value = [KCSQuery valueOrKCSPersistableId:value];
+    value = [KCSQuery valueOrKCSPersistableId:value field:field];
     
     query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
     
@@ -409,7 +432,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
     
-    value = [self valueOrKCSPersistableId:value];
+    value = [self valueOrKCSPersistableId:value field:field];
     
     query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
     
@@ -506,8 +529,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 - (void)addQueryOnField:(NSString *)field usingConditional:(KCSQueryConditional)conditional forValue: (NSObject *)value
 {
-    value = [KCSQuery valueOrKCSPersistableId:value];
-
+    value = [KCSQuery valueOrKCSPersistableId:value field:field];
+    
     NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO];
     
     for (NSString *key in tmp) {
@@ -517,8 +540,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 - (void)addQueryOnField:(NSString *)field withExactMatchForValue: (NSObject *)value
 {
-    value = [KCSQuery valueOrKCSPersistableId:value];
-
+    value = [KCSQuery valueOrKCSPersistableId:value field:field];
+    
     NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[value] useQueriesForOps:NO];
     for (NSString *key in tmp) {
         [self.query setObject:[tmp objectForKey:key] forKey:key];
@@ -652,13 +675,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     NSMutableDictionary* d = [[_query mutableCopy] autorelease];
     if ([self hasReferences]) {
-        [_query enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-            if ([self.referenceFieldsToResolve containsObject:key]) {
-                //use the _id to query for reference entities
-                [d removeObjectForKey:key];
-                [d setObject:obj forKey:[key stringByAppendingString:@"._id"]];
-            }
-        }];
+        [_query append:@"._id" ontoKeySet:self.referenceFieldsToResolve recursive:YES];
     }
     return [d JSONRepresentation];
 }
@@ -695,7 +712,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     if ([self hasReferences]) {
         stringRepresentation = [stringRepresentation stringByAppendingQueryString:[@"resolve=" stringByAppendingString:[self.referenceFieldsToResolve join:@","]]];
     }
-
+    
     KCSLogDebug(@"query: %@",stringRepresentation);
     return stringRepresentation;
 }

@@ -18,6 +18,9 @@
 #define kACLGlobalReadKey @"gr"
 #define kACLGlobalWriteKey @"gw"
 
+NSString* KCSMetadataFieldCreator = @"_acl.creator";
+NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
+
 @interface KCSUser ()
 - (NSString*) userId;
 @end

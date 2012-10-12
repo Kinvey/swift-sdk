@@ -77,6 +77,7 @@ typedef enum {
 
 /// Called when a string is found
 - (void)parser:(KCS_SBJsonStreamParser*)parser foundString:(NSString*)string;
+- (void)parser:(KCS_SBJsonStreamParser*)parser foundDate:(NSDate*)date;
 
 @end
 

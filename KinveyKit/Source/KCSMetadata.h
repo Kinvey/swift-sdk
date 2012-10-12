@@ -7,6 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+/** Fieldname to access an object's creator, using KCSQuery.
+ @since 1.10.2
+ */
+FOUNDATION_EXPORT NSString* KCSMetadataFieldCreator;
+/** Fieldname to access an object's last modified time, using KCSQuery.
+ @since 1.10.2
+ */
+FOUNDATION_EXPORT NSString* KCSMetadataFieldLastModifiedTime;
+
 /** This object represents backend information about the entity, such a timestamp and read/write permissions.
  
  To take advantage of KCSMetadata, map an entity property of this type to field `KCSEntityKeyMetadata`. The object that maps a particular instance is the "associated object." 
