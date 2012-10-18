@@ -22,12 +22,14 @@
 
 #import "KCSBuilders.h"
 
+#import "KCSErrorUtilities.h"
+#import "KinveyErrorCodes.h"
+
 #define kKMDKey @"_kmd"
 #define kACLKey @"_acl"
 #define kTypeKey @"_type"
 
 @implementation KCSKinveyRef
-@synthesize object, collectionName;
 - (id) initWithObj:(id<KCSPersistable>)obj andCollection:(NSString*)collection
 {
     self = [super init];
@@ -64,6 +66,12 @@
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<KCSKinveyRef: { objId : '%@', _collection : '%@'}>", [(id)self.object kinveyObjectId], self.collectionName];
+}
+
+- (BOOL) unableToSaveReference:(BOOL)savingReferences
+{
+    NSString* objId = [(id)self.object kinveyObjectId];
+    return savingReferences == NO && objId == nil;
 }
 
 @end
@@ -148,7 +156,7 @@ NSString* specialTypeOfValue(id value)
     if ([value isKindOfClass:[NSDictionary class]]) {
         type = [value objectForKey:kTypeKey];
     } else if ([value isKindOfClass:[NSArray class]] && [value count] > 0) {
-        type = specialTypeOfValue([value objectAtIndex:0]);
+        type = specialTypeOfValue(value[0]);
     }
     return type;
 }
@@ -212,7 +220,7 @@ NSString* specialTypeOfValue(id value)
                     return [obj isEqual:value];
                 }];
                 if (resIdx != NSNotFound) {
-                    [object setValue:[[resources objectAtIndex:resIdx] resource] forKey:hostKey];
+                    [object setValue:[resources[resIdx] resource] forKey:hostKey];
                 } else {
                     [object setValue:value forKey:hostKey];
                 }
@@ -235,7 +243,7 @@ NSString* specialTypeOfValue(id value)
                         if (refIdx == NSNotFound) {
                             [objVals addObject:arVal];
                         } else {
-                            [objVals addObject:[[references objectAtIndex:refIdx] object]];
+                            [objVals addObject:[references[refIdx] object]];
                         }
                     }
                     [object setValue:objVals forKey:hostKey];
@@ -244,9 +252,14 @@ NSString* specialTypeOfValue(id value)
                         return [obj isEqual:value];
                     }];
                     if (refIdx != NSNotFound) {
-                        [object setValue:[[references objectAtIndex:refIdx] object] forKey:hostKey];
+                        [object setValue:[references[refIdx] object] forKey:hostKey];
                     } else {
-                        [object setValue:value forKey:hostKey];
+                        id oldVal = [object valueForKey:hostKey];
+                        NSString* refId = [value objectForKey:@"_id"];
+                        BOOL hasAnObjectAlreadyAssigned = oldVal != nil && refId != nil && [refId isEqualToString:[oldVal kinveyObjectId]];
+                        if (hasAnObjectAlreadyAssigned == NO) {
+                            [object setValue:value forKey:hostKey];
+                        }
                     }
                 }
             } else {
@@ -257,7 +270,7 @@ NSString* specialTypeOfValue(id value)
                     id builtValue = [builder objectForJSONObject:value];
                     [object setValue:builtValue forKey:hostKey];
                 } else {
-                    if ([jsonKey isEqualToString:KCSEntityKeyId] && [[object kinveyObjectId] isEqualToString:value] == NO) {
+                    if ([jsonKey isEqualToString:KCSEntityKeyId] && [object kinveyObjectId] != nil && [[object kinveyObjectId] isEqualToString:value] == NO) {
                         KCSLogWarning(@"%@ is having it's id overwritten.", object);
                     }
                     if ([object respondsToSelector:@selector(setValue:forKey:)]) {
@@ -523,7 +536,16 @@ BOOL isCollection(id obj)
     return [obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSSet class]] || [obj isKindOfClass:[NSOrderedSet class]];
 }
 
-+ (KCSSerializedObject*) makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName withProps:(BOOL)withProps
+void setError(NSError** error, NSString* objectId, NSString* jsonName)
+{
+    if (error != NULL) {
+        NSDictionary* info = @{NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Reference object does not have ID set."],
+        NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"Object (id=%@) is trying to create a reference in field '%@', but that object does not yet have an assigned id. Save this object to its collection first", objectId, jsonName], NSLocalizedRecoverySuggestionErrorKey : @"Save reference object first or pre-assign it an id."};
+        *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSReferenceNoIdSetError userInfo:info];
+    }
+}
+
++ (KCSSerializedObject*) makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName withProps:(BOOL)withProps error:(NSError**)error
 {
     NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
     NSDictionary *kinveyMapping = [object hostToKinveyPropertyMapping];
@@ -577,6 +599,7 @@ BOOL isCollection(id obj)
                 [resourceWrapper release];
             } else if (withProps == YES && [kinveyRefMapping objectForKey:jsonName] != nil) {
                 // have a kinvey ref
+                BOOL shouldSaveRef = [object respondsToSelector:@selector(referenceKinveyPropertiesOfObjectsToSave)] && [[object referenceKinveyPropertiesOfObjectsToSave] containsObject:jsonName] == YES;
                 if (isCollection(value)) {
                     NSArray* arrayValue = value;
                     Class<KCSDataTypeBuilder> builder = builderForComplexType(object, [value classForCoder]);
@@ -586,14 +609,26 @@ BOOL isCollection(id obj)
                     NSMutableArray* refArray = [NSMutableArray arrayWithCapacity:[arrayValue count]];
                     for (id arrayVal in arrayValue) {
                         KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:arrayVal andCollection:[kinveyRefMapping objectForKey:jsonName]];
+                        if ([ref unableToSaveReference:shouldSaveRef]) {
+                            setError(error, objectId, jsonName);
+                            return nil;
+                        }
                         [refArray addObject:ref];
                     }
-                    [referencesToSave addObjectsFromArray:refArray];
+                    if (shouldSaveRef) {
+                        [referencesToSave addObjectsFromArray:refArray];
+                    }
                     [dictionaryToMap setValue:refArray forKey:jsonName];
                 } else {
                     KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:value andCollection:[kinveyRefMapping objectForKey:jsonName]];
+                    if ([ref unableToSaveReference:shouldSaveRef]) {
+                        setError(error, objectId, jsonName);
+                        return nil;
+                    }
                     [dictionaryToMap setValue:ref forKey:jsonName];
-                    [referencesToSave addObject:ref];
+                    if (shouldSaveRef) {
+                        [referencesToSave addObject:ref];
+                    }
                 }
             } else {
                 Class valClass = [value classForCoder];
@@ -629,14 +664,14 @@ BOOL isCollection(id obj)
     return sObject;
 }
 
-+ (KCSSerializedObject *)makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName
++ (KCSSerializedObject *)makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName error:(NSError**)error
 {
-    return [self makeResourceEntityDictionaryFromObject:object forCollection:collectionName withProps:YES];
+    return [self makeResourceEntityDictionaryFromObject:object forCollection:collectionName withProps:YES error:error];
 }
 
-+ (KCSSerializedObject *)makeKinveyDictionaryFromObject: (id)object
++ (KCSSerializedObject *)makeKinveyDictionaryFromObject: (id)object error:(NSError**)error
 {
-    return [self makeResourceEntityDictionaryFromObject:object forCollection:nil withProps:NO];
+    return [self makeResourceEntityDictionaryFromObject:object forCollection:nil withProps:NO error:error];
 }
 
 @end

@@ -138,9 +138,9 @@
     }
 }
 
-- (KCSSerializedObject*) makeSO:(id<KCSPersistable>)object
+- (KCSSerializedObject*) makeSO:(id<KCSPersistable>)object error:(NSError**)error
 {
-    return [KCSObjectMapper makeResourceEntityDictionaryFromObject:object forCollection:self.backingCollection.collectionName];
+    return [KCSObjectMapper makeResourceEntityDictionaryFromObject:object forCollection:self.backingCollection.collectionName error:error];
 }
 
 #pragma mark - Querying/Fetching
