@@ -290,8 +290,8 @@ static BOOL sFirstReached;
     
     NSMutableArray* objs = [NSMutableArray arrayWithCapacity:_q.count];
     for (KCSSaveQueueItem* i in _q) {
-        NSDictionary *d = @{ @"d" : [i.mostRecentSaveDate stringWithISO8601Encoding],
-        @"i" : [KCSObjectMapper makeKinveyDictionaryFromObject:i.object].dataToSerialize
+        NSDictionary *d = @{ @"d" : [i.mostRecentSaveDate stringWithISO8601Encoding], //TODO: handle errors
+        @"i" : [KCSObjectMapper makeKinveyDictionaryFromObject:i.object error:NULL].dataToSerialize
         };
         [objs addObject:d];
     }

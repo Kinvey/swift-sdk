@@ -30,7 +30,7 @@
 + (id)populateExistingObject:(KCSSerializedObject*)serializedObject withNewData:(NSDictionary*)data;
 + (id)makeObjectOfType:(Class)objectClass withData: (NSDictionary *)data;
 + (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withResourceDictionary:(NSMutableDictionary*)resources;
-+ (KCSSerializedObject *)makeKinveyDictionaryFromObject: (id)object;
-+ (KCSSerializedObject *)makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName;
++ (KCSSerializedObject *)makeKinveyDictionaryFromObject:(id)object error:(NSError**)error;
++ (KCSSerializedObject *)makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName error:(NSError**)error;
 
 @end

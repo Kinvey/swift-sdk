@@ -226,7 +226,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 - (void)saveToCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistableDelegate>)delegate
 {
 
-    KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self];
+    KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
     BOOL isPostRequest = obj.isPostRequest;
     NSString *objectId = obj.objectId;
     NSDictionary *dictionaryToMap = [obj.dataToSerialize retain];
@@ -289,7 +289,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 - (void)saveToCollection:(KCSCollection *)collection withCompletionBlock:(KCSCompletionBlock)onCompletion withProgressBlock:(KCSProgressBlock)onProgress
 {
     
-    KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self];
+    KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
     BOOL isPostRequest = obj.isPostRequest;
     NSString *objectId = obj.objectId;
     NSDictionary *dictionaryToMap = [obj.dataToSerialize retain];

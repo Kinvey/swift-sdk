@@ -619,15 +619,20 @@ int reachable = -1;
     [self saveMainEntity:so progress:progress withCompletionBlock:completionBlock withProgressBlock:progressBlock];
 }
 
-- (KCSSerializedObject*) makeSO:(id<KCSPersistable>)object
+- (KCSSerializedObject*) makeSO:(id<KCSPersistable>)object error:(NSError**)error
 {
-    return [KCSObjectMapper makeKinveyDictionaryFromObject:object];
+    return [KCSObjectMapper makeKinveyDictionaryFromObject:object error:error];
 }
 
 - (void) saveEntity:(id<KCSPersistable>)objToSave progressGraph:(KCSSaveGraph*)progress doSaveBlock:(KCSCompletionBlock)doSaveblock alreadySavedBlock:(KCSCompletionWrapperBlock_t)alreadySavedBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
     //Step 0: Serialize Object
-    KCSSerializedObject* so = [self makeSO:objToSave];
+    NSError* error = nil;
+    KCSSerializedObject* so = [self makeSO:objToSave error:&error];
+    if (so == nil && error) {
+        doSaveblock(@[], error);
+        return;
+    }
     id objKey = [progress markEntity:so];
     DBAssert(objKey != nil, @"should have a valid obj key here");
     [objKey ifNotLoaded:^{
@@ -640,7 +645,7 @@ int reachable = -1;
         } withProgressBlock:progressBlock];
         
     } otherwiseWhenLoaded:alreadySavedBlock andResaveAfterReferencesSaved:^{
-        KCSSerializedObject* soPrime = [KCSObjectMapper makeResourceEntityDictionaryFromObject:objToSave forCollection:self.backingCollection.collectionName];
+        KCSSerializedObject* soPrime = [KCSObjectMapper makeResourceEntityDictionaryFromObject:objToSave forCollection:self.backingCollection.collectionName error:NULL]; //TODO: figure out if this is needed?
         [soPrime restoreReferences:so];
         [self saveMainEntity:soPrime progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
             [objKey resaveComplete];
