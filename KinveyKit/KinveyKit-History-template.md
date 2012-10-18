@@ -1,6 +1,15 @@
 # KinveyKit Release History
 
 ## 1.10
+### 1.10.3
+** Release Date:** October 18, 2012
+
+* __Change in behavior when saving objects with relationships__.
+    * Objects specified as relationships (through `kinveyPropertyToCollectionMapping`) will, by default, __no longer be saved__ to its collection when the owning object is saved. Like before, there will be a reference dictionary saved to the backend in place of the object.
+    * If a reference object has not had its `_id` set, either programmatically or by saving that object to the backend, then saving the owning object will fail. The save will not be sent, and the `completionBlock` callback with have an error with an error code: `KCSReferenceNoIdSetError`.
+    * To save the reference objects (either to simplify the save or have the backend generate the `_id`'s), have the `KCSPersistable` object implement the `- referenceKinveyPropertiesOfObjectsToSave` method. This will return an array of backend property names for the objects to save. 
+        * For example, if you have an `Invitation` object with a reference property `Invitee`, in addition to mentioning the `Invitee` property in `- hostToKinveyPropertyMapping` and `- kinveyPropertyToCollectionMapping`, if you supply `@"Invitee"` in `- referenceKinveyPropertiesOfObjectsToSave`, then any objects in the `Invitee` property will be saved to the backend before saving the `Invitation` object, populating any `_id`'s as necessary.
+
 ### 1.10.2
 ** Release Date:** October 12, 2012
 

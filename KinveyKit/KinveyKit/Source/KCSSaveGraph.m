@@ -223,7 +223,7 @@ double countBytesE(KCSSerializedObject* serializedObj)
 
 double countBytesRf(id referenceObj)
 {
-    KCSSerializedObject* serializedObj = [KCSObjectMapper makeResourceEntityDictionaryFromObject:referenceObj forCollection:@""];
+    KCSSerializedObject* serializedObj = [KCSObjectMapper makeResourceEntityDictionaryFromObject:referenceObj forCollection:@"" error:NULL];
     NSDictionary *dictionaryToMap = serializedObj.dataToSerialize;
     KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
     NSData* data = [writer dataWithObject:dictionaryToMap];

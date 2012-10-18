@@ -123,7 +123,7 @@
     [s setAttributes:@{@"myattr" : @"x"} range:NSMakeRange(1, 2)];
     t.asParam = s;
     
-    KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:t];
+    KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:t error:NULL];
     STAssertNotNil(so, @"should not have a nil object");
     
     NSDictionary* d = [so dataToSerialize];

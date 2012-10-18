@@ -173,13 +173,13 @@ typedef BOOL(^InfoSuccessAction)(int);
 - (void) testSerialize
 {
     NSDictionary* myDict = @{@"_id" : @"12345", @"keyA" : @"valA", @"keyB" : @10};
-    KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:myDict];
+    KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:myDict error:NULL];
     NSDictionary* outDict = [so dataToSerialize];
     STAssertFalse(so.isPostRequest, @"Should not be a post because _id is specified");
     STAssertEqualObjects(myDict, outDict, @"dicts should be the same");
     
     myDict = @{@"keyA" : @"valA", @"keyB" : @10};
-    so = [KCSObjectMapper makeKinveyDictionaryFromObject:myDict];
+    so = [KCSObjectMapper makeKinveyDictionaryFromObject:myDict error:NULL];
     outDict = [so dataToSerialize];
     STAssertTrue(so.isPostRequest, @"Should be true, no _id is specified");
     STAssertEqualObjects(myDict, outDict, @"dicts should be the same");

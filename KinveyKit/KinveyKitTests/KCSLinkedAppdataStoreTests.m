@@ -52,6 +52,11 @@ static NSString* _collection;
     return newmap;
 }
 
+- (NSArray *)referenceKinveyPropertiesOfObjectsToSave
+{
+    return @[@"auserK"];
+}
+
 + (NSDictionary*) kinveyPropertyToCollectionMapping
 {
     return @{ @"auserK" : KCSUserCollectionName};
@@ -78,6 +83,11 @@ static NSString* _collection;
     return newmap;
 }
 
+- (NSArray *)referenceKinveyPropertiesOfObjectsToSave
+{
+    return @[@"otherK",@"arrayOfOthersK",@"setOfOthersK",@"thisOtherK"];
+}
+
 + (NSDictionary*) kinveyPropertyToCollectionMapping
 {
     return @{ @"otherK" : @"OtherCollection", @"arrayOfOthersK" : @"OtherCollection", @"setOfOthersK" : @"OtherCollection", @"thisOtherK" : _collection};
@@ -98,6 +108,32 @@ static NSString* _collection;
 @property (nonatomic, retain) ReffedTestClass* relatedObject;
 @end
 @implementation NestingRefClass
+@synthesize relatedObject;
+
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    NSDictionary *map = [super hostToKinveyPropertyMapping];
+    NSMutableDictionary* newmap = [NSMutableDictionary dictionaryWithDictionary:map];
+    [newmap setValue:@"relatedObject" forKey:@"relatedObject"];
+    return newmap;
+}
+
+- (NSArray *)referenceKinveyPropertiesOfObjectsToSave
+{
+    return @[@"relatedObject"];
+}
+
++ (NSDictionary*) kinveyPropertyToCollectionMapping
+{
+    return @{ @"relatedObject" : @"NestedOtherCollection", @"relatedObject.otherK" : @"OtherCollection"};
+}
+
+@end
+
+@interface NoSaveTestClass : TestClass
+@property (nonatomic, retain) ReffedTestClass* relatedObject;
+@end
+@implementation NoSaveTestClass
 @synthesize relatedObject;
 
 - (NSDictionary *)hostToKinveyPropertyMapping
@@ -1020,4 +1056,92 @@ TestClass* randomTestClass(NSString* description)
     } withProgressBlock:nil];
     [self poll];
 }
+
+#pragma mark graph
+
+- (void) testThatNonRecursiveGeneratesError
+{
+    NoSaveTestClass* t = [[NoSaveTestClass alloc] init];
+    t.objDescription = @"nnn";
+    t.objCount = 10;
+    
+    ReffedTestClass* r = [[ReffedTestClass alloc] init];
+    r.objDescription = @"r";
+    r.objCount = 700;
+    t.relatedObject = r;
+    
+    
+    self.done = NO;
+    __block double done = -1;
+    
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[NoSaveTestClass class]] options:nil];
+    [store saveObject:t withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertObjects(0);
+        STAssertNotNil(errorOrNil, @"should have an error");
+        STAssertEquals((int)errorOrNil.code, (int)KCSReferenceNoIdSetError, @"expecting no id error");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
+        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        done = percentComplete;
+    }];
+    [self poll];
+}
+
+- (void) testThatNonRecursiveGoodWithIdDoesNotSave
+{
+    NoSaveTestClass* t = [[NoSaveTestClass alloc] init];
+    t.objDescription = @"nnn";
+    t.objCount = 10;
+    
+    ReffedTestClass* r1 = [[ReffedTestClass alloc] init];
+    r1.objDescription = @"r";
+    r1.objCount = 710;
+    r1.objId = @"testThatNonRecursiveGoodWithIdDoesNotSave";
+    t.relatedObject = r1;
+    
+    
+    //--- presave an object with a different count but same id as our reference. The test for not save will make sure that the ref object does not
+    //revert to the known object in the backend
+    ReffedTestClass* r2 = [[ReffedTestClass alloc] init];
+    r2.objDescription = @"r";
+    r2.objCount = 9000;
+    r2.objId = @"testThatNonRecursiveGoodWithIdDoesNotSave";
+
+    NSString* refClass = @"NestedOtherCollection";
+    KCSCollection* refCollection = [KCSCollection collectionFromString:refClass ofClass:[ReffedTestClass class]];
+    KCSLinkedAppdataStore* refStore = [KCSLinkedAppdataStore storeWithCollection:refCollection options:nil];
+    self.done = NO;
+    [refStore saveObject:r2 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    
+    
+    //now test the save doesn't error but also doesn't save
+    self.done = NO;
+    __block double done = -1;
+    
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[NoSaveTestClass class]] options:nil];
+    [store saveObject:t withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertObjects(1);
+        NoSaveTestClass* tb = objectsOrNil[0];
+        ReffedTestClass* rb = tb.relatedObject;
+        STAssertNotNil(rb, @"good object");
+        STAssertEquals((int)rb.objCount, (int)710, @"should match orig value, not saved");
+        
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
+        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        done = percentComplete;
+    }];
+    [self poll];
+}
+
 @end
