@@ -32,5 +32,6 @@
 + (NSString *)getStringForKey:(NSString *)key;
 + (BOOL)removeStringForKey:(NSString *)key;
 
-
++ (BOOL)setDict:(NSDictionary *)dict forKey:(NSString *)key;
++ (NSDictionary *)getDictForKey:(NSString *)key;
 @end
