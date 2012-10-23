@@ -1,4 +1,4 @@
-KinveyKit (1.10.3, October 18, 2012)
+KinveyKit (1.10.4, October 23, 2012)
 ==========
 
 ## Welcome
