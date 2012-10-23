@@ -131,6 +131,7 @@
     [KCSKeyChain setString:user.userId forKey:kKeychainUserIdKey];
     
     KCSClient *client = [KCSClient sharedClient];
+#warning talk to sandeep
     if (sessionAuth != nil) {
         //session auth
         [client setAuthCredentials:[NSURLCredential credentialWithUser:user.username password:user.sessionAuth persistence:NSURLCredentialPersistenceNone]];
