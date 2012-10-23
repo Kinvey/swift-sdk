@@ -5,6 +5,7 @@
 ** Release Date:** October 23, 2012
 
 * Minor update(s)
+* Additional User information, such as surname and givenname are now persisted in the keychain.
 
 ### 1.10.3
 ** Release Date:** October 18, 2012

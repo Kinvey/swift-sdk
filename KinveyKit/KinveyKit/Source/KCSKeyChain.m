@@ -1,4 +1,4 @@
-//
+ //
 //  KCSKeyChain.m
 //  KinveyKit
 //
@@ -113,6 +113,8 @@
 	return YES;
 }
 
+
+
 + (NSString *)getStringForKey:(NSString *)key {
     
     key = [NSString stringWithFormat:@"%@ - %@", [KCSKeyChain appName], key];
@@ -138,6 +140,79 @@
 	} else {
 		NSAssert1(res == errSecItemNotFound, @"SecItemCopyMatching returned %ld!", res);
 	}		
+	
+	return nil;
+}
+
+//TODO: refactor and combine
++ (BOOL)setDict:(NSDictionary *)dict forKey:(NSString *)key
+{
+    if (dict == nil || key == nil) {
+		return NO;
+	}
+    
+    key = [NSString stringWithFormat:@"%@ - %@", [KCSKeyChain appName], key];
+    
+	// First check if it already exists, by creating a search dictionary and requesting that
+    // nothing be returned, and performing the search anyway.
+	NSMutableDictionary *existsQueryDictionary = [NSMutableDictionary dictionary];
+	
+    NSData* data = [NSKeyedArchiver archivedDataWithRootObject:dict];
+	
+	[existsQueryDictionary setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+	
+	// Add the keys to the search dict
+	[existsQueryDictionary setObject:@"service" forKey:(id)kSecAttrService];
+	[existsQueryDictionary setObject:key forKey:(id)kSecAttrAccount];
+    
+	OSStatus res = SecItemCopyMatching((CFDictionaryRef)existsQueryDictionary, NULL);
+	if (res == errSecItemNotFound) {
+        NSMutableDictionary *addDict = existsQueryDictionary;
+        [addDict setObject:data forKey:(id)kSecValueData];
+        
+        res = SecItemAdd((CFDictionaryRef)addDict, NULL);
+        NSAssert1(res == errSecSuccess, @"Recieved %ld from SecItemAdd!", res);
+	} else if (res == errSecSuccess) {
+		// Modify an existing one
+		// Actually pull it now of the keychain at this point.
+		NSDictionary *attributeDict = [NSDictionary dictionaryWithObject:data forKey:(id)kSecValueData];
+        
+		res = SecItemUpdate((CFDictionaryRef)existsQueryDictionary, (CFDictionaryRef)attributeDict);
+		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %ld!", res);
+		
+	} else {
+		NSAssert1(NO, @"Received %ld from SecItemCopyMatching!", res);
+	}
+	
+	return YES;
+}
+
++ (NSDictionary *)getDictForKey:(NSString *)key
+{
+    
+    key = [NSString stringWithFormat:@"%@ - %@", [KCSKeyChain appName], key];
+    
+	NSMutableDictionary *existsQueryDictionary = [NSMutableDictionary dictionary];
+	
+	[existsQueryDictionary setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+	
+	// Add the keys to the search dict
+	[existsQueryDictionary setObject:@"service" forKey:(id)kSecAttrService];
+	[existsQueryDictionary setObject:key forKey:(id)kSecAttrAccount];
+	
+	// We want the data back!
+	NSData *data = nil;
+	
+	[existsQueryDictionary setObject:(id)kCFBooleanTrue forKey:(id)kSecReturnData];
+	
+	OSStatus res = SecItemCopyMatching((CFDictionaryRef)existsQueryDictionary, (CFTypeRef *)&data);
+	[data autorelease];
+	if (res == errSecSuccess) {
+        NSDictionary* dict = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        return dict;
+	} else {
+		NSAssert1(res == errSecItemNotFound, @"SecItemCopyMatching returned %ld!", res);
+	}
 	
 	return nil;
 }
