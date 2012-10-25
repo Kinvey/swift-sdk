@@ -21,13 +21,15 @@
 
 @interface TestEntity : NSObject
 @property (nonatomic, retain) NSString* key;
+@property (nonatomic, retain) NSString* objId;
+
 @end
 @implementation TestEntity
 @synthesize key;
 
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
-    return [NSDictionary dictionaryWithObject:@"key" forKey:@"key"];
+    return @{@"key" : @"key" , @"objId" : KCSEntityKeyId};
 }
 @end
 
@@ -40,8 +42,7 @@ static float pollTime;
     if (store == nil) {
         return false;
     }
-    NSDictionary *dict = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:@"val", @"key",
-                          nil]);
+    NSDictionary *dict = wrapResponseDictionary(@{@"key" : @"val", KCSEntityKeyId : @"foo - id"});
     
     KCS_SBJsonWriter* jsonwriter = [[KCS_SBJsonWriter alloc] init];
     NSData* data = [jsonwriter dataWithObject:dict];
@@ -57,9 +58,10 @@ static float pollTime;
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:_conn];
     
     __block BOOL wasCalled = NO;
-    __block BOOL cxnDone = NO;
     __block BOOL firstCall = YES;
-    id query = [[KCSAllObjects alloc] init];
+    id query = [KCSQuery query];
+ 
+    self.done = NO;
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         NSLog(@"completion block: %@,%i", query, _conn.wasCalled);
         if (firstCall) {
@@ -67,19 +69,12 @@ static float pollTime;
             firstCall = NO;
         }
         _callbackCount++;
-        cxnDone = YES;
+        self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"progress block");
         //DO nothing on progress
     }];
-    
-    
-    int count = 0;
-    while (!cxnDone && count < 20) {
-        NSLog(@"polling... %i", count);
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:pollTime]];
-        count++;
-    }
+    [self poll];
     NSLog(@"done");
     return wasCalled;
 }
@@ -89,7 +84,7 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     KCSCollection* collection = [[KCSCollection alloc] init];
     collection.collectionName = [NSString stringWithFormat:@"lists%@",[NSDate date]];
     collection.objectTemplate = [TestEntity class];
-    KCSCachedStore* store = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection, KCSStoreKeyResource, [NSNumber numberWithInt:cachePolicy], KCSStoreKeyCachePolicy, nil]];
+    KCSCachedStore* store = [KCSCachedStore storeWithOptions:@{KCSStoreKeyResource : collection, KCSStoreKeyCachePolicy: @(cachePolicy)}];
     return store;
 }
 
@@ -170,8 +165,6 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     BOOL useServer = [self queryServer:store];
     STAssertTrue(useServer, @"expecting to call server for first time");
     
- //   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]]; //wait for everything to flush
-
     NSLog(@"0");
     _callbackCount = 0;
     

@@ -81,7 +81,8 @@
     self.done = NO;
     [store queryWithQuery:fileName withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
-        NSData* responseData = (NSData*)[(KCSResourceResponse*)[objectsOrNil objectAtIndex:0] resource];
+        STAssertObjects(1);
+        NSData* responseData = (NSData*)objectsOrNil[0];
         STAssertEqualObjects(responseData, data, @"Data should match");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
