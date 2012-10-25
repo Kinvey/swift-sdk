@@ -78,7 +78,11 @@ withResourceDelegate: (id<KCSResourceDelegate>)delegate
         [self postError:error fromResponse:nil toDelegate:delegate orCompletionBlock:completionBlock];
     };
     
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
+    KCSConnectionProgressBlock pBlock = (progressBlock == nil) ? nil : ^(KCSConnectionProgress *connection){
+        if (progressBlock != nil) {
+            progressBlock(connection.objects, connection.percentComplete);
+        }
+    };
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){

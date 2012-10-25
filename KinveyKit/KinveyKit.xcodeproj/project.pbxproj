@@ -66,6 +66,9 @@
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275D5459161682EF003ABE40 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
+		276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 276A6F6116372FD500285884 /* KCSEntityCache.h */; };
+		276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6216372FD500285884 /* KCSEntityCache.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		276A6F6F1637834700285884 /* KCSEntityCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6E1637834700285884 /* KCSEntityCacheTests.m */; };
 		2779FE06161CCAB900D3D74F /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */; };
 		2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
 		2785F5351609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5331609179E004AA410 /* InfoPlist.strings */; };
@@ -345,6 +348,10 @@
 		2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSOfflineSaveStore.h; sourceTree = "<group>"; };
 		275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.3.3.a"; path = "Airship/libUAirship-1.3.3.a"; sourceTree = "<group>"; };
 		2764B53C15DD9242003964D1 /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = usr/lib/libobjc.dylib; sourceTree = SDKROOT; };
+		276A6F6116372FD500285884 /* KCSEntityCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCache.h; sourceTree = "<group>"; };
+		276A6F6216372FD500285884 /* KCSEntityCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCache.m; sourceTree = "<group>"; };
+		276A6F6D1637834700285884 /* KCSEntityCacheTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCacheTests.h; sourceTree = "<group>"; };
+		276A6F6E1637834700285884 /* KCSEntityCacheTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCacheTests.m; sourceTree = "<group>"; };
 		2785F52E1609179E004AA410 /* KinveyKitExtras.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; includeInIndex = 0; path = KinveyKitExtras.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2785F5321609179E004AA410 /* KinveyKitExtras-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KinveyKitExtras-Info.plist"; sourceTree = "<group>"; };
 		2785F5341609179E004AA410 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -962,6 +969,8 @@
 				2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */,
 				273DB2E115D171E80072A444 /* KCSOfflineStoreTests.h */,
 				273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */,
+				276A6F6D1637834700285884 /* KCSEntityCacheTests.h */,
+				276A6F6E1637834700285884 /* KCSEntityCacheTests.m */,
 			);
 			name = KinveyStore;
 			sourceTree = "<group>";
@@ -1753,6 +1762,8 @@
 				273DB2E615D191A00072A444 /* KCSSaveQueue.m */,
 				272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */,
 				272FBE5215F90FB500EC7031 /* KCSSaveGraph.m */,
+				276A6F6116372FD500285884 /* KCSEntityCache.h */,
+				276A6F6216372FD500285884 /* KCSEntityCache.m */,
 			);
 			name = KinveyStore;
 			sourceTree = "<group>";
@@ -2044,6 +2055,7 @@
 				27C22290161DE9B200D827AE /* NSObject+KCS_SBJson.h in Headers */,
 				270E4CAD16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.h in Headers */,
 				2736B19416275504006CF960 /* KinveyHeaderInfo.h in Headers */,
+				276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2398,6 +2410,7 @@
 				27C2228F161DE9B200D827AE /* KCS_SBJsonWriter.m in Sources */,
 				27C22291161DE9B200D827AE /* NSObject+KCS_SBJson.m in Sources */,
 				270E4CAE16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m in Sources */,
+				276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2442,6 +2455,7 @@
 				27E0B36415E523B400B83E72 /* KCSGenericRestTests.m in Sources */,
 				27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */,
 				2736B19216271D50006CF960 /* KinveyKitNSDictionaryTests.m in Sources */,
+				276A6F6F1637834700285884 /* KCSEntityCacheTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

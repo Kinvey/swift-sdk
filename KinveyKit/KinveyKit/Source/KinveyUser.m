@@ -141,7 +141,6 @@
     [KCSKeyChain setString:user.userId forKey:kKeychainUserIdKey];
     
     KCSClient *client = [KCSClient sharedClient];
-#warning talk to sandeep
     if (sessionAuth != nil) {
         //session auth
         [client setAuthCredentials:[NSURLCredential credentialWithUser:user.username password:user.sessionAuth persistence:NSURLCredentialPersistenceNone]];
@@ -172,8 +171,12 @@
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         
         // Ok, we're really authd
-        NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-        [self setupCurrentUser:user properties:dictionary password:user.password username:user.username];
+        if ([response responseCode] < 300) {
+            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
+            [self setupCurrentUser:user properties:dictionary password:user.password username:user.username];
+        } else {
+            KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
+        }
     };
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
@@ -181,9 +184,7 @@
         return;
     };
     
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
-    
-    [userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
+    [userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
     [userRequest start];
 }
 
@@ -884,10 +885,11 @@
     _surname = [surname copy];
     NSMutableDictionary* properties = [[KCSKeyChain getDictForKey:kKeychainPropertyDictKey] mutableCopy];
     if (!properties) {
-        properties = [NSMutableDictionary dictionary];
+        properties = [[NSMutableDictionary dictionary] retain];
     }
     [properties setValue:_surname forKey:KCSUserAttributeSurname];
     [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
+    [properties release];
 }
 
 - (void)setGivenName:(NSString *)givenName
@@ -895,10 +897,11 @@
     _givenName = [givenName copy];
     NSMutableDictionary* properties = [[KCSKeyChain getDictForKey:kKeychainPropertyDictKey] mutableCopy];
     if (!properties) {
-        properties = [NSMutableDictionary dictionary];
+        properties = [[NSMutableDictionary dictionary] retain];
     }
     [properties setValue:_givenName forKey:KCSUserAttributeGivenname];
     [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
+    [properties release];
 }
 
 - (void)setEmail:(NSString *)email
@@ -906,9 +909,10 @@
     _email = [email copy];
     NSMutableDictionary* properties = [[KCSKeyChain getDictForKey:kKeychainPropertyDictKey] mutableCopy];
     if (!properties) {
-        properties = [NSMutableDictionary dictionary];
+        properties = [[NSMutableDictionary dictionary] retain];
     }
     [properties setValue:_email forKey:KCSUserAttributeEmail];
     [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
+    [properties release];
 }
 @end
