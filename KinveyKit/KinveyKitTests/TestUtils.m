@@ -101,6 +101,8 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
         loaded = result.pingWasSuccessful;
         if (!loaded) {
             NSLog(@"ping error: %@", result.description);
+        } else {
+            NSLog(@"ping successful");
         }
         pollObj.done = YES;
     }];

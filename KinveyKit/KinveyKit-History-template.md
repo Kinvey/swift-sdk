@@ -1,6 +1,9 @@
 # KinveyKit Release History
 
 ## 1.10
+### 1.10.6
+* Updated `KCSQuery` to throw an exception when trying to negate an exact match query. This is invalid syntax and fails server-side. Use a conditional query with `kKCSNotEqual` to test not equals.  
+
 ### 1.10.5
 ** Release Date:** October 30, 2012
 
