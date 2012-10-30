@@ -99,6 +99,9 @@
 */
 - (NSString *)kinveyObjectId;
 
+#warning todoc
+- (void) setKinveyObjectId:(NSString*) objId;
+
 /*! Returns the value for a given property in this entity
 *
 * @param property The property that we're interested in.

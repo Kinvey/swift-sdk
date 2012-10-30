@@ -94,7 +94,8 @@ typedef enum  {
 #define KCSUserAttributeGivenname @"first_name"
 /** Constant for use in querying the email field */
 #define KCSUserAttributeEmail @"email"
-
+/** Constant for querying by Facebook id */
+#define KCSUserAttributeFacebookId @"_socialIdentity.facebook.id"
 
 /*! User in the Kinvey System
  
