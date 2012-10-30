@@ -1,11 +1,19 @@
 # KinveyKit Release History
 
 ## 1.10
+### 1.10.5
+** Release Date:** October 30, 2012
+
+* Added `KCSUserAttributeFacebookId` to allow for discovering users through `KCSUserDiscovery` given a Facebook id (from the FB SDK).
+* Bug fix(es):
+    * Joined `KCSQuery`s using `kKCSAnd` now work correctly. 
+    * Fixed error where streaming resource URLs were not fetched properly.
+
 ### 1.10.4
 ** Release Date:** October 23, 2012
 
 * Minor update(s)
-* Additional User information, such as surname and givenname are now persisted in the keychain.
+    * Additional User information, such as surname and givenname are now persisted in the keychain.
 
 ### 1.10.3
 ** Release Date:** October 18, 2012

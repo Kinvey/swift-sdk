@@ -179,7 +179,9 @@
                     topError = errorOrNil;
                 }
                 if (objectsOrNil != nil) {
-                    [completedObjects addObjectsFromArray:objectsOrNil];
+                    for (KCSResourceResponse* response in objectsOrNil) {
+                        [completedObjects addObject:[response resource]];
+                    }
                 }
                 completedCount++;
                 if (completedCount == totalObjects) {

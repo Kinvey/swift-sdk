@@ -15,7 +15,7 @@
 
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 {
-    return [NSDictionary dictionaryWithObjectsAndKeys:originalResponse, @"result", nil];
+    return @{@"result" : originalResponse};
 }
 
 

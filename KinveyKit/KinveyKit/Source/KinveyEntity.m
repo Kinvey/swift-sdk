@@ -160,6 +160,16 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     return ifNotNil(objKey, [self valueForKey:objKey]);
 }
 
+- (void) setKinveyObjectId:(NSString*) objId
+{
+    NSString* objKey = [self kinveyObjectIdHostProperty];
+    if (objKey == nil) {
+        NSString* exp = [NSString stringWithFormat:@"Cannot set the 'id', the entity of class '%@' does not map KCSEntityKeyId in -hostToKinveyPropertyMapping.", [self class]];
+        @throw [NSException exceptionWithName:@"KCSEntityNoId" reason:exp userInfo:@{@"object" : self}];
+    } else {
+        [self setValue:objId forKey:objKey];
+    }
+}
 
 - (NSString *)valueForProperty: (NSString *)property
 {

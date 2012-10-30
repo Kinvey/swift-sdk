@@ -109,6 +109,9 @@ static BOOL sFirstReached;
 - (NSDictionary*) cachedQueues
 {
     NSData* d = [NSData dataWithContentsOfFile:[self savefile]];
+    if (d == nil || d.length == 0) {
+        return @{};
+    }
     NSKeyedUnarchiver* ua = [[NSKeyedUnarchiver alloc] initForReadingWithData:d];
     NSDictionary* dict = @{};
     @try {

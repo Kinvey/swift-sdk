@@ -78,7 +78,11 @@ withResourceDelegate: (id<KCSResourceDelegate>)delegate
         [self postError:error fromResponse:nil toDelegate:delegate orCompletionBlock:completionBlock];
     };
     
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connection){};
+    KCSConnectionProgressBlock pBlock = (progressBlock == nil) ? nil : ^(KCSConnectionProgress *connection){
+        if (progressBlock != nil) {
+            progressBlock(connection.objects, connection.percentComplete);
+        }
+    };
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -270,44 +274,61 @@ withResourceDelegate: (id<KCSResourceDelegate>)delegate
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        // This needs to be REDIRECT, otherwise something is messed up!
-        if (response.responseCode != KCS_HTTP_STATUS_REDIRECT){
-            NSDictionary* failureDict = (NSDictionary*) [response jsonResponseValue];
-            NSError* error = [KCSErrorUtilities createError:failureDict description:@"Get streaming URL failed." errorCode:response.responseCode domain:KCSResourceErrorDomain];
-            
-            if (error){
-                [delegate resourceServiceDidFailWithError:error];
-            } else {
-                completionBlock(nil, error);
-            }
+        if (response.responseCode != KCS_HTTP_STATUS_OK){
+            [self postError:nil fromResponse:response toDelegate:delegate orCompletionBlock:completionBlock];
         } else {
-            NSString *URL = [[response.responseHeaders objectForKey:@"Location"] retain];
-            
-            if (!URL){
-                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"URL for streaming resource not available."
-                                                                                   withFailureReason:@"No 'Location' header found in HTTP redirect."
-                                                                              withRecoverySuggestion:@"No client recovery available, contact Kinvey Support."
-                                                                                 withRecoveryOptions:nil];
-                NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
-                                                     code:KCSUnexpectedResultFromServerError
-                                                 userInfo:userInfo];
-                
-                if (delegate){
-                    [delegate resourceServiceDidFailWithError:error];
-                } else {
-                    completionBlock(nil, error);
-                }
+            NSDictionary* jsonData = (NSDictionary*) [response jsonResponseValue];
+            NSString *newResource = [jsonData valueForKey:@"URI"];
+//            KCSRESTRequest *newRequest = [KCSRESTRequest requestForResource:newResource usingMethod:kGetRESTMethod];
+//             KCSConnectionCompletionBlock innerCBlock = ^(KCSConnectionResponse *response){
+            KCSResourceResponse *resourceResponse = [KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:newResource withData:nil withLength:0];
+            if (delegate){
+                [delegate resourceServiceDidCompleteWithResult:resourceResponse];
             } else {
-                // NB: The delegate must take ownership of this resource!
-                KCSResourceResponse *resourceResponse = [KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:URL withData:nil withLength:0];
-                if (delegate){
-                    [delegate resourceServiceDidCompleteWithResult:resourceResponse];
-                } else {
-                    completionBlock([NSArray arrayWithObject:resourceResponse], nil);
-                }
-                [URL release];
+                completionBlock([NSArray arrayWithObject:resourceResponse], nil);
             }
+    //          };
+  //          [[newRequest withCompletionAction:innerCBlock failureAction:fBlock progressAction:pBlock] start];
         }
+
+        // This needs to be REDIRECT, otherwise something is messed up!
+//        if (response.responseCode != KCS_HTTP_STATUS_REDIRECT){
+//            NSDictionary* failureDict = (NSDictionary*) [response jsonResponseValue];
+//            NSError* error = [KCSErrorUtilities createError:failureDict description:@"Get streaming URL failed." errorCode:response.responseCode domain:KCSResourceErrorDomain];
+//            
+//            if (delegate != nil) {
+//                [delegate resourceServiceDidFailWithError:error];
+//            } else {
+//                completionBlock(nil, error);
+//            }
+//        } else {
+//            NSString *URL = [[response.responseHeaders objectForKey:@"Location"] retain];
+//            
+//            if (!URL){
+//                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"URL for streaming resource not available."
+//                                                                                   withFailureReason:@"No 'Location' header found in HTTP redirect."
+//                                                                              withRecoverySuggestion:@"No client recovery available, contact Kinvey Support."
+//                                                                                 withRecoveryOptions:nil];
+//                NSError *error = [NSError errorWithDomain:KCSResourceErrorDomain
+//                                                     code:KCSUnexpectedResultFromServerError
+//                                                 userInfo:userInfo];
+//                
+//                if (delegate){
+//                    [delegate resourceServiceDidFailWithError:error];
+//                } else {
+//                    completionBlock(nil, error);
+//                }
+//            } else {
+//                // NB: The delegate must take ownership of this resource!
+//                KCSResourceResponse *resourceResponse = [KCSResourceResponse responseWithFileName:nil withResourceId:resourceId withStreamingURL:URL withData:nil withLength:0];
+//                if (delegate){
+//                    [delegate resourceServiceDidCompleteWithResult:resourceResponse];
+//                } else {
+//                    completionBlock([NSArray arrayWithObject:resourceResponse], nil);
+//                }
+//                [URL release];
+//            }
+//        }
     };
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){

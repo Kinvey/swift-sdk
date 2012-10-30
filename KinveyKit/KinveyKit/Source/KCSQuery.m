@@ -136,7 +136,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
                                     // Joining Operators
                                     @(kKCSIn)    : @"$in",
                                     @(kKCSOr)    : @"$or",
-                                    @(kKCSAnd)   : @"XXX",
+                                    @(kKCSAnd)   : @"$and",
                                     @(kKCSNotIn) : @"$nin",
                                     
                                     // Array Operators
@@ -210,6 +210,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
             break;
             // Exterior array ops
         case kKCSOr:
+        case kKCSAnd:
             
             if (fieldname != nil || queries == nil){
                 KCSLogWarning(@"Fieldname was not nil (was %@) for a joining op, this is unexpected", fieldname);
