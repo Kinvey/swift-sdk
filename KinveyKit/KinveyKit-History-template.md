@@ -2,10 +2,12 @@
 
 ## 1.10
 ### 1.10.5
-** Release Date:** TBA
+** Release Date:** October 30, 2012
 
+* Added `KCSUserAttributeFacebookId` to allow for discovering users through `KCSUserDiscovery` given a Facebook id (from the FB SDK).
 * Bug fix(es):
     * Joined `KCSQuery`s using `kKCSAnd` now work correctly. 
+    * Fixed error where streaming resource URLs were not fetched properly.
 
 ### 1.10.4
 ** Release Date:** October 23, 2012

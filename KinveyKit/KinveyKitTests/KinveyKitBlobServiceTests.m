@@ -74,6 +74,8 @@ typedef BOOL(^FailureAction)(NSError *);
     
     _writer = [[[KCS_SBJsonWriter alloc] init] retain];
     _parser = [[[KCS_SBJsonParser alloc] init] retain];
+    
+    STAssertTrue([TestUtils setUpKinveyUnittestBackend], @"should be set up");
 }
 
 - (void)tearDown
@@ -209,40 +211,19 @@ typedef BOOL(^FailureAction)(NSError *);
 
 - (void)testGetStreamingURLForResource
 {
-    self.testID = @"Test get streaming URL";
-    self.onSuccess = ^(KCSResourceResponse *response){
-        if ([response.streamingURL isEqualToString:@"http://www.google.com"]){
-            return YES;
-        } else {
-            self.message = [NSString stringWithFormat:@"Redirected to: %@", response.streamingURL];
-            return NO;
-        }
-    };
-
-    KCSMockConnection *conn = [self buildDefaultMockConnection];
-    
-    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"http://www.google.com", @"Location", nil];
-    
-    KCSConnectionResponse *resp = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_REDIRECT
-                                                                       responseData:nil
-                                                                         headerData:dict
-                                                                           userData:nil];
-    
-    conn.responseForSuccess = resp;
-    
-    [[KCSConnectionPool sharedPool] drainPools];
-    [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
-    
-    // Make sure we're not false positve.
-    self.testPassed = NO;
-    
-    [KCSResourceService getStreamingURLForResource:@"blah" withResourceDelegate:self];
-    
-    STAssertTrue(self.testPassed, self.message);
-    
-    [[KCSConnectionPool sharedPool] drainPools];
+    //note station.mp4 must be pre-uploaded for thist test
+    self.done = NO;
+    [KCSResourceService getStreamingURLForResource:@"station.mp4" completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        STAssertObjects(1)
+        KCSResourceResponse* response = objectsOrNil[0];
+        NSString* s = [response streamingURL];
+        STAssertNotNil(s, @"expeting a streaming URL");
+        STAssertTrue([s rangeOfString:@"station.mp4"].location != NSNotFound, @"expecting to get back our resource (%@)", s);
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
 }
-
 
 - (void)testSaveLocalResource
 {
