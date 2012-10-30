@@ -485,19 +485,34 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     
 }
 
-+ (KCSQuery *)queryNegatingQuery:(KCSQuery *)query
+BOOL kcsIsOperator(NSString* queryField)
 {
-    KCSQuery *q = [[[KCSQuery alloc] init] autorelease];
-    
+    return [queryField hasPrefix:@"$"];
+}
+
++ (NSMutableDictionary*) negateQuery:(KCSQuery*)query
+{
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     
     // We need to take each key in query and replace the value with a dictionary containing the key $not and the old value
     for (NSString *field in query.query) {
         NSObject *oldQuery = [query.query objectForKey:field];
+        if ([oldQuery isKindOfClass:[NSDictionary class]] == NO) {
+            NSException* myException = [NSException exceptionWithName:@"InvalidArgument" reason:@"Cannot negate field/value type queries. Use conditional query with 'kKCSNotEqual' instead." userInfo:nil];
+            @throw myException;
+        }
+        
         [dict setObject:@{@"$not" : oldQuery} forKey:field];
     }
+    return dict;
+}
+
++ (KCSQuery *)queryNegatingQuery:(KCSQuery *)query
+{
+    KCSQuery *q = [[[KCSQuery alloc] init] autorelease];
     
-    q.query = dict;
+    
+    q.query = [self negateQuery:query];
     
     return q;
 }
@@ -591,12 +606,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 - (void)addQueryNegatingQuery:(KCSQuery *)query
 {
-    // We need to take each key in query and replace the value with a dictionary containing the key $not and the old value
-    for (NSString *field in query.query) {
-        NSObject *oldQuery = [query.query objectForKey:field];
-        [self.query setObject:@{@"$not" : oldQuery} forKey:field];
-    }
-    
+    NSMutableDictionary* d = [KCSQuery negateQuery:query];
+    [self.query addEntriesFromDictionary:d];
 }
 
 - (void)clear
@@ -607,11 +618,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 - (void)negateQuery
 {
-    for (NSString *field in self.query) {
-        NSObject *oldQuery = [self.query objectForKey:field];
-        [self.query setObject:@{@"$not" : oldQuery} forKey:field];
-    }
-    
+    self.query = [KCSQuery negateQuery:self];
 }
 
 

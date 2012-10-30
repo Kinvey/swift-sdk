@@ -271,6 +271,7 @@
     //setup a test user
     [self loginWithUser:@"testMetadataQueryCreator1" password:@"b"];    
     NSString* origId = [[[KCSClient sharedClient].currentUser kinveyObjectId] copy];
+    STAssertNotNil(origId, @"expecting an id");
     
     KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
     
@@ -349,6 +350,19 @@
     act = [query_2 JSONStringRepresentation];
     STAssertEqualObjects(act, exp, @"queries should match");
     
+}
+
+- (void) testNegate
+{
+    KCSQuery* q1 = [KCSQuery queryOnField:@"field" usingConditional:kKCSGreaterThan forValue:@1];
+    STAssertEqualObjects(q1.query, @{@"field" : @{@"$gt" : @1}}, @"should properly construct the gt query");
+    
+    [q1 negateQuery];
+    STAssertEqualObjects(q1.query, @{@"field" : @{@"$not" : @{@"$gt" : @1}}}, @"should properly construct the gt query");
+    
+    KCSQuery* q2 = [KCSQuery queryOnField:@"field" withExactMatchForValue:@1];
+    STAssertThrows([q2 negateQuery], @"InvalidArguments", @"Should throw an error");
+
 }
 
 @end
