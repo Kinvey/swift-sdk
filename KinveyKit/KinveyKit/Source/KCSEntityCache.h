@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NSString* KCSMongoObjectId();
+
 @protocol KCSPersistable;
 @class KCSQuery;
 @class KCSGroup;
@@ -19,8 +21,8 @@
 - (NSArray*) resultsForIds:(NSArray*)keys;
 - (NSArray*) resultsForQuery:(KCSQuery*)query;
 
-- (void) addObject:(id<KCSPersistable>)obj;
-- (void) addObjects:(NSArray*)objects;
+- (void) addResult:(id)obj;
+- (void) addResults:(NSArray*)objects;
 - (void) setResults:(NSArray*)results forQuery:(KCSQuery*)query;
 - (void) setResults:(KCSGroup*)results forGroup:(NSArray*)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition;
 

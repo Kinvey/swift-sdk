@@ -16,6 +16,23 @@
 #import "KCSLogManager.h"
 
 #import "KCSReduceFunction.h"
+//#import "math.h"
+#import <CommonCrypto/CommonDigest.h>
+
+#import "KCSAppdataStore.h"
+#import "KinveyCollection.h"
+#import "KinveyErrorCodes.h"
+
+@interface KCSEntityCache ()
+{
+    NSCache* _cache;
+    NSCache* _queryCache;
+    NSCache* _groupingCache;
+    NSMutableOrderedSet* _unsavedObjs;
+}
+@property (nonatomic, retain) NSDictionary* saveContext;
+@end
+
 
 @interface KCSCachedStoreCaching () {
     NSMutableDictionary* _caches;
@@ -65,6 +82,7 @@ static KCSCachedStoreCaching* sCaching;
         if (!cache) {
             cache = [[KCSEntityCache alloc] init];
             [_caches setObject:cache forKey:collection];
+            cache.saveContext = @{@"collection" : collection};
         }
     }
     return cache;
@@ -77,6 +95,7 @@ static KCSCachedStoreCaching* sCaching;
 @interface CacheValue : NSObject
 @property (nonatomic) NSUInteger count;
 @property (nonatomic) id<KCSPersistable> object;
+@property (nonatomic) BOOL unsaved;
 @end
 @implementation CacheValue
 
@@ -89,60 +108,6 @@ static KCSCachedStoreCaching* sCaching;
     return self;
 }
 @end
-
-
-//Offload equality of group queries to simple object that uses a string representation
-//NSString* kcsCacheKeyIds(id objectId)
-//{
-//    NSString* idRepresentation = ([objectId isKindOfClass:[NSArray class]] == YES) ? [(NSArray*)objectId join:@","] : objectId;
-//    return [NSString stringWithFormat:@"objectid=%@", idRepresentation];
-//}
-
-//@interface KCSCacheKey : NSObject
-//{
-//    NSString* _representation;
-//}
-//@end
-//
-//@implementation KCSCacheKey
-//
-
-
-//
-//- (id) initWithObjectId:(id)objectId
-//{
-//    self = [super init];
-//    if (self) {
-//        NSString* idRepresentation = ([objectId isKindOfClass:[NSArray class]] == YES) ? [(NSArray*)objectId join:@","] : objectId;
-//        _representation = [[NSString stringWithFormat:@"objectid=%@",idRepresentation] retain];
-//    }
-//    return self;
-//}
-//
-//
-//- (void) dealloc
-//{
-//    [_representation release];
-//    [super dealloc];
-//}
-//
-//- (NSString*) representation
-//{
-//    return _representation;
-//}
-//
-//- (BOOL) isEqual:(id)object
-//{
-//    return [object isKindOfClass:[KCSCacheKey class]] && [_representation isEqual:[object representation]];
-//}
-//
-//- (NSUInteger)hash
-//{
-//    return [_representation hash];
-//}
-//
-//@end
-
 
 NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuery* condition)
 {
@@ -157,15 +122,39 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
     return representation;
 }
 
-@interface KCSEntityCache ()
-{
-    NSCache* _cache;
-    NSCache* _queryCache;
-    NSCache* _groupingCache;
-}
-@end
 
 @implementation KCSEntityCache
+static uint counter;
+
+void md5(NSString* s, unsigned char* result)
+{
+    const char *cStr = [s UTF8String];
+    CC_MD5( cStr, strlen(cStr), result ); // This is the md5 call
+}
+
+NSString* KCSMongoObjectId()
+{
+    int timestamp = (time_t) [[NSDate date] timeIntervalSince1970];
+//    NSString *processName = [[NSProcessInfo processInfo] processName];
+//    unsigned char namebytes[16];
+//    md5(processName, namebytes);
+    NSString *hostName = [[NSProcessInfo processInfo] hostName];
+    unsigned char hostbytes[16];
+    md5(hostName, hostbytes);
+    int pid = getpid();
+    counter = (counter + 1) % 16777216;
+    NSString* s = [NSString stringWithFormat:
+            @"%08x%02x%02x%02x%04x%06x",
+            timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
+            pid, counter];
+    return s;
+}
+
++ (void)initialize
+{
+    [super initialize];
+    counter = arc4random();
+}
 
 - (id) init
 {
@@ -174,6 +163,7 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
         _cache = [[NSCache alloc] init];
         _queryCache = [[NSCache alloc] init];
         _groupingCache = [[NSCache alloc] init];
+        _unsavedObjs = [NSMutableOrderedSet orderedSet];
     }
     return self;
 }
@@ -183,8 +173,8 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
 - (NSArray*) resultsForQuery:(KCSQuery*)query
 {
     NSString* queryKey = [query JSONStringRepresentation];
-    NSMutableArray* ids = [_queryCache objectForKey:queryKey];
-    return ids == nil ? nil : [self resultsForIds:ids];
+    NSMutableOrderedSet* ids = [_queryCache objectForKey:queryKey];
+    return ids == nil ? nil : [self resultsForIds:[ids array]];
 }
 
 - (NSArray*) resultsForIds:(NSArray*)keys
@@ -201,7 +191,6 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
 
 - (id) objectForId:(NSString*)objId
 {
-//    NSString* key = kcsCacheKeyIds(objId);
     CacheValue* val = [_cache objectForKey:objId];
     id obj = nil;
     if (val != nil) {
@@ -212,7 +201,32 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
 
 #pragma mark - adding
 
-- (void) addObject:(id)obj
+- (void) addUnsavedObject:(id)obj
+{
+    NSString* objId = [obj kinveyObjectId];
+    if (objId == nil) {
+        objId = KCSMongoObjectId();
+        KCSLogDebug(@"attempting to save a new object to the backend - assigning '%@' as id", objId);
+        [obj setKinveyObjectId:objId];
+    }
+    if (objId != nil) {
+        CacheValue* val = [_cache objectForKey:objId];
+        if (val == nil) {
+            val.count++;
+        } else {
+            val = [[CacheValue alloc] init];
+            [_cache setObject:val forKey:objId];
+        }
+        val.object = obj;
+        val.unsaved = YES;
+        [_unsavedObjs addObject:objId];
+    } else {
+        KCSLogDebug(@"attempting to cache an object without a set ID");
+    }
+
+}
+
+- (void) addResult:(id)obj
 {
     NSString* objId = [obj kinveyObjectId];
     if (objId != nil) {
@@ -225,15 +239,16 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
             val.object = obj;
             [_cache setObject:val forKey:objId];
         }
+        [_unsavedObjs removeObject:objId];
     } else {
         KCSLogDebug(@"attempting to cache an object without a set ID");
     }
 }
 
-- (void) addObjects:(NSArray *)objects
+- (void) addResults:(NSArray *)objects
 {
     for (id n in objects) {
-        [self addObject:n];
+        [self addResult:n];
     }
 }
 
@@ -242,19 +257,19 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
 - (void) setResults:(NSArray*)results forQuery:(KCSQuery*)query
 {
     NSString* queryKey = [query JSONStringRepresentation];
-    NSMutableArray* oldIds = [_queryCache objectForKey:queryKey];
-    NSMutableArray* ids = [NSMutableArray arrayWithCapacity:results.count];
+    NSMutableOrderedSet* oldIds = [_queryCache objectForKey:queryKey];
+    NSMutableOrderedSet* ids = [NSMutableOrderedSet orderedSetWithCapacity:oldIds.count];
     for (id n in results) {
         NSString* objId = [n kinveyObjectId];
         if (objId != nil) {
             [ids addObject:objId];
-            [self addObject:n];
+            [self addResult:n];
         }
     }
     [_queryCache setObject:ids forKey:queryKey];
     if (oldIds) {
-        [oldIds removeObjectsInArray:ids];
-        [self removeIds:oldIds];
+        [oldIds removeObjectsInArray:[ids array]];
+        [self removeIds:[oldIds array]];
     }
 }
 
@@ -280,8 +295,8 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
 - (void) removeQuery:(KCSQuery*) query
 {
     NSString* queryKey = [query JSONStringRepresentation];
-    NSArray* keys = [_queryCache objectForKey:queryKey];
-    [self removeIds:keys];
+    NSMutableOrderedSet* keys = [_queryCache objectForKey:queryKey];
+    [self removeIds:[keys array]];
     [_queryCache removeObjectForKey:queryKey];
 }
 
@@ -290,7 +305,6 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
     NSString* key = cacheKeyForGroup(fields, function, condition);
     [_groupingCache removeObjectForKey:key];
 }
-
 
 
 #pragma mark - mem management
@@ -305,6 +319,52 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
     [_cache removeAllObjects];
     [_queryCache removeAllObjects];
     [_groupingCache removeAllObjects];
+    [_unsavedObjs removeAllObjects];
+}
+
+#pragma mark - Saving
+//note saving an object could make it invalid for a query, but will show up until query is refetched
+- (void) startSaving
+{
+    if (_unsavedObjs.count > 0) {
+        NSString* objId = [_unsavedObjs firstObject];
+        CacheValue* v = [_cache objectForKey:objId];
+        id<KCSPersistable> obj = v.object;
+        
+        //todo about to save
+        KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:[_saveContext objectForKey:@"collection"] ofClass:[obj class]] options:nil];
+        [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+            //
+            if (errorOrNil) {
+                if ([errorOrNil.domain isEqualToString:KCSAppDataErrorDomain]) {
+                    //KCS Error
+                    v.unsaved = NO;
+                    [_unsavedObjs removeObject:objId];
+
+//                    if (_delegate && [_delegate respondsToSelector:@selector(errorSaving:error:)]) {
+//                        [_delegate errorSaving:entity error:error];
+//                    }
+                    [self startSaving];
+                } else {
+                    //Other error, like networking
+                    //requeue error
+                    [self startSaving];
+                }
+            } else {
+                //save complete
+                //[self removeFirstItem]; //pop off the stack
+                v.unsaved = NO;
+                [_unsavedObjs removeObject:objId];
+                //result is json dictionary
+//                if (_delegate && [_delegate respondsToSelector:@selector(didSave:)]) {
+//                    [_delegate didSave:entity];
+//                }
+                [self startSaving];
+
+            }
+
+        } withProgressBlock:nil];
+    }
 }
 
 @end

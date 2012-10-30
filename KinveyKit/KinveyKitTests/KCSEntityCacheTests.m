@@ -41,7 +41,7 @@
     
     ASTTestClass* obj1 = [[ASTTestClass alloc] init];
     obj1.objId = @"1";
-    [cache addObject:obj1];
+    [cache addResult:obj1];
     
     id result = [cache objectForId:@"1"];
     STAssertEqualObjects(result, obj1, @"should match");
@@ -55,7 +55,7 @@
     obj1.objId = @"1";
     ASTTestClass* obj2 = [[ASTTestClass alloc] init];
     obj2.objId = @"2";
-    [cache addObjects:@[obj1, obj2]];
+    [cache addResults:@[obj1, obj2]];
     
     NSArray* results = [cache resultsForIds:@[@"1",@"2",@"3"]];
     STAssertTrue(results.count == 2, @"should have both objects");
@@ -82,7 +82,7 @@
     ASTTestClass* obj1Prime = [[ASTTestClass alloc] init];
     obj1Prime.objId = @"1";
     obj1Prime.objCount = 100;
-    [cache addObject:obj1Prime];
+    [cache addResult:obj1Prime];
     
     NSArray* primeResults = [cache resultsForQuery:query];
     STAssertTrue(primeResults.count == 2, @"should have both objects");
@@ -105,7 +105,7 @@
     obj1.objId = @"1";
     ASTTestClass* obj2 = [[ASTTestClass alloc] init];
     obj2.objId = @"2";
-    [cache addObjects:@[obj1,obj2]];
+    [cache addResults:@[obj1,obj2]];
     
     NSArray* results = [cache resultsForIds:@[@"1",@"2"]];
     STAssertTrue(results.count == 2, @"should have both objects");

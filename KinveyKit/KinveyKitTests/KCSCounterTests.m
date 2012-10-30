@@ -11,6 +11,8 @@
 #import "KinveyKit.h"
 #import "ASTTestClass.h"
 
+#import "KCSEntityCache.h"
+
 @implementation KCSCounterTests
 
 - (void) setUp
@@ -87,6 +89,7 @@
 
 - (void) testCounterCollection
 {
+    
     KCSCollection* collection = [[KCSCollection alloc] init];
     collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
     collection.objectTemplate = [ASTTestClass class];

@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		27041AFE163B0ADB00538656 /* MD5Helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 27041AFC163B0ADB00538656 /* MD5Helpers.h */; };
+		27041AFF163B0ADB00538656 /* MD5Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 27041AFD163B0ADB00538656 /* MD5Helpers.m */; };
 		270E4CAD16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */; };
 		270E4CAE16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 270E4CAC16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m */; };
 		271E8242157D70B3000AF9EF /* KCSPropertyUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */; };
@@ -64,12 +66,10 @@
 		27592BC81602211600AC2A69 /* KCSUniqueNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BC61602211600AC2A69 /* KCSUniqueNumber.m */; };
 		27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BCB160228D100AC2A69 /* KCSCounterTests.m */; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		275D5459161682EF003ABE40 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
 		276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 276A6F6116372FD500285884 /* KCSEntityCache.h */; };
 		276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6216372FD500285884 /* KCSEntityCache.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		276A6F6F1637834700285884 /* KCSEntityCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6E1637834700285884 /* KCSEntityCacheTests.m */; };
-		2779FE06161CCAB900D3D74F /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */; };
 		2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
 		2785F5351609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5331609179E004AA410 /* InfoPlist.strings */; };
 		2785F53D1609179E004AA410 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
@@ -106,6 +106,8 @@
 		27BD0889160A0BBE009473A3 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */; };
 		27BD088D160A0C27009473A3 /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD088C160A0C27009473A3 /* TestUtils.m */; };
 		27BD088F160A0DC5009473A3 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
+		27BFA98E163F293500F865C8 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BFA98D163F293500F865C8 /* libUAirship-1.3.3.a */; };
+		27BFA98F163F293500F865C8 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BFA98D163F293500F865C8 /* libUAirship-1.3.3.a */; };
 		27C22279161DE9B200D827AE /* KCS_SBJson.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22260161DE9B200D827AE /* KCS_SBJson.h */; };
 		27C2227A161DE9B200D827AE /* KCS_SBJsonParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22261161DE9B200D827AE /* KCS_SBJsonParser.h */; };
 		27C2227B161DE9B200D827AE /* KCS_SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22262161DE9B200D827AE /* KCS_SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
@@ -305,6 +307,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		27041AFC163B0ADB00538656 /* MD5Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MD5Helpers.h; sourceTree = "<group>"; };
+		27041AFD163B0ADB00538656 /* MD5Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MD5Helpers.m; sourceTree = "<group>"; };
 		270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+KinveyAdditions.h"; sourceTree = "<group>"; };
 		270E4CAC16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+KinveyAdditions.m"; sourceTree = "<group>"; };
 		271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPropertyUtil.h; sourceTree = "<group>"; };
@@ -346,7 +350,6 @@
 		27592BCA160228D100AC2A69 /* KCSCounterTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCounterTests.h; sourceTree = "<group>"; };
 		27592BCB160228D100AC2A69 /* KCSCounterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCounterTests.m; sourceTree = "<group>"; };
 		2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSOfflineSaveStore.h; sourceTree = "<group>"; };
-		275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.3.3.a"; path = "Airship/libUAirship-1.3.3.a"; sourceTree = "<group>"; };
 		2764B53C15DD9242003964D1 /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = usr/lib/libobjc.dylib; sourceTree = SDKROOT; };
 		276A6F6116372FD500285884 /* KCSEntityCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCache.h; sourceTree = "<group>"; };
 		276A6F6216372FD500285884 /* KCSEntityCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCache.m; sourceTree = "<group>"; };
@@ -389,6 +392,7 @@
 		27BD0876160A03A8009473A3 /* KinveyKitExtras.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyKitExtras.h; sourceTree = "<group>"; };
 		27BD088B160A0C27009473A3 /* TestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestUtils.h; path = ../KinveyKitExtras/TestUtils.h; sourceTree = "<group>"; };
 		27BD088C160A0C27009473A3 /* TestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestUtils.m; path = ../KinveyKitExtras/TestUtils.m; sourceTree = "<group>"; };
+		27BFA98D163F293500F865C8 /* libUAirship-1.3.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.3.3.a"; path = "../../../Downloads/Airship 4/libUAirship-1.3.3.a"; sourceTree = "<group>"; };
 		27C22260161DE9B200D827AE /* KCS_SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJson.h; sourceTree = "<group>"; };
 		27C22261161DE9B200D827AE /* KCS_SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonParser.h; sourceTree = "<group>"; };
 		27C22262161DE9B200D827AE /* KCS_SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonParser.m; sourceTree = "<group>"; };
@@ -808,7 +812,7 @@
 				27BD0888160A0BB2009473A3 /* KinveyKitTests.octest in Frameworks */,
 				27BD0883160A0B83009473A3 /* CoreLocation.framework in Frameworks */,
 				2785F53E1609179E004AA410 /* UIKit.framework in Frameworks */,
-				2779FE06161CCAB900D3D74F /* libUAirship-1.3.3.a in Frameworks */,
+				27BFA98F163F293500F865C8 /* libUAirship-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -840,7 +844,7 @@
 				D32A60DD14716EE300F77A3F /* UIKit.framework in Frameworks */,
 				D32A60DE14716EE300F77A3F /* Foundation.framework in Frameworks */,
 				D32A60E314716EE300F77A3F /* KinveyKit.framework in Frameworks */,
-				275D5459161682EF003ABE40 /* libUAirship-1.3.3.a in Frameworks */,
+				27BFA98E163F293500F865C8 /* libUAirship-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1018,6 +1022,8 @@
 				270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */,
 				270E4CAC16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m */,
 				27B1FDCB15B0D3B0003CC4C6 /* KCSHiddenMethods.h */,
+				27041AFC163B0ADB00538656 /* MD5Helpers.h */,
+				27041AFD163B0ADB00538656 /* MD5Helpers.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -1110,11 +1116,11 @@
 		D32A60CA14716EE300F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				27BFA98D163F293500F865C8 /* libUAirship-1.3.3.a */,
 				273A3E92160A1A9F00F3742C /* Accounts.framework */,
 				2785F55A160917C9004AA410 /* Twitter.framework */,
 				2764B53C15DD9242003964D1 /* libobjc.dylib */,
 				27347F7115B4665800133F64 /* CoreLocation.framework */,
-				275D5457161682EB003ABE40 /* libUAirship-1.3.3.a */,
 				D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */,
 				D3F340A914BCCEA500DB6C37 /* StoreKit.framework */,
 				D3C5E68414745F09002D8F2B /* MobileCoreServices.framework */,
@@ -2056,6 +2062,7 @@
 				270E4CAD16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.h in Headers */,
 				2736B19416275504006CF960 /* KinveyHeaderInfo.h in Headers */,
 				276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */,
+				27041AFE163B0ADB00538656 /* MD5Helpers.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2411,6 +2418,7 @@
 				27C22291161DE9B200D827AE /* NSObject+KCS_SBJson.m in Sources */,
 				270E4CAE16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m in Sources */,
 				276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */,
+				27041AFF163B0ADB00538656 /* MD5Helpers.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2603,6 +2611,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 					"\"$(SRCROOT)/Airship\"",
+					"\"$(SRCROOT)/../../../Downloads/Airship 4\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2665,6 +2674,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Airship\"",
+					"\"$(SRCROOT)/../../../Downloads/Airship 4\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2777,6 +2787,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Airship\"",
+					"\"$(SRCROOT)/../../../Downloads/Airship 4\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2802,6 +2813,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Airship\"",
+					"\"$(SRCROOT)/../../../Downloads/Airship 4\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2827,6 +2839,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Airship\"",
+					"\"$(SRCROOT)/../../../Downloads/Airship 4\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2906,6 +2919,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 					"\"$(SRCROOT)/Airship\"",
+					"\"$(SRCROOT)/../../../Downloads/Airship 4\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3023,6 +3037,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 					"\"$(SRCROOT)/Airship\"",
+					"\"$(SRCROOT)/../../../Downloads/Airship 4\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3046,6 +3061,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
 					"\"$(SRCROOT)/Airship\"",
+					"\"$(SRCROOT)/../../../Downloads/Airship 4\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
