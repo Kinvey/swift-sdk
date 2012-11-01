@@ -96,6 +96,7 @@ static KCSCachedStoreCaching* sCaching;
 @property (nonatomic) NSUInteger count;
 @property (nonatomic) id<KCSPersistable> object;
 @property (nonatomic) BOOL unsaved;
+@property (nonatomic, retain) NSDate* lastSavedTime;
 @end
 @implementation CacheValue
 
@@ -219,6 +220,7 @@ NSString* KCSMongoObjectId()
         }
         val.object = obj;
         val.unsaved = YES;
+        val.lastSavedTime = [NSDate date];
         [_unsavedObjs addObject:objId];
     } else {
         KCSLogDebug(@"attempting to cache an object without a set ID");
@@ -323,6 +325,48 @@ NSString* KCSMongoObjectId()
 }
 
 #pragma mark - Saving
+//TODO: BACKGROUND STUFF
+
+- (void) saveObject:(NSString*)objId
+{
+    CacheValue* v = [_cache objectForKey:objId];
+    id<KCSPersistable> obj = v.object;
+    
+    
+    if (_delegate && [_delegate respondsToSelector:@selector(willSave:lastSaveTime:)]) {
+        [_delegate willSave:obj lastSaveTime:v.lastSavedTime];
+    }
+    
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:[_saveContext objectForKey:@"collection"] ofClass:[obj class]] options:nil];
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        //
+        if (errorOrNil) {
+            if ([errorOrNil.domain isEqualToString:KCSAppDataErrorDomain]) {
+                //KCS Error
+                v.unsaved = NO;
+                [_unsavedObjs removeObject:objId];
+                
+                if (_delegate && [_delegate respondsToSelector:@selector(errorSaving:error:)]) {
+                    [_delegate errorSaving:obj error:errorOrNil];
+                }
+                [self startSaving];
+            } else {
+                //Other error, like networking
+                //requeue error
+                [self startSaving];
+            }
+        } else {
+            //save complete
+            v.unsaved = NO;
+            [_unsavedObjs removeObject:objId];
+            if (_delegate && [_delegate respondsToSelector:@selector(didSave:)]) {
+                [_delegate didSave:obj];
+            }
+            [self startSaving];
+        }
+    } withProgressBlock:nil];
+}
+
 //note saving an object could make it invalid for a query, but will show up until query is refetched
 - (void) startSaving
 {
@@ -330,40 +374,19 @@ NSString* KCSMongoObjectId()
         NSString* objId = [_unsavedObjs firstObject];
         CacheValue* v = [_cache objectForKey:objId];
         id<KCSPersistable> obj = v.object;
-        
-        //todo about to save
-        KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:[_saveContext objectForKey:@"collection"] ofClass:[obj class]] options:nil];
-        [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            //
-            if (errorOrNil) {
-                if ([errorOrNil.domain isEqualToString:KCSAppDataErrorDomain]) {
-                    //KCS Error
-                    v.unsaved = NO;
-                    [_unsavedObjs removeObject:objId];
-
-//                    if (_delegate && [_delegate respondsToSelector:@selector(errorSaving:error:)]) {
-//                        [_delegate errorSaving:entity error:error];
-//                    }
-                    [self startSaving];
-                } else {
-                    //Other error, like networking
-                    //requeue error
-                    [self startSaving];
-                }
+       
+        if (_delegate && [_delegate respondsToSelector:@selector(shouldSave:lastSaveTime:)]) {
+            //test the delegate, if available
+            if ([_delegate shouldSave:obj lastSaveTime:v.lastSavedTime]) {
+                [self saveObject:objId];
             } else {
-                //save complete
-                //[self removeFirstItem]; //pop off the stack
                 v.unsaved = NO;
                 [_unsavedObjs removeObject:objId];
-                //result is json dictionary
-//                if (_delegate && [_delegate respondsToSelector:@selector(didSave:)]) {
-//                    [_delegate didSave:entity];
-//                }
-                [self startSaving];
-
             }
-
-        } withProgressBlock:nil];
+        } else {
+           //otherwise client doesn't care about shouldSave: and then we should default the save
+            [self saveObject:objId];
+        }
     }
 }
 

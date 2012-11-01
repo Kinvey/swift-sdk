@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "KCSOfflineSaveStore.h"
+
 NSString* KCSMongoObjectId();
 
 @protocol KCSPersistable;
@@ -15,6 +17,8 @@ NSString* KCSMongoObjectId();
 @class KCSGroup;
 @class KCSReduceFunction;
 @interface KCSEntityCache : NSObject
+
+@property (nonatomic, assign) id<KCSOfflineSaveDelegate> delegate;
 
 
 - (id) objectForId:(NSString*)objId;
@@ -29,6 +33,10 @@ NSString* KCSMongoObjectId();
 - (void) removeQuery:(KCSQuery*) query;
 - (void) removeIds:(NSArray*)keys;
 - (void) removeGroup:(NSArray*)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition;
+
+- (void) addUnsavedObject:(id)obj;
+//TODO remove?
+- (void) startSaving;
 @end
 
 @interface KCSCachedStoreCaching : NSObject

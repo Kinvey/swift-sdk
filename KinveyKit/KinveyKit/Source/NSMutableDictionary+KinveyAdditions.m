@@ -33,15 +33,15 @@
         }
         if (recursive) {
             if ([obj isKindOfClass:[NSDictionary class]]) {
-                NSMutableDictionary* mobj = [[obj mutableCopy] autorelease];
+                NSMutableDictionary* mobj = [obj mutableCopy];
                 [mobj append:appendant ontoKeySet:keys recursive:recursive];
                 [keysToRemove addObject:key];
                 [objectsToAdd setObject:mobj forKey:newKey];
             } else if ([obj isKindOfClass:[NSArray class]]) {
-                NSMutableArray* marray = [[obj mutableCopy] autorelease];
+                NSMutableArray* marray = [obj mutableCopy];
                 for (id arrayObj in obj) {
                     if ([arrayObj isKindOfClass:[NSDictionary class]]) {
-                        NSMutableDictionary* mobj = [[arrayObj mutableCopy] autorelease];
+                        NSMutableDictionary* mobj = [arrayObj mutableCopy];
                         [mobj append:appendant ontoKeySet:keys recursive:recursive];
                         [marray replaceObjectAtIndex:[obj indexOfObject:arrayObj] withObject:mobj];
                     }

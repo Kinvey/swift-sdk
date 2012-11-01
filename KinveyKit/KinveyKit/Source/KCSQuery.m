@@ -19,6 +19,11 @@
 #import "KCSMetadata.h"
 #import "NSDate+ISO8601.h"
 
+//http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24type
+typedef enum KCSQueryType : NSUInteger {
+    KCSQueryTypeNull = 10
+} KCSQueryType;
+
 #pragma mark -
 #pragma mark KCSQuerySortModifier
 @implementation KCSQuerySortModifier
@@ -148,7 +153,10 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
                                     
                                     // Internal Operators
                                     @(kKCSWithin)  : @"$within",
-                                    @(kKCSOptions) : @"$options"} retain];
+                                    @(kKCSOptions) : @"$options",
+                                    @(kKCSExists) : @"$exists",
+                                    @(kKCSType) : @"$type",
+                                    } retain];
     }
     return [KCSOperationStringLookup objectForKey:@(conditional)];
 }
@@ -228,7 +236,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
                 // ERROR!
                 return nil;
             }
-            query = @{ fieldname : [queries objectAtIndex:0]};
+            query = @{ fieldname : queries[0]};
             break;
             
         case kKCSLessThan:
@@ -238,6 +246,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
         case kKCSNotEqual:
         case kKCSRegex:
         case kKCSMulti:
+        case kKCSExists:
+        case kKCSType:
             
             if (fieldname == nil){
                 // Error
@@ -250,7 +260,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
                     return nil;
                 }
                 
-                query = @{ fieldname : @{ opName : [queries objectAtIndex:0]} };
+                query = @{ fieldname : @{ opName : queries[0]} };
             } else {
                 BOOL isGeoQuery = NO;
                 if (op != kKCSMulti || queries == nil){
@@ -360,7 +370,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 + (id) valueOrKCSPersistableId:(NSObject*) value field:(NSString*)field
 {
-    if (([value isKindOfClass:[NSArray class]] || [value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSString class]] || [value isKindOfClass:[NSNumber class]]) == NO) {
+    if (([value isKindOfClass:[NSArray class]] || [value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSString class]] || [value isKindOfClass:[NSNumber class]] || [value isKindOfClass:[NSNull class]]) == NO) {
         //there's no test to determine if an object has an id since there's a NSObject category
         @try {
             if ([field isEqualToString:KCSMetadataFieldLastModifiedTime] && [value isKindOfClass:[NSDate class]]) {
@@ -420,18 +430,23 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 + (KCSQuery *)queryOnField:(NSString *)field usingConditional:(KCSQueryConditional)conditional forValue: (NSObject *)value
 {
-    KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
+    KCSQuery *query = [KCSQuery query];
     value = [KCSQuery valueOrKCSPersistableId:value field:field];
     
-    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
+    query.query = [[[self queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
     
     return query;
     
 }
 
-+ (KCSQuery *)queryOnField:(NSString *)field withExactMatchForValue: (NSObject *)value
++ (KCSQuery *)queryOnField:(NSString *)field withExactMatchForValue:(NSObject *)value
 {
-    KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
+    if ([value isEqual:[NSNull null]]) {
+        //for the special case using 'null' in mongo is not exist or null; but since this is an exact value test, we are hijacking and returing the matches `null` query
+        return [KCSQuery queryOnField:field usingConditional:kKCSType forValue:@(KCSQueryTypeNull)];
+    }
+    
+    KCSQuery *query = [self query];
     
     value = [self valueOrKCSPersistableId:value field:field];
     
@@ -458,7 +473,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     }
     va_end(items);
     
-    KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
+    KCSQuery *query = [self query];
     
     query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:args useQueriesForOps:YES] mutableCopy] autorelease];
     
@@ -476,7 +491,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     }
     va_end(args);
     
-    KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
+    KCSQuery *query = [self query];
     
     query.query = [[[KCSQuery queryDictionaryWithFieldname:nil operation:joiningOperator forQueries:queries useQueriesForOps:NO] mutableCopy] autorelease];
     
@@ -509,9 +524,7 @@ BOOL kcsIsOperator(NSString* queryField)
 
 + (KCSQuery *)queryNegatingQuery:(KCSQuery *)query
 {
-    KCSQuery *q = [[[KCSQuery alloc] init] autorelease];
-    
-    
+    KCSQuery *q = [self query];
     q.query = [self negateQuery:query];
     
     return q;
@@ -519,17 +532,24 @@ BOOL kcsIsOperator(NSString* queryField)
 
 + (KCSQuery *)queryForNilValueInField: (NSString *)field
 {
-    /////// MEGA SPECIAL CASE
-    NSDictionary *exists = [NSDictionary dictionaryWithObjectsAndKeys:[NSNull null], @"$in", [NSNumber numberWithBool:YES], @"$exists", nil];
-    NSDictionary *query = [NSDictionary dictionaryWithObject:exists forKey:field];
-    KCSQuery *q = [[[KCSQuery alloc] init] autorelease];
-    q.query = [[query mutableCopy] autorelease];
-    return q;
+    return [self queryForEmptyValueInField:field];
+}
+
++ (KCSQuery*) queryForEmptyValueInField:(NSString*)field
+{
+    return [self queryOnField:field usingConditional:kKCSExists forValue:@(NO)];
+}
+
++ (KCSQuery*) queryForEmptyOrNullValueInField:(NSString*)field
+{
+    KCSQuery *query = [self query];
+    query.query = [[[self queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[[NSNull null]] useQueriesForOps:NO] mutableCopy] autorelease];
+    return query;
 }
 
 + (KCSQuery *)query
 {
-    KCSQuery *query = [[[KCSQuery alloc] init] autorelease];
+    KCSQuery *query = [[[self alloc] init] autorelease];
     return query;
 }
 
