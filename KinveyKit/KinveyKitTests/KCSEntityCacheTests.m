@@ -12,6 +12,7 @@
 
 #import "KCSQuery.h"
 #import "ASTTestClass.h"
+#import "TestUtils.h"
 
 @implementation KCSEntityCacheTests
 
@@ -113,6 +114,45 @@
     STAssertTrue([results containsObject:obj2], @"should have item 2");
 }
 
+
+- (void) addBySave
+{
+    NSLog(@"---------- starting");
+    
+    ASTTestClass* obj = [[ASTTestClass alloc] init];
+    obj.date = [NSDate date];
+    obj.objCount = 79000;
+    
+//    KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{KCSStoreKeyUniqueOfflineSaveIdentifier : @"x0"}];
+//    
+//    [store setReachable:NO];
+    
+    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
+    [cache addUnsavedObject:obj];
+
+    NSString* objId = obj.objId;
+    STAssertNotNil(objId, @"Should have objid assigned");
+    
+    id ret = [cache objectForId:objId];
+    STAssertEqualObjects(obj, ret, @"should get our object back");
+}
+    
+//    self.done = NO;
+//    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertError(errorOrNil, KCSKinveyUnreachableError);
+//        NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
+//        STAssertEquals((NSUInteger)1, (NSUInteger) objs.count, @"should have one unsaved obj, from above");
+//        self.done = YES;
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        NSLog(@"%f", percentComplete);
+//    }];
+//    
+//    [self poll];
+//}
+
+//test save updates query
+//test save new updates existing query
 //save by id, load by query
 //test persist
 //test removal

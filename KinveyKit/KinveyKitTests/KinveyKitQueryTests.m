@@ -365,4 +365,19 @@
 
 }
 
+- (void) testNil
+{
+    KCSQuery* q1 = [KCSQuery queryOnField:@"field" withExactMatchForValue:[NSNull null]];
+    STAssertEqualObjects(q1.query, @{@"field" : @{@"$type" : @(10)}}, @"should properly construct the null query");
+    
+    KCSQuery* q2 = [KCSQuery queryForEmptyOrNullValueInField:@"field"];
+    STAssertEqualObjects(q2.query, @{@"field" : [NSNull null]}, @"should properly construct the null query");
+
+    KCSQuery* q3 = [KCSQuery queryForEmptyValueInField:@"field"];
+    STAssertEqualObjects(q3.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
+    
+    KCSQuery* q4 = [KCSQuery queryForNilValueInField:@"field"];
+    STAssertEqualObjects(q4.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
+}
+
 @end

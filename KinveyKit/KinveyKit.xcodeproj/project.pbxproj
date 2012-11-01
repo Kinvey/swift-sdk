@@ -22,9 +22,9 @@
 
 /* Begin PBXBuildFile section */
 		27041AFE163B0ADB00538656 /* MD5Helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 27041AFC163B0ADB00538656 /* MD5Helpers.h */; };
-		27041AFF163B0ADB00538656 /* MD5Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 27041AFD163B0ADB00538656 /* MD5Helpers.m */; };
+		27041AFF163B0ADB00538656 /* MD5Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 27041AFD163B0ADB00538656 /* MD5Helpers.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		270E4CAD16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */; };
-		270E4CAE16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 270E4CAC16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m */; };
+		270E4CAE16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 270E4CAC16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		271E8242157D70B3000AF9EF /* KCSPropertyUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */; };
 		271E8243157D70B3000AF9EF /* KCSPropertyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */; };
 		27223E1C157E7A3200656BCC /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
@@ -1766,10 +1766,10 @@
 				2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */,
 				273DB2E515D191A00072A444 /* KCSSaveQueue.h */,
 				273DB2E615D191A00072A444 /* KCSSaveQueue.m */,
-				272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */,
-				272FBE5215F90FB500EC7031 /* KCSSaveGraph.m */,
 				276A6F6116372FD500285884 /* KCSEntityCache.h */,
 				276A6F6216372FD500285884 /* KCSEntityCache.m */,
+				272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */,
+				272FBE5215F90FB500EC7031 /* KCSSaveGraph.m */,
 			);
 			name = KinveyStore;
 			sourceTree = "<group>";
