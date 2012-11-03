@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.10
+### 1.10.6
+** Release Date:** November 3, 2012
+
+* Bug fix(es):
+    * Fixed bug where sign-in with Twitter sporadically crashed or did not complete.
+
 ### 1.10.5
 ** Release Date:** October 30, 2012
 

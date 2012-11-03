@@ -48,8 +48,8 @@
 {
     self = [super init];
     if (self) {
-        _url = url;
-        _parameters = parameters;
+        _url = [url copy];
+        _parameters = [parameters copy];
         _signedRequestMethod = requestMethod;
     }
     return self;
