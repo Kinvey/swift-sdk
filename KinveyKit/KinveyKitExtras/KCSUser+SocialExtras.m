@@ -41,6 +41,8 @@
     BOOL hasKeys = [self checkForTwitterKeys];
     BOOL hasTwitterCred = [self checkForTwitterCredentials];
     if (hasKeys && hasTwitterCred) {
+        
+        dispatch_queue_t current_queue = dispatch_get_current_queue();
         //
         //  Step 1)  Ask Twitter for a special request_token for reverse auth
         //
@@ -52,7 +54,9 @@
         [signedRequest performRequestWithHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             if (!data || [(NSHTTPURLResponse*)response statusCode] >= 400) {
                 NSError* tokenError =[KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain sourceError:error];
-                completionBlock(nil, tokenError);
+                dispatch_async(current_queue, ^{
+                    completionBlock(nil, tokenError);
+                });
             } else {
                 NSString *signedReverseAuthSignature = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
                 
@@ -76,7 +80,9 @@
                     [accountStore requestAccessToAccountsWithType:twitterType withCompletionHandler:^(BOOL granted, NSError *error) {
                         if (!granted) {
                             NSError* tokenError =[KCSErrorUtilities createError:nil description:@"User rejected access to Twitter account" errorCode:KCSDeniedError domain:KCSUserErrorDomain sourceError:error];
-                            completionBlock(nil, tokenError);
+                            dispatch_async(current_queue, ^{
+                                completionBlock(nil, tokenError);
+                            });
                         } else {
                             // obtain all the local account instances
                             NSArray *accounts = [accountStore accountsWithAccountType:twitterType];
@@ -85,8 +91,10 @@
                             [step2Request setAccount:[accounts objectAtIndex:0]];
                             [step2Request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
                                 if (!responseData || ((NSHTTPURLResponse*)urlResponse).statusCode >= 400) {
-                                    NSError* tokenError =[KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain sourceError:error];
-                                    completionBlock(nil, tokenError);
+                                    NSError* tokenError = [KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain sourceError:error];
+                                    dispatch_async(current_queue, ^{
+                                        completionBlock(nil, tokenError);
+                                    });
                                 }
                                 else {
                                     NSString *responseStr = [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease];
@@ -104,7 +112,9 @@
                                             }
                                         }
                                     }
-                                    completionBlock(dictionary, nil);
+                                    dispatch_async(current_queue, ^{
+                                        completionBlock(dictionary, nil);
+                                    });
                                 }
                             }];
                         }

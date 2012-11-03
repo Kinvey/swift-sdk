@@ -2,6 +2,8 @@
 
 ## 1.11
 ### 1.11.0
+** Release Date:** TBA
+
 * Updated `KCSQuery` to throw an exception when trying to negate an exact match query. This is invalid syntax and fails server-side. Use a conditional query with `kKCSNotEqual` to test not equals.  
 * Deprecated `+[KCSQuery queryForNilValueInField:]` because it is ambiguous and did not work. It has been modified to work the same as `queryForEmptyValueInField:` and is superceeded by the following behaviors:
     * To find values that have been set to `null` : `+[KCSQuery queryOnField:field withExactMatchForValue:[NSNull null]]`
@@ -9,6 +11,12 @@
     * To find either `null` or empty or unset: `+[KCSQuery queryForEmptyOrNullValueInField:]`    
 
 ## 1.10
+### 1.10.6
+** Release Date:** November 3, 2012
+
+* Bug fix(es):
+    * Fixed bug where sign-in with Twitter sporadically crashed or did not complete.
+
 ### 1.10.5
 ** Release Date:** October 30, 2012
 

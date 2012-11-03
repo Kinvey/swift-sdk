@@ -20,11 +20,11 @@
 #import "KCSLogManager.h"
 #import "KinveyCollection.h"
 #import "KCSReachability.h"
-#import "KCSPush.h"
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
 #import "KinveyCollection.h"
+#import "KCSDevice.h"
 
 #define kKeychainPasswordKey @"password"
 #define kKeychainUsernameKey @"username"
@@ -271,7 +271,7 @@
         
         // Finally we check for the device token, we're creating the user,
         // so we just need to set the one value, no merging/etc
-        KCSPush *sp = [KCSPush sharedPush];
+        KCSDevice *sp = [KCSDevice currentDevice];
         if (sp.deviceToken != nil){
             [userJSONPaylod setObject:@[sp.deviceToken] forKey:@"_deviceTokens"];
         }
@@ -558,7 +558,7 @@
             NSString* twitterKey = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_KEY];
             NSString* twitterSecret = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_SECRET];
             DBAssert(twitterKey != nil && twitterSecret != nil, @"twitter info should not be nil.");
-            if (!twitterKey || !twitterSecret) {
+            if (twitterKey != nil && twitterSecret != nil) {
                 dict = @{@"_socialIdentity" : @{@"twitter" : @{@"access_token" : accessToken,
                 @"access_token_secret" : accessTokenSecret,
                 @"consumer_key" : twitterKey,
@@ -737,11 +737,11 @@
         // the right thing.  This might be less efficient than just iterating, but these routines have
         // been optimized, we do this now, since there's no other place guarenteed to merge.
         // Login/create store this info
-        KCSPush *sp = [KCSPush sharedPush];
+        KCSDevice *sp = [KCSDevice currentDevice];
         
         if (sp.deviceToken != nil){
             NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
-            [tmpSet addObject:[[KCSPush sharedPush] deviceTokenString]];
+            [tmpSet addObject:[sp deviceTokenString]];
             self.deviceTokens = [tmpSet allObjects];
         }
         [self saveToCollection:[KCSCollection userCollection] withDelegate:delegate];
