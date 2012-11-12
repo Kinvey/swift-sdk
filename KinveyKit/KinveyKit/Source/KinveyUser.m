@@ -273,7 +273,7 @@
         // so we just need to set the one value, no merging/etc
         KCSPush *sp = [KCSPush sharedPush];
         if (sp.deviceToken != nil){
-            [userJSONPaylod setObject:@[sp.deviceToken] forKey:@"_deviceTokens"];
+            [userJSONPaylod setObject:@[[sp deviceTokenString]] forKey:@"_deviceTokens"];
         }
         
         NSDictionary *userData = [NSDictionary dictionaryWithDictionary:userJSONPaylod];

@@ -1,6 +1,11 @@
 # KinveyKit Release History
 
 ## 1.10
+### 1.10.7
+** Release Date:** November 12, 2012
+* Bug fix(es):
+    * Fixed bug where new user could not be created when using push. 
+
 ### 1.10.6
 ** Release Date:** November 3, 2012
 
