@@ -80,7 +80,7 @@
 
 + (BOOL) hasSavedCredentials
 {
-    return ([KCSKeyChain getStringForKey:kKeychainPasswordKey] && [KCSKeyChain getStringForKey:kKeychainUsernameKey]) || ([KCSKeyChain getStringForKey:kKeychainAuthTokenKey]);
+    return ([KCSKeyChain getStringForKey:kKeychainPasswordKey] || [KCSKeyChain getStringForKey:kKeychainAuthTokenKey]) && [KCSKeyChain getStringForKey:kKeychainUsernameKey] && [KCSKeyChain getStringForKey:kKeychainUserIdKey];
 }
 
 + (void) clearSavedCredentials
@@ -100,10 +100,17 @@
     
     NSString* propUsername = [properties popObjectForKey:@"username"];
     NSString* propPassword = [properties popObjectForKey:@"password"];
+    NSString* propId = [properties popObjectForKey:@"_id"];
     
     user.username = propUsername != nil ? propUsername : username;
     user.password = propPassword != nil ? propPassword : password;
-    user.userId   = [properties popObjectForKey:@"_id"];
+    user.userId   = propId;
+    
+    if (user.userId == nil || user.username == nil) {
+        //prevent that weird assertion that Colden was seeing
+        return;
+    }
+    
     user.deviceTokens = [properties popObjectForKey:@"_deviceTokens"];
     user.oauthTokens = [properties popObjectForKey:KCSUserAttributeOAuthTokens];
     
@@ -162,30 +169,32 @@
 
 + (void) updateUserInBackground:(KCSUser*)user 
 {
-    KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", user.userId] usingMethod:kGetRESTMethod];
-    [userRequest setContentType:KCS_JSON_TYPE];
-    KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
-    [writer release];
-    
-    // Set up our callbacks
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+    if (user.userId != nil) {
+        KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", user.userId] usingMethod:kGetRESTMethod];
+        [userRequest setContentType:KCS_JSON_TYPE];
+        KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
+        [writer release];
         
-        // Ok, we're really authd
-        if ([response responseCode] < 300) {
-            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-            [self setupCurrentUser:user properties:dictionary password:user.password username:user.username];
-        } else {
-            KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
-        }
-    };
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        KCSLogError(@"Internal Error Updating user: %@", error);
-        return;
-    };
-    
-    [userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
-    [userRequest start];
+        // Set up our callbacks
+        KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+            
+            // Ok, we're really authd
+            if ([response responseCode] < 300) {
+                NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
+                [self setupCurrentUser:user properties:dictionary password:user.password username:user.username];
+            } else {
+                KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
+            }
+        };
+        
+        KCSConnectionFailureBlock fBlock = ^(NSError *error){
+            KCSLogError(@"Internal Error Updating user: %@", error);
+            return;
+        };
+        
+        [userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
+        [userRequest start];
+    }
 }
 
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew
@@ -273,7 +282,7 @@
         // so we just need to set the one value, no merging/etc
         KCSPush *sp = [KCSPush sharedPush];
         if (sp.deviceToken != nil){
-            [userJSONPaylod setObject:@[sp.deviceToken] forKey:@"_deviceTokens"];
+            [userJSONPaylod setObject:@[[sp deviceTokenString]] forKey:@"_deviceTokens"];
         }
         
         NSDictionary *userData = [NSDictionary dictionaryWithDictionary:userJSONPaylod];
