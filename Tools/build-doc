@@ -55,7 +55,7 @@ LICENSES="--include ${KINVEYKITLOC}/LICENSES.html"
 CHANGES="--include ${KINVEYKITLOC}/KinveyKit-History-template.md"
 SETTINGS="${KINVEYKITLOC}/AppledocSettings.plist"
 
-UTILPATH="--docsetutil-path /Applications/Xcode.app/Contents/Developer/usr/bin/docsetutil"
+UTILPATH=""
 
 if [ ! -d $OUTPUTLOC ]
 then
