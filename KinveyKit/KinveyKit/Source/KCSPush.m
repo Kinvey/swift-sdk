@@ -15,6 +15,7 @@
 #import "UAPush.h"
 
 #import "KinveyErrorCodes.h"
+#import "KCSDevice.h"
 
 @interface KCSPush()
 - (BOOL)initializeUrbanAirshipWithOptions: (NSDictionary *)options error:(NSError**)error;
@@ -100,7 +101,7 @@
         return NO;
     }
     
-    if ([[options valueForKey:KCS_PUSH_MODE_KEY] isEqualToString:KCS_PUSH_DEBUG]){
+    if ([[options valueForKey:KCS_PUSH_MODE_KEY] isEqualToString:KCS_PUSH_DEVELOPMENT]){
         [airshipConfigOptions setValue:@"NO" forKey:@"APP_STORE_OR_AD_HOC_BUILD"];
         [airshipConfigOptions setValue:pushKey forKey:@"DEVELOPMENT_APP_KEY"];
         [airshipConfigOptions setValue:pushSecret forKey:@"DEVELOPMENT_APP_SECRET"];
@@ -141,6 +142,7 @@
     
     // Capture the token for us to use later
     self.deviceToken = deviceToken;
+    [KCSDevice currentDevice].deviceToken = deviceToken;
     // Updates the device token and registers the token with UA
     [[UAPush shared] registerDeviceToken:deviceToken];
     
@@ -164,15 +166,6 @@
 - (void) exposeSettingsViewInView: (UIViewController *)parentViewController
 {
     [UAPush openApnsSettings:parentViewController animated:YES];
-}
-
-
-- (NSString *)deviceTokenString
-{
-    NSString *deviceToken = [[self.deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""];
-    deviceToken = [deviceToken stringByReplacingOccurrencesOfString: @">" withString: @""] ;
-    deviceToken = [deviceToken stringByReplacingOccurrencesOfString: @" " withString: @""];
-    return deviceToken;
 }
 
 @end

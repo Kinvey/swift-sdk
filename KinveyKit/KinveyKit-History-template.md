@@ -1,16 +1,47 @@
 # KinveyKit Release History
 
 ## 1.11
-### 1.11.0
+### 1.11.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1110APIDiffs/KinveyKit1110APIDiffs.html)
 ** Release Date:** TBA
 
+* `- [KCSStore loadObjectWithID:withCompletionBlock:withProgressBlock:]` now accepts `NSSet`s of id's as well as arrays and a single id. 
 * Updated `KCSQuery` to throw an exception when trying to negate an exact match query. This is invalid syntax and fails server-side. Use a conditional query with `kKCSNotEqual` to test not equals.  
 * Deprecated `+[KCSQuery queryForNilValueInField:]` because it is ambiguous and did not work. It has been modified to work the same as `queryForEmptyValueInField:` and is superceeded by the following behaviors:
     * To find values that have been set to `null` : `+[KCSQuery queryOnField:field withExactMatchForValue:[NSNull null]]`
     * To find values that empty or unset: `+[KCSQuery queryForEmptyValueInField:]`
-    * To find either `null` or empty or unset: `+[KCSQuery queryForEmptyOrNullValueInField:]`    
+    * To find either `null` or empty or unset: `+[KCSQuery queryForEmptyOrNullValueInField:]`  
+* Usability Enhancements:
+    * Created options keys for `KCSAppdataStore` so that a `KCSCollection` object does not have to be explicitly created and managed by the client code.
+        * `KCSStoreKeyCollectionName` the collection Name
+        * `KCSStoreKeyCollectionTemplateClass` the template class
+        * For example, instead of:
+            
+                KCSCollection* collection = [KCSCollection collectionFromString:@"Events" ofClass:[Event class]];
+                _store = [KCSAppdataStore storeWithCollection:collection options:nil];
+          You can use the following:
+          
+                _store = [KCSAppdataStore storeWithOptions:@{ KCSStoreKeyCollectionName : @"Events",
+                                                     KCSStoreKeyCollectionTemplateClass : [Event class]}];
+                                                    
+    * Renamed `KCS_PUSH_MODE` values to match the language used eslewhere
+        * `KCS_PUSH_DEBUG` is now `KCS_PUSH_DEVELOPMENT`
+        * `KCS_PUSH_RELEASE` is now `KCS_PUSH_PRODUCTION`
+    * Exposed `userId` property of `KCSUser` to obtain the `_id` for references.
+
+          
+
 
 ## 1.10
+### 1.10.8
+** Release Date:** November 13, 2012
+* Bug fix(es):
+    * Sporadic assertion when initializing user outside of normal flow. 
+
+### 1.10.7
+** Release Date:** November 12, 2012
+* Bug fix(es):
+    * Fixed bug where new user could not be created when using push. 
+
 ### 1.10.6
 ** Release Date:** November 3, 2012
 

@@ -2,7 +2,6 @@
 //  KCSQuery.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 1/26/12.
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 
@@ -239,7 +238,7 @@ typedef enum {
  @return The new KCSQuery object (autoreleased).
  
  */
-+ (KCSQuery *)queryOnField:(NSString *)field withExactMatchForValue: (NSObject *)value; // Accepts Regular Expressions
++ (KCSQuery *)queryOnField:(NSString *)field withExactMatchForValue: (NSObject *)value;
 
 /*! Query a field for multiple values (AND).
  

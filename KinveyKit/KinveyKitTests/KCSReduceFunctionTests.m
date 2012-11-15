@@ -13,6 +13,11 @@
 #import "ASTTestClass.h"
 #import "TestUtils.h"
 
+//TODO: FIXME
+@interface KCSAppdataStore (FIX)
+- (void)groupByKeyFunction:(id)keyFunction reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+@end
+
 @interface GroupTestClass : ASTTestClass
 @property (nonatomic, retain) NSDictionary* objDict;
 @end
@@ -220,5 +225,38 @@
 
 //TODO: try sum for various types, string, etc
 
+- (void) testGroupObjByField
+{
+    self.done = NO;
+    [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction AGGREGATE] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        
+        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
+        STAssertEquals([value intValue],10, @"expecting 10 as the min for objects of 'one'");
+        
+        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
+        STAssertEquals([value intValue], -30, @"expecting 10 as the min for objects of 'math'");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+}
+
+- (void) testGroupObjByKeyFunction
+{
+    self.done = NO;
+    [store groupByKeyFunction:@"function(obj) { var dt = new ISODate(obj._kmd.lmt); var g = {}; g[dt.getDate()] = true; return g;" reduce:[KCSReduceFunction AGGREGATE] condition:[KCSQuery query] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        
+        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
+        STAssertEquals([value intValue],10, @"expecting 10 as the min for objects of 'one'");
+        
+        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
+        STAssertEquals([value intValue], -30, @"expecting 10 as the min for objects of 'math'");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+}
 
 @end

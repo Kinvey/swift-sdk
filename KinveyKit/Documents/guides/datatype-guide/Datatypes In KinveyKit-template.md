@@ -1,5 +1,5 @@
 ## Datatypes in KinveyKit
-Not all object types are representable in Kinvey's back-end and thus are not saved when specified as a property of a `KCSPersistable` class. In general, only properties of JOSN-compatible types are persistable. This is done to make back-end cross-platform compatible and easy to parse. These considerations are similar to those when using `NSCoding`.
+Not all object types are representable in Kinvey's back-end and thus are not saved when specified as a property of a `KCSPersistable` class. In general, only properties of JSON-compatible types are persistable. This is done to make back-end cross-platform compatible and easy to parse. These considerations are similar to those when using `NSCoding`.
 
 We've also provided built-in converters for common `Foundation` types (as specified in the table below). If you want to support other types, supply a proxy property (as described below). 
 

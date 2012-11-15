@@ -170,7 +170,7 @@ NSString* KCSMongoObjectId()
 }
 
 #pragma mark - querying
-
+//TODO: empty results vs not cached
 - (NSArray*) resultsForQuery:(KCSQuery*)query
 {
     NSString* queryKey = [query JSONStringRepresentation];

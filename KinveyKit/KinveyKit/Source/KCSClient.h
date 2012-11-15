@@ -34,8 +34,11 @@
 #define KCS_PUSH_SECRET_KEY @"kcsPushSecret"
 #define KCS_PUSH_IS_ENABLED_KEY @"kcsPushEnabled"
 #define KCS_PUSH_MODE_KEY @"kcsPushMode"
-#define KCS_PUSH_DEBUG @"debug"
-#define KCS_PUSH_RELEASE @"release"
+
+#define KCS_PUSH_DEVELOPMENT @"development"
+#define KCS_PUSH_DEBUG @"development"
+#define KCS_PUSH_PRODUCTION @"production"
+#define KCS_PUSH_RELEASE @"production"
 
 #define KCS_USE_OLD_PING_STYLE_KEY @"kcsPingStyle"
 

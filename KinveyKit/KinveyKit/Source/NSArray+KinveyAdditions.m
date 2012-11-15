@@ -29,6 +29,10 @@
     // as an array so we do a single unified processing
     if ([object isKindOfClass:[NSArray class]]){
         return object;
+    } else if ([object isKindOfClass:[NSSet class]]){
+        return [object allObjects];
+    } else if ([object isKindOfClass:[NSOrderedSet class]]){
+        return [object array];
     } else {
         return object == nil? @[] : @[object];
     }

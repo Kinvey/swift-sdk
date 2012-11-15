@@ -36,7 +36,6 @@
 @class GTMOAuth2Authentication;
 
 @interface KCSUser()
-@property (nonatomic, retain) NSString *userId;
 @property (nonatomic, retain) NSMutableDictionary *userAttributes;
 @property (nonatomic, retain) NSDictionary* oauthTokens;
 
@@ -80,7 +79,7 @@
 
 + (BOOL) hasSavedCredentials
 {
-    return ([KCSKeyChain getStringForKey:kKeychainPasswordKey] && [KCSKeyChain getStringForKey:kKeychainUsernameKey]) || ([KCSKeyChain getStringForKey:kKeychainAuthTokenKey]);
+    return ([KCSKeyChain getStringForKey:kKeychainPasswordKey] || [KCSKeyChain getStringForKey:kKeychainAuthTokenKey]) && [KCSKeyChain getStringForKey:kKeychainUsernameKey] && [KCSKeyChain getStringForKey:kKeychainUserIdKey];
 }
 
 + (void) clearSavedCredentials
@@ -100,10 +99,17 @@
     
     NSString* propUsername = [properties popObjectForKey:@"username"];
     NSString* propPassword = [properties popObjectForKey:@"password"];
+    NSString* propId = [properties popObjectForKey:@"_id"];
     
     user.username = propUsername != nil ? propUsername : username;
     user.password = propPassword != nil ? propPassword : password;
-    user.userId   = [properties popObjectForKey:@"_id"];
+    user.userId   = propId;
+    
+    if (user.userId == nil || user.username == nil) {
+        //prevent that weird assertion that Colden was seeing
+        return;
+    }
+    
     user.deviceTokens = [properties popObjectForKey:@"_deviceTokens"];
     user.oauthTokens = [properties popObjectForKey:KCSUserAttributeOAuthTokens];
     
@@ -162,34 +168,37 @@
 
 + (void) updateUserInBackground:(KCSUser*)user 
 {
-    KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", user.userId] usingMethod:kGetRESTMethod];
-    [userRequest setContentType:KCS_JSON_TYPE];
-    KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
-    [writer release];
-    
-    // Set up our callbacks
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+    if (user.userId != nil) {
+        KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", user.userId] usingMethod:kGetRESTMethod];
+        [userRequest setContentType:KCS_JSON_TYPE];
+        KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
+        [writer release];
         
-        // Ok, we're really authd
-        if ([response responseCode] < 300) {
-            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-            [self setupCurrentUser:user properties:dictionary password:user.password username:user.username];
-        } else {
-            KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
-        }
-    };
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        KCSLogError(@"Internal Error Updating user: %@", error);
-        return;
-    };
-    
-    [userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
-    [userRequest start];
+        // Set up our callbacks
+        KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+            
+            // Ok, we're really authd
+            if ([response responseCode] < 300) {
+                NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
+                [self setupCurrentUser:user properties:dictionary password:user.password username:user.username];
+            } else {
+                KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
+            }
+        };
+        
+        KCSConnectionFailureBlock fBlock = ^(NSError *error){
+            KCSLogError(@"Internal Error Updating user: %@", error);
+            return;
+        };
+        
+        [userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
+        [userRequest start];
+    }
 }
 
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew
 {
+    
     BOOL localInitInProgress = NO;
     KCSClient *client = [KCSClient sharedClient];
     
@@ -273,7 +282,7 @@
         // so we just need to set the one value, no merging/etc
         KCSDevice *sp = [KCSDevice currentDevice];
         if (sp.deviceToken != nil){
-            [userJSONPaylod setObject:@[sp.deviceToken] forKey:@"_deviceTokens"];
+            [userJSONPaylod setObject:@[[sp deviceTokenString]] forKey:@"_deviceTokens"];
         }
         
         NSDictionary *userData = [NSDictionary dictionaryWithDictionary:userJSONPaylod];
@@ -631,6 +640,11 @@
 
 + (void)loginWithWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
+    [self loginWithSocialIdentity:provider accessDictionary:accessDictionary withCompletionBlock:completionBlock];
+}
+
++ (void)loginWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+{
     KCSClient *client = [KCSClient sharedClient];
     KCSRESTRequest *loginRequest = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"login"] usingMethod:kPostRESTMethod];
     NSDictionary* loginDict = [self loginDictForProvder:provider accessDictionary:accessDictionary];
@@ -701,10 +715,24 @@
                                                                            withFailureReason:@"An operation only applicable to the current user was tried on a different user."
                                                                       withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
                                                                          withRecoveryOptions:nil];
-        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationREquiresCurrentUserError userInfo:userInfo];
+        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
         [delegate entity:self operationDidFailWithError:userError];
     } else {
         [self deleteFromCollection:[KCSCollection userCollection] withDelegate:delegate];
+    }
+}
+
+- (void) removeWithCompletionBlock:(KCSCompletionBlock)completionBlock
+{
+    if (![self isEqual:[[KCSClient sharedClient] currentUser]]){
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Receiver is not current user."
+                                                                           withFailureReason:@"An operation only applicable to the current user was tried on a different user."
+                                                                      withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
+                                                                         withRecoveryOptions:nil];
+        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
+        completionBlock(nil, userError);
+    } else {
+        [self deleteFromCollection:[KCSCollection userCollection] withCompletionBlock:completionBlock withProgressBlock:nil];
     }
 }
 
@@ -715,7 +743,7 @@
                                                                            withFailureReason:@"An operation only applicable to the current user was tried on a different user."
                                                                       withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
                                                                          withRecoveryOptions:nil];
-        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationREquiresCurrentUserError userInfo:userInfo];
+        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
         [delegate entity:self fetchDidFailWithError:userError];
     } else {
         [self loadObjectWithID:self.userId fromCollection:[KCSCollection userCollection] withDelegate:delegate];
@@ -730,7 +758,7 @@
                                                                            withFailureReason:@"An operation only applicable to the current user was tried on a different user."
                                                                       withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
                                                                          withRecoveryOptions:nil];
-        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationREquiresCurrentUserError userInfo:userInfo];
+        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
         [delegate entity:self operationDidFailWithError:userError];
     } else {
         // Extract all of the items from the Array into a set, so adding the "new" device token does
@@ -748,6 +776,31 @@
     }
 }
 
+
+- (void) saveWithCompletionBlock:(KCSCompletionBlock)completionBlock
+{
+    if (![self isEqual:[[KCSClient sharedClient] currentUser]]){
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Receiver is not current user."
+                                                                           withFailureReason:@"An operation only applicable to the current user was tried on a different user."
+                                                                      withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
+                                                                         withRecoveryOptions:nil];
+        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
+        completionBlock(nil, userError);
+    } else {
+        // Extract all of the items from the Array into a set, so adding the "new" device token does
+        // the right thing.  This might be less efficient than just iterating, but these routines have
+        // been optimized, we do this now, since there's no other place guarenteed to merge.
+        // Login/create store this info
+        KCSDevice *sp = [KCSDevice currentDevice];
+        
+        if (sp.deviceToken != nil){
+            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
+            [tmpSet addObject:[sp deviceTokenString]];
+            self.deviceTokens = [tmpSet allObjects];
+        }
+        [self saveToCollection:[KCSCollection userCollection] withCompletionBlock:completionBlock withProgressBlock:nil];
+    }
+}
 
 - (id)getValueForAttribute: (NSString *)attribute
 {
@@ -914,5 +967,10 @@
     [properties setValue:_email forKey:KCSUserAttributeEmail];
     [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
     [properties release];
+}
+
++ (KCSUser *)activeUser
+{
+    return [KCSClient sharedClient].currentUser;
 }
 @end
