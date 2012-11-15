@@ -59,7 +59,7 @@ typedef enum KCSErrorCodes : NSInteger {
     KCSAuthenticationRetryError = 60005,
     KCSUserAlreadyLoggedInError = 60006,
     KCSUserAlreadyExistsError = 60007,
-    KCSOperationREquiresCurrentUserError = 60008,
+    KCSOperationRequiresCurrentUserError = 60008,
     KCSLoginFailureError = 60009,
     KCSUnexpectedError = 60010,
     KCSFileError = 60011,

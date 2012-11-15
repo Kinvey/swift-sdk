@@ -19,14 +19,13 @@
 
 #import <Foundation/Foundation.h>
 
-/* NSString Category to generate MD5 hash for a string */
 @interface NSString (MD5Helpers)
-/** Generate a md5 hash string */
+// Generate a md5 hash string */
 - (NSString *) md5;
 @end
 
-/** NSData Category to generate a MD5 hash for the data, directly */
+// NSData Category to generate a MD5 hash for the data, directly */
 @interface NSData (MD5Helpers)
-/** Generate a md5 hash string */
+// Generate a md5 hash string */
 - (NSString*)md5;
 @end

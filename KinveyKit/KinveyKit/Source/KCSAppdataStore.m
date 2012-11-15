@@ -118,7 +118,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     if (options == nil) {
         options = @{ KCSStoreKeyResource : collection };
     } else {
-        options= [NSMutableDictionary dictionaryWithDictionary:options];
+        options = [NSMutableDictionary dictionaryWithDictionary:options];
         [options setValue:collection forKey:KCSStoreKeyResource];
     }
     return [self storeWithAuthHandler:authHandler withOptions:options];
@@ -129,7 +129,18 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     
     if (options) {
         // Configure
-        self.backingCollection = [options objectForKey:KCSStoreKeyResource];
+        KCSCollection* collection = [options objectForKey:KCSStoreKeyResource];
+        if (collection == nil) {
+            NSString* collectionName = [options objectForKey:KCSStoreKeyCollectionName];
+            if (collectionName != nil) {
+                Class objectClass = [options objectForKey:KCSStoreKeyCollectionTemplateClass];
+                if (objectClass == nil) {
+                    objectClass = [NSMutableDictionary class];
+                }
+                collection = [KCSCollection collectionFromString:collectionName ofClass:objectClass];
+            }
+        }
+        self.backingCollection = collection;
         NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
         if (queueId == nil)
             queueId = [self description];
@@ -373,7 +384,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     
     NSString* query = @"";
     if (array.count == 1) {
-        query = [self getObjIdFromObject:[array objectAtIndex:0] completionBlock:completionBlock];
+        query = [self getObjIdFromObject:array[0] completionBlock:completionBlock];
         if (query == nil) {
             //already sent an error;
             return;
@@ -494,6 +505,53 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     [self group:fieldOrFields reduce:function condition:[KCSQuery query] completionBlock:completionBlock progressBlock:progressBlock];
+}
+
+- (void)groupByKeyFunction:(id)keyFunction reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+{
+    KCSCollection* collection = self.backingCollection;
+    BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
+    if (okayToProceed == NO) {
+        return;
+    }
+    
+    NSString* collectionName = collection.collectionName;
+    NSString *format = nil;
+    
+    if ([collectionName isEqualToString:@""]){
+        format = @"%@_group";
+    } else {
+        format = @"%@/_group";
+    }
+    
+//    NSArray* fields = [NSArray wrapIfNotArray:fieldOrFields];
+    
+    NSString *resource = [collection.baseURL stringByAppendingFormat:format, collectionName];
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:4];
+//    NSMutableDictionary *keys = [NSMutableDictionary dictionaryWithCapacity:[fields count]];
+//    for (NSString* field in fields) {
+//        [keys setObject:[NSNumber numberWithBool:YES] forKey:field];
+//    }
+    [body setObject:keyFunction forKey:@"keyf"];
+    [body setObject:[function JSONStringRepresentationForInitialValue:@[]] forKey:@"initial"];
+    [body setObject:[function JSONStringRepresentationForFunction:@[]] forKey:@"reduce"];
+    [body setObject:[NSDictionary dictionary] forKey:@"finalize"];
+    
+    if (condition != nil) {
+        [body setObject:[condition query] forKey:@"condition"];
+    }
+    
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kPostRESTMethod];
+    KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+    [request addBody:[writer dataWithObject:body]];
+    [request setContentType:@"application/json"];
+    
+    KCSConnectionCompletionBlock cBlock = makeGroupCompletionBlock(completionBlock, [function outputValueName:@[]], @[]);
+    KCSConnectionFailureBlock fBlock = makeGroupFailureBlock(completionBlock);
+    KCSConnectionProgressBlock pBlock = makeProgressBlock(progressBlock);
+    
+    // Make the request happen
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
 #pragma mark - Reachability

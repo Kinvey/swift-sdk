@@ -86,4 +86,11 @@
     
 }
 
++ (KCSReduceFunction*) AGGREGATE
+{
+    NSString* function = [NSString stringWithFormat:@"function(doc,out){ out.%%@ = out.%%@.concat(doc)}"];
+    return [[[KCSReduceFunction alloc] initWithFunction:function field:@"objects" initial:@[]] autorelease];
+}
+
+
 @end
