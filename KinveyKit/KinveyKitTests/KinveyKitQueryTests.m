@@ -365,6 +365,8 @@
 
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void) testNil
 {
     KCSQuery* q1 = [KCSQuery queryOnField:@"field" withExactMatchForValue:[NSNull null]];
@@ -379,5 +381,6 @@
     KCSQuery* q4 = [KCSQuery queryForNilValueInField:@"field"];
     STAssertEqualObjects(q4.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
 }
+#pragma clang diagnostic pop
 
 @end

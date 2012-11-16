@@ -12,13 +12,10 @@
 
 + (KCSDevice*) currentDevice;
 
-///---------------------------------------------------------------------------------------
-/// @name Device Properties
-///---------------------------------------------------------------------------------------
-/*! The current session's token for this device to receive notifications */
+/* The current session's token for this device to receive notifications */
 @property (nonatomic, retain) NSData *deviceToken;
 
-/*! Return the device's token as a string
+/* Return the device's token as a string
  
  Return the current session's device token for push as an NSString.
  

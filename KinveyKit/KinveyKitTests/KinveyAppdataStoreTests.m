@@ -414,17 +414,4 @@ NSArray* largeArray()
     [self poll];
 }
 
-#warning deleteme
-- (void) testXXX
-{
-    self.done = NO;
-    [_store qu:@"N" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError;
-        STAssertEquals((NSUInteger)0, objectsOrNil.count, @"should be empty array");
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
-    
-}
-
 @end

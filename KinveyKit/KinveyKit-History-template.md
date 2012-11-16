@@ -2,8 +2,9 @@
 
 ## 1.11
 ### 1.11.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1110APIDiffs/KinveyKit1110APIDiffs.html)
-** Release Date:** TBA
+** Release Date:** November 16, 2012
 
+* Replaced `libUAirship-1.3.3` with the smaller `libUAirshipPush-1.3.3` library.
 * `- [KCSStore loadObjectWithID:withCompletionBlock:withProgressBlock:]` now accepts `NSSet`s of id's as well as arrays and a single id. 
 * Updated `KCSQuery` to throw an exception when trying to negate an exact match query. This is invalid syntax and fails server-side. Use a conditional query with `kKCSNotEqual` to test not equals.  
 * Deprecated `+[KCSQuery queryForNilValueInField:]` because it is ambiguous and did not work. It has been modified to work the same as `queryForEmptyValueInField:` and is superceeded by the following behaviors:
