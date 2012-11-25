@@ -375,6 +375,7 @@
     KCSQuery* q2 = [KCSQuery queryForEmptyOrNullValueInField:@"field"];
     STAssertEqualObjects(q2.query, @{@"field" : [NSNull null]}, @"should properly construct the null query");
 
+    
     KCSQuery* q3 = [KCSQuery queryForEmptyValueInField:@"field"];
     STAssertEqualObjects(q3.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
     
@@ -382,5 +383,17 @@
     STAssertEqualObjects(q4.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
 }
 #pragma clang diagnostic pop
+
+- (void) testSortCollectionAPI
+{
+    [TestUtils setUpKinveyUnittestBackend];
+    
+    KCSQuery* q = [KCSQuery queryOnField:@"field" withExactMatchForValue:@1];
+    [q addSortModifier:[[KCSQuerySortModifier alloc] initWithField: @"Fitness" inDirection: kKCSDescending]];
+    
+    KCSCollection* c = [KCSCollection collectionFromString:@"collection" ofClass:[NSMutableDictionary class]];
+    c.query = q;
+    [c fetchWithDelegate:nil];
+}
 
 @end
