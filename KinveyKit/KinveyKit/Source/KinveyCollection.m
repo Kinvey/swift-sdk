@@ -346,30 +346,8 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     // Here we know that we're working with a query, so now we just check each of the params...
     if (query != nil){
         resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
-        
-        // NB: All of the modifiers are optional and may be combined in any order.  However, we ended up here
-        //     so the user made an attempt to set some...
-        
-        // Add the Query portion of the request
-        if (query.query != nil && query.query.count > 0){
-            resource = [resource stringByAppendingQueryString:[query parameterStringRepresentation]];
-        }
-        
-        // Add any sort modifiers
-        if (query.sortModifiers.count > 0){
-            resource = [resource stringByAppendingQueryString:[query parameterStringForSortKeys]];
-        }
-        
-        // Add any limit modifiers
-        if (query.limitModifer != nil){
-            resource = [resource stringByAppendingQueryString:[query.limitModifer parameterStringRepresentation]];
-        }
-        
-        // Add any skip modifiers
-        if (query.skipModifier != nil){
-            resource = [resource stringByAppendingQueryString:[query.skipModifier parameterStringRepresentation]];
-        }
-    }        
+        resource = [resource stringByAppendingString:[self.query parameterStringRepresentation]];
+    }
     
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
@@ -414,29 +392,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     if (self.query != nil){
         resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
 
-        // NB: All of the modifiers are optional and may be combined in any order.  However, we ended up here
-        //     so the user made an attempt to set some...
-        
-        // Add the Query portion of the request
-        if (self.query.query != nil && self.query.query.count > 0){
-            resource = [resource stringByAppendingQueryString:[self.query parameterStringRepresentation]];
-        }
-        
-        // Add any sort modifiers
-        if (self.query.sortModifiers.count > 0){
-            resource = [resource stringByAppendingQueryString:[self.query parameterStringForSortKeys]];
-        }
-        
-        // Add any limit modifiers
-        if (self.query.limitModifer != nil){
-            resource = [resource stringByAppendingQueryString:[self.query.limitModifer parameterStringRepresentation]];
-        }
-        
-        // Add any skip modifiers
-        if (self.query.skipModifier != nil){
-            resource = [resource stringByAppendingQueryString:[self.query.skipModifier parameterStringRepresentation]];
-        }
-        
+        resource = [resource stringByAppendingString:[self.query parameterStringRepresentation]];
     } else {
         resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
         resource = [resource stringByAppendingQueryString:[NSString stringWithFormat:@"query=%@", [NSString stringByPercentEncodingString:[self buildQueryForFilters:_filters]]]];

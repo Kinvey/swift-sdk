@@ -1,5 +1,12 @@
 # KinveyKit Release History
 
+## 1.12
+### 1.12.0
+** Release Date:** TBD
+
+* Bug Fix(es):
+    * Fix bug when using sort modifiers on queries with old collection API where the sort is not applied correctly
+
 ## 1.11
 ### 1.11.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1110APIDiffs/KinveyKit1110APIDiffs.html)
 ** Release Date:** November 16, 2012
