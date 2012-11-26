@@ -34,6 +34,8 @@
 @end
 
 
+@interface KCSCLLocationBuilder : NSObject <KCSDataTypeBuilder>
+@end
 
 @interface KCSBuilders : NSObject
 

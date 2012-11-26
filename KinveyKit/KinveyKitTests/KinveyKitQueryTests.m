@@ -408,7 +408,7 @@
     
     KCSCollection* c = [KCSCollection collectionFromString:@"collection" ofClass:[NSMutableDictionary class]];
     c.query = q;
-    [c fetchWithDelegate:nil];
+//  [c fetchWithDelegate:nil];
 }
 
 @end
