@@ -107,6 +107,7 @@
     
     if (user.userId == nil || user.username == nil) {
         //prevent that weird assertion that Colden was seeing
+        [properties release];
         return;
     }
     
@@ -309,9 +310,9 @@
                 
                 NSError* error = nil;
                 if (response.responseCode == KCS_HTTP_STATUS_CONFLICT) {
-                    error = [KCSErrorUtilities createError:(NSDictionary*)[response jsonResponseValue] description:@"User already exists" errorCode:KCSConflictError domain:KCSUserErrorDomain];
+                    error = [KCSErrorUtilities createError:(NSDictionary*)[response jsonResponseValue] description:@"User already exists" errorCode:KCSConflictError domain:KCSUserErrorDomain requestId:response.requestId];
                 } else {
-                    error = [KCSErrorUtilities createError:(NSDictionary*)[response jsonResponseValue] description:@"Unable to create user" errorCode:response.responseCode domain:KCSUserErrorDomain];
+                    error = [KCSErrorUtilities createError:(NSDictionary*)[response jsonResponseValue] description:@"Unable to create user" errorCode:response.responseCode domain:KCSUserErrorDomain requestId:response.requestId];
                     
                 }
                 

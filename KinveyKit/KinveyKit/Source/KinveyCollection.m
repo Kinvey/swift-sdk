@@ -48,7 +48,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
         NSObject* jsonData = [response jsonResponseValue];
         NSArray *jsonArray = nil;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:(NSDictionary*) jsonData description:@"Collection fetch was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:(NSDictionary*) jsonData description:@"Collection fetch was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             if (delegate){
                 [delegate collection:collection didFailWithError:error];
             } else {
@@ -427,7 +427,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         int count;
 
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Information request  was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Information request  was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             
             [delegate collection:self informationOperationFailedWithError:error];
             return;
@@ -468,7 +468,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
         int count;
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Information request  was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Information request  was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             countBlock(0, error);
             return;
         }

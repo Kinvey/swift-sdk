@@ -46,7 +46,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
          NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity fetch operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity fetch operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             [delegate entity:objectOfInterest fetchDidFailWithError:error];
 
         } else {
@@ -274,7 +274,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
 
             [delegate entity:self operationDidFailWithError:error];
         } else {
@@ -337,7 +337,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             onCompletion(nil, error);
         } else {
             onCompletion([NSArray arrayWithObject:jsonResponse], nil);
@@ -377,7 +377,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode >= 400){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             [delegate entity:self operationDidFailWithError:error];
         } else {
             [delegate entity:self operationDidCompleteWithResult:jsonResponse];
@@ -413,7 +413,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
         NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             onCompletion(nil, error);
         } else {
             onCompletion([NSArray arrayWithObjectOrNil:jsonResponse], nil);

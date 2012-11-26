@@ -14,6 +14,8 @@
 #define KCSErrorCode @"kinveyErrorCode"
 /** This is an optional server error string, useful for reporting back to Kinvey for debugging purposes. */
 #define KCSErrorInternalError @"kinveyInternalErrorString"
+/** This is an optional request id, useful for reporting back to Kinvey for debugging purposes. */
+#define KCSRequestId @"kinveyRequestId"
 
 // Error Domains
 #define KCSNetworkErrorDomain @"KCSNetworkErrorDomain"

@@ -55,7 +55,7 @@
 {
     if (response) {
         NSDictionary* failureDict = (NSDictionary*) [response jsonResponseValue];
-        error = [KCSErrorUtilities createError:failureDict description:@"Resource download failed." errorCode:response.responseCode domain:KCSResourceErrorDomain];
+        error = [KCSErrorUtilities createError:failureDict description:@"Resource download failed." errorCode:response.responseCode domain:KCSResourceErrorDomain requestId:response.requestId];
     }
     
     if (delegate){
@@ -454,7 +454,7 @@ withResourceDelegate: (id<KCSResourceDelegate>)delegate
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         NSDictionary* jsonData = (NSDictionary*) [response jsonResponseValue];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonData description:@"Getting the resource service save location failed." errorCode:response.responseCode domain:KCSResourceErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonData description:@"Getting the resource service save location failed." errorCode:response.responseCode domain:KCSResourceErrorDomain requestId:response.requestId];
             
             if (delegate){
                 [delegate resourceServiceDidFailWithError:error];
@@ -541,7 +541,7 @@ withResourceDelegate: (id<KCSResourceDelegate>)delegate
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         NSDictionary *jsonData = (NSDictionary*) [response jsonResponseValue];
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonData description:@"Getting delete location failed." errorCode:response.responseCode domain:KCSResourceErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonData description:@"Getting delete location failed." errorCode:response.responseCode domain:KCSResourceErrorDomain requestId:response.requestId];
             
             if (delegate){
                 [delegate resourceServiceDidFailWithError:error];

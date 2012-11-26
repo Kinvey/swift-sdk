@@ -53,7 +53,7 @@
         KCS_TWSignedRequest* signedRequest = [[[KCS_TWSignedRequest alloc] initWithURL:url parameters:dict requestMethod:kPostRESTMethod] autorelease];
         [signedRequest performRequestWithHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             if (!data || [(NSHTTPURLResponse*)response statusCode] >= 400) {
-                NSError* tokenError =[KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain sourceError:error];
+                NSError* tokenError =[KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
                 dispatch_async(current_queue, ^{
                     completionBlock(nil, tokenError);
                 });
@@ -79,7 +79,7 @@
                     
                     [accountStore requestAccessToAccountsWithType:twitterType withCompletionHandler:^(BOOL granted, NSError *error) {
                         if (!granted) {
-                            NSError* tokenError =[KCSErrorUtilities createError:nil description:@"User rejected access to Twitter account" errorCode:KCSDeniedError domain:KCSUserErrorDomain sourceError:error];
+                            NSError* tokenError =[KCSErrorUtilities createError:nil description:@"User rejected access to Twitter account" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
                             dispatch_async(current_queue, ^{
                                 completionBlock(nil, tokenError);
                             });
@@ -91,7 +91,7 @@
                             [step2Request setAccount:[accounts objectAtIndex:0]];
                             [step2Request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
                                 if (!responseData || ((NSHTTPURLResponse*)urlResponse).statusCode >= 400) {
-                                    NSError* tokenError = [KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain sourceError:error];
+                                    NSError* tokenError = [KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
                                     dispatch_async(current_queue, ^{
                                         completionBlock(nil, tokenError);
                                     });
@@ -133,7 +133,7 @@
             description = @"Twitter account not configured in settings";
             info = [KCSErrorUtilities createErrorUserDictionaryWithDescription:description withFailureReason:nil withRecoverySuggestion:@"Configure twitter account in settings" withRecoveryOptions:nil];
         }
-        NSError* error = [KCSErrorUtilities createError:info description:description errorCode:KCSDeniedError domain:KCSUserErrorDomain];
+        NSError* error = [KCSErrorUtilities createError:info description:description errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil];
         completionBlock(nil, error);
     }
 }

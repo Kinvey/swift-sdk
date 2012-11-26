@@ -42,13 +42,16 @@
     NSLocalizedRecoverySuggestionErrorKey : suggestion};
 }
 
-+ (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain sourceError:(NSError*)underlyingError
++ (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain requestId:(NSString*)requestId sourceError:(NSError*)underlyingError
 {
     NSDictionary* userInfo = [NSMutableDictionary dictionary];
     description = (description == nil) ? [jsonErrorDictionary objectForKey:KCS_ERROR_DESCRIPTION_KEY] : description;
     [userInfo setValue:description forKey:NSLocalizedDescriptionKey];
     [userInfo setValue:[jsonErrorDictionary objectForKey:KCS_ERROR_KINVEY_ERROR_CODE_KEY] forKey:KCSErrorCode];
     [userInfo setValue:[jsonErrorDictionary objectForKey:KCS_ERROR_DEBUG_KEY] forKey:KCSErrorInternalError];
+    if (requestId != nil) {
+        [userInfo setValue:requestId forKey:KCSRequestId];
+    }
     [userInfo setValue:@"Retry request based on information in JSON Error" forKey:NSLocalizedRecoverySuggestionErrorKey];
     [userInfo setValue:[NSString stringWithFormat:@"JSON Error: %@", [jsonErrorDictionary objectForKey:KCS_ERROR_DESCRIPTION_KEY]] forKey:NSLocalizedFailureReasonErrorKey];
     if (underlyingError) {
@@ -60,9 +63,9 @@
     return error;
 }
 
-+ (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain
++ (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain requestId:(NSString*)requestId
 {
-    return [self createError:jsonErrorDictionary description:description errorCode:errorCode domain:domain sourceError:nil];
+    return [self createError:jsonErrorDictionary description:description errorCode:errorCode domain:domain requestId:requestId sourceError:nil];
 }
 
 @end
