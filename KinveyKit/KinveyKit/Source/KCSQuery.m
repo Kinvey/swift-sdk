@@ -401,8 +401,12 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 }
 
 #pragma mark - Creating Queries
-+ (KCSQuery *) queryOnField:(NSString*)field withRegex:(NSString*)expression options:(KCSRegexpQueryOptions)options
++ (KCSQuery *) queryOnField:(NSString*)field withRegex:(id)expression options:(KCSRegexpQueryOptions)options
 {
+    if ([expression isKindOfClass:[NSRegularExpression class]]) {
+        expression = [expression pattern];
+    }
+    
     if (options == 0) {
         return [self queryOnField:field usingConditional:kKCSRegex forValue:expression];
     } else {
@@ -423,9 +427,15 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     }
 }
 
-+ (KCSQuery *)queryOnField:(NSString*)field withRegex:(NSString*)expression
++ (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression
 {
-    return [self queryOnField:field withRegex:expression options:kKCSRegexepDefault];
+    NSUInteger options = kKCSRegexepDefault;
+    if ([expression isKindOfClass:[NSRegularExpression class]]) {
+        options = [(NSRegularExpression*)expression options];
+        expression = [(NSRegularExpression*)expression pattern];
+    }
+    return [self queryOnField:field withRegex:expression options:options];
+    
 }
 
 + (KCSQuery *)queryOnField:(NSString *)field usingConditional:(KCSQueryConditional)conditional forValue: (NSObject *)value

@@ -213,6 +213,21 @@
     AssertQuery
 }
 
+- (void) testNSRegularExpressionQuery
+{
+    NSError* error = nil;
+    NSRegularExpression* reg = [NSRegularExpression regularExpressionWithPattern:@"&/\"[0-9a-zA-Z].*" options:NSRegularExpressionCaseInsensitive | NSRegularExpressionAnchorsMatchLines error:&error];
+    STAssertNil(error, @"no error %@", error);
+    
+    KCSQuery* query = [KCSQuery queryOnField:@"field" withRegex:reg];
+    NSString* expectedJSON = @"{\"field\":{\"$regex\":\"&/\\\"[0-9a-zA-Z].*\",\"$options\":\"im\"}}";
+    AssertQuery
+    
+    query = [KCSQuery queryOnField:@"field" withRegex:reg options:kKCSRegexpAllowCommentsAndWhitespace];
+    expectedJSON = @"{\"field\":{\"$regex\":\"&/\\\"[0-9a-zA-Z].*\",\"$options\":\"x\"}}";
+    AssertQuery
+}
+
 - (void) testMetadatQueryDate
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
