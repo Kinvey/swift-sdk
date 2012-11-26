@@ -8,6 +8,8 @@
 
 #import "KCSBuilders.h"
 
+#import "CLLocation+Kinvey.h"
+
 @implementation KCSAttributedStringBuilder
 + (id)JSONCompatabileValueForObject:(id)object
 {
@@ -113,6 +115,24 @@
     }
     return [NSNull null];
 }
+@end
+
+@implementation KCSCLLocationBuilder
+
++ (id)JSONCompatabileValueForObject:(id)object
+{
+    return [(CLLocation*)object kinveyValue];
+}
++ (id) objectForJSONObject:(id)object
+{
+    if ([object isKindOfClass:[CLLocation class]]) {
+        return object;
+    } else if ([object isKindOfClass:[NSArray class]]) {
+        return [CLLocation locationFromKinveyValue:object];
+    } 
+    return [NSNull null];
+}
+
 @end
 
 @implementation KCSBuilders

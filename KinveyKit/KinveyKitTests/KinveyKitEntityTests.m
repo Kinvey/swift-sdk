@@ -10,6 +10,9 @@
 
 #import "KCSObjectMapper.h"
 
+#import <CoreLocation/CoreLocation.h>
+#import "CLLocation+Kinvey.h"
+
 @interface TestObject : NSObject <KCSPersistable>
 
 @property (nonatomic, retain) NSString *testId;
@@ -19,14 +22,11 @@
 @property (nonatomic, retain) NSSet* setParam;
 @property (nonatomic, retain) NSOrderedSet* oSetParam;
 @property (nonatomic, retain) NSMutableAttributedString* asParam;
+@property (nonatomic, retain) CLLocation* locParam;
 
 @end
 
 @implementation TestObject
-@synthesize asParam;
-@synthesize testId = _testId;
-@synthesize testParam1 = _testParam1;
-@synthesize testParam2 = _testParam2;
 
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
@@ -36,9 +36,9 @@
     @"setParam"   : @"setParam",
     @"dateParam" : @"dateParam",
     @"oSetParam" : @"oSetParam",
-    @"asParam" : @"asParam"    };
+    @"asParam" : @"asParam",
+    @"locParam" : @"locParam"};
 }
-
 
 @end
 
@@ -122,13 +122,14 @@
     NSMutableAttributedString* s  = [[NSMutableAttributedString alloc] initWithString:@"abcdef"];
     [s setAttributes:@{@"myattr" : @"x"} range:NSMakeRange(1, 2)];
     t.asParam = s;
+    t.locParam = [[CLLocation alloc] initWithLatitude:10 longitude:130];
     
     KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:t error:NULL];
     STAssertNotNil(so, @"should not have a nil object");
     
     NSDictionary* d = [so dataToSerialize];
     STAssertNotNil(d, @"should not have a nil dictionary");
-    STAssertEquals([d count], (NSUInteger) 7, @"should have 6 params");
+    STAssertEquals([d count], (NSUInteger) 8, @"should have 8 params");
     
     STAssertEqualObjects([d objectForKey:KCSEntityKeyId], @"idX", @"should have set the id");
     STAssertEqualObjects([d objectForKey:@"testParam1i"],  @"p1", @"should have set the string");
@@ -138,6 +139,8 @@
     STAssertEqualObjects([d objectForKey:@"setParam"],    a, @"should have set the set");
     STAssertEqualObjects([d objectForKey:@"oSetParam"],   a, @"should have set the ordered set");
     STAssertEqualObjects([d objectForKey:@"asParam"],   @"abcdef", @"should have set the ordered set");
+    a = @[@130,@10];
+    STAssertEqualObjects([d objectForKey:@"locParam"], a, @"should have set cllocation");
 }
 
 - (void) testTypesDeserialize
@@ -148,7 +151,8 @@
     @"dateParam"   : @"ISODate(\"1970-01-01T00:00:00.000Z\")",
     @"setParam"    : @[@"2",@"1",@7],
     @"oSetParam"   : @[@"2",@"1",@7],
-    @"asParam"     : @"abcedf"};
+    @"asParam"     : @"abcedf",
+    @"locParam"    : @[@100,@-30]};
     TestObject* out = [KCSObjectMapper makeObjectOfType:[TestObject class] withData:data];
     
     STAssertNotNil(out, @"Should not be nil");
@@ -161,6 +165,8 @@
     STAssertTrue([out.dateParam isKindOfClass:[NSDate class]], @"should be a NSOrderedSet");
     STAssertEqualObjects(out.dateParam,  [NSDate dateWithTimeIntervalSince1970:0], @"NSOrderedSets should be equal");
     STAssertTrue([out.asParam isKindOfClass:[NSMutableAttributedString class]], @"should be a NSOrderedSet");
+    a = @[@100,@-30];
+    STAssertEqualObjects([out.locParam kinveyValue] , a, @"should be matching CLLocation");
 }
 
 

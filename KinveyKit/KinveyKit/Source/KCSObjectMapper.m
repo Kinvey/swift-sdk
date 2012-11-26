@@ -10,6 +10,10 @@
 
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
+
+//TODO: remove core location as dependency injection
+#import <CoreLocation/CoreLocation.h>
+
 #import "KCSPropertyUtil.h"
 
 #import "KinveyPersistable.h"
@@ -514,7 +518,8 @@ NSDictionary* defaultBuilders()
                             (id)[NSOrderedSet class] : [KCSOrderedSetBuilder class],
                             (id)[NSMutableOrderedSet class] : [KCSMOrderedSetBuilder class],
                             (id)[NSMutableAttributedString class] : [KCSMAttributedStringBuilder class],
-                            (id)[NSAttributedString class] : [KCSAttributedStringBuilder class]} retain];
+                            (id)[NSAttributedString class] : [KCSAttributedStringBuilder class],
+                            (id)[CLLocation class] : [KCSCLLocationBuilder class]} retain];
     }
 }
 
