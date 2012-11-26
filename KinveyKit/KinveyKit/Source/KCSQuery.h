@@ -337,25 +337,25 @@ typedef enum {
  * `kKCSRegexpAnchorsMatchLines` - Allow ^ and $ to match the start and end of lines.
  
  @param field The field in Kinvey to query on.
- @param expression the regular expression string
- @param options regular expression options
+ @param expression the regular expression string or `NSRegularExpression` object. 
+ @param options regular expression options. This will override any options in a provided `NSRegularExpression` expression.
  @see queryOnField:withRegex:
  @return The new KCSQuery object (autoreleased).
  @since 1.8
  */
-+ (KCSQuery *)queryOnField:(NSString*)field withRegex:(NSString*)expression options:(KCSRegexpQueryOptions)options;
++ (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression options:(KCSRegexpQueryOptions)options;
 
 /*! Creates a regular expression query on a field.
  
  This query will return entities where the field values match the regular expression. By default, the match is case-sensitive and new-lines do not match anchors. 
  
  @param field The field in Kinvey to query on.
- @param expression the regular expression string
+ @param expression the regular expression string or `NSRegularExpression` object. If using a NSRegularExpression, this will its options, where available. 
  @see queryOnField:withRegex:options:
  @return The new KCSQuery object (autoreleased).
  @since 1.8
  */
-+ (KCSQuery *)queryOnField:(NSString*)field withRegex:(NSString*)expression;
++ (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression;
 
 
 ///---------------------------------------------------------------------------------------
