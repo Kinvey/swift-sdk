@@ -86,7 +86,7 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
                 onComplete(YES, response, nil);                
             } else {
                 NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
-                NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Unable to Ping Kinvey" errorCode:response.responseCode domain:KCSNetworkErrorDomain];
+                NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Unable to Ping Kinvey" errorCode:response.responseCode domain:KCSNetworkErrorDomain requestId:response.requestId];
                 onComplete(NO, nil, error);
             }
 

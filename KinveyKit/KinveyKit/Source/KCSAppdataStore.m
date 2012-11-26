@@ -173,7 +173,7 @@ KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock on
         
         NSArray *jsonArray = nil;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Collection grouping was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Collection grouping was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             onComplete(nil, error);
             
             [processedData release];
@@ -247,7 +247,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
         NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             completionBlock(nil, error);
         } else {
             if (jsonResponse) {
@@ -592,7 +592,7 @@ int reachable = -1;
         NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             completionBlock(nil, error);
         } else {
             if (jsonResponse != nil && serializedObject != nil) {
@@ -657,7 +657,7 @@ int reachable = -1;
     
     KCSRESTRequest* request = requestBlock(nil);
     if ([request isKindOfClass:[NSString class]]) {
-        NSError* error = [KCSErrorUtilities createError:nil description:(NSString*)request errorCode:KCSBadRequestError domain:KCSAppDataErrorDomain];
+        NSError* error = [KCSErrorUtilities createError:nil description:(NSString*)request errorCode:KCSBadRequestError domain:KCSAppDataErrorDomain requestId:nil];
         completionBlock(nil, error);
     } else {
         id objKey = [[serializedObj userInfo] objectForKey:@"entityProgress"];
@@ -850,7 +850,7 @@ int reachable = -1;
         NSObject* jsonData = [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Deletion was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain];
+            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Deletion was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             completionBlock(nil, error);
             return;
         }

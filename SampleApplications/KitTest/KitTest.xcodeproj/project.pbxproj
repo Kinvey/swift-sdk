@@ -131,8 +131,6 @@
 		D32A64E014717B4800F77A3F = {
 			isa = PBXGroup;
 			children = (
-				27C2229D161E32C300D827AE /* Twitter.framework */,
-				27C2229A161E32BE00D827AE /* Accounts.framework */,
 				D35E07DF1471D63300DD9E41 /* twitter_round_57.png */,
 				D35E07DD1471D5B400DD9E41 /* logo114.png */,
 				D35E07DA1471D5B100DD9E41 /* logo57.png */,
@@ -153,6 +151,8 @@
 		D32A64EE14717B4800F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				27C2229D161E32C300D827AE /* Twitter.framework */,
+				27C2229A161E32BE00D827AE /* Accounts.framework */,
 				27ACDDEA1656A6E300EFE4EE /* libUAirshipPush-1.3.3.a */,
 				27347F7E15B4839500133F64 /* CoreLocation.framework */,
 				D3503D1F149B98B200460879 /* KinveyKit.framework */,

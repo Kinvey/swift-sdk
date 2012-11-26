@@ -15,10 +15,6 @@
 
 @implementation KCSConnectionResponse
 
-@synthesize responseCode=_responseCode;
-@synthesize responseData=_responseData;
-@synthesize userData=_userData;
-@synthesize responseHeaders=_responseHeaders;
 
 - (id)initWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData
 {
@@ -65,7 +61,7 @@
     if (parser.error) {
         KCSLogError(@"JSON Serialization retry failed: %@", parser.error);
         if (anError != NULL) {
-            *anError = [KCSErrorUtilities createError:nil description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain];
+            *anError = [KCSErrorUtilities createError:nil description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain requestId:self.requestId];
         }
     }
     [parser release];
@@ -87,7 +83,7 @@
             return reevaluatedObject;
         } else {
             if (anError != NULL) {
-                *anError = [KCSErrorUtilities createError:nil description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain];
+                *anError = [KCSErrorUtilities createError:nil description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain requestId:self.requestId];
             }
         }
     } else {
@@ -113,6 +109,11 @@
             return @{@"debug" : [self stringValue]};
         }
     }
+}
+
+- (NSString*) requestId
+{
+    return [self.responseHeaders objectForKey:@"X-Kinvey-Request-Id"];
 }
 
 @end
