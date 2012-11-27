@@ -8,6 +8,7 @@
 * Added `KCSBackendLogicError` constant for `-[NSError code]` value for cases when there is an error running Backend Logic on the Kinvey server (HTTP error code 550).
 * `+[KCSQuery queryOnField:withRegex:]` and `+[KCSQuery queryOnField:withRegex:options]` now take either `NSString` or `NSRegularExpression` objects as the regular expression parameter. The `+[KCSQuery queryOnField:withRegex:]` form will use the applicable options from the NSRegularExpression object.
 * `CLLocation` objects can now be used as values for a `KCSEntityKeyGeolocation` property. These objects are saved in the form [latitude, longitude]; all other CLLocation properties are discarded. 
+* `+[KCSPing pingKinveyWithBlock:]` no longer requires user authentication, and thus will not create or initialize a `KCSUser`. 
 * Bug Fix(es):
     * Fix bug when using sort modifiers on queries with old collection API where the sort is not applied correctly
 

@@ -28,7 +28,8 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
     KCSClient *client = [KCSClient sharedClient];
     
     if ([URL hasPrefix:client.appdataBaseURL]){
-        authType = KCSAuthBasicAuthUser;
+        //if is the root of appdata it's a ping - use basic auth
+        authType = [URL isEqualToString:client.appdataBaseURL] ? KCSAuthBasicAuthAppKey : KCSAuthBasicAuthUser;
     } else if ([URL hasPrefix:client.resourceBaseURL]){
         authType = KCSAuthBasicAuthUser;
     } else if ([URL hasPrefix:client.userBaseURL]){
