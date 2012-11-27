@@ -94,7 +94,7 @@
 + (void) setupCurrentUser:(KCSUser*)user properties:(NSDictionary*)dictionary password:(NSString*)password username:(NSString*)username
 {
     [KCSKeyChain setDict:dictionary forKey:kKeychainPropertyDictKey];
-
+    
     NSMutableDictionary* properties = [dictionary mutableCopy];
     
     NSString* propUsername = [properties popObjectForKey:@"username"];
@@ -167,7 +167,7 @@
     client.userAuthenticationInProgress = NO;
 }
 
-+ (void) updateUserInBackground:(KCSUser*)user 
++ (void) updateUserInBackground:(KCSUser*)user
 {
     if (user.userId != nil) {
         KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", user.userId] usingMethod:kGetRESTMethod];
@@ -443,77 +443,61 @@
     KCSClient *client = [KCSClient sharedClient];
     
     // Just log-in and set currentUser
-    // Note that isReachable is slightly redundant here, as
-    // the actual request also does the reachable check, however we'd like to know
-    // here before branching to the blocks
-    if ([client.kinveyReachability isReachable]){
-        // Set up our callbacks
-        KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-            // Ok, we're probably authenticated
-            KCSUser *createdUser = [[[KCSUser alloc] init] autorelease];
-            createdUser.username = username;
-            createdUser.password = password;
-            if (response.responseCode != KCS_HTTP_STATUS_OK){
-                client.userIsAuthenticated = NO;
-                client.userAuthenticationInProgress = NO;
-                client.currentUser = nil;
-                // This is expected here, user auth failed, do the right thing
-                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
-                                                                                   withFailureReason:@"Invalid Username or Password"
-                                                                              withRecoverySuggestion:@"Try again with different username/password"
-                                                                                 withRecoveryOptions:nil];
-                NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
-                // Delegate must retain createdUser
-                completionBlock(createdUser, error, 0);
-                return;
-            }
-            // Ok, we're really authd
-            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-            [self setupCurrentUser:createdUser properties:dictionary password:password username:username];
-            
-            // Delegate must retain createdUser
-            completionBlock(createdUser, nil, KCSUserFound);
-        };
-        
-        KCSConnectionFailureBlock fBlock = ^(NSError *error){
-            // I really don't know what to do here, we can't continue... Something died...
-            KCSLogError(@"Internal Error: %@", error);
-            
+    // Set up our callbacks
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        // Ok, we're probably authenticated
+        KCSUser *createdUser = [[[KCSUser alloc] init] autorelease];
+        createdUser.username = username;
+        createdUser.password = password;
+        if (response.responseCode != KCS_HTTP_STATUS_OK){
             client.userIsAuthenticated = NO;
             client.userAuthenticationInProgress = NO;
             client.currentUser = nil;
-            
-            completionBlock(nil, error, 0);
-        };
+            // This is expected here, user auth failed, do the right thing
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
+                                                                               withFailureReason:@"Invalid Username or Password"
+                                                                          withRecoverySuggestion:@"Try again with different username/password"
+                                                                             withRecoveryOptions:nil];
+            NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
+            // Delegate must retain createdUser
+            completionBlock(createdUser, error, 0);
+            return;
+        }
+        // Ok, we're really authd
+        NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
+        [self setupCurrentUser:createdUser properties:dictionary password:password username:username];
         
-        KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
+        // Delegate must retain createdUser
+        completionBlock(createdUser, nil, KCSUserFound);
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        // I really don't know what to do here, we can't continue... Something died...
+        KCSLogError(@"Internal Error: %@", error);
         
+        client.userIsAuthenticated = NO;
+        client.userAuthenticationInProgress = NO;
+        client.currentUser = nil;
         
-        KCSRESTRequest *request = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"_me"] usingMethod:kGetRESTMethod];
-        
-        // We need to init the current user to something before trying this
-        client.userAuthenticationInProgress = YES;
-        
-        // Create a temp user with uname/password and use it it init currentUser
-        KCSUser *tmpCurrentUser = [[[KCSUser alloc] init] autorelease];
-        tmpCurrentUser.username = username;
-        tmpCurrentUser.password = password;
-        client.currentUser = tmpCurrentUser;
-        
-        [request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
-        [request start];
-        
-        
-    } else {
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to reach Kinvey"
-                                                                           withFailureReason:@"Reachability determined that  Kinvey was not reachable, login cannot proceed."
-                                                                      withRecoverySuggestion:@"Check to make sure device is not in Airplane mode and has a signal or try again later"
-                                                                         withRecoveryOptions:nil];
-        NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
-                                             code:KCSKinveyUnreachableError
-                                         userInfo:userInfo];
         completionBlock(nil, error, 0);
-    }
+    };
+    
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
+    
+    
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"_me"] usingMethod:kGetRESTMethod];
+    
+    // We need to init the current user to something before trying this
+    client.userAuthenticationInProgress = YES;
+    
+    // Create a temp user with uname/password and use it it init currentUser
+    KCSUser *tmpCurrentUser = [[[KCSUser alloc] init] autorelease];
+    tmpCurrentUser.username = username;
+    tmpCurrentUser.password = password;
+    client.currentUser = tmpCurrentUser;
+    
+    [request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
+    [request start];
 }
 
 
