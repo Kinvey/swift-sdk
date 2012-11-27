@@ -24,6 +24,7 @@
 #define KCSUserErrorDomain @"KCSUserErrorDomain"
 #define KCSPushErrorDomain @"KCSPushErrorDomain"
 #define KCSErrorDomain @"KCSErrorDomain"
+#define KCSServerErrorDomain @"KCSServerErrorDomain"
 
 // Error Codes
 typedef enum KCSErrorCodes : NSInteger {
@@ -50,6 +51,7 @@ typedef enum KCSErrorCodes : NSInteger {
     KCSServiceUnavailableError = 503,
     KCSGatewayTimeoutError = 504,
     KCSVersionNotSupporteError = 505,
+    KCSBackendLogicError = 550,
     
     
     // Internal Library Codes (starting at 60000)

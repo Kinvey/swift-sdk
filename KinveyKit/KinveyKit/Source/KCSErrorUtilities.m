@@ -15,11 +15,6 @@
 
 @implementation KCSErrorUtilities
 
-//NSLocalizedDescriptionKey
-//NSLocalizedFailureReasonErrorKey
-//NSLocalizedRecoverySuggestionErrorKey
-//NSLocalizedRecoveryOptionsErrorKey
-
 + (NSDictionary *)createErrorUserDictionaryWithDescription:(NSString *)description
                                          withFailureReason:(NSString *)reason
                                     withRecoverySuggestion:(NSString *)suggestion 

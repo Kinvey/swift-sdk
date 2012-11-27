@@ -5,6 +5,7 @@
 ** Release Date:** TBD
 
 * Added `KCSRequestId` key to most `NSError` `userInfo` dictionaries. If available, this unique key corresponds to the request to the Kinvey backend. This value is useful for tech support purposes, and should be provided when contacting support@kinvey.com for faster issue resolution. 
+* Added `KCSBackendLogicError` constant for `-[NSError code]` value for cases when there is an error running Backend Logic on the Kinvey server (HTTP error code 550).
 * `+[KCSQuery queryOnField:withRegex:]` and `+[KCSQuery queryOnField:withRegex:options]` now take either `NSString` or `NSRegularExpression` objects as the regular expression parameter. The `+[KCSQuery queryOnField:withRegex:]` form will use the applicable options from the NSRegularExpression object.
 * `CLLocation` objects can now be used as values for a `KCSEntityKeyGeolocation` property. These objects are saved in the form [latitude, longitude]; all other CLLocation properties are discarded. 
 * Bug Fix(es):
