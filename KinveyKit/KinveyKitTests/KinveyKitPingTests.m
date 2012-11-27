@@ -26,15 +26,13 @@
 @end
 
 @implementation KinveyKitPingTests
-@synthesize parser = _parser;
-@synthesize writer = _writer;
-
 
 - (void)setUp
 {
     KCSClient *client = [KCSClient sharedClient];
     [client setServiceHostname:@"baas"];
     [client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
+    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     
     
     // Fake Auth
