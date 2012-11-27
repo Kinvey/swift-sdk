@@ -16,7 +16,6 @@
 #import "KCSAuthCredential.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
-#import "KCSReachability.h"
 #import "KinveyAnalytics.h"
 #import "KCS_SBJson.h"
 

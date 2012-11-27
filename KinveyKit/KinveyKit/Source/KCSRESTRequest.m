@@ -134,22 +134,7 @@ getLogDate(void)
 {
     KCSConnection *connection;
     KCSClient *kinveyClient = [KCSClient sharedClient];
-   
-    // Check for reachability here, but how do we allow for mock testing?
-    if (![kinveyClient.kinveyReachability isReachable]){
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Kinvey not reachable"
-                                                                           withFailureReason:@"Reachability determined that Kinvey was not reachable."
-                                                                      withRecoverySuggestion:@"Check to make sure device is not in Airplane mode and has a signal or try again later"
-                                                                         withRecoveryOptions:nil];
-        NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
-                                             code:KCSKinveyUnreachableError
-                                         userInfo:userInfo];
-        self.failureAction(error);
-        // No connection, no release
-        return;
-    }
-
-    
+      
     if (self.isSyncRequest){
         connection = [[KCSConnectionPool syncConnection] retain];
     } else if (self.isMockRequest) {
