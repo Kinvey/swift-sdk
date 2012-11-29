@@ -154,6 +154,19 @@ BOOL diff(NSURL* oldApiFile, NSURL* newApiFile, NSString* kinveyKitDir)
         </xsl:template> \
     </xsl:stylesheet>";
    
+    if ([diffDocRoot childCount] == 0) {
+        xstl = @"<?xml version=\"1.0\"?><xsl:stylesheet version=\"1.0\" \
+        xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"> \
+        <xsl:output method=\"text\"/> \
+        <xsl:template match=\"/\"> \
+            <div class='diffReport'> \
+            <h1>KinveyKit <xsl:value-of select='/APIDiff/@oldversion'/> to KinveyKit <xsl:value-of select='/APIDiff/@newversion'/> API Differences</h1> \
+            <h2>KinveyKit</h2> \
+            No API Changes For This Release \
+            </div> \
+        </xsl:template> \
+        </xsl:stylesheet>";
+    }
     
     NSXMLDocument* html = [diffDocument objectByApplyingXSLTString:xstl arguments:nil error:&error];
     [html setDocumentContentKind:NSXMLDocumentHTMLKind];
