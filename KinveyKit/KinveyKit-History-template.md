@@ -2,7 +2,7 @@
 
 ## 1.12
 ### 1.12.0
-** Release Date:** TBD
+** Release Date:** November 29, 2012 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1120APIDiffs/KinveyKit1120APIDiffs.html)
 
 * Added `KCSRequestId` key to most `NSError` `userInfo` dictionaries. If available, this unique key corresponds to the request to the Kinvey backend. This value is useful for tech support purposes, and should be provided when contacting support@kinvey.com for faster issue resolution. 
 * Added `KCSBackendLogicError` constant for `-[NSError code]` value for cases when there is an error running Backend Logic on the Kinvey server (HTTP error code 550).
