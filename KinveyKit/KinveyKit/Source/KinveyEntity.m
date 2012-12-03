@@ -438,9 +438,11 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     // 1-1 mapping of the client properties
     KCSLogForced(@"EXCEPTION Encountered: Name => %@, Reason => %@", @"UnsupportedFeatureException", @"This version of the Kinvey iOS library requires clients to override this method");
     
+    NSString* errorMessage = [NSString stringWithFormat:@"Object \"%@\" of type \"%@\" does not implement 'hostToKinveyPropertyMapping', a required 'KCSPersistable' method for saving the object to the backend", self, [self class]];
+    
     NSException* myException = [NSException
                                 exceptionWithName:@"UnsupportedFeatureException"
-                                reason:@"This version of the Kinvey iOS library requires clients to override this method"
+                                reason:errorMessage
                                 userInfo:nil];
     
     @throw myException;
@@ -453,10 +455,14 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     // Eventually this will be used to allow a default scanning of "self" to build and cache a
     // 1-1 mapping of the client properties
     KCSLogForced(@"EXCEPTION Encountered: Name => %@, Reason => %@", @"UnsupportedFeatureException", @"This version of the Kinvey iOS library requires clients to override this method");
+
+    NSString* errorMessage = [NSString stringWithFormat:@"Object \"%@\" of type \"%@\" does not implement 'kinveyDesignatedInitializer', an optional 'KCSPersistable' method for saving the object to the backend. This method is called beacuse of options set in the class' 'kinveyObjectBuilderOptions' method.", self, [self class]];
+    
     NSException* myException = [NSException
                                 exceptionWithName:@"UnsupportedFeatureException"
-                                reason:@"This version of the Kinvey iOS library requires clients to override this method"
+                                reason:errorMessage
                                 userInfo:nil];
+
     
     @throw myException;
     
