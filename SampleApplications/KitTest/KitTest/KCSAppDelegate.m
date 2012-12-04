@@ -79,12 +79,12 @@
                              @"-SfD84xsTay1ufWXbaGwZQ", KCS_PUSH_SECRET_KEY,
                              @"YES", KCS_PUSH_IS_ENABLED_KEY,
                              KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
-
-//      [KCSUser clearSavedCredentials];
-    
+//
+////      [KCSUser clearSavedCredentials];
+//    
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
-//    [KCSClient sharedClient].serviceHostname = @"v3yk1n";
-    [[KCSPush sharedPush] onLoadHelper:options error:NULL];
+    [KCSClient sharedClient].serviceHostname = @"v3yk1n";
+//    [[KCSPush sharedPush] onLoadHelper:options error:NULL];
 
     
 //    [[[KCSClient sharedClient] currentUser] logout];
@@ -102,8 +102,8 @@
     [KCSClient configureLoggingWithNetworkEnabled:YES
                                      debugEnabled:YES
                                      traceEnabled:YES 
-                                   warningEnabled:NO 
-                                     errorEnabled:NO];
+                                   warningEnabled:YES
+                                     errorEnabled:YES];
 
     [self.viewController prepareDataForView];
     ///////////////////////////

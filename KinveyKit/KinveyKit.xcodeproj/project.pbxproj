@@ -86,6 +86,7 @@
 		27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */; };
 		27B23D1D16443ECF00A78D7D /* KCSDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B23D1B16443ECF00A78D7D /* KCSDevice.h */; };
 		27B23D1E16443ECF00A78D7D /* KCSDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B23D1C16443ECF00A78D7D /* KCSDevice.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		27BAB38E166D467000C5D156 /* libUAirshipPush-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BAB38D166D467000C5D156 /* libUAirshipPush-1.3.3.a */; };
 		27BBD91615ADD3A2005E27E1 /* TestThreads.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BBD91515ADD3A2005E27E1 /* TestThreads.m */; };
 		27BD086D16095D7D009473A3 /* KCS_OAuthCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD086B16095D7D009473A3 /* KCS_OAuthCore.h */; };
 		27BD086E16095D7D009473A3 /* KCS_OAuthCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD086C16095D7D009473A3 /* KCS_OAuthCore.m */; };
@@ -108,8 +109,6 @@
 		27BD0889160A0BBE009473A3 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67E14745EEE002D8F2B /* CoreTelephony.framework */; };
 		27BD088D160A0C27009473A3 /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD088C160A0C27009473A3 /* TestUtils.m */; };
 		27BD088F160A0DC5009473A3 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
-		27BFA98E163F293500F865C8 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BFA98D163F293500F865C8 /* libUAirship-1.3.3.a */; };
-		27BFA98F163F293500F865C8 /* libUAirship-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BFA98D163F293500F865C8 /* libUAirship-1.3.3.a */; };
 		27C22279161DE9B200D827AE /* KCS_SBJson.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22260161DE9B200D827AE /* KCS_SBJson.h */; };
 		27C2227A161DE9B200D827AE /* KCS_SBJsonParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22261161DE9B200D827AE /* KCS_SBJsonParser.h */; };
 		27C2227B161DE9B200D827AE /* KCS_SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22262161DE9B200D827AE /* KCS_SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
@@ -385,6 +384,7 @@
 		27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyUserDiscoveryTests.m; sourceTree = "<group>"; };
 		27B23D1B16443ECF00A78D7D /* KCSDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDevice.h; sourceTree = "<group>"; };
 		27B23D1C16443ECF00A78D7D /* KCSDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSDevice.m; sourceTree = "<group>"; };
+		27BAB38D166D467000C5D156 /* libUAirshipPush-1.3.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirshipPush-1.3.3.a"; path = "Airship/libUAirshipPush-1.3.3.a"; sourceTree = "<group>"; };
 		27BBD91415ADD3A2005E27E1 /* TestThreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestThreads.h; sourceTree = "<group>"; };
 		27BBD91515ADD3A2005E27E1 /* TestThreads.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestThreads.m; sourceTree = "<group>"; };
 		27BD086B16095D7D009473A3 /* KCS_OAuthCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_OAuthCore.h; sourceTree = "<group>"; };
@@ -396,7 +396,6 @@
 		27BD0876160A03A8009473A3 /* KinveyKitExtras.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyKitExtras.h; sourceTree = "<group>"; };
 		27BD088B160A0C27009473A3 /* TestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestUtils.h; path = ../KinveyKitExtras/TestUtils.h; sourceTree = "<group>"; };
 		27BD088C160A0C27009473A3 /* TestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestUtils.m; path = ../KinveyKitExtras/TestUtils.m; sourceTree = "<group>"; };
-		27BFA98D163F293500F865C8 /* libUAirship-1.3.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.3.3.a"; path = "../../../Downloads/Airship 4/libUAirship-1.3.3.a"; sourceTree = "<group>"; };
 		27C22260161DE9B200D827AE /* KCS_SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJson.h; sourceTree = "<group>"; };
 		27C22261161DE9B200D827AE /* KCS_SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_SBJsonParser.h; sourceTree = "<group>"; };
 		27C22262161DE9B200D827AE /* KCS_SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonParser.m; sourceTree = "<group>"; };
@@ -816,7 +815,6 @@
 				27BD0888160A0BB2009473A3 /* KinveyKitTests.octest in Frameworks */,
 				27BD0883160A0B83009473A3 /* CoreLocation.framework in Frameworks */,
 				2785F53E1609179E004AA410 /* UIKit.framework in Frameworks */,
-				27BFA98F163F293500F865C8 /* libUAirship-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -824,6 +822,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27BAB38E166D467000C5D156 /* libUAirshipPush-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -848,7 +847,6 @@
 				D32A60DD14716EE300F77A3F /* UIKit.framework in Frameworks */,
 				D32A60DE14716EE300F77A3F /* Foundation.framework in Frameworks */,
 				D32A60E314716EE300F77A3F /* KinveyKit.framework in Frameworks */,
-				27BFA98E163F293500F865C8 /* libUAirship-1.3.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1120,7 +1118,7 @@
 		D32A60CA14716EE300F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				27BFA98D163F293500F865C8 /* libUAirship-1.3.3.a */,
+				27BAB38D166D467000C5D156 /* libUAirshipPush-1.3.3.a */,
 				273A3E92160A1A9F00F3742C /* Accounts.framework */,
 				2785F55A160917C9004AA410 /* Twitter.framework */,
 				2764B53C15DD9242003964D1 /* libobjc.dylib */,

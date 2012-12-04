@@ -172,12 +172,12 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     
     switch (op) {
             
-            // These guys all have the extra nesting
+        // These guys all have the extra nesting
         case kKCSNearSphere:
         case kKCSWithinBox:
         case kKCSWithinCenterSphere:
         case kKCSWithinPolygon:
-            
+        {
             if (queries.count > 1){
                 // ERROR
                 return nil;
@@ -191,21 +191,22 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
             }
             
             //////////// HACK //////////////
-            ///// For right now Kinvey has _geoloc as a free indexed property, if the user is using a geoquery now, then we
-            ////  rewrite to the correct property, in the future use their passed in property
-#if 0
-            query = @{fieldname : geoQ};
-#else
+            ///// For right now Kinvey has _geoloc as a free indexed property, if the user is using a geoquery now
+            if ([fieldname isEqualToString:KCSEntityKeyGeolocation] == NO) {
+                //not geoloc
+                NSString* reason = [NSString stringWithFormat:@"Attempting to geo-query field '%@'. Geo-location queries can only be performed on the field 'KCSEntityKeyGeolocation'.",fieldname];
+                @throw [NSException exceptionWithName:@"InvalidQuery" reason:reason userInfo:nil];
+            }
             query = @{KCSEntityKeyGeolocation : geoQ};
-#endif
             ////
             //////////// HACK //////////////
-            
+        }
             break;
             
             // Interior array ops
         case kKCSIn:
         case kKCSNotIn:
+        {
             if (fieldname == nil || queries == nil){
                 return nil;
             }
@@ -214,7 +215,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
             }
             NSDictionary *innerQ = @{opName : queries};
             query = @{fieldname : innerQ};
-            
+        }
             break;
             // Exterior array ops
         case kKCSOr:
