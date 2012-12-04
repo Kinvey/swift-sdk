@@ -1,5 +1,11 @@
 # KinveyKit Release History
 
+## 1.13
+## 1.13.0 
+** Release Date:** TBA
+
+* `KCSQuery` geo-queries (`kKCSNearSphere`, `kKCSWithinBox`, `kKCSWithinCenterSphere`, `kKCSWithinPolygon`) on a field other than `KCSEntityKeyGeolocation` will now throw an exception instead of silently fail. 
+
 ## 1.12
 ### 1.12.0
 ** Release Date:** November 29, 2012 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1120APIDiffs/KinveyKit1120APIDiffs.html)
