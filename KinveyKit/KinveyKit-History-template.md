@@ -4,11 +4,20 @@
 ## 1.13.0 
 ** Release Date:** TBA
 
+* Added support for log-in with __LinkedIn__
+    * Added `KCSSocialIDLinkedIn` value to `KCSUserSocialIdentifyProvider` enum for use with `+ [KCSUser loginWithSocialIdentity:accessDictionary:withCompletionBlock:]` and `+ [KCSUser registerUserWithSocialIdentity:accessDictionary:withCompletionBlock:]`.
+    * Added `+ [KCSUser getAccessDictionaryFromLinkedIn:usingWebView]` to obtain an accessDictionary for use with the register & log-in methods. 
 * `KCSQuery` geo-queries (`kKCSNearSphere`, `kKCSWithinBox`, `kKCSWithinCenterSphere`, `kKCSWithinPolygon`) on a field other than `KCSEntityKeyGeolocation` will now throw an exception instead of silently fail. 
 
 ## 1.12
-### 1.12.0
-** Release Date:** November 29, 2012 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1120APIDiffs/KinveyKit1120APIDiffs.html)
+### 1.12.1
+** Release Date:** December 12, 2012
+
+* Bug Fix(es):
+    * Fix crash when using `-[KCSQuery fetchWithQuery:withCompletionBlock:withProgressBlock:]`.
+
+### 1.12.0 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1120APIDiffs/KinveyKit1120APIDiffs.html)
+** Release Date:** November 29, 2012 
 
 * Added `KCSRequestId` key to most `NSError` `userInfo` dictionaries. If available, this unique key corresponds to the request to the Kinvey backend. This value is useful for tech support purposes, and should be provided when contacting support@kinvey.com for faster issue resolution. 
 * Added `KCSBackendLogicError` constant for `-[NSError code]` value for cases when there is an error running Backend Logic on the Kinvey server (HTTP error code 550).
@@ -53,11 +62,13 @@
 ## 1.10
 ### 1.10.8
 ** Release Date:** November 13, 2012
+
 * Bug fix(es):
     * Sporadic assertion when initializing user outside of normal flow. 
 
 ### 1.10.7
 ** Release Date:** November 12, 2012
+
 * Bug fix(es):
     * Fixed bug where new user could not be created when using push. 
 

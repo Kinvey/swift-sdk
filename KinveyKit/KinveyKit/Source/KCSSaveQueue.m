@@ -253,7 +253,7 @@ static BOOL sFirstReached;
     if (self) {
         _q = [[NSMutableArray array] retain];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(online:) name:kKCSReachabilityChangedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willBackground:) name:UIApplicationWillResignActiveNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willBackground:) name:UIApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
     }
     return self;
@@ -363,22 +363,22 @@ static BOOL sFirstReached;
     }
 }
 
-- (void) invalidateBgTask
-{
-    UIApplication* application = [UIApplication sharedApplication];
-    [application endBackgroundTask:_bgTask];
-    _bgTask = UIBackgroundTaskInvalid;
-}
-
-- (void) willBackground:(NSNotification*)note
-{
-    UIApplication* application = [UIApplication sharedApplication];
-    _bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
-        // Clean up any unfinished task business by marking where you.
-        // stopped or ending the task outright.
-        [self invalidateBgTask];
-    }];
-}
+//- (void) invalidateBgTask
+//{
+//    UIApplication* application = [UIApplication sharedApplication];
+//    [application endBackgroundTask:_bgTask];
+//    _bgTask = UIBackgroundTaskInvalid;
+//}
+//
+//- (void) willBackground:(NSNotification*)note
+//{
+//    UIApplication* application = [UIApplication sharedApplication];
+//    _bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+//        // Clean up any unfinished task business by marking where you.
+//        // stopped or ending the task outright.
+//        [self invalidateBgTask];
+//    }];
+//}
 
 - (void) didBecomeActive:(NSNotification*)note
 {

@@ -85,8 +85,9 @@
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
     [KCSClient sharedClient].serviceHostname = @"v3yk1n";
 //    [[KCSPush sharedPush] onLoadHelper:options error:NULL];
-
-    
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_PTG6wqYyeM"
+                                                        withAppSecret:@"09889d16f2694e078a989b83d24e9480"
+                                                         usingOptions:nil];
 //    [[[KCSClient sharedClient] currentUser] logout];
 //    
 //    exit(EXIT_SUCCESS);

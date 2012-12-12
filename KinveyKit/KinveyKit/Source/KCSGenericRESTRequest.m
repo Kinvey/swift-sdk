@@ -33,19 +33,6 @@
 
 @implementation KCSGenericRESTRequest
 
-@synthesize resourceLocation=_resourceLocation;
-@synthesize completionAction=_completionAction;
-@synthesize failureAction=_failureAction;
-@synthesize progressAction=_progressAction;
-@synthesize headers=_headers;
-@synthesize method=_method;
-@synthesize isSyncRequest=_isSyncRequest;
-@synthesize isMockRequest=_isMockRequest;
-@synthesize mockConnection=_mockConnection;
-@synthesize request=_request;
-@synthesize followRedirects=_followRedirects;
-@synthesize retriesAttempted = _retriesAttempted;
-
 
 + (KCSGenericRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failure progressAction: (KCSConnectionProgressBlock)progress
 {
