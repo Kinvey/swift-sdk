@@ -348,6 +348,16 @@ typedef BOOL(^InfoSuccessAction)(int);
     [conn release];
 }
 
+- (void) testQuery
+{
+    KCSQuery* aq = [KCSQuery query];
+    KCSCollection* collection = [KCSCollection collectionFromString:@"abc" ofClass:[NSMutableDictionary class]];
+    [collection fetchWithQuery:aq withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        self.done = YES;
+    } withProgressBlock:nil];
+    
+    [self poll];
+}
 
 
 @end

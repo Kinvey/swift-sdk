@@ -346,7 +346,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     // Here we know that we're working with a query, so now we just check each of the params...
     if (query != nil){
         resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
-        resource = [resource stringByAppendingString:[self.query parameterStringRepresentation]];
+        resource = [resource stringByAppendingString:[query parameterStringRepresentation]];
     }
     
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
