@@ -73,7 +73,7 @@
     NSString* twitterSecret = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_SECRET];
 
     
-    NSString *authorizationHeader = KCS_OAuthorizationHeader(_url, method, bodyData, twitterKey, twitterSecret, _authToken, _authTokenSecret);
+    NSString *authorizationHeader = KCS_OAuthorizationHeader(_url, method, bodyData, twitterKey, twitterSecret, _authToken, _authTokenSecret, nil);
 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:_url];
     [request setHTTPMethod:method];

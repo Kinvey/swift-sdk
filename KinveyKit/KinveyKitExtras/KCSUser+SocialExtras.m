@@ -13,6 +13,9 @@
 #import <Twitter/Twitter.h>
 #import <Accounts/Accounts.h>
 #import "KCS_TWSignedRequest.h"
+#import "KCSLinkedInHelper.h"
+
+
 
 @implementation KCSUser (SocialExtras)
 
@@ -138,6 +141,31 @@
     }
 }
 
++ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(UIWebView*) webview
+{
+    NSString* linkedInKey = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_API_KEY];
+    NSString* linkedInSecret = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_SECRET_KEY];
+    NSString* linkedInAcceptRedirect = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_ACCEPT_REDIRECT];
+    NSString* linkedInCancelRedirect = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_CANCEL_REDIRECT];
+
+    if (linkedInKey == nil || linkedInSecret == nil || linkedInAcceptRedirect == nil || linkedInCancelRedirect == nil) {
+        NSString* description = @"Cannot use Linked In authentication without consumer app information";
+        NSDictionary* info = [KCSErrorUtilities createErrorUserDictionaryWithDescription:description withFailureReason:@"Missing one or more of: Linked In api key, secret key, accept redirect or cancel redirect." withRecoverySuggestion:@"Set KCS_LINKEDIN_API_KEY, KCS_LINKEDIN_SECRET_KEY, KCS_LINKEDIN_ACCEPT_REDIRECT, and KCS_LINKEDIN_CANCEL_REDIRECT in the Kinvey client options dictionary" withRecoveryOptions:nil];
+       
+        NSError* error = [KCSErrorUtilities createError:info description:description errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil];
+        completionBlock(nil, error);
+
+    } else {
+        KCSLinkedInHelper* helper = [[KCSLinkedInHelper alloc] init];
+        helper.apiKey = linkedInKey;
+        helper.secretKey = linkedInSecret;
+        helper.acceptRedirect = linkedInAcceptRedirect;
+        helper.cancelRedirect = linkedInCancelRedirect;
+        helper.webview = webview;
+        
+        [helper requestToken:@"r_basicprofile" completionBlock:completionBlock];
+    }
+}
 
 
 @end

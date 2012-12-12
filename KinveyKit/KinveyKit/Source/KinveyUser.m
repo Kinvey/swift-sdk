@@ -538,7 +538,7 @@
     completionBlock(createdUser, error, status);
 }
 
-
+//TODO: constants for fields
 + (NSDictionary*) loginDictForProvder:(KCSUserSocialIdentifyProvider)provder accessDictionary:(NSDictionary*)accessDictionary
 {
     NSDictionary* dict = @{};
@@ -557,6 +557,18 @@
                 @"access_token_secret" : accessTokenSecret,
                 @"consumer_key" : twitterKey,
                 @"consumer_secret" : twitterSecret}}};
+            }
+        }
+            break;
+        case KCSSocialIDLinkedIn: {
+            NSString* linkedInKey = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_API_KEY];
+            NSString* linkedInSecret = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_SECRET_KEY];
+            DBAssert(linkedInKey != nil && linkedInSecret != nil, @"LinkedIn info should not be nil.");
+            if (linkedInKey != nil && linkedInSecret != nil) {
+                dict = @{@"_socialIdentity" : @{@"linkedIn" : @{@"access_token" : accessToken,
+                @"access_token_secret" : accessTokenSecret,
+                @"consumer_key" : linkedInKey,
+                @"consumer_secret" : linkedInSecret}}};
             }
         }
             break;

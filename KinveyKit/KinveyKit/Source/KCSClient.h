@@ -2,7 +2,7 @@
 //  KCSClient.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -44,6 +44,10 @@
 
 #define KCS_TWITTER_CLIENT_KEY @"twitterKey"
 #define KCS_TWITTER_CLIENT_SECRET @"twitterSecret"
+#define KCS_LINKEDIN_API_KEY @"linkedinKey"
+#define KCS_LINKEDIN_SECRET_KEY @"linkedinSecret"
+#define KCS_LINKEDIN_ACCEPT_REDIRECT @"linkedinAcceptRedirect"
+#define KCS_LINKEDIN_CANCEL_REDIRECT @"linkedinCancelRedirect"
 
 /*! A Singleton Class that provides access to all Kinvey Services.
 

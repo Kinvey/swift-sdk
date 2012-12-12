@@ -27,7 +27,7 @@ static NSData *HMAC_SHA1(NSString *data, NSString *key) {
     return [NSData dataWithBytes:buf length:CC_SHA1_DIGEST_LENGTH];
 }
 
-NSString *KCS_OAuthorizationHeader(NSURL *url, NSString *method, NSData *body, NSString *_oAuthConsumerKey, NSString *_oAuthConsumerSecret, NSString *_oAuthToken, NSString *_oAuthTokenSecret)
+NSString *KCS_OAuthorizationHeader(NSURL *url, NSString *method, NSData *body, NSString *_oAuthConsumerKey, NSString *_oAuthConsumerSecret, NSString *_oAuthToken, NSString *_oAuthTokenSecret, NSDictionary* _additionalOAuthKeys)
 {
     NSString *_oAuthNonce = [NSString ab_GUID];
     NSString *_oAuthTimestamp = [NSString stringWithFormat:@"%d", (int)[[NSDate date] timeIntervalSince1970]];
@@ -42,6 +42,9 @@ NSString *KCS_OAuthorizationHeader(NSURL *url, NSString *method, NSData *body, N
     [oAuthAuthorizationParameters setObject:_oAuthConsumerKey forKey:@"oauth_consumer_key"];
     if(_oAuthToken)
         [oAuthAuthorizationParameters setObject:_oAuthToken forKey:@"oauth_token"];
+    if (_additionalOAuthKeys) {
+        [oAuthAuthorizationParameters addEntriesFromDictionary:_additionalOAuthKeys];
+    }
 
     // get query and body parameters
     NSDictionary *additionalQueryParameters = [NSURL ab_parseURLQueryString:[url query]];

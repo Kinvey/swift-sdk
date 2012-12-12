@@ -39,6 +39,8 @@ typedef enum  {
     KCSSocialIDFacebook,
     /** Twitter */
     KCSSocialIDTwitter,
+    /** LinkedIn */
+    KCSSocialIDLinkedIn,
 } KCSUserSocialIdentifyProvider;
 
 /** Access Dictionary key for the token: both Facebook & Twitter */
@@ -150,7 +152,7 @@ typedef enum  {
  */
 + (void) clearSavedCredentials;
 
-/* The current user of the application.
+/** The currently active user of the application.
  
  @return the user object for the current user. `nil` if the user has not been set yet or has been cleared.
  @since 1.11.0
