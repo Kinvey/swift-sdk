@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.12
+### 1.12.1
+** Release Date:** December 12, 2012
+
+* Bug Fix(es):
+    * Fix crash when using `-[KCSQuery fetchWithQuery:withCompletionBlock:withProgressBlock:]`.
+
 ### 1.12.0
 ** Release Date:** November 29, 2012 [<sub>api diff</sub>](Documents/releasenotes/General/KinveyKit1120APIDiffs/KinveyKit1120APIDiffs.html)
 
