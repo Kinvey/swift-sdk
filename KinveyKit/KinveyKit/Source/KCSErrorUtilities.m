@@ -8,6 +8,7 @@
 
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
+#import "NSMutableDictionary+KinveyAdditions.h"
 
 #define KCS_ERROR_DEBUG_KEY @"debug"
 #define KCS_ERROR_DESCRIPTION_KEY @"description"
@@ -17,7 +18,7 @@
 
 + (NSDictionary *)createErrorUserDictionaryWithDescription:(NSString *)description
                                          withFailureReason:(NSString *)reason
-                                    withRecoverySuggestion:(NSString *)suggestion 
+                                    withRecoverySuggestion:(NSString *)suggestion
                                        withRecoveryOptions:(NSArray *)options
 {
     if (description == nil || reason == nil || suggestion == nil){
@@ -29,7 +30,7 @@
     for (NSString *option in options) {
         [localizedOptions addObject:NSLocalizedString(option, nil)];
     }
-
+    
     return @{
     NSLocalizedRecoveryOptionsErrorKey : [NSArray arrayWithArray:localizedOptions],
     NSLocalizedDescriptionKey : description,
@@ -39,20 +40,46 @@
 
 + (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain requestId:(NSString*)requestId sourceError:(NSError*)underlyingError
 {
+    NSString* kcsErrorDescription = nil;
     NSDictionary* userInfo = [NSMutableDictionary dictionary];
-    description = (description == nil) ? [jsonErrorDictionary objectForKey:KCS_ERROR_DESCRIPTION_KEY] : description;
-    [userInfo setValue:description forKey:NSLocalizedDescriptionKey];
-    [userInfo setValue:[jsonErrorDictionary objectForKey:KCS_ERROR_KINVEY_ERROR_CODE_KEY] forKey:KCSErrorCode];
-    [userInfo setValue:[jsonErrorDictionary objectForKey:KCS_ERROR_DEBUG_KEY] forKey:KCSErrorInternalError];
+    
+    if ([jsonErrorDictionary isKindOfClass:[NSDictionary class]] == NO) {
+        kcsErrorDescription = (id) jsonErrorDictionary;
+    } else {
+        NSMutableDictionary* errorValues = [jsonErrorDictionary mutableCopy];
+        
+        NSString* kcsError = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
+        description = (description == nil) ? kcsError : description;
+        
+        NSString* kcsErrorCode = [errorValues popObjectForKey:KCS_ERROR_KINVEY_ERROR_CODE_KEY];
+        if (kcsErrorCode != nil) {
+            [userInfo setValue:kcsErrorCode forKey:KCSErrorCode];
+        }
+        
+        NSString* kcsDebugKey = [errorValues popObjectForKey:KCS_ERROR_DEBUG_KEY];
+        if (kcsDebugKey != nil) {
+            [userInfo setValue:kcsDebugKey forKey:KCSErrorInternalError];
+        }
+        
+        [userInfo setValuesForKeysWithDictionary:errorValues];
+        
+        kcsErrorDescription = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
+    }
+    
+    if (description != nil) {
+        [userInfo setValue:description forKey:NSLocalizedDescriptionKey];
+    }
+    
     if (requestId != nil) {
         [userInfo setValue:requestId forKey:KCSRequestId];
     }
+    
     [userInfo setValue:@"Retry request based on information in JSON Error" forKey:NSLocalizedRecoverySuggestionErrorKey];
-    [userInfo setValue:[NSString stringWithFormat:@"JSON Error: %@", [jsonErrorDictionary objectForKey:KCS_ERROR_DESCRIPTION_KEY]] forKey:NSLocalizedFailureReasonErrorKey];
-    if (underlyingError) {
+    [userInfo setValue:[NSString stringWithFormat:@"JSON Error: %@", kcsErrorDescription] forKey:NSLocalizedFailureReasonErrorKey];
+    
+    if (underlyingError != nil) {
         [userInfo setValue:underlyingError forKey:NSUnderlyingErrorKey];
     }
-    
     
     NSError *error = [NSError errorWithDomain:domain code:errorCode userInfo:userInfo];
     return error;

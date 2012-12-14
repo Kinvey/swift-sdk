@@ -118,11 +118,13 @@ typedef BOOL(^InfoSuccessAction)(int);
 - (void)collection:(KCSCollection *)collection didCompleteWithResult:(NSArray *)result
 {
     self.testPassed = self.onSuccess(result);
+    self.done = YES;
 }
 
 - (void)collection:(KCSCollection *)collection didFailWithError:(NSError *)error
 {
     self.testPassed = self.onFailure(error);
+    self.done = YES;
 }
 
 - (void)collection:(KCSCollection *)collection informationOperationDidCompleteWithResult:(int)result
@@ -359,5 +361,45 @@ typedef BOOL(^InfoSuccessAction)(int);
     [self poll];
 }
 
+
+- (void) testQueryQlio
+{
+    [TestUtils setUpKinveyUnittestBackend];
+    KCSQuery *q = [KCSQuery queryOnField:@"location"
+                  withExactMatchForValue:@"N"];
+    KCSCollection *fuelStations = [[KCSClient sharedClient]
+                                   collectionFromString:@"qlio-errors"
+                                   withClass:[NSMutableDictionary class]];
+    fuelStations.query=q;
+    [fuelStations fetchWithDelegate:self];
+    
+    [self poll];
+    
+    
+//    For example this is iOS app code:
+//    KCSQuery *q = [KCSQuery queryOnField:@"location" withExactMatchForValue:[NSString stringWithFormat:@"%f,%f", newLocation.coordinate.latitude, newLocation.coordinate.longitude]];
+//    KCSCollection *fuelStations = [[KCSClient sharedClient]
+//                                   collectionFromString:@"FuelStations"
+//                                   withClass:[NSMutableDictionary class]];
+//    KCSAppdataStore* fuelStationStore = [KCSAppdataStore storeWithCollection:fuelStations options:nil];
+//    [fuelStationStore queryWithQuery:q withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        //handle response
+//    } withProgressBlock:nil];
+    
+//    [KCSUser initCurrentUser]; //loads the activeUser from keychain
+//    
+//    
+//    NSArray* usernames = @[@"12345", @"username2", @"basfsadsaXE2"]; //whatever usernames you have
+//    KCSQuery* query = [KCSQuery queryOnField:KCSUserAttributeUsername usingConditional:kKCSIn forValue:usernames]; //find users with username in 'usernames' array
+//    
+//    //optional, sort return by last names
+//    KCSQuerySortModifier* sort = [[KCSQuerySortModifier alloc] initWithField:KCSUserAttributeSurname inDirection:kKCSAscending];
+//    [query addSortModifier:sort];
+//    
+//    KCSCachedStore* userStore = [KCSCachedStore storeWithCollection:[KCSCollection userCollection] options:@{KCSStoreKeyCachePolicy : @(KCSCachePolicyLocalFirst)}]; //store that caches and reads from the cache and updates in the background
+//    [userStore queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        //handle response
+//    } withProgressBlock:nil];
+}
 
 @end
