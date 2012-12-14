@@ -8,6 +8,8 @@
     * Added `KCSSocialIDLinkedIn` value to `KCSUserSocialIdentifyProvider` enum for use with `+ [KCSUser loginWithSocialIdentity:accessDictionary:withCompletionBlock:]` and `+ [KCSUser registerUserWithSocialIdentity:accessDictionary:withCompletionBlock:]`.
     * Added `+ [KCSUser getAccessDictionaryFromLinkedIn:usingWebView]` to obtain an accessDictionary for use with the register & log-in methods. 
 * `KCSQuery` geo-queries (`kKCSNearSphere`, `kKCSWithinBox`, `kKCSWithinCenterSphere`, `kKCSWithinPolygon`) on a field other than `KCSEntityKeyGeolocation` will now throw an exception instead of silently fail. 
+* Bug fix(es):
+    * Fix bug when using Data Integration query and an error is returned in an unexpected format causes a crash. 
 
 ## 1.12
 ### 1.12.1
