@@ -40,14 +40,14 @@ then
   rm -r ${RKK}
 fi
 
-if [ -d  ${RAPI} ]
-then
-  rm -r ${RAPI}
-fi
+#if [ -d  ${RAPI} ]
+#then
+#  rm -r ${RAPI}
+#fi
 
 ## Make output dirs
 mkdir ${RKK}
-mkdir ${RAPI}
+#mkdir ${RAPI}
 
 # This needs to be an option...
 
@@ -58,7 +58,7 @@ mkdir ${RAPI}
 #cp -R ${KINVEYKITLOC}/Airship ${RELEASEDIR}/KinveyKit-${RELEASENO}/
 
 # Copy Docs
-( cd ${KINVEYKITLOC}/doc/built-docs/ && tar cf - ./com.kinvey.KinveyKit.docset ) | ( cd ${RAPI}/ && tar -xf - )
+( cd ${KINVEYKITLOC}/doc/built-docs/ && tar cf - ./com.kinvey.KinveyKit.docset ) | ( cd ${RKK}/ && tar -xf - )
 #cp -R ${KINVEYKITLOC}/doc/built-docs/com.kinvey.KinveyKit.docset ${RELEASEDIR}/KinveyKit-API-Reference-${RELEASENO}/
 
 
@@ -68,4 +68,4 @@ find ${RELEASEDIR}/ -name '.svn' -print | xargs rm -r
 
 # Build zipfiles
 (cd ${RELEASEDIR} && ditto -c -k --sequesterRsrc --keepParent ${KK} ${KK}.zip)
-(cd ${RELEASEDIR} && ditto -c -k --sequesterRsrc --keepParent ${API} ${API}.zip)
+#put docs in zip file(cd ${RELEASEDIR} && ditto -c -k --sequesterRsrc --keepParent ${API} ${API}.zip)
