@@ -31,5 +31,6 @@
 - (void) setJsonBody:(id)bodyObject;
 - (void)setContentType: (NSString *)contentType;
 - (void)setContentLength: (NSInteger)contentLength;
+- (void) setAuth:(NSString*)username password:(NSString*)password;
 
 @end

@@ -127,7 +127,7 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
         KCSLogDebug(@"Using app key/app secret for auth: (%@, %@) => %@", [[KCSClient sharedClient] appKey], [[KCSClient sharedClient] appSecret], self.appKeyBase64);
         return self.appKeyBase64;
     } else if (self.authRequired == KCSAuthBasicAuthUser){
-        KCSUser *curUser = [[KCSClient sharedClient] currentUser];
+        KCSUser *curUser = [KCSUser activeUser];
         if (curUser == nil){
             KCSLogDebug(@"No current user, auth needed.");
             // We need to start auth proceeding here
@@ -140,7 +140,7 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
             NSString *authString = nil;
             if (curUser.sessionAuth) {
                 authString = [@"Kinvey " stringByAppendingString: curUser.sessionAuth];//KCSbase64EncodedStringFromData([curUser.sessionAuth dataUsingEncoding:NSUTF8StringEncoding]);
-                KCSLogDebug(@"Current user found (%@) => (%@)", curUser.username, authString);                
+                KCSLogDebug(@"Current user found, using sessionauth (%@) => (%@)", curUser.username, authString);
             } else {
                 authString = KCSbasicAuthString(curUser.username, curUser.password);
                 KCSLogDebug(@"Current user found (%@, %@) => (%@)", curUser.username, curUser.password, authString);

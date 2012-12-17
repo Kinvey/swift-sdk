@@ -17,6 +17,8 @@
 #import "KCSReachability.h"
 #import "KinveyAnalytics.h"
 #import "KCS_SBJson.h"
+#import "KCSBase64.h"
+#import "KCSRESTRequest.h"
 
 // This is in Seconds!
 #define KCS_RETRY_DELAY 0.05
@@ -168,34 +170,35 @@ getLogDate(void)
     // Let the server know we want wrapped json erors
     [self.request setValue:@"true" forHTTPHeaderField:@"X-Kinvey-ResponseWrapper"];
     
-    KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
-    if (cred.requiresAuthentication){
-        NSString *authString = [cred HTTPBasicAuthString];
-        // If authString is nil and we needed it (requiresAuthentication is true),
-        // then there is no current user, so we need to retry this "later", say 500 msec
-        if (authString == nil){
-            // We're only going to try this so many times before we just give up
-            if (self.retriesAttempted >= MAX_NUMBER_OF_RETRIES_K){
-                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Request Timeout"
-                                                                                   withFailureReason:@"Authentication service failed to return valid credentials after multiple attempts." 
-                                                                              withRecoverySuggestion:@"Check to see if the network is active."
-                                                                                 withRecoveryOptions:nil];
-                
-                self.failureAction([NSError errorWithDomain:KCSUserErrorDomain
-                                                          code:KCSAuthenticationRetryError
-                                                      userInfo:userInfo]);
-            } else {
-                self.retriesAttempted++;
-                [self performSelector:@selector(start) withObject:nil afterDelay:KCS_RETRY_DELAY];
-                // This iteration is done.
-            }
-            [connection release];
-            return;
-        }
-        [self.request setValue:authString forHTTPHeaderField:@"Authorization"];
-    }
     
-
+    if ([self.request.allHTTPHeaderFields objectForKey:@"Authorization"] == nil) {
+        KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
+        if (cred.requiresAuthentication){
+            NSString *authString = [cred HTTPBasicAuthString];
+            // If authString is nil and we needed it (requiresAuthentication is true),
+            // then there is no current user, so we need to retry this "later", say 500 msec
+            if (authString == nil){
+                // We're only going to try this so many times before we just give up
+                if (self.retriesAttempted >= MAX_NUMBER_OF_RETRIES_K){
+                    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Request Timeout"
+                                                                                       withFailureReason:@"Authentication service failed to return valid credentials after multiple attempts."
+                                                                                  withRecoverySuggestion:@"Check to see if the network is active."
+                                                                                     withRecoveryOptions:nil];
+                    
+                    self.failureAction([NSError errorWithDomain:KCSUserErrorDomain
+                                                           code:KCSAuthenticationRetryError
+                                                       userInfo:userInfo]);
+                } else {
+                    self.retriesAttempted++;
+                    [self performSelector:@selector(start) withObject:nil afterDelay:KCS_RETRY_DELAY];
+                    // This iteration is done.
+                }
+                [connection release];
+                return;
+            }
+            [self.request setValue:authString forHTTPHeaderField:@"Authorization"];
+        }
+    }
     
     if (!self.followRedirects){
         connection.followRedirects = NO;
@@ -203,6 +206,12 @@ getLogDate(void)
     
     [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:nil];    
     [connection release];
+}
+
+- (void) setAuth:(NSString*)username password:(NSString*)password
+{
+    NSString *authString = KCSbasicAuthString(username, password);
+    [self.request setValue:authString forHTTPHeaderField:@"Authorization"];
 }
 
 @end

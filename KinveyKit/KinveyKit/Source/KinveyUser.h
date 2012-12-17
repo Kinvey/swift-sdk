@@ -325,6 +325,14 @@ typedef enum  {
  */
 - (KCSCollection *)userCollection KCS_DEPRECATED(Use [KCSCollection userCollection] instead., 1.10.2);
 
+
+/** Update a user's password and save the user object to the backend. 
+ @param newPassword the new password for the user
+ @param completionBlock block to be notified when operation is completed or fails. The `objectsOrNil` return array will have the updated user as its only value if successful. 
+ @sicne 1.13.0
+ */
+- (void) changePassword:(NSString*)newPassword completionBlock:(KCSCompletionBlock)completionBlock;
+
 ///---------------------------------------------------------------------------------------
 /// @name User email management
 ///---------------------------------------------------------------------------------------

@@ -679,4 +679,29 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     [self poll];
 
 }
+
+- (void) testChangePassword
+{
+    KCSUser* u = [KCSUser activeUser];
+    NSString* currentPassword = u.password;
+    NSString* keychainPassword = [KCSKeyChain getStringForKey:@"password"];
+    
+    STAssertNotNil(currentPassword, @"current password should not be nil");
+    STAssertNotNil(keychainPassword, @"keychain should not be nil");
+    
+    STAssertEqualObjects(currentPassword, keychainPassword, @"passwords should match");
+    STAssertFalse([keychainPassword isEqualToString:@"foo"], @"should be old password");
+    
+    
+    self.done = NO;
+    [u changePassword:@"foo" completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertEqualObjects(@"foo", [[KCSUser activeUser] password], @"password should be updated");
+        NSString* newKeychainPwd = [KCSKeyChain getStringForKey:@"password"];
+        STAssertTrue([newKeychainPwd isEqualToString:@"foo"], @"should be old password");
+        
+        self.done = YES;
+    }];
+    [self poll];
+}
 @end

@@ -26,6 +26,9 @@
 #import "KinveyCollection.h"
 #import "KCSDevice.h"
 
+#import "KCSObjectMapper.h"
+#import "KCSRESTRequest.h"
+
 #define kKeychainPasswordKey @"password"
 #define kKeychainUsernameKey @"username"
 #define kKeychainUserIdKey @"_id"
@@ -148,17 +151,17 @@
     [KCSKeyChain setString:user.userId forKey:kKeychainUserIdKey];
     
     KCSClient *client = [KCSClient sharedClient];
-    if (sessionAuth != nil) {
-        //session auth
-        [client setAuthCredentials:[NSURLCredential credentialWithUser:user.username password:user.sessionAuth persistence:NSURLCredentialPersistenceNone]];
-        [KCSKeyChain setString:user.sessionAuth forKey:kKeychainAuthTokenKey];
-    } else {
+    if (password != nil) {
         //password auth
         [KCSKeyChain setString:user.password forKey:kKeychainPasswordKey];
         [client setAuthCredentials:[NSURLCredential credentialWithUser:user.username password:user.password persistence:NSURLCredentialPersistenceNone]];
         
     }
-    
+    if (sessionAuth != nil) {
+        //session auth
+        [client setAuthCredentials:[NSURLCredential credentialWithUser:user.username password:user.sessionAuth persistence:NSURLCredentialPersistenceNone]];
+        [KCSKeyChain setString:user.sessionAuth forKey:kKeychainAuthTokenKey];
+    }
     
     [client setCurrentUser:user];
     
@@ -969,5 +972,91 @@
 + (KCSUser *)activeUser
 {
     return [KCSClient sharedClient].currentUser;
+}
+
+- (void) changePassword:(NSString*)newPassword completionBlock:(KCSCompletionBlock)completionBlock
+{
+    if (![self isEqual:[KCSUser activeUser]]){
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Receiver is not current user."
+                                                                           withFailureReason:@"An operation only applicable to the current user was tried on a different user."
+                                                                      withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
+                                                                         withRecoveryOptions:nil];
+        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
+        completionBlock(nil, userError);
+    } else {
+        NSString* uname = self.username;
+        NSString* pwd = self.password;
+        
+        self.password = newPassword;
+        
+        // Extract all of the items from the Array into a set, so adding the "new" device token does
+        // the right thing.  This might be less efficient than just iterating, but these routines have
+        // been optimized, we do this now, since there's no other place guarenteed to merge.
+        // Login/create store this info
+        KCSDevice *sp = [KCSDevice currentDevice];
+        
+        if (sp.deviceToken != nil){
+            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
+            [tmpSet addObject:[sp deviceTokenString]];
+            self.deviceTokens = [tmpSet allObjects];
+        }
+        
+        KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
+        BOOL isPostRequest = obj.isPostRequest;
+        NSString *objectId = obj.objectId;
+        NSDictionary *dictionaryToMap = [obj.dataToSerialize retain];
+        
+        NSString *resource = nil;
+        KCSCollection* collection = [KCSCollection userCollection];
+        if ([collection.collectionName isEqualToString:@""]){
+            resource = [collection.baseURL stringByAppendingFormat:@"%@", objectId];
+        } else {
+            resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
+        }
+        
+        
+        NSInteger HTTPMethod;
+        
+        // If we need to post this, then do so
+        if (isPostRequest){
+            HTTPMethod = kPostRESTMethod;
+        } else {
+            HTTPMethod = kPutRESTMethod;
+        }
+        
+        
+        // Prepare our request
+        KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:HTTPMethod];
+        
+        // This is a JSON request
+        [request setContentType:KCS_JSON_TYPE];
+        
+        // Make sure to include the UTF-8 encoded JSONData...
+        KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+        [request addBody:[writer dataWithObject:dictionaryToMap]];
+        
+        // Prepare our handlers
+        KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
+            NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
+            
+            if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
+                NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+                completionBlock(nil, error);
+            } else {
+                [KCSUser setupCurrentUser:self properties:jsonResponse password:newPassword username:self.username];
+                completionBlock([NSArray arrayWithObject:self], nil);
+            }
+        };
+        
+        KCSConnectionFailureBlock fBlock = ^(NSError *error){
+            completionBlock(nil, error);
+        };
+        
+        KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
+        [request setAuth:uname password:pwd];
+        
+        [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+        [dictionaryToMap release];
+    }
 }
 @end

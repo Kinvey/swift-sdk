@@ -46,7 +46,7 @@
     if ([jsonErrorDictionary isKindOfClass:[NSDictionary class]] == NO) {
         kcsErrorDescription = (id) jsonErrorDictionary;
     } else {
-        NSMutableDictionary* errorValues = [jsonErrorDictionary mutableCopy];
+        NSMutableDictionary* errorValues = [[jsonErrorDictionary mutableCopy] autorelease];
         
         NSString* kcsError = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
         description = (description == nil) ? kcsError : description;

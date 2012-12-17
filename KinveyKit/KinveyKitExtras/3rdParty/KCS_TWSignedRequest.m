@@ -80,7 +80,7 @@
     [request setValue:authorizationHeader forHTTPHeaderField:@"Authorization"];
     [request setHTTPBody:bodyData];
 
-    return [request autorelease];
+    return request;
 }
 
 - (void)performRequestWithHandler:(KCS_TWSignedRequestHandler)handler

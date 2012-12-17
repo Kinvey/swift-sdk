@@ -53,7 +53,7 @@
         
         // "reverse_auth" is a required parameter
         NSDictionary* dict = @{ @"x_auth_mode" : @"reverse_auth"};
-        KCS_TWSignedRequest* signedRequest = [[[KCS_TWSignedRequest alloc] initWithURL:url parameters:dict requestMethod:kPostRESTMethod] autorelease];
+        KCS_TWSignedRequest* signedRequest = [[KCS_TWSignedRequest alloc] initWithURL:url parameters:dict requestMethod:kPostRESTMethod];
         [signedRequest performRequestWithHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             if (!data || [(NSHTTPURLResponse*)response statusCode] >= 400) {
                 NSError* tokenError =[KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
@@ -61,7 +61,7 @@
                     completionBlock(nil, tokenError);
                 });
             } else {
-                NSString *signedReverseAuthSignature = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+                NSString *signedReverseAuthSignature = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                 
                 //
                 //  Step 2)  Ask Twitter for the user's auth token and secret
@@ -100,7 +100,7 @@
                                     });
                                 }
                                 else {
-                                    NSString *responseStr = [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease];
+                                    NSString *responseStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
                                     //will get back in the form of oauth_token=XXXX&oauth_token_secret=YYYY&user_id=ZZZZ&screen_name=AAAAA
                                     NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithCapacity:2];
                                     NSArray* components = [responseStr componentsSeparatedByString:@"&"];
