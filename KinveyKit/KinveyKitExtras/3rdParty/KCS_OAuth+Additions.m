@@ -61,7 +61,7 @@
 	CFUUIDRef u = CFUUIDCreate(kCFAllocatorDefault);
 	CFStringRef s = CFUUIDCreateString(kCFAllocatorDefault, u);
 	CFRelease(u);
-    NSString* ret = [[(NSString*)s copy] autorelease];
+    NSString* ret = [(__bridge NSString*)s copy];
     CFRelease(s);
 	return ret;
 }
