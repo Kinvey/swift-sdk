@@ -2,7 +2,7 @@
 
 ## 1.13
 ## 1.13.0 
-** Release Date:** TBA
+** Release Date:** December 18, 2012
 
 * Added support for log-in with __LinkedIn__
     * Added `KCSSocialIDLinkedIn` value to `KCSUserSocialIdentifyProvider` enum for use with `+ [KCSUser loginWithSocialIdentity:accessDictionary:withCompletionBlock:]` and `+ [KCSUser registerUserWithSocialIdentity:accessDictionary:withCompletionBlock:]`.
