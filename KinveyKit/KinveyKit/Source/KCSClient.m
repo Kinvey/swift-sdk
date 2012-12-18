@@ -20,6 +20,7 @@
 
 #import "KCSStore.h"
 #import "KCSClient+ConfigurationTest.h"
+#import "KCSKeyChain.h"
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
@@ -232,13 +233,20 @@
 - (KCSClient *)initializeKinveyServiceForAppKey:(NSString *)appKey withAppSecret:(NSString *)appSecret usingOptions:(NSDictionary *)options
 {
     
-    if (!appKey){
+    if (appKey == nil) {
         [self killAppViaExceptionNamed:@"KinveyInitializationError"
                             withReason:@"Nil value used for appKey, cannot use Kinvey Service, no recovery available"];
-    } else if (!appSecret){
+    } else if (appSecret == nil) {
         [self killAppViaExceptionNamed:@"KinveyInitializationError"
                             withReason:@"Nil value used for appKey, cannot use KinveyService, no recovery available"];
     }
+    
+    NSString* oldAppKey = [KCSKeyChain getStringForKey:@"kinveykit.appkey"];
+    if (oldAppKey != nil && [appKey isEqualToString:oldAppKey] == NO) {
+        //clear the saved user if the kid changes
+        [KCSUser clearSavedCredentials];
+    }
+    [KCSKeyChain setString:appKey forKey:@"kinveykit.appkey"];
     
     self.appKey = appKey;
     self.appSecret = appSecret;
