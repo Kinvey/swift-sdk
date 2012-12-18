@@ -134,8 +134,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     [[KCSConnectionPool sharedPool] drainPools];
 }
 
-
-- (void)testAAADDInitializeCurrentUserWithRequestPerformsRequest
+//TODO: remove this test point it's no longer needed since PING does not cause a user create should instead try some other request
+- (void)noTestAAADDInitializeCurrentUserWithRequestPerformsRequest
 {
     [TestUtils justInitServer];
     // Ensure user is logged out
@@ -328,7 +328,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
         }
     } copy];
     
-    KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:[[KCSClient sharedClient] appdataBaseURL] usingMethod:kGetRESTMethod];
+    KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:[[[KCSClient sharedClient] appdataBaseURL] stringByAppendingString:@"/1234"] usingMethod:kGetRESTMethod];
 
     KCSUser *preCurrentUser = [[KCSClient sharedClient] currentUser];    
    
@@ -684,13 +684,13 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
 {
     KCSUser* u = [KCSUser activeUser];
     NSString* currentPassword = u.password;
-    NSString* keychainPassword = [KCSKeyChain getStringForKey:@"password"];
+//    NSString* keychainPassword = [KCSKeyChain getStringForKey:@"password"];
     
     STAssertNotNil(currentPassword, @"current password should not be nil");
-    STAssertNotNil(keychainPassword, @"keychain should not be nil");
+//   STAssertNotNil(keychainPassword, @"keychain should not be nil");
     
-    STAssertEqualObjects(currentPassword, keychainPassword, @"passwords should match");
-    STAssertFalse([keychainPassword isEqualToString:@"foo"], @"should be old password");
+//    STAssertEqualObjects(currentPassword, keychainPassword, @"passwords should match");
+    STAssertFalse([currentPassword isEqualToString:@"foo"], @"should be old password");
     
     
     self.done = NO;

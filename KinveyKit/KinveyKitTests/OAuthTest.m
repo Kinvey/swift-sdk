@@ -18,7 +18,7 @@
 @implementation OAuthTest
 
 
-- (void) testOAuth1Step1a
+- (void) notestOAuth1Step1a
 {
     
 //    NSURL* url = [NSURL URLWithString:@"https://api.linkedin.com/uas/oauth/requestToken"];

@@ -34,7 +34,7 @@
     STAssertEqualObjects(computedJSON, expectedJSON, @"");
     
     
-    KCSQuery *geoQuery = [KCSQuery queryOnField:@"location" usingConditional:kKCSNearSphere forValue:[NSArray arrayWithObjects:[NSNumber numberWithFloat:50.0], [NSNumber numberWithFloat:50.0], nil]];
+    KCSQuery *geoQuery = [KCSQuery queryOnField:KCSEntityKeyGeolocation usingConditional:kKCSNearSphere forValue:[NSArray arrayWithObjects:[NSNumber numberWithFloat:50.0], [NSNumber numberWithFloat:50.0], nil]];
     
     NSLog(@"%@\n%@", [geoQuery JSONStringRepresentation], [NSString stringByPercentEncodingString:[geoQuery JSONStringRepresentation]]);
 }
@@ -75,7 +75,7 @@
 - (void)testBlog
 {
     NSString *r1 = @"{\"_geoloc\":{\"$nearSphere\":[-71,41]}}";
-    KCSQuery *q1 = [KCSQuery queryOnField:@"coordinates"
+    KCSQuery *q1 = [KCSQuery queryOnField:KCSEntityKeyGeolocation
                          usingConditional:kKCSNearSphere
                                  forValue: [NSArray arrayWithObjects:
                                             [NSNumber numberWithInt:-71],
@@ -83,7 +83,7 @@
     STAssertEqualObjects([q1 JSONStringRepresentation], r1, @"");
 
     NSString *r2 = @"{\"_geoloc\":{\"$nearSphere\":[-71,42],\"$maxDistance\":0.5}}";
-    KCSQuery *q2 = [KCSQuery queryOnField:@"coordinates"
+    KCSQuery *q2 = [KCSQuery queryOnField:KCSEntityKeyGeolocation
                usingConditionalsForValues:
                     kKCSNearSphere,
                     [NSArray arrayWithObjects:
@@ -102,7 +102,7 @@
                        [NSNumber numberWithInt:42], nil];
 
     NSArray *box = [NSArray arrayWithObjects:point1, point2, nil];
-    KCSQuery *q3 = [KCSQuery queryOnField:@"coordinates"
+    KCSQuery *q3 = [KCSQuery queryOnField:KCSEntityKeyGeolocation
                          usingConditional:kKCSWithinBox
                                  forValue:box];
 
