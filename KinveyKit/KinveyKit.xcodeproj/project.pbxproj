@@ -67,6 +67,16 @@
 		27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BCB160228D100AC2A69 /* KCSCounterTests.m */; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
+		2766E62F16834B78000D27C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2766E62E16834B78000D27C5 /* Cocoa.framework */; };
+		2766E63516834B78000D27C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2766E63316834B78000D27C5 /* InfoPlist.strings */; };
+		2766E63916834B78000D27C5 /* KinveyKit_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 2766E63816834B78000D27C5 /* KinveyKit_mac.m */; };
+		2766E64016834B78000D27C5 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
+		2766E64116834B78000D27C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2766E62E16834B78000D27C5 /* Cocoa.framework */; };
+		2766E64416834B78000D27C5 /* KinveyKit-mac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2766E62D16834B77000D27C5 /* KinveyKit-mac.framework */; };
+		2766E64A16834B78000D27C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2766E64816834B78000D27C5 /* InfoPlist.strings */; };
+		2766E64D16834B78000D27C5 /* KinveyKit_macTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2766E64C16834B78000D27C5 /* KinveyKit_macTests.m */; };
+		2766E65916834F1D000D27C5 /* KCSGenericRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E0B35E15E51F3600B83E72 /* KCSGenericRESTRequest.m */; };
+		2766E65A16835050000D27C5 /* KCSConnectionPool.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA224B148412A600666259 /* KCSConnectionPool.m */; };
 		276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 276A6F6116372FD500285884 /* KCSEntityCache.h */; };
 		276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6216372FD500285884 /* KCSEntityCache.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		276A6F6F1637834700285884 /* KCSEntityCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6E1637834700285884 /* KCSEntityCacheTests.m */; };
@@ -141,13 +151,13 @@
 		27D1559116713C7300171230 /* KCSLinkedInHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D1558D16713C3C00171230 /* KCSLinkedInHelper.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27D1559216713DD000171230 /* KCSLinkedInHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 27D1558C16713C3C00171230 /* KCSLinkedInHelper.h */; };
 		27E0B35F15E51F3700B83E72 /* KCSGenericRESTRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E0B35D15E51F3600B83E72 /* KCSGenericRESTRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		27E0B36015E51F3700B83E72 /* KCSGenericRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E0B35E15E51F3600B83E72 /* KCSGenericRESTRequest.m */; };
+		27E0B36015E51F3700B83E72 /* KCSGenericRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E0B35E15E51F3600B83E72 /* KCSGenericRESTRequest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
 		27E0B36415E523B400B83E72 /* KCSGenericRestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E0B36315E523B400B83E72 /* KCSGenericRestTests.m */; };
 		27E33EB31609525600D01C97 /* KCS_TWSignedRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E33EB11609525600D01C97 /* KCS_TWSignedRequest.h */; };
 		27E33EB41609525600D01C97 /* KCS_TWSignedRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E33EB21609525600D01C97 /* KCS_TWSignedRequest.m */; };
 		27E33EB51609529000D01C97 /* KCSUser+SocialExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 2795FC3A160915A1002ED162 /* KCSUser+SocialExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E4CDFB156A801A00B5DF55 /* KCSReduceFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4CDF9156A801A00B5DF55 /* KCSReduceFunction.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		27E4CDFC156A801A00B5DF55 /* KCSReduceFunction.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFA156A801A00B5DF55 /* KCSReduceFunction.m */; settings = {COMPILER_FLAGS = "-fobjc_arc"; }; };
+		27E4CDFC156A801A00B5DF55 /* KCSReduceFunction.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFA156A801A00B5DF55 /* KCSReduceFunction.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27E4CE00156A803300B5DF55 /* KCSGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4CDFE156A803300B5DF55 /* KCSGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E4CE01156A803300B5DF55 /* KCSGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFF156A803300B5DF55 /* KCSGroup.m */; };
 		27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F360981598BF5C006B699E /* KCSMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -231,7 +241,7 @@
 		D3E7326414C879A4002972B8 /* KCSObjectMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = D3E7326214C879A4002972B8 /* KCSObjectMapper.h */; };
 		D3E7326514C879A4002972B8 /* KCSObjectMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = D3E7326314C879A4002972B8 /* KCSObjectMapper.m */; };
 		D3EA224C148412A600666259 /* KCSConnectionPool.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA224A148412A600666259 /* KCSConnectionPool.h */; };
-		D3EA224D148412A600666259 /* KCSConnectionPool.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA224B148412A600666259 /* KCSConnectionPool.m */; };
+		D3EA224D148412A600666259 /* KCSConnectionPool.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA224B148412A600666259 /* KCSConnectionPool.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D3EA22521484180300666259 /* KCSSyncConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22501484180300666259 /* KCSSyncConnection.h */; };
 		D3EA22531484180300666259 /* KCSSyncConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22511484180300666259 /* KCSSyncConnection.m */; };
 		D3EA22571484228300666259 /* KCSRESTRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22551484228300666259 /* KCSRESTRequest.h */; };
@@ -269,6 +279,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2766E64216834B78000D27C5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2766E62C16834B77000D27C5;
+			remoteInfo = "KinveyKit-mac";
+		};
 		2785F5421609179E004AA410 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
@@ -358,6 +375,18 @@
 		27592BCB160228D100AC2A69 /* KCSCounterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCounterTests.m; sourceTree = "<group>"; };
 		2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSOfflineSaveStore.h; sourceTree = "<group>"; };
 		2764B53C15DD9242003964D1 /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = usr/lib/libobjc.dylib; sourceTree = SDKROOT; };
+		2766E62D16834B77000D27C5 /* KinveyKit-mac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "KinveyKit-mac.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2766E62E16834B78000D27C5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		2766E63216834B78000D27C5 /* KinveyKit-mac-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KinveyKit-mac-Info.plist"; sourceTree = "<group>"; };
+		2766E63416834B78000D27C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2766E63616834B78000D27C5 /* KinveyKit-mac-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyKit-mac-Prefix.pch"; sourceTree = "<group>"; };
+		2766E63716834B78000D27C5 /* KinveyKit_mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyKit_mac.h; sourceTree = "<group>"; };
+		2766E63816834B78000D27C5 /* KinveyKit_mac.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KinveyKit_mac.m; sourceTree = "<group>"; };
+		2766E63F16834B78000D27C5 /* KinveyKit-macTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyKit-macTests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2766E64716834B78000D27C5 /* KinveyKit-macTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KinveyKit-macTests-Info.plist"; sourceTree = "<group>"; };
+		2766E64916834B78000D27C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2766E64B16834B78000D27C5 /* KinveyKit_macTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyKit_macTests.h; sourceTree = "<group>"; };
+		2766E64C16834B78000D27C5 /* KinveyKit_macTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KinveyKit_macTests.m; sourceTree = "<group>"; };
 		276A6F6116372FD500285884 /* KCSEntityCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCache.h; sourceTree = "<group>"; };
 		276A6F6216372FD500285884 /* KCSEntityCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCache.m; sourceTree = "<group>"; };
 		276A6F6D1637834700285884 /* KCSEntityCacheTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCacheTests.h; sourceTree = "<group>"; };
@@ -794,6 +823,24 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2766E62916834B77000D27C5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2766E62F16834B78000D27C5 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2766E63B16834B78000D27C5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2766E64016834B78000D27C5 /* SenTestingKit.framework in Frameworks */,
+				2766E64116834B78000D27C5 /* Cocoa.framework in Frameworks */,
+				2766E64416834B78000D27C5 /* KinveyKit-mac.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2785F5281609179E004AA410 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -870,6 +917,45 @@
 				272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */,
 			);
 			name = "UI Helpers";
+			sourceTree = "<group>";
+		};
+		2766E63016834B78000D27C5 /* KinveyKit-mac */ = {
+			isa = PBXGroup;
+			children = (
+				2766E63716834B78000D27C5 /* KinveyKit_mac.h */,
+				2766E63816834B78000D27C5 /* KinveyKit_mac.m */,
+				2766E63116834B78000D27C5 /* Supporting Files */,
+			);
+			path = "KinveyKit-mac";
+			sourceTree = "<group>";
+		};
+		2766E63116834B78000D27C5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2766E63216834B78000D27C5 /* KinveyKit-mac-Info.plist */,
+				2766E63316834B78000D27C5 /* InfoPlist.strings */,
+				2766E63616834B78000D27C5 /* KinveyKit-mac-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2766E64516834B78000D27C5 /* KinveyKit-macTests */ = {
+			isa = PBXGroup;
+			children = (
+				2766E64B16834B78000D27C5 /* KinveyKit_macTests.h */,
+				2766E64C16834B78000D27C5 /* KinveyKit_macTests.m */,
+				2766E64616834B78000D27C5 /* Supporting Files */,
+			);
+			path = "KinveyKit-macTests";
+			sourceTree = "<group>";
+		};
+		2766E64616834B78000D27C5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2766E64716834B78000D27C5 /* KinveyKit-macTests-Info.plist */,
+				2766E64816834B78000D27C5 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		2785F5301609179E004AA410 /* KinveyKitExtras */ = {
@@ -1111,6 +1197,8 @@
 				D32A60E514716EE300F77A3F /* KinveyKitTests */,
 				2785F5301609179E004AA410 /* KinveyKitExtras */,
 				2785F5461609179E004AA410 /* KinveyKitExtrasTests */,
+				2766E63016834B78000D27C5 /* KinveyKit-mac */,
+				2766E64516834B78000D27C5 /* KinveyKit-macTests */,
 				D32A60CA14716EE300F77A3F /* Frameworks */,
 				D32A60C914716EE300F77A3F /* Products */,
 			);
@@ -1123,6 +1211,8 @@
 				D32A60D914716EE300F77A3F /* KinveyKitTests.octest */,
 				2785F52E1609179E004AA410 /* KinveyKitExtras.framework */,
 				2785F53C1609179E004AA410 /* KinveyKitExtrasTests.octest */,
+				2766E62D16834B77000D27C5 /* KinveyKit-mac.framework */,
+				2766E63F16834B78000D27C5 /* KinveyKit-macTests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1147,6 +1237,7 @@
 				D32A60CB14716EE300F77A3F /* Foundation.framework */,
 				D32A60DA14716EE300F77A3F /* SenTestingKit.framework */,
 				D32A60DC14716EE300F77A3F /* UIKit.framework */,
+				2766E62E16834B78000D27C5 /* Cocoa.framework */,
 				2795FC0F16091570002ED162 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -1989,6 +2080,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		2766E62A16834B77000D27C5 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2785F5291609179E004AA410 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2091,6 +2189,43 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		2766E62C16834B77000D27C5 /* KinveyKit-mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2766E65616834B78000D27C5 /* Build configuration list for PBXNativeTarget "KinveyKit-mac" */;
+			buildPhases = (
+				2766E62816834B77000D27C5 /* Sources */,
+				2766E62916834B77000D27C5 /* Frameworks */,
+				2766E62A16834B77000D27C5 /* Headers */,
+				2766E62B16834B77000D27C5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "KinveyKit-mac";
+			productName = "KinveyKit-mac";
+			productReference = 2766E62D16834B77000D27C5 /* KinveyKit-mac.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		2766E63E16834B78000D27C5 /* KinveyKit-macTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2766E65716834B78000D27C5 /* Build configuration list for PBXNativeTarget "KinveyKit-macTests" */;
+			buildPhases = (
+				2766E63A16834B78000D27C5 /* Sources */,
+				2766E63B16834B78000D27C5 /* Frameworks */,
+				2766E63C16834B78000D27C5 /* Resources */,
+				2766E63D16834B78000D27C5 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2766E64316834B78000D27C5 /* PBXTargetDependency */,
+			);
+			name = "KinveyKit-macTests";
+			productName = "KinveyKit-macTests";
+			productReference = 2766E63F16834B78000D27C5 /* KinveyKit-macTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
 		2785F52D1609179E004AA410 /* KinveyKitExtras */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2785F54F1609179F004AA410 /* Build configuration list for PBXNativeTarget "KinveyKitExtras" */;
@@ -2200,11 +2335,29 @@
 				D3F7E88D148D7C770044F1E8 /* KinveyKit Documentation */,
 				2785F52D1609179E004AA410 /* KinveyKitExtras */,
 				2785F53B1609179E004AA410 /* KinveyKitExtrasTests */,
+				2766E62C16834B77000D27C5 /* KinveyKit-mac */,
+				2766E63E16834B78000D27C5 /* KinveyKit-macTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2766E62B16834B77000D27C5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2766E63516834B78000D27C5 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2766E63C16834B78000D27C5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2766E64A16834B78000D27C5 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2785F52A1609179E004AA410 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2241,6 +2394,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		2766E63D16834B78000D27C5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
 		2785F5261609179E004AA410 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2348,6 +2514,24 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2766E62816834B77000D27C5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2766E63916834B78000D27C5 /* KinveyKit_mac.m in Sources */,
+				2766E65916834F1D000D27C5 /* KCSGenericRESTRequest.m in Sources */,
+				2766E65A16835050000D27C5 /* KCSConnectionPool.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2766E63A16834B78000D27C5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2766E64D16834B78000D27C5 /* KinveyKit_macTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2785F5271609179E004AA410 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2496,6 +2680,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		2766E64316834B78000D27C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2766E62C16834B77000D27C5 /* KinveyKit-mac */;
+			targetProxy = 2766E64216834B78000D27C5 /* PBXContainerItemProxy */;
+		};
 		2785F5431609179E004AA410 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 2785F52D1609179E004AA410 /* KinveyKitExtras */;
@@ -2529,6 +2718,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		2766E63316834B78000D27C5 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2766E63416834B78000D27C5 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		2766E64816834B78000D27C5 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2766E64916834B78000D27C5 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		2785F5331609179E004AA410 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -2707,6 +2912,230 @@
 				WRAPPER_EXTENSION = octest;
 			};
 			name = DebugForTest_run_tests;
+		};
+		2766E64E16834B78000D27C5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKit-mac/KinveyKit-mac-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		2766E64F16834B78000D27C5 /* DebugForTest */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKit-mac/KinveyKit-mac-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = DebugForTest;
+		};
+		2766E65016834B78000D27C5 /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKit-mac/KinveyKit-mac-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = DebugForTest_run_tests;
+		};
+		2766E65116834B78000D27C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKit-mac/KinveyKit-mac-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
+		2766E65216834B78000D27C5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKit-macTests/KinveyKit-macTests-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		2766E65316834B78000D27C5 /* DebugForTest */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKit-macTests/KinveyKit-macTests-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = DebugForTest;
+		};
+		2766E65416834B78000D27C5 /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKit-macTests/KinveyKit-macTests-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = DebugForTest_run_tests;
+		};
+		2766E65516834B78000D27C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "KinveyKit-macTests/KinveyKit-macTests-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
 		};
 		2785F5501609179F004AA410 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3119,6 +3548,26 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2766E65616834B78000D27C5 /* Build configuration list for PBXNativeTarget "KinveyKit-mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2766E64E16834B78000D27C5 /* Debug */,
+				2766E64F16834B78000D27C5 /* DebugForTest */,
+				2766E65016834B78000D27C5 /* DebugForTest_run_tests */,
+				2766E65116834B78000D27C5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		2766E65716834B78000D27C5 /* Build configuration list for PBXNativeTarget "KinveyKit-macTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2766E65216834B78000D27C5 /* Debug */,
+				2766E65316834B78000D27C5 /* DebugForTest */,
+				2766E65416834B78000D27C5 /* DebugForTest_run_tests */,
+				2766E65516834B78000D27C5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		2785F54F1609179F004AA410 /* Build configuration list for PBXNativeTarget "KinveyKitExtras" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

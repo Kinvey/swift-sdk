@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 7/13/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSUserDiscovery.h"
@@ -17,6 +17,8 @@
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
 #import "KinveyCollection.h"
+#import "NSArray+KinveyAdditions.h"
+#import "KCSObjectMapper.h"
 
 @implementation KCSUserDiscovery
 
@@ -29,25 +31,25 @@
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         
         KCSLogTrace(@"In collection callback with response: %@", response);
-        NSObject* jsonData = [response jsonResponseValue];
+        id jsonData = [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Lookup was unsuccessful." errorCode:response.responseCode domain:KCSUserErrorDomain requestId:response.requestId];
             completionBlock(nil, error);
             return;
         }
-        NSArray* jsonArray = nil;
-        if ([jsonData isKindOfClass:[NSArray class]]){
-            jsonArray = (NSArray *)jsonData;
-        } else {
-            if ([(NSDictionary *)jsonData count] == 0){
-                jsonArray = [NSArray array];
-            } else {
-                jsonArray = [NSArray arrayWithObjects:(NSDictionary *)jsonData, nil];
-            }
-        }        
+        NSArray* jsonArray = [NSArray wrapIfNotArray:jsonData];
+        NSUInteger itemCount = jsonArray.count;
+        if (itemCount == 0) {
+            completionBlock(@[], nil);
+        }
+        NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:itemCount];
+        for (NSDictionary* jsonDict in jsonArray) {
+            id newobj = [KCSObjectMapper makeObjectOfType:userCollection.objectTemplate withData:jsonDict];
+            [returnObjects addObject:newobj];
+        }
         
-        completionBlock(jsonArray, nil);
+        completionBlock(returnObjects, nil);
     };
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
         completionBlock(nil, error);

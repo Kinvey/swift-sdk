@@ -14,7 +14,6 @@
 @end
 
 @implementation KCSReduceFunction
-@synthesize outputField = _outputField;
 
 #pragma mark - Init
 
@@ -22,19 +21,11 @@
 {
     self = [super init];
     if (self) {
-        _jsonRepresentation = [function retain];
-        _jsonInitValue = [initialObj retain];
-        _outputField = [field retain];
+        _jsonRepresentation = function;
+        _jsonInitValue = initialObj;
+        _outputField = field;
     }
     return self;
-}
-
-- (void) dealloc
-{
-    [_jsonRepresentation release];
-    [_jsonInitValue release];
-    [_outputField release];
-    [super dealloc];
 }
 
 #pragma mark - functions
@@ -58,38 +49,38 @@
 
 + (KCSReduceFunction*) COUNT
 {
-    return [[[KCSReduceFunction alloc] initWithFunction:@"function(doc,out){ out.%@++;}" field:@"count" initial:[NSNumber numberWithInt:0]] autorelease];
+    return [[KCSReduceFunction alloc] initWithFunction:@"function(doc,out){ out.%@++;}" field:@"count" initial:[NSNumber numberWithInt:0]];
 }
 
 + (KCSReduceFunction*) SUM:(NSString *)fieldToSum
 {
     NSString* function = [NSString stringWithFormat:@"function(doc,out){ out.%%@ = out.%%@ + doc.%@;}", fieldToSum];
-    return [[[KCSReduceFunction alloc] initWithFunction:function field:@"sum" initial:[NSNumber numberWithInt:0]] autorelease];
+    return [[KCSReduceFunction alloc] initWithFunction:function field:@"sum" initial:[NSNumber numberWithInt:0]];
 }
 
 + (KCSReduceFunction*) MIN:(NSString *)fieldToMin
 {
     NSString* function = [NSString stringWithFormat:@"function(doc,out){ out.%%@ = Math.min(out.%%@, doc.%@);}", fieldToMin];
-    return [[[KCSReduceFunction alloc] initWithFunction:function field:@"min" initial:@"Infinity"] autorelease];
+    return [[KCSReduceFunction alloc] initWithFunction:function field:@"min" initial:@"Infinity"];
 }
 
 + (KCSReduceFunction*) MAX:(NSString*)fieldToMax
 {
     NSString* function = [NSString stringWithFormat:@"function(doc,out){ out.%%@ = Math.max(out.%%@, doc.%@);}", fieldToMax];
-    return [[[KCSReduceFunction alloc] initWithFunction:function field:@"max" initial:@"-Infinity"] autorelease];  
+    return [[KCSReduceFunction alloc] initWithFunction:function field:@"max" initial:@"-Infinity"];  
 }
 
 + (KCSReduceFunction*) AVERAGE:(NSString*)fieldToAverage
 {
     NSString* function = [NSString stringWithFormat:@"function(doc,out){ var count = (out._kcs_count == undefined) ? 0 : out._kcs_count; out.%%@ = (out.%%@ * count + doc.%@) / (count + 1); out._kcs_count = count+1;}", fieldToAverage];
-    return [[[KCSReduceFunction alloc] initWithFunction:function field:@"avg" initial:[NSNumber numberWithInt:0]] autorelease];  
+    return [[KCSReduceFunction alloc] initWithFunction:function field:@"avg" initial:[NSNumber numberWithInt:0]];  
     
 }
 
 + (KCSReduceFunction*) AGGREGATE
 {
     NSString* function = [NSString stringWithFormat:@"function(doc,out){ out.%%@ = out.%%@.concat(doc)}"];
-    return [[[KCSReduceFunction alloc] initWithFunction:function field:@"objects" initial:@[]] autorelease];
+    return [[KCSReduceFunction alloc] initWithFunction:function field:@"objects" initial:@[]];
 }
 
 

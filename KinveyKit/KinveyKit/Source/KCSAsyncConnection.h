@@ -37,8 +37,4 @@ typedef void (^RunBlock_t)();
 @property (nonatomic, readonly) double percentComplete;
 @property (nonatomic) double percentNotificationThreshold;
 
-
-
-
-
 @end

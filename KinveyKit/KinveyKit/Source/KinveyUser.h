@@ -108,7 +108,7 @@ typedef enum  {
  Since all requests *must* be made through a user, the library maintains the concept of a current user, which is the
  user used to make all requests.  Convienience routines are available to manage the state of this Current User.
  
- Like other entities, KCSUsers can have different levels of access control. The `user` collection can be made private in the Kinvey console; if it is private, users will still have four fields that can be queried publicly: username, surname, given name, and email. These can be discovered with ... 
+ Like other entities, KCSUsers can have different levels of access control. The `user` collection can be made private in the Kinvey console; if it is private, users will still have four fields that can be queried publicly: username, surname, given name, and email. These can be discovered with `KCSUserDiscovery`.
  
  Like other entities, the `metadata` property can be modified to control access on a user-by-user basis, beyond the `user` collection-wide settings. 
  

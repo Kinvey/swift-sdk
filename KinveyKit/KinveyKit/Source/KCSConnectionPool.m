@@ -28,19 +28,13 @@ void verifyConnectionType(id connectionClass);
 
 @implementation KCSConnectionPool
 
-@synthesize asyncConnectionType = _asyncConnectionType;
-@synthesize syncConnectionType = _syncConnectionType;
-@synthesize genericConnectionPools = _genericConnectionPools;
-@synthesize poolIsFilled = _poolIsFilled;
-@synthesize genericPoolStack = _genericPoolStack;
-
 #pragma mark -
 #pragma mark Singleton Implementation
 - (id)init
 {
     self = [super init];
     if (self){
-        _genericConnectionPools = [[[NSMutableDictionary alloc] init] retain];
+        _genericConnectionPools = [[NSMutableDictionary alloc] init];
         self.asyncConnectionType = [KCSAsyncConnection class];
         self.syncConnectionType = [KCSSyncConnection class];
         _poolIsFilled = NO;
@@ -83,7 +77,7 @@ void verifyConnectionType(id connectionClass);
     // Note that we have to allocate an object before testing the class, since I don't know the way to
     // do a direct comparison, I could use the underlying structure of the objc types, but that
     // feels more hacky than the temp copy here.
-    verifyConnectionType([[[connectionClass alloc] init] autorelease]);
+    verifyConnectionType([[connectionClass alloc] init]);
     self.asyncConnectionType = connectionClass;
 }
 
@@ -92,7 +86,7 @@ void verifyConnectionType(id connectionClass);
     // Note that we have to allocate an object before testing the class, since I don't know the way to
     // do a direct comparison, I could use the underlying structure of the objc types, but that
     // feels more hacky than the temp copy here.
-    verifyConnectionType([[[connectionClass alloc] init] autorelease]);
+    verifyConnectionType([[connectionClass alloc] init]);
     self.syncConnectionType = connectionClass;
 }
 
@@ -137,7 +131,7 @@ void verifyConnectionType(id connectionClass);
         return conn;
     } else {
         // Make the object
-        id obj = [[[connectionClass alloc] init] autorelease];
+        id obj = [[connectionClass alloc] init] ;
         
         // Check the object
         verifyConnectionType(obj);
