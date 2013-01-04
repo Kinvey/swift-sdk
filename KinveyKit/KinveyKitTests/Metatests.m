@@ -67,14 +67,14 @@ typedef struct {
     dispatch_queue_t myd = dispatch_queue_create("com.kinvey.testQ", NULL);
     self.done = NO;
     
-//     dispatch_async(myd, ^{
-//     NSLog(@"in q");
-//     
-//         [self runit2];
-//     });
-
+    //     dispatch_async(myd, ^{
+    //     NSLog(@"in q");
+    //
+    //         [self runit2];
+    //     });
+    
     NSOperationQueue* op = [[NSOperationQueue alloc] init];
-
+    
     [op addOperationWithBlock:^{
         [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
             NSLog(@"in ping return");
@@ -87,8 +87,8 @@ typedef struct {
     }];
     
     
-//    NSThread* t =[[NSThread alloc] initWithTarget:self selector:@selector(startthread) object:nil];
-//    [t start];
+    //    NSThread* t =[[NSThread alloc] initWithTarget:self selector:@selector(startthread) object:nil];
+    //    [t start];
     [self poll];
     
 }
@@ -97,7 +97,7 @@ typedef struct {
 {
     
     dispatch_semaphore_t semi = dispatch_semaphore_create(0);
-  
+    
     NSOperationQueue* op = [[NSOperationQueue alloc] init];
     
     [op addOperationWithBlock:^{
@@ -106,19 +106,19 @@ typedef struct {
             //    thisDone = YES;
             self.done = YES;
             //        dispatch_resume(<#dispatch_object_t object#>)
-//            dispatch_semaphore_signal(semi);
+            //            dispatch_semaphore_signal(semi);
         }];
         [[NSRunLoop currentRunLoop] run];
     }];
     
-  //  NSRunLoop* l = [NSRunLoop currentRunLoop];
-   // [l runMode:@"ABC" beforeDate:[NSDate distantFuture]];
-//    [q setMaxConcurrentOperationCount:1000];
-  //  dispatch_source_create(<#dispatch_source_type_t type#>, <#uintptr_t handle#>, <#unsigned long mask#>, <#dispatch_queue_t queue#>)
-
-//    dispatch_semaphore_wait(semi, DISPATCH_TIME_FOREVER);
+    //  NSRunLoop* l = [NSRunLoop currentRunLoop];
+    // [l runMode:@"ABC" beforeDate:[NSDate distantFuture]];
+    //    [q setMaxConcurrentOperationCount:1000];
+    //  dispatch_source_create(<#dispatch_source_type_t type#>, <#uintptr_t handle#>, <#unsigned long mask#>, <#dispatch_queue_t queue#>)
+    
+    //    dispatch_semaphore_wait(semi, DISPATCH_TIME_FOREVER);
     NSLog(@"done");
- //   dispatch_suspend(dispatch_get_current_queue());
+    //   dispatch_suspend(dispatch_get_current_queue());
 }
 
 - (void) runit
@@ -155,11 +155,11 @@ typedef struct {
 
 - (void) startthread {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-//    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
-//        NSLog(@"in ping return");
-//        self.done = YES;
-//        
-//    }];
+    //    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
+    //        NSLog(@"in ping return");
+    //        self.done = YES;
+    //
+    //    }];
     
     [self runit];
     
@@ -183,11 +183,11 @@ typedef struct {
     KCSQuerySortModifier* sort = [[KCSQuerySortModifier alloc] initWithField:@"name" inDirection:kKCSAscending];
     [query addSortModifier:sort];
     
-  //  NSFetchRequest* req = [NSFetchRequest fetchRequestWithEntityName:@"Recipe"];
+    //  NSFetchRequest* req = [NSFetchRequest fetchRequestWithEntityName:@"Recipe"];
     req.fetchLimit = 40;
     req.fetchOffset = 40;
-
-//    KCSQuery* query = [KCSQuery query];
+    
+    //    KCSQuery* query = [KCSQuery query];
     KCSQueryLimitModifier* limit = [[KCSQueryLimitModifier alloc] initWithLimit:40];
     KCSQuerySkipModifier* skip = [[KCSQuerySkipModifier alloc] initWithcount:40];
     [query setLimitModifer:limit];
@@ -227,7 +227,7 @@ typedef struct {
     
     
     NSString* o = KCS_DICTIONARY_DATATYPE_BUILDER;
-  //  o = abcd;
+    //  o = abcd;
     
     
     
@@ -257,41 +257,41 @@ typedef struct {
 
 - (void) neq
 {
-//    NSDictionary* teamRef = @{@"_type" : @"KinveyRef", @"_collection" : @"Teams", @"_id" : [self.team kinveyObjectId] }
-//    KCSQuery *query = [KCSQuery queryOnField:@"team"
-//                      withExactMatchForValue:teamRef];
-//    
-//    KCSCollection* collection = [KCSCollection collectionFromString:@"<#collection name#>" ofClass:[NSObject class]];
-//    
-//    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
-//    [store loadObjectWithID:@"object1" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-//        dispatch_async(dispatch_queue_create("com.kinvey.lotsofwork", NULL), ^{
-//            [self doIntensiveWorkOn:objectsOrNil];
-//        });
-//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-//        NSLog(@"percent complete = %f", percentComplete);
-//    }];
+    //    NSDictionary* teamRef = @{@"_type" : @"KinveyRef", @"_collection" : @"Teams", @"_id" : [self.team kinveyObjectId] }
+    //    KCSQuery *query = [KCSQuery queryOnField:@"team"
+    //                      withExactMatchForValue:teamRef];
+    //
+    //    KCSCollection* collection = [KCSCollection collectionFromString:@"<#collection name#>" ofClass:[NSObject class]];
+    //
+    //    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
+    //    [store loadObjectWithID:@"object1" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    //        dispatch_async(dispatch_queue_create("com.kinvey.lotsofwork", NULL), ^{
+    //            [self doIntensiveWorkOn:objectsOrNil];
+    //        });
+    //    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+    //        NSLog(@"percent complete = %f", percentComplete);
+    //    }];
 }
 
 
 - (void) xys
 {
-  //  I'm having trouble getting past the first step of the setup. I'm trying to simply ping the service using the tutorial and I keep getting a "invalid credentials" response.
+    //  I'm having trouble getting past the first step of the setup. I'm trying to simply ping the service using the tutorial and I keep getting a "invalid credentials" response.
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_eVWJLDiR0"
                                                  withAppSecret:@"e124b851ba7146628ce25d7b6d35910b"
                                                   usingOptions:nil];
-  //  I checked them 100 times, seems right to me. Here's the pinging code, directly from the tutorial:
-//    - (void)viewDidLoad{ [super viewDidLoad]; // Do any additional setup after loading the view, typically from a nib.
-        // Ping Kinvey
-        [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) { // This block gets executed when the ping completes
-            NSString *title; if (result.pingWasSuccessful){ title = @"Kinvey Ping Success :)"; } else { title = @"Kinvey Ping Failed :("; }
-            // Log the result
-            NSLog(@"%@", result.description);
-            // Display an alert stating the result
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle: title message: [result description] delegate: nil cancelButtonTitle: @"OK" otherButtonTitles: nil];
-            [alert show];
-        }];
-  //  }
+    //  I checked them 100 times, seems right to me. Here's the pinging code, directly from the tutorial:
+    //    - (void)viewDidLoad{ [super viewDidLoad]; // Do any additional setup after loading the view, typically from a nib.
+    // Ping Kinvey
+    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) { // This block gets executed when the ping completes
+        NSString *title; if (result.pingWasSuccessful){ title = @"Kinvey Ping Success :)"; } else { title = @"Kinvey Ping Failed :("; }
+        // Log the result
+        NSLog(@"%@", result.description);
+        // Display an alert stating the result
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: title message: [result description] delegate: nil cancelButtonTitle: @"OK" otherButtonTitles: nil];
+        [alert show];
+    }];
+    //  }
     //    If you can assist in anyway it will be most helpful. Thanks,Frankie
     
 }
@@ -381,7 +381,7 @@ typedef struct {
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         //show progress;
     }];
-//    [store loadObjectWithID:]
+    //    [store loadObjectWithID:]
     
     [KCSUser getAccessDictionaryFromTwitterFromPrimaryAccount:^(NSDictionary *accessDictOrNil, NSError *errorOrNil) {
         if (accessDictOrNil) {
@@ -392,7 +392,7 @@ typedef struct {
             }];
         }
     }];
-
+    
 }
 
 - (void) ex2
@@ -428,7 +428,27 @@ typedef struct {
             //handle error
         }
     }];
+    
+}
 
+- (void) adf
+{
+    BOOL wasCancelled = NO;
+    [_store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if (wasCancelled == NO) {
+            if (errorOrNil != nil) {
+                //An error happened, just log for now
+                NSLog(@"An error occurred on fetch: %@", errorOrNil);
+            } else {
+                //got all events back from server -- update table view
+                [_eventList setArray:objectsOrNil];
+                [self.tableView reloadData];
+            }
+        } else
+        {
+            // do nothing
+        }
+    } withProgressBlock:nil];
 }
 
 @end

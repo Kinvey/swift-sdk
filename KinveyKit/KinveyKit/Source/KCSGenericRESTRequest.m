@@ -36,7 +36,7 @@
 
 + (KCSGenericRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failure progressAction: (KCSConnectionProgressBlock)progress
 {
-    KCSGenericRESTRequest* req = [[[self alloc] initWithResource:resource usingMethod:requestMethod] autorelease];
+    KCSGenericRESTRequest* req = [[self alloc] initWithResource:resource usingMethod:requestMethod];
     req.completionAction = complete;
     req.failureAction = failure;
     req.progressAction = progress;
@@ -57,7 +57,7 @@
         _isMockRequest = NO;
         _followRedirects = YES;
         _retriesAttempted = 0;
-        _headers = [[NSMutableDictionary dictionary] retain];
+        _headers = [NSMutableDictionary dictionary];
         
         // Prepare to generate the request...
         KCSClient *kinveyClient = [KCSClient sharedClient];
@@ -66,25 +66,19 @@
         NSURL *url = [NSURL URLWithString:resource];
         
         KCSLogNetwork(@"Requesting resource: %@", resource);
-        _request = [[NSMutableURLRequest requestWithURL:url cachePolicy:kinveyClient.cachePolicy timeoutInterval:kinveyClient.connectionTimeout] retain];
+        _request = [NSMutableURLRequest requestWithURL:url cachePolicy:kinveyClient.cachePolicy timeoutInterval:kinveyClient.connectionTimeout];
     }
     return self;
 }
 
 - (void) dealloc
 {
-    [_resourceLocation release];
-    [_headers release];
-    
     _resourceLocation = nil;
     _headers = nil;
     
-    [_request release];
     self.completionAction = NULL;
     self.progressAction = NULL;
     self.failureAction = NULL;
-    
-    [super dealloc];
 }
 
 #pragma mark -
@@ -115,11 +109,11 @@
     KCSConnection *connection;
     
     if (self.isSyncRequest){
-        connection = [[KCSConnectionPool syncConnection] retain];
+        connection = [KCSConnectionPool syncConnection];
     } else if (self.isMockRequest) {
-        connection = [[KCSConnectionPool connectionWithConnectionType:self.mockConnection] retain];
+        connection = [KCSConnectionPool connectionWithConnectionType:self.mockConnection];
     } else {
-        connection = [[KCSConnectionPool asyncConnection] retain];
+        connection = [KCSConnectionPool asyncConnection];
     }
     
     [self.request setHTTPMethod: [KCSGenericRESTRequest getHTTPMethodForConstant: self.method]];
@@ -137,7 +131,6 @@
     }
     
     [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:nil];
-    [connection release];
 }
 
 
