@@ -1,7 +1,14 @@
 # KinveyKit Release History
 
 ## 1.13
-## 1.13.0 
+### 1.13.1
+** Release Date:** January 7, 2013
+
+* `KCSAppdataStore` and subclasses will now return objects when partial data is loaded from the server in progress blocks with `loadObjectWithID:withCompletionBlock:withProgressBlock:` and `queryWithQuery:withCompletionBlock:withProgressBlock:`
+* Bug fix(es):
+    * Email verification status property on `KCSUser` is now being properly set once the user has clicked the link in the email and the user is reloaded from the server. 
+
+### 1.13.0 
 ** Release Date:** December 18, 2012
 
 * Added support for log-in with __LinkedIn__

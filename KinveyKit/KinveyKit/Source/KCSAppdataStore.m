@@ -1,4 +1,4 @@
-
+    
 //
 //  KCSAppdataStore.m
 //  KinveyKit
@@ -42,6 +42,7 @@ return; \
 typedef KCSRESTRequest* (^RestRequestForObjBlock_t)(id obj);
 typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletionBlock completion);
 
+
 @interface KCSAppdataStore () {
     KCSSaveGraph* _previousProgress;
     KCSSaveQueue* _saveQueue;
@@ -52,8 +53,67 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
 @property (nonatomic, retain) KCSCollection *backingCollection;
 
+- (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources;
+
 @end
 
+@interface KCSPartialDataParser : NSObject <KCS_SBJsonStreamParserAdapterDelegate>
+@property (nonatomic, retain) KCS_SBJsonStreamParser* parser;
+@property (nonatomic, retain) KCS_SBJsonStreamParserAdapter* adapter;
+@property (nonatomic, retain) NSMutableArray* items;
+@property (nonatomic, assign) id objectMaker;
+@end
+
+@implementation KCSPartialDataParser
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.parser = [[[KCS_SBJsonStreamParser alloc] init] autorelease];
+        self.adapter = [[[KCS_SBJsonStreamParserAdapter alloc] init] autorelease];
+        _adapter.delegate = self;
+        _adapter.levelsToSkip = 2;
+        _parser.delegate = _adapter;
+        
+        self.items = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (NSArray*) parseData:(NSData*)data
+{
+    KCS_SBJsonStreamParserStatus status = [_parser parse:data];
+    if (status == SBJsonStreamParserError) {
+        KCSLogError(@"Error parsing partial progress reults: %@", _parser.error);
+	} else if (status == SBJsonStreamParserWaitingForData) {
+        KCSLogTrace(@"Parsed partial progress results. Item count %@", _items.count);
+		NSLog(@"Parser waiting for more data");
+	} else if (status == SBJsonStreamParserComplete) {
+        NSLog(@"complete");
+    }
+    return [[_items copy] autorelease];
+}
+
+- (void)parser:(KCS_SBJsonStreamParser *)parser foundArray:(NSArray *)array
+{
+    DBAssert(true, @"not expecting an array here");
+}
+
+- (void)parser:(KCS_SBJsonStreamParser *)parser foundObject:(NSDictionary *)dict {
+    id obj = [self.objectMaker manufactureNewObject:dict resourcesOrNil:nil];
+    [_items addObject:obj];
+}
+
+- (void) dealloc
+{
+    [self.items removeAllObjects];
+    self.items = nil;
+    self.adapter = nil;
+    self.parser = nil;
+    [super dealloc];
+}
+@end
 
 @implementation KCSAppdataStore
 
@@ -207,7 +267,7 @@ KCSConnectionFailureBlock makeGroupFailureBlock(KCSGroupCompletionBlock onComple
 KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 {
     return onProgress == nil ? nil : [[^(KCSConnectionProgress *connectionProgress) {
-        onProgress(connectionProgress.objects, connectionProgress.percentComplete);
+        onProgress(@[], connectionProgress.percentComplete);
     } copy] autorelease];
 }
 
@@ -307,6 +367,9 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     return [[processBlock copy] autorelease];
 }
 
+
+
+
 - (void) loadObjectsWithRESTRequest:(KCSRESTRequest*)request dataHandler:(ProcessDataBlock_t)processBlock completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
@@ -319,9 +382,17 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     KCSConnectionFailureBlock failureAction = ^(NSError* error) {
         completionBlock(nil, error);
     };
+    
+    KCSPartialDataParser* partialParser = nil;
+    if (progressBlock!= nil) {
+        partialParser = [[KCSPartialDataParser alloc] init];
+        partialParser.objectMaker = self;
+    }
+    
     [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* progress) {
         if (progressBlock != nil) {
-            progressBlock(progress.objects, progress.percentComplete);
+            NSArray* partialResults = [partialParser parseData:progress.data];
+            progressBlock(partialResults, progress.percentComplete);
         }
     }] start];
 }
@@ -448,9 +519,16 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
         completionBlock(nil, error);
     };
     
+    KCSPartialDataParser* partialParser = nil;
+    if (progressBlock!= nil) {
+        partialParser = [[KCSPartialDataParser alloc] init];
+        partialParser.objectMaker = self;
+    }
+    
     [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* progress) {
         if (progressBlock != nil) {
-            progressBlock(progress.objects, progress.percentComplete);
+            NSArray* partialResults = [partialParser parseData:progress.data];
+            progressBlock(partialResults, progress.percentComplete);
         }
     }] start];
 }
@@ -665,7 +743,7 @@ int reachable = -1;
         [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* cxnProgress) {
             [objKey setPc:cxnProgress.percentComplete];
             if (progressBlock != nil) {
-                progressBlock(cxnProgress.objects, progress.percentDone);
+                progressBlock(@[], progress.percentDone);
             }
         }] start];
     }

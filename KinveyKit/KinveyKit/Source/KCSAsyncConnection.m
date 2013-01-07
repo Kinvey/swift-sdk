@@ -240,6 +240,7 @@
         self.lastPercentage = downloadPercent; // Update to the current value
         KCSConnectionProgress* progress = [[[KCSConnectionProgress alloc] init] autorelease];
         progress.percentComplete = downloadPercent;
+        progress.data = data;
         self.progressBlock(progress);
     }
 }

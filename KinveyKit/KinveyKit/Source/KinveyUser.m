@@ -124,7 +124,7 @@
     NSDictionary* metadata = [properties popObjectForKey:@"_kmd"];
     NSDictionary* emailVerification = [metadata objectForKey:@"emailVerification"];
     NSString* verificationStatus = [emailVerification objectForKey:@"status"];
-    user->_emailVerified = [verificationStatus isEqualToString:@"Confirmed"];
+    user->_emailVerified = [verificationStatus isEqualToString:@"confirmed"];
     
     NSString* sessionAuth = [metadata objectForKey:@"authtoken"]; //get the session auth
     if (sessionAuth) {
