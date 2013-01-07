@@ -2,7 +2,7 @@
 //  KCSConnectionProgress.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -11,7 +11,7 @@
 
 #import <Foundation/Foundation.h>
 
-/*! Indication of current progress of a connection operation
+/* Indication of current progress of a connection operation
  
  This object is used to provide current status of the remote operation in progress.
  
@@ -20,7 +20,7 @@
  */
 @interface KCSConnectionProgress : NSObject
 
-@property (nonatomic, copy) NSArray* objects;
+@property (nonatomic, copy) NSData* data;
 @property (nonatomic) double percentComplete;
 
 

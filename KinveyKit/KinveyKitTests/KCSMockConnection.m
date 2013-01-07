@@ -3,23 +3,13 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/12/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSMockConnection.h"
 #import "KCSLogManager.h"
 
 @implementation KCSMockConnection
-
-@synthesize connectionShouldReturnNow = _connectionShouldReturnNow;
-@synthesize connectionShouldFail = _connectionShouldFail;
-@synthesize responseForSuccess = _responseForSuccess;
-@synthesize progressActions = _progressActions;
-@synthesize errorForFailure = _errorForFailure;
-@synthesize delayInMSecs = _delayInMSecs;
-@synthesize providedRequest = _providedRequest;
-@synthesize providedCredentials = _providedCredentials;
-@synthesize wasCalled = _wasCalled;
 
 #define BOOL_STRING(b) (b)?@"YES":@"NO"
 

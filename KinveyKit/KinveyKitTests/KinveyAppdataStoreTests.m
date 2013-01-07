@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 5/1/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyAppdataStoreTests.h"
@@ -11,6 +11,9 @@
 #import "ASTTestClass.h"
 
 #import "TestUtils.h"
+
+#import "KCSMockConnection.h"
+#import "KCS_SBJson.h"
 
 @interface KCSUser ()
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
@@ -411,6 +414,41 @@ NSArray* largeArray()
         STAssertEquals((NSUInteger)0, objectsOrNil.count, @"should be empty array");
         self.done = YES;
     } withProgressBlock:nil];
+    [self poll];
+}
+
+- (void) testStreamingResults
+{
+    NSMutableArray* baseObjs = [NSMutableArray array];
+    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a1"]];
+    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a2"]];
+    [baseObjs addObject:[self makeObject:@"two" count:10 objId:@"a3"]];
+    [baseObjs addObject:[self makeObject:@"two" count:30 objId:@"a4"]];
+    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a5"]];
+    [baseObjs addObject:[self makeObject:@"one" count:5  objId:@"a6"]];
+    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a7"]];
+    [_store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    __block float done = -1;
+    __block NSArray* objs = nil;
+    [_store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        objs = objectsOrNil;
+        STAssertNotNil(objs, @"expecting to load some objects");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"testStreamingResults: percentcomplete:%f", percentComplete);
+        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        done = percentComplete;
+        
+        STAssertNotNil(objects, @"should have objects");
+        STAssertTrue(objects.count >=1, @"should have at least object");
+        id obj = objects[0];
+        STAssertTrue([obj isKindOfClass:[ASTTestClass class]], @"class should be test class type");
+    }];
     [self poll];
 }
 
