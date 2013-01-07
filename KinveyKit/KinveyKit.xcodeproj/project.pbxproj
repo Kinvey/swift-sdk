@@ -259,7 +259,7 @@
 		D3F7E8751488084D0044F1E8 /* KinveyUser.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E8731488084D0044F1E8 /* KinveyUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3F7E8761488084D0044F1E8 /* KinveyUser.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E8741488084D0044F1E8 /* KinveyUser.m */; };
 		D3F7E88A148D64560044F1E8 /* KCSConnectionProgress.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E888148D64560044F1E8 /* KCSConnectionProgress.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3F7E88B148D64560044F1E8 /* KCSConnectionProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E889148D64560044F1E8 /* KCSConnectionProgress.m */; };
+		D3F7E88B148D64560044F1E8 /* KCSConnectionProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E889148D64560044F1E8 /* KCSConnectionProgress.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D3FC21FE149A833E00979F09 /* KinveyKitClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FC21FD149A833E00979F09 /* KinveyKitClientTests.m */; };
 		D3FF5FDB14C6178600680BD2 /* KCSAuthCredential.h in Headers */ = {isa = PBXBuildFile; fileRef = D3FF5FD914C6178600680BD2 /* KCSAuthCredential.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3FF5FDC14C6178600680BD2 /* KCSAuthCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FF5FDA14C6178600680BD2 /* KCSAuthCredential.m */; };
@@ -3119,6 +3119,28 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2766E65616834B78000D27C5 /* Build configuration list for PBXNativeTarget "KinveyKit-mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2766E64E16834B78000D27C5 /* Debug */,
+				2766E64F16834B78000D27C5 /* DebugForTest */,
+				2766E65016834B78000D27C5 /* DebugForTest_run_tests */,
+				2766E65116834B78000D27C5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = DebugForTest_run_tests;
+		};
+		2766E65716834B78000D27C5 /* Build configuration list for PBXNativeTarget "KinveyKit-macTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2766E65216834B78000D27C5 /* Debug */,
+				2766E65316834B78000D27C5 /* DebugForTest */,
+				2766E65416834B78000D27C5 /* DebugForTest_run_tests */,
+				2766E65516834B78000D27C5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = DebugForTest_run_tests;
+		};
 		2785F54F1609179F004AA410 /* Build configuration list for PBXNativeTarget "KinveyKitExtras" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

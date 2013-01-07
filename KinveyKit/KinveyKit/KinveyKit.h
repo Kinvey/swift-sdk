@@ -2,7 +2,7 @@
 //  KinveyKit.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -13,7 +13,7 @@
 #ifndef KinveyKit_h
 #define KinveyKit_h
 
-#define __KINVEYKIT_VERSION__ @"1.13.0"
+#define __KINVEYKIT_VERSION__ @"1.13.1"
 
 #import "KCSPush.h"
 #import "KCSClient.h"

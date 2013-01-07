@@ -55,7 +55,8 @@
     
     KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connectionProgress) {
         if (progressBlock != nil) {
-            progressBlock(connectionProgress.objects, connectionProgress.percentComplete);
+            //TODO:progressBlock(connectionProgress.objects, connectionProgress.percentComplete);
+            progressBlock(@[], connectionProgress.percentComplete);
         }
     };
 

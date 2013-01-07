@@ -48,7 +48,7 @@ typedef void (^KCSLocalCredentialBlock)(NSDictionary* accessDictOrNil, NSError* 
  
  @param completionBlock the block to be called when the request completes or faults. This is the place to dismiss the webview if necessary.
  @param webview for showing the LinkedIn access form. 
- @since 1.13
+ @since 1.13.0
  */
 + (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(UIWebView*) webview;
 @end

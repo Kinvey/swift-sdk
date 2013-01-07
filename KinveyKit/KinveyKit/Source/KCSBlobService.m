@@ -80,7 +80,8 @@ withResourceDelegate: (id<KCSResourceDelegate>)delegate
     
     KCSConnectionProgressBlock pBlock = (progressBlock == nil) ? nil : ^(KCSConnectionProgress *connection){
         if (progressBlock != nil) {
-            progressBlock(connection.objects, connection.percentComplete);
+            //TODO: progressBlock(connection.objects, connection.percentComplete);
+            progressBlock(@[], connection.percentComplete);
         }
     };
     
@@ -419,7 +420,8 @@ withResourceDelegate: (id<KCSResourceDelegate>)delegate
     
     KCSConnectionProgressBlock pBlock = (progressBlock == nil) ? nil : ^(KCSConnectionProgress *connection){
         if (progressBlock != nil) {
-            progressBlock(connection.objects, connection.percentComplete);
+            //TODO: progressBlock(connection.objects, connection.percentComplete);
+            progressBlock(@[], connection.percentComplete);
         }
     };
     

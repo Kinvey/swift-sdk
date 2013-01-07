@@ -104,7 +104,8 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     return [[^(KCSConnectionProgress *conn)
     {
         if (onProgress != nil) {
-            onProgress(conn.objects, conn.percentComplete);
+            //TODO: deprecate
+            onProgress(@[], conn.percentComplete);
         }
     } copy] autorelease];
     
