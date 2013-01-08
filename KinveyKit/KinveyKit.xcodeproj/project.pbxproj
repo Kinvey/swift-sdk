@@ -63,7 +63,7 @@
 		274330221575227000B2BF37 /* KCSResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330201575227000B2BF37 /* KCSResource.m */; };
 		274330251575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */; };
 		27592BC71602211600AC2A69 /* KCSUniqueNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 27592BC51602211600AC2A69 /* KCSUniqueNumber.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		27592BC81602211600AC2A69 /* KCSUniqueNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BC61602211600AC2A69 /* KCSUniqueNumber.m */; };
+		27592BC81602211600AC2A69 /* KCSUniqueNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BC61602211600AC2A69 /* KCSUniqueNumber.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27592BCC160228D100AC2A69 /* KCSCounterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27592BCB160228D100AC2A69 /* KCSCounterTests.m */; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };

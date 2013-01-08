@@ -4,7 +4,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 5/1/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 //TODO: check headers
