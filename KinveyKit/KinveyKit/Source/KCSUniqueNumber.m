@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/13/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSUniqueNumber.h"
@@ -14,14 +14,10 @@
 @end
 
 @implementation KCSUniqueNumber
-@synthesize value = _value;
-@synthesize sequenceId = _sequenceId;
-@synthesize metadata = _metadata;
-@synthesize type = _type;
 
 + (KCSUniqueNumber*) defaultSequence
 {
-    KCSUniqueNumber* counter = [[[KCSUniqueNumber alloc] init] autorelease];
+    KCSUniqueNumber* counter = [[KCSUniqueNumber alloc] init];
     counter.sequenceId = KCSSequenceId;
     return counter;
 }
@@ -30,27 +26,15 @@
 {
     self = [super init];
     if (self) {
-        _type = [KCSSequenceType retain];
+        _type = KCSSequenceType;
     }
     return self;
 }
 
-- (void) dealloc
-{
-    [_sequenceId release];
-    [_type release];
-    [_metadata release];
-    [super dealloc];
-}
 
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
-    static NSDictionary* mapping;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        mapping = [@{ @"sequenceId" : KCSEntityKeyId, @"metadata" : KCSEntityKeyMetadata, @"valueObj" : @"value", @"type" : @"_type"} retain];
-    });
-    return mapping;
+    return  @{ @"sequenceId" : KCSEntityKeyId, @"metadata" : KCSEntityKeyMetadata, @"valueObj" : @"value", @"type" : @"_type"};
 }
 
 - (void) reset

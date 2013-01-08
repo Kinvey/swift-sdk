@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/13/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 
