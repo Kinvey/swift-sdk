@@ -420,9 +420,9 @@
     KCSQuery *queryRequestMessages = [KCSQuery queryOnField:@"request_type" usingConditional:kKCSIn forValue:[NSArray arrayWithObjects:[NSNumber numberWithInt:10], [NSNumber numberWithInt:20], [NSNumber numberWithInt:30], nil]];
     
     KCSQuery *queryForGroup = [KCSQuery queryForJoiningOperator:kKCSAnd onQueries:queryNewMessages, queryRequestMessages, nil];
-    KCSQuery *queryForGroup2 = [KCSQuery queryForJoiningOperator:kKCSOr onQueries:queryNewMessages, queryRequestMessages, nil];
-    
-    NSString* x = @"f2e40aH2QK2mBcC9_NTl8Q";
+//    KCSQuery *queryForGroup2 = [KCSQuery queryForJoiningOperator:kKCSOr onQueries:queryNewMessages, queryRequestMessages, nil];
+//    
+//    NSString* x = @"f2e40aH2QK2mBcC9_NTl8Q";
     
     NSLog(@"%@", queryForGroup);
 }

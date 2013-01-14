@@ -51,13 +51,13 @@
         
         completionBlock(returnObjects, nil);
     };
+
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
         completionBlock(nil, error);
     };
     
     KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *connectionProgress) {
         if (progressBlock != nil) {
-            //TODO:progressBlock(connectionProgress.objects, connectionProgress.percentComplete);
             progressBlock(@[], connectionProgress.percentComplete);
         }
     };
