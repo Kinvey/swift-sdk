@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/13/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyEntity.h"
@@ -30,19 +30,15 @@
 // Avoid compiler warning by prototyping here...
 void
 makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
-                     KCSConnectionFailureBlock *fBlock,
-                     KCSConnectionProgressBlock *pBlock,
                      id objectOfInterest,
                      id <KCSEntityDelegate> delegate);
 
 void
 makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
-                     KCSConnectionFailureBlock *fBlock,
-                     KCSConnectionProgressBlock *pBlock,
                      id objectOfInterest,
                      id <KCSEntityDelegate> delegate)
 {
-     *cBlock = [^(KCSConnectionResponse *response){
+     *cBlock = [[^(KCSConnectionResponse *response){
          NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -60,17 +56,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
             }
             [delegate entity:[KCSObjectMapper populateObject:objectOfInterest withData:responseToReturn] fetchDidCompleteWithResult:responseToReturn];
         }
-    } copy];
-    
-    *fBlock = [^(NSError *error){
-        [delegate entity:objectOfInterest fetchDidFailWithError:error];
-    } copy];
-    
-    *pBlock = [^(KCSConnectionProgress *conn)
-    {
-        // Do nothing...
-    } copy];
-   
+    } copy] autorelease];
 }
 
 // NOTE: We're supressing the remainder of protocol warnings here
@@ -102,10 +88,15 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 
 
     KCSConnectionCompletionBlock cBlock;
-    KCSConnectionFailureBlock fBlock;
-    KCSConnectionProgressBlock pBlock;
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        [delegate entity:self fetchDidFailWithError:error];
+    };
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn)
+    {
+        // Do nothing...
+    };
     
-    makeConnectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
+    makeConnectionBlocks(&cBlock, self, delegate);
     [[[KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod] withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
@@ -221,10 +212,16 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     }
 
     KCSConnectionCompletionBlock cBlock;
-    KCSConnectionFailureBlock fBlock;
-    KCSConnectionProgressBlock pBlock;
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        [delegate entity:self fetchDidFailWithError:error];
+    };
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn)
+    {
+        // Do nothing...
+    };
+
     
-    makeConnectionBlocks(&cBlock, &fBlock, &pBlock, self, delegate);
+    makeConnectionBlocks(&cBlock, self, delegate);
     [[[KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod] withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
