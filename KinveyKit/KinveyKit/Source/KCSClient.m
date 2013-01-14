@@ -63,23 +63,6 @@
 
 @implementation KCSClient
 
-@synthesize appKey=_appKey;
-@synthesize appSecret=_appSecret;
-@synthesize appdataBaseURL=_appdataBaseURL;
-@synthesize resourceBaseURL=_resourceBaseURL;
-@synthesize connectionTimeout=_connectionTimeout;
-@synthesize options=_options;
-@synthesize userAgent=_userAgent;
-@synthesize libraryVersion=_libraryVersion;
-@synthesize authCredentials=_authCredentials;
-@synthesize cachePolicy=_cachePolicy;
-@synthesize protocol=_protocol;
-@synthesize currentUser=_currentUser;
-@synthesize userBaseURL=_userBaseURL;
-@synthesize authInProgressLock=_authInProgressLock;
-@synthesize authCompleteLock=_authCompleteLock;
-@synthesize serviceHostname=_serviceHostname;
-
 @synthesize userIsAuthenticated=_userIsAuthenticated;
 @synthesize userAuthenticationInProgress=_userAuthenticationInProgress;
 

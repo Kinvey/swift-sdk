@@ -8,7 +8,7 @@
 
 #import "Metatests.h"
 #import <KinveyKit/KinveyKit.h>
-#import "SBJson.h"
+#import "KCS_SBJson.h"
 
 #import "TestUtils.h"
 
@@ -450,6 +450,8 @@ typedef struct {
         }
     } withProgressBlock:nil];
 }
+
+
 
 @end
 
