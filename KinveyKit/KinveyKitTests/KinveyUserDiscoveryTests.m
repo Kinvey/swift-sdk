@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 7/14/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyUserDiscoveryTests.h"
@@ -55,8 +55,9 @@
     self.done = NO;
     [KCSUserDiscovery lookupUsersForFieldsAndValues:[NSDictionary dictionaryWithObjectsAndKeys:@"batman", @"username", nil] completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
-        NSDictionary* obj = [objectsOrNil objectAtIndex:0];
-        STAssertEqualObjects(@"Wayne", [obj valueForKey:KCSUserAttributeSurname], @"expecting a match");
+        STAssertObjects(1)
+        KCSUser* obj = objectsOrNil[0];
+        STAssertEqualObjects(@"Wayne", obj.surname, @"expecting a match");
         self.done = YES;
     } progressBlock:nil];
     [self poll];

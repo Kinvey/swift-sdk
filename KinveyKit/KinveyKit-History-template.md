@@ -1,5 +1,12 @@
 # KinveyKit Release History
 
+## 1.14
+### 1.14.0
+** Release Date:** TBD
+
+* Bug fix(es):
+    * KCSUserDiscover returns complete `KCSUser` objects now instead of `NSDictionary`.
+
 ## 1.13
 ### 1.13.1
 ** Release Date:** January 7, 2013

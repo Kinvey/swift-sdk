@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/23/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSBuilders.h"
@@ -21,7 +21,7 @@
         return object;
     } else if ([object isKindOfClass:[NSString class]]) {
         
-        return [[[NSAttributedString alloc] initWithString:object] autorelease];
+        return [[NSAttributedString alloc] initWithString:object];
     }
     return [NSNull null];
 }
@@ -33,7 +33,7 @@
         return object;
     } else if ([object isKindOfClass:[NSString class]]) {
         
-        return [[[NSMutableAttributedString alloc] initWithString:object] autorelease];
+        return [[NSMutableAttributedString alloc] initWithString:object];
     }
     return [NSNull null];
 }

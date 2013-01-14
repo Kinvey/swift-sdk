@@ -90,9 +90,7 @@
         }
     }
     
-    NSString* webUrlString = [@"https://www.linkedin.com/uas/oauth/authorize" stringByAppendingQueryString:[NSString stringWithFormat:@"oauth_token=%@", oauthToken]];
-    
-//   NSString* webPage
+//    NSString* webUrlString = [@"https://www.linkedin.com/uas/oauth/authorize" stringByAppendingQueryString:[NSString stringWithFormat:@"oauth_token=%@", oauthToken]];
 }
 
 @end
