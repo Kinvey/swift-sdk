@@ -81,8 +81,9 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     return self;
 }
 
-- (NSArray*) parseData:(NSData*)data
+- (NSArray*) parseData:(NSData*)data hasArray:(BOOL)hasArray
 {
+    _adapter.levelsToSkip = hasArray ? 2 : 1;
     KCS_SBJsonStreamParserStatus status = [_parser parse:data];
     if (status == SBJsonStreamParserError) {
         KCSLogError(@"Error parsing partial progress reults: %@", _parser.error);
@@ -369,34 +370,6 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 
 
 
-
-- (void) loadObjectsWithRESTRequest:(KCSRESTRequest*)request dataHandler:(ProcessDataBlock_t)processBlock completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
-        KCSLogTrace(@"In collection callback with response: %@", [response jsonResponseValue]);
-        processBlock(response, ^(NSArray* objectsOrNil, NSError* error) {
-            completionBlock(objectsOrNil, error);
-        });
-    };
-    
-    KCSConnectionFailureBlock failureAction = ^(NSError* error) {
-        completionBlock(nil, error);
-    };
-    
-    KCSPartialDataParser* partialParser = nil;
-    if (progressBlock!= nil) {
-        partialParser = [[KCSPartialDataParser alloc] init];
-        partialParser.objectMaker = self;
-    }
-    
-    [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* progress) {
-        if (progressBlock != nil) {
-            NSArray* partialResults = [partialParser parseData:progress.data];
-            progressBlock(partialResults, progress.percentComplete);
-        }
-    }] start];
-}
-
 - (NSString*) getObjIdFromObject:(id)object completionBlock:(KCSCompletionBlock)completionBlock
 {
     NSString* theId = nil;
@@ -454,6 +427,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     }
     
     NSString* query = @"";
+    BOOL hasArray = NO;
     if (array.count == 1) {
         query = [self getObjIdFromObject:array[0] completionBlock:completionBlock];
         if (query == nil) {
@@ -461,6 +435,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
             return;
         }
     } else {
+        hasArray = YES;
         NSMutableArray* objIds = [NSMutableArray arrayWithCapacity:array.count];
         for (id object in array) {
             NSString* anId = [self getObjIdFromObject:object completionBlock:completionBlock];
@@ -480,8 +455,29 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     KCSRESTRequest* request = [collection restRequestForMethod:kGetRESTMethod apiEndpoint:query];
     ProcessDataBlock_t processBlock = [self makeProcessDictBlockForNewObject];
     
-    [self loadObjectsWithRESTRequest:request dataHandler:processBlock completionBlock:completionBlock progressBlock:progressBlock];
-}
+    KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
+        KCSLogTrace(@"In collection callback with response: %@", [response jsonResponseValue]);
+        processBlock(response, ^(NSArray* objectsOrNil, NSError* error) {
+            completionBlock(objectsOrNil, error);
+        });
+    };
+    
+    KCSConnectionFailureBlock failureAction = ^(NSError* error) {
+        completionBlock(nil, error);
+    };
+    
+    KCSPartialDataParser* partialParser = nil;
+    if (progressBlock!= nil) {
+        partialParser = [[KCSPartialDataParser alloc] init];
+        partialParser.objectMaker = self;
+    }
+    
+    [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* progress) {
+        if (progressBlock != nil) {
+            NSArray* partialResults = [partialParser parseData:progress.data hasArray:hasArray];
+            progressBlock(partialResults, progress.percentComplete);
+        }
+    }] start];}
 
 - (void)queryWithQuery: (id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
@@ -527,7 +523,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     
     [[request withCompletionAction:completionAction failureAction:failureAction progressAction:^(KCSConnectionProgress* progress) {
         if (progressBlock != nil) {
-            NSArray* partialResults = [partialParser parseData:progress.data];
+            NSArray* partialResults = [partialParser parseData:progress.data hasArray:YES];
             progressBlock(partialResults, progress.percentComplete);
         }
     }] start];

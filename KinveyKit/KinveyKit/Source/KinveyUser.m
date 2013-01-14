@@ -985,7 +985,7 @@
         completionBlock(nil, userError);
     } else {
         NSString* uname = self.username;
-        NSString* pwd = self.password;
+        NSString* pwd = [[self.password copy] autorelease];
         
         self.password = newPassword;
         

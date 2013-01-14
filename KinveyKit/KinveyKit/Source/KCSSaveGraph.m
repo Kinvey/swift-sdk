@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/6/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSSaveGraph.h"
@@ -17,40 +17,25 @@
 
 
 @implementation KCSCompletionWrapper
-@synthesize size,pc,type,handle = _handle;
-@synthesize references = _references;
-@synthesize loading;
-@synthesize done;
-@synthesize resaveCount;
-@synthesize waitingObjects = _waitingObjects;
-@synthesize waitingBlocks = _waitingBlocks;
+
 - (id) initWithObject:(id)object
 {
     self = [super init];
     if (self) {
-        _references = [[NSMutableArray array] retain];
-        _handle = [object retain];
-        _waitingBlocks = [[NSMutableArray array] retain];
-        _waitingObjects = [[NSMutableSet set] retain];
-        _resaveBlocks = [[NSMutableArray array] retain];
-        _resaveWaiters = [[NSMutableArray array] retain];
+        _references = [NSMutableArray array];
+        _handle = object;
+        _waitingBlocks = [NSMutableArray array];
+        _waitingObjects = [NSMutableSet set];
+        _resaveBlocks = [NSMutableArray array];
+        _resaveWaiters = [NSMutableArray array];
     }
     return self;
 }
 - (void) dealloc
 {
-    size = -1;
-    [_resaveWaiters removeAllObjects];
-    [_resaveWaiters release];
-    [_resaveBlocks removeAllObjects];
-    [_resaveBlocks release];
-    [_waitingBlocks removeAllObjects];
-    [_waitingBlocks release];
-    [_handle release];
-    [_references removeAllObjects];
-    [_references release];
-    [super dealloc];
+    _size = -1;
 }
+
 - (void) addReference:(id)ref
 {
     [_references addObject:ref];
@@ -59,11 +44,11 @@
 - (void)setPc:(double)aPc
 {
     DBAssert(aPc >= 0.0 && aPc <= 1.0, @"progress greater out of bounds: %f", aPc);
-    pc = aPc;
+    _pc = aPc;
 }
 - (NSString *)debugDescription
 {
-    NSMutableString* str = [NSMutableString stringWithFormat:@"\n| %d | %8f  (%8f) ----| (%@)",type, pc, size, _handle];
+    NSMutableString* str = [NSMutableString stringWithFormat:@"\n| %d | %8f  (%8f) ----| (%@)", _type, _pc, _size, _handle];
     for (KCSCompletionWrapper* r in _references) {
         [str appendFormat:@"\n|    %d | %8f (%8f) --| (%@)", r.type, r.pc, r.size, r.handle];
     }
@@ -80,7 +65,7 @@
         self.loading = YES;
     }
     
-    [_resaveBlocks addObject:[[resaveBlock copy] autorelease]];
+    [_resaveBlocks addObject:[resaveBlock copy]];
     
     if (shouldSave) {
         noloadedBlock();
@@ -89,7 +74,7 @@
             //added after done loading
             loadedBlock();
         } else {
-            [_waitingBlocks addObject:[[loadedBlock copy] autorelease]];
+            [_waitingBlocks addObject:[loadedBlock copy]];
         }
     }
 }
@@ -101,13 +86,13 @@
         alreadyFinished = self.done;
     }
     
-    [_resaveBlocks addObject:[[resaveBlock copy] autorelease]];
+    [_resaveBlocks addObject:[resaveBlock copy]];
     
     if (alreadyFinished == YES) {
         //added after done loading
         loadedBlock();
     } else {
-        [_waitingBlocks addObject:[[loadedBlock copy] autorelease]];
+        [_waitingBlocks addObject:[loadedBlock copy]];
     }
 }
 
@@ -145,7 +130,6 @@
     }
     if (self.resaveCount == 0) {
         _doAfterWaitingResave();
-        [_doAfterWaitingResave release];
     }
 }
 
@@ -186,19 +170,10 @@
 {
     self = [super init];
     if (self) {
-        _resourceSeen = [[NSMutableArray arrayWithCapacity:entityCount] retain];
-        _entitySeen = [[NSMutableSet setWithCapacity:entityCount] retain];
+        _resourceSeen = [NSMutableArray arrayWithCapacity:entityCount];
+        _entitySeen = [NSMutableSet setWithCapacity:entityCount];
     }
     return self;
-}
-
-- (void) dealloc
-{
-    [_resourceSeen removeAllObjects];
-    [_resourceSeen release];
-    [_entitySeen removeAllObjects];
-    [_entitySeen release];
-    [super dealloc];
 }
 
 - (NSString *)debugDescription
@@ -217,7 +192,6 @@ double countBytesE(KCSSerializedObject* serializedObj)
     KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
     NSData* data = [writer dataWithObject:dictionaryToMap];
     double bytecount = [data length];
-    [writer release];
     return bytecount;
 }
 
@@ -228,7 +202,6 @@ double countBytesRf(id referenceObj)
     KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
     NSData* data = [writer dataWithObject:dictionaryToMap];
     double bytecount = [data length];
-    [writer release];
     return bytecount;
 }
 
@@ -252,7 +225,7 @@ double countBytesRf(id referenceObj)
     @synchronized(self) {
         w = [self alreadySeen:serializedObj.handleToOriginalObject];
         if (w == nil) {
-            w = [[[KCSCompletionWrapper alloc] initWithObject:serializedObj.handleToOriginalObject] autorelease];
+            w = [[KCSCompletionWrapper alloc] initWithObject:serializedObj.handleToOriginalObject];
             [_entitySeen addObject:w];
             w.size = countBytesE(serializedObj);
             _totalBytes += w.size;
@@ -269,7 +242,7 @@ double countBytesRf(id referenceObj)
     @synchronized(self) {
         w = [self alreadySeen:reference];
         if (w == nil) {
-            w = [[[KCSCompletionWrapper alloc] initWithObject:reference] autorelease];
+            w = [[KCSCompletionWrapper alloc] initWithObject:reference];
             [_entitySeen addObject:w];
             w.size = countBytesRf(reference);
             _totalBytes += w.size;
@@ -289,9 +262,9 @@ double countBytesRf(id referenceObj)
         BOOL needToSave = NO;
         if ([wp.handle respondsToSelector:@selector(kinveyObjectId)] == NO || [wp.handle kinveyObjectId] == nil) {
             //need to resave to record the entity
-            [w.waitingBlocks addObject:[[^{
+            [w.waitingBlocks addObject:[^{
                 [wp doResaves];
-            } copy] autorelease]];
+            } copy]];
             needToSave = YES;
         }
         return [NSNumber numberWithBool:needToSave];
@@ -301,7 +274,7 @@ double countBytesRf(id referenceObj)
 
 - (id) addResource:(KCSResource*)resource entity:(KCSCompletionWrapper*)wp
 {
-    KCSCompletionWrapper* w = [[[KCSCompletionWrapper alloc] init] autorelease];
+    KCSCompletionWrapper* w = [[KCSCompletionWrapper alloc] init];
     w.type = 2;
     w.size = [[resource data] length];
     _totalBytes += w.size;
