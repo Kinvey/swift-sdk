@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/23/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSAsyncConnection.h"
@@ -13,6 +13,7 @@
 #import "KinveyErrorCodes.h"
 #import "KCSLogManager.h"
 #import "KCSClient.h"
+#import <UIKit/UIKit.h>
 
 @interface KCSAsyncConnection()
 {
@@ -34,24 +35,6 @@
 
 @implementation KCSAsyncConnection
 
-@synthesize downloadedData = _downloadedData;
-
-@synthesize lastResponse=_lastResponse;
-@synthesize request = _request;
-@synthesize basicAuthCred=_basicAuthCred;
-
-@synthesize completionBlock=_completionBlock;
-@synthesize failureBlock=_failureBlock;
-@synthesize progressBlock=_progressBlock;
-@synthesize connection=_connection;
-
-@synthesize percentComplete=_percentComplete;
-@synthesize percentNotificationThreshold=_percentNotificationThreshold;
-
-@synthesize contentLength=_contentLength;
-@synthesize connectionTimeout=_connectionTimeout;
-
-@synthesize lastPercentage=_lastPercentage;
 
 /* NOTES:
  

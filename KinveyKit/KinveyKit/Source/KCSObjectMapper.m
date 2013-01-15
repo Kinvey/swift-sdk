@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/19/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSObjectMapper.h"
@@ -22,7 +22,6 @@
 #import "KCSLogManager.h"
 #import "KCSResource.h"
 #import "KCSMetadata.h"
-#import "KCSUniqueNumber.h"
 
 #import "KCSBuilders.h"
 
@@ -443,20 +442,8 @@ NSString* specialTypeOfValue(id value)
     return object;
 }
 
-+ (Class) swapObjectClassIfNecessary:(Class)originalClass forData:(NSDictionary*)data
-{
-    id type = [data objectForKey:kTypeKey];
-    if (type && [type isKindOfClass:[NSString class]]) {
-        if ([type isEqualToString:KCSSequenceType]) {
-            originalClass = [KCSUniqueNumber class];
-        }
-    }
-    return originalClass;
-}
-
 + (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withResourceDictionary:(NSMutableDictionary*)resources;
 {
-    objectClass = [self swapObjectClassIfNecessary:objectClass forData:data];
     
     // Check for special options to building this class
     NSDictionary *specialOptions = [objectClass kinveyObjectBuilderOptions];
