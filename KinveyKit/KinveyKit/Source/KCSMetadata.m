@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 6/25/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSMetadata.h"
@@ -31,14 +31,12 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
 @end
 
 @implementation KCSMetadata
-@synthesize lastModifiedTime;
-@synthesize acl;
 
 - (id) init
 {
     self = [super init];
     if (self) {
-        acl = [[NSMutableDictionary dictionary] retain];
+        _acl = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -48,15 +46,15 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
     self = [super init];
     if (self) {
         NSString* lmt = [kmd objectForKey:kKMDLMTKey];
-        lastModifiedTime = [[NSDate dateFromISO8601EncodedString:lmt] retain];     
-        acl = [[NSMutableDictionary dictionaryWithDictionary:pACL] retain];
+        _lastModifiedTime = [NSDate dateFromISO8601EncodedString:lmt];
+        _acl = [NSMutableDictionary dictionaryWithDictionary:pACL];
     }
     return self;
 }
 
 - (NSString*) creatorId 
 {
-    return [acl objectForKey:kACLCreatorKey];
+    return [_acl objectForKey:kACLCreatorKey];
 }
 
 - (BOOL) hasWritePermission
@@ -68,49 +66,49 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
 
 - (NSArray*) usersWithReadAccess
 {
-    NSArray* readers = [acl objectForKey:kACLReadersKey];
+    NSArray* readers = [_acl objectForKey:kACLReadersKey];
     return readers == nil ? @[] : readers;
 }
 
 - (void) setUsersWithReadAccess:(NSArray*) readers
 {
-    [acl setObject:readers forKey:kACLReadersKey];
+    [_acl setObject:readers forKey:kACLReadersKey];
 }
 
 - (NSArray*) usersWithWriteAccess
 {
-    NSArray* writers = [acl objectForKey:kACLWritersKey];
+    NSArray* writers = [_acl objectForKey:kACLWritersKey];
     return writers == nil ? @[] : writers;
 }
 
 - (void) setUsersWithWriteAccess:(NSArray*) writers
 {
-    [acl setObject:writers forKey:kACLWritersKey];
+    [_acl setObject:writers forKey:kACLWritersKey];
 }
 
 - (BOOL) isGloballyReadable
 {
-    return [[acl objectForKey:kACLGlobalReadKey] boolValue];
+    return [[_acl objectForKey:kACLGlobalReadKey] boolValue];
 }
 
 - (void) setGloballyReadable:(BOOL)readable
 {
-    [acl setObject:@(readable) forKey:kACLGlobalReadKey];
+    [_acl setObject:@(readable) forKey:kACLGlobalReadKey];
 }
 
 - (BOOL) isGloballyWritable
 {
-    return [[acl objectForKey:kACLGlobalWriteKey] boolValue];
+    return [[_acl objectForKey:kACLGlobalWriteKey] boolValue];
 }
 
 - (void) setGloballyWritable:(BOOL)writable
 {
-    [acl setObject:@(writable) forKey:kACLGlobalWriteKey];
+    [_acl setObject:@(writable) forKey:kACLGlobalWriteKey];
 }
 
 - (NSDictionary*) aclValue
 {
-    return acl;
+    return _acl;
 }
 
 @end

@@ -87,12 +87,13 @@
 		2785F54B1609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5491609179E004AA410 /* InfoPlist.strings */; };
 		2785F557160917AF004AA410 /* KCSUser+SocialExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2785F55B160917C9004AA410 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
+		2798CBC916A5A8BA003636F6 /* KCSRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22561484228300666259 /* KCSRESTRequest.m */; };
 		27A93B53156AD14800810B88 /* KCSReduceFunctionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */; };
 		27A93B57156AD2D500810B88 /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
 		27AC2F25161CA258008A05E1 /* KCSClient+ConfigurationTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27AC2F23161CA258008A05E1 /* KCSClient+ConfigurationTest.h */; };
 		27AC2F26161CA258008A05E1 /* KCSClient+ConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AC2F24161CA258008A05E1 /* KCSClient+ConfigurationTest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B1FDC615B0C49F003CC4C6 /* KCSUserDiscovery.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */; };
+		27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */; };
 		27B23D1D16443ECF00A78D7D /* KCSDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B23D1B16443ECF00A78D7D /* KCSDevice.h */; };
 		27B23D1E16443ECF00A78D7D /* KCSDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B23D1C16443ECF00A78D7D /* KCSDevice.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -161,7 +162,7 @@
 		27E4CE00156A803300B5DF55 /* KCSGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4CDFE156A803300B5DF55 /* KCSGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E4CE01156A803300B5DF55 /* KCSGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFF156A803300B5DF55 /* KCSGroup.m */; };
 		27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F360981598BF5C006B699E /* KCSMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609C1598C1CB006B699E /* KCSMetadata.m */; };
+		27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609C1598C1CB006B699E /* KCSMetadata.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27F360A01598C250006B699E /* KCSMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609F1598C250006B699E /* KCSMetadataTests.m */; };
 		D306B58E154F847C00A52CB8 /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B58D154F847C00A52CB8 /* KCSStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D306B5A3155095A800A52CB8 /* KinveyAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */; };
@@ -220,7 +221,6 @@
 		D3715ACE14B695B00030F5E9 /* KinveyKitBlobServiceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ACD14B695B00030F5E9 /* KinveyKitBlobServiceTests.m */; };
 		D3715AD414B696D80030F5E9 /* KinveyKitConnectionPoolTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AD314B696D80030F5E9 /* KinveyKitConnectionPoolTests.m */; };
 		D3715AD714B696F30030F5E9 /* KinveyKitConnectionResponseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AD614B696F30030F5E9 /* KinveyKitConnectionResponseTests.m */; };
-		D3715ADA14B6970C0030F5E9 /* KinveyKitConnectionProgressTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AD914B6970C0030F5E9 /* KinveyKitConnectionProgressTests.m */; };
 		D3715ADD14B697EA0030F5E9 /* KinveyKitNSStringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ADC14B697EA0030F5E9 /* KinveyKitNSStringTests.m */; };
 		D3715AE014B697F80030F5E9 /* KinveyKitNSURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ADF14B697F80030F5E9 /* KinveyKitNSURLTests.m */; };
 		D3715AE314B698040030F5E9 /* KinveyKitNSDateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AE214B698040030F5E9 /* KinveyKitNSDateTests.m */; };
@@ -245,7 +245,7 @@
 		D3EA22521484180300666259 /* KCSSyncConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22501484180300666259 /* KCSSyncConnection.h */; };
 		D3EA22531484180300666259 /* KCSSyncConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22511484180300666259 /* KCSSyncConnection.m */; };
 		D3EA22571484228300666259 /* KCSRESTRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22551484228300666259 /* KCSRESTRequest.h */; };
-		D3EA22581484228300666259 /* KCSRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22561484228300666259 /* KCSRESTRequest.m */; };
+		D3EA22581484228300666259 /* KCSRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22561484228300666259 /* KCSRESTRequest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D3EA22691484852B00666259 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22671484852B00666259 /* KCSPush.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3EA226A1484852B00666259 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22681484852B00666259 /* KCSPush.m */; };
 		D3EA226E148529A400666259 /* KinveyKitRESTRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA226D148529A400666259 /* KinveyKitRESTRequestTests.m */; };
@@ -756,8 +756,6 @@
 		D3715AD314B696D80030F5E9 /* KinveyKitConnectionPoolTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitConnectionPoolTests.m; sourceTree = "<group>"; };
 		D3715AD514B696F30030F5E9 /* KinveyKitConnectionResponseTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitConnectionResponseTests.h; sourceTree = "<group>"; };
 		D3715AD614B696F30030F5E9 /* KinveyKitConnectionResponseTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitConnectionResponseTests.m; sourceTree = "<group>"; };
-		D3715AD814B6970C0030F5E9 /* KinveyKitConnectionProgressTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitConnectionProgressTests.h; sourceTree = "<group>"; };
-		D3715AD914B6970C0030F5E9 /* KinveyKitConnectionProgressTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitConnectionProgressTests.m; sourceTree = "<group>"; };
 		D3715ADB14B697EA0030F5E9 /* KinveyKitNSStringTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitNSStringTests.h; sourceTree = "<group>"; };
 		D3715ADC14B697EA0030F5E9 /* KinveyKitNSStringTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitNSStringTests.m; sourceTree = "<group>"; };
 		D3715ADE14B697F80030F5E9 /* KinveyKitNSURLTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitNSURLTests.h; sourceTree = "<group>"; };
@@ -1890,8 +1888,6 @@
 				D3715AD314B696D80030F5E9 /* KinveyKitConnectionPoolTests.m */,
 				D3715AD514B696F30030F5E9 /* KinveyKitConnectionResponseTests.h */,
 				D3715AD614B696F30030F5E9 /* KinveyKitConnectionResponseTests.m */,
-				D3715AD814B6970C0030F5E9 /* KinveyKitConnectionProgressTests.h */,
-				D3715AD914B6970C0030F5E9 /* KinveyKitConnectionProgressTests.m */,
 				27BBD91415ADD3A2005E27E1 /* TestThreads.h */,
 				27BBD91515ADD3A2005E27E1 /* TestThreads.m */,
 				27E0B36215E523B400B83E72 /* KCSGenericRestTests.h */,
@@ -2521,6 +2517,7 @@
 				2766E63916834B78000D27C5 /* KinveyKit_mac.m in Sources */,
 				2766E65916834F1D000D27C5 /* KCSGenericRESTRequest.m in Sources */,
 				2766E65A16835050000D27C5 /* KCSConnectionPool.m in Sources */,
+				2798CBC916A5A8BA003636F6 /* KCSRESTRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2652,7 +2649,6 @@
 				D3715ACE14B695B00030F5E9 /* KinveyKitBlobServiceTests.m in Sources */,
 				D3715AD414B696D80030F5E9 /* KinveyKitConnectionPoolTests.m in Sources */,
 				D3715AD714B696F30030F5E9 /* KinveyKitConnectionResponseTests.m in Sources */,
-				D3715ADA14B6970C0030F5E9 /* KinveyKitConnectionProgressTests.m in Sources */,
 				D3715ADD14B697EA0030F5E9 /* KinveyKitNSStringTests.m in Sources */,
 				D3715AE014B697F80030F5E9 /* KinveyKitNSURLTests.m in Sources */,
 				D3715AE314B698040030F5E9 /* KinveyKitNSDateTests.m in Sources */,
