@@ -2,7 +2,7 @@
 //  KinveyKit.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -30,7 +30,6 @@
 #import "KCSReachability.h"
 #import "KinveyErrorCodes.h"
 #import "KCSQuery.h"
-#import "KCSUniqueNumber.h"
 #import "KCSStore.h"
 
 #import "KCSStore.h"
