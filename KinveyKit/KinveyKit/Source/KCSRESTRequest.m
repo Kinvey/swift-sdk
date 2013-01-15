@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/28/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSRESTRequest.h"
@@ -72,7 +72,7 @@ getLogDate(void)
 
 + (KCSRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod
 {
-    return [[[self alloc] initWithResource:resource usingMethod:requestMethod] autorelease];
+    return [[self alloc] initWithResource:resource usingMethod:requestMethod];
 }
 
 - (id)syncRequest
@@ -101,7 +101,7 @@ getLogDate(void)
 
 - (void) setJsonBody:(id)bodyObject
 {
-    KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+    KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
     [self addBody:[writer dataWithObject:bodyObject]];
 }
 
@@ -138,11 +138,11 @@ getLogDate(void)
     KCSClient *kinveyClient = [KCSClient sharedClient];
       
     if (self.isSyncRequest){
-        connection = [[KCSConnectionPool syncConnection] retain];
+        connection = [KCSConnectionPool syncConnection];
     } else if (self.isMockRequest) {
-        connection = [[KCSConnectionPool connectionWithConnectionType:self.mockConnection] retain];
+        connection = [KCSConnectionPool connectionWithConnectionType:self.mockConnection];
     } else {
-        connection = [[KCSConnectionPool asyncConnection] retain];
+        connection = [KCSConnectionPool asyncConnection];
     }
     
     [self.request setHTTPMethod: [KCSGenericRESTRequest getHTTPMethodForConstant: self.method]];
@@ -193,7 +193,6 @@ getLogDate(void)
                     [self performSelector:@selector(start) withObject:nil afterDelay:KCS_RETRY_DELAY];
                     // This iteration is done.
                 }
-                [connection release];
                 return;
             }
             [self.request setValue:authString forHTTPHeaderField:@"Authorization"];
@@ -205,7 +204,6 @@ getLogDate(void)
     }
     
     [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:nil];    
-    [connection release];
 }
 
 - (void) setAuth:(NSString*)username password:(NSString*)password

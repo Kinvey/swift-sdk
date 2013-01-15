@@ -15,7 +15,12 @@
 #import "KCSClient.h"
 
 @interface KCSAsyncConnection()
-
+{
+#if TARGET_OS_IPHONE
+    UIBackgroundTaskIdentifier _bgTask;
+#endif
+    RunBlock_t _blockToRun;
+}
 
 @property (copy) KCSConnectionCompletionBlock completionBlock;
 @property (copy) KCSConnectionFailureBlock    failureBlock;

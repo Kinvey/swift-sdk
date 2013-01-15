@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/13/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSCounterTests.h"
@@ -17,7 +17,8 @@
 
 - (void) setUp
 {
-    [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    STAssertTrue(setup, @"should have been set up");
 }
 
 - (void) testGet
