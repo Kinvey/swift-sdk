@@ -13,7 +13,7 @@
 #ifndef KinveyKit_h
 #define KinveyKit_h
 
-#define __KINVEYKIT_VERSION__ TAG-ME
+#define __KINVEYKIT_VERSION__ @"TAG-ME"
 
 #import "KCSPush.h"
 #import "KCSClient.h"
