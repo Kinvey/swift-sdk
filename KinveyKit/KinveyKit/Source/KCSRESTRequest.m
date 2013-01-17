@@ -41,15 +41,14 @@ void clogResource(NSString *resource, NSInteger requestMethod)
 
 NSString *getLogDate(void); // Make compiler happy...
 
-NSString *
-getLogDate(void)
+NSString * getLogDate(void)
 {
     time_t now = time(NULL);
     struct tm *t = gmtime(&now);
     
     char timestring[MAX_DATE_STRING_LENGTH_K];
     
-    int len = strftime(timestring, MAX_DATE_STRING_LENGTH_K - 1, "%a, %d %b %Y %T %Z", t);
+    NSInteger len = strftime(timestring, MAX_DATE_STRING_LENGTH_K - 1, "%a, %d %b %Y %T %Z", t);
     assert(len < MAX_DATE_STRING_LENGTH_K);
     
     return [NSString stringWithCString:timestring encoding:NSASCIIStringEncoding];
@@ -103,7 +102,7 @@ getLogDate(void)
 - (id)addBody:(NSData *)theBody
 {
     [self.request setHTTPBody:theBody];
-    [self.request setValue:[NSString stringWithFormat:@"%d", [theBody length]] forHTTPHeaderField:@"Content-Length"];
+    [self.request setValue:[NSString stringWithFormat:@"%ld", [theBody length]] forHTTPHeaderField:@"Content-Length"];
     return self;
 }
 
@@ -122,9 +121,9 @@ getLogDate(void)
     [self.headers setObject:contentType forKey:@"Content-Type"];
 }
 
-- (void)setContentLength: (NSInteger)contentLength
+- (void)setContentLength:(NSInteger)contentLength
 {
-    [self.headers setObject:[NSNumber numberWithInt:contentLength] forKey:@"Content-Length"];    
+    [self.headers setObject:@(contentLength) forKey:@"Content-Length"];
 }
 
 - (void)start

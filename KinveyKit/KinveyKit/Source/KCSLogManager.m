@@ -44,7 +44,7 @@ enum {
 {
     return ([self.displayString isEqualToString:[(KCSLogChannel *)object displayString]] &&
             self.channelID == [(KCSLogChannel *)object channelID]);
-
+    
 }
 
 + (NSDictionary *)channels
@@ -90,8 +90,8 @@ enum {
 + (KCSLogManager *)sharedLogManager
 {
     static KCSLogManager *sKCSLogManager;
-    // This can be called on any thread, so we synchronise.  We only do this in 
-    // the sKCSLogManager case because, once sKCSLogManager goes non-nil, it can 
+    // This can be called on any thread, so we synchronise.  We only do this in
+    // the sKCSLogManager case because, once sKCSLogManager goes non-nil, it can
     // never go nil again.
     
     if (sKCSLogManager == nil) {
@@ -145,15 +145,15 @@ enum {
 
 - (void)logChannel: (KCSLogChannel *)channel file:(char *)sourceFile lineNumber: (int)lineNumber withFormat:(NSString *)format, ...
 {
-    BOOL channelIsEnabled = [(NSNumber *)[self.loggingState objectForKey:[NSNumber numberWithInt:channel.channelID]] boolValue];
+    BOOL channelIsEnabled = [(NSNumber *)[self.loggingState objectForKey:@(channel.channelID)] boolValue];
     
     // If the channel is not enabled we don't do anything here, ALWAYS log the forced channel
     if (channelIsEnabled || channel.channelID == kKCSForcedChannelID){
         va_list ap;
         NSString *print,*file;
         va_start(ap,format);
-        file=[[NSString alloc] initWithBytes:sourceFile 
-                                      length:strlen(sourceFile) 
+        file=[[NSString alloc] initWithBytes:sourceFile
+                                      length:strlen(sourceFile)
                                     encoding:NSUTF8StringEncoding];
         print = [[NSString alloc] initWithFormat:format arguments:ap];
         va_end(ap);
@@ -166,27 +166,19 @@ enum {
     }
 }
 
-- (void)configureLoggingWithNetworkEnabled:(BOOL)networkIsEnabled 
-                              debugEnabled:(BOOL)debugIsEnabled 
+- (void)configureLoggingWithNetworkEnabled:(BOOL)networkIsEnabled
+                              debugEnabled:(BOOL)debugIsEnabled
                               traceEnabled:(BOOL)traceIsEnabled
                             warningEnabled:(BOOL)warningIsEnabled
                               errorEnabled:(BOOL)errorIsEnabled
 {
-    NSNumber *netChan = [NSNumber numberWithInt:[[KCSLogManager kNetworkChannel] channelID]];
-    NSNumber *dbgChan = [NSNumber numberWithInt:[[KCSLogManager kDebugChannel] channelID]];
-    NSNumber *trcChan = [NSNumber numberWithInt:[[KCSLogManager kTraceChannel] channelID]];
-    NSNumber *wrnChan = [NSNumber numberWithInt:[[KCSLogManager kWarningChannel] channelID]];
-    NSNumber *errChan = [NSNumber numberWithInt:[[KCSLogManager kErrorChannel] channelID]];
-    
-    NSDictionary *configuredStates = [NSDictionary dictionaryWithObjectsAndKeys:
-                                      [NSNumber numberWithBool:networkIsEnabled], netChan,
-                                      [NSNumber numberWithBool:debugIsEnabled], dbgChan,
-                                      [NSNumber numberWithBool:traceIsEnabled], trcChan,
-                                      [NSNumber numberWithBool:warningIsEnabled], wrnChan,
-                                      [NSNumber numberWithBool:errorIsEnabled], errChan,
-                                      nil];
-    
-    self.loggingState = configuredStates;
+    self.loggingState = @{
+    @([[KCSLogManager kNetworkChannel] channelID]) : @(networkIsEnabled),
+    @([[KCSLogManager kDebugChannel] channelID]) : @(debugIsEnabled),
+    @([[KCSLogManager kTraceChannel] channelID]) : @(traceIsEnabled),
+    @([[KCSLogManager kWarningChannel] channelID]) : @(warningIsEnabled),
+    @([[KCSLogManager kErrorChannel] channelID]) : @(errorIsEnabled),
+    };
 }
 
 @end
