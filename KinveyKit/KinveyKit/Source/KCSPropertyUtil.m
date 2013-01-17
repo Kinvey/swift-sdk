@@ -3,11 +3,9 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 6/4/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
-
-// PropertyUtil.m
 #import "KCSPropertyUtil.h"
 #import "objc/runtime.h"
 
@@ -47,7 +45,7 @@ static const char * getPropertyType(objc_property_t property) {
         return nil;
     }
     
-    NSMutableDictionary *results = [[[NSMutableDictionary alloc] init] autorelease];
+    NSMutableDictionary *results = [NSMutableDictionary dictionary];
     
     while (klass && [klass isEqual:[NSObject class]] == NO) {
         unsigned int outCount, i;

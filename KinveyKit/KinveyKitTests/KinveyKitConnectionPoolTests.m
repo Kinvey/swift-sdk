@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitConnectionPoolTests.h"
@@ -11,7 +11,6 @@
 #import "KCSMockConnection.h"
 #import "KCSConnection.h"
 #import "KCSAsyncConnection.h"
-#import "KCSSyncConnection.h"
 
 @implementation KinveyKitConnectionPoolTests
 
@@ -37,24 +36,17 @@
 {
     // Fill async and sync pools with mock types
     [[KCSConnectionPool sharedPool] fillAsyncPoolWithConnections:[KCSMockConnection class]];
-    [[KCSConnectionPool sharedPool] fillSyncPoolWithConnections:[KCSMockConnection class]];
     
     // Test correct types returned
     KCSConnection *connection = [KCSConnectionPool asyncConnection];
     STAssertTrue([connection isKindOfClass:[KCSMockConnection class]], @"class should match");
 
-    connection = [KCSConnectionPool syncConnection];
-    STAssertTrue([connection isKindOfClass:[KCSMockConnection class]], @"class should match");
-    
     // Reset connections
     [[KCSConnectionPool sharedPool] fillPools];
 
     // Test correct types returned
     connection = [KCSConnectionPool asyncConnection];
     STAssertTrue([connection isKindOfClass:[KCSAsyncConnection class]], @"class should match");
-    
-    connection = [KCSConnectionPool syncConnection];
-    STAssertTrue([connection isKindOfClass:[KCSSyncConnection class]], @"class should match");
 }
 
 - (void)testFillPoolsFillsToDefaultValues
@@ -65,9 +57,6 @@
     // Test correct types returned
     KCSConnection *connection = [KCSConnectionPool asyncConnection];
     STAssertTrue([connection isKindOfClass:[KCSAsyncConnection class]], @"class should match");
-    
-    connection = [KCSConnectionPool syncConnection];
-    STAssertTrue([connection isKindOfClass:[KCSSyncConnection class]], @"class should match");
 }
 
 - (void)testArbitraryConnectionType
@@ -84,12 +73,8 @@
     STAssertThrows([pool fillAsyncPoolWithConnections:[NSString class]],
                    @"Fill Async pool allowed invalid connection type");
     
-    STAssertThrows([pool fillSyncPoolWithConnections:[NSString class]],
-                   @"Fill Sync pool allowed invalid connection type");
-    
     STAssertThrows([KCSConnectionPool connectionWithConnectionType:[NSString class]],
                    @"Pool returned is notvalid connection");
-
 }
 
 @end

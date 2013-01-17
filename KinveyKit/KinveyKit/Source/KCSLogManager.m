@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/11/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSLogManager.h"
@@ -30,23 +30,14 @@ enum {
 
 @implementation KCSLogChannel
 
-@synthesize displayString = _displayString;
-@synthesize channelID = _channelID;
-
 - (id)initWithDisplayString:(NSString *)displayString channelID:(NSInteger)channelID
 {
     self = [super init];
     if (self){
-        _displayString = [displayString retain];
+        _displayString = displayString;
         _channelID = channelID;
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [_displayString release];
-    [super dealloc];
 }
 
 - (BOOL)isEqual:(id)object
@@ -58,19 +49,18 @@ enum {
 
 + (NSDictionary *)channels
 {
-    static NSDictionary *channels = nil;
-    
-    
-    if (channels == nil){
-        channels = [[NSDictionary dictionaryWithObjectsAndKeys:
-                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[Network]" channelID:kKCSNetworkChannelID] autorelease], @"kNetworkChannel",
-                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[DEBUG]" channelID:kKCSDebugChannelID] autorelease], @"kDebugChannel",
-                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[Trace]" channelID:kKCSTraceChannelID] autorelease], @"kTraceChannel",
-                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[WARN]" channelID:kKCSWarningChannelID]  autorelease], @"kWarningChannel",
-                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSErrorChannelID] autorelease], @"kErrorChannel",
-                                     [[[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSForcedChannelID] autorelease], @"kForcedChannel",
-                                     nil] retain];
-    }
+    static NSDictionary *channels;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        channels = @{
+        @"kNetworkChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[Network]" channelID:kKCSNetworkChannelID],
+        @"kDebugChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[DEBUG]" channelID:kKCSDebugChannelID],
+        @"kTraceChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[Trace]" channelID:kKCSTraceChannelID],
+        @"kWarningChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[WARN]" channelID:kKCSWarningChannelID],
+        @"kErrorChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSErrorChannelID],
+        @"kForcedChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSForcedChannelID]
+        };
+    });
     
     return channels;
 }
@@ -165,7 +155,7 @@ enum {
         file=[[NSString alloc] initWithBytes:sourceFile 
                                       length:strlen(sourceFile) 
                                     encoding:NSUTF8StringEncoding];
-        print = [[[NSString alloc] initWithFormat:format arguments:ap] autorelease];
+        print = [[NSString alloc] initWithFormat:format arguments:ap];
         va_end(ap);
         if ([print length] > 1000) {
             print = [[print substringToIndex:1000] stringByAppendingString:@"...(truncated)"];
@@ -173,7 +163,6 @@ enum {
         //NSLog handles synchronization issues
         NSLog(@"%s:%d %@ %@",[[file lastPathComponent] UTF8String],
               lineNumber, channel.displayString,print);
-        [file release];
     }
 }
 
@@ -199,8 +188,5 @@ enum {
     
     self.loggingState = configuredStates;
 }
-
-
-
 
 @end
