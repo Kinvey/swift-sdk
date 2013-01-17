@@ -75,11 +75,6 @@ getLogDate(void)
     return [[self alloc] initWithResource:resource usingMethod:requestMethod];
 }
 
-- (id)syncRequest
-{
-    self.isSyncRequest = YES;
-    return self;
-}
 
 - (id)mockRequestWithMockClass:(Class)connection
 {
@@ -137,9 +132,7 @@ getLogDate(void)
     KCSConnection *connection;
     KCSClient *kinveyClient = [KCSClient sharedClient];
       
-    if (self.isSyncRequest){
-        connection = [KCSConnectionPool syncConnection];
-    } else if (self.isMockRequest) {
+    if (self.isMockRequest) {
         connection = [KCSConnectionPool connectionWithConnectionType:self.mockConnection];
     } else {
         connection = [KCSConnectionPool asyncConnection];

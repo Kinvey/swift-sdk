@@ -3,15 +3,13 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/23/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSConnection.h"
 #import "KCSLogManager.h"
 
 @implementation KCSConnection
-
-@synthesize followRedirects=_followRedirects;
 
 - (id)initWithConnection:(NSURLConnection *)theConnection
 {

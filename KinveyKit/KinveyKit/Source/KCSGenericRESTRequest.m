@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/22/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSGenericRESTRequest.h"
@@ -53,7 +53,6 @@
         _completionAction = NULL;
         _progressAction = NULL;
         _failureAction = NULL;
-        _isSyncRequest = NO;
         _isMockRequest = NO;
         _followRedirects = YES;
         _retriesAttempted = 0;
@@ -108,9 +107,7 @@
 {
     KCSConnection *connection;
     
-    if (self.isSyncRequest){
-        connection = [KCSConnectionPool syncConnection];
-    } else if (self.isMockRequest) {
+    if (self.isMockRequest) {
         connection = [KCSConnectionPool connectionWithConnectionType:self.mockConnection];
     } else {
         connection = [KCSConnectionPool asyncConnection];

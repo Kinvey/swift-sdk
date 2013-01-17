@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/29/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSResource.h"
@@ -18,7 +18,6 @@
 #define kImageMimeType @"image/png"
 
 @implementation KCSResource
-@synthesize resource = _resource;
 #pragma mark - Helpers
 
 + (BOOL) isResourceDictionary:(id)value
@@ -41,8 +40,8 @@
 {
     self = [super init];
     if (self) {
-        _blobName = [name retain];
-        _resource = [resource retain];
+        _blobName = name;
+        _resource = resource;
     }
     return self;
 }
@@ -52,16 +51,9 @@
     self = [super init];
     if (self) {
         _blobName = nil;
-        _resource = [resource retain];
+        _resource = resource;
     }
     return self;
-}
-
-- (void) dealloc
-{
-    [_blobName release];
-    [_resource release];
-    [super dealloc];
 }
 
 NSString* mimeType(id obj);
@@ -97,8 +89,7 @@ NSString* mimeType(id obj)
 - (void) setBlobName:(NSString *)blobName
 {
     @synchronized(self) {
-        [_blobName release];
-        _blobName = [blobName retain];
+        _blobName = blobName;
     }
 }
 
@@ -116,14 +107,13 @@ NSString* mimeType(id obj)
                 NSString *uuidString = nil;
                 
                 if (uuid){
-                    uuidString = (NSString *)CFUUIDCreateString(NULL, uuid);
+                    uuidString = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
                     CFRelease(uuid);
                 }
                 
                 location = [NSString stringWithFormat:@"%@.%@", uuidString, @"png"];
-                [uuidString release];
             } //TODO: general
-            _blobName = [location retain];
+            _blobName = location;
         }
     }
     return _blobName;

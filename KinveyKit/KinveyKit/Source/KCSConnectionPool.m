@@ -3,20 +3,18 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/28/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSConnectionPool.h"
 #import "KCSConnection.h"
 #import "KCSAsyncConnection.h"
-#import "KCSSyncConnection.h"
 #import "KCSLogManager.h"
 
 
 @interface KCSConnectionPool ()
 
 @property (retain, nonatomic) Class asyncConnectionType;
-@property (retain, nonatomic) Class syncConnectionType;
 @property (retain, nonatomic) NSMutableDictionary *genericConnectionPools;
 @property (nonatomic) BOOL poolIsFilled;
 
@@ -36,7 +34,6 @@ void verifyConnectionType(id connectionClass);
     if (self){
         _genericConnectionPools = [[NSMutableDictionary alloc] init];
         self.asyncConnectionType = [KCSAsyncConnection class];
-        self.syncConnectionType = [KCSSyncConnection class];
         _poolIsFilled = NO;
         _genericPoolStack = [[NSMutableArray alloc] init];
     }
@@ -67,7 +64,6 @@ void verifyConnectionType(id connectionClass);
 {
     // Basically a NO-OP until we implement pools
     self.asyncConnectionType = [KCSAsyncConnection class];
-    self.syncConnectionType = [KCSSyncConnection class];
     
     self.poolIsFilled = YES;
 }
@@ -81,19 +77,10 @@ void verifyConnectionType(id connectionClass);
     self.asyncConnectionType = connectionClass;
 }
 
-- (void)fillSyncPoolWithConnections:(Class)connectionClass
-{
-    // Note that we have to allocate an object before testing the class, since I don't know the way to
-    // do a direct comparison, I could use the underlying structure of the objc types, but that
-    // feels more hacky than the temp copy here.
-    verifyConnectionType([[connectionClass alloc] init]);
-    self.syncConnectionType = connectionClass;
-}
 
 - (void)drainPools
 {
     self.asyncConnectionType = [KCSAsyncConnection class];
-    self.syncConnectionType = [KCSSyncConnection class];
     self.poolIsFilled = NO;
     [self.genericPoolStack removeAllObjects];
 }
@@ -104,22 +91,13 @@ void verifyConnectionType(id connectionClass);
     self.poolIsFilled = YES;
 }
 
-#pragma mark -
-#pragma mark Client Access
+#pragma mark - Client Access
 + (KCSConnection *)asyncConnection
 {
-//    return [KCSConnectionPool connectionWithConnectionType:[KCSAsyncConnection class]];
     Class asyncClass = [[KCSConnectionPool sharedPool] asyncConnectionType];
     return [KCSConnectionPool connectionWithConnectionType:asyncClass];    
 }
 
-+ (KCSConnection *)syncConnection
-{
-//    return [KCSConnectionPool connectionWithConnectionType:[KCSSyncConnection class]];
-    Class syncClass = [[KCSConnectionPool sharedPool] syncConnectionType];
-    return [KCSConnectionPool connectionWithConnectionType:syncClass];    
-
-}
 
 + (KCSConnection *)connectionWithConnectionType: (Class)connectionClass
 {

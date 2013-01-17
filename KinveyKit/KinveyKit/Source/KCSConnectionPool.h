@@ -17,7 +17,6 @@
 
 // Known Connection types
 + (KCSConnection *)asyncConnection;
-+ (KCSConnection *)syncConnection;
 
 // Arbitrary Connection types
 + (KCSConnection *)connectionWithConnectionType: (Class)connectionClass;
@@ -32,7 +31,6 @@
 - (void)fillPools;
 
 // Fill pools with specific types
-- (void)fillSyncPoolWithConnections: (Class)connectionClass;
 - (void)fillAsyncPoolWithConnections: (Class)connectionClass;
 
 - (void)topPoolsWithConnection: (KCSConnection *)connection;

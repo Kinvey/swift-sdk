@@ -261,4 +261,9 @@
     [self poll];
 }
 
+BOOL dosomething()
+{
+    return YES;
+}
+
 @end

@@ -28,7 +28,6 @@ typedef enum {
 @property (nonatomic, copy) NSString *resourceLocation;
 @property (nonatomic, copy) NSMutableDictionary *headers;
 @property (nonatomic) NSInteger method;
-@property (nonatomic) BOOL isSyncRequest;
 @property (nonatomic) BOOL followRedirects;
 
 - (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod;
