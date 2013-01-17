@@ -13,7 +13,7 @@
 #ifndef KinveyKit_h
 #define KinveyKit_h
 
-#define __KINVEYKIT_VERSION__ @"1.13.1"
+#define __KINVEYKIT_VERSION__ @"1.13.2"
 
 #import "KCSPush.h"
 #import "KCSClient.h"

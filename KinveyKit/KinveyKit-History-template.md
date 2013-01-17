@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.13
+### 1.13.2
+** Release Date:** January 17, 2013
+
+* Bug fix(es):
+    * Fixed issue where airship lib was added twice, causing linker failures.
+
 ### 1.13.1
 ** Release Date:** January 7, 2013
 
