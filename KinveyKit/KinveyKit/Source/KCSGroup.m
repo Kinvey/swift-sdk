@@ -3,10 +3,18 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/21/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSGroup.h"
+@interface KCSGroup () {
+@private
+    NSArray* _array;
+    NSString* _key;
+    NSArray* _queriedFields;
+}
+
+@end
 
 @implementation KCSGroup
 
@@ -14,20 +22,11 @@
 {
     self = [super init];
     if (self) {
-        _array = [jsonData retain];
-        _queriedFields = [[NSArray arrayWithArray:fields] retain];
-        _key = [key retain];
+        _array = [jsonData copy];
+        _queriedFields = [NSArray arrayWithArray:fields];
+        _key = [key copy];
     }
     return self;
-}
-
-- (void) dealloc
-{
-    [_array release];
-    [_key release];
-    [_queriedFields release];
-
-    [super dealloc];
 }
 
 - (NSArray*) fieldsAndValues

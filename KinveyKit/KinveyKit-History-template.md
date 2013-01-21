@@ -4,6 +4,7 @@
 ### 1.14.0
 ** Release Date:** TBD
 
+* Added `+ [KCSQuery queryWithQuery:]` copy factory method.
 * Removed `KCSUniqueNumber` class. 
 * Bug fix(es):
     * KCSUserDiscover returns complete `KCSUser` objects now instead of `NSDictionary`.

@@ -426,4 +426,22 @@
     
     NSLog(@"%@", queryForGroup);
 }
+
+- (void) testCopyConstructor
+{
+    KCSQuery* q1 = [KCSQuery queryOnField:@"A" usingConditional:kKCSIn forValue:@[@1,@3]];
+    [q1 addQuery:[KCSQuery queryOnField:@"B" withExactMatchForValue:@"foo"]];
+    q1.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:300];
+    [q1 addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"C" inDirection:kKCSAscending]];
+    
+    KCSQuery* q2 = [KCSQuery queryWithQuery:q1];
+    
+    STAssertTrue(q1 != q2, @"Should be different objects");
+    STAssertEqualObjects([q1 parameterStringRepresentation], [q2 parameterStringRepresentation], @"The query strings should match");
+    
+    q1.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:5];
+    
+    STAssertFalse([[q1 parameterStringRepresentation] isEqualToString:[q2 parameterStringRepresentation]], @"strings should be independent");
+}
+
 @end
