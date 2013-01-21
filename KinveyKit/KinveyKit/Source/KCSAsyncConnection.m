@@ -13,7 +13,10 @@
 #import "KinveyErrorCodes.h"
 #import "KCSLogManager.h"
 #import "KCSClient.h"
+
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#endif
 
 @interface KCSAsyncConnection()
 {

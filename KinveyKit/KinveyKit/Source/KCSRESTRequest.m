@@ -102,7 +102,7 @@ NSString * getLogDate(void)
 - (id)addBody:(NSData *)theBody
 {
     [self.request setHTTPBody:theBody];
-    [self.request setValue:[NSString stringWithFormat:@"%ld", [theBody length]] forHTTPHeaderField:@"Content-Length"];
+    [self.request setValue:[NSString stringWithFormat:@"%ld", (long) [theBody length]] forHTTPHeaderField:@"Content-Length"];
     return self;
 }
 

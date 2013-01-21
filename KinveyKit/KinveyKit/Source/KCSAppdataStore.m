@@ -88,7 +88,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     if (status == SBJsonStreamParserError) {
         KCSLogError(@"Error parsing partial progress reults: %@", _parser.error);
 	} else if (status == SBJsonStreamParserWaitingForData) {
-        KCSLogTrace(@"Parsed partial progress results. Item count %@", _items.count);
+        KCSLogTrace(@"Parsed partial progress results. Item count %d", _items.count);
 		NSLog(@"Parser waiting for more data");
 	} else if (status == SBJsonStreamParserComplete) {
         NSLog(@"complete");

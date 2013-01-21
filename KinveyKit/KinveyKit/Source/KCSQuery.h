@@ -2,7 +2,7 @@
 //  KCSQuery.h
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -356,6 +356,16 @@ typedef enum {
  @since 1.8
  */
 + (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression;
+
+/*! Copy factory
+ 
+ This creates a new `KCSQuery` with the same values as the old input one. 
+ 
+ @param query the query to copy
+ @return a new KCSQuery that matches the old object
+ @since 1.14.0
+ */
++ (KCSQuery *) queryWithQuery:(KCSQuery*) query;
 
 
 ///---------------------------------------------------------------------------------------

@@ -296,6 +296,27 @@ typedef struct {
     
 }
 
+- (void) testRR
+{
+    KCSQuery *query1=[KCSQuery queryOnField:KCSEntityKeyGeolocation
+                 usingConditionalsForValues:
+                      kKCSNearSphere,
+                      @[@1,@2],
+                      kKCSMaxDistance,
+                      @10, nil];
+    KCSQuery *query2=[KCSQuery queryForEmptyOrNullValueInField:@"city"];
+    KCSQuery* _query=[KCSQuery queryForJoiningOperator:kKCSAnd onQueries:query1, query2, nil];
+    _query.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:30]; //maxStationsCount=30
+    
+    NSLog(@"%@",_query);
+    
+    KCSQuery* workingQuery = query1;
+    [workingQuery addQuery:query2];
+    
+    NSLog(@"%@", workingQuery);
+}
+
+
 @end
 
 @class Employer;
@@ -430,7 +451,7 @@ typedef struct {
     }];
     
 }
-
+#if NEVER
 - (void) adf
 {
     BOOL wasCancelled = NO;
@@ -450,6 +471,8 @@ typedef struct {
         }
     } withProgressBlock:nil];
 }
+#endif
+
 
 
 

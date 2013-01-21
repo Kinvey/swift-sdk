@@ -3,7 +3,7 @@
 //  SampleApp
 //
 //  Created by Brian Wilson on 10/25/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "NSString+KinveyAdditions.h"
@@ -11,17 +11,16 @@
 
 @implementation NSString (KinveyAdditions)
 
-- (NSURL *)URLByAppendingQueryString:(NSString *)queryString {
-    if (![queryString length]) {
+- (NSURL *)URLByAppendingQueryString:(NSString *)queryString
+{
+    if ([queryString length] == 0) {
         return [NSURL URLWithString:self];
     }
     
-    NSString *URLString = [[NSString alloc] initWithFormat:@"%@%@%@", self,
+    NSString *URLString = [NSString stringWithFormat:@"%@%@%@", self,
                            [self rangeOfString:@"?"].length > 0 ? @"&" : @"?", queryString];
-
-    NSURL *theURL = [NSURL URLWithString:URLString];
-    [URLString release];
-    return theURL;
+    
+    return [NSURL URLWithString:URLString];
 }
 
 // Or:
@@ -38,19 +37,16 @@
         prefix = @"";
     }
     return [NSString stringWithFormat:@"%@%@%@", self,
-           prefix, queryString];
+            prefix, queryString];
 }
 
 + (NSString *)stringByPercentEncodingString:(NSString *)string
 {
-    NSString *encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
-                                                                                  (CFStringRef) string,
-                                                                                  NULL,
-                                                                                  (CFStringRef) @"!*'();:@&=+$,/?%#[]{}",
-                                                                                  kCFStringEncodingUTF8);
-    
-    // encodedString has a ref count of 1..., need to auto release it
-    [encodedString autorelease];
+    NSString *encodedString = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
+                                                                                                    (CFStringRef) string,
+                                                                                                    NULL,
+                                                                                                    (CFStringRef) @"!*'();:@&=+$,/?%#[]{}",
+                                                                                                    kCFStringEncodingUTF8));
     return encodedString;
 }
 
