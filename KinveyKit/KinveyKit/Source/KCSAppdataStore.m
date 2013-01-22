@@ -220,11 +220,11 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 #pragma mark - Block Making
 // Avoid compiler warning by prototyping here...
-KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock onComplete, NSString* key, NSArray* fields);
+//KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock onComplete, NSString* key, NSArray* fields, BOOL buildsObjects);
 KCSConnectionFailureBlock    makeGroupFailureBlock(KCSGroupCompletionBlock onComplete);
 KCSConnectionProgressBlock   makeProgressBlock(KCSProgressBlock onProgress);
 
-KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock onComplete, NSString* key, NSArray* fields)
+- (KCSConnectionCompletionBlock) makeGroupCompletionBlock:(KCSGroupCompletionBlock) onComplete key:(NSString*)key fields:(NSArray*)fields buildsObjects:(BOOL)buildsObjects
 {
     return [[^(KCSConnectionResponse *response){
         
@@ -249,6 +249,23 @@ KCSConnectionCompletionBlock makeGroupCompletionBlock(KCSGroupCompletionBlock on
             } else {
                 jsonArray = @[jsonData];
             }
+        }
+        
+        if (buildsObjects == YES) {
+            NSMutableArray* newArray = [NSMutableArray arrayWithCapacity:jsonArray.count];
+            for (NSDictionary* d in jsonArray) {
+                NSMutableDictionary* newDictionary = [d mutableCopy];
+                NSArray* objectDicts = [d objectForKey:key];
+                NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:objectDicts.count];
+                for (NSDictionary* objDict in objectDicts) {
+                    NSMutableDictionary* resources = [NSMutableDictionary dictionary];
+                    id newobj = [self manufactureNewObject:objDict resourcesOrNil:resources];
+                    [returnObjects addObject:newobj];
+                }
+                [newDictionary setObject:returnObjects forKey:key];
+                [newArray addObject:newDictionary];
+            }
+            jsonArray = [NSArray arrayWithArray:newArray];
         }
         
         KCSGroup* group = [[[KCSGroup alloc] initWithJsonArray:jsonArray valueKey:key queriedFields:fields] autorelease];
@@ -568,7 +585,10 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     [request addBody:[writer dataWithObject:body]];
     [request setContentType:@"application/json"];
     
-    KCSConnectionCompletionBlock cBlock = makeGroupCompletionBlock(completionBlock, [function outputValueName:fields], fields);
+    KCSConnectionCompletionBlock cBlock = [self makeGroupCompletionBlock:completionBlock
+                                                                     key:[function outputValueName:fields]
+                                                                  fields:fields
+                                                           buildsObjects:[function buildsObjects]];
     KCSConnectionFailureBlock fBlock = makeGroupFailureBlock(completionBlock);
     KCSConnectionProgressBlock pBlock = makeProgressBlock(progressBlock);
     
@@ -620,7 +640,10 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     [request addBody:[writer dataWithObject:body]];
     [request setContentType:@"application/json"];
     
-    KCSConnectionCompletionBlock cBlock = makeGroupCompletionBlock(completionBlock, [function outputValueName:@[]], @[]);
+    KCSConnectionCompletionBlock cBlock = [self makeGroupCompletionBlock:completionBlock
+                                                                     key: [function outputValueName:@[]]
+                                                                  fields:@[]
+                                                           buildsObjects:[function buildsObjects]];
     KCSConnectionFailureBlock fBlock = makeGroupFailureBlock(completionBlock);
     KCSConnectionProgressBlock pBlock = makeProgressBlock(progressBlock);
     
