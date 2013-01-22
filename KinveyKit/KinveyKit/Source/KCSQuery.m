@@ -361,7 +361,8 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
             if ([field isEqualToString:KCSMetadataFieldLastModifiedTime] && [value isKindOfClass:[NSDate class]]) {
                 value = [(NSDate*)value stringWithISO8601Encoding];
             } else {
-                Class<KCSDataTypeBuilder> builderClass = [defaultBuilders() objectForKey:[value classForCoder]];
+                NSDictionary* builders = defaultBuilders();
+                Class<KCSDataTypeBuilder> builderClass = [builders objectForKey:[value classForCoder]];
                 if (builderClass) {
                     value = [builderClass JSONCompatabileValueForObject:value];
                 } else {
