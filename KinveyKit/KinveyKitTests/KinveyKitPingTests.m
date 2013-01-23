@@ -31,7 +31,7 @@
 {
     KCSClient *client = [KCSClient sharedClient];
     [client setServiceHostname:@"baas"];
-    [client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
+    (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     
     
@@ -42,8 +42,8 @@
     // Needed, otherwise we burn a connection later...
     [KCSUser initCurrentUser];
     
-    _parser = [[[KCS_SBJsonParser alloc] init]retain];
-    _writer = [[[KCS_SBJsonWriter alloc] init]retain];
+    _parser = [[KCS_SBJsonParser alloc] init];
+    _writer = [[KCS_SBJsonWriter alloc] init];
 
 }
 
@@ -56,7 +56,7 @@
 - (void)testPingSuccessOnGoodRequestOldStyle
 {
     // Set-up client
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1234" 
+    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1234"
                                                  withAppSecret:@"1234"
                                                   usingOptions:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES]
                                                                                            forKey:KCS_USE_OLD_PING_STYLE_KEY]];
@@ -97,13 +97,10 @@
     STAssertTrue([description containsStringCaseInsensitive:@"kinvey = hello"], @"");
     STAssertTrue([description containsStringCaseInsensitive:@"version = \"0.6.6\""], @"");
     
-    [conn release];
-    
     // Reset client
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1234" 
+    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1234"
                                                  withAppSecret:@"1234"
                                                   usingOptions:nil];
-
 }
 
 - (void)testPingSuccessOnGoodRequestNewStyle
@@ -144,8 +141,6 @@
     STAssertTrue(pingWasSuccessful, @"ping should be successful");
     STAssertTrue([description hasPrefix:@"Kinvey Service is alive, version: "], @"");
     STAssertTrue([description hasSuffix:@", response: hello"], @"");
-    
-    [conn release];
 }
 
 
@@ -186,8 +181,6 @@
     
     STAssertFalse(pingWasSuccessful, @"ping should be successful");
     STAssertTrue([description containsStringCaseInsensitive:@"Planned Testing Error"], @"");
-
-    [conn release];
 }
 
 @end

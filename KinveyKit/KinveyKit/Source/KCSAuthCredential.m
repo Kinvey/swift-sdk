@@ -61,12 +61,6 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
 
 @implementation KCSAuthCredential
 
-@synthesize URL = _URL;
-@synthesize method = _method;
-@synthesize authRequired = _authRequired;
-@synthesize appKeyAuth = _appKeyAuth;
-@synthesize appKeyBase64 = _appKeyBase64;
-
 - (id)initWithURL: (NSString *)URL withMethod: (NSInteger)method
 {
     self = [super init];

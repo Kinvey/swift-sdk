@@ -42,13 +42,6 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 @end
 
 @implementation KinveyKitUserTests
-@synthesize testPassed = _testPassed;
-@synthesize onFailure = _onFailure;
-@synthesize onSuccess = _onSuccess;
-@synthesize onEntityFailure = _onEntityFailure;
-@synthesize onEntitySuccess = _onEntitySuccess;
-@synthesize parser = _parser;
-@synthesize writer = _writer;
 
 - (void)setUp
 {
@@ -59,8 +52,8 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     _onEntityFailure = [^(id u, NSError *error){ return NO; } copy];
     STAssertTrue([TestUtils setUpKinveyUnittestBackend],@"");
 
-    _parser = [[[KCS_SBJsonParser alloc] init] retain];
-    _writer = [[[KCS_SBJsonWriter alloc] init] retain];
+    _parser = [[KCS_SBJsonParser alloc] init];
+    _writer = [[KCS_SBJsonWriter alloc] init];
 }
 
 
@@ -173,7 +166,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     self.done = NO;
     [KCSPing pingKinveyWithBlock:^(KCSPingResult *res){
         pingWorked = res.pingWasSuccessful; 
-        description = [res.description retain];
+        description = res.description;
         self.done = YES;
     }];
     [self poll];
@@ -510,7 +503,7 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     }];
     [self poll];
     
-    lastUser = [[KCSClient sharedClient].currentUser.username retain];
+    lastUser = [KCSClient sharedClient].currentUser.username;
 }
 
 #pragma clang diagnostic pop
@@ -535,7 +528,7 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     }];
     [self poll];
     
-    lastUser = [[KCSClient sharedClient].currentUser.username retain];
+    lastUser = [KCSClient sharedClient].currentUser.username;
 }
 
 /* function named this way to follow the login with FB */

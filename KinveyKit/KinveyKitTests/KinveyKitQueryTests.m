@@ -119,7 +119,7 @@
     
     NSMutableArray* arr = [NSMutableArray arrayWithCapacity:20];
     for (int i=0; i < 20; i++) {
-        TestClass* a = [[[TestClass alloc] init] autorelease];
+        TestClass* a = [[TestClass alloc] init];
         a.objCount = i;
         [arr addObject:a];
     }

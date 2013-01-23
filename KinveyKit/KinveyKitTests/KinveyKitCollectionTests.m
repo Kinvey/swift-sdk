@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/19/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitCollectionTests.h"
@@ -31,8 +31,6 @@ typedef BOOL(^InfoSuccessAction)(int);
 @end
 
 @implementation SimpleClass
-@synthesize items = _items;
-@synthesize kinveyID = _kinveyID;
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
     return [NSDictionary dictionaryWithObjectsAndKeys:@"_id", @"kinveyID",
@@ -45,9 +43,9 @@ typedef BOOL(^InfoSuccessAction)(int);
 @interface KinveyKitCollectionTests ()
 @property (nonatomic) BOOL testPassed;
 @property (retain, nonatomic) NSString *testID;
-@property (retain, nonatomic) SuccessAction onSuccess;
-@property (retain, nonatomic) FailureAction onFailure;
-@property (retain, nonatomic) InfoSuccessAction onInfoSuccess;
+@property (copy, nonatomic) SuccessAction onSuccess;
+@property (copy, nonatomic) FailureAction onFailure;
+@property (copy, nonatomic) InfoSuccessAction onInfoSuccess;
 @property (retain, nonatomic) NSString *message;
 
 @property (retain, nonatomic) NSArray *completeDataSet;
@@ -76,7 +74,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // Ensure that KCSClient is alive
     KCSClient *client = [KCSClient sharedClient];
     [client setServiceHostname:@"baas"];
-    [client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
+    (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
     
     
     // Fake Auth
@@ -106,8 +104,8 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     self.completeDataSet = @[_allTypes, _nesting];
                  
-    _writer = [[[KCS_SBJsonWriter alloc] init] retain];
-    _parser = [[[KCS_SBJsonParser alloc] init] retain];
+    _writer = [[KCS_SBJsonWriter alloc] init];
+    _parser = [[KCS_SBJsonParser alloc] init];
 }
 
 - (void)tearDown
@@ -168,7 +166,6 @@ typedef BOOL(^InfoSuccessAction)(int);
     [[[KCSClient sharedClient] collectionFromString:@"testCollection" withClass:[SimpleClass class]] fetchAllWithDelegate:self];
 
     STAssertTrue(self.testPassed, self.message);
-    [conn release];
 }
 
 - (void) testQueryWithDelegate
@@ -204,8 +201,6 @@ typedef BOOL(^InfoSuccessAction)(int);
     } withProgressBlock:nil];
     
     STAssertTrue(self.testPassed, self.message);
-    [conn release];
-
 }
 
 - (void)testFetchEmptyCollectionReturns0SizedArray
@@ -238,8 +233,6 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     
     STAssertTrue(self.testPassed, self.message);
-    [conn release];
-
 }
 
 - (void)testCountFunction
@@ -346,8 +339,6 @@ typedef BOOL(^InfoSuccessAction)(int);
     STAssertTrue(self.testPassed, self.message);
     self.testPassed = NO;
     // END FRACTION
-
-    [conn release];
 }
 
 - (void) testQuery

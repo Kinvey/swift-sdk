@@ -8,10 +8,10 @@
 #import <Foundation/Foundation.h>
 #import "KinveyHeaderInfo.h"
 
-typedef enum
+typedef enum : NSInteger
 {
     // NO OP
-    kKCSNOOP = 0,
+    kKCSNOOP = 1,
     
     // Basic operators
     kKCSLessThan = 16,
