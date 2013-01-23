@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/21/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "ASTTestClass.h"
@@ -11,17 +11,11 @@
 
 @implementation ASTTestClass
 
-@synthesize objId = _objId;
-@synthesize objCount = _objCount;
-@synthesize objDescription = _objDescription;
-@synthesize date = _date;
-@synthesize meta = _meta;
-
 - (id) init
 {
     self = [super init];
     if (self) {
-        _date = [[NSDate date] retain];
+        _date = [NSDate date];
     }
     return self;
 }

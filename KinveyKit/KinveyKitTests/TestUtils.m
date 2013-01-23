@@ -95,7 +95,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     [[[KCSClient sharedClient] currentUser] logout];
     [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:YES];
     
-    SenTestCase* pollObj = [[[SenTestCase alloc] init]autorelease];
+    SenTestCase* pollObj = [[SenTestCase alloc] init];
     pollObj.done = NO;
     [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
         loaded = result.pingWasSuccessful;
@@ -117,7 +117,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     NSString *uuidString = nil;
     
     if (uuid){
-        uuidString = (NSString *)CFUUIDCreateString(NULL, uuid);
+        uuidString = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
         CFRelease(uuid);
     }
     return uuidString;
@@ -133,7 +133,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 + (KCSCollection*) randomCollection:(Class)objClass
 {
-    KCSCollection* collection = [[[KCSCollection alloc] init] autorelease];
+    KCSCollection* collection = [[KCSCollection alloc] init];
     collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
     collection.objectTemplate = objClass;
     return collection;

@@ -35,11 +35,6 @@
 
 }
 
-- (void) tearDown
-{
-    [_collection release];
-}
-
 -(void)testSaveOne
 {
     self.done = NO;

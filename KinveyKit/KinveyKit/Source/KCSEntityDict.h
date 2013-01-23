@@ -23,10 +23,10 @@
  
  @deprecatedIn 1.9
 */
-@interface KCSEntityDict : NSObject <KCSPersistable> 
+@interface KCSEntityDict : NSObject <KCSPersistable>  
 
 /*! The ObjectID for this dictionary, if the objectID is not set when saving to a collection one will be generated. */
-@property (nonatomic, retain) NSString *objectId;
+@property (nonatomic, retain) NSString *objectId DEPRECATED_ATTRIBUTE;
 
 
 /*! Return the value for an attribute for this user

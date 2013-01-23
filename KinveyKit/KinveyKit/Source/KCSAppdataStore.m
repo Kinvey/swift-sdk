@@ -118,11 +118,6 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 @implementation KCSAppdataStore
 
-@synthesize authHandler = _authHandler;
-@synthesize treatSingleFailureAsGroupFailure = _treatSingleFailureAsGroupFailure;
-@synthesize backingCollection = _backingCollection;
-
-
 #pragma mark -
 #pragma mark Initialization
 
@@ -264,6 +259,7 @@ KCSConnectionProgressBlock   makeProgressBlock(KCSProgressBlock onProgress);
                 }
                 [newDictionary setObject:returnObjects forKey:key];
                 [newArray addObject:newDictionary];
+                [newDictionary release];
             }
             jsonArray = [NSArray arrayWithArray:newArray];
         }

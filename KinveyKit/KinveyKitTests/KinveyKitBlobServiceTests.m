@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitBlobServiceTests.h"
@@ -26,8 +26,8 @@ typedef BOOL(^FailureAction)(NSError *);
 @interface KinveyKitBlobServiceTests ()
 
 @property (retain, nonatomic) NSString *testID;
-@property (retain, nonatomic) SuccessAction onSuccess;
-@property (retain, nonatomic) FailureAction onFailure;
+@property (copy, nonatomic) SuccessAction onSuccess;
+@property (copy, nonatomic) FailureAction onFailure;
 @property (nonatomic) BOOL testPassed;
 @property (retain, nonatomic) NSString *message;
 @property (retain, nonatomic) KCS_SBJsonWriter *writer;
@@ -61,7 +61,7 @@ typedef BOOL(^FailureAction)(NSError *);
     // Ensure that KCSClient is alive
     KCSClient *client = [KCSClient sharedClient];
     [client setServiceHostname:@"baas"];
-    [client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
+    (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
     
     
     // Fake Auth
@@ -72,8 +72,8 @@ typedef BOOL(^FailureAction)(NSError *);
 //    [[client currentUser] initializeCurrentUser];
     [KCSUser initCurrentUser];
     
-    _writer = [[[KCS_SBJsonWriter alloc] init] retain];
-    _parser = [[[KCS_SBJsonParser alloc] init] retain];
+    _writer = [[KCS_SBJsonWriter alloc] init];
+    _parser = [[KCS_SBJsonParser alloc] init];
     
     STAssertTrue([TestUtils setUpKinveyUnittestBackend], @"should be set up");
 }
@@ -143,7 +143,6 @@ typedef BOOL(^FailureAction)(NSError *);
     [KCSResourceService getStreamingURLForResource:@"blah" withResourceDelegate:self];
     STAssertTrue(self.testPassed, self.message);
     
-    [conn release];
     [[KCSConnectionPool sharedPool] drainPools];
 }
 
@@ -182,7 +181,6 @@ typedef BOOL(^FailureAction)(NSError *);
     
     STAssertTrue([[conn.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
-    [conn release];
     [[KCSConnectionPool sharedPool] drainPools];
 }
 
@@ -203,9 +201,7 @@ typedef BOOL(^FailureAction)(NSError *);
     
     STAssertTrue([[conn.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
-    [conn release];
     [[KCSConnectionPool sharedPool] drainPools];
-
 }
 
 
@@ -264,8 +260,6 @@ typedef BOOL(^FailureAction)(NSError *);
     
     STAssertTrue([[kinvey.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
-    [resource release];
-    [kinvey release];
     [[KCSConnectionPool sharedPool] drainPools];
     
     KCSLogDebug(@"Made it out of the woods...");
@@ -311,8 +305,6 @@ typedef BOOL(^FailureAction)(NSError *);
     
     STAssertTrue([[kinvey.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
-    [resource release];
-    [kinvey release];
     [[KCSConnectionPool sharedPool] drainPools];
 }
 
@@ -353,8 +345,6 @@ typedef BOOL(^FailureAction)(NSError *);
     
     STAssertTrue([[kinvey.providedRequest.URL absoluteString] hasSuffix:expectedString], @"did not have expected response");
     
-    [resource release];
-    [kinvey release];
     [[KCSConnectionPool sharedPool] drainPools];
 }
 

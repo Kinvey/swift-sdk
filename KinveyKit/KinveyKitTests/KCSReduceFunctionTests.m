@@ -248,8 +248,7 @@
 {
     self.done = NO;
     [store groupByKeyFunction:@"function(obj) { var dt = new ISODate(obj._kmd.lmt); var g = {}; g[dt.getDate()] = true; return g;" reduce:[KCSReduceFunction AGGREGATE] condition:[KCSQuery query] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
-        
+        STAssertNoError;
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
         STAssertEquals([value intValue],10, @"expecting 10 as the min for objects of 'one'");
         

@@ -459,13 +459,13 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     va_start(items, firstConditional);
     
     KCSQueryConditional currentCondition = firstConditional;
-    NSObject *currentQuery = va_arg(items, NSObject *);
     
-    while (currentCondition && currentQuery){
+    while (currentCondition) {
+        NSObject *currentQuery = va_arg(items, id);
         NSDictionary *pair = @{ @"op" : @(currentCondition), @"query" : currentQuery};
         [args addObject:pair];
+        //do it this way b/c for last condition currentCondition == 0 and the next one will be undefined
         currentCondition = va_arg(items, KCSQueryConditional);
-        currentQuery = va_arg(items, NSObject *);
     }
     va_end(items);
     

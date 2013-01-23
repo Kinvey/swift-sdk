@@ -294,7 +294,7 @@ static NSString* _collection;
 
 TestClass* randomTestClass(NSString* description)
 {
-    TestClass* ref = [[[TestClass alloc] init] autorelease];
+    TestClass* ref = [[TestClass alloc] init];
     ref.objDescription = description;
     ref.objCount = arc4random();
     return ref;
@@ -1035,7 +1035,7 @@ TestClass* randomTestClass(NSString* description)
 
 - (void) testUserAssociation
 {
-    UserRefTestClass* obj = [[[UserRefTestClass alloc] init] autorelease];
+    UserRefTestClass* obj = [[UserRefTestClass alloc] init];
     obj.objCount = -3000;
     obj.objDescription = @"auser that knows about another user";
     obj.auser = [KCSClient sharedClient].currentUser;

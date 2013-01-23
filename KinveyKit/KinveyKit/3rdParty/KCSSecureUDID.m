@@ -151,7 +151,7 @@ BOOL          SUUIDValidOwnerObject(id object);
             // Otherwise, create a new RFC-4122 Version 4 UUID
             // http://en.wikipedia.org/wiki/Universally_unique_identifier
             CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
-            identifier = [(NSString*)CFUUIDCreateString(kCFAllocatorDefault, uuid) autorelease];
+            identifier = (NSString*)CFBridgingRelease(CFUUIDCreateString(kCFAllocatorDefault, uuid));
             CFRelease(uuid);
             
             // Encrypt it for storage.
@@ -239,7 +239,7 @@ NSString *SUUIDCryptorToString(CCOperation operation, NSData *value, NSData *key
         return nil;
     }
     
-    return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
 /*

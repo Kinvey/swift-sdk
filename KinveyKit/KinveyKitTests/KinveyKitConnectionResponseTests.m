@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitConnectionResponseTests.h"
@@ -16,7 +16,7 @@
 - (void)testFactoryMethodGeneratesValidResponse{
     NSDictionary *header = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
     NSDictionary *userData = [NSDictionary dictionaryWithObject:@"This is some Test Data" forKey:@"testData"];
-    KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+    KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
     NSData *data = [writer dataWithObject:userData];
     
     KCSConnectionResponse *response = [KCSConnectionResponse connectionResponseWithCode:200
