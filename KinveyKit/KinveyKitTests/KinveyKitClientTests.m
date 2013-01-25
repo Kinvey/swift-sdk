@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/15/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitClientTests.h"
@@ -14,13 +14,13 @@
 
 - (void) testNilAppKeyRaisesException
 {
-    STAssertThrows([[KCSClient sharedClient] initializeKinveyServiceForAppKey:nil withAppSecret:@"text" usingOptions:nil],
+    STAssertThrows((void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:nil withAppSecret:@"text" usingOptions:nil],
                    @"nil AppKey Did Not raise exception!");
 }
 
 - (void) testNilAppSecretRaisesException
 {
-    STAssertThrows([[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969" withAppSecret:nil usingOptions:nil],
+    STAssertThrows((void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969" withAppSecret:nil usingOptions:nil],
                    @"nil AppSecret did not raise exception!");
 }
 
@@ -40,7 +40,7 @@
                            @"https://baas.kinvey.com/appdata/%@/",
                            kidID];
     
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:kidID
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:kidID
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
@@ -54,7 +54,7 @@
                            @"https://baas.kinvey.com/blob/%@/",
                            kidID];
     
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:kidID
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:kidID
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
@@ -68,7 +68,7 @@
                            @"https://baas.kinvey.com/user/%@/",
                            kidID];
     
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:kidID
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:kidID
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
@@ -78,7 +78,7 @@
 
 - (void)testBaseURLIsValid
 {
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969"
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969"
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
@@ -95,7 +95,7 @@
                            @"https://baas.kinvey.com/user/%@/",
                            kidID];
     
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:kidID
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:kidID
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
 
@@ -114,7 +114,7 @@
 
 - (void)testThatInitializeWithKeyAndSecretRejectsInvalidInput
 {
-    STAssertThrows([[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"<app key>"
+    STAssertThrows((void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"<app key>"
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil],
                    @"Malformed input DID NOT raise exception!");
@@ -138,7 +138,7 @@
     NSString *appKey = @"name";
     NSString *appSecret = @"secret";
     
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:appKey
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:appKey
                                                  withAppSecret:appSecret
                                                   usingOptions:nil];
     
