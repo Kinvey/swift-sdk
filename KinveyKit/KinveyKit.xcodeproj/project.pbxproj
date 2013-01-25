@@ -199,7 +199,7 @@
 		D32A611114716F2D00F77A3F /* KinveyAnalytics.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60FD14716F2D00F77A3F /* KinveyAnalytics.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D32A611214716F2D00F77A3F /* KinveyAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60FE14716F2D00F77A3F /* KinveyAnalytics.m */; };
 		D32A611414716F2D00F77A3F /* KinveyCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60FF14716F2D00F77A3F /* KinveyCollection.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D32A611514716F2D00F77A3F /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610014716F2D00F77A3F /* KinveyCollection.m */; };
+		D32A611514716F2D00F77A3F /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610014716F2D00F77A3F /* KinveyCollection.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D32A611714716F2D00F77A3F /* KinveyEntity.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A610114716F2D00F77A3F /* KinveyEntity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D32A611814716F2D00F77A3F /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610214716F2D00F77A3F /* KinveyEntity.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D32A611A14716F2D00F77A3F /* KinveyPersistable.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A610314716F2D00F77A3F /* KinveyPersistable.h */; settings = {ATTRIBUTES = (Public, ); }; };
