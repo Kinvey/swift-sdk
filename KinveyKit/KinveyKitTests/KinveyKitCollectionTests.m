@@ -304,7 +304,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // count.  What ends up happening is that the value overflows (to 0?)
     // but still registers as a negative int..., so we end up with:
     // 0x80000000 => -2147483648.
-    expectedResult = -2147483648;
+    expectedResult = -1;
     conn.responseForSuccess = response;
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     [collection entityCountWithDelegate:self];
