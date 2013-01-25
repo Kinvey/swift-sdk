@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/19/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitAnalyticsTests.h"
@@ -16,7 +16,7 @@
 // All code under test must be linked into the Unit Test bundle
 - (void)testGenerateUUIDUniquenessn
 {
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969"
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969"
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     KCSAnalytics *lytics = [[KCSClient sharedClient] analytics];
@@ -27,7 +27,7 @@
 
 - (void)testUUIDNotUsingDeprecatedUDID
 {
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969"
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969"
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
