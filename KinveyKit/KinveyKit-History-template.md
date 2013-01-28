@@ -4,6 +4,7 @@
 ### 1.14.0
 ** Release Date:** TBD
 
+* Added `+ [KCSReduceFunction AGGREGATE]` grouping function which returns whole objects for the store type, grouped by the specified field. This is useful for building sectioned tables. 
 * Added `+ [KCSQuery queryWithQuery:]` copy factory method.
 * Removed `KCSUniqueNumber` class. 
 * Removed deprecated (as of version 1.2) filter API from old Collections interface. 

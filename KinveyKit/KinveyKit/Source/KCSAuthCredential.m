@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/17/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSAuthCredential.h"
@@ -65,26 +65,18 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
 {
     self = [super init];
     if (self){
-        _URL = [URL retain];
+        _URL = URL;
         _method = method;
         _authRequired = deriveAuth(_URL, _method);
-        _appKeyAuth = [[NSURLCredential credentialWithUser:[[KCSClient sharedClient] appKey] password:[[KCSClient sharedClient] appSecret] persistence:NSURLCredentialPersistenceNone] retain];
-        _appKeyBase64 = [KCSbasicAuthString([[KCSClient sharedClient] appKey], [[KCSClient sharedClient] appSecret]) retain];
+        _appKeyAuth = [NSURLCredential credentialWithUser:[[KCSClient sharedClient] appKey] password:[[KCSClient sharedClient] appSecret] persistence:NSURLCredentialPersistenceNone];
+        _appKeyBase64 = KCSbasicAuthString([[KCSClient sharedClient] appKey], [[KCSClient sharedClient] appSecret]);
     }
     return self;
 }
 
-- (void)dealloc
-{
-    [_URL release];
-    [_appKeyAuth release];
-    [_appKeyBase64 release];
-    [super dealloc];
-}
-
 + (KCSAuthCredential *)credentialForURL: (NSString *)URL usingMethod: (NSInteger)method
 {
-    return [[[KCSAuthCredential alloc] initWithURL:URL withMethod:method] autorelease];
+    return [[KCSAuthCredential alloc] initWithURL:URL withMethod:method];
 }
 
 - (NSURLCredential *)NSURLCredential
@@ -149,11 +141,7 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
 
 - (BOOL)requiresAuthentication
 {
-    if (self.authRequired == KCSAuthNoAuth){
-        return NO;
-    } else {
-        return YES;
-    }
+    return self.authRequired != KCSAuthNoAuth;
 }
 
 @end

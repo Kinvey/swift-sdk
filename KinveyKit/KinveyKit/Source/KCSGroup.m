@@ -23,7 +23,18 @@
     self = [super init];
     if (self) {
         _array = [jsonData copy];
-        _queriedFields = [NSArray arrayWithArray:fields];
+       
+        if (fields.count == 0) {
+            NSMutableArray* fieldValues = [NSMutableArray array];
+            for (NSDictionary* d in jsonData) {
+                NSMutableArray* keys = [[d allKeys] mutableCopy];
+                [keys removeObject:key];
+                [fieldValues addObjectsFromArray:keys];
+            }
+            _queriedFields = [NSArray arrayWithArray:fieldValues];
+        } else {
+            _queriedFields = [NSArray arrayWithArray:fields];
+        }
         _key = [key copy];
     }
     return self;
@@ -34,7 +45,7 @@
     return _array;
 }
 
-- (NSString*) returnValueKey 
+- (NSString*) returnValueKey
 {
     return _key;
 }

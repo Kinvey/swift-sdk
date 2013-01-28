@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/9/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -16,29 +16,20 @@
 
 
 @implementation KCSAnalytics
-
 @synthesize UUID=_UUID;
 @synthesize UDID=_UDID;
-@synthesize analyticsHeaderName = _analyticsHeaderName;
 
 - (id)init
 {
     self = [super init];
     if (self){
-        _UDID = [[KCSKinveyUDID uniqueIdentifier] retain];//[[[UIDevice currentDevice] uniqueIdentifier] retain];
+        _UDID = [KCSKinveyUDID uniqueIdentifier];
         _UUID = nil;
-        _analyticsHeaderName = [@"X-Kinvey-Device-Information" retain];
+        _analyticsHeaderName = @"X-Kinvey-Device-Information";
     }
     return self;
 }
 
-- (void)dealloc
-{
-    [_UDID release];
-    [_UUID release];
-    [_analyticsHeaderName release];
-    [super dealloc];
-}
 
 - (NSString *)generateUUID
 {
@@ -46,12 +37,12 @@
     NSString *uuidString = nil;
     
     if (uuid){
-        uuidString = (NSString *)CFUUIDCreateString(NULL, uuid);
+        uuidString = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
         CFRelease(uuid);
     }
     // CreateString creates the string, so we own this string.
     // We must ensure it gets destroyed
-    return [uuidString autorelease];
+    return uuidString;
 }
 
 // Always return the same UUID for all users.
@@ -74,7 +65,7 @@
     NSMutableDictionary *d = [NSMutableDictionary dictionary];
 
     // Available Features
-    [d setObject:[NSNumber numberWithBool:cd.multitaskingSupported] forKey:@"multitaskingSupported"];
+    [d setObject:@(cd.multitaskingSupported) forKey:@"multitaskingSupported"];
     
     // Identifying Device / OS
     [d setObject:cd.name forKey:@"name"];
@@ -85,24 +76,22 @@
     [d setObject:[self platform] forKey:@"platform"];
 
     // Device Orientation
-    [d setObject:[NSNumber numberWithInt:cd.orientation] forKey:@"orientation"];
-    [d setObject:[NSNumber numberWithBool:cd.generatesDeviceOrientationNotifications]
-          forKey:@"generatesDeviceOrientationNotifications"];
+    [d setObject:@(cd.orientation) forKey:@"orientation"];
+    [d setObject:@(cd.generatesDeviceOrientationNotifications) forKey:@"generatesDeviceOrientationNotifications"];
     
     
     // Battery
-    [d setObject:[NSNumber numberWithFloat:cd.batteryLevel] forKey:@"batteryLevel"];
-    [d setObject:[NSNumber numberWithBool:cd.batteryMonitoringEnabled] forKey:@"batteryMonitoringEnabled"];
-    [d setObject:[NSNumber numberWithInt:cd.batteryState] forKey:@"batteryState"];
+    [d setObject:@(cd.batteryLevel) forKey:@"batteryLevel"];
+    [d setObject:@(cd.batteryMonitoringEnabled) forKey:@"batteryMonitoringEnabled"];
+    [d setObject:@(cd.batteryState) forKey:@"batteryState"];
     
     
     // Proximity Sensor State
-    [d setObject:[NSNumber numberWithBool:cd.proximityMonitoringEnabled] forKey:@"proximityMonitoringEnabled"];
-    [d setObject:[NSNumber numberWithBool:cd.proximityState] forKey:@"proximityState"];
+    [d setObject:@(cd.proximityMonitoringEnabled) forKey:@"proximityMonitoringEnabled"];
+    [d setObject:@(cd.proximityState) forKey:@"proximityState"];
     
     // Record timestamp of when data was collected
-    [d setObject:[NSNumber numberWithDouble:[NSDate timeIntervalSinceReferenceDate] + NSTimeIntervalSince1970]
-          forKey:@"timestamp"];
+    [d setObject:@([NSDate timeIntervalSinceReferenceDate] + NSTimeIntervalSince1970) forKey:@"timestamp"];
     
     return d;
 }
@@ -110,7 +99,7 @@
 
 // From: http://www.cocos2d-iphone.org/forum/topic/21923
 // NB: This is not 100% awesome and needs cleaned up
-- (NSString *) platform{
+- (NSString *) platform {
     size_t size;
     sysctlbyname("hw.machine", NULL, &size, NULL, 0);
     char *machine = malloc(size);
