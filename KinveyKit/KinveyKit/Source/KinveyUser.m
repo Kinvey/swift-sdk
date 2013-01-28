@@ -51,33 +51,18 @@
 {
     self = [super init];
     if (self){
-        _username = [[NSString string] retain];
-        _password = [[NSString string] retain];
-        _userId = [[NSString string] retain];
-        _userAttributes = [[NSMutableDictionary dictionary] retain];
+        _username = @"";
+        _password = @"";
+        _userId = @"";
+        _userAttributes = [NSMutableDictionary dictionary];
         _deviceTokens = nil;
-        _oauthTokens = [[NSMutableDictionary dictionary] retain];
+        _oauthTokens = [NSMutableDictionary dictionary];
         _sessionAuth = nil;
         _surname = nil;
         _email = nil;
         _givenName = nil;
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [_surname release];
-    [_givenName release];
-    [_email release];
-    [_username release];
-    [_password release];
-    [_userId release];
-    [_userAttributes release];
-    [_deviceTokens release];
-    [_oauthTokens release];
-    [_sessionAuth release];
-    [super dealloc];
 }
 
 + (BOOL) hasSavedCredentials
@@ -110,7 +95,6 @@
     
     if (user.userId == nil || user.username == nil) {
         //prevent that weird assertion that Colden was seeing
-        [properties release];
         return;
     }
     
@@ -143,8 +127,6 @@
         }
     }];
     
-    [properties release];
-    
     assert(user.username != nil && user.userId != nil);
     
     [KCSKeyChain setString:user.username forKey:kKeychainUsernameKey];
@@ -175,8 +157,6 @@
     if (user.userId != nil) {
         KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", user.userId] usingMethod:kGetRESTMethod];
         [userRequest setContentType:KCS_JSON_TYPE];
-        KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
-        [writer release];
         
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
@@ -260,7 +240,7 @@
         [KCSUser clearSavedCredentials];
     }
     
-    KCSUser *createdUser = [[[KCSUser alloc] init] autorelease];
+    KCSUser *createdUser = [[KCSUser alloc] init];
     
     createdUser.username = [KCSKeyChain getStringForKey:kKeychainUsernameKey];
     
@@ -297,7 +277,6 @@
         [userRequest setContentType:KCS_JSON_TYPE];
         KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
         [userRequest addBody:[writer dataWithObject:userData]];
-        [writer release];
         
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
@@ -449,7 +428,7 @@
     // Set up our callbacks
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         // Ok, we're probably authenticated
-        KCSUser *createdUser = [[[KCSUser alloc] init] autorelease];
+        KCSUser *createdUser = [[KCSUser alloc] init];
         createdUser.username = username;
         createdUser.password = password;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -494,7 +473,7 @@
     client.userAuthenticationInProgress = YES;
     
     // Create a temp user with uname/password and use it it init currentUser
-    KCSUser *tmpCurrentUser = [[[KCSUser alloc] init] autorelease];
+    KCSUser *tmpCurrentUser = [[KCSUser alloc] init];
     tmpCurrentUser.username = username;
     tmpCurrentUser.password = password;
     client.currentUser = tmpCurrentUser;
@@ -522,7 +501,7 @@
     // Ok, we're really authd
     [self clearSavedCredentials];
     NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-    KCSUser* createdUser = [[[KCSUser alloc] init] autorelease];
+    KCSUser* createdUser = [[KCSUser alloc] init];
     [self setupCurrentUser:createdUser properties:dictionary password:nil username:nil];
     
     NSError* error = nil;
@@ -603,7 +582,7 @@
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
         if ([response responseCode] >= 400) {
-            KCSUser *createdUser = [[[KCSUser alloc] init] autorelease];
+            KCSUser *createdUser = [[KCSUser alloc] init];
             
             client.userIsAuthenticated = NO;
             client.userAuthenticationInProgress = NO;
@@ -677,7 +656,7 @@
         }
     };
     
-    KCSUser *tmpCurrentUser = [[[KCSUser alloc] init] autorelease];
+    KCSUser *tmpCurrentUser = [[KCSUser alloc] init];
     tmpCurrentUser.username = @"";
     tmpCurrentUser.password = @"";
     client.currentUser = tmpCurrentUser;
@@ -842,8 +821,8 @@
     static NSDictionary *options = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        options = [@{KCS_USE_DICTIONARY_KEY : @(YES),
-                   KCS_DICTIONARY_NAME_KEY : @"userAttributes"} retain];
+        options = @{KCS_USE_DICTIONARY_KEY : @(YES),
+                   KCS_DICTIONARY_NAME_KEY : @"userAttributes"};
     });
     
     return options;
@@ -854,7 +833,7 @@
     static NSDictionary *mappedDict = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mappedDict = [@{@"userId" : KCSEntityKeyId,
+        mappedDict = @{@"userId" : KCSEntityKeyId,
                       @"deviceTokens" : @"_deviceTokens",
                       @"username" : KCSUserAttributeUsername,
                       @"password" : @"password",
@@ -863,7 +842,7 @@
                       @"surname" : KCSUserAttributeSurname,
                       @"metadata" : KCSEntityKeyMetadata,
                       @"oauthTokens" : KCSUserAttributeOAuthTokens,
-                      } retain];
+        };
     });
     
     return mappedDict;
@@ -938,11 +917,10 @@
     _surname = [surname copy];
     NSMutableDictionary* properties = [[KCSKeyChain getDictForKey:kKeychainPropertyDictKey] mutableCopy];
     if (!properties) {
-        properties = [[NSMutableDictionary dictionary] retain];
+        properties = [NSMutableDictionary dictionary];
     }
     [properties setValue:_surname forKey:KCSUserAttributeSurname];
     [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
-    [properties release];
 }
 
 - (void)setGivenName:(NSString *)givenName
@@ -950,11 +928,10 @@
     _givenName = [givenName copy];
     NSMutableDictionary* properties = [[KCSKeyChain getDictForKey:kKeychainPropertyDictKey] mutableCopy];
     if (!properties) {
-        properties = [[NSMutableDictionary dictionary] retain];
+        properties = [NSMutableDictionary dictionary];
     }
     [properties setValue:_givenName forKey:KCSUserAttributeGivenname];
     [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
-    [properties release];
 }
 
 - (void)setEmail:(NSString *)email
@@ -962,11 +939,10 @@
     _email = [email copy];
     NSMutableDictionary* properties = [[KCSKeyChain getDictForKey:kKeychainPropertyDictKey] mutableCopy];
     if (!properties) {
-        properties = [[NSMutableDictionary dictionary] retain];
+        properties = [NSMutableDictionary dictionary];
     }
     [properties setValue:_email forKey:KCSUserAttributeEmail];
     [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
-    [properties release];
 }
 
 + (KCSUser *)activeUser
@@ -985,7 +961,7 @@
         completionBlock(nil, userError);
     } else {
         NSString* uname = self.username;
-        NSString* pwd = [[self.password copy] autorelease];
+        NSString* pwd = [self.password copy];
         
         self.password = newPassword;
         
@@ -1004,7 +980,7 @@
         KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
         BOOL isPostRequest = obj.isPostRequest;
         NSString *objectId = obj.objectId;
-        NSDictionary *dictionaryToMap = [obj.dataToSerialize retain];
+        NSDictionary *dictionaryToMap = obj.dataToSerialize;
         
         NSString *resource = nil;
         KCSCollection* collection = [KCSCollection userCollection];
@@ -1032,7 +1008,7 @@
         [request setContentType:KCS_JSON_TYPE];
         
         // Make sure to include the UTF-8 encoded JSONData...
-        KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+        KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
         [request addBody:[writer dataWithObject:dictionaryToMap]];
         
         // Prepare our handlers
@@ -1056,7 +1032,6 @@
         [request setAuth:uname password:pwd];
         
         [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-        [dictionaryToMap release];
     }
 }
 @end

@@ -224,7 +224,6 @@ KCSConnectionProgressBlock   makeProgressBlock(KCSProgressBlock onProgress);
     return [[^(KCSConnectionResponse *response){
         
         KCSLogTrace(@"In collection callback with response: %@", response);
-        NSMutableArray *processedData = [[NSMutableArray alloc] init];
         NSObject* jsonData = [response jsonResponseValue];
         
         NSArray *jsonArray = nil;
@@ -232,7 +231,6 @@ KCSConnectionProgressBlock   makeProgressBlock(KCSProgressBlock onProgress);
             NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Collection grouping was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             onComplete(nil, error);
             
-            [processedData release];
             return;
         }
         
@@ -267,7 +265,6 @@ KCSConnectionProgressBlock   makeProgressBlock(KCSProgressBlock onProgress);
         KCSGroup* group = [[[KCSGroup alloc] initWithJsonArray:jsonArray valueKey:key queriedFields:fields] autorelease];
         
         onComplete(group, nil);
-        [processedData release];
     } copy] autorelease];
 }
 
@@ -614,14 +611,10 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
         format = @"%@/_group";
     }
     
-//    NSArray* fields = [NSArray wrapIfNotArray:fieldOrFields];
     
     NSString *resource = [collection.baseURL stringByAppendingFormat:format, collectionName];
-    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:4];
-//    NSMutableDictionary *keys = [NSMutableDictionary dictionaryWithCapacity:[fields count]];
-//    for (NSString* field in fields) {
-//        [keys setObject:[NSNumber numberWithBool:YES] forKey:field];
-//    }
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:5];
+
     [body setObject:keyFunction forKey:@"keyf"];
     [body setObject:[function JSONStringRepresentationForInitialValue:@[]] forKey:@"initial"];
     [body setObject:[function JSONStringRepresentationForFunction:@[]] forKey:@"reduce"];

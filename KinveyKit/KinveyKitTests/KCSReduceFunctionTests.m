@@ -1,4 +1,4 @@
-//
+ //
 //  KCSReduceFunctionTests.m
 //  KinveyKit
 //
@@ -247,13 +247,16 @@
 - (void) testGroupObjByKeyFunction
 {
     self.done = NO;
-    [store groupByKeyFunction:@"function(obj) { var dt = new ISODate(obj._kmd.lmt); var g = {}; g[dt.getDate()] = true; return g;" reduce:[KCSReduceFunction AGGREGATE] condition:[KCSQuery query] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+    [store groupByKeyFunction:@"function(obj) { var dt = new ISODate(obj._kmd.lmt); var g = {}; g[dt.getDate()] = true; return g;}" reduce:[KCSReduceFunction AGGREGATE] condition:[KCSQuery query] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNoError;
-        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue],10, @"expecting 10 as the min for objects of 'one'");
+        NSCalendar *calendar = [NSCalendar currentCalendar];
+        NSDateComponents* components = [calendar components:NSDayCalendarUnit | NSYearCalendarUnit fromDate:[NSDate date]];
+        NSInteger day = [components day];
+        NSString* keyf = [NSString stringWithFormat:@"%i", day];
+        NSArray* value = [valuesOrNil reducedValueForFields:@{keyf : @1}];
+        STAssertEquals((int)[value count], (int)6, @"expecting 6 new objects");
         
-        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
-        STAssertEquals([value intValue], -30, @"expecting 10 as the min for objects of 'math'");
+        STAssertEquals((int)[value[0] objCount], (int)10, @"expecting 10 as the min for objects of 'math'");
         
         self.done = YES;
     } progressBlock:nil];

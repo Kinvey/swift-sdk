@@ -21,7 +21,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 @implementation SenTestCase (TestUtils)
 @dynamic done;
-#define MAX_POLL_COUNT 20
+#define MAX_POLL_COUNT 120
 
 - (void) poll
 {
@@ -29,7 +29,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     while (self.done == NO && pollCount < MAX_POLL_COUNT) {
         NSLog(@"polling... %i", pollCount);
         NSRunLoop* loop = [NSRunLoop mainRunLoop];
-        NSDate* until = [NSDate dateWithTimeIntervalSinceNow:2];
+        NSDate* until = [NSDate dateWithTimeIntervalSinceNow:0.5];
         [loop runUntilDate:until];
         pollCount++;
     }
