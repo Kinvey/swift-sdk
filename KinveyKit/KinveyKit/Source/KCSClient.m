@@ -98,11 +98,11 @@
         _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
 
 #if TARGET_OS_IPHONE
-        _networkReachability = [[KCSReachability reachabilityForInternetConnection] retain];
+        _networkReachability = [KCSReachability reachabilityForInternetConnection];
         // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
         // We start this in init in the hopes that it will be (mostly) complete by the time we need to use it.
         // TODO: Investigate being notified of changes in KCS Client
-        _kinveyReachability = [[KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]] retain];
+        _kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]];
 #endif
         
         @try {
@@ -117,35 +117,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_userAgent release];
-    [_analytics release];
-    [_authCompleteLock release];
-    [_authInProgressLock release];
-    [_currentUser release];
-    [_resourceBaseURL release];
-    [_userBaseURL release];
-    [_appdataBaseURL release];
-    [_serviceHostname release];
-    [_kinveyReachability release];
-    [_networkReachability release];
-    
-    
-    _userAgent = nil;
-    _analytics = nil;
-    _authCompleteLock = nil;
-    _authInProgressLock = nil;
-    _currentUser = nil;
-    _resourceBaseURL = nil;
-    _userBaseURL = nil;
-    _appdataBaseURL = nil;
-    _serviceHostname = nil;
-    _networkReachability = nil;
-    _kinveyReachability = nil;
-    
-    [super dealloc];
-}
 
 - (BOOL)userIsAuthenticated
 {
@@ -183,10 +154,7 @@
 - (void)setServiceHostname:(NSString *)serviceHostname
 {
     // Note that we need to update the Kinvey Reachability host here...
-    NSString *oldName = _serviceHostname;
     _serviceHostname = [serviceHostname copy]; // Implicit retain here
-    [oldName release];
-    
     [self updateURLs];
     
 #if TARGET_OS_IPHONE
@@ -239,7 +207,7 @@
     [self updateURLs];
     
     // TODO extract options to something meaningful...
-    self.options = [options retain];
+    self.options = options;
     self.authCredentials = [NSURLCredential credentialWithUser:appKey password:appSecret persistence:NSURLCredentialPersistenceNone];
     
     // Check to make sure appdata URL is good
@@ -320,7 +288,7 @@
         [store configureWithOptions:options];
     }
     
-    return [store autorelease];
+    return store;
 }
 
 

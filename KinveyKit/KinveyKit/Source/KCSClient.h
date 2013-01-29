@@ -2,7 +2,7 @@
 //  KCSClient.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -10,6 +10,7 @@
 //  contents is a violation of applicable laws.
 
 #import <Foundation/Foundation.h>
+#import "KinveyHeaderInfo.h"
 
 #define MINIMUM_KCS_VERSION_SUPPORTED @"2.0"
 
@@ -221,27 +222,30 @@
  
  @param collection The name of the collection that will contain the objects.
  @param collectionClass A class that represents the objects of this collection.
+ @deprecated 1.14.0
  @returns The collection object.
- 
- 
 */
-- (KCSCollection *)collectionFromString: (NSString *)collection withClass: (Class)collectionClass;
+- (KCSCollection *)collectionFromString: (NSString *)collection withClass: (Class)collectionClass KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);;
 
 ///---------------------------------------------------------------------------------------
 /// @name Store Interface
 ///---------------------------------------------------------------------------------------
-- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource;
+//@deprecated 1.14.0
+- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);
 
-- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource withAuthHandler: (KCSAuthHandler *)authHandler;
+//@deprecated 1.14.0
+- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource withAuthHandler: (KCSAuthHandler *)authHandler KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);
 
+//@deprecated 1.14.0
 - (id<KCSStore>)store: (NSString *)storeType
           forResource: (NSString *)resource
-            withClass: (Class)collectionClass;
+            withClass: (Class)collectionClass KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);
 
+//@deprecated 1.14.0
 - (id<KCSStore>)store: (NSString *)storeType
           forResource: (NSString *)resource
             withClass: (Class)collectionClass
-      withAuthHandler: (KCSAuthHandler *)authHandler;
+      withAuthHandler: (KCSAuthHandler *)authHandler KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);
 
 
 ///---------------------------------------------------------------------------------------

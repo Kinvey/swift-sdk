@@ -59,6 +59,9 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 @implementation KinveyKitCollectionTests
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-retain-cycles"
+
 - (void)setUp
 {
     _testID = nil;
@@ -163,7 +166,8 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     
-    [[[KCSClient sharedClient] collectionFromString:@"testCollection" withClass:[SimpleClass class]] fetchAllWithDelegate:self];
+    KCSCollection* collection = [KCSCollection collectionFromString:@"testCollection" ofClass:[SimpleClass class]];
+    [collection fetchAllWithDelegate:self];
 
     STAssertTrue(self.testPassed, self.message);
 }
@@ -195,7 +199,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     
-    KCSCollection* collection = [[KCSClient sharedClient] collectionFromString:@"testCollection" withClass:[SimpleClass class]];
+    KCSCollection* collection = [KCSCollection collectionFromString:@"testCollection" ofClass:[SimpleClass class]];
     [collection fetchWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         self.testPassed = self.onSuccess(objectsOrNil);
     } withProgressBlock:nil];
@@ -229,7 +233,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     
-    [[[KCSClient sharedClient] collectionFromString:@"testCollection" withClass:[SimpleClass class]] fetchAllWithDelegate:self];
+    [[KCSCollection collectionFromString:@"testCollection" ofClass:[SimpleClass class]] fetchAllWithDelegate:self];
     
     
     STAssertTrue(self.testPassed, self.message);
@@ -243,8 +247,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     NSDictionary *negative =  wrapResponseDictionary([NSDictionary dictionaryWithObject:[NSNumber numberWithInt:-1] forKey:@"count"]);
     NSDictionary *fraction =  wrapResponseDictionary([NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:3.14156] forKey:@"count"]);
 
-    KCSClient *client = [KCSClient sharedClient];
-    KCSCollection *collection = [client collectionFromString:@"test" withClass:[SimpleClass class]];
+    KCSCollection *collection = [KCSCollection collectionFromString:@"test" ofClass:[SimpleClass class]];
     
     KCSConnectionResponse *response = nil;
     __block long long expectedResult = 0;
@@ -358,9 +361,9 @@ typedef BOOL(^InfoSuccessAction)(int);
     [TestUtils setUpKinveyUnittestBackend];
     KCSQuery *q = [KCSQuery queryOnField:@"location"
                   withExactMatchForValue:@"N"];
-    KCSCollection *fuelStations = [[KCSClient sharedClient]
+    KCSCollection *fuelStations = [KCSCollection 
                                    collectionFromString:@"qlio-errors"
-                                   withClass:[NSMutableDictionary class]];
+                                   ofClass:[NSMutableDictionary class]];
     fuelStations.query=q;
     [fuelStations fetchWithDelegate:self];
     
@@ -392,5 +395,5 @@ typedef BOOL(^InfoSuccessAction)(int);
 //        //handle response
 //    } withProgressBlock:nil];
 }
-
+#pragma clang diagnostic pop
 @end

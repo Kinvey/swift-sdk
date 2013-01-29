@@ -256,8 +256,6 @@
         NSArray* value = [valuesOrNil reducedValueForFields:@{keyf : @1}];
         STAssertEquals((int)[value count], (int)6, @"expecting 6 new objects");
         
-        STAssertEquals((int)[value[0] objCount], (int)10, @"expecting 10 as the min for objects of 'math'");
-        
         self.done = YES;
     } progressBlock:nil];
     [self poll];
