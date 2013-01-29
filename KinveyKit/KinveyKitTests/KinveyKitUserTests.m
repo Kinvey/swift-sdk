@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitUserTests.h"
@@ -478,7 +478,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 
 static NSString* lastUser;
-static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCIqs5qxTqO3VHxlGNZAv2iMFS5E0FoR9GCww07GQsVic0hQdCSq2TzALEW7vk6XMl569zPqO";
+static NSString* access_token = @"AAAGI68NkOC4BAH51tsJcxZACSdzZAjIUZAjsY5xzVAumCtvIMw3yZBeHgCroDyU7mtNNj9BXhZB05ucgVv6i8ILrkSOuvydPuzMA9lA6R2QlLuQeZArvVp";
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -532,6 +532,8 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
 }
 
 /* function named this way to follow the login with FB */
+//TODO: get this to work in the simulator
+#if NEVER
 - (void) testLoginWithFacebookPersists
 {
     [TestUtils justInitServer];
@@ -545,6 +547,7 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
     }];
     [self poll];
 }
+#endif
 
 - (void) testLoginWithTwitter
 {
@@ -575,7 +578,7 @@ static NSString* access_token = @"AAAD30ogoDZCYBALAPOsgxHBAgBoXkw8ra7JIsrtLG0ZCI
 {
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
     self.done = NO;
-    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [store loadObjectWithID:[KCSUser activeUser].kinveyObjectId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if(errorOrNil) {
             NSLog(@"Failed to load users... %@", errorOrNil);
         } else {

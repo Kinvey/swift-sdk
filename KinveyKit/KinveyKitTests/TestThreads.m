@@ -152,7 +152,7 @@
     }
 }
 
-- (void) testY
+- (void) XtestY
 {
     XYZ* xyz = [[XYZ alloc] init];
     self.done = NO;

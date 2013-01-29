@@ -193,7 +193,7 @@
 		D32A610814716F2D00F77A3F /* KCSBlobService.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60F714716F2D00F77A3F /* KCSBlobService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D32A610914716F2D00F77A3F /* KCSBlobService.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60F814716F2D00F77A3F /* KCSBlobService.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D32A610B14716F2D00F77A3F /* KCSClient.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60F914716F2D00F77A3F /* KCSClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D32A610C14716F2D00F77A3F /* KCSClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60FA14716F2D00F77A3F /* KCSClient.m */; };
+		D32A610C14716F2D00F77A3F /* KCSClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60FA14716F2D00F77A3F /* KCSClient.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D32A610E14716F2D00F77A3F /* KCSEntityDict.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60FB14716F2D00F77A3F /* KCSEntityDict.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D32A610F14716F2D00F77A3F /* KCSEntityDict.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60FC14716F2D00F77A3F /* KCSEntityDict.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D32A611114716F2D00F77A3F /* KinveyAnalytics.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60FD14716F2D00F77A3F /* KinveyAnalytics.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -266,7 +266,7 @@
 		D3EA22C71486B0BD00666259 /* KinveyPing.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22C51486B0BD00666259 /* KinveyPing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3EA22C81486B0BD00666259 /* KinveyPing.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22C61486B0BD00666259 /* KinveyPing.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D3F3409814BC8AB800DB6C37 /* KCSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F3409614BC8AB800DB6C37 /* KCSReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D3F3409914BC8AB800DB6C37 /* KCSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3409714BC8AB800DB6C37 /* KCSReachability.m */; };
+		D3F3409914BC8AB800DB6C37 /* KCSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3409714BC8AB800DB6C37 /* KCSReachability.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D3F340A714BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F340A514BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3F340A814BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F340A614BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D3F340AA14BCCEA600DB6C37 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F340A914BCCEA500DB6C37 /* StoreKit.framework */; };
@@ -2311,7 +2311,7 @@
 		D32A60BC14716EE300F77A3F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = Kinvey;
 			};
 			buildConfigurationList = D32A60BF14716EE300F77A3F /* Build configuration list for PBXProject "KinveyKit" */;
@@ -2785,6 +2785,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -2795,8 +2799,11 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
@@ -3319,6 +3326,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -3329,8 +3340,11 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
@@ -3400,6 +3414,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -3410,8 +3428,11 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
@@ -3424,11 +3445,18 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;

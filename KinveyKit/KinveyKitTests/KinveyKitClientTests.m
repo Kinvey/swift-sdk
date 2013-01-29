@@ -126,8 +126,11 @@
 
 - (void)testCollectionIsReallyCollection
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     KCSCollection *coll1 = [[KCSClient sharedClient] collectionFromString:@"test"
                                                                 withClass:[NSObject class]];
+#pragma  clang diagnostic pop
     KCSCollection *coll2 = [KCSCollection collectionFromString:@"test"
                                                        ofClass:[NSObject class]];
     STAssertEqualObjects(coll1, coll2, @"should be equal");

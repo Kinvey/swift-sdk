@@ -39,13 +39,8 @@ typedef BOOL(^FailureAction)(NSError *);
 
 @implementation KinveyKitBlobServiceTests
 
-@synthesize testID = _testID;
-@synthesize onFailure = _onFailure;
-@synthesize onSuccess = _onSuccess;
-@synthesize testPassed = _testPassed;
-@synthesize message = _message;
-@synthesize writer = _writer;
-@synthesize parser = _parser;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-retain-cycles"
 
 - (void)setUp
 {
@@ -382,3 +377,4 @@ typedef BOOL(^FailureAction)(NSError *);
 }
 
 @end
+#pragma clang diagnostic pop

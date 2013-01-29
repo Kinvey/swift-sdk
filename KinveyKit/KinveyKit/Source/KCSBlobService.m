@@ -212,7 +212,9 @@ withResourceDelegate: (id<KCSResourceDelegate>)delegate
         if (delegate){
             [delegate resourceServiceDidFailWithError:err];
         } else {
-            completionBlock(nil, err);
+            if (completionBlock != NULL) {
+                completionBlock(nil, err);
+            }
         }
     }
     
