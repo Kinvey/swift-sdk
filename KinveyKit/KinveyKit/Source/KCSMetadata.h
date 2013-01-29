@@ -2,7 +2,7 @@
 //  KCSMetadata.h
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -20,7 +20,11 @@ FOUNDATION_EXPORT NSString* KCSMetadataFieldLastModifiedTime;
  
  To take advantage of KCSMetadata, map an entity property of this type to field `KCSEntityKeyMetadata`. The object that maps a particular instance is the "associated object." 
  */
-@interface KCSMetadata : NSObject 
+@interface KCSMetadata : NSObject
+
+
+@property (nonatomic, retain, readonly) NSMutableArray* readers;
+@property (nonatomic, retain, readonly) NSMutableArray* writers;
  
 /** @name Basic Metadata */
 

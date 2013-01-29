@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/7/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSSaveQueue.h"
@@ -28,11 +28,7 @@
 - (void)queueUpdated;
 @end
 
-@interface KCSSaveQueue () <KCSPersistableDelegate, NSCoding> {
-    NSMutableArray* _q;
-    id<KCSOfflineSaveDelegate> _delegate;
-    UIBackgroundTaskIdentifier _bgTask;
-}
+@interface KCSSaveQueue () <KCSPersistableDelegate, NSCoding> 
 @property (nonatomic, retain) KCSCollection* collection;
 @property (nonatomic, retain) NSMutableArray* q;
 @property (nonatomic, assign) id<KCSSaveQueueUpdateDelegate> updateDelegate;
@@ -61,7 +57,7 @@ static BOOL sFirstReached;
         [sQueues restoreQueues];
         KCSClient* client = [KCSClient sharedClient];
         sFirstReached = NO;
-        sReachability = [[KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", client.serviceHostname, [client kinveyDomain]]] retain];
+        sReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", client.serviceHostname, [client kinveyDomain]]];
         [sReachability startNotifier];
     });
     return sQueues;
@@ -71,16 +67,9 @@ static BOOL sFirstReached;
 {
     self = [super init];
     if (self) {
-        _queues = [[NSMutableDictionary dictionary] retain];
+        _queues = [NSMutableDictionary dictionary];
     }
     return self;
-}
-
-- (void) dealloc
-{
-    [_queues removeAllObjects];
-    [_queues release];
-    [super dealloc];
 }
 
 - (KCSSaveQueue*)queueForCollection:(KCSCollection*)collection identifier:(NSString*)queueIdentifier
@@ -89,7 +78,7 @@ static BOOL sFirstReached;
     @synchronized(self) {
         q = [_queues objectForKey:queueIdentifier];
         if (!q) {
-            q = [[[KCSSaveQueue alloc] init] autorelease];
+            q = [[KCSSaveQueue alloc] init];
             q.collection = collection;
             [_queues setObject:q forKey:queueIdentifier];
             q.updateDelegate = self;
@@ -120,16 +109,13 @@ static BOOL sFirstReached;
     @catch (NSException *exception) {
         KCSLogError(@"error restoring queues: %@",exception);
     }
-    @finally {
-        [ua release];
-    }
     return dict;
 }
 
 - (void) restoreQueues
 {
     NSDictionary* qs = [self cachedQueues];
-    _queues = [[NSMutableDictionary dictionaryWithDictionary:qs] retain];
+    _queues = [NSMutableDictionary dictionaryWithDictionary:qs];
     for (KCSSaveQueue* q in [_queues allValues]) {
         q.updateDelegate = self;
         dispatch_async(dispatch_get_current_queue(), ^{
@@ -147,7 +133,6 @@ static BOOL sFirstReached;
     NSError* error = nil;
     //TODO: enable security
     [data writeToFile:[self savefile] options:NSDataWritingAtomic error:&error];
-    [archiver release];
     if (error) {
         KCSLogError(@"error saving queues %@", error);
     }
@@ -170,23 +155,16 @@ static BOOL sFirstReached;
 
 
 @implementation KCSSaveQueueItem
-@synthesize mostRecentSaveDate, object;
 - (id) initWithObject:(id<KCSPersistable>)obj
 {
     self = [super init];
     if (self) {
-        object = [obj retain];
-        mostRecentSaveDate = [[NSDate date] retain];
+        _object = obj;
+        _mostRecentSaveDate = [NSDate date];
     }
     return self;
 }
 
-- (void) dealloc
-{
-    [mostRecentSaveDate release];
-    [object release];
-    [super dealloc];
-}
 
 - (BOOL)isEqual:(id)other
 {
@@ -237,10 +215,6 @@ static BOOL sFirstReached;
 
 
 @implementation KCSSaveQueue
-@synthesize delegate = _delegate;
-@synthesize collection = _collection;
-@synthesize q = _q;
-@synthesize updateDelegate;
 
 + (KCSSaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier
 {
@@ -251,7 +225,7 @@ static BOOL sFirstReached;
 {
     self = [super init];
     if (self) {
-        _q = [[NSMutableArray array] retain];
+        _q = [NSMutableArray array];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(online:) name:kKCSReachabilityChangedNotification object:nil];
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willBackground:) name:UIApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -277,7 +251,6 @@ static BOOL sFirstReached;
             item.object = obj;
             item.mostRecentSaveDate = date;
             [_q addObject:item];
-            [item release];
         }
     }
     return self;
@@ -306,9 +279,6 @@ static BOOL sFirstReached;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kKCSReachabilityChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
-    [_q release];
-    [_collection release];
-    [super dealloc];
 }
 
 - (void) addObject:(id<KCSPersistable>)obj
@@ -317,7 +287,6 @@ static BOOL sFirstReached;
     @synchronized(_q) {
         [_q addObject:item];
     }
-    [item release];
     [self.updateDelegate queueUpdated];
 }
 

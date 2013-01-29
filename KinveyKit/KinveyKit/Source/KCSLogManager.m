@@ -78,8 +78,6 @@ enum {
 
 @implementation KCSLogManager
 
-@synthesize loggingState = _loggingState;
-
 - (id)init
 {
     self = [super init];

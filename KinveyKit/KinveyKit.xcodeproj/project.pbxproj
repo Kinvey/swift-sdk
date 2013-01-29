@@ -55,7 +55,7 @@
 		273A3E9D160A385100F3742C /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
 		273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */; };
 		273DB2E715D191A00072A444 /* KCSSaveQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 273DB2E515D191A00072A444 /* KCSSaveQueue.h */; };
-		273DB2E815D191A00072A444 /* KCSSaveQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E615D191A00072A444 /* KCSSaveQueue.m */; };
+		273DB2E815D191A00072A444 /* KCSSaveQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E615D191A00072A444 /* KCSSaveQueue.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27433012156ED63B00B2BF37 /* KCSLinkedAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27433013156ED63C00B2BF37 /* KCSLinkedAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27433011156ED63B00B2BF37 /* KCSLinkedAppdataStore.m */; };
 		274330211575227000B2BF37 /* KCSResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSResource.h */; };
@@ -278,7 +278,7 @@
 		D3F3412A14BD686100DB6C37 /* KCSLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3412814BD686000DB6C37 /* KCSLogManager.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D3F3E88E14BABD5F009063DE /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		D3F7E870148807900044F1E8 /* KCSKeyChain.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E86E148807900044F1E8 /* KCSKeyChain.h */; };
-		D3F7E871148807900044F1E8 /* KCSKeyChain.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E86F148807900044F1E8 /* KCSKeyChain.m */; };
+		D3F7E871148807900044F1E8 /* KCSKeyChain.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E86F148807900044F1E8 /* KCSKeyChain.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D3F7E8751488084D0044F1E8 /* KinveyUser.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E8731488084D0044F1E8 /* KinveyUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3F7E8761488084D0044F1E8 /* KinveyUser.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E8741488084D0044F1E8 /* KinveyUser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D3F7E88A148D64560044F1E8 /* KCSConnectionProgress.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E888148D64560044F1E8 /* KCSConnectionProgress.h */; settings = {ATTRIBUTES = (Public, ); }; };

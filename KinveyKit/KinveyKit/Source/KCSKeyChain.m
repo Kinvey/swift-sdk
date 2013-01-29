@@ -32,7 +32,7 @@
 + (NSString *)appName {    
 	NSBundle *bundle = [NSBundle bundleForClass:[self class]];
     
-	// Attempt to find a name for this application
+	// (NSData*)CFBridgingRelease(data) to find a name for this application
 	NSString *appName = [bundle objectForInfoDictionaryKey:@"CFBundleDisplayName"];
 	if (!appName) {
 		appName = [bundle objectForInfoDictionaryKey:@"CFBundleName"];	
@@ -52,18 +52,18 @@
     // nothing be returned, and performing the search anyway.
 	NSMutableDictionary *existsQueryDictionary = [NSMutableDictionary dictionary];
 	
-	[existsQueryDictionary setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+	[existsQueryDictionary setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
 	
 	// Add the keys to the search dict
-	[existsQueryDictionary setObject:@"service" forKey:(id)kSecAttrService];
-	[existsQueryDictionary setObject:key forKey:(id)kSecAttrAccount];
+	[existsQueryDictionary setObject:@"service" forKey:(__bridge id)kSecAttrService];
+	[existsQueryDictionary setObject:key forKey:(__bridge id)kSecAttrAccount];
     
-	OSStatus res = SecItemCopyMatching((CFDictionaryRef)existsQueryDictionary, NULL);
+	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, NULL);
 
     if (res == errSecItemNotFound){
         return NO;
     } else {
-        res = SecItemDelete((CFDictionaryRef)existsQueryDictionary);
+        res = SecItemDelete((__bridge CFDictionaryRef)existsQueryDictionary);
         NSAssert1(res == errSecSuccess, @"Recieved %ld from SecItemDelete!", res);
     }
     
@@ -83,27 +83,27 @@
 	
 	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
 	
-	[existsQueryDictionary setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+	[existsQueryDictionary setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
 	
 	// Add the keys to the search dict
-	[existsQueryDictionary setObject:@"service" forKey:(id)kSecAttrService];
-	[existsQueryDictionary setObject:key forKey:(id)kSecAttrAccount];
+	[existsQueryDictionary setObject:@"service" forKey:(__bridge id)kSecAttrService];
+	[existsQueryDictionary setObject:key forKey:(__bridge id)kSecAttrAccount];
     
-	OSStatus res = SecItemCopyMatching((CFDictionaryRef)existsQueryDictionary, NULL);
+	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, NULL);
 	if (res == errSecItemNotFound) {
 		if (string != nil) {
 			NSMutableDictionary *addDict = existsQueryDictionary;
-			[addDict setObject:data forKey:(id)kSecValueData];
+			[addDict setObject:data forKey:(__bridge id)kSecValueData];
             
-			res = SecItemAdd((CFDictionaryRef)addDict, NULL);
+			res = SecItemAdd((__bridge CFDictionaryRef)addDict, NULL);
 			NSAssert1(res == errSecSuccess, @"Recieved %ld from SecItemAdd!", res);
 		}
 	} else if (res == errSecSuccess) {
 		// Modify an existing one
 		// Actually pull it now of the keychain at this point.
-		NSDictionary *attributeDict = [NSDictionary dictionaryWithObject:data forKey:(id)kSecValueData];
+		NSDictionary *attributeDict = [NSDictionary dictionaryWithObject:data forKey:(__bridge id)kSecValueData];
         
-		res = SecItemUpdate((CFDictionaryRef)existsQueryDictionary, (CFDictionaryRef)attributeDict);
+		res = SecItemUpdate((__bridge CFDictionaryRef)existsQueryDictionary, (__bridge CFDictionaryRef)attributeDict);
 		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %ld!", res);
 		
 	} else {
@@ -121,21 +121,20 @@
     
 	NSMutableDictionary *existsQueryDictionary = [NSMutableDictionary dictionary];
 	
-	[existsQueryDictionary setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+	[existsQueryDictionary setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
 	
 	// Add the keys to the search dict
-	[existsQueryDictionary setObject:@"service" forKey:(id)kSecAttrService];
-	[existsQueryDictionary setObject:key forKey:(id)kSecAttrAccount];
+	[existsQueryDictionary setObject:@"service" forKey:(__bridge id)kSecAttrService];
+	[existsQueryDictionary setObject:key forKey:(__bridge id)kSecAttrAccount];
 	
 	// We want the data back!
-	NSData *data = nil;
+	CFTypeRef data = nil;
 	
-	[existsQueryDictionary setObject:(id)kCFBooleanTrue forKey:(id)kSecReturnData];
+	[existsQueryDictionary setObject:(id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
 	
-	OSStatus res = SecItemCopyMatching((CFDictionaryRef)existsQueryDictionary, (CFTypeRef *)&data);
-	[data autorelease];
+	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, (CFTypeRef *)&data);
 	if (res == errSecSuccess) {
-		NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+		NSString *string = [[NSString alloc] initWithData:(NSData*)CFBridgingRelease(data) encoding:NSUTF8StringEncoding];
 		return string;
 	} else {
 		NSAssert1(res == errSecItemNotFound, @"SecItemCopyMatching returned %ld!", res);
@@ -159,25 +158,25 @@
 	
     NSData* data = [NSKeyedArchiver archivedDataWithRootObject:dict];
 	
-	[existsQueryDictionary setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+	[existsQueryDictionary setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
 	
 	// Add the keys to the search dict
-	[existsQueryDictionary setObject:@"service" forKey:(id)kSecAttrService];
-	[existsQueryDictionary setObject:key forKey:(id)kSecAttrAccount];
+	[existsQueryDictionary setObject:@"service" forKey:(__bridge id)kSecAttrService];
+	[existsQueryDictionary setObject:key forKey:(__bridge id)kSecAttrAccount];
     
-	OSStatus res = SecItemCopyMatching((CFDictionaryRef)existsQueryDictionary, NULL);
+	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, NULL);
 	if (res == errSecItemNotFound) {
         NSMutableDictionary *addDict = existsQueryDictionary;
-        [addDict setObject:data forKey:(id)kSecValueData];
+        [addDict setObject:data forKey:(__bridge id)kSecValueData];
         
-        res = SecItemAdd((CFDictionaryRef)addDict, NULL);
+        res = SecItemAdd((__bridge CFDictionaryRef)addDict, NULL);
         NSAssert1(res == errSecSuccess, @"Recieved %ld from SecItemAdd!", res);
 	} else if (res == errSecSuccess) {
 		// Modify an existing one
 		// Actually pull it now of the keychain at this point.
-		NSDictionary *attributeDict = [NSDictionary dictionaryWithObject:data forKey:(id)kSecValueData];
+		NSDictionary *attributeDict = [NSDictionary dictionaryWithObject:data forKey:(__bridge id)kSecValueData];
         
-		res = SecItemUpdate((CFDictionaryRef)existsQueryDictionary, (CFDictionaryRef)attributeDict);
+		res = SecItemUpdate((__bridge CFDictionaryRef)existsQueryDictionary, (__bridge CFDictionaryRef)attributeDict);
 		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %ld!", res);
 		
 	} else {
@@ -194,21 +193,20 @@
     
 	NSMutableDictionary *existsQueryDictionary = [NSMutableDictionary dictionary];
 	
-	[existsQueryDictionary setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+	[existsQueryDictionary setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
 	
 	// Add the keys to the search dict
-	[existsQueryDictionary setObject:@"service" forKey:(id)kSecAttrService];
-	[existsQueryDictionary setObject:key forKey:(id)kSecAttrAccount];
+	[existsQueryDictionary setObject:@"service" forKey:(__bridge id)kSecAttrService];
+	[existsQueryDictionary setObject:key forKey:(__bridge id)kSecAttrAccount];
 	
 	// We want the data back!
-	NSData *data = nil;
+	CFTypeRef data = nil;
 	
-	[existsQueryDictionary setObject:(id)kCFBooleanTrue forKey:(id)kSecReturnData];
+	[existsQueryDictionary setObject:(id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
 	
-	OSStatus res = SecItemCopyMatching((CFDictionaryRef)existsQueryDictionary, (CFTypeRef *)&data);
-	[data autorelease];
+	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, (CFTypeRef *)&data);
 	if (res == errSecSuccess) {
-        NSDictionary* dict = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        NSDictionary* dict = [NSKeyedUnarchiver unarchiveObjectWithData:(NSData*)CFBridgingRelease(data)];
         return dict;
 	} else {
 		NSAssert1(res == errSecItemNotFound, @"SecItemCopyMatching returned %ld!", res);
