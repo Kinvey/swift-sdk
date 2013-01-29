@@ -43,7 +43,7 @@ typedef enum KCSQueryType : NSUInteger {
 #pragma mark -
 #pragma mark KCSQueryLimitModifier
 @implementation KCSQueryLimitModifier
-@synthesize limit = _limit;
+
 - (id)initWithLimit:(NSInteger)limit
 {
     self = [super init];
@@ -65,7 +65,6 @@ typedef enum KCSQueryType : NSUInteger {
 #pragma mark -
 #pragma mark KCSQuerySkipModifier
 @implementation KCSQuerySkipModifier
-@synthesize count = _count;
 
 -(id)initWithcount:(NSInteger)count
 {
@@ -315,14 +314,6 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     
     return query;
 }
-
-#pragma mark - iVars
-@synthesize query = _query;
-@synthesize JSONwriter = _JSONwriter;
-@synthesize sortModifiers = _sortModifiers;
-@synthesize limitModifer = _limitModifer;
-@synthesize skipModifier = _skipModifier;
-@synthesize referenceFieldsToResolve = _referenceFieldsToResolve;
 
 - (id)init
 {

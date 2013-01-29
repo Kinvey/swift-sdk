@@ -18,9 +18,6 @@
 
 @implementation KCSEntityDict
 
-@synthesize entityProperties = _entityProperties;
-@synthesize objectId = _objectId;
-
 - (id)init
 {
     self = [super init];
