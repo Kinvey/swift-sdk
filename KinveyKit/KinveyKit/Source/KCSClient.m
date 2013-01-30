@@ -22,6 +22,8 @@
 #import "KCSClient+ConfigurationTest.h"
 #import "KCSKeyChain.h"
 
+#import "KinveyVersion.h"
+
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
 @interface KCSClient ()

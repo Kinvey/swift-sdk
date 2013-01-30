@@ -62,10 +62,7 @@
  */
 
 
-#pragma mark -
-#pragma mark Constructors
-
-
+#pragma mark - Constructors
 - (id)initWithConnection:(NSURLConnection *)theConnection
 {
     self = [self init]; // Note that in the test environment we don't need credentials
@@ -153,8 +150,10 @@
                                          userInfo:userInfo];
         self.failureBlock(error);
     }
-    
+
+#if TARGET_OS_IPHONE
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+#endif
 }
 
 - (void)cleanUp
@@ -162,14 +161,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     // Cause all members to release their current object and reset to the nil state.
-    [_request release];
-    [_basicAuthCred release];
-    [_connection release];
-    [_lastResponse release];
-    [_downloadedData release];
-    [_progressBlock release];
-    [_completionBlock release];
-    [_failureBlock release];
 
     _request = nil;
     _basicAuthCred = nil;
@@ -229,7 +220,7 @@
         // Probably want to handle this differently, since now the caller needs to know what's going
         // on, but I think that at a minimum, we need progress + data.
         self.lastPercentage = downloadPercent; // Update to the current value
-        KCSConnectionProgress* progress = [[[KCSConnectionProgress alloc] init] autorelease];
+        KCSConnectionProgress* progress = [[KCSConnectionProgress alloc] init];
         progress.percentComplete = downloadPercent;
         progress.data = data;
         self.progressBlock(progress);
@@ -242,7 +233,7 @@
     if (self.progressBlock != NULL &&
         ((self.lastPercentage + self.percentNotificationThreshold) <= downloadPercent)){
         self.lastPercentage = downloadPercent; // Update to the current value
-        KCSConnectionProgress* progress = [[[KCSConnectionProgress alloc] init] autorelease];
+        KCSConnectionProgress* progress = [[KCSConnectionProgress alloc] init];
         //min the percent in the case where the command is sometimes sent twice (automatically)
         progress.percentComplete = MIN(downloadPercent, 1.0);
         self.progressBlock(progress);
@@ -266,14 +257,25 @@
     }
 }
 
+#if TARGET_OS_IPHONE
+
 - (void) runBlockInForeground:(RunBlock_t)block
 {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
         block();
     } else {
-        _blockToRun = Block_copy(block);
+        _blockToRun = [block copy];
     }
 }
+
+#else
+
+- (void) runBlockInForeground:(RunBlock_t)block
+{
+    block();
+}
+
+#endif 
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
@@ -321,7 +323,7 @@
             NSString* resourceURLString = [[KCSClient sharedClient] resourceBaseURL];
             NSURL* resourceURL = [NSURL URLWithString:resourceURLString];
             if (![newHost isEqualToString:[resourceURL host]]) {
-                newRequest = [[[NSMutableURLRequest alloc] initWithURL:newurl] autorelease];
+                newRequest = [[NSMutableURLRequest alloc] initWithURL:newurl];
                 //get date from old request
                 NSString* date = [[request allHTTPHeaderFields] objectForKey:@"Date"];
                 [(NSMutableURLRequest*)newRequest setValue:date forHTTPHeaderField:@"Date"];
@@ -336,6 +338,9 @@
 }
 
 #pragma mark - Background Handling
+
+#if TARGET_OS_IPHONE
+
 - (void) didEnterBackground:(NSNotification*)note
 {
     UIApplication* application = [UIApplication sharedApplication];
@@ -361,10 +366,15 @@
     if (_blockToRun != nil) {
         //check for nil first in case the app went to the background during transmission. This is only needed if the background happens after the completion delegate methods.
         //to keep app from being killed by watchdog.
-        RunBlock_t block = Block_copy(_blockToRun);
-        Block_release(_blockToRun);
+        RunBlock_t block = [_blockToRun copy];
         block();
-        Block_release(block);
     }
 }
+
+#else 
+- (void) invalidateBgTask
+{
+}
+
+#endif
 @end
