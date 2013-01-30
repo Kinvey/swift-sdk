@@ -218,7 +218,6 @@ static void logNetworkStatus_(const char *name, int line, KCSNetworkStatus statu
 		
 	}
 	
-	self.key = nil;
 	
 } // dealloc
 

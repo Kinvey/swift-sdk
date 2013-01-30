@@ -23,7 +23,7 @@ enum {
 + (NSDictionary *)channels;
 
 - (id)initWithDisplayString: (NSString *)displayString channelID:(NSInteger)channelID;
-@property (readonly, nonatomic) NSString *displayString;
+@property (strong, readonly, nonatomic) NSString *displayString;
 @property (readonly, nonatomic) NSInteger channelID;
 
 @end
@@ -73,7 +73,7 @@ enum {
 @end
 
 @interface KCSLogManager ()
-@property (retain, nonatomic) NSDictionary *loggingState;
+@property (strong, nonatomic) NSDictionary *loggingState;
 @end
 
 @implementation KCSLogManager

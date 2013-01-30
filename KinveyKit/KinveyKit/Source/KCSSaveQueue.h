@@ -16,12 +16,12 @@
 @class KCSCollection;
 
 @interface KCSSaveQueueItem : NSObject
-@property (nonatomic, retain) NSDate* mostRecentSaveDate;
-@property (nonatomic, retain) id<KCSPersistable> object;
+@property (nonatomic, strong) NSDate* mostRecentSaveDate;
+@property (nonatomic, strong) id<KCSPersistable> object;
 @end
 
 @interface KCSSaveQueue : NSObject <NSCoding>
-@property (nonatomic, assign) id<KCSOfflineSaveDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id<KCSOfflineSaveDelegate> delegate;
 
 + (KCSSaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier;
 

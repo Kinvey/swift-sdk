@@ -9,6 +9,7 @@
 * Removed `KCSUniqueNumber` class. 
 * Removed deprecated (as of version 1.2) filter API from old Collections interface. 
 * Deprecated undocumented `KCSStore` factory methods on `KCSClient`.
+* Infrastructure update: entire library now built with ARC.
 * Bug fix(es):
     * KCSUserDiscover returns complete `KCSUser` objects now instead of `NSDictionary`.
 

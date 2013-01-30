@@ -93,16 +93,16 @@
 ///---------------------------------------------------------------------------------------
 
 /*! String representation of the name of the Kinvey Collection. */
-@property (retain) NSString *collectionName;
+@property (strong) NSString *collectionName;
 
 /*! An instance of an object stored by this collection */
-@property (retain) Class objectTemplate;
+@property (strong) Class objectTemplate;
 
 /*! A cached copy of the last results from Kinvey (handy if you forget to copy them in your delegate) */
-@property (retain) NSArray *lastFetchResults;
+@property (strong) NSArray *lastFetchResults;
 
 /*! The Endpoint where we look for a request */
-@property (nonatomic, retain) NSString *baseURL;
+@property (nonatomic, strong) NSString *baseURL;
 
 
 
@@ -155,7 +155,7 @@
 
 /*! The current query for this collection.  Overwrite to assign new query.
     NOTE: if query is `nil` and fetchWithDelegate: is called, an error status will be returned. */
-@property (nonatomic, retain) KCSQuery *query;
+@property (nonatomic, strong) KCSQuery *query;
 
 ///---------------------------------------------------------------------------------------
 /// @name Obtaining information about a Collection

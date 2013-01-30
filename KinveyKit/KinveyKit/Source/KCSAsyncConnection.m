@@ -29,8 +29,8 @@
 @property (copy) KCSConnectionCompletionBlock completionBlock;
 @property (copy) KCSConnectionFailureBlock    failureBlock;
 @property (copy) KCSConnectionProgressBlock   progressBlock;
-@property (nonatomic, retain) NSMutableData *downloadedData;
-@property (retain) NSURLConnection *connection;
+@property (nonatomic, strong) NSMutableData *downloadedData;
+@property (strong) NSURLConnection *connection;
 @property (nonatomic, readwrite) NSInteger contentLength;
 @property NSInteger lastPercentage;
 

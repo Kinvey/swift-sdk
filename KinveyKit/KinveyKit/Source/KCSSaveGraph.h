@@ -28,13 +28,13 @@ typedef void(^KCSCompletionWrapperBlock_t)();
 @property (nonatomic) double size;
 @property (nonatomic) double pc;
 @property (nonatomic) uint type;
-@property (nonatomic, readonly) NSArray* references;
-@property (nonatomic, retain) id handle;
+@property (strong, nonatomic, readonly) NSArray* references;
+@property (nonatomic, strong) id handle;
 @property (atomic) BOOL loading;
 @property (atomic) BOOL done;
 @property (atomic) uint resaveCount;
-@property (atomic, readonly, retain) NSMutableSet* waitingObjects;
-@property (atomic, readonly, retain) NSMutableArray* waitingBlocks;
+@property (atomic, readonly, strong) NSMutableSet* waitingObjects;
+@property (atomic, readonly, strong) NSMutableArray* waitingBlocks;
 
 - (void) finished;
 - (void) resaveComplete;
