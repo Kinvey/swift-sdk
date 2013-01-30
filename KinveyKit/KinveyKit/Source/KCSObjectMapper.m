@@ -8,7 +8,6 @@
 
 #import "KCSObjectMapper.h"
 
-#import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 
 //TODO: remove core location as dependency injection
@@ -27,6 +26,7 @@
 
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
+#import "KCSImageUtils.h"
 
 #define kKMDKey @"_kmd"
 #define kACLKey @"_acl"
@@ -457,13 +457,13 @@ NSString* specialTypeOfValue(id value)
 BOOL isResourceType(id object);
 BOOL isResourceType(id object)
 {
-    return [object isKindOfClass:[UIImage class]];
+    return [object isKindOfClass:[ImageClass class]];
 }
 
 NSString* extensionForResource(id object);
 NSString* extensionForResource(id object)
 {
-    if ([object isKindOfClass:[UIImage class]]) {
+    if ([object isKindOfClass:[ImageClass class]]) {
         return @".png";
     }
     return @"";
