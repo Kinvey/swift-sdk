@@ -26,8 +26,8 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
 @end
 
 @interface KCSMetadata ()
-@property (nonatomic, retain, readonly) NSDate* lastModifiedTime;
-@property (nonatomic, retain, readonly) NSMutableDictionary* acl;
+@property (nonatomic, strong, readonly) NSDate* lastModifiedTime;
+@property (nonatomic, strong, readonly) NSMutableDictionary* acl;
 @end
 
 @implementation KCSMetadata

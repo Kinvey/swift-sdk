@@ -13,7 +13,7 @@
 + (KCSDevice*) currentDevice;
 
 /* The current session's token for this device to receive notifications */
-@property (nonatomic, retain) NSData *deviceToken;
+@property (nonatomic, strong) NSData *deviceToken;
 
 /* Return the device's token as a string
  

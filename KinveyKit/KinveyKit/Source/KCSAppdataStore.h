@@ -47,7 +47,7 @@
  */
 @interface KCSAppdataStore : NSObject <KCSStore> 
 
-@property (nonatomic, retain) KCSAuthHandler *authHandler;
+@property (nonatomic, strong) KCSAuthHandler *authHandler;
 
 
 /** Initialize an empty store with the given collections, options and the default authentication

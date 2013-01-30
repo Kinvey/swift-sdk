@@ -30,7 +30,7 @@
     NSCache* _groupingCache;
     NSMutableOrderedSet* _unsavedObjs;
 }
-@property (nonatomic, retain) NSDictionary* saveContext;
+@property (nonatomic, strong) NSDictionary* saveContext;
 @end
 
 
@@ -94,9 +94,9 @@ static KCSCachedStoreCaching* sCaching;
 
 @interface CacheValue : NSObject
 @property (nonatomic) NSUInteger count;
-@property (nonatomic) id<KCSPersistable> object;
+@property (unsafe_unretained, nonatomic) id<KCSPersistable> object;
 @property (nonatomic) BOOL unsaved;
-@property (nonatomic, retain) NSDate* lastSavedTime;
+@property (nonatomic, strong) NSDate* lastSavedTime;
 @end
 @implementation CacheValue
 

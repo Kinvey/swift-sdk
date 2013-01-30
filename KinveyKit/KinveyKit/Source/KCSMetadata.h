@@ -23,8 +23,8 @@ FOUNDATION_EXPORT NSString* KCSMetadataFieldLastModifiedTime;
 @interface KCSMetadata : NSObject
 
 
-@property (nonatomic, retain, readonly) NSMutableArray* readers;
-@property (nonatomic, retain, readonly) NSMutableArray* writers;
+@property (nonatomic, strong, readonly) NSMutableArray* readers;
+@property (nonatomic, strong, readonly) NSMutableArray* writers;
  
 /** @name Basic Metadata */
 

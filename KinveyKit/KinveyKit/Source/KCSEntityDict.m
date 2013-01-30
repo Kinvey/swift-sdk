@@ -11,7 +11,7 @@
 
 // Private interface
 @interface KCSEntityDict () 
-@property (nonatomic, retain) NSMutableDictionary *entityProperties;
+@property (nonatomic, strong) NSMutableDictionary *entityProperties;
 @end
 
 

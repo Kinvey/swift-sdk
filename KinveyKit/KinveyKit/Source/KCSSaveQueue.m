@@ -29,9 +29,9 @@
 @end
 
 @interface KCSSaveQueue () <KCSPersistableDelegate, NSCoding> 
-@property (nonatomic, retain) KCSCollection* collection;
-@property (nonatomic, retain) NSMutableArray* q;
-@property (nonatomic, assign) id<KCSSaveQueueUpdateDelegate> updateDelegate;
+@property (nonatomic, strong) KCSCollection* collection;
+@property (nonatomic, strong) NSMutableArray* q;
+@property (nonatomic, unsafe_unretained) id<KCSSaveQueueUpdateDelegate> updateDelegate;
 - (void) saveNext;
 @end
 

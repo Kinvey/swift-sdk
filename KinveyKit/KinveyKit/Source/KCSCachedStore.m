@@ -45,7 +45,7 @@
     self.cachePolicy = cachePolicy;
     
     KCSCollection* backingCollection = [self backingCollection];
-    _cache = [[KCSCachedStoreCaching cacheForCollection:backingCollection.collectionName] retain];
+    _cache = [KCSCachedStoreCaching cacheForCollection:backingCollection.collectionName];
     
     return retVal;
 }
@@ -59,11 +59,6 @@
     return self;
 }
 
-- (void) dealloc
-{
-    [_cache release];
-    [super dealloc];
-}
 
 #pragma mark - Cache Policy
 

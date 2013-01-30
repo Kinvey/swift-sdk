@@ -55,8 +55,8 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
 
 @interface KCSAuthCredential ()
 @property (nonatomic) NSInteger authRequired;
-@property (nonatomic, retain) NSURLCredential *appKeyAuth;
-@property (nonatomic, retain) NSString *appKeyBase64;
+@property (nonatomic, strong) NSURLCredential *appKeyAuth;
+@property (nonatomic, strong) NSString *appKeyBase64;
 @end
 
 @implementation KCSAuthCredential

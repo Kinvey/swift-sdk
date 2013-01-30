@@ -18,7 +18,7 @@
 @property (nonatomic, copy) NSString* acceptRedirect;
 @property (nonatomic, copy) NSString* cancelRedirect;
 
-@property (nonatomic, retain) UIWebView* webview;
+@property (nonatomic, strong) UIWebView* webview;
 
 - (void) requestToken:(NSString*)linkedInScope completionBlock:(KCSLocalCredentialBlock)completionBlock;
 

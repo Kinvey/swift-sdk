@@ -39,18 +39,18 @@
 @property (nonatomic, copy, readwrite) NSString *appSecret;
 
 
-@property (atomic, retain) NSRecursiveLock *authInProgressLock;
-@property (atomic, retain) NSRecursiveLock *authCompleteLock;
+@property (atomic, strong) NSRecursiveLock *authInProgressLock;
+@property (atomic, strong) NSRecursiveLock *authCompleteLock;
 
-@property (nonatomic, retain, readwrite) NSDictionary *options;
+@property (nonatomic, strong, readwrite) NSDictionary *options;
 
 #if TARGET_OS_IPHONE
-@property (nonatomic, retain, readwrite) KCSReachability *networkReachability;
-@property (nonatomic, retain, readwrite) KCSReachability *kinveyReachability;
+@property (nonatomic, strong, readwrite) KCSReachability *networkReachability;
+@property (nonatomic, strong, readwrite) KCSReachability *kinveyReachability;
 
 #endif
 
-@property (nonatomic, readonly) NSString *kinveyDomain;
+@property (unsafe_unretained, nonatomic, readonly) NSString *kinveyDomain;
 
 ///---------------------------------------------------------------------------------------
 /// @name Connection Properties

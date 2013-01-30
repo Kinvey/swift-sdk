@@ -51,17 +51,17 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 }
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
-@property (nonatomic, retain) KCSCollection *backingCollection;
+@property (nonatomic, strong) KCSCollection *backingCollection;
 
 - (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources;
 
 @end
 
 @interface KCSPartialDataParser : NSObject <KCS_SBJsonStreamParserAdapterDelegate>
-@property (nonatomic, retain) KCS_SBJsonStreamParser* parser;
-@property (nonatomic, retain) KCS_SBJsonStreamParserAdapter* adapter;
-@property (nonatomic, retain) NSMutableArray* items;
-@property (nonatomic, assign) id objectMaker;
+@property (nonatomic, strong) KCS_SBJsonStreamParser* parser;
+@property (nonatomic, strong) KCS_SBJsonStreamParserAdapter* adapter;
+@property (nonatomic, strong) NSMutableArray* items;
+@property (nonatomic, unsafe_unretained) id objectMaker;
 @end
 
 @implementation KCSPartialDataParser

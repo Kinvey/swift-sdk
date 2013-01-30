@@ -39,8 +39,8 @@
 @class GTMOAuth2Authentication;
 
 @interface KCSUser()
-@property (nonatomic, retain) NSMutableDictionary *userAttributes;
-@property (nonatomic, retain) NSDictionary* oauthTokens;
+@property (nonatomic, strong) NSMutableDictionary *userAttributes;
+@property (nonatomic, strong) NSDictionary* oauthTokens;
 
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew;
 @end

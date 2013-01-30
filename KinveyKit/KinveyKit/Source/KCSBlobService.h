@@ -36,7 +36,7 @@
 @property (copy) NSString *resourceId;
 
  /*! Contains the actual data for the resources. */
-@property (retain) NSData *resource;
+@property (strong) NSData *resource;
 
 /*! Contains the "expected" size of the resource. */
 @property NSInteger length;

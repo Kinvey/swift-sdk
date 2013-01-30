@@ -18,7 +18,7 @@ NSString* KCSMongoObjectId();
 @class KCSReduceFunction;
 @interface KCSEntityCache : NSObject
 
-@property (nonatomic, assign) id<KCSOfflineSaveDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id<KCSOfflineSaveDelegate> delegate;
 
 
 - (id) objectForId:(NSString*)objId;

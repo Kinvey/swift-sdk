@@ -89,9 +89,9 @@ typedef enum KCSQueryType : NSUInteger {
 // Private interface
 @interface KCSQuery ()
 @property (nonatomic, readwrite, copy) NSMutableDictionary *query;
-@property (nonatomic, retain) KCS_SBJsonWriter *JSONwriter;
-@property (nonatomic, retain, readwrite) NSArray *sortModifiers;
-@property (nonatomic, retain) NSArray* referenceFieldsToResolve;
+@property (nonatomic, strong) KCS_SBJsonWriter *JSONwriter;
+@property (nonatomic, strong, readwrite) NSArray *sortModifiers;
+@property (nonatomic, strong) NSArray* referenceFieldsToResolve;
 
 
 NSString *KCSConditionalStringFromEnum(KCSQueryConditional conditional);
@@ -327,14 +327,6 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     return self;
 }
 
-- (void)dealloc
-{
-    _limitModifer = nil;
-    _skipModifier = nil;
-    _sortModifiers = nil;
-    _JSONwriter = nil;
-    _query = nil;
-}
 
 - (void)setQuery:(NSMutableDictionary *)query
 {
