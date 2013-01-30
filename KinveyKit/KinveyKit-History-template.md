@@ -6,6 +6,7 @@
 
 * Added `+ [KCSReduceFunction AGGREGATE]` grouping function which returns whole objects for the store type, grouped by the specified field. This is useful for building sectioned tables. 
 * Added `+ [KCSQuery queryWithQuery:]` copy factory method.
+* Replaced (deprecated) `KCSMetadata` `usersWithReadAccess` and `setUsersWithReadAccess:` with `readers` mutable array; and replaced `usersWithWriteAccess` and `setUsersWithWriteAccess:` with `writers` mutable array. User `_id`'s can now be added directly to these arrays instead of using accessor methods. 
 * Removed `KCSUniqueNumber` class. 
 * Removed deprecated (as of version 1.2) filter API from old Collections interface. 
 * Deprecated undocumented `KCSStore` factory methods on `KCSClient`.

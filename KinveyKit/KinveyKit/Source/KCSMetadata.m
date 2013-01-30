@@ -70,7 +70,7 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
 {
     KCSUser* user = [[KCSClient sharedClient] currentUser];
     NSString* userId = [user userId];
-    return [[self creatorId] isEqualToString:userId] || [[self usersWithWriteAccess] containsObject:userId] || [self isGloballyWritable];
+    return [[self creatorId] isEqualToString:userId] || [self.writers containsObject:userId] || [self isGloballyWritable];
 }
 
 #pragma mark - readers/writers
