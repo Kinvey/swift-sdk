@@ -634,6 +634,7 @@ int reachable = -1;
 }
 #endif
 
+#if TARGET_OS_IPHONE
 - (BOOL) isKinveyReachable
 {
 #if BUILD_FOR_UNIT_TEST
@@ -642,6 +643,7 @@ int reachable = -1;
     return [[KCSClient sharedClient] kinveyReachability].isReachable;
 #endif
 }
+#endif
 
 #pragma mark - Adding/Updating
 - (BOOL) offlineSaveEnabled
@@ -811,7 +813,7 @@ int reachable = -1;
     KCSSTORE_VALIDATE_PRECONDITION
     
     NSArray* objectsToSave = [NSArray wrapIfNotArray:object];
-    int totalItemCount = [objectsToSave count];
+    NSUInteger totalItemCount = [objectsToSave count];
     
     if (totalItemCount == 0) {
         //TODO: does this need an error?

@@ -61,7 +61,7 @@
 {
     NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
     
-    int totalObjects = objectsToProcess.count;
+    NSUInteger totalObjects = objectsToProcess.count;
     if (totalObjects == 0) {
         completionBlock(nil, nil);
     }
@@ -150,7 +150,7 @@
 - (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     NSArray *objectsToProcess = [NSArray wrapIfNotArray:query];
-    int totalObjects = objectsToProcess.count;
+    NSUInteger totalObjects = objectsToProcess.count;
     if (totalObjects == 0) {
         completionBlock(nil, nil);
     }
@@ -203,7 +203,7 @@
 - (void)removeObject:(id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
-    int totalObjects = objectsToProcess.count;
+    NSUInteger totalObjects = objectsToProcess.count;
     if (totalObjects == 0) {
         completionBlock(nil, nil);
     }

@@ -8,6 +8,11 @@
 
 #import <KinveyKit/KinveyKit.h>
 
+#if TARGET_OS_IPHONE
+#else
+#import <WebKit/WebKit.h>
+#endif
+
 /** Completion block for `getAccessDictionaryFromTwitterFromPrimaryAccount:` returns either the access dictionary to pass to `+[KCSUser loginWithWithSocialIdentity:accessDictionary:withCompletionBlock]` or an error.
  */
 typedef void (^KCSLocalCredentialBlock)(NSDictionary* accessDictOrNil, NSError* errorOrNil);
@@ -50,5 +55,10 @@ typedef void (^KCSLocalCredentialBlock)(NSDictionary* accessDictOrNil, NSError* 
  @param webview for showing the LinkedIn access form. 
  @since 1.13
  */
+#if TARGET_OS_IPHONE
 + (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(UIWebView*) webview;
+#else
++ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(WebView*) webview;
+#endif
+
 @end

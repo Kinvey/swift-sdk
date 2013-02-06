@@ -25,7 +25,7 @@
 #else
 + (ImageClass*) imageWithData:(NSData*)data
 {
-    return [NSImage imageWithData:data];
+    return [[NSImage alloc] initWithData:data];
 }
 
 + (NSData*) dataFromImage:(ImageClass*)image

@@ -52,4 +52,7 @@
 
 - (NSString *)headerString;
 
+
+- (BOOL) supportsUDID;
+
 @end

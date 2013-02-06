@@ -8,11 +8,14 @@
 
 #import "KCSSaveQueue.h"
 
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#import "KCSReachability.h"
+#endif
+
 #import <objc/runtime.h>
 
 #import "KCSObjectMapper.h"
-#import "KCSReachability.h"
 #import "KinveyCollection.h"
 #import "KinveyEntity.h"
 #import "KinveyErrorCodes.h"
@@ -46,7 +49,10 @@
 @implementation KCSSaveQueues
 
 static KCSSaveQueues* sQueues;
+#if TARGET_OS_IPHONE
 static KCSReachability* sReachability;
+#endif
+
 static BOOL sFirstReached;
 
 + (KCSSaveQueues*)sharedQueues
@@ -55,10 +61,12 @@ static BOOL sFirstReached;
     dispatch_once(&onceToken, ^{
         sQueues = [[KCSSaveQueues alloc] init];
         [sQueues restoreQueues];
-        KCSClient* client = [KCSClient sharedClient];
         sFirstReached = NO;
+#if TARGET_OS_IPHONE
+        KCSClient* client = [KCSClient sharedClient];
         sReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", client.serviceHostname, [client kinveyDomain]]];
         [sReachability startNotifier];
+#endif
     });
     return sQueues;
 }
@@ -226,9 +234,11 @@ static BOOL sFirstReached;
     self = [super init];
     if (self) {
         _q = [NSMutableArray array];
+#if TARGET_OS_IPHONE
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(online:) name:kKCSReachabilityChangedNotification object:nil];
 //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willBackground:) name:UIApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+#endif
     }
     return self;
 }
@@ -274,12 +284,14 @@ static BOOL sFirstReached;
     [aCoder encodeObject:objs forKey:@"o"];
 }
 
+#if TARGET_OS_IPHONE
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kKCSReachabilityChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
 }
+#endif
 
 - (void) addObject:(id<KCSPersistable>)obj
 {
@@ -326,10 +338,12 @@ static BOOL sFirstReached;
 - (void) online:(NSNotification*)note
 {
     sFirstReached = YES;
+#if TARGET_OS_IPHONE
     KCSReachability* reachability = [note object];
     if (reachability.isReachable == YES) {
         [self saveNext];
     }
+#endif
 }
 
 //- (void) invalidateBgTask
@@ -362,10 +376,12 @@ static BOOL sFirstReached;
 
 - (void) saveNext
 {
+#if TARGET_OS_IPHONE
     if ((sFirstReached && [sReachability isReachable] == NO) ||
         [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
         return;
     }
+#endif
     if ([self count] > 0) {
         KCSSaveQueueItem* item = [_q objectAtIndex:0];
         id obj = [self objForItem:item];

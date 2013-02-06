@@ -52,7 +52,7 @@
 
 - (id) reducedValueForFields:(NSDictionary*)fields
 {
-    __block NSNumber* number = [NSNumber numberWithInt:NSNotFound];
+    __block NSNumber* number = @(NSNotFound);
     [self enumerateWithBlock:^(NSArray *fieldValues, id value, NSUInteger idx, BOOL *stop) {
         BOOL found = NO;
         for (NSString* field in [fields allKeys]) {

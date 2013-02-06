@@ -132,4 +132,9 @@
     return headerString;
 }
 
+- (BOOL)supportsUDID
+{
+    return YES;
+}
+
 @end
