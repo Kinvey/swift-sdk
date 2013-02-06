@@ -56,7 +56,7 @@ typedef enum KCSQueryType : NSUInteger {
 - (NSString *)parameterStringRepresentation
 {
     KCSLogDebug(@"Limit String: %@", [NSString stringWithFormat:@"limit=%d", self.limit]);
-    return [NSString stringWithFormat:@"limit=%d", self.limit];
+    return [NSString stringWithFormat:@"limit=%d", (int) self.limit];
     
 }
 
@@ -78,7 +78,7 @@ typedef enum KCSQueryType : NSUInteger {
 - (NSString *)parameterStringRepresentation
 {
     KCSLogDebug(@"Count String: %@", [NSString stringWithFormat:@"skip=%d", self.count]);
-    return [NSString stringWithFormat:@"skip=%d", self.count];
+    return [NSString stringWithFormat:@"skip=%d", (int) self.count];
 }
 
 @end
@@ -398,9 +398,9 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 + (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression
 {
-    NSUInteger options = kKCSRegexepDefault;
+    KCSRegexpQueryOptions options = kKCSRegexepDefault;
     if ([expression isKindOfClass:[NSRegularExpression class]]) {
-        options = [(NSRegularExpression*)expression options];
+        options = (KCSRegexpQueryOptions) [(NSRegularExpression*)expression options];
         expression = [(NSRegularExpression*)expression pattern];
     }
     return [self queryOnField:field withRegex:expression options:options];
