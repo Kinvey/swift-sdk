@@ -41,6 +41,9 @@ typedef enum  {
     KCSSocialIDTwitter,
     /** LinkedIn */
     KCSSocialIDLinkedIn,
+    /** Salesforce */
+    KCSSocialIDSalesforce,
+    KCSSocialIDOther,
 } KCSUserSocialIdentifyProvider;
 
 /** Access Dictionary key for the token: both Facebook & Twitter */

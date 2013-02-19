@@ -50,7 +50,7 @@
 
 #endif
 
-@property (unsafe_unretained, nonatomic, readonly) NSString *kinveyDomain;
+@property (strong, nonatomic, readonly) NSString *kinveyDomain;
 
 ///---------------------------------------------------------------------------------------
 /// @name Connection Properties
@@ -107,10 +107,7 @@
         _kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]];
 #endif
         
-        @try {
-            [self testCanUseCategories];
-        }
-        @catch (NSException *exception) {
+        if (![self respondsToSelector:@selector(testCanUseCategories)]) {
             NSException* myException = [NSException exceptionWithName:@"CategoriesNotLoaded" reason:@"KinveyKit setup: Categories could not be loaded. Be sure to set '-ObjC' in the 'Other Linker Flags'." userInfo:nil];
             @throw myException;
         }

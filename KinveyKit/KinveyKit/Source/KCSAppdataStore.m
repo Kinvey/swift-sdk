@@ -61,7 +61,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 @property (nonatomic, strong) KCS_SBJsonStreamParser* parser;
 @property (nonatomic, strong) KCS_SBJsonStreamParserAdapter* adapter;
 @property (nonatomic, strong) NSMutableArray* items;
-@property (nonatomic, unsafe_unretained) id objectMaker;
+@property (nonatomic, strong) id objectMaker;
 @end
 
 @implementation KCSPartialDataParser
