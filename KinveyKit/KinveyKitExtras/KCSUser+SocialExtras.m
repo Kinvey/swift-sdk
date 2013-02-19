@@ -28,6 +28,8 @@
     return [twitterKey length] > 0 && [twitterSecret length] > 0;
 }
 
+//TODO: use accounts framework?
+
 + (BOOL) checkForTwitterCredentials
 {
     return [TWTweetComposeViewController canSendTweet];
@@ -143,7 +145,7 @@
     }
 }
 
-+ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(UIWebView*) webview
++ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(KCSWebViewClass*) webview
 {
     NSString* linkedInKey = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_API_KEY];
     NSString* linkedInSecret = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_SECRET_KEY];

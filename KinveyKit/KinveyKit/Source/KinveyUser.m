@@ -555,6 +555,18 @@
             }
         }
             break;
+        case KCSSocialIDSalesforce: {
+            NSString* idUrl = [accessDictionary objectForKey:KCS_SALESFORCE_IDENTITY_URL];
+            DBAssert(idUrl != nil, @"salesForce info should not be nil.");
+            if (idUrl != nil && accessToken != nil) {
+                dict = @{@"_socialIdentity" : @{@"salesforce" : @{@"access_token" : accessToken,
+                                                                KCS_SALESFORCE_IDENTITY_URL : idUrl}}};
+            }
+
+        }
+            break;
+        default:
+            dict = accessDictionary;
     }
     return dict;
 }

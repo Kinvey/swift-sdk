@@ -8,10 +8,7 @@
 
 #import <KinveyKit/KinveyKit.h>
 
-#if TARGET_OS_IPHONE
-#else
-#import <WebKit/WebKit.h>
-#endif
+#import "KCSWebView.h"
 
 /** Completion block for `getAccessDictionaryFromTwitterFromPrimaryAccount:` returns either the access dictionary to pass to `+[KCSUser loginWithWithSocialIdentity:accessDictionary:withCompletionBlock]` or an error.
  */

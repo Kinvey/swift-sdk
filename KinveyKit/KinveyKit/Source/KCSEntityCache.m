@@ -94,7 +94,7 @@ static KCSCachedStoreCaching* sCaching;
 
 @interface CacheValue : NSObject
 @property (nonatomic) NSUInteger count;
-@property (unsafe_unretained, nonatomic) id<KCSPersistable> object;
+@property (retain, nonatomic) id<KCSPersistable> object;
 @property (nonatomic) BOOL unsaved;
 @property (nonatomic, strong) NSDate* lastSavedTime;
 @end
