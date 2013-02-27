@@ -50,6 +50,8 @@
 #define KCS_LINKEDIN_ACCEPT_REDIRECT @"linkedinAcceptRedirect"
 #define KCS_LINKEDIN_CANCEL_REDIRECT @"linkedinCancelRedirect"
 #define KCS_SALESFORCE_IDENTITY_URL @"id"
+#define KCS_SALESFORCE_REFRESH_TOKEN @"refresh_token"
+#define KCS_SALESFORCE_CLIENT_ID @"client_id"
 
 /*! A Singleton Class that provides access to all Kinvey Services.
 

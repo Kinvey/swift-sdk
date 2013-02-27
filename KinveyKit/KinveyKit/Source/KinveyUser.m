@@ -557,10 +557,17 @@
             break;
         case KCSSocialIDSalesforce: {
             NSString* idUrl = [accessDictionary objectForKey:KCS_SALESFORCE_IDENTITY_URL];
+            NSString* refreshToken = [accessDictionary objectForKey:KCS_SALESFORCE_REFRESH_TOKEN];
+            NSString* clientId = [accessDictionary objectForKey:KCS_SALESFORCE_CLIENT_ID];
+            if (clientId == nil) {
+                clientId = [[KCSClient sharedClient].options objectForKey:KCS_SALESFORCE_CLIENT_ID];
+            }
             DBAssert(idUrl != nil, @"salesForce info should not be nil.");
             if (idUrl != nil && accessToken != nil) {
                 dict = @{@"_socialIdentity" : @{@"salesforce" : @{@"access_token" : accessToken,
-                                                                KCS_SALESFORCE_IDENTITY_URL : idUrl}}};
+                                                                KCS_SALESFORCE_IDENTITY_URL : idUrl,
+                                                                  KCS_SALESFORCE_REFRESH_TOKEN: refreshToken,
+                                                                  KCS_SALESFORCE_CLIENT_ID : clientId}}};
             }
 
         }
