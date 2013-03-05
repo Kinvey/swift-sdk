@@ -60,6 +60,7 @@ typedef enum KCSErrorCodes : NSInteger {
     KCSNetworkUnreachableError = 60001,
     KCSKinveyUnreachableError = 60002,
     KCSUserCreationContentionTimeoutError = 60003,
+    KCSUserNoImplictUserError = 60014,
     KCSUnexpectedResultFromServerError = 60004,
     KCSAuthenticationRetryError = 60005,
     KCSUserAlreadyLoggedInError = 60006,
