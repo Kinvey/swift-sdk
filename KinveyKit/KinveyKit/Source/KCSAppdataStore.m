@@ -211,7 +211,11 @@ KCSConnectionProgressBlock   makeProgressBlock(KCSProgressBlock onProgress);
         
         NSArray *jsonArray = nil;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Collection grouping was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData
+                                                description:@"Collection grouping was unsuccessful."
+                                                  errorCode:response.responseCode
+                                                     domain:KCSAppDataErrorDomain
+                                                  requestId:response.requestId];
             onComplete(nil, error);
             
             return;

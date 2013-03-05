@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/10/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #ifndef KinveyKit_KinveyErrorCodes_h
@@ -21,6 +21,7 @@
 #define KCSNetworkErrorDomain @"KCSNetworkErrorDomain"
 #define KCSAppDataErrorDomain @"KCSAppDataErrorDomain"
 #define KCSResourceErrorDomain @"KCSResourceErrorDomain"
+#define KCSDatalinkErrorDomain @"KCSDatalinkErrorDomain"
 #define KCSUserErrorDomain @"KCSUserErrorDomain"
 #define KCSPushErrorDomain @"KCSPushErrorDomain"
 #define KCSErrorDomain @"KCSErrorDomain"
