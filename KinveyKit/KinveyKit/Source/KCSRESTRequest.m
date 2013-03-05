@@ -172,7 +172,7 @@ NSString * getLogDate(void)
             if (authString == nil){
                 // We're only going to try this so many times before we just give up
                 if (self.retriesAttempted >= MAX_NUMBER_OF_RETRIES_K){
-                    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Request Timeout"
+                    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Authentication Request Timeout"
                                                                                        withFailureReason:@"Authentication service failed to return valid credentials after multiple attempts."
                                                                                   withRecoverySuggestion:@"Check to see if the network is active."
                                                                                      withRecoveryOptions:nil];

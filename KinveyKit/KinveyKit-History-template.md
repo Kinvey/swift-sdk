@@ -7,6 +7,13 @@
 * Added `+ [KCSReduceFunction AGGREGATE]` grouping function which returns whole objects for the store type, grouped by the specified field. This is useful for building sectioned tables. 
 * Added `+ [KCSQuery queryWithQuery:]` copy factory method.
 * Replaced (deprecated) `KCSMetadata` `usersWithReadAccess` and `setUsersWithReadAccess:` with `readers` mutable array; and replaced `usersWithWriteAccess` and `setUsersWithWriteAccess:` with `writers` mutable array. User `_id`'s can now be added directly to these arrays instead of using accessor methods. 
+* Added `KCSClient` set-up option `KCS_USER_CAN_CREATE_IMPLICT` to disable creating "implicit users" when set to `NO`. If a request is sent before a login with a username or social identity, it will complete with an authentication error.
+
+        (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"<#APP KEY#>"
+                                                           withAppSecret:@"<#APP SECRET#>"
+                                                            usingOptions:@{KCS_USER_CAN_CREATE_IMPLICT : @NO}];
+
+                                                                                                               
 * Removed `KCSUniqueNumber` class. 
 * Removed deprecated (as of version 1.2) filter API from old Collections interface. 
 * Deprecated undocumented `KCSStore` factory methods on `KCSClient`.
