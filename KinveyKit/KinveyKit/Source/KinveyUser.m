@@ -184,7 +184,18 @@
 {
     NSNumber* canCreate = [[KCSClient sharedClient].options valueForKey:KCS_USER_CAN_CREATE_IMPLICT];
     if (uname == nil && canCreate != nil && [canCreate boolValue] == NO) {
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
+                                                                           withFailureReason:@"KCSClient not allowed to create implicit users."
+                                                                      withRecoverySuggestion:@"Login with username and password."
+                                                                         withRecoveryOptions:nil];
+        
+        // No user, it's during creation
+        NSError* error = [NSError errorWithDomain:KCSUserErrorDomain
+                                             code:KCSUserNoImplictUserError
+                                         userInfo:userInfo];
+        completionBlock(nil, error, 0);
         return;
+
     }
     
     
