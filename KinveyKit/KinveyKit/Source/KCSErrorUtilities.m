@@ -62,7 +62,7 @@
         if (kcsErrorCode != nil) {
             [userInfo setValue:kcsErrorCode forKey:KCSErrorCode];
             //if the error is a datalink error, hijack the originating domain and indicate it's a DL error
-            if ([KCSErrorCode isEqualToString:kDatalinkError]) {
+            if ([kcsErrorCode isEqualToString:kDatalinkError]) {
                 domain = KCSDatalinkErrorDomain;
             }
         }
