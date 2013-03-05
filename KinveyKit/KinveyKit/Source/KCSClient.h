@@ -31,6 +31,9 @@
 #define KCS_SERVICE_KEY @"kcsServiceKey"
 #define KCS_CONNECTION_TIMEOUT_KEY @"kcsConnectionTimeout"
 
+/** Set this key's value to @NO to turn off the ability to create implict users. This will generate an error if a user is not logged in and a request is made. **/
+#define KCS_USER_CAN_CREATE_IMPLICT @"kcsCreateImplicitUsers"
+
 #define KCS_PUSH_KEY_KEY @"kcsPushKey"
 #define KCS_PUSH_SECRET_KEY @"kcsPushSecret"
 #define KCS_PUSH_IS_ENABLED_KEY @"kcsPushEnabled"

@@ -182,6 +182,11 @@
 
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew
 {
+    NSNumber* canCreate = [[KCSClient sharedClient].options valueForKey:KCS_USER_CAN_CREATE_IMPLICT];
+    if (uname == nil && canCreate != nil && [canCreate boolValue] == NO) {
+        return;
+    }
+    
     
     BOOL localInitInProgress = NO;
     KCSClient *client = [KCSClient sharedClient];
