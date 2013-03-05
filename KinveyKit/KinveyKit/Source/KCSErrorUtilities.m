@@ -14,6 +14,8 @@
 #define KCS_ERROR_DESCRIPTION_KEY @"description"
 #define KCS_ERROR_KINVEY_ERROR_CODE_KEY @"error"
 
+#define kDatalinkError @"DLCError"
+
 @implementation KCSErrorUtilities
 
 + (NSDictionary *)createErrorUserDictionaryWithDescription:(NSString *)description
@@ -38,7 +40,12 @@
     NSLocalizedRecoverySuggestionErrorKey : suggestion};
 }
 
-+ (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain requestId:(NSString*)requestId sourceError:(NSError*)underlyingError
++ (NSError*) createError:(NSDictionary*)jsonErrorDictionary
+             description:(NSString*) description
+               errorCode:(NSInteger)errorCode
+                  domain:(NSString*)domain
+               requestId:(NSString*)requestId
+             sourceError:(NSError*)underlyingError
 {
     NSString* kcsErrorDescription = nil;
     NSDictionary* userInfo = [NSMutableDictionary dictionary];
@@ -54,6 +61,10 @@
         NSString* kcsErrorCode = [errorValues popObjectForKey:KCS_ERROR_KINVEY_ERROR_CODE_KEY];
         if (kcsErrorCode != nil) {
             [userInfo setValue:kcsErrorCode forKey:KCSErrorCode];
+            //if the error is a datalink error, hijack the originating domain and indicate it's a DL error
+            if ([KCSErrorCode isEqualToString:kDatalinkError]) {
+                domain = KCSDatalinkErrorDomain;
+            }
         }
         
         NSString* kcsDebugKey = [errorValues popObjectForKey:KCS_ERROR_DEBUG_KEY];
@@ -85,9 +96,18 @@
     return error;
 }
 
-+ (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain requestId:(NSString*)requestId
++ (NSError*) createError:(NSDictionary*)jsonErrorDictionary
+             description:(NSString*)description
+               errorCode:(NSInteger)errorCode
+                  domain:(NSString*)domain
+               requestId:(NSString*)requestId
 {
-    return [self createError:jsonErrorDictionary description:description errorCode:errorCode domain:domain requestId:requestId sourceError:nil];
+    return [self createError:jsonErrorDictionary
+                 description:description
+                   errorCode:errorCode
+                      domain:domain
+                   requestId:requestId
+                 sourceError:nil];
 }
 
 @end
