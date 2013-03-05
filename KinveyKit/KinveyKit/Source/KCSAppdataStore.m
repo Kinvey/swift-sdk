@@ -304,7 +304,11 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
         NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse
+                                                description:nil
+                                                  errorCode:response.responseCode
+                                                     domain:KCSAppDataErrorDomain
+                                                  requestId:response.requestId];
             completionBlock(nil, error);
         } else {
             if (jsonResponse) {
