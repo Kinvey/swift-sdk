@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/1/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyUser.h"
@@ -394,7 +394,7 @@
 // These routines all do similar work, but the first two are for legacy support
 - (void)initializeCurrentUserWithRequest: (KCSRESTRequest *)request
 {
-    [KCSUser registerUserWithUsername:nil withPassword:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+    [KCSUser registerUserWithUsername:[KCSKeyChain getStringForKey:kKeychainUsernameKey] withPassword:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         //... do nothing with result
     } forceNew:NO];
     if (request){
@@ -409,7 +409,7 @@
 
 + (void)initCurrentUser
 {
-    [KCSUser registerUserWithUsername:nil withPassword:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+    [KCSUser registerUserWithUsername:[KCSKeyChain getStringForKey:kKeychainUsernameKey] withPassword:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         //... do nothing with result
     } forceNew:NO];
 }
