@@ -53,9 +53,9 @@ typedef void (^KCSLocalCredentialBlock)(NSDictionary* accessDictOrNil, NSError* 
  @since 1.13
  */
 #if TARGET_OS_IPHONE
-+ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(UIWebView*) webview;
++ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(KCSWebViewClass*) webview;
 #else
-+ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(WebView*) webview;
++ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(KCSWebViewClass*) webview;
 #endif
 
 @end
