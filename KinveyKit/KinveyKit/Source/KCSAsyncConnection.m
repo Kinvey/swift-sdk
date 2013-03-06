@@ -286,8 +286,10 @@
                     [error localizedDescription],
                     [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
         
+        NSError* error2 = [KCSErrorUtilities createError:@{} description:[error localizedDescription] errorCode:[error code] domain:KCSNetworkErrorDomain requestId:nil sourceError:error];
+        
         // Notify client that the operation failed!
-        self.failureBlock(error);
+        self.failureBlock(error2);
         
         [self cleanUp];
     }];

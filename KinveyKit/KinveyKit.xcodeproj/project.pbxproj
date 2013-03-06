@@ -183,6 +183,8 @@
 		27B425E816C2C1D000C59E1A /* KCSUser+SocialExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 2795FC3A160915A1002ED162 /* KCSUser+SocialExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27B425EE16C3DA6600C59E1A /* KCSWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B425ED16C3DA6200C59E1A /* KCSWebView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27B425EF16C3DA6700C59E1A /* KCSWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B425ED16C3DA6200C59E1A /* KCSWebView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27B7724216E7C63500610D11 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B7724116E7C63500610D11 /* WebKit.framework */; };
+		27B7724516E7C71300610D11 /* KCSWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B7724316E7C6EC00610D11 /* KCSWebView.m */; };
 		27BAB39A166E957100C5D156 /* OAuthTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BAB399166E957100C5D156 /* OAuthTest.m */; };
 		27BAB3EB166FED0500C5D156 /* KCS_OAuthCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD086B16095D7D009473A3 /* KCS_OAuthCore.h */; settings = {ATTRIBUTES = (); }; };
 		27BBD91615ADD3A2005E27E1 /* TestThreads.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BBD91515ADD3A2005E27E1 /* TestThreads.m */; };
@@ -510,6 +512,8 @@
 		27B3B08316B8756900E1B540 /* KinveyVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyVersion.h; sourceTree = "<group>"; };
 		27B425E916C2C30F00C59E1A /* libXcodeTest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libXcodeTest.a; sourceTree = "<group>"; };
 		27B425ED16C3DA6200C59E1A /* KCSWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSWebView.h; sourceTree = "<group>"; };
+		27B7724116E7C63500610D11 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
+		27B7724316E7C6EC00610D11 /* KCSWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSWebView.m; sourceTree = "<group>"; };
 		27BAB38D166D467000C5D156 /* libUAirshipPush-1.3.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirshipPush-1.3.3.a"; path = "Airship/libUAirshipPush-1.3.3.a"; sourceTree = "<group>"; };
 		27BAB398166E957000C5D156 /* OAuthTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAuthTest.h; sourceTree = "<group>"; };
 		27BAB399166E957100C5D156 /* OAuthTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OAuthTest.m; sourceTree = "<group>"; };
@@ -914,6 +918,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27B7724216E7C63500610D11 /* WebKit.framework in Frameworks */,
 				271827C716C0357700825D50 /* Security.framework in Frameworks */,
 				271827AA16B9A1D100825D50 /* CoreLocation.framework in Frameworks */,
 				2766E62F16834B78000D27C5 /* Cocoa.framework in Frameworks */,
@@ -1002,6 +1007,7 @@
 		271827AB16B9A1E600825D50 /* Mac */ = {
 			isa = PBXGroup;
 			children = (
+				27B7724116E7C63500610D11 /* WebKit.framework */,
 				271827C616C0357500825D50 /* Security.framework */,
 				2766E62E16834B78000D27C5 /* Cocoa.framework */,
 				271827A916B9A1D000825D50 /* CoreLocation.framework */,
@@ -1069,6 +1075,7 @@
 				27D1558C16713C3C00171230 /* KCSLinkedInHelper.h */,
 				27D1558D16713C3C00171230 /* KCSLinkedInHelper.m */,
 				27B425ED16C3DA6200C59E1A /* KCSWebView.h */,
+				27B7724316E7C6EC00610D11 /* KCSWebView.m */,
 				2785F5311609179E004AA410 /* Supporting Files */,
 			);
 			path = KinveyKitExtras;
@@ -2700,6 +2707,7 @@
 				271827FF16C17B8700825D50 /* KCSSaveGraph.m in Sources */,
 				27B425E516C2C03D00C59E1A /* KCSLinkedInHelper.m in Sources */,
 				27B425E616C2C04100C59E1A /* KCSUser+SocialExtras.m in Sources */,
+				27B7724516E7C71300610D11 /* KCSWebView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
