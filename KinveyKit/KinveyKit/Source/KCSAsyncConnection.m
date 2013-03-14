@@ -14,6 +14,9 @@
 #import "KCSLogManager.h"
 #import "KCSClient.h"
 
+#import "NSDictionary+KinveyAdditions.h"
+
+
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #endif
@@ -302,7 +305,7 @@
     [self runBlockInForeground:^{
         NSInteger statusCode = [(NSHTTPURLResponse *)self.lastResponse statusCode];
         NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
-        KCSLogNetwork(@"Response completed with code %d and response headers: %@", statusCode, headers);
+        KCSLogNetwork(@"Response completed with code %d and response headers: %@", statusCode, [headers stripKeys:@[@"Authorization"]]);
         KCSLogRequestId(@"Kinvey Request ID: %@", [headers objectForKey:@"X-Kinvey-Request-Id"]);
         self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:nil]);    
         
