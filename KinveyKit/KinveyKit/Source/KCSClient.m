@@ -216,6 +216,10 @@
                             withReason:@"App Key contains invalid characters, check to make sure App Key is correct!"];
     }
     
+    if ([self.options objectForKey:KCS_LOG_SINK] != nil) {
+        [KCSLogManager setLogSink:[self.options objectForKey:KCS_LOG_SINK]];
+    }
+    
     return self;
 }
 

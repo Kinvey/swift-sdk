@@ -39,6 +39,8 @@
 #import "KCSLinkedAppdataStore.h"
 #import "KCSOfflineSaveStore.h"
 
+#import "KCSLogSink.h"
+
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"

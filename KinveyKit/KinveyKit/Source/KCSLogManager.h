@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "KCSLogSink.h"
 
 // Convenience Macros
 #if KINVEY_DEBUG_ENABLED
@@ -59,6 +60,7 @@ withFormat:(format),##__VA_ARGS__]
 @interface KCSLogManager : NSObject
 
 + (KCSLogManager *)sharedLogManager;
++ (void) setLogSink:(id<KCSLogSink>)sink;
 
 + (KCSLogChannel *)kNetworkChannel;
 + (KCSLogChannel *)kDebugChannel;

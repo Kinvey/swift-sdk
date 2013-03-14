@@ -74,6 +74,7 @@ enum {
 
 @interface KCSLogManager ()
 @property (strong, nonatomic) NSDictionary *loggingState;
+@property (strong, nonatomic) id<KCSLogSink> logSink;
 @end
 
 @implementation KCSLogManager
@@ -109,6 +110,11 @@ enum {
     return sKCSLogManager;
 }
 
++ (void) setLogSink:(id<KCSLogSink>)sink
+{
+    [self sharedLogManager].logSink = sink;
+}
+
 
 + (KCSLogChannel *)kNetworkChannel
 {
@@ -141,6 +147,16 @@ enum {
 }
 
 
+- (void) log:(NSString*)message
+{
+    if (self.logSink == nil) {
+        //NSLog handles synchronization issues
+        NSLog(@"%@", message);
+    } else {
+        [self.logSink log:message];
+    }
+}
+
 - (void)logChannel: (KCSLogChannel *)channel file:(char *)sourceFile lineNumber: (int)lineNumber withFormat:(NSString *)format, ...
 {
     BOOL channelIsEnabled = [(NSNumber *)[self.loggingState objectForKey:@(channel.channelID)] boolValue];
@@ -158,9 +174,9 @@ enum {
         if ([print length] > 1000) {
             print = [[print substringToIndex:1000] stringByAppendingString:@"...(truncated)"];
         }
-        //NSLog handles synchronization issues
-        NSLog(@"%s:%d %@ %@",[[file lastPathComponent] UTF8String],
-              lineNumber, channel.displayString,print);
+        
+        [self log:[NSString stringWithFormat:@"%s:%d %@ %@",[[file lastPathComponent] UTF8String],
+              lineNumber, channel.displayString, print]];
     }
 }
 
