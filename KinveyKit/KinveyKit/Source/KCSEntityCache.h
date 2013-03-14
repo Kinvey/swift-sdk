@@ -37,6 +37,9 @@ NSString* KCSMongoObjectId();
 - (void) addUnsavedObject:(id)obj;
 //TODO remove?
 - (void) startSaving;
+
+#pragma mark Persistence
+- (void) setPersistenceId:(NSString*)key;
 @end
 
 @interface KCSCachedStoreCaching : NSObject
