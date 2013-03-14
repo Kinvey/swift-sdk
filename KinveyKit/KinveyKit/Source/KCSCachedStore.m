@@ -46,6 +46,9 @@
     
     KCSCollection* backingCollection = [self backingCollection];
     _cache = [KCSCachedStoreCaching cacheForCollection:backingCollection.collectionName];
+    if (cachePolicy == KCSCachePolicyReadOnceAndSaveLocal_Xperimental) {
+        [_cache setPersistenceId:[options objectForKey:KCSStoreKeyLocalCachePersistanceKey_Xperimental]];
+    }
     
     return retVal;
 }
