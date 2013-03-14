@@ -14,6 +14,27 @@
                                                             usingOptions:@{KCS_USER_CAN_CREATE_IMPLICT : @NO}];
 
                                                                                                                
+* Added `KCSClient` set-up option `KCS_LOG_SINK` to allow you to send KinveyKit logs to a custom logger, such as Testflight. This requires that you create an object that implements the new `KCSLogSink` protocol and configure logging. For example:
+
+
+        @interface TestFlightLogger : NSObject <KCSLogSink>
+        @end
+        @implementation TestFlightLogger
+        
+        - (void)log:(NSString *)message
+        {
+            TFLog(@"%@", message);
+        }
+        @end
+        
+	and, in the app delegate: 
+	
+    	(void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"<#APP KEY#>"
+    	                                                   withAppSecret:@"<#APP SECRET#>"
+        	                                                usingOptions:@{KCS_LOG_SINK : [[TestFlightLogger alloc] init]}];
+    
+        [KCSClient configureLoggingWithNetworkEnabled:NO debugEnabled:NO traceEnabled:NO warningEnabled:YES errorEnabled:YES];
+    
 * Removed `KCSUniqueNumber` class. 
 * Removed deprecated (as of version 1.2) filter API from old Collections interface. 
 * Deprecated undocumented `KCSStore` factory methods on `KCSClient`.

@@ -31,6 +31,9 @@
 #define KCS_SERVICE_KEY @"kcsServiceKey"
 #define KCS_CONNECTION_TIMEOUT_KEY @"kcsConnectionTimeout"
 
+/** This object shoul implement the `KCSLogSink` protocol. Use this along with +[KinveyKit configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:] to send log messages to a custom sink.*/
+#define KCS_LOG_SINK @"kcsLogSink"
+
 /** Set this key's value to @NO to turn off the ability to create implict users. This will generate an error if a user is not logged in and a request is made. **/
 #define KCS_USER_CAN_CREATE_IMPLICT @"kcsCreateImplicitUsers"
 
