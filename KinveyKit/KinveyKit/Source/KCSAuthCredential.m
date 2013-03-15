@@ -126,10 +126,10 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
             NSString *authString = nil;
             if (curUser.sessionAuth) {
                 authString = [@"Kinvey " stringByAppendingString: curUser.sessionAuth];//KCSbase64EncodedStringFromData([curUser.sessionAuth dataUsingEncoding:NSUTF8StringEncoding]);
-                KCSLogDebug(@"Current user found, using sessionauth (%@) => (%@)", curUser.username, authString);
+                KCSLogDebug(@"Current user found, using sessionauth (%@) => XXXXXXXXX", curUser.username);
             } else {
                 authString = KCSbasicAuthString(curUser.username, curUser.password);
-                KCSLogDebug(@"Current user found (%@, %@) => (%@)", curUser.username, curUser.password, authString);
+                KCSLogDebug(@"Current user found (%@, XXXXXXXXX) => XXXXXXXXX", curUser.username);
             }
             return authString;
         }
