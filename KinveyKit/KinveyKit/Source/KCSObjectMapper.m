@@ -192,7 +192,7 @@ NSString* specialTypeOfValue(id value)
         }
         
         if (value == nil){
-            KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Host Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
+            KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
             continue;
         } else {
             NSString* maybeType = specialTypeOfValue(value);
@@ -354,7 +354,7 @@ NSString* specialTypeOfValue(id value)
         }
         
         if (value == nil){
-            KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Host Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
+            KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
             continue;
         } else {
             NSString* maybeType = specialTypeOfValue(value);
