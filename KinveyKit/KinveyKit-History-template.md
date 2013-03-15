@@ -40,7 +40,7 @@
 * Deprecated undocumented `KCSStore` factory methods on `KCSClient`.
 * Infrastructure update: entire library now built with ARC.
 * Bug fix(es):
-    * KCSUserDiscover returns complete `KCSUser` objects now instead of `NSDictionary`.
+    * KCSUserDiscovery returns complete `KCSUser` objects now instead of `NSDictionary`.
 
 ## 1.13
 ### 1.13.2
