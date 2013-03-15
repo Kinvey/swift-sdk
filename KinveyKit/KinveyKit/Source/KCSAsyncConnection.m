@@ -124,7 +124,7 @@
 
     KCSLogNetwork(@"Request URL:%@", self.request.URL);
     KCSLogNetwork(@"Request Method:%@", self.request.HTTPMethod);
-    KCSLogNetwork(@"Request Headers:%@", self.request.allHTTPHeaderFields);
+    KCSLogNetwork(@"Request Headers:%@", [self.request.allHTTPHeaderFields stripKeys:@[@"Authorization"]]);
 
     
     // If our connection has been cleaned up, then we need to make sure that we get it back before using it.
