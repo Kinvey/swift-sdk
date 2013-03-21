@@ -2,7 +2,7 @@
 
 ## 1.14
 ### 1.14.0
-** Release Date:** TBD
+** Release Date:** March 21, 2013
 
 * Added `+ [KCSReduceFunction AGGREGATE]` grouping function which returns whole objects for the store type, grouped by the specified field. This is useful for building sectioned tables. 
 * Added `+ [KCSQuery queryWithQuery:]` copy factory method.

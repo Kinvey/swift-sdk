@@ -36,9 +36,11 @@
  @param fieldToAverage is the collection object's field to find the average.
  */
 + (KCSReduceFunction*) AVERAGE:(NSString*)fieldToAverage;
+
 /** Function to collect all the objects for a particular field value.
  
- This is a useful function for obtaining objecs for sectioned tables. 
+ This is a useful function for obtaining objects for sectioned tables. 
+ @since 1.14.0
  */
 + (KCSReduceFunction*) AGGREGATE;
 
