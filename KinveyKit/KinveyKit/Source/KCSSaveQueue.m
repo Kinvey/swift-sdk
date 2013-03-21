@@ -329,8 +329,10 @@ static BOOL sFirstReached;
 
 - (void) removeFirstItem
 {
-    [_q removeObjectAtIndex:0];
-    [self.updateDelegate queueUpdated];
+    if (_q.count > 0) {
+        [_q removeObjectAtIndex:0];
+        [self.updateDelegate queueUpdated];
+    }
 }
 
 #pragma mark - respond to events
