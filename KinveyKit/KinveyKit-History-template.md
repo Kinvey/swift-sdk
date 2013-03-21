@@ -34,7 +34,26 @@
         	                                                usingOptions:@{KCS_LOG_SINK : [[TestFlightLogger alloc] init]}];
     
         [KCSClient configureLoggingWithNetworkEnabled:NO debugEnabled:NO traceEnabled:NO warningEnabled:YES errorEnabled:YES];
+
+* Added support for log-in with __Salesforce__
+    * Added `KCSSocialIDSalesforce` value to `KCSUserSocialIdentifyProvider` enum for use with `+ [KCSUser loginWithSocialIdentity:accessDictionary:withCompletionBlock:]` and `+ [KCSUser registerUserWithSocialIdentity:accessDictionary:withCompletionBlock:]`.    
+    * To use with [Salesforce's iOS SDK](https://github.com/forcedotcom/SalesforceMobileSDK-iOS)
+	
+         
+             - (void)oauthCoordinatorDidAuthenticate:(SFOAuthCoordinator *)coordinator authInfo:(SFOAuthInfo *)info
+             {
+             	NSString* accessToken = coordinator.credentials.accessToken;
+             	NSString* instanceURL = [coordinator.credentials.identityUrl absoluteString];
+             	NSString* refreshToken = coordinator.credentials.refreshToken;
+             	NSString* clientId = coordinator.credentials.clientId;
     
+             	NSDictionary* acccessDictionary = @{KCSUserAccessTokenKey : accessToken, KCS_SALESFORCE_IDENTITY_URL : instanceURL, KCS_SALESFORCE_REFRESH_TOKEN : refreshToken, KCS_SALESFORCE_CLIENT_ID : clientId};
+    
+             	[KCSUser loginWithSocialIdentity:KCSSocialIDSalesforce accessDictionary:acccessDictionary withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+             		NSLog(@"Logged in user: %@ - error: %@", user, errorOrNil);
+             	}];
+             }     
+
 * Removed `KCSUniqueNumber` class. 
 * Removed deprecated (as of version 1.2) filter API from old Collections interface. 
 * Deprecated undocumented `KCSStore` factory methods on `KCSClient`.
