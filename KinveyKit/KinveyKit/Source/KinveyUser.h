@@ -41,6 +41,9 @@ typedef enum  {
     KCSSocialIDTwitter,
     /** LinkedIn */
     KCSSocialIDLinkedIn,
+    /** Salesforce */
+    KCSSocialIDSalesforce,
+    KCSSocialIDOther,
 } KCSUserSocialIdentifyProvider;
 
 /** Access Dictionary key for the token: both Facebook & Twitter */
@@ -125,7 +128,7 @@ typedef enum  {
 /*! Password of this Kinvey User */
 @property (nonatomic, copy) NSString *password;
 /** The Kinvey user collection id for the user */
-@property (nonatomic, retain) NSString *userId;
+@property (nonatomic, strong) NSString *userId;
 /*! Device Tokens of this User */
 @property (nonatomic, copy) NSArray *deviceTokens;
 /*! Session Auth Token, if available */
@@ -133,7 +136,7 @@ typedef enum  {
 /*! Access Control Metadata of this User 
  @see KCSPersistable
  */
-@property (nonatomic, retain) KCSMetadata *metadata;
+@property (nonatomic, strong) KCSMetadata *metadata;
 /** Optional surname for the user. Publicly queryable be default. */
 @property (nonatomic, copy) NSString *surname;
 /** Optional given (first) name for the user. Publicly queryable be default. */

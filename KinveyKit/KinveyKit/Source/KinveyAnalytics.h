@@ -25,12 +25,12 @@
 ///---------------------------------------------------------------------------------------
 
 /*! The unique identifier for this device/user */
-@property (retain, readonly) NSString *UUID;
+@property (strong, readonly) NSString *UUID;
 
 /*! Kinvey's UDID representation */
-@property (retain, readonly) NSString *UDID;
+@property (strong, readonly) NSString *UDID;
 
-@property (retain, readonly) NSString *analyticsHeaderName;
+@property (strong, readonly) NSString *analyticsHeaderName;
 
 /*! Generate a UUID
  
@@ -51,5 +51,8 @@
 - (NSDictionary *)deviceInformation;
 
 - (NSString *)headerString;
+
+
+- (BOOL) supportsUDID;
 
 @end

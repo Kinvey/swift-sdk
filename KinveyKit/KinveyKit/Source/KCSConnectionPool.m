@@ -14,11 +14,11 @@
 
 @interface KCSConnectionPool ()
 
-@property (retain, nonatomic) Class asyncConnectionType;
-@property (retain, nonatomic) NSMutableDictionary *genericConnectionPools;
+@property (strong, nonatomic) Class asyncConnectionType;
+@property (strong, nonatomic) NSMutableDictionary *genericConnectionPools;
 @property (nonatomic) BOOL poolIsFilled;
 
-@property (retain, nonatomic) NSMutableArray *genericPoolStack;
+@property (strong, nonatomic) NSMutableArray *genericPoolStack;
 
 void verifyConnectionType(id connectionClass);
 

@@ -2,7 +2,7 @@
 //  KCSClient.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -10,6 +10,7 @@
 //  contents is a violation of applicable laws.
 
 #import <Foundation/Foundation.h>
+#import "KinveyHeaderInfo.h"
 
 #define MINIMUM_KCS_VERSION_SUPPORTED @"2.0"
 
@@ -30,6 +31,12 @@
 #define KCS_SERVICE_KEY @"kcsServiceKey"
 #define KCS_CONNECTION_TIMEOUT_KEY @"kcsConnectionTimeout"
 
+/** This object shoul implement the `KCSLogSink` protocol. Use this along with +[KinveyKit configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:] to send log messages to a custom sink.*/
+#define KCS_LOG_SINK @"kcsLogSink"
+
+/** Set this key's value to @NO to turn off the ability to create implict users. This will generate an error if a user is not logged in and a request is made. **/
+#define KCS_USER_CAN_CREATE_IMPLICT @"kcsCreateImplicitUsers"
+
 #define KCS_PUSH_KEY_KEY @"kcsPushKey"
 #define KCS_PUSH_SECRET_KEY @"kcsPushSecret"
 #define KCS_PUSH_IS_ENABLED_KEY @"kcsPushEnabled"
@@ -48,6 +55,9 @@
 #define KCS_LINKEDIN_SECRET_KEY @"linkedinSecret"
 #define KCS_LINKEDIN_ACCEPT_REDIRECT @"linkedinAcceptRedirect"
 #define KCS_LINKEDIN_CANCEL_REDIRECT @"linkedinCancelRedirect"
+#define KCS_SALESFORCE_IDENTITY_URL @"id"
+#define KCS_SALESFORCE_REFRESH_TOKEN @"refresh_token"
+#define KCS_SALESFORCE_CLIENT_ID @"client_id"
 
 /*! A Singleton Class that provides access to all Kinvey Services.
 
@@ -72,7 +82,7 @@
 @property (nonatomic, copy, readonly) NSString *appSecret;
 
 /*! Configuration options, set via @see initializeKinveyServiceForAppKey:withAppSecret:usingOptions */
-@property (nonatomic, retain, readonly) NSDictionary *options;
+@property (nonatomic, strong, readonly) NSDictionary *options;
 
 ///---------------------------------------------------------------------------------------
 /// @name Library Information
@@ -107,10 +117,10 @@
 
 #if TARGET_OS_IPHONE
 /*! Overall Network Status Reachability Object */
-@property (nonatomic, retain, readonly) KCSReachability *networkReachability;
+@property (nonatomic, strong, readonly) KCSReachability *networkReachability;
 
 /*! Kinvey Host Specific Reachability Object */
-@property (nonatomic, retain, readonly) KCSReachability *kinveyReachability;
+@property (nonatomic, strong, readonly) KCSReachability *kinveyReachability;
 #endif
 
 
@@ -119,7 +129,7 @@
 /// @name User Authentication
 ///---------------------------------------------------------------------------------------
 /*! Current Kinvey User */
-@property (nonatomic, retain) KCSUser *currentUser;
+@property (nonatomic, strong) KCSUser *currentUser;
 /*! Has the current user been authenticated?  (NOTE: Thread Safe) */
 @property (nonatomic) BOOL userIsAuthenticated;
 /*! Is user authentication in progress?  (NOTE: Thread Safe, can be used to spin for completion) */
@@ -141,7 +151,7 @@
 /// @name Data Type Support
 ///---------------------------------------------------------------------------------------
 /*! NSDateFormatter String for Date storage */
-@property (nonatomic, readonly) NSString *dateStorageFormatString;
+@property (unsafe_unretained, nonatomic, readonly) NSString *dateStorageFormatString;
 
 
 
@@ -221,27 +231,30 @@
  
  @param collection The name of the collection that will contain the objects.
  @param collectionClass A class that represents the objects of this collection.
+ @deprecated 1.14.0
  @returns The collection object.
- 
- 
 */
-- (KCSCollection *)collectionFromString: (NSString *)collection withClass: (Class)collectionClass;
+- (KCSCollection *)collectionFromString: (NSString *)collection withClass: (Class)collectionClass KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);;
 
 ///---------------------------------------------------------------------------------------
 /// @name Store Interface
 ///---------------------------------------------------------------------------------------
-- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource;
+//@deprecated 1.14.0
+- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);
 
-- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource withAuthHandler: (KCSAuthHandler *)authHandler;
+//@deprecated 1.14.0
+- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource withAuthHandler: (KCSAuthHandler *)authHandler KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);
 
+//@deprecated 1.14.0
 - (id<KCSStore>)store: (NSString *)storeType
           forResource: (NSString *)resource
-            withClass: (Class)collectionClass;
+            withClass: (Class)collectionClass KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);
 
+//@deprecated 1.14.0
 - (id<KCSStore>)store: (NSString *)storeType
           forResource: (NSString *)resource
             withClass: (Class)collectionClass
-      withAuthHandler: (KCSAuthHandler *)authHandler;
+      withAuthHandler: (KCSAuthHandler *)authHandler KCS_DEPRECATED(dont use method--create the class directly, 1.14.0);
 
 
 ///---------------------------------------------------------------------------------------

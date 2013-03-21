@@ -20,7 +20,7 @@
  */
 @interface KCSResourceStore : NSObject <KCSStore>
 
-@property (nonatomic, retain) KCSAuthHandler *authHandler;
+@property (nonatomic, strong) KCSAuthHandler *authHandler;
 
 ///---------------------------------------------------------------------------------------
 /// @name Adding/Updating

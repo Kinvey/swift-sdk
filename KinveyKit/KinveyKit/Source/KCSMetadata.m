@@ -26,8 +26,8 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
 @end
 
 @interface KCSMetadata ()
-@property (nonatomic, retain, readonly) NSDate* lastModifiedTime;
-@property (nonatomic, retain, readonly) NSMutableDictionary* acl;
+@property (nonatomic, strong, readonly) NSDate* lastModifiedTime;
+@property (nonatomic, strong, readonly) NSMutableDictionary* acl;
 @end
 
 @implementation KCSMetadata
@@ -48,6 +48,15 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
         NSString* lmt = [kmd objectForKey:kKMDLMTKey];
         _lastModifiedTime = [NSDate dateFromISO8601EncodedString:lmt];
         _acl = [NSMutableDictionary dictionaryWithDictionary:pACL];
+
+        NSMutableArray* readers = [_acl objectForKey:kACLReadersKey];
+        if (readers != nil) {
+            [_acl setObject:[readers mutableCopy] forKey:kACLReadersKey];
+        }
+        NSMutableArray* writers = [_acl objectForKey:kACLWritersKey];
+        if (writers != nil) {
+            [_acl setObject:[writers mutableCopy] forKey:kACLWritersKey];
+        }
     }
     return self;
 }
@@ -61,30 +70,54 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
 {
     KCSUser* user = [[KCSClient sharedClient] currentUser];
     NSString* userId = [user userId];
-    return [[self creatorId] isEqualToString:userId] || [[self usersWithWriteAccess] containsObject:userId] || [self isGloballyWritable];
+    return [[self creatorId] isEqualToString:userId] || [self.writers containsObject:userId] || [self isGloballyWritable];
+}
+
+#pragma mark - readers/writers
+
+- (NSMutableArray *)readers
+{
+    NSMutableArray* readers = [_acl objectForKey:kACLReadersKey];
+    if (readers == nil) {
+        readers = [NSMutableArray array];
+        [_acl setObject:readers forKey:kACLReadersKey];
+    }
+    DBAssert(readers != nil && [readers isKindOfClass:[NSMutableArray class]], @"should be mutable");
+    return readers;
+}
+
+- (NSMutableArray *) writers
+{
+    NSMutableArray* writers = [_acl objectForKey:kACLWritersKey];
+    if (writers == nil) {
+        writers = [NSMutableArray array];
+        [_acl setObject:writers forKey:kACLWritersKey];
+    }
+    DBAssert(writers != nil && [writers isKindOfClass:[NSMutableArray class]], @"should be mutable");
+    return writers;
 }
 
 - (NSArray*) usersWithReadAccess
 {
-    NSArray* readers = [_acl objectForKey:kACLReadersKey];
-    return readers == nil ? @[] : readers;
+    return self.readers;
 }
 
 - (void) setUsersWithReadAccess:(NSArray*) readers
 {
-    [_acl setObject:readers forKey:kACLReadersKey];
+    [self.readers setArray:readers];
 }
 
 - (NSArray*) usersWithWriteAccess
 {
-    NSArray* writers = [_acl objectForKey:kACLWritersKey];
-    return writers == nil ? @[] : writers;
+    return self.writers;
 }
 
 - (void) setUsersWithWriteAccess:(NSArray*) writers
 {
-    [_acl setObject:writers forKey:kACLWritersKey];
+    [self.writers setArray:writers];
 }
+
+#pragma mark - Globals
 
 - (BOOL) isGloballyReadable
 {

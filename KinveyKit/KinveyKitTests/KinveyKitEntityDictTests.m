@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitEntityDictTests.h"
@@ -22,9 +22,9 @@ typedef BOOL(^InfoSuccessAction)(int);
 @interface KinveyKitEntityDictTests ()
 @property (nonatomic) BOOL testPassed;
 @property (retain, nonatomic) NSString *testID;
-@property (retain, nonatomic) SuccessAction onSuccess;
-@property (retain, nonatomic) FailureAction onFailure;
-@property (retain, nonatomic) InfoSuccessAction onInfoSuccess;
+@property (copy, nonatomic) SuccessAction onSuccess;
+@property (copy, nonatomic) FailureAction onFailure;
+@property (copy, nonatomic) InfoSuccessAction onInfoSuccess;
 @property (retain, nonatomic) NSString *message;
 
 @property (retain, nonatomic) KCS_SBJsonParser *parser;
@@ -36,16 +36,6 @@ typedef BOOL(^InfoSuccessAction)(int);
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 @implementation KinveyKitEntityDictTests
-
-
-@synthesize testID = _testID;
-@synthesize onFailure = _onFailure;
-@synthesize onSuccess = _onSuccess;
-@synthesize onInfoSuccess = _onInfoSuccess;
-@synthesize testPassed = _testPassed;
-@synthesize message = _message;
-@synthesize parser = _parser;
-@synthesize writer = _writer;
 
 - (void)setUp
 {
@@ -62,7 +52,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // Ensure that KCSClient is alive
     KCSClient *client = [KCSClient sharedClient];
     [client setServiceHostname:@"baas"];
-    [client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
+    (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
     
     
     // Fake Auth
@@ -73,8 +63,8 @@ typedef BOOL(^InfoSuccessAction)(int);
     [KCSUser initCurrentUser];
     
     
-    _writer = [[[KCS_SBJsonWriter alloc] init] retain];
-    _parser = [[[KCS_SBJsonParser alloc] init] retain];
+    _writer = [[KCS_SBJsonWriter alloc] init];
+    _parser = [[KCS_SBJsonParser alloc] init];
 }
 
 - (void)tearDown

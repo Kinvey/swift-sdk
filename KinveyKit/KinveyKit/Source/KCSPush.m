@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/28/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 #ifndef NO_URBAN_AIRSHIP_PUSH
 
@@ -25,8 +25,6 @@
 
 @implementation KCSPush
 
-@synthesize deviceToken = _deviceToken;
-
 - (id)init {
     self = [super init];
     if (self) {
@@ -35,10 +33,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [_deviceToken release];
-    [super dealloc];
-}
 
 #pragma mark UA Init
 + (KCSPush *)sharedPush
@@ -60,7 +54,7 @@
 
 - (void) onLoadHelper:(NSDictionary *)options
 {
-    [self initializeUrbanAirshipWithOptions:options error:NULL];
+    (void)[self initializeUrbanAirshipWithOptions:options error:NULL];
 }
 
 - (BOOL) onLoadHelper:(NSDictionary *)options error:(NSError**)error
@@ -85,8 +79,8 @@
     // Set up the UA stuff
     //Init Airship launch options
     
-    NSMutableDictionary *airshipConfigOptions = [[[NSMutableDictionary alloc] init] autorelease];
-    NSMutableDictionary *takeOffOptions = [[[NSMutableDictionary alloc] init] autorelease];
+    NSMutableDictionary *airshipConfigOptions = [NSMutableDictionary dictionary];
+    NSMutableDictionary *takeOffOptions = [NSMutableDictionary dictionary];
     
     NSString* pushKey = [options valueForKey:KCS_PUSH_KEY_KEY];
     NSString* pushSecret = [options valueForKey:KCS_PUSH_SECRET_KEY];

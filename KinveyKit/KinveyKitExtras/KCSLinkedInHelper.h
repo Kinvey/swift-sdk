@@ -7,7 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#endif
 
 #import "KCSUser+SocialExtras.h"
 
@@ -18,7 +21,11 @@
 @property (nonatomic, copy) NSString* acceptRedirect;
 @property (nonatomic, copy) NSString* cancelRedirect;
 
-@property (nonatomic, retain) UIWebView* webview;
+#if TARGET_OS_IPHONE
+@property (nonatomic, strong) UIWebView* webview;
+#else
+@property (nonatomic, strong) WebView* webview;
+#endif
 
 - (void) requestToken:(NSString*)linkedInScope completionBlock:(KCSLocalCredentialBlock)completionBlock;
 

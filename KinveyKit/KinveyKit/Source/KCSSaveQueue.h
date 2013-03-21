@@ -2,7 +2,7 @@
 //  SaveQueue.h
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -16,12 +16,12 @@
 @class KCSCollection;
 
 @interface KCSSaveQueueItem : NSObject
-@property (nonatomic, retain) NSDate* mostRecentSaveDate;
-@property (nonatomic, retain) id<KCSPersistable> object;
+@property (nonatomic, strong) NSDate* mostRecentSaveDate;
+@property (nonatomic, strong) id<KCSPersistable> object;
 @end
 
 @interface KCSSaveQueue : NSObject <NSCoding>
-@property (nonatomic, assign) id<KCSOfflineSaveDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id<KCSOfflineSaveDelegate> delegate;
 
 + (KCSSaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier;
 

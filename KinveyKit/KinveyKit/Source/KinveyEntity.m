@@ -38,7 +38,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      id objectOfInterest,
                      id <KCSEntityDelegate> delegate)
 {
-     *cBlock = [[^(KCSConnectionResponse *response){
+     *cBlock = [^(KCSConnectionResponse *response){
          NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -56,7 +56,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
             }
             [delegate entity:[KCSObjectMapper populateObject:objectOfInterest withData:responseToReturn] fetchDidCompleteWithResult:responseToReturn];
         }
-    } copy] autorelease];
+    } copy];
 }
 
 // NOTE: We're supressing the remainder of protocol warnings here
@@ -236,7 +236,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
     BOOL isPostRequest = obj.isPostRequest;
     NSString *objectId = obj.objectId;
-    NSDictionary *dictionaryToMap = [obj.dataToSerialize retain];
+    NSDictionary *dictionaryToMap = obj.dataToSerialize;
     
     NSString *resource = nil;
     if ([collection.collectionName isEqualToString:@""]){
@@ -263,7 +263,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     [request setContentType:KCS_JSON_TYPE];
     
     // Make sure to include the UTF-8 encoded JSONData...
-    KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+    KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
     [request addBody:[writer dataWithObject:dictionaryToMap]];
     
     // Prepare our handlers
@@ -288,9 +288,6 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-
-    [dictionaryToMap release];
-
 }
 
 - (void)saveToCollection:(KCSCollection *)collection withCompletionBlock:(KCSCompletionBlock)onCompletion withProgressBlock:(KCSProgressBlock)onProgress
@@ -299,7 +296,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
     BOOL isPostRequest = obj.isPostRequest;
     NSString *objectId = obj.objectId;
-    NSDictionary *dictionaryToMap = [obj.dataToSerialize retain];
+    NSDictionary *dictionaryToMap = obj.dataToSerialize;
     
     NSString *resource = nil;
     if ([collection.collectionName isEqualToString:@""]){
@@ -326,7 +323,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     [request setContentType:KCS_JSON_TYPE];
     
     // Make sure to include the UTF-8 encoded JSONData...
-    KCS_SBJsonWriter *writer = [[[KCS_SBJsonWriter alloc] init] autorelease];
+    KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
     [request addBody:[writer dataWithObject:dictionaryToMap]];
     
     // Prepare our handlers
@@ -350,10 +347,6 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-    
-    [dictionaryToMap release];
-    
-
 }
 
 - (void)deleteFromCollection:(KCSCollection *)collection withDelegate:(id<KCSPersistableDelegate>)delegate

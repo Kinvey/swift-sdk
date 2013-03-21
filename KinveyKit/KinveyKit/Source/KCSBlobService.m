@@ -3,7 +3,7 @@
 //  SampleApp
 //
 //  Created by Brian Wilson on 11/9/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyHTTPStatusCodes.h"
@@ -17,15 +17,9 @@
 
 @implementation KCSResourceResponse
 
-@synthesize localFileName=_localFileName;
-@synthesize resourceId=_resourceId;
-@synthesize resource=_resource; // Set to nil on upload
-@synthesize length=_length;
-@synthesize streamingURL=_streamingURL;
-
 + (KCSResourceResponse *)responseWithFileName:(NSString *)localFile withResourceId:(NSString *)resourceId withStreamingURL:(NSString *)streamingURL withData:(NSData *)resource withLength:(NSInteger)length
 {
-    KCSResourceResponse *response = [[[KCSResourceResponse alloc] init] autorelease];
+    KCSResourceResponse *response = [[KCSResourceResponse alloc] init];
     response.localFileName = localFile;
     response.resourceId = resourceId;
     response.resource = resource;
@@ -34,16 +28,6 @@
     
     return response;
 }
-
-- (void)dealloc
-{
-    [_localFileName release];
-    [_resourceId release];
-    [_resource release];
-    [_streamingURL release];
-    [super dealloc];
-}
-
 
 @end
 
@@ -228,7 +212,9 @@ withResourceDelegate: (id<KCSResourceDelegate>)delegate
         if (delegate){
             [delegate resourceServiceDidFailWithError:err];
         } else {
-            completionBlock(nil, err);
+            if (completionBlock != NULL) {
+                completionBlock(nil, err);
+            }
         }
     }
     

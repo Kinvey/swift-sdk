@@ -22,6 +22,8 @@
 #import "KCSClient+ConfigurationTest.h"
 #import "KCSKeyChain.h"
 
+#import "KinveyVersion.h"
+
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
 @interface KCSClient ()
@@ -37,18 +39,18 @@
 @property (nonatomic, copy, readwrite) NSString *appSecret;
 
 
-@property (atomic, retain) NSRecursiveLock *authInProgressLock;
-@property (atomic, retain) NSRecursiveLock *authCompleteLock;
+@property (atomic, strong) NSRecursiveLock *authInProgressLock;
+@property (atomic, strong) NSRecursiveLock *authCompleteLock;
 
-@property (nonatomic, retain, readwrite) NSDictionary *options;
+@property (nonatomic, strong, readwrite) NSDictionary *options;
 
 #if TARGET_OS_IPHONE
-@property (nonatomic, retain, readwrite) KCSReachability *networkReachability;
-@property (nonatomic, retain, readwrite) KCSReachability *kinveyReachability;
+@property (nonatomic, strong, readwrite) KCSReachability *networkReachability;
+@property (nonatomic, strong, readwrite) KCSReachability *kinveyReachability;
 
 #endif
 
-@property (nonatomic, readonly) NSString *kinveyDomain;
+@property (strong, nonatomic, readonly) NSString *kinveyDomain;
 
 ///---------------------------------------------------------------------------------------
 /// @name Connection Properties
@@ -98,17 +100,14 @@
         _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
 
 #if TARGET_OS_IPHONE
-        _networkReachability = [[KCSReachability reachabilityForInternetConnection] retain];
+        _networkReachability = [KCSReachability reachabilityForInternetConnection];
         // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
         // We start this in init in the hopes that it will be (mostly) complete by the time we need to use it.
         // TODO: Investigate being notified of changes in KCS Client
-        _kinveyReachability = [[KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]] retain];
+        _kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]];
 #endif
         
-        @try {
-            [self testCanUseCategories];
-        }
-        @catch (NSException *exception) {
+        if (![self respondsToSelector:@selector(testCanUseCategories)]) {
             NSException* myException = [NSException exceptionWithName:@"CategoriesNotLoaded" reason:@"KinveyKit setup: Categories could not be loaded. Be sure to set '-ObjC' in the 'Other Linker Flags'." userInfo:nil];
             @throw myException;
         }
@@ -117,35 +116,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_userAgent release];
-    [_analytics release];
-    [_authCompleteLock release];
-    [_authInProgressLock release];
-    [_currentUser release];
-    [_resourceBaseURL release];
-    [_userBaseURL release];
-    [_appdataBaseURL release];
-    [_serviceHostname release];
-    [_kinveyReachability release];
-    [_networkReachability release];
-    
-    
-    _userAgent = nil;
-    _analytics = nil;
-    _authCompleteLock = nil;
-    _authInProgressLock = nil;
-    _currentUser = nil;
-    _resourceBaseURL = nil;
-    _userBaseURL = nil;
-    _appdataBaseURL = nil;
-    _serviceHostname = nil;
-    _networkReachability = nil;
-    _kinveyReachability = nil;
-    
-    [super dealloc];
-}
 
 - (BOOL)userIsAuthenticated
 {
@@ -183,10 +153,7 @@
 - (void)setServiceHostname:(NSString *)serviceHostname
 {
     // Note that we need to update the Kinvey Reachability host here...
-    NSString *oldName = _serviceHostname;
     _serviceHostname = [serviceHostname copy]; // Implicit retain here
-    [oldName release];
-    
     [self updateURLs];
     
 #if TARGET_OS_IPHONE
@@ -239,7 +206,7 @@
     [self updateURLs];
     
     // TODO extract options to something meaningful...
-    self.options = [options retain];
+    self.options = options;
     self.authCredentials = [NSURLCredential credentialWithUser:appKey password:appSecret persistence:NSURLCredentialPersistenceNone];
     
     // Check to make sure appdata URL is good
@@ -247,6 +214,10 @@
     if (!tmpURL){
         [self killAppViaExceptionNamed:@"KinveyInitializationError"
                             withReason:@"App Key contains invalid characters, check to make sure App Key is correct!"];
+    }
+    
+    if ([self.options objectForKey:KCS_LOG_SINK] != nil) {
+        [KCSLogManager setLogSink:[self.options objectForKey:KCS_LOG_SINK]];
     }
     
     return self;
@@ -320,7 +291,7 @@
         [store configureWithOptions:options];
     }
     
-    return [store autorelease];
+    return store;
 }
 
 

@@ -10,7 +10,16 @@
 
 #import "KCSErrorUtilities.h"
 
+#if TARGET_OS_IPHONE
 #import <Twitter/Twitter.h>
+#else
+//#import <objc/message.h>
+//#import <objc/runtime.h>
+//#import <objc/objc-runtime.h>
+//#import <objc/Object.h>
+#import <Social/Social.h>
+#endif
+
 #import <Accounts/Accounts.h>
 #import "KCS_TWSignedRequest.h"
 #import "KCSLinkedInHelper.h"
@@ -26,15 +35,28 @@
     return [twitterKey length] > 0 && [twitterSecret length] > 0;
 }
 
+//TODO: use accounts framework?
+
 + (BOOL) checkForTwitterCredentials
 {
+#if TARGET_OS_IPHONE
     return [TWTweetComposeViewController canSendTweet];
+#else 
+    NSSharingService *tweetSharingService = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
+    return [tweetSharingService canPerformWithItems:nil];
+#endif
 }
 
 + (BOOL) canUseNativeTwitter
 {
+#if TARGET_OS_IPHONE
     NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
     BOOL osVersionSupported = ([currSysVer compare:@"5.0" options:NSNumericSearch] != NSOrderedAscending);
+#else
+    SInt32 version = 0;
+    Gestalt( gestaltSystemVersion, &version );
+    BOOL osVersionSupported = YES; //TODO: check for 10.8
+#endif
     return osVersionSupported && [self checkForTwitterCredentials] && [self checkForTwitterKeys];
 }
 
@@ -72,7 +94,13 @@
 
                     NSDictionary *step2Params = @{@"x_reverse_auth_target" : twitterKey, @"x_reverse_auth_parameters" : signedReverseAuthSignature};
                     NSURL *authTokenURL = [NSURL URLWithString:@"https://api.twitter.com/oauth/access_token"];
+                    
+#if TARGET_OS_IPHONE
+                    //TODO: handle iOS 5 & 6
                     TWRequest *step2Request = [[TWRequest alloc] initWithURL:authTokenURL parameters:step2Params requestMethod:TWRequestMethodPOST];
+#else
+                    SLRequest* step2Request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:authTokenURL parameters:step2Params];
+#endif
                     
                     //  Obtain the user's permission to access the store
                     //
@@ -80,7 +108,11 @@
                     ACAccountStore* accountStore = [[ACAccountStore alloc] init];
                     ACAccountType *twitterType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
                     
+#if TARGET_OS_IPHONE
                     [accountStore requestAccessToAccountsWithType:twitterType withCompletionHandler:^(BOOL granted, NSError *error) {
+#else
+                    [accountStore requestAccessToAccountsWithType:twitterType options:@{} completion:^(BOOL granted, NSError *error) {
+#endif
                         if (!granted) {
                             NSError* tokenError =[KCSErrorUtilities createError:nil description:@"User rejected access to Twitter account" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
                             dispatch_async(current_queue, ^{
@@ -141,7 +173,7 @@
     }
 }
 
-+ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(UIWebView*) webview
++ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(KCSWebViewClass*) webview
 {
     NSString* linkedInKey = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_API_KEY];
     NSString* linkedInSecret = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_SECRET_KEY];
