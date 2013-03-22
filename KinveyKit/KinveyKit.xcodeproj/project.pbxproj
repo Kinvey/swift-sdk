@@ -74,6 +74,8 @@
 		27223E1C157E7A3200656BCC /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
 		2726F98B15E6CE370087099D /* KCSBuilders.h in Headers */ = {isa = PBXBuildFile; fileRef = 2726F98915E6CE370087099D /* KCSBuilders.h */; };
 		2726F98C15E6CE370087099D /* KCSBuilders.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F98A15E6CE370087099D /* KCSBuilders.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		272D73FB16FCB82E004F26FC /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */; };
+		272D73FC16FCB82E004F26FC /* KCSFacebookHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 272D73FA16FCB82E004F26FC /* KCSFacebookHelper.m */; };
 		272EF18815E2BA4E008E3F68 /* CLLocation+Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		272EF18915E2BA4E008E3F68 /* CLLocation+Kinvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		272FBE5315F90FB600EC7031 /* KCSSaveGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */; };
@@ -441,6 +443,8 @@
 		27223E1B157E7A3200656BCC /* TestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtils.m; sourceTree = "<group>"; };
 		2726F98915E6CE370087099D /* KCSBuilders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBuilders.h; sourceTree = "<group>"; };
 		2726F98A15E6CE370087099D /* KCSBuilders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBuilders.m; sourceTree = "<group>"; };
+		272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFacebookHelper.h; sourceTree = "<group>"; };
+		272D73FA16FCB82E004F26FC /* KCSFacebookHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFacebookHelper.m; sourceTree = "<group>"; };
 		272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Kinvey.h"; sourceTree = "<group>"; };
 		272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CLLocation+Kinvey.m"; sourceTree = "<group>"; };
 		272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSaveGraph.h; sourceTree = "<group>"; };
@@ -1083,6 +1087,8 @@
 				2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */,
 				27D1558C16713C3C00171230 /* KCSLinkedInHelper.h */,
 				27D1558D16713C3C00171230 /* KCSLinkedInHelper.m */,
+				272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */,
+				272D73FA16FCB82E004F26FC /* KCSFacebookHelper.m */,
 				27B425ED16C3DA6200C59E1A /* KCSWebView.h */,
 				27B7724316E7C6EC00610D11 /* KCSWebView.m */,
 				2785F5311609179E004AA410 /* Supporting Files */,
@@ -2248,6 +2254,7 @@
 				27BD087116095E62009473A3 /* KCS_OAuth+Additions.h in Headers */,
 				27BD0877160A03BD009473A3 /* KinveyKitExtras.h in Headers */,
 				27D1558E16713C3C00171230 /* KCSLinkedInHelper.h in Headers */,
+				272D73FB16FCB82E004F26FC /* KCSFacebookHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2751,6 +2758,7 @@
 				27BD086E16095D7D009473A3 /* KCS_OAuthCore.m in Sources */,
 				27BD087216095E62009473A3 /* KCS_OAuth+Additions.m in Sources */,
 				27D1558F16713C3C00171230 /* KCSLinkedInHelper.m in Sources */,
+				272D73FC16FCB82E004F26FC /* KCSFacebookHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
