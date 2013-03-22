@@ -149,6 +149,10 @@ typedef enum  {
  */
 @property (nonatomic, readonly) BOOL emailVerified;
 
+/** Checks if credentials have been stored in the keychain. 
+ 
+ This is useful to check if a user will be loaded on the first call to Kinvey, or if an implicit user will be created instead. 
+ */
 + (BOOL) hasSavedCredentials;
 
 /** Clears and saved credentials from the keychain.
