@@ -53,28 +53,30 @@
     if ([jsonErrorDictionary isKindOfClass:[NSDictionary class]] == NO) {
         kcsErrorDescription = (id) jsonErrorDictionary;
     } else {
-        NSMutableDictionary* errorValues = [jsonErrorDictionary mutableCopy];
+        NSMutableDictionary* errorValues = [[jsonErrorDictionary objectForKey:@"error"] mutableCopy];
         
-        NSString* kcsError = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
-        description = (description == nil) ? kcsError : description;
-        
-        NSString* kcsErrorCode = [errorValues popObjectForKey:KCS_ERROR_KINVEY_ERROR_CODE_KEY];
-        if (kcsErrorCode != nil) {
-            [userInfo setValue:kcsErrorCode forKey:KCSErrorCode];
-            //if the error is a datalink error, hijack the originating domain and indicate it's a DL error
-            if ([kcsErrorCode isEqualToString:kDatalinkError]) {
-                domain = KCSDatalinkErrorDomain;
+        if ([errorValues isKindOfClass:[NSDictionary class]]) {
+            NSString* kcsError = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
+            description = (description == nil) ? kcsError : description;
+            
+            NSString* kcsErrorCode = [errorValues popObjectForKey:KCS_ERROR_KINVEY_ERROR_CODE_KEY];
+            if (kcsErrorCode != nil) {
+                [userInfo setValue:kcsErrorCode forKey:KCSErrorCode];
+                //if the error is a datalink error, hijack the originating domain and indicate it's a DL error
+                if ([kcsErrorCode isKindOfClass:[NSString class]] && [kcsErrorCode isEqualToString:kDatalinkError]) {
+                    domain = KCSDatalinkErrorDomain;
+                }
             }
+            
+            NSString* kcsDebugKey = [errorValues popObjectForKey:KCS_ERROR_DEBUG_KEY];
+            if (kcsDebugKey != nil) {
+                [userInfo setValue:kcsDebugKey forKey:KCSErrorInternalError];
+            }
+            
+            [userInfo setValuesForKeysWithDictionary:errorValues];
+            
+            kcsErrorDescription = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
         }
-        
-        NSString* kcsDebugKey = [errorValues popObjectForKey:KCS_ERROR_DEBUG_KEY];
-        if (kcsDebugKey != nil) {
-            [userInfo setValue:kcsDebugKey forKey:KCSErrorInternalError];
-        }
-        
-        [userInfo setValuesForKeysWithDictionary:errorValues];
-        
-        kcsErrorDescription = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
     }
     
     if (description != nil) {

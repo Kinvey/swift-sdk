@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.14
+### 1.14.1
+** Release Date:** March 24, 2013
+
+* Bug fix(es):
+    * Fix bug where library can crash parsing certain server errors. 
+   
 ### 1.14.0
 ** Release Date:** March 21, 2013
 
