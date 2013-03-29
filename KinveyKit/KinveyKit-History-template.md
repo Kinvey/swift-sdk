@@ -1,11 +1,18 @@
 # KinveyKit Release History
 
 ## 1.14
-### 1.14.1
+### 1.14.2
 ** Release Date:** TBD
 
+* Kinvey now supplies a creation time in addition to last modified time. Added `creationTime` to `KCSMetadata` object. And `KCSMetadataFieldCreationTime` constant for defining queries on creation time. 
 * `+ [KCSUser loginWithSocialIdentity:accessDictionary:withCompletionBlock:] and + [KCSUser registerUserWithSocialIdentity:accessDictionary:withCompletionBlock:]` for __Facebook__ now requires an additional key in the accessDictionary: `KCS_FACEBOOK_APP_KEY` where the value is the Facebook App Id. This can be found on the main page of app info in the Facebook developer site.
-    * This key can be supplied as part of the `accessDictionary`, as an option when intializing `KCSClient` or in the info.plist with the key: `FacebookAppID`. The Info.plist key is also used with the Facebook iOS SDK. 
+    * This key can be supplied as part of the `accessDictionary`, as an option when initializing `KCSClient` or in the info.plist with the key: `FacebookAppID`. The Info.plist key is also used with the Facebook iOS SDK. 
+
+### 1.14.1
+** Release Date:** March 24, 2013
+
+* Bug fix(es):
+    * Fix bug where library can crash parsing certain server errors. 
    
 
 ### 1.14.0

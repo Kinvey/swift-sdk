@@ -28,7 +28,7 @@
 {
     //Step 2: Save References
     NSArray* references = so.referencesToSave;
-    int totalReferences = references.count;
+    NSUInteger totalReferences = references.count;
     
     if (totalReferences == 0) {
         //no references, go on to saving object
@@ -94,7 +94,7 @@
 {
     //Step 1: Save Resources
     NSArray* resources = so.resourcesToSave;
-    int totalResources = resources.count;
+    NSUInteger totalResources = resources.count;
     
     if (totalResources == 0) {
         //no resources, go on to saving references

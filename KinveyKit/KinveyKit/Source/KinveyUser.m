@@ -552,11 +552,13 @@
                     appId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
                     if (appId == nil) {
                         // could not locate in the access dictionary, client, or plist, error
-                        NSAssert(appId != nil, @"No Facebook App Id provided");
+                        KCSLogWarning(@"No Facebook App Id provided in access dictionary, or KCSClient options key");
+                        DBAssert(appId != nil, @"No Facebook App Id provided");
                     }
                 }
             }
-            dict = @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken, @"appid" : appId}}};
+            dict = appId != nil ?  @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken, @"appid" : appId}}} :
+                                   @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken}}};
         }
             break;
         case KCSSocialIDTwitter: {

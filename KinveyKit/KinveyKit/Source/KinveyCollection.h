@@ -167,5 +167,4 @@
 - (void)entityCountWithDelegate: (id <KCSInformationDelegate>)delegate;
 - (void)entityCountWithBlock: (KCSCountBlock)countBlock;
 
-
 @end

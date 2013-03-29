@@ -130,7 +130,7 @@ static KCSCachedStoreCaching* sCaching;
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
     [aCoder encodeObject:_lastSavedTime forKey:@"date"];
-    [aCoder encodeInt:_count forKey:@"count"];
+    [aCoder encodeInteger:_count forKey:@"count"];
     [aCoder encodeBool:_unsaved forKey:@"unsaved"];
     [aCoder encodeObject:NSStringFromClass([_object class]) forKey:@"classname"];
     NSError* error = nil;
@@ -157,6 +157,7 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
 @implementation KCSEntityCache
 static uint counter;
 
+#if TARGET_OS_IPHONE
 void md5(NSString* s, unsigned char* result)
 {
     const char *cStr = [s UTF8String];
@@ -177,6 +178,29 @@ NSString* KCSMongoObjectId()
             pid, counter];
     return s;
 }
+#else
+
+void md5(NSString* s, unsigned char* result)
+{
+    const char *cStr = [s UTF8String];
+    CC_MD5( cStr, (CC_LONG) strlen(cStr), result ); // This is the md5 call
+}
+
+NSString* KCSMongoObjectId()
+{
+    int timestamp = (int) [[NSDate date] timeIntervalSince1970];
+    NSString *hostName = [[NSProcessInfo processInfo] hostName];
+    unsigned char hostbytes[16];
+    md5(hostName, hostbytes);
+    int pid = getpid();
+    counter = (counter + 1) % 16777216;
+    NSString* s = [NSString stringWithFormat:
+                   @"%08x%02x%02x%02x%04x%06x",
+                   timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
+                   pid, counter];
+    return s;
+}
+#endif
 
 + (void)initialize
 {

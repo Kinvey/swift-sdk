@@ -183,8 +183,12 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 
 #pragma mark Basic Methods
-- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint
+- (NSString*) urlForEndpoint:(NSString*)endpoint
 {
+    if (endpoint == nil) {
+        endpoint = @"";
+    }
+    
     NSString *resource = nil;
     // create a link: baas.kinvey.com/:appid/:collection/:id
     if ([self.collectionName isEqualToString:@""]){
@@ -192,6 +196,12 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     } else {
         resource = [self.baseURL stringByAppendingFormat:@"%@/%@", self.collectionName, endpoint];
     }
+    return resource;
+}
+
+- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint
+{
+    NSString *resource = [self urlForEndpoint:endpoint];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:method];
     [request setContentType:KCS_JSON_TYPE];        
     return request;
@@ -210,46 +220,6 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
-
-//- (NSString *)buildQueryForProperty: (NSString *)property withValue: (id)value filteredByOperator: (int)op
-//{
-//    NSString *query;
-//    
-//    NSString *stringValue;
-//    
-//    // Check to see if the object is a string or a real object
-//    // surround strings with quotes, values without
-//    if ([value isKindOfClass:[NSString class]]){
-//        stringValue = [NSString stringWithFormat:@"\"%@\"", value];
-//    } else {
-//        stringValue = [NSString stringWithFormat:@"%@", value];
-//    }
-//    
-//    if (op == KCS_EQUALS_OPERATOR){
-//        query = [NSString stringWithFormat:@"\"%@\": %@", property, stringValue];
-//    } else {
-//        query = [NSString stringWithFormat:@"\"%@\": {\"%@\": %@}", property, [KCSCollection getOperatorString:op], stringValue];
-//    }
-//    return query;
-//    
-//}
-//
-//- (NSString *)buildQueryForFilters: (NSArray *)filters
-//{
-//    NSString *outputString = @"{";
-//    for (NSString *filter in filters) {
-//        outputString = [outputString stringByAppendingFormat:@"%@, ", filter];
-//    }
-//    
-//    // String the trailing ','
-//    if ([outputString characterAtIndex:[outputString length]-2] == ','){
-//        outputString = [outputString substringToIndex:[outputString length] -2];
-//    }
-//    
-//    return [outputString stringByAppendingString:@"}"];
-//}
-//
-
 
 - (void)fetchWithQuery:(KCSQuery *)query withCompletionBlock:(KCSCompletionBlock)onCompletion withProgressBlock:(KCSProgressBlock)onProgress
 {
@@ -326,12 +296,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 - (void)entityCountWithDelegate:(id<KCSInformationDelegate>)delegate
 {
-    NSString *resource = nil;
-    if ([self.collectionName isEqualToString:@""]){
-        resource = [self.baseURL stringByAppendingFormat:@"%@", @"_count"];        
-    } else {
-        resource = [self.baseURL stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
-    }
+    NSString *resource = [self urlForEndpoint:@"_count"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
@@ -368,12 +333,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 -(void)entityCountWithBlock:(KCSCountBlock)countBlock
 {
-    NSString *resource = nil;
-    if ([self.collectionName isEqualToString:@""]){
-        resource = [self.baseURL stringByAppendingFormat:@"%@", @"_count"];        
-    } else {
-        resource = [self.baseURL stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
-    }
+    NSString *resource = [self urlForEndpoint:@"_count"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
