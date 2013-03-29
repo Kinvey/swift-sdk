@@ -17,6 +17,10 @@ FOUNDATION_EXPORT NSString* KCSMetadataFieldCreator;
  @since 1.10.2
  */
 FOUNDATION_EXPORT NSString* KCSMetadataFieldLastModifiedTime;
+/** Fieldname to access an object's entity creation time, using KCSQuery.
+ @since 1.14.2
+ */
+FOUNDATION_EXPORT NSString* KCSMetadataFieldCreationTime;
 
 /** This object represents backend information about the entity, such a timestamp and read/write permissions.
  
@@ -40,8 +44,16 @@ FOUNDATION_EXPORT NSString* KCSMetadataFieldLastModifiedTime;
 
 /** The time at which the server recorded the most recent change to the entity. 
  @return the server time when the entity was last saved
+ @see creationTime;
  */
 - (NSDate*) lastModifiedTime;
+
+/** The time at which the server the entity's creation.
+ @return the server time when the entity was created. Nil if the object was created before Kinvey data store started to keep track of this value. 
+ @see lastModifiedTime;
+ @since 1.14.2
+ */
+- (NSDate*) creationTime;
 
 /** The id of the user that created the associated entity
  @return the user id that created the entity

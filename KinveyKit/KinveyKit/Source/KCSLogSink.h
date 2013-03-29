@@ -16,7 +16,7 @@
 /** Take the incoming `message` and send it somewhere; e.g. STDOUT, NSLog, or a custom logger.
  
  @see +[KinveyKit configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:]
- @param message the KinveyKit
+ @param message the KinveyKit log message
  @since 1.14.0
  */
 - (void) log:(NSString*)message;

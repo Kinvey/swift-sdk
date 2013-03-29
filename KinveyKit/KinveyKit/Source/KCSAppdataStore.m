@@ -268,6 +268,15 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     } copy];
 }
 
+- (NSError*) noCollectionError
+{
+    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"This store is not associated with a resource."
+                                                                       withFailureReason:@"Store's collection is nil"
+                                                                  withRecoverySuggestion:@"Create a store with KCSCollection object for  'kKCSStoreKeyResource'."
+                                                                     withRecoveryOptions:nil];
+    return [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSNotFoundError userInfo:userInfo];
+}
+
 - (BOOL) validatePreconditionsAndSendErrorTo:(void(^)(id objs, NSError* error))completionBlock
 {
     if (completionBlock == nil) {
@@ -279,13 +288,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     if (collection == nil) {
         collection = NO;
         dispatch_async(dispatch_get_current_queue(), ^{
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"This store is not associated with a resource."
-                                                                               withFailureReason:@"Store's collection is nil"
-                                                                          withRecoverySuggestion:@"Create a store with KCSCollection object for  'kKCSStoreKeyResource'."
-                                                                             withRecoveryOptions:nil];
-            NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSNotFoundError userInfo:userInfo];
-            
-            completionBlock(nil, error);
+            completionBlock(nil, [self noCollectionError]);
         });
     }
     return okay;
@@ -477,31 +480,16 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
             NSArray* partialResults = [partialParser parseData:progress.data hasArray:hasArray];
             progressBlock(partialResults, progress.percentComplete);
         }
-    }] start];}
+    }] start];
+}
 
-- (void)queryWithQuery: (id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+- (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     KCSSTORE_VALIDATE_PRECONDITION
     KCSCollection* collection = self.backingCollection;
+    NSString* queryString = query != nil ? [query parameterStringRepresentation] : @"";
     
-    NSString *resource = nil;
-    NSString *format = nil;
-    
-    if ([collection.collectionName isEqualToString:@""]){
-        format = @"%@";
-    } else {
-        format = @"%@/";
-    }
-    
-    KCSQuery* kcsQuery = (KCSQuery*)query;
-    
-    // Here we know that we're working with a query, so now we just check each of the params...
-    if (kcsQuery != nil){
-        resource = [collection.baseURL stringByAppendingFormat:format, collection.collectionName];
-        resource = [resource stringByAppendingString:[query parameterStringRepresentation]];
-    }
-    
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
+    KCSRESTRequest *request = [collection restRequestForMethod:kGetRESTMethod apiEndpoint:queryString];
     ProcessDataBlock_t processBlock = [self makeProcessDictBlockForNewObject];
     
     KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
@@ -693,12 +681,7 @@ int reachable = -1;
         NSDictionary *dictionaryToMap = serializedObj.dataToSerialize;
         
         KCSCollection* collection = self.backingCollection;
-        NSString *resource = nil;
-        if ([collection.collectionName isEqualToString:@""]){
-            resource = [collection.baseURL stringByAppendingFormat:@"%@", objectId];
-        } else {
-            resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
-        }
+        NSString *resource = [collection urlForEndpoint:objectId];
         
         // If we need to post this, then do so
         NSInteger HTTPMethod = (isPostRequest) ? kPostRESTMethod : kPutRESTMethod;
@@ -956,8 +939,48 @@ int reachable = -1;
 #pragma mark - Information
 - (void)countWithBlock:(KCSCountBlock)countBlock
 {
-    [self.backingCollection entityCountWithBlock:countBlock];
+    [self countWithQuery:nil completion:countBlock];
 }
 
+- (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock
+{
+    if (countBlock == nil) {
+        return;
+    } else if (self.backingCollection == nil) {
+        dispatch_async(dispatch_get_current_queue(), ^{
+            countBlock(0, [self noCollectionError]);
+        });
+        return;
+    }
+    
+    KCSCollection* collection = self.backingCollection;
+    NSString* queryString = query != nil ? [query parameterStringRepresentation] : @"";
+    NSString* params = [@"_count" stringByAppendingString:queryString];
+    
+    KCSRESTRequest *request = [collection restRequestForMethod:kGetRESTMethod apiEndpoint:params];
+    
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
+        
+        if (response.responseCode != KCS_HTTP_STATUS_OK){
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Count was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+            countBlock(0, error);
+            return;
+        }
+        
+        NSNumber* val = jsonResponse[@"count"];
+        
+        countBlock([val unsignedLongValue], nil);
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        countBlock(0, error);
+    };
+    
+    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *collection) {};
+    
+    // Make the request happen
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+}
 
 @end

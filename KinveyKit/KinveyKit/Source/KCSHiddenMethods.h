@@ -28,6 +28,7 @@ NSDictionary* defaultBuilders();
 @interface KCSCollection (KCSHiddenMethods)
 
 - (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint;
+- (NSString*) urlForEndpoint:(NSString*)endpoint;
 
 @end
 
