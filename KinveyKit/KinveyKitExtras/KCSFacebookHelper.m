@@ -20,7 +20,7 @@
         NSArray *kv = [pair componentsSeparatedByString:@"="];
         NSString *val = [kv[1]
                          stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        params[val] = kv[0];
+        params[kv[0]] = val;
     }
     return params;
 }
@@ -34,19 +34,19 @@
         NSString* targetURL = params[@"target_url"];
         if (targetURL != nil) {
             //target URL should be in the form:
-            //http://baas.kinvey.com/rpc/:kid/:OGCollection/:id/:category/_objView.html
-            //                      / 0 / 1  /     2       / 3 /   4     / 5
+            //http://baas.kinvey.com/rpc/:kid/:action/:id/:object/_objView.html
+            // 0   /     1          / 2 / 3  /  4   / 5 /   6   / 7
             NSArray* subpieces = [targetURL pathComponents];
-            //            NSString* deeplink = subpieces.count >= 5 ? subpieces[5] : nil;
-            
-            // Check for the 'deeplink' parameter to check if this is one of
-            NSString* action = subpieces[2];
-            NSString* entityId = subpieces[3];
-            NSString* objectType = subpieces[4];
-            if (action != nil && entityId != nil && objectType != nil) {
-                d[KCSFacebookOGAction] = action;
-                d[KCSFacebookOGObjectType] = objectType;
-                d[KCSFacebookOGEntityId] = entityId;
+            if ([subpieces count] == 8) {
+                // Check for the 'deeplink' parameter to check if this is one of
+                NSString* action = subpieces[4];
+                NSString* entityId = subpieces[5];
+                NSString* objectType = subpieces[6];
+                if (action != nil && entityId != nil && objectType != nil) {
+                    d[KCSFacebookOGAction] = action;
+                    d[KCSFacebookOGObjectType] = objectType;
+                    d[KCSFacebookOGEntityId] = entityId;
+                }
             }
         }
     }
@@ -55,6 +55,10 @@
 
 + (void) publishToOpenGraph:(NSString*)entityId action:(NSString*)action objectType:(NSString*)objectType optionalParams:(NSDictionary*)extraParams completion:(FacebookOGCompletionBlock)completionBlock
 {
+    if (entityId != nil && [entityId isKindOfClass:[NSString class]] == NO) {
+        entityId = [entityId kinveyObjectId];
+    }
+    
     NSMutableDictionary* dict = [NSMutableDictionary dictionary];
     KCSAppdataStore* store = [KCSAppdataStore storeWithOptions:@{KCSStoreKeyCollectionName : action,
                            KCSStoreKeyCollectionTemplateClass : [NSMutableDictionary class],
@@ -66,11 +70,12 @@
         [dict addEntriesFromDictionary:extraParams];
     }
     [store saveObject:dict withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        //TODO: handle
         NSString* actionId = nil;
         if (objectsOrNil != nil && objectsOrNil.count > 0){
             actionId = objectsOrNil[0];
-            //TODO: check this
+            if ([actionId isKindOfClass:[NSDictionary class]] == YES) {
+                actionId = [(NSDictionary*)actionId objectForKey:@"id"];
+            }
         }
         completionBlock(actionId, errorOrNil);
     } withProgressBlock:nil];
