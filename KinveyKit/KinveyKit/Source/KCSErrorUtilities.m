@@ -53,7 +53,11 @@
     if ([jsonErrorDictionary isKindOfClass:[NSDictionary class]] == NO) {
         kcsErrorDescription = (id) jsonErrorDictionary;
     } else {
-        NSMutableDictionary* errorValues = [[jsonErrorDictionary objectForKey:@"error"] mutableCopy];
+        NSDictionary* ed = [jsonErrorDictionary objectForKey:@"error"];
+        if (ed == nil || [ed isKindOfClass:[NSDictionary class]] == NO) {
+            ed = jsonErrorDictionary;
+        }
+        NSMutableDictionary* errorValues = [ed mutableCopy];
         
         if ([errorValues isKindOfClass:[NSDictionary class]]) {
             NSString* kcsError = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
@@ -76,6 +80,10 @@
             [userInfo setValuesForKeysWithDictionary:errorValues];
             
             kcsErrorDescription = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
+            //if the error is a datalink error, hijack the originating domain and indicate it's a DL error
+            if ([kcsErrorCode isEqualToString:kDatalinkError]) {
+                domain = KCSDatalinkErrorDomain;
+            }
         }
     }
     

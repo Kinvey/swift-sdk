@@ -191,8 +191,11 @@ NSString* specialTypeOfValue(id value)
             value = [data valueForKey:jsonKey];
         }
         
-        if (value == nil){
-            KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
+        if (value == nil) {
+            if ([object isKindOfClass:[NSDictionary class]] == NO)  {
+                //dictionaries don't have set properties, so no need to warn, just continue
+                KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
+            }
             continue;
         } else {
             NSString* maybeType = specialTypeOfValue(value);

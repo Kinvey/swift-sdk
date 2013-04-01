@@ -58,7 +58,7 @@ mkdir ${RKK}
 #cp -R ${KINVEYKITLOC}/Airship ${RELEASEDIR}/KinveyKit-${RELEASENO}/
 
 # Copy Docs
-( cd ${KINVEYKITLOC}/doc/built-docs/ && tar cf - ./com.kinvey.KinveyKit.docset ) | ( cd ${RKK}/ && tar -xf - )
+( cd doc/install/ && tar cf - ./com.kinvey.KinveyKit.docset ) | ( cd ${RKK}/ && tar -xf - )
 #cp -R ${KINVEYKITLOC}/doc/built-docs/com.kinvey.KinveyKit.docset ${RELEASEDIR}/KinveyKit-API-Reference-${RELEASENO}/
 
 

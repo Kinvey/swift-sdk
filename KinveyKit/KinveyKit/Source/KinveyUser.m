@@ -544,8 +544,22 @@
     NSString* accessToken = [accessDictionary objectForKey:KCSUserAccessTokenKey];
     NSString* accessTokenSecret = [accessDictionary objectForKey:KCSUserAccessTokenSecretKey];
     switch (provder) {
-        case KCSSocialIDFacebook:
-            dict = @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken}}};
+        case KCSSocialIDFacebook: {
+            NSString* appId = [accessDictionary objectForKey:KCS_FACEBOOK_APP_KEY];
+            if (appId == nil) {
+                appId = [[KCSClient sharedClient].options objectForKey:KCS_FACEBOOK_APP_KEY];
+                if (appId == nil) {
+                    appId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
+                    if (appId == nil) {
+                        // could not locate in the access dictionary, client, or plist, error
+                        KCSLogWarning(@"No Facebook App Id provided in access dictionary, or KCSClient options key");
+                        DBAssert(appId != nil, @"No Facebook App Id provided");
+                    }
+                }
+            }
+            dict = appId != nil ?  @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken, @"appid" : appId}}} :
+                                   @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken}}};
+        }
             break;
         case KCSSocialIDTwitter: {
             NSString* twitterKey = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_KEY];

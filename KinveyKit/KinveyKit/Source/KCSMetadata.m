@@ -12,6 +12,7 @@
 #import "KinveyUser.h"
 
 #define kKMDLMTKey @"lmt"
+#define kKMDECTKey @"ect"
 #define kACLCreatorKey @"creator"
 #define kACLReadersKey @"r"
 #define kACLWritersKey @"w"
@@ -20,6 +21,7 @@
 
 NSString* KCSMetadataFieldCreator = @"_acl.creator";
 NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
+NSString* KCSMetadataFieldCreationTime = @"_kmd.ect";
 
 @interface KCSUser ()
 - (NSString*) userId;
@@ -27,6 +29,7 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
 
 @interface KCSMetadata ()
 @property (nonatomic, strong, readonly) NSDate* lastModifiedTime;
+@property (nonatomic, strong, readonly) NSDate* creationTime;
 @property (nonatomic, strong, readonly) NSMutableDictionary* acl;
 @end
 
@@ -47,6 +50,8 @@ NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
     if (self) {
         NSString* lmt = [kmd objectForKey:kKMDLMTKey];
         _lastModifiedTime = [NSDate dateFromISO8601EncodedString:lmt];
+        NSString* ect = [kmd objectForKey:kKMDECTKey];
+        _creationTime = ect != nil ? [NSDate dateFromISO8601EncodedString:ect] : nil;
         _acl = [NSMutableDictionary dictionaryWithDictionary:pACL];
 
         NSMutableArray* readers = [_acl objectForKey:kACLReadersKey];
