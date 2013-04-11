@@ -6,8 +6,7 @@
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 
-#import <KinveyKit/KinveyKit.h>
-
+#import "KinveyKit.h"
 #import "KCSWebView.h"
 
 /** Completion block for `getAccessDictionaryFromTwitterFromPrimaryAccount:` returns either the access dictionary to pass to `+[KCSUser loginWithWithSocialIdentity:accessDictionary:withCompletionBlock]` or an error.

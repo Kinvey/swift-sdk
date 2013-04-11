@@ -25,6 +25,7 @@
 //
 
 #import "KCSKeyChain.h"
+#import "KCSLogManager.h"
 #import <Security/Security.h>
 
 @implementation KCSKeyChain
@@ -81,32 +82,34 @@
     // nothing be returned, and performing the search anyway.
 	NSMutableDictionary *existsQueryDictionary = [NSMutableDictionary dictionary];
 	
-	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
 	
 	[existsQueryDictionary setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
 	
 	// Add the keys to the search dict
-	[existsQueryDictionary setObject:@"service" forKey:(__bridge id)kSecAttrService];
-	[existsQueryDictionary setObject:key forKey:(__bridge id)kSecAttrAccount];
+    existsQueryDictionary[(__bridge id)kSecAttrService] = @"service";
+    existsQueryDictionary[(__bridge id)kSecAttrAccount] = key;
     
-	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, NULL);
+    CFTypeRef o = nil;
+	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, &o);
 	if (res == errSecItemNotFound) {
-		if (string != nil) {
-			NSMutableDictionary *addDict = existsQueryDictionary;
-			[addDict setObject:data forKey:(__bridge id)kSecValueData];
-            
-			res = SecItemAdd((__bridge CFDictionaryRef)addDict, NULL);
-			NSAssert1(res == errSecSuccess, @"Recieved %@ from SecItemAdd!", @(res));
-		}
+        NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSMutableDictionary *addDict = [NSMutableDictionary dictionaryWithDictionary:existsQueryDictionary];
+        addDict[(__bridge id)kSecValueData] = data;
+        
+        res = SecItemAdd((__bridge CFDictionaryRef)addDict, NULL);
+        NSAssert1(res == errSecSuccess, @"Recieved %@ from SecItemAdd!", @(res));
 	} else if (res == errSecSuccess) {
 		// Modify an existing one
 		// Actually pull it now of the keychain at this point.
+        NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
 		NSDictionary *attributeDict = [NSDictionary dictionaryWithObject:data forKey:(__bridge id)kSecValueData];
         
 		res = SecItemUpdate((__bridge CFDictionaryRef)existsQueryDictionary, (__bridge CFDictionaryRef)attributeDict);
 		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %@!", @(res));
 		
 	} else {
+        KCSLogError(@"results = %@", o);
 		NSAssert1(NO, @"Received %@ from SecItemCopyMatching!", @(res));
 	}
 	
@@ -164,12 +167,13 @@
 	[existsQueryDictionary setObject:@"service" forKey:(__bridge id)kSecAttrService];
 	[existsQueryDictionary setObject:key forKey:(__bridge id)kSecAttrAccount];
     
-	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, NULL);
+    CFTypeRef o = nil;
+	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, &o);
 	if (res == errSecItemNotFound) {
-        NSMutableDictionary *addDict = existsQueryDictionary;
-        [addDict setObject:data forKey:(__bridge id)kSecValueData];
+        NSMutableDictionary *addDict = [NSMutableDictionary dictionaryWithDictionary:existsQueryDictionary];
+        addDict[(__bridge id)kSecValueData] = data;
         
-        res = SecItemAdd((__bridge CFDictionaryRef)addDict, NULL);
+        res = SecItemAdd((__bridge CFDictionaryRef)addDict, &o);
         NSAssert1(res == errSecSuccess, @"Recieved %@ from SecItemAdd!", @(res));
 	} else if (res == errSecSuccess) {
 		// Modify an existing one
@@ -180,6 +184,7 @@
 		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %@!", @(res));
 		
 	} else {
+        KCSLogError(@"results = %@", o);
 		NSAssert1(NO, @"Received %@ from SecItemCopyMatching!", @(res));
 	}
 	

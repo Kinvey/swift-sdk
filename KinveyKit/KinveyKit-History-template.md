@@ -2,7 +2,7 @@
 
 ## 1.14
 ### 1.14.2
-** Release Date:** TBD
+** Release Date:** April 1, 2013
 
 * Kinvey now supplies a creation time in addition to last modified time. Added `creationTime` to `KCSMetadata` object. And `KCSMetadataFieldCreationTime` constant for defining queries on creation time. 
 * `+ [KCSUser loginWithSocialIdentity:accessDictionary:withCompletionBlock:] and + [KCSUser registerUserWithSocialIdentity:accessDictionary:withCompletionBlock:]` for __Facebook__ now requires an additional key in the accessDictionary: `KCS_FACEBOOK_APP_KEY` where the value is the Facebook App Id. This can be found on the main page of app info in the Facebook developer site.

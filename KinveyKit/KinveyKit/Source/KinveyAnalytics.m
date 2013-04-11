@@ -16,8 +16,6 @@
 
 
 @implementation KCSAnalytics
-@synthesize UUID=_UUID;
-@synthesize UDID=_UDID;
 
 - (id)init
 {

@@ -68,9 +68,6 @@
 @synthesize userIsAuthenticated=_userIsAuthenticated;
 @synthesize userAuthenticationInProgress=_userAuthenticationInProgress;
 
-@synthesize analytics=_analytics;
-@synthesize dateStorageFormatString = _dateStorageFormatString;
-
 #if TARGET_OS_IPHONE
 @synthesize networkReachability = _networkReachability;
 @synthesize kinveyReachability = _kinveyReachability;

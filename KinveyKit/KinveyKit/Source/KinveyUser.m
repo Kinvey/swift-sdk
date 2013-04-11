@@ -961,6 +961,24 @@
     [request start];
 }
 
++ (void) sendForgotUsername:(NSString*)email withCompletionBlock:(KCSUserSendEmailBlock)completionBlock
+{
+    //app secret
+    
+    // /rpc/:kid/:username/user-password-reset-initiate
+//    NSString* pwdReset = [[[[KCSClient sharedClient] rpcBaseURL] stringByAppendingStringWithPercentEncoding:username] stringByAppendingString:@"/user-password-reset-initiate"];
+//    //[NSString stringWithFormat:@"%@/user-password-reset-initiate",username]];
+//    KCSRESTRequest *request = [KCSRESTRequest requestForResource:pwdReset usingMethod:kPostRESTMethod];
+//    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
+//        //response will be a 204 if accepted by server
+//        completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
+//    } failureAction:^(NSError *error) {
+//        //do error
+//        completionBlock(NO, error);
+//    } progressAction:nil];
+//    [request start];
+}
+
 #pragma mark - properties
 - (void)setSurname:(NSString *)surname
 {

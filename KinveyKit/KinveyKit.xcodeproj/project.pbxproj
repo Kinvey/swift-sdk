@@ -21,10 +21,31 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		27010A97171330F40012D1ED /* KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A612114716F5200F77A3F /* KinveyKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27010A9A1713313F0012D1ED /* KCSEntityDict.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A60FB14716F2D00F77A3F /* KCSEntityDict.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27010A9B1713314A0012D1ED /* KinveyEntity.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A610114716F2D00F77A3F /* KinveyEntity.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27010A9C1713315C0012D1ED /* KinveyPersistable.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A610314716F2D00F77A3F /* KinveyPersistable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27010A9D1713316F0012D1ED /* KinveyBlocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA226F148543D600666259 /* KinveyBlocks.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27010A9E171331730012D1ED /* KinveyErrorCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F340FB14BD2A8100DB6C37 /* KinveyErrorCodes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27010A9F171331790012D1ED /* KinveyHTTPStatusCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */; };
+		27010AA0171331AD0012D1ED /* KCSBlockDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = D3BE9C531551ED2900ED0FDF /* KCSBlockDefs.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27010AA1171331C60012D1ED /* KinveyPing.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22C51486B0BD00666259 /* KinveyPing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27010AA2171331FB0012D1ED /* KCSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F3409614BC8AB800DB6C37 /* KCSReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27010AA3171332140012D1ED /* CLLocation+Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27041AFE163B0ADB00538656 /* MD5Helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 27041AFC163B0ADB00538656 /* MD5Helpers.h */; };
 		27041AFF163B0ADB00538656 /* MD5Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 27041AFD163B0ADB00538656 /* MD5Helpers.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		270BAEB317134107005174D2 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610214716F2D00F77A3F /* KinveyEntity.m */; };
+		270BAEB41713414D005174D2 /* NSMutableDictionary+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */; };
+		270BAEB51713415E005174D2 /* NSArray+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */; };
+		270BAEB617134193005174D2 /* KCSEntityDict.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A60FC14716F2D00F77A3F /* KCSEntityDict.m */; };
 		270E4CAD16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */; };
 		270E4CAE16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 270E4CAC16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2711B6CE170DBCB4002DD03F /* KinveyAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */; };
+		2711B6CF170DBCC2002DD03F /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
+		2711B6D0170DBCD2002DD03F /* KinveyPing.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA22C61486B0BD00666259 /* KinveyPing.m */; };
+		2711B6D1170DBD5A002DD03F /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = D3451F5B14A50DD200090E9F /* NSDate+ISO8601.m */; };
+		2711B6D2170DBD6B002DD03F /* NSMutableDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 270E4CAC16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m */; };
+		2711B6D3170DBDB3002DD03F /* KCSClient+ConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AC2F24161CA258008A05E1 /* KCSClient+ConfigurationTest.m */; };
 		2718279616B8A55500825D50 /* KCSAuthCredential.h in Headers */ = {isa = PBXBuildFile; fileRef = D3FF5FD914C6178600680BD2 /* KCSAuthCredential.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2718279716B8A55B00825D50 /* KCSAuthCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FF5FDA14C6178600680BD2 /* KCSAuthCredential.m */; };
 		2718279816B8A57C00825D50 /* KCSBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = D3FF5FE114C6373C00680BD2 /* KCSBase64.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -488,7 +509,7 @@
 		274330231575262A00B2BF37 /* KCSLinkedAppdataStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLinkedAppdataStoreTests.h; sourceTree = "<group>"; };
 		274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLinkedAppdataStoreTests.m; sourceTree = "<group>"; };
 		2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSOfflineSaveStore.h; sourceTree = "<group>"; };
-		275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyHeaderInfo.h; sourceTree = "<group>"; };
+		275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KinveyHeaderInfo.h; path = ../KinveyHeaderInfo.h; sourceTree = "<group>"; };
 		2764B53C15DD9242003964D1 /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = usr/lib/libobjc.dylib; sourceTree = SDKROOT; };
 		2766E62D16834B77000D27C5 /* KinveyKit-mac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "KinveyKit-mac.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2766E62E16834B78000D27C5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
@@ -1394,7 +1415,6 @@
 			isa = PBXGroup;
 			children = (
 				D32A612114716F5200F77A3F /* KinveyKit.h */,
-				275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */,
 				27B3B08316B8756900E1B540 /* KinveyVersion.h */,
 				D32A61231471700200F77A3F /* 3rdParty */,
 				D32A60F614716F2D00F77A3F /* Source */,
@@ -2191,6 +2211,7 @@
 		D3F340FA14BD2A2900DB6C37 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */,
 				D3EA226F148543D600666259 /* KinveyBlocks.h */,
 				D3F340FB14BD2A8100DB6C37 /* KinveyErrorCodes.h */,
 				D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */,
@@ -2266,6 +2287,19 @@
 				27FB2A8316FCEE8A00CD7D5C /* KCSLinkedAppdataStore.h in Headers */,
 				27FB2A8416FCEE8F00CD7D5C /* KCSCachedStore.h in Headers */,
 				275512001707CCD7007E8320 /* KCSFacebookHelper.h in Headers */,
+				27010A97171330F40012D1ED /* KinveyKit.h in Headers */,
+				27010A9A1713313F0012D1ED /* KCSEntityDict.h in Headers */,
+				27010A9B1713314A0012D1ED /* KinveyEntity.h in Headers */,
+				27010A9C1713315C0012D1ED /* KinveyPersistable.h in Headers */,
+				27010A9D1713316F0012D1ED /* KinveyBlocks.h in Headers */,
+				27010A9E171331730012D1ED /* KinveyErrorCodes.h in Headers */,
+				27010A9F171331790012D1ED /* KinveyHTTPStatusCodes.h in Headers */,
+				27010AA0171331AD0012D1ED /* KCSBlockDefs.h in Headers */,
+				27010AA1171331C60012D1ED /* KinveyPing.h in Headers */,
+				27010AA2171331FB0012D1ED /* KCSReachability.h in Headers */,
+				27010AA3171332140012D1ED /* CLLocation+Kinvey.h in Headers */,
+				270BAEB41713414D005174D2 /* NSMutableDictionary+KinveyAdditions.h in Headers */,
+				270BAEB51713415E005174D2 /* NSArray+KinveyAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2765,6 +2799,12 @@
 				27FB2A7F16FCEDC500CD7D5C /* KCSCachedStore.m in Sources */,
 				27FB2A8016FCEDD100CD7D5C /* KCSEntityCache.m in Sources */,
 				27FB2A8216FCEE8400CD7D5C /* KCSLinkedAppdataStore.m in Sources */,
+				2711B6D0170DBCD2002DD03F /* KinveyPing.m in Sources */,
+				2711B6D1170DBD5A002DD03F /* NSDate+ISO8601.m in Sources */,
+				2711B6D2170DBD6B002DD03F /* NSMutableDictionary+KinveyAdditions.m in Sources */,
+				2711B6D3170DBDB3002DD03F /* KCSClient+ConfigurationTest.m in Sources */,
+				270BAEB317134107005174D2 /* KinveyEntity.m in Sources */,
+				270BAEB617134193005174D2 /* KCSEntityDict.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2779,6 +2819,8 @@
 				27B425E216C2C00400C59E1A /* KinveyKitNSDateTests.m in Sources */,
 				27B425E316C2C00700C59E1A /* KinveyKitBase64Tests.m in Sources */,
 				27B425E416C2C00900C59E1A /* TestUtils.m in Sources */,
+				2711B6CE170DBCB4002DD03F /* KinveyAppdataStoreTests.m in Sources */,
+				2711B6CF170DBCC2002DD03F /* ASTTestClass.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3046,7 +3088,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 			};
 			name = DebugForTest_run_tests;
@@ -3589,7 +3631,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 			};
 			name = DebugForTest;
@@ -3679,7 +3721,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -3704,7 +3746,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};

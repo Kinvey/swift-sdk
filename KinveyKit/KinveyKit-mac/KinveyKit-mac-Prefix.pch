@@ -1,0 +1,15 @@
+//
+// Prefix header for all source files of the 'KinveyKit-mac' target in the 'KinveyKit-mac' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
+
+#define ifNotNil(x,val) (x == nil) ? nil : val;
+
+#ifdef BUILD_FOR_UNIT_TEST
+#define DBAssert(condition,description, ...) NSAssert(condition, description, ##__VA_ARGS__)
+#else
+#define DBAssert(condition,description, ...)
+#endif

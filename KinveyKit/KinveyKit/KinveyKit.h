@@ -15,7 +15,6 @@
 
 #import "KinveyVersion.h"
 #import "KCSClient.h"
-#import "KinveyAnalytics.h"
 #import "KCSEntityDict.h"
 #import "KinveyCollection.h"
 #import "KinveyEntity.h"
@@ -44,6 +43,8 @@
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
+#import "KinveyAnalytics.h"
+
 #endif
 
 //UI & Framework Helpers
