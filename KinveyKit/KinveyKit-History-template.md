@@ -5,6 +5,8 @@
 ** Release Date:** TBD
 
 * Deprecated `KCSClient` property `dateStorageFormatString`.
+* Bug fix(es):
+    * NSError in completion block now returns full error message info when a business logic error occurs. 
 
 ## 1.14
 ### 1.14.2
