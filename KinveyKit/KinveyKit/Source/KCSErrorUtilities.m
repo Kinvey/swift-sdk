@@ -48,12 +48,12 @@
              sourceError:(NSError*)underlyingError
 {
     NSString* kcsErrorDescription = nil;
-    NSDictionary* userInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
     
     if ([jsonErrorDictionary isKindOfClass:[NSDictionary class]] == NO) {
         kcsErrorDescription = (id) jsonErrorDictionary;
     } else {
-        NSDictionary* ed = [jsonErrorDictionary objectForKey:@"error"];
+        NSDictionary* ed = jsonErrorDictionary[@"error"];
         if (ed == nil || [ed isKindOfClass:[NSDictionary class]] == NO) {
             ed = jsonErrorDictionary;
         }
@@ -91,8 +91,17 @@
         [userInfo setValue:requestId forKey:KCSRequestId];
     }
     
-    [userInfo setValue:@"Retry request based on information in JSON Error" forKey:NSLocalizedRecoverySuggestionErrorKey];
-    [userInfo setValue:[NSString stringWithFormat:@"JSON Error: %@", kcsErrorDescription] forKey:NSLocalizedFailureReasonErrorKey];
+    if (kcsErrorDescription == nil) {
+        if (userInfo[KCSErrorInternalError] != nil) {
+            userInfo[NSLocalizedFailureReasonErrorKey] = userInfo[KCSErrorInternalError];
+        }
+    } else {
+        userInfo[NSLocalizedFailureReasonErrorKey] = [NSString stringWithFormat:@"JSON Error: %@", kcsErrorDescription];
+    }
+    
+    if (userInfo[NSLocalizedFailureReasonErrorKey] != nil) {
+        userInfo[NSLocalizedRecoverySuggestionErrorKey] = @"Retry request based on information in `NSLocalizedFailureReasonErrorKey`";
+    }
     
     if (underlyingError != nil) {
         [userInfo setValue:underlyingError forKey:NSUnderlyingErrorKey];

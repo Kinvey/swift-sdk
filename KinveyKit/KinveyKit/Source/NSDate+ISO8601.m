@@ -12,13 +12,15 @@
 
 @implementation NSDate (ISO8601)
 
-
 - (NSString *)stringWithISO8601Encoding
 {
     NSLocale* enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setLocale:enUSPOSIXLocale];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [df setDateFormat:[[KCSClient sharedClient] dateStorageFormatString]];
+#pragma clang diagnostic pop
     [df setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     NSString *dTmp = [df stringFromDate:self];
     KCSLogDebug(@"Date conversion: %@ => %@", self, dTmp);
@@ -30,7 +32,10 @@
     NSLocale* enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setLocale:enUSPOSIXLocale];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [df setDateFormat:[[KCSClient sharedClient] dateStorageFormatString]];
+#pragma clang diagnostic pop
     [df setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     
     NSDate *myDate = [df dateFromString:string];
