@@ -38,6 +38,9 @@
 #define KCSUserAttributeOAuthTokens @"_oauth"
 @class GTMOAuth2Authentication;
 
+NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
+
+
 @interface KCSUser()
 @property (nonatomic, strong) NSMutableDictionary *userAttributes;
 @property (nonatomic, strong) NSDictionary* oauthTokens;

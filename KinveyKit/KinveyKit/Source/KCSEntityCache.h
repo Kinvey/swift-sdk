@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 10/23/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -40,6 +40,7 @@ NSString* KCSMongoObjectId();
 
 #pragma mark Persistence
 - (void) setPersistenceId:(NSString*)key;
+- (void) clearCaches;
 @end
 
 @interface KCSCachedStoreCaching : NSObject

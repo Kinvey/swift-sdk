@@ -51,6 +51,9 @@ typedef enum  {
 /** Access Dictionary key for the token secret: just Twitter */
 #define KCSUserAccessTokenSecretKey @"access_token_secret"
 
+/** Notification type. This is called when a user is logged in or logged out. `userInfo` and `object` are nil. Query `+[KCSUser activeUser] to get the new value. */
+FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
+
 /*!  Describes required methods for an object wishing to be notified about the status of user actions.
  *
  * This Protocol should be implemented by a client for processing the results of any User Actions against the Kinvey

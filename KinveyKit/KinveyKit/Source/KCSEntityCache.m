@@ -252,17 +252,39 @@ NSString* KCSMongoObjectId()
         //TODO handle errors
         NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", _persistenceId]]];
         BOOL wrote = [NSKeyedArchiver archiveRootObject:_cache toFile:[url path]];
-//        BOOL wrote = [(NSDictionary*)_cache writeToURL:url atomically:YES];
         DBAssert(wrote, @"should have written cache");
         url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheq.plist", _persistenceId]]];
-//        wrote = [(NSDictionary*)_queryCache writeToURL:url atomically:YES];
         wrote = [NSKeyedArchiver archiveRootObject:_queryCache toFile:[url path]];
         DBAssert(wrote, @"should have written cache");
 
         url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheg.plist", _persistenceId]]];
-//        wrote = [(NSDictionary*)_groupingCache writeToURL:url atomically:YES];
         wrote = [NSKeyedArchiver archiveRootObject:_groupingCache toFile:[url path]];
         DBAssert(wrote, @"should have written cache");
+    }
+}
+
+- (void) clearCaches
+{
+    if (_persistenceId != nil) {
+        NSError* error = nil;
+
+        NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", _persistenceId]]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+            [[NSFileManager defaultManager] removeItemAtURL:url error:&error];
+        }
+        DBAssert(!error, @"error clearing cache: %@", error);
+
+        url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheq.plist", _persistenceId]]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+            [[NSFileManager defaultManager] removeItemAtURL:url error:&error];
+        }
+        DBAssert(!error, @"error clearing cache: %@", error);
+        
+        url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheg.plist", _persistenceId]]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+            [[NSFileManager defaultManager] removeItemAtURL:url error:&error];
+        }
+        DBAssert(!error, @"error clearing cache: %@", error);
     }
 }
 
