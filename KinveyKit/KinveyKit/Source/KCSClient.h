@@ -152,7 +152,7 @@
 /// @name Data Type Support
 ///---------------------------------------------------------------------------------------
 /*! NSDateFormatter String for Date storage */
-@property (unsafe_unretained, nonatomic, readonly) NSString *dateStorageFormatString;
+@property (unsafe_unretained, nonatomic, readonly) NSString *dateStorageFormatString KCS_DEPRECATED(is this even being used?, 1.15);
 
 
 

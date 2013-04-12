@@ -162,18 +162,13 @@
 + (KCSClient *)sharedClient
 {
     static KCSClient *sKCSClient;
-    // This can be called on any thread, so we synchronise.  We only do this in 
-    // the sKCSClient case because, once sKCSClient goes non-nil, it can 
-    // never go nil again.
-   
-    if (sKCSClient == nil) {
-        @synchronized (self) {
-            sKCSClient = [[KCSClient alloc] init];
-            assert(sKCSClient != nil);
-            
-        }
-    }
     
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sKCSClient = [[self alloc] init];
+        NSAssert(sKCSClient != nil, @"Unable to instantiate KCSClient");
+    });
+
     return sKCSClient;
 }
 

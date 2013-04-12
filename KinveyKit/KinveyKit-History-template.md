@@ -1,5 +1,11 @@
 # KinveyKit Release History
 
+## 1.15
+### 1.15.0
+** Release Date:** TBD
+
+* Deprecated `KCSClient` property `dateStorageFormatString`.
+
 ## 1.14
 ### 1.14.2
 ** Release Date:** April 1, 2013
