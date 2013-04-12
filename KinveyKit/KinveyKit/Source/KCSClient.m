@@ -241,8 +241,15 @@
 
 }
 
-#pragma mark -
-#pragma mark Store Interface
+#pragma mark - User
+
+- (void) setCurrentUser:(KCSUser *)currentUser
+{
+    _currentUser = currentUser;
+    [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:nil];
+}
+
+#pragma mark - Store Interface
 - (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource
 {
     return [self store:storeType forResource:resource withClass:nil withAuthHandler:nil];
