@@ -4,6 +4,7 @@
 ### 1.15.0
 ** Release Date:** TBD
 
+* Added `KCSActiveUserChangedNotification` as a `NSNotification`. Observe this to have code informed when the active user is set or logged out. 
 * Deprecated `KCSClient` property `dateStorageFormatString`.
 * Bug fix(es):
     * NSError in completion block now returns full error message info when a business logic error occurs. 

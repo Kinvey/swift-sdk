@@ -16,7 +16,7 @@
 #import "KCSLogManager.h"
 
 #import "KCSReduceFunction.h"
-//#import "math.h"
+
 #import <CommonCrypto/CommonDigest.h>
 
 #import "KCSAppdataStore.h"
@@ -24,6 +24,7 @@
 #import "KinveyErrorCodes.h"
 
 #import "KCSObjectMapper.h"
+#import "KinveyUser.h"
 
 @interface KCSEntityCache ()
 {
@@ -224,6 +225,9 @@ NSString* KCSMongoObjectId()
 - (void)setPersistenceId:(NSString *)key
 {
     //TODO: maybe reuse context dictionary
+    
+    //TODO: reuse URLs in array oe dict
+    //TODO: clear up if change
     _persistenceId = key;
     NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", key]]];
 //    _cache = [NSMutableDictionary dictionaryWithContentsOfURL:url];
@@ -260,6 +264,7 @@ NSString* KCSMongoObjectId()
         url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheg.plist", _persistenceId]]];
         wrote = [NSKeyedArchiver archiveRootObject:_groupingCache toFile:[url path]];
         DBAssert(wrote, @"should have written cache");
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearCaches) name:KCSActiveUserChangedNotification object:nil];
     }
 }
 
@@ -437,6 +442,7 @@ NSString* KCSMongoObjectId()
 - (void)dealloc
 {
     [self dumpContents];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:KCSActiveUserChangedNotification object:nil];
 }
 
 - (void) dumpContents

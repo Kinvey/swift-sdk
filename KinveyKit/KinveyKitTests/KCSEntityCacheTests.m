@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 10/23/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSEntityCacheTests.h"
@@ -20,7 +20,6 @@
 - (void) testRoundTripQuery
 {
     KCSEntityCache* cache = [[KCSEntityCache alloc] init];
-    cache.persistenceId = @"f";
     
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
     ASTTestClass* obj1 = [[ASTTestClass alloc] init];
@@ -172,7 +171,28 @@
     [cache clearCaches];
     
     STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should not have cache at %@", [url path]);
+}
 
+- (void) testCacheClearasOnUserChange
+{
+    
+    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
+    NSString* pid = @"persistenceId";
+    cache.persistenceId = pid;
+    
+    KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.objId = @"1";
+    ASTTestClass* obj2 = [[ASTTestClass alloc] init];
+    obj2.objId = @"2";
+    [cache setResults:@[obj1, obj2] forQuery:query];
+    
+    NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", pid]]];
+    STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should have cache at %@", [url path]);
+    
+    [KCSClient sharedClient].currentUser = [[KCSUser alloc] init];
+    
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should not have cache at %@", [url path]);
 }
 
 //test save updates query
