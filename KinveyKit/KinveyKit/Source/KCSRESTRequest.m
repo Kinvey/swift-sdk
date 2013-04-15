@@ -162,7 +162,6 @@ NSString * getLogDate(void)
     // Let the server know we want wrapped json erors
     [self.request setValue:@"true" forHTTPHeaderField:@"X-Kinvey-ResponseWrapper"];
     
-    
     if ([self.request.allHTTPHeaderFields objectForKey:@"Authorization"] == nil) {
         KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
         if (cred.requiresAuthentication){

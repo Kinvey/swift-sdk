@@ -171,6 +171,11 @@
     [cache clearCaches];
     
     STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should not have cache at %@", [url path]);
+    
+    KCSQuery* query2 = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    NSArray* results = [cache resultsForQuery:query2];
+    
+    STAssertEquals((int)results.count, (int)0, @"should not have any results after clearing cache");
 }
 
 - (void) testCacheClearasOnUserChange

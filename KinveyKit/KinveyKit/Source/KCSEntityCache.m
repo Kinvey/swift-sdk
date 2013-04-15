@@ -291,6 +291,7 @@ NSString* KCSMongoObjectId()
         }
         DBAssert(!error, @"error clearing cache: %@", error);
     }
+    [self dumpContents];
 }
 
 #pragma mark - querying
