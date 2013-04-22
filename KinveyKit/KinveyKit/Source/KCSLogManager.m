@@ -171,8 +171,8 @@ enum {
                                     encoding:NSUTF8StringEncoding];
         print = [[NSString alloc] initWithFormat:format arguments:ap];
         va_end(ap);
-        if ([print length] > 1000) {
-            print = [[print substringToIndex:1000] stringByAppendingString:@"...(truncated)"];
+        if ([print length] > 1500) {
+            print = [[print substringToIndex:1500] stringByAppendingString:@"...(truncated)"];
         }
         
         [self log:[NSString stringWithFormat:@"%s:%d %@ %@",[[file lastPathComponent] UTF8String],

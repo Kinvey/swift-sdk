@@ -1,0 +1,12 @@
+#!/bin/sh
+ 
+if [ $# -lt 2 ]
+then
+	echo "Usage: branch release-number ticket-number"
+	exit
+fi 
+ 
+BRANCH="$1"
+TICKET="$2"
+COMMAND="svn cp . https://subversion.assembla.com/svn/kinvey/ios-library/branches/$BRANCH -m \"branch $BRANCH re #$TICKET\""
+echo $COMMAND

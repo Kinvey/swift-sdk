@@ -22,6 +22,7 @@
     KCSEntityCache* cache = [[KCSEntityCache alloc] init];
     
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"sortOrder" inDirection:kKCSAscending]];
     ASTTestClass* obj1 = [[ASTTestClass alloc] init];
     obj1.objId = @"1";
     ASTTestClass* obj2 = [[ASTTestClass alloc] init];
@@ -29,6 +30,7 @@
     [cache setResults:@[obj1, obj2] forQuery:query];
     
     KCSQuery* query2 = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    [query2 addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"sortOrder" inDirection:kKCSAscending]];
     NSArray* results = [cache resultsForQuery:query2];
     
     STAssertTrue(results.count == 2, @"should have both objects");

@@ -11,6 +11,7 @@
 #import "KCSObjectMapper.h"
 
 #import <CoreLocation/CoreLocation.h>
+#import <UIKit/UIKit.h>
 #import "CLLocation+Kinvey.h"
 
 @interface TestObject : NSObject <KCSPersistable>
@@ -23,7 +24,7 @@
 @property (nonatomic, retain) NSOrderedSet* oSetParam;
 @property (nonatomic, retain) NSMutableAttributedString* asParam;
 @property (nonatomic, retain) CLLocation* locParam;
-
+@property (nonatomic, retain) UIImage* image;
 @end
 
 @implementation TestObject
@@ -31,13 +32,14 @@
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
     return @{@"testId" : KCSEntityKeyId,
-    @"testParam1" : @"testParam1i",
-    @"testParam2" : @"testParam2i",
-    @"setParam"   : @"setParam",
-    @"dateParam" : @"dateParam",
-    @"oSetParam" : @"oSetParam",
-    @"asParam" : @"asParam",
-    @"locParam" : @"locParam"};
+             @"testParam1" : @"testParam1i",
+             @"testParam2" : @"testParam2i",
+             @"setParam"   : @"setParam",
+             @"dateParam" : @"dateParam",
+             @"oSetParam" : @"oSetParam",
+             @"asParam" : @"asParam",
+             @"locParam" : @"locParam",
+             @"image" : @"image"};
 }
 
 @end
@@ -80,13 +82,13 @@
 - (void) testTypesDeserialize
 {
     NSDictionary* data = @{ KCSEntityKeyId : @"idX",
-    @"testParam1i" : @"p1",
-    @"testParam2i" : @1.245,
-    @"dateParam"   : @"ISODate(\"1970-01-01T00:00:00.000Z\")",
-    @"setParam"    : @[@"2",@"1",@7],
-    @"oSetParam"   : @[@"2",@"1",@7],
-    @"asParam"     : @"abcedf",
-    @"locParam"    : @[@100,@-30]};
+                            @"testParam1i" : @"p1",
+                            @"testParam2i" : @1.245,
+                            @"dateParam"   : @"ISODate(\"1970-01-01T00:00:00.000Z\")",
+                            @"setParam"    : @[@"2",@"1",@7],
+                            @"oSetParam"   : @[@"2",@"1",@7],
+                            @"asParam"     : @"abcedf",
+                            @"locParam"    : @[@100,@-30]};
     TestObject* out = [KCSObjectMapper makeObjectOfType:[TestObject class] withData:data];
     
     STAssertNotNil(out, @"Should not be nil");
@@ -103,5 +105,36 @@
     STAssertEqualObjects([out.locParam kinveyValue] , a, @"should be matching CLLocation");
 }
 
+- (void) testLinkedRef
+{
+    NSDictionary* data = @{ KCSEntityKeyId : @"idX",
+                            @"testParam1i" : @"p1",
+                            @"testParam2i" : @1.245,
+                            @"dateParam"   : @"ISODate(\"1970-01-01T00:00:00.000Z\")",
+                            @"setParam"    : @[@"2",@"1",@7],
+                            @"oSetParam"   : @[@"2",@"1",@7],
+                            @"asParam"     : @"abcedf",
+                            @"locParam"    : @[@100,@-30],
+                            @"image"       : @{
+                                @"_loc" : @"OfflineSave-linked1-photo.png",
+                                @"_mime-type" : @"image/png",
+                                @"_type" : @"resource"
+                            }};
+    TestObject* out = [KCSObjectMapper makeObjectOfType:[TestObject class] withData:data];
+    
+    STAssertNotNil(out, @"Should not be nil");
+    id im = out.image;
+    STAssertNotNil(im, @"image should be valid");
+    STAssertTrue([im isKindOfClass:[NSDictionary class]], @"should be a dictionary");
+    
+    NSMutableDictionary* resources = [NSMutableDictionary dictionary];
+    TestObject* out2 = [KCSObjectMapper makeObjectWithResourcesOfType:[TestObject class] withData:data withResourceDictionary:resources];
+
+    STAssertNotNil(out2, @"Should not be nil");
+    id im2 = out2.image;
+    STAssertNil(im2, @"image should be nil");
+    STAssertEquals((int) 1, (int) resources.count, @"should have a resource to loag");
+    STAssertNotNil(resources[@"image"], @"should have an image value");
+}
 
 @end
