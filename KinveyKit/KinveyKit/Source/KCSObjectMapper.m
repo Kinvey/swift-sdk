@@ -361,7 +361,9 @@ NSString* specialTypeOfValue(id value)
             continue;
         } else {
             NSString* maybeType = specialTypeOfValue(value);
-            if (maybeType && [maybeType isEqualToString:@"resource"]) {
+            if (resourcesToLoad && maybeType && [maybeType isEqualToString:@"resource"]) {
+                //if there is no resourcesToLoad dict, then it's not a linked store and the object shoul be replaced by a dictionary
+                
                 //this is a linked resource; TODO: should support array?
                 //TODO: DIFF-----
                 [resourcesToLoad setObject:value forKey:hostKey];

@@ -26,7 +26,7 @@
 #import "KCSObjectMapper.h"
 #import "KinveyUser.h"
 
-@interface KCSEntityCache ()
+@interface KCSEntityCache () <NSCacheDelegate>
 {
     NSCache* _cache;
     NSCache* _queryCache;
@@ -215,10 +215,17 @@ NSString* KCSMongoObjectId()
     if (self) {
         _cache = [[NSCache alloc] init];
         _queryCache = [[NSCache alloc] init];
+        _queryCache.delegate = self;
         _groupingCache = [[NSCache alloc] init];
         _unsavedObjs = [NSMutableOrderedSet orderedSet];
     }
     return self;
+}
+
+//TODO:
+- (void)cache:(NSCache *)cache willEvictObject:(id)obj
+{
+    KCSLogWarning(@"CACHE DISCARD OBJ: %@",obj);
 }
 
 #pragma mark - peristence
@@ -393,7 +400,7 @@ NSString* KCSMongoObjectId()
             [self addResult:n];
         }
     }
-    [_queryCache setObject:ids forKey:queryKey];
+    [_queryCache setObject:ids forKey:queryKey cost:100];
     if (oldIds) {
         [oldIds removeObjectsInArray:[ids array]];
         [self removeIds:[oldIds array]];

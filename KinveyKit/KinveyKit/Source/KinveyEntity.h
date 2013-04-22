@@ -2,7 +2,7 @@
 //  KinveyEntity.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -13,6 +13,8 @@
 #import "KinveyPersistable.h"
 #import "KCSClient.h"
 #import "KCSBlockDefs.h"
+
+#import "KinveyHeaderInfo.h"
 
 /*!  Describes required selectors for requesting entities from the Kinvey Service.
 *
@@ -48,8 +50,9 @@
 * @param collection Collection to pull the entity from
 * @param query Arbitrary JSON query to execute on KCS (See Queries in KCS documentation for details on Queries)
 * @param delegate Delegate object to inform upon completion or failure of this request 
+* @dprecated 1.2
 */
-- (void)fetchOneFromCollection: (KCSCollection *)collection matchingQuery: (NSString *)query withDelegate: (id<KCSEntityDelegate>)delegate;
+- (void)fetchOneFromCollection: (KCSCollection *)collection matchingQuery: (NSString *)query withDelegate: (id<KCSEntityDelegate>)delegate KCS_DEPRECATED(Deprecated,1.2);
 
 /*! Fetch first entity with a given Boolean value for a property (Depricated as of version 1.2)
 *
@@ -57,8 +60,9 @@
 * @param value Boolean value (YES or NO) to query against value
 * @param collection Collection to pull the entity from
 * @param delegate Delegate object to inform upon completion or failure of this request
+* @deprecated 1.2
 */
-- (void)findEntityWithProperty: (NSString *)property matchingBoolValue: (BOOL)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
+- (void)findEntityWithProperty: (NSString *)property matchingBoolValue: (BOOL)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate KCS_DEPRECATED(Deprecated,1.2);
 
 /*! Fetch first entity with a given Double value for a property (Depricated as of version 1.2)
 *
@@ -66,8 +70,9 @@
 * @param value Real value to query against value
 * @param collection Collection to pull the entity from
 * @param delegate Delegate object to inform upon completion or failure of this request
+* @deprecated 1.2
 */
-- (void)findEntityWithProperty: (NSString *)property matchingDoubleValue: (double)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
+- (void)findEntityWithProperty: (NSString *)property matchingDoubleValue: (double)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate KCS_DEPRECATED(Deprecated,1.2);
 
 /*! Fetch first entity with a given Integer value for a property (Depricated as of version 1.2)
 *
@@ -75,8 +80,9 @@
 * @param value Integer to query against value
 * @param collection Collection to pull the entity from
 * @param delegate Delegate object to inform upon completion or failure of this request
+* @deprecated 1.2
 */
-- (void)findEntityWithProperty: (NSString *)property matchingIntegerValue: (int)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
+- (void)findEntityWithProperty: (NSString *)property matchingIntegerValue: (int)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate  KCS_DEPRECATED(Deprecated,1.2);
 
 /*! Fetch first entity with a given String value for a property (Depricated as of version 1.2)
 *
@@ -84,8 +90,9 @@
 * @param value String to query against value
 * @param collection Collection to pull the entity from
 * @param delegate Delegate object to inform upon completion or failure of this request
+* @deprecated 1.2
 */
-- (void)findEntityWithProperty: (NSString *)property matchingStringValue: (NSString *)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate;
+- (void)findEntityWithProperty: (NSString *)property matchingStringValue: (NSString *)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate KCS_DEPRECATED(Deprecated,1.2);
 
 /*! Return the client property name for the kinvey id
  *
