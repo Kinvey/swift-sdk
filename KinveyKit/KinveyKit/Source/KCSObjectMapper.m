@@ -511,6 +511,7 @@ BOOL isCollection(id obj)
     return [obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSSet class]] || [obj isKindOfClass:[NSOrderedSet class]];
 }
 
+
 void setError(NSError** error, NSString* objectId, NSString* jsonName)
 {
     if (error != NULL) {
@@ -540,7 +541,25 @@ void setError(NSError** error, NSString* objectId, NSString* jsonName)
     
     for (NSString* key in kinveyMapping) {
         NSString *jsonName = [kinveyMapping valueForKey:key];
-        id value = [object valueForKey:key];
+
+        id value;
+        @try {
+            value = [object valueForKey:key];
+        }
+        @catch (NSException *exception) {
+            if ([[exception name] isEqualToString:@"NSUnknownKeyException"]) {
+                KCSLogError(@"Error serialzing entity for use with Kinvey: '%@'", [exception reason]);
+                if (error != NULL) {
+                    NSDictionary* info = @{NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Entity does not have property '%@' as specified in hostToKinveyPropertyMapping", key],
+                                           NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"Cannot map a non-existant property"], NSLocalizedRecoverySuggestionErrorKey : @"Check the hostToKinveyPropertyMapping for typos and errors."};
+                    *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidKCSPersistableError userInfo:info];
+                }
+                return nil;
+            } else {
+                [exception raise];
+            }
+        }
+        
         
         //get the id
         if ([jsonName isEqualToString:KCSEntityKeyId] && value != nil){

@@ -73,6 +73,7 @@ typedef enum KCSErrorCodes : NSInteger {
     KCSInvalidJSONFormatError = 60013,
     
     KCSReferenceNoIdSetError = 60101,
+    KCSInvalidKCSPersistableError = 60102,
     
     // For testing only, no user should ever see this!
     KCSTestingError = 65535

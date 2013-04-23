@@ -13,6 +13,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
 #import "CLLocation+Kinvey.h"
+#import "KinveyErrorCodes.h"
 
 @interface TestObject : NSObject <KCSPersistable>
 
@@ -40,6 +41,23 @@
              @"asParam" : @"asParam",
              @"locParam" : @"locParam",
              @"image" : @"image"};
+}
+
+@end
+
+@interface BrokenHostMappingObj : NSObject <KCSPersistable>
+
+@end
+
+@implementation BrokenHostMappingObj
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    static NSDictionary* mapping;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        mapping = @{@"objectId" : KCSEntityKeyId};
+                    });
+        return mapping;
 }
 
 @end
@@ -137,4 +155,13 @@
     STAssertNotNil(resources[@"image"], @"should have an image value");
 }
 
+- (void) testPropMap
+{
+    BrokenHostMappingObj* obj = [[BrokenHostMappingObj alloc] init];
+    NSError* error = nil;
+    KCSSerializedObject* d = [KCSObjectMapper makeKinveyDictionaryFromObject:obj error:&error];
+    STAssertNil(d, @"should be nil");
+    STAssertNotNil(error, @"Should have an error");
+    STAssertEquals((int)KCSInvalidKCSPersistableError, (int) error.code, @"should make a invalid persistable error");
+}
 @end

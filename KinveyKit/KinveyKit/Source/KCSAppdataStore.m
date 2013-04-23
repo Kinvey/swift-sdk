@@ -752,7 +752,9 @@ int reachable = -1;
         return;
     }
     id objKey = [progress markEntity:so];
+    __weak id saveGraph = objKey;
     DBAssert(objKey != nil, @"should have a valid obj key here");
+    NSString* cname = self.backingCollection.collectionName;
     [objKey ifNotLoaded:^{
         [self saveEntityWithResources:so progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
             [objKey finished];
@@ -763,10 +765,10 @@ int reachable = -1;
         } withProgressBlock:progressBlock];
         
     } otherwiseWhenLoaded:alreadySavedBlock andResaveAfterReferencesSaved:^{
-        KCSSerializedObject* soPrime = [KCSObjectMapper makeResourceEntityDictionaryFromObject:objToSave forCollection:self.backingCollection.collectionName error:NULL]; //TODO: figure out if this is needed?
+        KCSSerializedObject* soPrime = [KCSObjectMapper makeResourceEntityDictionaryFromObject:objToSave forCollection:cname error:NULL]; //TODO: figure out if this is needed?
         [soPrime restoreReferences:so];
         [self saveMainEntity:soPrime progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            [objKey resaveComplete];
+            [saveGraph resaveComplete];
         } withProgressBlock:^(NSArray *objects, double percentComplete) {
             //TODO: as above
         }];
