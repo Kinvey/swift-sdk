@@ -5,6 +5,7 @@
 ** Release Date:** TBD
 
 * Added `KCSActiveUserChangedNotification` as a `NSNotification`. Observe this to have code informed when the active user is set or logged out. 
+* If an object's `hostToKinveyPropertyMapping` specifies an invalid property, the save will now fail with an error with code `KCSInvalidKCSPersistableError` rather than crash.
 * Deprecated `KCSClient` property `dateStorageFormatString`.
 * Bug fix(es):
     * NSError in completion block now returns full error message info when a business logic error occurs.
