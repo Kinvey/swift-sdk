@@ -10,6 +10,6 @@
 #define KinveyKit_KinveyVersion_h
 
 
-#define __KINVEYKIT_VERSION__ @"2013_04_23(HD)"
+#define __KINVEYKIT_VERSION__ @"TAG-ME"
 
 #endif
