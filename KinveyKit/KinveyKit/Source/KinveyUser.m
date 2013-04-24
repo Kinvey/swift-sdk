@@ -932,11 +932,11 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
 
 #pragma mark - Password
 
-+ (void) sendPasswordResetForUser:(NSString*)username withCompletionBlock:(KCSUserSendEmailBlock)completionBlock
++ (void) sendPasswordResetForUser:(NSString*)usernameOrEmail withCompletionBlock:(KCSUserSendEmailBlock)completionBlock
 {
     // /rpc/:kid/:username/user-password-reset-initiate
-    NSString* pwdReset = [[[[KCSClient sharedClient] rpcBaseURL] stringByAppendingStringWithPercentEncoding:username] stringByAppendingString:@"/user-password-reset-initiate"];
-    //[NSString stringWithFormat:@"%@/user-password-reset-initiate",username]];
+    // /rpc/:kid/:email/user-password-reset-initiate
+    NSString* pwdReset = [[[[KCSClient sharedClient] rpcBaseURL] stringByAppendingStringWithPercentEncoding:usernameOrEmail] stringByAppendingString:@"/user-password-reset-initiate"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:pwdReset usingMethod:kPostRESTMethod];
     request = [request withCompletionAction:^(KCSConnectionResponse *response) {
         //response will be a 204 if accepted by server
