@@ -4,6 +4,7 @@
 ### 1.15.0
 ** Release Date:** TBD
 
+* `+[KCSUser sendPasswordResetForUser:withCompletionBlock:]` now accepts an input username or email address. However the user entity in the backend still has to have an valid value in the `email` field.
 * Added `KCSActiveUserChangedNotification` as a `NSNotification`. Observe this to have code informed when the active user is set or logged out. 
 * Added `- [KCSAppdataStore countWithQuery:completion:]` to allow for calculating the number of matching elements without transferring the data.
 * If an object's `hostToKinveyPropertyMapping` specifies an invalid property, the save will now fail with an error with code `KCSInvalidKCSPersistableError` rather than crash.

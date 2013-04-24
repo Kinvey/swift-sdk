@@ -353,15 +353,13 @@ FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
  
  Until the password reset is complete, the old password remains active and valid. This allows the user to ignore the request if he remembers the old password. If too much time has passed, the email link will no longer be valid, and the user will have to initiate a new sendPasswordResetForUser:withCompletionBlock:.
  
- Because we do not yet provide a username reset/reminder function, we recommend that you use email addresses as usernames. 
+ If the user knows his current password and is logged in, but wants to change the password, it can just be done with the - [KCSUser setPassword:] method followed by saving the current user to the back-end.
  
- If the user knows his current password and is logged in, but wants to change the password, it can just be done with the - [KCSUser setPassword:] method followed by saving the current user to the back-end.  
- 
- @param username the user to send the password reset link to
+ @param usernameOrEmail the username or user email to send the password reset link to
  @param completionBlock the request callback. `emailSent` is true if the email address is found and an email is sent (does not guarantee delivery). If `emailSent` is `NO`, then the `errorOrNil` value will have information as to what went wrong on the network. For security reasons, `emailSent` will be true even if the user is not found or the user does not have an associated email.
  @since 1.10.0
  */
-+ (void) sendPasswordResetForUser:(NSString*)username withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
++ (void) sendPasswordResetForUser:(NSString*)usernameOrEmail withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
 
 
 /** Sends an request to confirm email address to the specified user.
