@@ -218,7 +218,7 @@
     // Update download percent and call the progress block
     double downloadPercent = self.percentComplete;
     // TODO: Need to check percent complete threshold...
-    if (self.progressBlock != NULL &&
+    if (self.progressBlock != NULL && [(NSHTTPURLResponse *)self.lastResponse statusCode] < 300 &&
         ((self.lastPercentage + self.percentNotificationThreshold) <= downloadPercent)){
         // Probably want to handle this differently, since now the caller needs to know what's going
         // on, but I think that at a minimum, we need progress + data.
