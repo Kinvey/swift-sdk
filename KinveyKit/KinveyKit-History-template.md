@@ -10,6 +10,7 @@
 * Bug fix(es):
     * NSError in completion block now returns full error message info when a business logic error occurs.
     * Linked resources now once again show up as `NSDictionary` values when loaded with `KCSAppdataStore` or `KCSCachedStore`.  
+    * Fixed progress block crash when there is a server error. 
 
 ## 1.14
 ### 1.14.2

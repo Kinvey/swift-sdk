@@ -129,5 +129,5 @@
  @param countBlock the block that receives the response 
  */
 - (void)countWithBlock: (KCSCountBlock)countBlock;
-
+- (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock;
 @end
