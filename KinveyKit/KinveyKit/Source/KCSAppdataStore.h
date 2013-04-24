@@ -127,7 +127,18 @@
 /** Count all the elements the collection
   
  @param countBlock the block that receives the response 
+ @see countWithQuery:completion:
  */
 - (void)countWithBlock: (KCSCountBlock)countBlock;
+
+/** Count all the elements the collection that match a given query.
+ 
+ This method is useful for finding out how big a query will be without transferring all the data. This method is __not__ cached. 
+ 
+ @param query the query to filter the elements
+ @param countBlock the block that receives the response
+ @since 1.15
+ @see countWithBlock:
+ */
 - (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock;
 @end
