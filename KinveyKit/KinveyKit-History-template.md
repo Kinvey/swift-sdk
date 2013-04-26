@@ -2,7 +2,7 @@
 
 ## 1.15
 ### 1.15.0
-** Release Date:** TBD
+** Release Date:** April 26, 2013
 
 * `+[KCSUser sendPasswordResetForUser:withCompletionBlock:]` now accepts an input username or email address. However the user entity in the backend still has to have an valid value in the `email` field.
 * Added `KCSActiveUserChangedNotification` as a `NSNotification`. Observe this to have code informed when the active user is set or logged out. 

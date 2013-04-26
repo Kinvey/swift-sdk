@@ -137,7 +137,7 @@
  
  @param query the query to filter the elements
  @param countBlock the block that receives the response
- @since 1.15
+ @since 1.15.0
  @see countWithBlock:
  */
 - (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock;
