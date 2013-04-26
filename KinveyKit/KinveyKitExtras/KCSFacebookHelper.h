@@ -86,7 +86,7 @@ typedef void (^FacebookOGCompletionBlock)(NSString* actionId, NSError* errorOrNi
  @param entityId the `KCSEntityKeyId` of the object in the mapped collection
  @param action the actionType. This must be one of the ones specified in the Open Graph data link in the Kinvey console
  @param objectType the object type of the entity. A collection can be mapped to multiple object types
- @param optionalParams optional action parameters. E.g. `tags` (friends), `place`, `start_time`, `end_time`, etc.
+ @param extraParams optional action parameters. E.g. `tags` (friends), `place`, `start_time`, `end_time`, etc.
  @param completionBlock the callback for publishing to Open Graph. `actionId` is the id for the published story; this can be used to read, update, or delete the story separately using the Facebook SDK or API. `errorOrNil` will the error object if one was generated.
  @since 1.14.2
  */
