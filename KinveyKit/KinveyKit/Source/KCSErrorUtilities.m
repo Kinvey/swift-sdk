@@ -14,6 +14,8 @@
 #define KCS_ERROR_DESCRIPTION_KEY @"description"
 #define KCS_ERROR_KINVEY_ERROR_CODE_KEY @"error"
 
+#define kDatalinkError @"DLCError"
+
 @implementation KCSErrorUtilities
 
 + (NSDictionary *)createErrorUserDictionaryWithDescription:(NSString *)description
@@ -38,32 +40,47 @@
     NSLocalizedRecoverySuggestionErrorKey : suggestion};
 }
 
-+ (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain requestId:(NSString*)requestId sourceError:(NSError*)underlyingError
++ (NSError*) createError:(NSDictionary*)jsonErrorDictionary
+             description:(NSString*) description
+               errorCode:(NSInteger)errorCode
+                  domain:(NSString*)domain
+               requestId:(NSString*)requestId
+             sourceError:(NSError*)underlyingError
 {
     NSString* kcsErrorDescription = nil;
-    NSDictionary* userInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
     
     if ([jsonErrorDictionary isKindOfClass:[NSDictionary class]] == NO) {
         kcsErrorDescription = (id) jsonErrorDictionary;
     } else {
-        NSMutableDictionary* errorValues = [jsonErrorDictionary mutableCopy];
-        
-        NSString* kcsError = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
-        description = (description == nil) ? kcsError : description;
-        
-        NSString* kcsErrorCode = [errorValues popObjectForKey:KCS_ERROR_KINVEY_ERROR_CODE_KEY];
-        if (kcsErrorCode != nil) {
-            [userInfo setValue:kcsErrorCode forKey:KCSErrorCode];
+        NSDictionary* ed = jsonErrorDictionary[@"error"];
+        if (ed == nil || [ed isKindOfClass:[NSDictionary class]] == NO) {
+            ed = jsonErrorDictionary;
         }
+        NSMutableDictionary* errorValues = [ed mutableCopy];
         
-        NSString* kcsDebugKey = [errorValues popObjectForKey:KCS_ERROR_DEBUG_KEY];
-        if (kcsDebugKey != nil) {
-            [userInfo setValue:kcsDebugKey forKey:KCSErrorInternalError];
+        if ([errorValues isKindOfClass:[NSDictionary class]]) {
+            NSString* kcsError = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
+            description = (description == nil) ? kcsError : description;
+            
+            NSString* kcsErrorCode = [errorValues popObjectForKey:KCS_ERROR_KINVEY_ERROR_CODE_KEY];
+            if (kcsErrorCode != nil) {
+                [userInfo setValue:kcsErrorCode forKey:KCSErrorCode];
+                //if the error is a datalink error, hijack the originating domain and indicate it's a DL error
+                if ([kcsErrorCode isKindOfClass:[NSString class]] && [kcsErrorCode isEqualToString:kDatalinkError]) {
+                    domain = KCSDatalinkErrorDomain;
+                }
+            }
+            
+            NSString* kcsDebugKey = [errorValues popObjectForKey:KCS_ERROR_DEBUG_KEY];
+            if (kcsDebugKey != nil) {
+                [userInfo setValue:kcsDebugKey forKey:KCSErrorInternalError];
+            }
+            
+            [userInfo setValuesForKeysWithDictionary:errorValues];
+            
+            kcsErrorDescription = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
         }
-        
-        [userInfo setValuesForKeysWithDictionary:errorValues];
-        
-        kcsErrorDescription = [errorValues popObjectForKey:KCS_ERROR_DESCRIPTION_KEY];
     }
     
     if (description != nil) {
@@ -74,8 +91,17 @@
         [userInfo setValue:requestId forKey:KCSRequestId];
     }
     
-    [userInfo setValue:@"Retry request based on information in JSON Error" forKey:NSLocalizedRecoverySuggestionErrorKey];
-    [userInfo setValue:[NSString stringWithFormat:@"JSON Error: %@", kcsErrorDescription] forKey:NSLocalizedFailureReasonErrorKey];
+    if (kcsErrorDescription == nil) {
+        if (userInfo[KCSErrorInternalError] != nil) {
+            userInfo[NSLocalizedFailureReasonErrorKey] = userInfo[KCSErrorInternalError];
+        }
+    } else {
+        userInfo[NSLocalizedFailureReasonErrorKey] = [NSString stringWithFormat:@"JSON Error: %@", kcsErrorDescription];
+    }
+    
+    if (userInfo[NSLocalizedFailureReasonErrorKey] != nil) {
+        userInfo[NSLocalizedRecoverySuggestionErrorKey] = @"Retry request based on information in `NSLocalizedFailureReasonErrorKey`";
+    }
     
     if (underlyingError != nil) {
         [userInfo setValue:underlyingError forKey:NSUnderlyingErrorKey];
@@ -85,9 +111,18 @@
     return error;
 }
 
-+ (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain requestId:(NSString*)requestId
++ (NSError*) createError:(NSDictionary*)jsonErrorDictionary
+             description:(NSString*)description
+               errorCode:(NSInteger)errorCode
+                  domain:(NSString*)domain
+               requestId:(NSString*)requestId
 {
-    return [self createError:jsonErrorDictionary description:description errorCode:errorCode domain:domain requestId:requestId sourceError:nil];
+    return [self createError:jsonErrorDictionary
+                 description:description
+                   errorCode:errorCode
+                      domain:domain
+                   requestId:requestId
+                 sourceError:nil];
 }
 
 @end

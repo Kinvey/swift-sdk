@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/19/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitCollectionTests.h"
@@ -31,8 +31,6 @@ typedef BOOL(^InfoSuccessAction)(int);
 @end
 
 @implementation SimpleClass
-@synthesize items = _items;
-@synthesize kinveyID = _kinveyID;
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
     return [NSDictionary dictionaryWithObjectsAndKeys:@"_id", @"kinveyID",
@@ -45,9 +43,9 @@ typedef BOOL(^InfoSuccessAction)(int);
 @interface KinveyKitCollectionTests ()
 @property (nonatomic) BOOL testPassed;
 @property (retain, nonatomic) NSString *testID;
-@property (retain, nonatomic) SuccessAction onSuccess;
-@property (retain, nonatomic) FailureAction onFailure;
-@property (retain, nonatomic) InfoSuccessAction onInfoSuccess;
+@property (copy, nonatomic) SuccessAction onSuccess;
+@property (copy, nonatomic) FailureAction onFailure;
+@property (copy, nonatomic) InfoSuccessAction onInfoSuccess;
 @property (retain, nonatomic) NSString *message;
 
 @property (retain, nonatomic) NSArray *completeDataSet;
@@ -60,6 +58,9 @@ typedef BOOL(^InfoSuccessAction)(int);
 @end
 
 @implementation KinveyKitCollectionTests
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-retain-cycles"
 
 - (void)setUp
 {
@@ -76,7 +77,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // Ensure that KCSClient is alive
     KCSClient *client = [KCSClient sharedClient];
     [client setServiceHostname:@"baas"];
-    [client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
+    (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
     
     
     // Fake Auth
@@ -106,8 +107,8 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     self.completeDataSet = @[_allTypes, _nesting];
                  
-    _writer = [[[KCS_SBJsonWriter alloc] init] retain];
-    _parser = [[[KCS_SBJsonParser alloc] init] retain];
+    _writer = [[KCS_SBJsonWriter alloc] init];
+    _parser = [[KCS_SBJsonParser alloc] init];
 }
 
 - (void)tearDown
@@ -165,10 +166,10 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     
-    [[[KCSClient sharedClient] collectionFromString:@"testCollection" withClass:[SimpleClass class]] fetchAllWithDelegate:self];
+    KCSCollection* collection = [KCSCollection collectionFromString:@"testCollection" ofClass:[SimpleClass class]];
+    [collection fetchAllWithDelegate:self];
 
     STAssertTrue(self.testPassed, self.message);
-    [conn release];
 }
 
 - (void) testQueryWithDelegate
@@ -198,14 +199,12 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     
-    KCSCollection* collection = [[KCSClient sharedClient] collectionFromString:@"testCollection" withClass:[SimpleClass class]];
+    KCSCollection* collection = [KCSCollection collectionFromString:@"testCollection" ofClass:[SimpleClass class]];
     [collection fetchWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         self.testPassed = self.onSuccess(objectsOrNil);
     } withProgressBlock:nil];
     
     STAssertTrue(self.testPassed, self.message);
-    [conn release];
-
 }
 
 - (void)testFetchEmptyCollectionReturns0SizedArray
@@ -234,12 +233,10 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     
-    [[[KCSClient sharedClient] collectionFromString:@"testCollection" withClass:[SimpleClass class]] fetchAllWithDelegate:self];
+    [[KCSCollection collectionFromString:@"testCollection" ofClass:[SimpleClass class]] fetchAllWithDelegate:self];
     
     
     STAssertTrue(self.testPassed, self.message);
-    [conn release];
-
 }
 
 - (void)testCountFunction
@@ -250,8 +247,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     NSDictionary *negative =  wrapResponseDictionary([NSDictionary dictionaryWithObject:[NSNumber numberWithInt:-1] forKey:@"count"]);
     NSDictionary *fraction =  wrapResponseDictionary([NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:3.14156] forKey:@"count"]);
 
-    KCSClient *client = [KCSClient sharedClient];
-    KCSCollection *collection = [client collectionFromString:@"test" withClass:[SimpleClass class]];
+    KCSCollection *collection = [KCSCollection collectionFromString:@"test" ofClass:[SimpleClass class]];
     
     KCSConnectionResponse *response = nil;
     __block long long expectedResult = 0;
@@ -311,7 +307,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     // count.  What ends up happening is that the value overflows (to 0?)
     // but still registers as a negative int..., so we end up with:
     // 0x80000000 => -2147483648.
-    expectedResult = -2147483648;
+    expectedResult = -1;
     conn.responseForSuccess = response;
     [[KCSConnectionPool sharedPool] topPoolsWithConnection:conn];
     [collection entityCountWithDelegate:self];
@@ -346,8 +342,6 @@ typedef BOOL(^InfoSuccessAction)(int);
     STAssertTrue(self.testPassed, self.message);
     self.testPassed = NO;
     // END FRACTION
-
-    [conn release];
 }
 
 - (void) testQuery
@@ -367,9 +361,9 @@ typedef BOOL(^InfoSuccessAction)(int);
     [TestUtils setUpKinveyUnittestBackend];
     KCSQuery *q = [KCSQuery queryOnField:@"location"
                   withExactMatchForValue:@"N"];
-    KCSCollection *fuelStations = [[KCSClient sharedClient]
+    KCSCollection *fuelStations = [KCSCollection 
                                    collectionFromString:@"qlio-errors"
-                                   withClass:[NSMutableDictionary class]];
+                                   ofClass:[NSMutableDictionary class]];
     fuelStations.query=q;
     [fuelStations fetchWithDelegate:self];
     
@@ -401,5 +395,5 @@ typedef BOOL(^InfoSuccessAction)(int);
 //        //handle response
 //    } withProgressBlock:nil];
 }
-
+#pragma clang diagnostic pop
 @end

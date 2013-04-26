@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/10/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #ifndef KinveyKit_KinveyErrorCodes_h
@@ -21,6 +21,7 @@
 #define KCSNetworkErrorDomain @"KCSNetworkErrorDomain"
 #define KCSAppDataErrorDomain @"KCSAppDataErrorDomain"
 #define KCSResourceErrorDomain @"KCSResourceErrorDomain"
+#define KCSDatalinkErrorDomain @"KCSDatalinkErrorDomain"
 #define KCSUserErrorDomain @"KCSUserErrorDomain"
 #define KCSPushErrorDomain @"KCSPushErrorDomain"
 #define KCSErrorDomain @"KCSErrorDomain"
@@ -59,6 +60,7 @@ typedef enum KCSErrorCodes : NSInteger {
     KCSNetworkUnreachableError = 60001,
     KCSKinveyUnreachableError = 60002,
     KCSUserCreationContentionTimeoutError = 60003,
+    KCSUserNoImplictUserError = 60014,
     KCSUnexpectedResultFromServerError = 60004,
     KCSAuthenticationRetryError = 60005,
     KCSUserAlreadyLoggedInError = 60006,
@@ -71,6 +73,7 @@ typedef enum KCSErrorCodes : NSInteger {
     KCSInvalidJSONFormatError = 60013,
     
     KCSReferenceNoIdSetError = 60101,
+    KCSInvalidKCSPersistableError = 60102,
     
     // For testing only, no user should ever see this!
     KCSTestingError = 65535

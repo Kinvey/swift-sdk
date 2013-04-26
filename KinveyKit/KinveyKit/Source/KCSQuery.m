@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/26/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSQuery.h"
@@ -27,22 +27,15 @@ typedef enum KCSQueryType : NSUInteger {
 #pragma mark -
 #pragma mark KCSQuerySortModifier
 @implementation KCSQuerySortModifier
-@synthesize field = _field;
-@synthesize direction = _direction;
 
 - (id)initWithField:(NSString *)field inDirection:(KCSSortDirection)direction
 {
     self = [super init];
-    if (self){
-        _field = [field retain];
+    if (self) {
+        _field = field;
         _direction = direction;
     }
     return self;
-}
-
-- (void)dealloc {
-    [_field release];
-    [super dealloc];
 }
 
 @end
@@ -50,7 +43,7 @@ typedef enum KCSQueryType : NSUInteger {
 #pragma mark -
 #pragma mark KCSQueryLimitModifier
 @implementation KCSQueryLimitModifier
-@synthesize limit = _limit;
+
 - (id)initWithLimit:(NSInteger)limit
 {
     self = [super init];
@@ -63,7 +56,7 @@ typedef enum KCSQueryType : NSUInteger {
 - (NSString *)parameterStringRepresentation
 {
     KCSLogDebug(@"Limit String: %@", [NSString stringWithFormat:@"limit=%d", self.limit]);
-    return [NSString stringWithFormat:@"limit=%d", self.limit];
+    return [NSString stringWithFormat:@"limit=%d", (int) self.limit];
     
 }
 
@@ -72,7 +65,6 @@ typedef enum KCSQueryType : NSUInteger {
 #pragma mark -
 #pragma mark KCSQuerySkipModifier
 @implementation KCSQuerySkipModifier
-@synthesize count = _count;
 
 -(id)initWithcount:(NSInteger)count
 {
@@ -86,7 +78,7 @@ typedef enum KCSQueryType : NSUInteger {
 - (NSString *)parameterStringRepresentation
 {
     KCSLogDebug(@"Count String: %@", [NSString stringWithFormat:@"skip=%d", self.count]);
-    return [NSString stringWithFormat:@"skip=%d", self.count];
+    return [NSString stringWithFormat:@"skip=%d", (int) self.count];
 }
 
 @end
@@ -97,9 +89,9 @@ typedef enum KCSQueryType : NSUInteger {
 // Private interface
 @interface KCSQuery ()
 @property (nonatomic, readwrite, copy) NSMutableDictionary *query;
-@property (nonatomic, retain) KCS_SBJsonWriter *JSONwriter;
-@property (nonatomic, retain, readwrite) NSArray *sortModifiers;
-@property (nonatomic, retain) NSArray* referenceFieldsToResolve;
+@property (nonatomic, strong) KCS_SBJsonWriter *JSONwriter;
+@property (nonatomic, strong, readwrite) NSArray *sortModifiers;
+@property (nonatomic, strong) NSArray* referenceFieldsToResolve;
 
 
 NSString *KCSConditionalStringFromEnum(KCSQueryConditional conditional);
@@ -114,50 +106,50 @@ NSString *KCSConditionalStringFromEnum(KCSQueryConditional conditional);
 
 @implementation KCSQuery
 
-NSString *
-KCSConditionalStringFromEnum(KCSQueryConditional conditional)
+NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     static NSDictionary *KCSOperationStringLookup = nil;
-    
-    if (KCSOperationStringLookup == nil){
-        KCSOperationStringLookup = [@{
-                                    // Basic Queries
-                                    @(kKCSLessThan)           : @"$lt",
-                                    @(kKCSLessThanOrEqual)    : @"$lte",
-                                    @(kKCSGreaterThan)        : @"$gt",
-                                    @(kKCSGreaterThanOrEqual) : @"$gte",
-                                    @(kKCSNotEqual)           : @"$ne",
-                                    
-                                    // Geo Queries
-                                    @(kKCSNearSphere)         : @"$nearSphere",
-                                    @(kKCSWithinBox)          : @"$box",
-                                    @(kKCSWithinCenterSphere) : @"$centerSphere",
-                                    @(kKCSWithinPolygon)      : @"$polygon",
-                                    @(kKCSMaxDistance)        : @"$maxDistance",
-                                    
-                                    // String Operators
-                                    @(kKCSRegex) : @"$regex",
-                                    
-                                    // Joining Operators
-                                    @(kKCSIn)    : @"$in",
-                                    @(kKCSOr)    : @"$or",
-                                    @(kKCSAnd)   : @"$and",
-                                    @(kKCSNotIn) : @"$nin",
-                                    
-                                    // Array Operators
-                                    @(kKCSAll)  : @"$all",
-                                    @(kKCSSize) : @"$size",
-                                    
-                                    // Arbitrary Operators
-                                    @(kKCSWhere) : @"$where",
-                                    
-                                    // Internal Operators
-                                    @(kKCSWithin)  : @"$within",
-                                    @(kKCSOptions) : @"$options",
-                                    @(kKCSExists) : @"$exists",
-                                    @(kKCSType) : @"$type",
-                                    } retain];
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        KCSOperationStringLookup = @{
+        // Basic Queries
+        @(kKCSLessThan)           : @"$lt",
+        @(kKCSLessThanOrEqual)    : @"$lte",
+        @(kKCSGreaterThan)        : @"$gt",
+        @(kKCSGreaterThanOrEqual) : @"$gte",
+        @(kKCSNotEqual)           : @"$ne",
+        
+        // Geo Queries
+        @(kKCSNearSphere)         : @"$nearSphere",
+        @(kKCSWithinBox)          : @"$box",
+        @(kKCSWithinCenterSphere) : @"$centerSphere",
+        @(kKCSWithinPolygon)      : @"$polygon",
+        @(kKCSMaxDistance)        : @"$maxDistance",
+        
+        // String Operators
+        @(kKCSRegex) : @"$regex",
+        
+        // Joining Operators
+        @(kKCSIn)    : @"$in",
+        @(kKCSOr)    : @"$or",
+        @(kKCSAnd)   : @"$and",
+        @(kKCSNotIn) : @"$nin",
+        
+        // Array Operators
+        @(kKCSAll)  : @"$all",
+        @(kKCSSize) : @"$size",
+        
+        // Arbitrary Operators
+        @(kKCSWhere) : @"$where",
+        
+        // Internal Operators
+        @(kKCSWithin)  : @"$within",
+        @(kKCSOptions) : @"$options",
+        @(kKCSExists) : @"$exists",
+        @(kKCSType) : @"$type",
+        };
+    });
+
     return [KCSOperationStringLookup objectForKey:@(conditional)];
 }
 
@@ -323,50 +315,25 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     return query;
 }
 
-#pragma mark - iVars
-@synthesize query = _query;
-@synthesize JSONwriter = _JSONwriter;
-@synthesize sortModifiers = _sortModifiers;
-@synthesize limitModifer = _limitModifer;
-@synthesize skipModifier = _skipModifier;
-@synthesize referenceFieldsToResolve = _referenceFieldsToResolve;
-
 - (id)init
 {
     self = [super init];
     if (self){
         _JSONwriter = [[KCS_SBJsonWriter alloc] init];
-        _query = [[NSMutableDictionary dictionary] retain];
-        _sortModifiers = [@[] retain];
-        _referenceFieldsToResolve = [@[] retain];
+        _query = [NSMutableDictionary dictionary];
+        _sortModifiers = @[];
+        _referenceFieldsToResolve = @[];
     }
     return self;
 }
 
-- (void)dealloc
-{
-    [_JSONwriter release];
-    [_query release];
-    [_limitModifer release];
-    [_skipModifier release];
-    [_sortModifiers release];
-    [_referenceFieldsToResolve release];
-    _limitModifer = nil;
-    _skipModifier = nil;
-    _sortModifiers = nil;
-    _JSONwriter = nil;
-    _query = nil;
-    [super dealloc];
-}
 
 - (void)setQuery:(NSMutableDictionary *)query
 {
     if (_query == query){
         return;
     }
-    NSMutableDictionary *oldDict = _query;
     _query = [query mutableCopy];
-    [oldDict release];
 }
 
 + (id) valueOrKCSPersistableId:(NSObject*) value field:(NSString*)field
@@ -377,7 +344,8 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
             if ([field isEqualToString:KCSMetadataFieldLastModifiedTime] && [value isKindOfClass:[NSDate class]]) {
                 value = [(NSDate*)value stringWithISO8601Encoding];
             } else {
-                Class<KCSDataTypeBuilder> builderClass = [defaultBuilders() objectForKey:[value classForCoder]];
+                NSDictionary* builders = defaultBuilders();
+                Class<KCSDataTypeBuilder> builderClass = [builders objectForKey:[value classForCoder]];
                 if (builderClass) {
                     value = [builderClass JSONCompatabileValueForObject:value];
                 } else {
@@ -430,9 +398,9 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 + (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression
 {
-    NSUInteger options = kKCSRegexepDefault;
+    KCSRegexpQueryOptions options = kKCSRegexepDefault;
     if ([expression isKindOfClass:[NSRegularExpression class]]) {
-        options = [(NSRegularExpression*)expression options];
+        options = (KCSRegexpQueryOptions) [(NSRegularExpression*)expression options];
         expression = [(NSRegularExpression*)expression pattern];
     }
     return [self queryOnField:field withRegex:expression options:options];
@@ -444,7 +412,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     KCSQuery *query = [KCSQuery query];
     value = [KCSQuery valueOrKCSPersistableId:value field:field];
     
-    query.query = [[[self queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
+    query.query = [[self queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO] mutableCopy];
     
     return query;
     
@@ -461,7 +429,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     
     value = [self valueOrKCSPersistableId:value field:field];
     
-    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[value] useQueriesForOps:NO] mutableCopy] autorelease];
+    query.query = [[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[value] useQueriesForOps:NO] mutableCopy];
     
     return query;
     
@@ -474,19 +442,19 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     va_start(items, firstConditional);
     
     KCSQueryConditional currentCondition = firstConditional;
-    NSObject *currentQuery = va_arg(items, NSObject *);
     
-    while (currentCondition && currentQuery){
+    while (currentCondition) {
+        NSObject *currentQuery = va_arg(items, id);
         NSDictionary *pair = @{ @"op" : @(currentCondition), @"query" : currentQuery};
         [args addObject:pair];
+        //do it this way b/c for last condition currentCondition == 0 and the next one will be undefined
         currentCondition = va_arg(items, KCSQueryConditional);
-        currentQuery = va_arg(items, NSObject *);
     }
     va_end(items);
     
     KCSQuery *query = [self query];
     
-    query.query = [[[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:args useQueriesForOps:YES] mutableCopy] autorelease];
+    query.query = [[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:args useQueriesForOps:YES] mutableCopy];
     
     return query;
     
@@ -504,7 +472,7 @@ KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     
     KCSQuery *query = [self query];
     
-    query.query = [[[KCSQuery queryDictionaryWithFieldname:nil operation:joiningOperator forQueries:queries useQueriesForOps:NO] mutableCopy] autorelease];
+    query.query = [[KCSQuery queryDictionaryWithFieldname:nil operation:joiningOperator forQueries:queries useQueriesForOps:NO] mutableCopy];
     
     return query;
     
@@ -554,14 +522,44 @@ BOOL kcsIsOperator(NSString* queryField)
 + (KCSQuery*) queryForEmptyOrNullValueInField:(NSString*)field
 {
     KCSQuery *query = [self query];
-    query.query = [[[self queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[[NSNull null]] useQueriesForOps:NO] mutableCopy] autorelease];
+    query.query = [[self queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[[NSNull null]] useQueriesForOps:NO] mutableCopy];
     return query;
 }
 
 + (KCSQuery *)query
 {
-    KCSQuery *query = [[[self alloc] init] autorelease];
+    KCSQuery *query = [[self alloc] init];
     return query;
+}
+
++ (KCSQuery*) queryWithQuery:(KCSQuery *)query
+{
+    KCSQuery* newQuery = [self query];
+    newQuery.query = query.query;
+
+    //limit
+    KCSQueryLimitModifier* oldLimit = query.limitModifer;
+    if (oldLimit != nil) {
+        newQuery.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:oldLimit.limit];
+    }
+    
+    //skip
+    KCSQuerySkipModifier* oldSKip = query.skipModifier;
+    if (oldSKip != nil) {
+        newQuery.skipModifier = [[KCSQuerySkipModifier alloc] initWithcount:oldSKip.count];
+    }
+    
+    //sort
+    NSArray* sorts = query.sortModifiers;
+    if (sorts != nil && sorts.count > 0) {
+        NSMutableArray* newSorts = [NSMutableArray arrayWithCapacity:sorts.count];
+        for (KCSQuerySortModifier* s in sorts) {
+            [newSorts addObject:[[KCSQuerySortModifier alloc] initWithField:s.field inDirection:s.direction]];
+        }
+        newQuery.sortModifiers = newSorts;
+    }
+    
+    return newQuery;
 }
 
 
@@ -674,7 +672,7 @@ BOOL kcsIsOperator(NSString* queryField)
             [tmp setObject:[self.query objectForKey:key] forKey:key];
         }
         KCSQuery *q = [KCSQuery query];
-        q.query = [[tmp mutableCopy] autorelease];
+        q.query = [tmp mutableCopy];
     }
     return q;
 }
@@ -712,7 +710,7 @@ BOOL kcsIsOperator(NSString* queryField)
 
 - (NSString *)JSONStringRepresentation
 {
-    NSMutableDictionary* d = [[_query mutableCopy] autorelease];
+    NSMutableDictionary* d = [_query mutableCopy];
     if ([self hasReferences]) {
         [_query append:@"._id" ontoKeySet:self.referenceFieldsToResolve recursive:YES];
     }

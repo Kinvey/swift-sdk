@@ -16,10 +16,10 @@ typedef void (^RunBlock_t)();
 @interface KCSAsyncConnection : KCSConnection <NSURLConnectionDataDelegate>
 
 /* The (HTTP) response from the server.  We only store the final responding server in a redirect chain */
-@property (retain) NSURLResponse *lastResponse;
+@property (strong) NSURLResponse *lastResponse;
 
 /* Stored credentials for Kinvey access */
-@property (retain) NSURLCredential *basicAuthCred;
+@property (strong) NSURLCredential *basicAuthCred;
 
 /* How long to wait for a response before timing out */
 @property (readonly) double connectionTimeout;

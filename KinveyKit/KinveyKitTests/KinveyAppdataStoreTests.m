@@ -35,11 +35,6 @@
 
 }
 
-- (void) tearDown
-{
-    [_collection release];
-}
-
 -(void)testSaveOne
 {
     self.done = NO;
@@ -452,4 +447,39 @@ NSArray* largeArray()
     [self poll];
 }
 
+#pragma mark - Count
+
+- (void) testCountWithQuery
+{
+    NSMutableArray* baseObjs = [NSMutableArray array];
+    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a1"]];
+    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a2"]];
+    [baseObjs addObject:[self makeObject:@"two" count:10 objId:@"a3"]];
+    [baseObjs addObject:[self makeObject:@"two" count:30 objId:@"a4"]];
+    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a5"]];
+    [baseObjs addObject:[self makeObject:@"one" count:5  objId:@"a6"]];
+    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a7"]];
+    [_store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    KCSQuery* q = [KCSQuery queryOnField:@"objDescription" withExactMatchForValue:@"one"];
+    [_store countWithQuery:q completion:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError
+        unsigned long exp = 3;
+        STAssertEquals(exp, count, @"expeting count");
+        self.done = YES;
+    }];
+    [self poll];
+
+    self.done = NO;
+    [q addQueryOnField:@"objCount" withExactMatchForValue:@(10)];
+    [_store countWithQuery:q completion:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError
+        unsigned long exp = 2;
+        STAssertEquals(exp, count, @"expeting count");
+        self.done = YES;
+    }];
+    [self poll];
+}
 @end

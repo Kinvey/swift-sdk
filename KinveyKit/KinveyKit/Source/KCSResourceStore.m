@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 5/3/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSResourceStore.h"
@@ -21,8 +21,6 @@
 
 @implementation KCSResourceStore
 
-@synthesize authHandler = _authHandler;
-
 #pragma mark -
 #pragma mark Initialization
 
@@ -31,20 +29,13 @@
     return [self initWithAuth:nil];
 }
 
-
 - (id)initWithAuth: (KCSAuthHandler *)auth
 {
     self = [super init];
     if (self) {
-        _authHandler = [auth retain];
+        _authHandler = auth;
     }
     return self;
-}
-
-- (void) dealloc
-{
-    [_authHandler release];
-    [super dealloc];
 }
 
 + (id)store
@@ -59,20 +50,18 @@
 
 + (id)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
 {
-    KCSResourceStore *store = [[[self alloc] initWithAuth:authHandler] autorelease];
-    
+    KCSResourceStore *store = [[self alloc] initWithAuth:authHandler];
     [store configureWithOptions:options];
     
     return store;
 }
-
 
 #pragma mark - Adding/Updating
 - (void)saveObject: (id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
     
-    int totalObjects = objectsToProcess.count;
+    NSUInteger totalObjects = objectsToProcess.count;
     if (totalObjects == 0) {
         completionBlock(nil, nil);
     }
@@ -161,7 +150,7 @@
 - (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     NSArray *objectsToProcess = [NSArray wrapIfNotArray:query];
-    int totalObjects = objectsToProcess.count;
+    NSUInteger totalObjects = objectsToProcess.count;
     if (totalObjects == 0) {
         completionBlock(nil, nil);
     }
@@ -214,7 +203,7 @@
 - (void)removeObject:(id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
-    int totalObjects = objectsToProcess.count;
+    NSUInteger totalObjects = objectsToProcess.count;
     if (totalObjects == 0) {
         completionBlock(nil, nil);
     }

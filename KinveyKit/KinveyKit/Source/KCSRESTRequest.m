@@ -102,7 +102,7 @@ NSString * getLogDate(void)
 - (id)addBody:(NSData *)theBody
 {
     [self.request setHTTPBody:theBody];
-    [self.request setValue:[NSString stringWithFormat:@"%ld", [theBody length]] forHTTPHeaderField:@"Content-Length"];
+    [self.request setValue:[NSString stringWithFormat:@"%ld", (long) [theBody length]] forHTTPHeaderField:@"Content-Length"];
     return self;
 }
 
@@ -162,7 +162,6 @@ NSString * getLogDate(void)
     // Let the server know we want wrapped json erors
     [self.request setValue:@"true" forHTTPHeaderField:@"X-Kinvey-ResponseWrapper"];
     
-    
     if ([self.request.allHTTPHeaderFields objectForKey:@"Authorization"] == nil) {
         KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
         if (cred.requiresAuthentication){
@@ -172,7 +171,7 @@ NSString * getLogDate(void)
             if (authString == nil){
                 // We're only going to try this so many times before we just give up
                 if (self.retriesAttempted >= MAX_NUMBER_OF_RETRIES_K){
-                    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Request Timeout"
+                    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Authentication Request Timeout"
                                                                                        withFailureReason:@"Authentication service failed to return valid credentials after multiple attempts."
                                                                                   withRecoverySuggestion:@"Check to see if the network is active."
                                                                                      withRecoveryOptions:nil];

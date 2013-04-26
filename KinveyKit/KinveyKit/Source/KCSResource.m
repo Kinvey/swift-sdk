@@ -7,8 +7,7 @@
 //
 
 #import "KCSResource.h"
-
-#import <UIKit/UIKit.h>
+#import "KCSImageUtils.h"
 
 #define kTypeResourceValue @"resource"
 #define kTypeKey @"_type"
@@ -29,7 +28,7 @@
 {
     id resource = data;
     if ([mimeType isEqualToString:kImageMimeType]) {
-        resource = [UIImage imageWithData:data];
+        resource = [KCSImageUtils imageWithData:data];
     }
     return resource;
 }
@@ -59,7 +58,7 @@
 NSString* mimeType(id obj);
 NSString* mimeType(id obj)
 {
-    if ([obj isKindOfClass:[UIImage class]]) {
+    if ([obj isKindOfClass:[ImageClass class]]) {
         return kImageMimeType;
     }
     return @"application/octet-stream";
@@ -80,8 +79,8 @@ NSString* mimeType(id obj)
         data = [NSData dataWithContentsOfURL:_resource];
     } else if ([_resource isKindOfClass:[NSString class]]) {
         data = [NSData dataWithContentsOfFile:_resource];
-    } else if ([_resource isKindOfClass:[UIImage class]]) {
-        data = UIImagePNGRepresentation(_resource);
+    } else if ([_resource isKindOfClass:[ImageClass class]]) {
+        data = [KCSImageUtils dataFromImage:_resource];
     } //TODO: general
     return data;
 }
@@ -102,7 +101,7 @@ NSString* mimeType(id obj)
                 location = [_resource lastPathComponent];
             } else if ([_resource isKindOfClass:[NSString class]]) {
                 location = [_resource lastPathComponent];
-            } else if ([_resource isKindOfClass:[UIImage class]]) {
+            } else if ([_resource isKindOfClass:[ImageClass class]]) {
                 CFUUIDRef uuid = CFUUIDCreate(NULL);
                 NSString *uuidString = nil;
                 

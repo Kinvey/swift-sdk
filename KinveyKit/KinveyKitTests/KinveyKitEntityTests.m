@@ -2,7 +2,7 @@
 //  KinveyKitEntityTests.m
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitEntityTests.h"
@@ -11,7 +11,9 @@
 #import "KCSObjectMapper.h"
 
 #import <CoreLocation/CoreLocation.h>
+#import <UIKit/UIKit.h>
 #import "CLLocation+Kinvey.h"
+#import "KinveyErrorCodes.h"
 
 @interface TestObject : NSObject <KCSPersistable>
 
@@ -23,7 +25,7 @@
 @property (nonatomic, retain) NSOrderedSet* oSetParam;
 @property (nonatomic, retain) NSMutableAttributedString* asParam;
 @property (nonatomic, retain) CLLocation* locParam;
-
+@property (nonatomic, retain) UIImage* image;
 @end
 
 @implementation TestObject
@@ -31,84 +33,36 @@
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
     return @{@"testId" : KCSEntityKeyId,
-    @"testParam1" : @"testParam1i",
-    @"testParam2" : @"testParam2i",
-    @"setParam"   : @"setParam",
-    @"dateParam" : @"dateParam",
-    @"oSetParam" : @"oSetParam",
-    @"asParam" : @"asParam",
-    @"locParam" : @"locParam"};
+             @"testParam1" : @"testParam1i",
+             @"testParam2" : @"testParam2i",
+             @"setParam"   : @"setParam",
+             @"dateParam" : @"dateParam",
+             @"oSetParam" : @"oSetParam",
+             @"asParam" : @"asParam",
+             @"locParam" : @"locParam",
+             @"image" : @"image"};
+}
+
+@end
+
+@interface BrokenHostMappingObj : NSObject <KCSPersistable>
+
+@end
+
+@implementation BrokenHostMappingObj
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    static NSDictionary* mapping;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        mapping = @{@"objectId" : KCSEntityKeyId};
+                    });
+        return mapping;
 }
 
 @end
 
 @implementation KinveyKitEntityTests
-
-// All code under test must be linked into the Unit Test bundle
-
-- (void)testSaveEntityNormal
-{
-    STFail(@"Not implemented yet");
-}
-
-- (void)testSaveEntityBadEntity
-{
-    STFail(@"Not implemented yet");
-}
-
-- (void)testDeleteEntityNormal
-{
-    STFail(@"Not implemented yet");
-}
-
-- (void)testDeleteEntityBadEntity
-{
-    STFail(@"Not implemented yet");
-}
-
-
-- (void)testLoadNormalEntity
-{
-    STFail(@"Not implemented yet");
-}
-
-- (void)testLoadMalformedEntity
-{
-    STFail(@"Not implemented yet");
-}
-
-- (void)testValueForPropertyDeserialization
-{
-    STFail(@"Not implemented yet");
-}
-
-
-- (void)testFindEntityWithPropertyRoutines
-{
-    STFail(@"Not implemented yet");
-}
-
-
-- (void)testFetchOneFromCollection
-{
-    STFail(@"Not implemented yet");
-}
-
-- (void)testObjectIDConvienience
-{
-    STFail(@"Not implemented yet");
-}
-
-
-- (void)testSetValueForObject
-{
-    STFail(@"Not implemented yet");
-}
-
-- (void)testHostToKinveyPropertyMappingRaisesException
-{
-    STFail(@"Not implemented yet");
-}
 
 - (void) testTypesSerialize
 {
@@ -146,13 +100,13 @@
 - (void) testTypesDeserialize
 {
     NSDictionary* data = @{ KCSEntityKeyId : @"idX",
-    @"testParam1i" : @"p1",
-    @"testParam2i" : @1.245,
-    @"dateParam"   : @"ISODate(\"1970-01-01T00:00:00.000Z\")",
-    @"setParam"    : @[@"2",@"1",@7],
-    @"oSetParam"   : @[@"2",@"1",@7],
-    @"asParam"     : @"abcedf",
-    @"locParam"    : @[@100,@-30]};
+                            @"testParam1i" : @"p1",
+                            @"testParam2i" : @1.245,
+                            @"dateParam"   : @"ISODate(\"1970-01-01T00:00:00.000Z\")",
+                            @"setParam"    : @[@"2",@"1",@7],
+                            @"oSetParam"   : @[@"2",@"1",@7],
+                            @"asParam"     : @"abcedf",
+                            @"locParam"    : @[@100,@-30]};
     TestObject* out = [KCSObjectMapper makeObjectOfType:[TestObject class] withData:data];
     
     STAssertNotNil(out, @"Should not be nil");
@@ -169,5 +123,45 @@
     STAssertEqualObjects([out.locParam kinveyValue] , a, @"should be matching CLLocation");
 }
 
+- (void) testLinkedRef
+{
+    NSDictionary* data = @{ KCSEntityKeyId : @"idX",
+                            @"testParam1i" : @"p1",
+                            @"testParam2i" : @1.245,
+                            @"dateParam"   : @"ISODate(\"1970-01-01T00:00:00.000Z\")",
+                            @"setParam"    : @[@"2",@"1",@7],
+                            @"oSetParam"   : @[@"2",@"1",@7],
+                            @"asParam"     : @"abcedf",
+                            @"locParam"    : @[@100,@-30],
+                            @"image"       : @{
+                                @"_loc" : @"OfflineSave-linked1-photo.png",
+                                @"_mime-type" : @"image/png",
+                                @"_type" : @"resource"
+                            }};
+    TestObject* out = [KCSObjectMapper makeObjectOfType:[TestObject class] withData:data];
+    
+    STAssertNotNil(out, @"Should not be nil");
+    id im = out.image;
+    STAssertNotNil(im, @"image should be valid");
+    STAssertTrue([im isKindOfClass:[NSDictionary class]], @"should be a dictionary");
+    
+    NSMutableDictionary* resources = [NSMutableDictionary dictionary];
+    TestObject* out2 = [KCSObjectMapper makeObjectWithResourcesOfType:[TestObject class] withData:data withResourceDictionary:resources];
 
+    STAssertNotNil(out2, @"Should not be nil");
+    id im2 = out2.image;
+    STAssertNil(im2, @"image should be nil");
+    STAssertEquals((int) 1, (int) resources.count, @"should have a resource to loag");
+    STAssertNotNil(resources[@"image"], @"should have an image value");
+}
+
+- (void) testPropMap
+{
+    BrokenHostMappingObj* obj = [[BrokenHostMappingObj alloc] init];
+    NSError* error = nil;
+    KCSSerializedObject* d = [KCSObjectMapper makeKinveyDictionaryFromObject:obj error:&error];
+    STAssertNil(d, @"should be nil");
+    STAssertNotNil(error, @"Should have an error");
+    STAssertEquals((int)KCSInvalidKCSPersistableError, (int) error.code, @"should make a invalid persistable error");
+}
 @end

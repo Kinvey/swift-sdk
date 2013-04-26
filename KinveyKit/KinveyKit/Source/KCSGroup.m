@@ -3,10 +3,18 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/21/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSGroup.h"
+@interface KCSGroup () {
+@private
+    NSArray* _array;
+    NSString* _key;
+    NSArray* _queriedFields;
+}
+
+@end
 
 @implementation KCSGroup
 
@@ -14,20 +22,22 @@
 {
     self = [super init];
     if (self) {
-        _array = [jsonData retain];
-        _queriedFields = [[NSArray arrayWithArray:fields] retain];
-        _key = [key retain];
+        _array = [jsonData copy];
+       
+        if (fields.count == 0) {
+            NSMutableArray* fieldValues = [NSMutableArray array];
+            for (NSDictionary* d in jsonData) {
+                NSMutableArray* keys = [[d allKeys] mutableCopy];
+                [keys removeObject:key];
+                [fieldValues addObjectsFromArray:keys];
+            }
+            _queriedFields = [NSArray arrayWithArray:fieldValues];
+        } else {
+            _queriedFields = [NSArray arrayWithArray:fields];
+        }
+        _key = [key copy];
     }
     return self;
-}
-
-- (void) dealloc
-{
-    [_array release];
-    [_key release];
-    [_queriedFields release];
-
-    [super dealloc];
 }
 
 - (NSArray*) fieldsAndValues
@@ -35,14 +45,14 @@
     return _array;
 }
 
-- (NSString*) returnValueKey 
+- (NSString*) returnValueKey
 {
     return _key;
 }
 
 - (id) reducedValueForFields:(NSDictionary*)fields
 {
-    __block NSNumber* number = [NSNumber numberWithInt:NSNotFound];
+    __block NSNumber* number = @(NSNotFound);
     [self enumerateWithBlock:^(NSArray *fieldValues, id value, NSUInteger idx, BOOL *stop) {
         BOOL found = NO;
         for (NSString* field in [fields allKeys]) {

@@ -41,12 +41,18 @@ typedef enum  {
     KCSSocialIDTwitter,
     /** LinkedIn */
     KCSSocialIDLinkedIn,
+    /** Salesforce */
+    KCSSocialIDSalesforce,
+    KCSSocialIDOther,
 } KCSUserSocialIdentifyProvider;
 
 /** Access Dictionary key for the token: both Facebook & Twitter */
 #define KCSUserAccessTokenKey @"access_token"
 /** Access Dictionary key for the token secret: just Twitter */
 #define KCSUserAccessTokenSecretKey @"access_token_secret"
+
+/** Notification type. This is called when a user is logged in or logged out. `userInfo` and `object` are nil. Query `+[KCSUser activeUser] to get the new value. */
+FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
 
 /*!  Describes required methods for an object wishing to be notified about the status of user actions.
  *
@@ -125,7 +131,7 @@ typedef enum  {
 /*! Password of this Kinvey User */
 @property (nonatomic, copy) NSString *password;
 /** The Kinvey user collection id for the user */
-@property (nonatomic, retain) NSString *userId;
+@property (nonatomic, strong) NSString *userId;
 /*! Device Tokens of this User */
 @property (nonatomic, copy) NSArray *deviceTokens;
 /*! Session Auth Token, if available */
@@ -133,7 +139,7 @@ typedef enum  {
 /*! Access Control Metadata of this User 
  @see KCSPersistable
  */
-@property (nonatomic, retain) KCSMetadata *metadata;
+@property (nonatomic, strong) KCSMetadata *metadata;
 /** Optional surname for the user. Publicly queryable be default. */
 @property (nonatomic, copy) NSString *surname;
 /** Optional given (first) name for the user. Publicly queryable be default. */
@@ -146,6 +152,10 @@ typedef enum  {
  */
 @property (nonatomic, readonly) BOOL emailVerified;
 
+/** Checks if credentials have been stored in the keychain. 
+ 
+ This is useful to check if a user will be loaded on the first call to Kinvey, or if an implicit user will be created instead. 
+ */
 + (BOOL) hasSavedCredentials;
 
 /** Clears and saved credentials from the keychain.
@@ -343,15 +353,13 @@ typedef enum  {
  
  Until the password reset is complete, the old password remains active and valid. This allows the user to ignore the request if he remembers the old password. If too much time has passed, the email link will no longer be valid, and the user will have to initiate a new sendPasswordResetForUser:withCompletionBlock:.
  
- Because we do not yet provide a username reset/reminder function, we recommend that you use email addresses as usernames. 
+ If the user knows his current password and is logged in, but wants to change the password, it can just be done with the - [KCSUser setPassword:] method followed by saving the current user to the back-end.
  
- If the user knows his current password and is logged in, but wants to change the password, it can just be done with the - [KCSUser setPassword:] method followed by saving the current user to the back-end.  
- 
- @param username the user to send the password reset link to
+ @param usernameOrEmail the username or user email to send the password reset link to
  @param completionBlock the request callback. `emailSent` is true if the email address is found and an email is sent (does not guarantee delivery). If `emailSent` is `NO`, then the `errorOrNil` value will have information as to what went wrong on the network. For security reasons, `emailSent` will be true even if the user is not found or the user does not have an associated email.
  @since 1.10.0
  */
-+ (void) sendPasswordResetForUser:(NSString*)username withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
++ (void) sendPasswordResetForUser:(NSString*)usernameOrEmail withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
 
 
 /** Sends an request to confirm email address to the specified user.

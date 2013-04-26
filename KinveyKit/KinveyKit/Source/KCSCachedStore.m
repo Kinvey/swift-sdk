@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/10/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSCachedStore.h"
@@ -34,7 +34,6 @@
 @end
 
 @implementation KCSCachedStore
-@synthesize cachePolicy = _cachePolicy;
 
 #pragma mark - Initialization
 
@@ -46,7 +45,10 @@
     self.cachePolicy = cachePolicy;
     
     KCSCollection* backingCollection = [self backingCollection];
-    _cache = [[KCSCachedStoreCaching cacheForCollection:backingCollection.collectionName] retain];
+    _cache = [KCSCachedStoreCaching cacheForCollection:backingCollection.collectionName];
+    if (cachePolicy == KCSCachePolicyReadOnceAndSaveLocal_Xperimental) {
+        [_cache setPersistenceId:[options objectForKey:KCSStoreKeyLocalCachePersistanceKey_Xperimental]];
+    }
     
     return retVal;
 }
@@ -60,11 +62,6 @@
     return self;
 }
 
-- (void) dealloc
-{
-    [_cache release];
-    [super dealloc];
-}
 
 #pragma mark - Cache Policy
 

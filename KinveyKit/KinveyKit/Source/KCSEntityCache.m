@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 10/23/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSEntityCache.h"
@@ -16,21 +16,26 @@
 #import "KCSLogManager.h"
 
 #import "KCSReduceFunction.h"
-//#import "math.h"
+
 #import <CommonCrypto/CommonDigest.h>
 
 #import "KCSAppdataStore.h"
 #import "KinveyCollection.h"
 #import "KinveyErrorCodes.h"
 
-@interface KCSEntityCache ()
+#import "KCSObjectMapper.h"
+#import "KinveyUser.h"
+
+@interface KCSEntityCache () <NSCacheDelegate>
 {
     NSCache* _cache;
     NSCache* _queryCache;
     NSCache* _groupingCache;
     NSMutableOrderedSet* _unsavedObjs;
+
 }
-@property (nonatomic, retain) NSDictionary* saveContext;
+@property (nonatomic, strong) NSDictionary* saveContext;
+@property (nonatomic, retain) NSString* persistenceId;
 @end
 
 
@@ -92,11 +97,11 @@ static KCSCachedStoreCaching* sCaching;
 
 
 
-@interface CacheValue : NSObject
+@interface CacheValue : NSObject <NSCoding>
 @property (nonatomic) NSUInteger count;
-@property (nonatomic) id<KCSPersistable> object;
+@property (retain, nonatomic) id<KCSPersistable> object;
 @property (nonatomic) BOOL unsaved;
-@property (nonatomic, retain) NSDate* lastSavedTime;
+@property (nonatomic, strong) NSDate* lastSavedTime;
 @end
 @implementation CacheValue
 
@@ -107,6 +112,32 @@ static KCSCachedStoreCaching* sCaching;
         _count = 1;
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self) {
+        _lastSavedTime = [aDecoder decodeObjectForKey:@"date"];
+        _count = [aDecoder decodeIntForKey:@"count"];
+        _unsaved = [aDecoder decodeBoolForKey:@"unsaved"];
+        NSString* clName = [aDecoder decodeObjectForKey:@"classname"];
+        NSDictionary* objData = [aDecoder decodeObjectForKey:@"object"];
+        _object = [KCSObjectMapper makeObjectOfType:NSClassFromString(clName) withData:objData];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:_lastSavedTime forKey:@"date"];
+    [aCoder encodeInteger:_count forKey:@"count"];
+    [aCoder encodeBool:_unsaved forKey:@"unsaved"];
+    [aCoder encodeObject:NSStringFromClass([_object class]) forKey:@"classname"];
+    NSError* error = nil;
+    KCSSerializedObject* obj = [KCSObjectMapper makeKinveyDictionaryFromObject:_object error:&error];
+    DBAssert(error == nil, @"error = %@", error);
+    [aCoder encodeObject:[obj dataToSerialize] forKey:@"object"];
 }
 @end
 
@@ -127,6 +158,7 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
 @implementation KCSEntityCache
 static uint counter;
 
+#if TARGET_OS_IPHONE
 void md5(NSString* s, unsigned char* result)
 {
     const char *cStr = [s UTF8String];
@@ -136,9 +168,6 @@ void md5(NSString* s, unsigned char* result)
 NSString* KCSMongoObjectId()
 {
     int timestamp = (time_t) [[NSDate date] timeIntervalSince1970];
-//    NSString *processName = [[NSProcessInfo processInfo] processName];
-//    unsigned char namebytes[16];
-//    md5(processName, namebytes);
     NSString *hostName = [[NSProcessInfo processInfo] hostName];
     unsigned char hostbytes[16];
     md5(hostName, hostbytes);
@@ -150,6 +179,29 @@ NSString* KCSMongoObjectId()
             pid, counter];
     return s;
 }
+#else
+
+void md5(NSString* s, unsigned char* result)
+{
+    const char *cStr = [s UTF8String];
+    CC_MD5( cStr, (CC_LONG) strlen(cStr), result ); // This is the md5 call
+}
+
+NSString* KCSMongoObjectId()
+{
+    int timestamp = (int) [[NSDate date] timeIntervalSince1970];
+    NSString *hostName = [[NSProcessInfo processInfo] hostName];
+    unsigned char hostbytes[16];
+    md5(hostName, hostbytes);
+    int pid = getpid();
+    counter = (counter + 1) % 16777216;
+    NSString* s = [NSString stringWithFormat:
+                   @"%08x%02x%02x%02x%04x%06x",
+                   timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
+                   pid, counter];
+    return s;
+}
+#endif
 
 + (void)initialize
 {
@@ -163,10 +215,90 @@ NSString* KCSMongoObjectId()
     if (self) {
         _cache = [[NSCache alloc] init];
         _queryCache = [[NSCache alloc] init];
+        _queryCache.delegate = self;
         _groupingCache = [[NSCache alloc] init];
         _unsavedObjs = [NSMutableOrderedSet orderedSet];
     }
     return self;
+}
+
+//TODO:
+- (void)cache:(NSCache *)cache willEvictObject:(id)obj
+{
+    KCSLogWarning(@"CACHE DISCARD OBJ: %@",obj);
+}
+
+#pragma mark - peristence
+- (void)setPersistenceId:(NSString *)key
+{
+    //TODO: maybe reuse context dictionary
+    
+    //TODO: reuse URLs in array oe dict
+    //TODO: clear up if change
+    _persistenceId = key;
+    NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", key]]];
+//    _cache = [NSMutableDictionary dictionaryWithContentsOfURL:url];
+    _cache = [NSKeyedUnarchiver unarchiveObjectWithFile:[url path]];
+    if (!_cache) {
+        _cache = [NSMutableDictionary dictionary];
+    }
+    
+    url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheq.plist", key]]];
+    _queryCache = [NSKeyedUnarchiver unarchiveObjectWithFile:[url path]];//[NSMutableDictionary dictionaryWithContentsOfURL:url];
+    if (!_queryCache) {
+        _queryCache = [NSMutableDictionary dictionary];
+    }
+    
+    url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheg.plist", key]]];
+    _groupingCache = [NSKeyedUnarchiver unarchiveObjectWithFile:[url path]];// [NSMutableDictionary dictionaryWithContentsOfURL:url];
+    if (!_groupingCache) {
+        _groupingCache = [NSMutableDictionary dictionary];
+    }
+
+}
+
+- (void) persist
+{
+    if (_persistenceId != nil) {
+        //TODO handle errors
+        NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", _persistenceId]]];
+        BOOL wrote = [NSKeyedArchiver archiveRootObject:_cache toFile:[url path]];
+        DBAssert(wrote, @"should have written cache");
+        url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheq.plist", _persistenceId]]];
+        wrote = [NSKeyedArchiver archiveRootObject:_queryCache toFile:[url path]];
+        DBAssert(wrote, @"should have written cache");
+
+        url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheg.plist", _persistenceId]]];
+        wrote = [NSKeyedArchiver archiveRootObject:_groupingCache toFile:[url path]];
+        DBAssert(wrote, @"should have written cache");
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearCaches) name:KCSActiveUserChangedNotification object:nil];
+    }
+}
+
+- (void) clearCaches
+{
+    if (_persistenceId != nil) {
+        NSError* error = nil;
+
+        NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", _persistenceId]]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+            [[NSFileManager defaultManager] removeItemAtURL:url error:&error];
+        }
+        DBAssert(!error, @"error clearing cache: %@", error);
+
+        url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheq.plist", _persistenceId]]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+            [[NSFileManager defaultManager] removeItemAtURL:url error:&error];
+        }
+        DBAssert(!error, @"error clearing cache: %@", error);
+        
+        url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheg.plist", _persistenceId]]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+            [[NSFileManager defaultManager] removeItemAtURL:url error:&error];
+        }
+        DBAssert(!error, @"error clearing cache: %@", error);
+    }
+    [self dumpContents];
 }
 
 #pragma mark - querying
@@ -259,7 +391,7 @@ NSString* KCSMongoObjectId()
 - (void) setResults:(NSArray*)results forQuery:(KCSQuery*)query
 {
     NSString* queryKey = [query JSONStringRepresentation];
-    NSMutableOrderedSet* oldIds = [_queryCache objectForKey:queryKey];
+    NSMutableOrderedSet* oldIds = [[_queryCache objectForKey:queryKey] mutableCopy];
     NSMutableOrderedSet* ids = [NSMutableOrderedSet orderedSetWithCapacity:oldIds.count];
     for (id n in results) {
         NSString* objId = [n kinveyObjectId];
@@ -268,17 +400,19 @@ NSString* KCSMongoObjectId()
             [self addResult:n];
         }
     }
-    [_queryCache setObject:ids forKey:queryKey];
+    [_queryCache setObject:ids forKey:queryKey cost:100];
     if (oldIds) {
         [oldIds removeObjectsInArray:[ids array]];
         [self removeIds:[oldIds array]];
     }
+    [self persist];
 }
 
 - (void) setResults:(KCSGroup*)results forGroup:(NSArray*)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition;
 {
     NSString* key = cacheKeyForGroup(fields, function, condition);
     [_groupingCache setObject:results forKey:key];
+    [self persist];
 }
 
 #pragma mark - removing
@@ -300,12 +434,14 @@ NSString* KCSMongoObjectId()
     NSMutableOrderedSet* keys = [_queryCache objectForKey:queryKey];
     [self removeIds:[keys array]];
     [_queryCache removeObjectForKey:queryKey];
+    [self persist];
 }
 
 - (void) removeGroup:(NSArray*)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition;
 {
     NSString* key = cacheKeyForGroup(fields, function, condition);
     [_groupingCache removeObjectForKey:key];
+    [self persist];
 }
 
 
@@ -314,6 +450,7 @@ NSString* KCSMongoObjectId()
 - (void)dealloc
 {
     [self dumpContents];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:KCSActiveUserChangedNotification object:nil];
 }
 
 - (void) dumpContents

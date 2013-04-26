@@ -2,7 +2,7 @@
 //  KCSReduceFunction.h
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -37,6 +37,11 @@
  */
 + (KCSReduceFunction*) AVERAGE:(NSString*)fieldToAverage;
 
+/** Function to collect all the objects for a particular field value.
+ 
+ This is a useful function for obtaining objects for sectioned tables. 
+ @since 1.14.0
+ */
 + (KCSReduceFunction*) AGGREGATE;
 
 - (NSString *)JSONStringRepresentationForFunction:(NSArray*)fields;

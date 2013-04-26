@@ -96,8 +96,8 @@
     dispatch_queue_t myq = dispatch_queue_create("com.kinvey.testq", NULL);
     dispatch_retain(myq);
     dispatch_block_t block = ^(){
-        [[NSAutoreleasePool alloc] init];
-        loop = [[NSRunLoop currentRunLoop] retain];
+        @autoreleasepool {
+        loop = [NSRunLoop currentRunLoop];
         // Do this call to force getting a Kinvey generated username for the current user.
 //        [NSOperationQueue 
         [KCSPing checkKinveyServiceStatusWithAction:^(KCSPingResult *result){
@@ -117,8 +117,8 @@
             }
         }];
         //[self poll];
+        }
     };
-    [block retain];
 
     dispatch_async(myq, block);
     dispatch_retain(myq);
@@ -127,7 +127,7 @@
 
 - (void) runthis
 {
-    [[NSAutoreleasePool alloc] init];
+    @autoreleasepool {
 //    dispatch_queue_t myq = dispatch_queue_create("com.kinvey.testq", NULL);
 //    dispatch_retain(myq);
 //    dispatch_async(myq, ^(){
@@ -149,10 +149,10 @@
         }];
     }];
 //    });
-
+    }
 }
 
-- (void) testY
+- (void) XtestY
 {
     XYZ* xyz = [[XYZ alloc] init];
     self.done = NO;

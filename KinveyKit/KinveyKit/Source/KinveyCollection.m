@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/13/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyPersistable.h"
@@ -40,7 +40,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
                                                            id<KCSCollectionDelegate>delegate,
                                                            KCSCompletionBlock onComplete)
 {
-    return [[^(KCSConnectionResponse *response){
+    return [^(KCSConnectionResponse *response){
         
         KCSLogTrace(@"In collection callback with response: %@", response);
         NSMutableArray *processedData = [[NSMutableArray alloc] init];
@@ -54,8 +54,6 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
             } else {
                 onComplete(nil, error);
             }
-
-            [processedData release];
             return;
         }
         
@@ -77,8 +75,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
         } else {
             onComplete(processedData, nil);
         }
-        [processedData release];
-    } copy] autorelease];
+    } copy];
 }
 
 KCSConnectionFailureBlock    makeCollectionFailureBlock(KCSCollection *collection,
@@ -86,13 +83,13 @@ KCSConnectionFailureBlock    makeCollectionFailureBlock(KCSCollection *collectio
                                                         KCSCompletionBlock onComplete)
 {
     if (delegate){
-        return [[^(NSError *error){
+        return [^(NSError *error){
             [delegate collection:collection didFailWithError:error];
-        } copy] autorelease];
+        } copy];
     } else {
-        return [[^(NSError *error){
+        return [^(NSError *error){
             onComplete(nil, error);
-        } copy] autorelease];        
+        } copy];
     }
 }
 
@@ -101,13 +98,13 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
                                                          KCSProgressBlock onProgress)
 {
     
-    return [[^(KCSConnectionProgress *conn)
+    return [^(KCSConnectionProgress *conn)
     {
         if (onProgress != nil) {
             //TODO: deprecate
             onProgress(@[], conn.percentComplete);
         }
-    } copy] autorelease];
+    } copy];
     
 }
 
@@ -126,13 +123,6 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 // And later...
 // [self.objectCollection collectionDelegateFetchAll: ()
 
-@synthesize collectionName=_collectionName;
-@synthesize objectTemplate=_objectTemplate;
-@synthesize lastFetchResults=_lastFetchResults;
-@synthesize filters=_filters;
-@synthesize baseURL = _baseURL;
-@synthesize query = _query;
-
 - (id)initWithName: (NSString *)name forTemplateClass: (Class) theClass
 {
     self = [super init];
@@ -143,14 +133,13 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
                 [[NSException exceptionWithName:@"Invalid Template" reason:@"User collection must have a template that is of type 'KCSUser'" userInfo:nil] raise];
             }
             _collectionName = @"";
-            _baseURL = [[[KCSClient sharedClient] userBaseURL] retain]; //use user url for user collection
+            _baseURL = [[KCSClient sharedClient] userBaseURL]; //use user url for user collection
         } else {
-            _collectionName = [name retain];
-            _baseURL = [[[KCSClient sharedClient] appdataBaseURL] retain]; // Initialize this to the default appdata URL
+            _collectionName = name;
+            _baseURL = [[KCSClient sharedClient] appdataBaseURL]; // Initialize this to the default appdata URL
         }
         _objectTemplate = theClass;
         _lastFetchResults = nil;
-        _filters = [[NSMutableArray alloc] init];
         _query = nil;
     }
     
@@ -161,16 +150,6 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 - (id)init
 {
     return [self initWithName:nil forTemplateClass:[NSObject class]];
-}
-
-- (void)dealloc
-{
-    [_filters release];
-    [_lastFetchResults release];
-    [_collectionName release];
-    [_baseURL release];
-    [_query release];
-    [super dealloc];
 }
 
 // Override isEqual method to allow comparing of Collections
@@ -190,14 +169,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     if (![c.objectTemplate isEqual:c.objectTemplate]){
         return NO;
     }
-    
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if (![self.filters isEqualToArray:c.filters]){
-        return NO;
-    }
-#pragma clang diagnostic pop
-    
+        
     return YES;
 }
 
@@ -205,14 +177,18 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 + (KCSCollection *)collectionFromString: (NSString *)string ofClass: (Class)templateClass
 {
-    KCSCollection *collection = [[[self alloc] initWithName:string forTemplateClass:templateClass] autorelease];
+    KCSCollection *collection = [[self alloc] initWithName:string forTemplateClass:templateClass];
     return collection;
 }
 
 
 #pragma mark Basic Methods
-- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint
+- (NSString*) urlForEndpoint:(NSString*)endpoint
 {
+    if (endpoint == nil) {
+        endpoint = @"";
+    }
+    
     NSString *resource = nil;
     // create a link: baas.kinvey.com/:appid/:collection/:id
     if ([self.collectionName isEqualToString:@""]){
@@ -220,6 +196,12 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     } else {
         resource = [self.baseURL stringByAppendingFormat:@"%@/%@", self.collectionName, endpoint];
     }
+    return resource;
+}
+
+- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint
+{
+    NSString *resource = [self urlForEndpoint:endpoint];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:method];
     [request setContentType:KCS_JSON_TYPE];        
     return request;
@@ -237,100 +219,6 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-}
-
-// Private class helper method...
-+ (NSString *)getOperatorString: (int)op
-{
-    switch (op) {
-        case KCS_EQUALS_OPERATOR:
-            return nil;
-            break;
-        case KCS_LESS_THAN_OPERATOR:
-            return @"$lt";
-            break;
-        case KCS_GREATER_THAN_OPERATOR:
-            return @"$gt";
-            break;
-        case KCS_LESS_THAN_OR_EQUAL_OPERATOR:
-            return @"$lte";
-            break;
-        case KCS_GREATER_THAN_OR_EQUAL_OPERATOR:
-            return @"$gte";
-            break;
-            
-        default:
-            return nil;
-            break;
-    }
-}
-
-- (NSString *)buildQueryForProperty: (NSString *)property withValue: (id)value filteredByOperator: (int)op
-{
-    NSString *query;
-    
-    NSString *stringValue;
-    
-    // Check to see if the object is a string or a real object
-    // surround strings with quotes, values without
-    if ([value isKindOfClass:[NSString class]]){
-        stringValue = [NSString stringWithFormat:@"\"%@\"", value];
-    } else {
-        stringValue = [NSString stringWithFormat:@"%@", value];
-    }
-    
-    if (op == KCS_EQUALS_OPERATOR){
-        query = [NSString stringWithFormat:@"\"%@\": %@", property, stringValue];
-    } else {
-        query = [NSString stringWithFormat:@"\"%@\": {\"%@\": %@}", property, [KCSCollection getOperatorString:op], stringValue];
-    }
-    return query;
-    
-}
-
-- (NSString *)buildQueryForFilters: (NSArray *)filters
-{
-    NSString *outputString = @"{";
-    for (NSString *filter in filters) {
-        outputString = [outputString stringByAppendingFormat:@"%@, ", filter];
-    }
-    
-    // String the trailing ','
-    if ([outputString characterAtIndex:[outputString length]-2] == ','){
-        outputString = [outputString substringToIndex:[outputString length] -2];
-    }
-    
-    return [outputString stringByAppendingString:@"}"];
-}
-
-
-#pragma mark Query Methods
-- (void)addFilterCriteriaForProperty: (NSString *)property withBoolValue: (BOOL) value filteredByOperator: (int)operator
-{
-    [[self filters] addObject:[self buildQueryForProperty:property withValue:[NSNumber numberWithBool:value] filteredByOperator:operator]];
-}
-
-- (void)addFilterCriteriaForProperty: (NSString *)property withDoubleValue: (double)value filteredByOperator: (int)operator
-{
-    [[self filters] addObject:[self buildQueryForProperty:property withValue:[NSNumber numberWithBool:value] filteredByOperator:operator]];
-	
-}
-
-- (void)addFilterCriteriaForProperty: (NSString *)property withIntegerValue: (int)value filteredByOperator: (int)operator
-{
-    [[self filters] addObject:[self buildQueryForProperty:property withValue:[NSNumber numberWithBool:value] filteredByOperator:operator]];
-	
-}
-
-- (void)addFilterCriteriaForProperty: (NSString *)property withStringValue: (NSString *)value filteredByOperator: (int)operator
-{
-    [[self filters] addObject:[self buildQueryForProperty:property withValue:value filteredByOperator:operator]];
-	
-}
-
-- (void)resetFilterCriteria
-{
-    [self.filters removeAllObjects];
 }
 
 - (void)fetchWithQuery:(KCSQuery *)query withCompletionBlock:(KCSCompletionBlock)onCompletion withProgressBlock:(KCSProgressBlock)onProgress
@@ -367,7 +255,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 - (void)fetchWithDelegate:(id<KCSCollectionDelegate>)delegate
 {
     // Guard against an empty filter
-    if (_filters.count == 0 && self.query == nil){
+    if (self.query == nil){
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to fetch with an empty query."
                                                                            withFailureReason:@"No query or filter was supplied to fetchWithDelegate:"
                                                                       withRecoverySuggestion:@"Provide a query or filter, or use fetchAllWithDelegate:"
@@ -390,14 +278,8 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     }
 
     // Here we know that we're working with a query, so now we just check each of the params...
-    if (self.query != nil){
-        resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
-
-        resource = [resource stringByAppendingString:[self.query parameterStringRepresentation]];
-    } else {
-        resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
-        resource = [resource stringByAppendingQueryString:[NSString stringWithFormat:@"query=%@", [NSString stringByPercentEncodingString:[self buildQueryForFilters:_filters]]]];
-    }
+    resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
+    resource = [resource stringByAppendingString:[self.query parameterStringRepresentation]];
 
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
@@ -414,12 +296,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 - (void)entityCountWithDelegate:(id<KCSInformationDelegate>)delegate
 {
-    NSString *resource = nil;
-    if ([self.collectionName isEqualToString:@""]){
-        resource = [self.baseURL stringByAppendingFormat:@"%@", @"_count"];        
-    } else {
-        resource = [self.baseURL stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
-    }
+    NSString *resource = [self urlForEndpoint:@"_count"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
@@ -456,12 +333,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 -(void)entityCountWithBlock:(KCSCountBlock)countBlock
 {
-    NSString *resource = nil;
-    if ([self.collectionName isEqualToString:@""]){
-        resource = [self.baseURL stringByAppendingFormat:@"%@", @"_count"];        
-    } else {
-        resource = [self.baseURL stringByAppendingFormat:@"%@/%@", _collectionName, @"_count"];
-    }
+    NSString *resource = [self urlForEndpoint:@"_count"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){

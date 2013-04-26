@@ -3,10 +3,10 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 10/3/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
-#import <KinveyKit/KinveyKit.h>
+#import "KCSClient.h"
 
 @interface KCSClient (ConfigurationTest)
 

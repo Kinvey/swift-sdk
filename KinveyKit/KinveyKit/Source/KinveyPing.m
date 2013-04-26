@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/30/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyPing.h"
@@ -32,16 +32,10 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
 {
     self = [super init];
     if (self){
-        _description=[description copy];
+        _description = [description copy];
         _pingWasSuccessful=result;
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [_description release];
-    [super dealloc];
 }
 
 @end
@@ -134,7 +128,7 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
             description = [NSString stringWithFormat:@"%@, %@, %@", error.localizedDescription, error.localizedFailureReason, error.localizedRecoveryOptions];
         }
         
-        completionAction([[[KCSPingResult alloc] initWithDescription:description withResult:didSucceed] autorelease]);
+        completionAction([[KCSPingResult alloc] initWithDescription:description withResult:didSucceed]);
     };
     
     [KCSPing commonPingHelper:cpb];
@@ -158,7 +152,7 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
             description = [NSString stringWithFormat:@"%@, %@, %@", error.localizedDescription, error.localizedFailureReason, error.localizedRecoveryOptions];
         }
 
-        completionAction([[[KCSPingResult alloc] initWithDescription:description withResult:didSucceed] autorelease]);
+        completionAction([[KCSPingResult alloc] initWithDescription:description withResult:didSucceed]);
     };
 
     [KCSPing commonPingHelper:cpb];

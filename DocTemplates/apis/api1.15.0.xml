@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<API version="1.15.0">
+    <class name="KCSAnalytics" type="cl">
+        <sub name="setUUID:" type="instm"></sub>
+        <sub name="setUDID:" type="instm"></sub>
+        <sub name="generateUUID" type="instm"></sub>
+        <sub name="deviceInformation" type="instm"></sub>
+    </class>
+    <class name="KCSAppdataStore" type="cl">
+        <sub name="setAuthHandler:" type="instm"></sub>
+        <sub name="storeWithCollection:options:" type="clm"></sub>
+        <sub name="storeWithCollection:authHandler:withOptions:" type="clm"></sub>
+        <sub name="loadObjectWithID:withCompletionBlock:withProgressBlock:" type="instm"></sub>
+        <sub name="group:reduce:completionBlock:progressBlock:" type="instm"></sub>
+        <sub name="group:reduce:condition:completionBlock:progressBlock:" type="instm"></sub>
+        <sub name="group:reduce:condition:completionBlock:progressBlock:" type="instm"></sub>
+        <sub name="group:reduce:completionBlock:progressBlock:" type="instm"></sub>
+        <sub name="countWithBlock:" type="instm"></sub>
+        <sub name="loadObjectWithID:withCompletionBlock:withProgressBlock:" type="instm"></sub>
+        <sub name="group:reduce:condition:completionBlock:progressBlock:" type="instm"></sub>
+    </class>
+    <class name="KCSCachedStore" type="cl">
+        <sub name="setCachePolicy:" type="instm"></sub>
+        <sub name="defaultCachePolicy" type="clm"></sub>
+        <sub name="setDefaultCachePolicy:" type="clm"></sub>
+        <sub name="loadObjectWithID:withCompletionBlock:withProgressBlock:cachePolicy:" type="instm"></sub>
+        <sub name="queryWithQuery:withCompletionBlock:withProgressBlock:cachePolicy:" type="instm"></sub>
+        <sub name="group:reduce:condition:completionBlock:progressBlock:cachePolicy:" type="instm"></sub>
+    </class>
+    <class name="KCSStore" type="intfm">
+        <sub name="storeWithOptions:" type="intfm"></sub>
+        <sub name="storeWithAuthHandler:withOptions:" type="intfm"></sub>
+        <sub name="storeWithOptions:" type="intfm"></sub>
+        <sub name="store" type="intfm"></sub>
+        <sub name="storeWithOptions:" type="intfm"></sub>
+        <sub name="storeWithAuthHandler:withOptions:" type="intfm"></sub>
+        <sub name="saveObject:withCompletionBlock:withProgressBlock:" type="intfm"></sub>
+        <sub name="queryWithQuery:withCompletionBlock:withProgressBlock:" type="intfm"></sub>
+        <sub name="removeObject:withCompletionBlock:withProgressBlock:" type="intfm"></sub>
+        <sub name="configureWithOptions:" type="intfm"></sub>
+        <sub name="setAuthHandler:" type="intfm"></sub>
+        <sub name="authHandler" type="intfm"></sub>
+    </class>
+    <class name="KCSGroup" type="cl">
+        <sub name="fieldsAndValues" type="instm"></sub>
+        <sub name="returnValueKey" type="instm"></sub>
+        <sub name="enumerateWithBlock:" type="instm"></sub>
+        <sub name="reducedValueForFields:" type="instm"></sub>
+    </class>
+    <class name="KCSReduceFunction" type="cl">
+        <sub name="COUNT" type="clm"></sub>
+        <sub name="SUM:" type="clm"></sub>
+        <sub name="MIN:" type="clm"></sub>
+        <sub name="MAX:" type="clm"></sub>
+        <sub name="AVERAGE:" type="clm"></sub>
+    </class>
+    <class name="KCSClient" type="cl">
+        <sub name="setAppKey:" type="instm"></sub>
+        <sub name="setAppSecret:" type="instm"></sub>
+        <sub name="setOptions:" type="instm"></sub>
+        <sub name="setUserAgent:" type="instm"></sub>
+        <sub name="setLibraryVersion:" type="instm"></sub>
+        <sub name="setServiceHostname:" type="instm"></sub>
+        <sub name="setAppdataBaseURL:" type="instm"></sub>
+        <sub name="setResourceBaseURL:" type="instm"></sub>
+        <sub name="setUserBaseURL:" type="instm"></sub>
+        <sub name="setConnectionTimeout:" type="instm"></sub>
+        <sub name="setCachePolicy:" type="instm"></sub>
+        <sub name="setNetworkReachability:" type="instm"></sub>
+        <sub name="setKinveyReachability:" type="instm"></sub>
+        <sub name="setCurrentUser:" type="instm"></sub>
+        <sub name="setUserIsAuthenticated:" type="instm"></sub>
+        <sub name="setUserAuthenticationInProgress:" type="instm"></sub>
+        <sub name="setAuthCredentials:" type="instm"></sub>
+        <sub name="setAnalytics:" type="instm"></sub>
+        <sub name="setDateStorageFormatString:" type="instm"></sub>
+        <sub name="sharedClient" type="clm"></sub>
+        <sub name="initializeKinveyServiceForAppKey:withAppSecret:usingOptions:" type="instm"></sub>
+        <sub name="initializeKinveyServiceWithPropertyList" type="instm"></sub>
+        <sub name="collectionFromString:withClass:" type="instm"></sub>
+        <sub name="configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:" type="clm"></sub>
+    </class>
+    <class name="KCSCollection" type="cl">
+        <sub name="setCollectionName:" type="instm"></sub>
+        <sub name="setObjectTemplate:" type="instm"></sub>
+        <sub name="setLastFetchResults:" type="instm"></sub>
+        <sub name="setBaseURL:" type="instm"></sub>
+        <sub name="collectionFromString:ofClass:" type="clm"></sub>
+        <sub name="userCollection" type="clm"></sub>
+        <sub name="fetchAllWithDelegate:" type="instm"></sub>
+        <sub name="fetchWithDelegate:" type="instm"></sub>
+        <sub name="setQuery:" type="instm"></sub>
+        <sub name="setFilters:" type="instm"></sub>
+        <sub name="addFilterCriteriaForProperty:withBoolValue:filteredByOperator:" type="instm"></sub>
+        <sub name="addFilterCriteriaForProperty:withDoubleValue:filteredByOperator:" type="instm"></sub>
+        <sub name="addFilterCriteriaForProperty:withIntegerValue:filteredByOperator:" type="instm"></sub>
+        <sub name="addFilterCriteriaForProperty:withStringValue:filteredByOperator:" type="instm"></sub>
+        <sub name="resetFilterCriteria" type="instm"></sub>
+    </class>
+    <class name="KCSConnection" type="cl"></class>
+    <class name="KCSConnectionProgress" type="cl"></class>
+    <class name="KCSEntityDict" type="cl">
+        <sub name="setObjectId:" type="instm"></sub>
+        <sub name="getValueForProperty:" type="instm"></sub>
+        <sub name="setValue:forProperty:" type="instm"></sub>
+    </class>
+    <class name="KCSLinkedAppdataStore" type="cl"></class>
+    <class name="KCSMetadata" type="cl">
+        <sub name="lastModifiedTime" type="instm"></sub>
+        <sub name="creatorId" type="instm"></sub>
+        <sub name="hasWritePermission" type="instm"></sub>
+        <sub name="usersWithReadAccess" type="instm"></sub>
+        <sub name="setUsersWithReadAccess:" type="instm"></sub>
+        <sub name="isGloballyReadable" type="instm"></sub>
+        <sub name="setUsersWithReadAccess:" type="instm"></sub>
+        <sub name="usersWithReadAccess" type="instm"></sub>
+        <sub name="setGloballyReadable:" type="instm"></sub>
+        <sub name="usersWithWriteAccess" type="instm"></sub>
+        <sub name="setUsersWithWriteAccess:" type="instm"></sub>
+        <sub name="isGloballyWritable" type="instm"></sub>
+        <sub name="setUsersWithWriteAccess:" type="instm"></sub>
+        <sub name="usersWithWriteAccess" type="instm"></sub>
+        <sub name="setGloballyWritable:" type="instm"></sub>
+        <sub name="isGloballyReadable" type="instm"></sub>
+        <sub name="usersWithReadAccess" type="instm"></sub>
+        <sub name="setGloballyReadable:" type="instm"></sub>
+        <sub name="setGloballyReadable:" type="instm"></sub>
+        <sub name="setUsersWithReadAccess:" type="instm"></sub>
+        <sub name="isGloballyReadable" type="instm"></sub>
+        <sub name="isGloballyWritable" type="instm"></sub>
+        <sub name="usersWithWriteAccess" type="instm"></sub>
+        <sub name="setGloballyWritable:" type="instm"></sub>
+        <sub name="setGloballyWritable:" type="instm"></sub>
+        <sub name="setUsersWithWriteAccess:" type="instm"></sub>
+        <sub name="isGloballyWritable" type="instm"></sub>
+    </class>
+    <class name="KCSPing" type="cl">
+        <sub name="networkIsReachable" type="clm"></sub>
+        <sub name="kinveyServiceIsReachable" type="clm"></sub>
+        <sub name="checkKinveyServiceStatusWithAction:" type="clm"></sub>
+        <sub name="pingKinveyWithBlock:" type="clm"></sub>
+    </class>
+    <class name="KCSPingResult" type="cl">
+        <sub name="setDescription:" type="instm"></sub>
+        <sub name="setPingWasSuccessful:" type="instm"></sub>
+        <sub name="initWithDescription:withResult:" type="instm"></sub>
+    </class>
+    <class name="KCSPush" type="cl">
+        <sub name="sharedPush" type="clm"></sub>
+        <sub name="onLoadHelper:" type="instm"></sub>
+        <sub name="onLoadHelper:error:" type="instm"></sub>
+        <sub name="onUnloadHelper" type="instm"></sub>
+        <sub name="application:didReceiveRemoteNotification:" type="instm"></sub>
+        <sub name="application:didRegisterForRemoteNotificationsWithDeviceToken:" type="instm"></sub>
+        <sub name="setPushBadgeNumber:" type="instm"></sub>
+        <sub name="resetPushBadge" type="instm"></sub>
+    </class>
+    <class name="KCSQuery" type="cl">
+        <sub name="queryOnField:usingConditional:forValue:" type="clm"></sub>
+        <sub name="queryOnField:withExactMatchForValue:" type="clm"></sub>
+        <sub name="queryOnField:usingConditionalsForValues:" type="clm"></sub>
+        <sub name="queryForJoiningOperator:onQueries:" type="clm"></sub>
+        <sub name="queryNegatingQuery:" type="clm"></sub>
+        <sub name="queryForNilValueInField:" type="clm"></sub>
+        <sub name="queryForEmptyOrNullValueInField:" type="clm"></sub>
+        <sub name="queryForEmptyValueInField:" type="clm"></sub>
+        <sub name="queryForEmptyValueInField:" type="clm"></sub>
+        <sub name="queryForEmptyOrNullValueInField:" type="clm"></sub>
+        <sub name="queryForEmptyOrNullValueInField:" type="clm"></sub>
+        <sub name="queryForEmptyValueInField:" type="clm"></sub>
+        <sub name="query" type="clm"></sub>
+        <sub name="queryOnField:withRegex:options:" type="clm"></sub>
+        <sub name="queryOnField:withRegex:" type="clm"></sub>
+        <sub name="queryOnField:withRegex:" type="clm"></sub>
+        <sub name="queryOnField:withRegex:options:" type="clm"></sub>
+        <sub name="addQuery:" type="instm"></sub>
+        <sub name="addQueryOnField:usingConditional:forValue:" type="instm"></sub>
+        <sub name="addQueryOnField:withExactMatchForValue:" type="instm"></sub>
+        <sub name="addQueryOnField:usingConditionalsForValues:" type="instm"></sub>
+        <sub name="addQueryForJoiningOperator:onQueries:" type="instm"></sub>
+        <sub name="addQueryNegatingQuery:" type="instm"></sub>
+        <sub name="clear" type="instm"></sub>
+        <sub name="negateQuery" type="instm"></sub>
+        <sub name="queryByJoiningQuery:usingOperator:" type="instm"></sub>
+        <sub name="setQuery:" type="instm"></sub>
+        <sub name="JSONStringRepresentation" type="instm"></sub>
+        <sub name="UTF8JSONStringRepresentation" type="instm"></sub>
+        <sub name="parameterStringRepresentation" type="instm"></sub>
+        <sub name="parameterStringForSortKeys" type="instm"></sub>
+        <sub name="setLimitModifer:" type="instm"></sub>
+        <sub name="setSkipModifier:" type="instm"></sub>
+        <sub name="setSortModifiers:" type="instm"></sub>
+        <sub name="addSortModifier:" type="instm"></sub>
+        <sub name="clearSortModifiers" type="instm"></sub>
+    </class>
+    <class name="KCSQueryLimitModifier" type="cl">
+        <sub name="setLimit:" type="instm"></sub>
+        <sub name="initWithLimit:" type="instm"></sub>
+        <sub name="parameterStringRepresentation" type="instm"></sub>
+    </class>
+    <class name="KCSQuerySkipModifier" type="cl">
+        <sub name="setCount:" type="instm"></sub>
+        <sub name="initWithcount:" type="instm"></sub>
+        <sub name="parameterStringRepresentation" type="instm"></sub>
+    </class>
+    <class name="KCSQuerySortModifier" type="cl">
+        <sub name="setField:" type="instm"></sub>
+        <sub name="setDirection:" type="instm"></sub>
+        <sub name="initWithField:inDirection:" type="instm"></sub>
+    </class>
+    <class name="KCSResourceResponse" type="cl">
+        <sub name="setLocalFileName:" type="instm"></sub>
+        <sub name="setStreamingURL:" type="instm"></sub>
+        <sub name="setResourceId:" type="instm"></sub>
+        <sub name="setResource:" type="instm"></sub>
+        <sub name="setLength:" type="instm"></sub>
+        <sub name="responseWithFileName:withResourceId:withStreamingURL:withData:withLength:" type="clm"></sub>
+    </class>
+    <class name="KCSResourceService" type="cl">
+        <sub name="downloadResource:withResourceDelegate:" type="clm"></sub>
+        <sub name="downloadResource:toFile:withResourceDelegate:" type="clm"></sub>
+        <sub name="getStreamingURLForResource:withResourceDelegate:" type="clm"></sub>
+        <sub name="saveLocalResource:withDelegate:" type="clm"></sub>
+        <sub name="saveLocalResourceWithURL:withDelegate:" type="clm"></sub>
+        <sub name="saveLocalResource:toResource:withDelegate:" type="clm"></sub>
+        <sub name="saveLocalResourceWithURL:toResource:withDelegate:" type="clm"></sub>
+        <sub name="saveData:toResource:withDelegate:" type="clm"></sub>
+        <sub name="deleteResource:withDelegate:" type="clm"></sub>
+    </class>
+    <class name="KCSResourceStore" type="cl">
+        <sub name="setAuthHandler:" type="instm"></sub>
+        <sub name="saveObject:withCompletionBlock:withProgressBlock:" type="instm"></sub>
+        <sub name="queryWithQuery:withCompletionBlock:withProgressBlock:" type="instm"></sub>
+    </class>
+    <class name="KCSUniqueNumber" type="cl">
+        <sub name="setValue:" type="instm"></sub>
+        <sub name="setSequenceId:" type="instm"></sub>
+        <sub name="defaultSequence" type="clm"></sub>
+        <sub name="reset" type="instm"></sub>
+    </class>
+    <class name="KCSUser" type="cl">
+        <sub name="setUsername:" type="instm"></sub>
+        <sub name="setPassword:" type="instm"></sub>
+        <sub name="setUserId:" type="instm"></sub>
+        <sub name="setDeviceTokens:" type="instm"></sub>
+        <sub name="setSessionAuth:" type="instm"></sub>
+        <sub name="setMetadata:" type="instm"></sub>
+        <sub name="setSurname:" type="instm"></sub>
+        <sub name="setGivenName:" type="instm"></sub>
+        <sub name="setEmail:" type="instm"></sub>
+        <sub name="setEmailVerified:" type="instm"></sub>
+        <sub name="sendEmailConfirmationForUser:withCompletionBlock:" type="clm"></sub>
+        <sub name="sendEmailConfirmationForUser:withCompletionBlock:" type="clm"></sub>
+        <sub name="clearSavedCredentials" type="clm"></sub>
+        <sub name="activeUser" type="clm"></sub>
+        <sub name="initializeCurrentUserWithRequest:" type="instm"></sub>
+        <sub name="initializeCurrentUser" type="instm"></sub>
+        <sub name="userWithUsername:password:withDelegate:" type="clm"></sub>
+        <sub name="userWithUsername:password:withCompletionBlock:" type="clm"></sub>
+        <sub name="loginWithUsername:password:withDelegate:" type="clm"></sub>
+        <sub name="loginWithUsername:password:withCompletionBlock:" type="clm"></sub>
+        <sub name="loginWithFacebookAccessToken:withCompletionBlock:" type="clm"></sub>
+        <sub name="loginWithSocialIdentity:accessDictionary:withCompletionBlock:" type="clm"></sub>
+        <sub name="removeWithDelegate:" type="instm"></sub>
+        <sub name="removeWithCompletionBlock:" type="instm"></sub>
+        <sub name="logout" type="instm"></sub>
+        <sub name="loadWithDelegate:" type="instm"></sub>
+        <sub name="saveWithDelegate:" type="instm"></sub>
+        <sub name="saveWithCompletionBlock:" type="instm"></sub>
+        <sub name="getValueForAttribute:" type="instm"></sub>
+        <sub name="setValue:forAttribute:" type="instm"></sub>
+        <sub name="userCollection" type="instm"></sub>
+        <sub name="changePassword:completionBlock:" type="instm"></sub>
+        <sub name="sendPasswordResetForUser:withCompletionBlock:" type="clm"></sub>
+        <sub name="sendEmailConfirmationForUser:withCompletionBlock:" type="clm"></sub>
+        <sub name="canUseNativeTwitter" type="clm"></sub>
+        <sub name="getAccessDictionaryFromTwitterFromPrimaryAccount:" type="clm"></sub>
+        <sub name="getAccessDictionaryFromLinkedIn:usingWebView:" type="clm"></sub>
+    </class>
+    <class name="KCSPersistable" type="intf">
+        <sub name="hostToKinveyPropertyMapping" type="intfm"></sub>
+        <sub name="kinveyPropertyToCollectionMapping" type="intfm"></sub>
+        <sub name="kinveyObjectBuilderOptions" type="intfm"></sub>
+        <sub name="referenceKinveyPropertiesOfObjectsToSave" type="intfm"></sub>
+        <sub name="kinveyPropertyToCollectionMapping" type="intfm"></sub>
+        <sub name="kinveyObjectBuilderOptions" type="intfm"></sub>
+        <sub name="kinveyDesignatedInitializer" type="intfm"></sub>
+        <sub name="saveToCollection:withDelegate:" type="intfm"></sub>
+        <sub name="deleteFromCollection:withDelegate:" type="intfm"></sub>
+    </class>
+    <class name="KCSUserDiscovery" type="cl">
+        <sub name="lookupUsersForFieldsAndValues:completionBlock:progressBlock:" type="clm"></sub>
+    </class>
+    <class name="CLLocation(Kinvey)" type="cat">
+        <sub name="kinveyValue" type="intfm"></sub>
+        <sub name="locationFromKinveyValue:" type="intfm"></sub>
+    </class>
+    <class name="NSDictionary(KCSEntityDict)" type="cat"></class>
+    <class name="NSObject(KCSEntity)" type="cat">
+        <sub name="fetchOneFromCollection:matchingQuery:withDelegate:" type="intfm"></sub>
+        <sub name="findEntityWithProperty:matchingBoolValue:fromCollection:withDelegate:" type="intfm"></sub>
+        <sub name="findEntityWithProperty:matchingDoubleValue:fromCollection:withDelegate:" type="intfm"></sub>
+        <sub name="findEntityWithProperty:matchingIntegerValue:fromCollection:withDelegate:" type="intfm"></sub>
+        <sub name="findEntityWithProperty:matchingStringValue:fromCollection:withDelegate:" type="intfm"></sub>
+        <sub name="kinveyObjectIdHostProperty" type="intfm"></sub>
+        <sub name="kinveyObjectId" type="intfm"></sub>
+        <sub name="setKinveyObjectId:" type="intfm"></sub>
+        <sub name="setValue:forProperty:" type="intfm"></sub>
+        <sub name="loadObjectWithID:fromCollection:withDelegate:" type="intfm"></sub>
+    </class>
+    <class name="NSString(KinveyAdditions)" type="cat">
+        <sub name="URLByAppendingQueryString:" type="intfm"></sub>
+        <sub name="stringByAppendingQueryString:" type="intfm"></sub>
+        <sub name="stringByAppendingStringWithPercentEncoding:" type="intfm"></sub>
+        <sub name="stringByPercentEncodingString:" type="intfm"></sub>
+        <sub name="containsStringCaseInsensitive:" type="intfm"></sub>
+    </class>
+    <class name="NSURL(KinveyAdditions)" type="cat">
+        <sub name="URLByAppendingQueryString:" type="intfm"></sub>
+        <sub name="URLWithUnencodedString:" type="intfm"></sub>
+    </class>
+    <class name="KCSCollectionDelegate" type="intf">
+        <sub name="collection:didFailWithError:" type="intfm"></sub>
+        <sub name="collection:didCompleteWithResult:" type="intfm"></sub>
+    </class>
+    <class name="KCSEntityDelegate" type="intf">
+        <sub name="entity:fetchDidFailWithError:" type="intfm"></sub>
+        <sub name="entity:fetchDidCompleteWithResult:" type="intfm"></sub>
+    </class>
+    <class name="KCSInformationDelegate" type="intf">
+        <sub name="collection:informationOperationFailedWithError:" type="intfm"></sub>
+        <sub name="collection:informationOperationDidCompleteWithResult:" type="intfm"></sub>
+    </class>
+    <class name="KCSOfflineSaveDelegate" type="intf">
+        <sub name="shouldSave:lastSaveTime:" type="intfm"></sub>
+        <sub name="willSave:lastSaveTime:" type="intfm"></sub>
+        <sub name="didSave:" type="intfm"></sub>
+        <sub name="errorSaving:error:" type="intfm"></sub>
+    </class>
+    <class name="KCSOfflineSaveStore" type="intf">
+        <sub name="numberOfPendingSaves" type="intfm"></sub>
+    </class>
+    <class name="KCSPersistableDelegate" type="intf">
+        <sub name="entity:operationDidFailWithError:" type="intfm"></sub>
+        <sub name="entity:operationDidCompleteWithResult:" type="intfm"></sub>
+    </class>
+    <class name="KCSResourceDelegate" type="intf">
+        <sub name="resourceServiceDidCompleteWithResult:" type="intfm"></sub>
+        <sub name="resourceServiceDidFailWithError:" type="intfm"></sub>
+    </class>
+    <class name="KCSUserActionDelegate" type="intf">
+        <sub name="user:actionDidCompleteWithResult:" type="intfm"></sub>
+        <sub name="user:actionDidFailWithError:" type="intfm"></sub>
+    </class>
+</API>

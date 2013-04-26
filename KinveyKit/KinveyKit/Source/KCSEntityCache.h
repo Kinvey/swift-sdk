@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 10/23/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -18,7 +18,7 @@ NSString* KCSMongoObjectId();
 @class KCSReduceFunction;
 @interface KCSEntityCache : NSObject
 
-@property (nonatomic, assign) id<KCSOfflineSaveDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id<KCSOfflineSaveDelegate> delegate;
 
 
 - (id) objectForId:(NSString*)objId;
@@ -37,6 +37,10 @@ NSString* KCSMongoObjectId();
 - (void) addUnsavedObject:(id)obj;
 //TODO remove?
 - (void) startSaving;
+
+#pragma mark Persistence
+- (void) setPersistenceId:(NSString*)key;
+- (void) clearCaches;
 @end
 
 @interface KCSCachedStoreCaching : NSObject

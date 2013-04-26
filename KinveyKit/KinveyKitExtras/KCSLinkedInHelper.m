@@ -15,10 +15,11 @@
 #import "KCSLogManager.h"
 #import "KCSErrorUtilities.h"
 
+#import "KCSWebView.h"
 
-@interface KCSLinkedInHelper() <UIWebViewDelegate> {
+@interface KCSLinkedInHelper() <KCSWebViewDelegate> {
     NSString* _tokenSecret;
-    id<UIWebViewDelegate> _oldDelegate;
+    id<KCSWebViewDelegate> _oldDelegate;
     KCSLocalCredentialBlock _completionBlock;
 }
 @end
@@ -90,14 +91,14 @@ NSString* KCS_GetOAuthTokenFromQuery(NSString* results, NSString* parameter)
     [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:webUrlString]]];
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(KCSWebViewClass*)webView didFailLoadWithError:(NSError *)error
 {
     self.webview.delegate = _oldDelegate;
     NSError* wrappedError = [NSError errorWithDomain:KCSNetworkErrorDomain code:error.code userInfo:@{ NSUnderlyingErrorKey : error, NSLocalizedDescriptionKey : @"Unable to reach LinkedIn to obtain OAuth token." }];
     _completionBlock(nil, wrappedError);
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+- (BOOL)webView:(KCSWebViewClass*)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSURL* urlToLoad = [request URL];
     NSString* linkString = [urlToLoad absoluteString];

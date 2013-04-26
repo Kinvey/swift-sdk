@@ -9,18 +9,18 @@
 #import "KinveyPersistable.h"
 
 @interface KCSKinveyRef : NSObject
-@property (nonatomic, retain) id<KCSPersistable>object;
+@property (nonatomic, strong) id<KCSPersistable>object;
 @property (nonatomic, copy) NSString* collectionName;
 @end
 
 @interface KCSSerializedObject : NSObject
 @property (nonatomic, readonly) BOOL isPostRequest;
 @property (nonatomic, readonly) NSString *objectId;
-@property (nonatomic, readonly) NSDictionary *dataToSerialize;
-@property (nonatomic, readonly) NSArray* resourcesToSave;
-@property (nonatomic, readonly) NSArray* referencesToSave;
-@property (nonatomic, readonly) id<KCSPersistable> handleToOriginalObject;
-@property (nonatomic, retain) NSDictionary* userInfo;
+@property (strong, nonatomic, readonly) NSDictionary *dataToSerialize;
+@property (strong, nonatomic, readonly) NSArray* resourcesToSave;
+@property (strong, nonatomic, readonly) NSArray* referencesToSave;
+@property (strong, nonatomic, readonly) id<KCSPersistable> handleToOriginalObject;
+@property (nonatomic, strong) NSDictionary* userInfo;
 - (void) restoreReferences:(KCSSerializedObject*)previousObject;
 @end
 

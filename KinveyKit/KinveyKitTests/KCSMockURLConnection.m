@@ -3,16 +3,13 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/12/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSMockURLConnection.h"
 #import "KCSLogManager.h"
 
 @implementation KCSMockURLConnection
-
-@synthesize delegate=_delegate;
-@synthesize request=_request;
 
 // Methods we use:
 // [NSURLConnection connectionWithRequest:self.request delegate:self];
@@ -36,7 +33,7 @@
 {
     self = [super initWithRequest:request delegate:delegate startImmediately:NO];
     if (self){
-        _request = [request retain];
+        _request = request;
         _delegate = delegate;
     }
     
@@ -44,18 +41,11 @@
     
 }
 
-- (void)dealloc
-{
-    [_request release];
-    _request = nil;
-    _delegate = nil;
-    [super dealloc];
-}
 
 + (NSURLConnection *)connectionWithRequest:(NSURLRequest *)request delegate:(id)delegate
 {
     // We never want to start this!
-    return [[[KCSMockURLConnection alloc] initWithRequest:request delegate:delegate startImmediately:NO] autorelease];
+    return [[KCSMockURLConnection alloc] initWithRequest:request delegate:delegate startImmediately:NO];
 }
 
 - (void)start

@@ -22,7 +22,10 @@ typedef enum KCSCachePolicy {
 } KCSCachePolicy;
 
 #define KCSStoreKeyCachePolicy @"cachePolicy"
+
+//internal use
 #define KCSStoreKeyLocalCacheTimeout @"localcache.timeout"
+#define KCSStoreKeyLocalCachePersistanceKey_Xperimental @"localcache.persistenceid"
 
 /**
  This application data store caches queries, depending on the policy.

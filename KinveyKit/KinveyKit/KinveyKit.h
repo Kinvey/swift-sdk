@@ -13,11 +13,8 @@
 #ifndef KinveyKit_h
 #define KinveyKit_h
 
-#define __KINVEYKIT_VERSION__ @"TAG-ME"
-
-#import "KCSPush.h"
+#import "KinveyVersion.h"
 #import "KCSClient.h"
-#import "KinveyAnalytics.h"
 #import "KCSEntityDict.h"
 #import "KinveyCollection.h"
 #import "KinveyEntity.h"
@@ -40,6 +37,15 @@
 #import "KCSReduceFunction.h"
 #import "KCSLinkedAppdataStore.h"
 #import "KCSOfflineSaveStore.h"
+
+#import "KCSLogSink.h"
+
+
+#if TARGET_OS_IPHONE
+#import "KCSPush.h"
+#import "KinveyAnalytics.h"
+
+#endif
 
 //UI & Framework Helpers
 #import "CLLocation+Kinvey.h"

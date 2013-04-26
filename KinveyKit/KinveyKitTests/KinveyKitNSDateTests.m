@@ -2,7 +2,7 @@
 //  KinveyKitNSDateTests.m
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitNSDateTests.h"
@@ -30,8 +30,8 @@
     NSDateFormatter *   rfc3339DateFormatter;
     NSLocale *          enUSPOSIXLocale;
     NSDate *            date;
-    rfc3339DateFormatter = [[[NSDateFormatter alloc] init] autorelease];
-    enUSPOSIXLocale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"] autorelease];
+    rfc3339DateFormatter = [[NSDateFormatter alloc] init];
+    enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
     
     [rfc3339DateFormatter setLocale:enUSPOSIXLocale];
     [rfc3339DateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"];

@@ -300,7 +300,7 @@ static int const kKCSOpenUDIDRedundancySlots = 100;
                                                      code:kKCSOpenUDIDErrorOptedOut
                                                  userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Application %@ is opted-out from OpenUDID as of %@",bundleid,optedOutDate],@"description", nil]];
             
-        kKCSOpenUDIDSessionCache = [[NSString stringWithFormat:@"%040x",0] retain];
+        kKCSOpenUDIDSessionCache = [NSString stringWithFormat:@"%040x",0];
         return kKCSOpenUDIDSessionCache;
     }
 
@@ -316,7 +316,7 @@ static int const kKCSOpenUDIDRedundancySlots = 100;
                                          code:kKCSOpenUDIDErrorNone
                                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"OpenUDID succesfully retrieved",@"description", nil]];
     }
-    kKCSOpenUDIDSessionCache = [openUDID retain];
+    kKCSOpenUDIDSessionCache = openUDID;
     return kKCSOpenUDIDSessionCache;
 }
 

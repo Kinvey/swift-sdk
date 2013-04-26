@@ -2,7 +2,7 @@
 //  KCSHiddenMethods.h
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #ifndef KinveyKit_KCSHiddenMethods_h
@@ -12,6 +12,7 @@
 #import "KinveyCollection.h"
 #import "KCSRESTRequest.h"
 #import "KCSClient.h"
+#import "KCSReduceFunction.h"
 
 NSDictionary* defaultBuilders();
 
@@ -27,6 +28,7 @@ NSDictionary* defaultBuilders();
 @interface KCSCollection (KCSHiddenMethods)
 
 - (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint;
+- (NSString*) urlForEndpoint:(NSString*)endpoint;
 
 @end
 
@@ -40,6 +42,10 @@ NSDictionary* defaultBuilders();
 #if BUILD_FOR_UNIT_TEST
 - (void) setReachable:(BOOL)reachOverwrite;
 #endif
+@end
+
+@interface KCSReduceFunction (KCSHiddenMethods)
+@property (nonatomic, readonly) BOOL buildsObjects;
 @end
 
 #endif

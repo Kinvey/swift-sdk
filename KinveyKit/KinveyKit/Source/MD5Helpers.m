@@ -2,7 +2,7 @@
 //  MD5Helpers.m
 //  iOS UI Utils
 //
-//  Copyright 2012 Michael Katz
+//  Copyright 2012-2013 Michael Katz
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.

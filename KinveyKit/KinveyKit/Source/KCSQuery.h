@@ -2,16 +2,16 @@
 //  KCSQuery.h
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import "KinveyHeaderInfo.h"
 
-typedef enum
+typedef enum : NSInteger
 {
     // NO OP
-    kKCSNOOP = 0,
+    kKCSNOOP = 1,
     
     // Basic operators
     kKCSLessThan = 16,
@@ -357,6 +357,16 @@ typedef enum {
  */
 + (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression;
 
+/*! Copy factory
+ 
+ This creates a new `KCSQuery` with the same values as the old input one. 
+ 
+ @param query the query to copy
+ @return a new KCSQuery that matches the old object
+ @since 1.14.0
+ */
++ (KCSQuery *) queryWithQuery:(KCSQuery*) query;
+
 
 ///---------------------------------------------------------------------------------------
 /// @name Modifying Queries
@@ -501,11 +511,11 @@ typedef enum {
 /// @name Modifying Queries
 ///---------------------------------------------------------------------------------------
 /*! The current limit modifier, defaults to nil.  Set to nil to clear the limit modifier. */
-@property (nonatomic, retain) KCSQueryLimitModifier *limitModifer;
+@property (nonatomic, strong) KCSQueryLimitModifier *limitModifer;
 /*! The current skip modifier, defaults to nil.  Set to nil to clear the skip modifier. */
-@property (nonatomic, retain) KCSQuerySkipModifier *skipModifier;
+@property (nonatomic, strong) KCSQuerySkipModifier *skipModifier;
 /*! The current list of sort modifiers.  Read only, use addSortModifier: and clearSortModifiers to modify. */
-@property (nonatomic, retain, readonly) NSArray *sortModifiers;
+@property (nonatomic, strong, readonly) NSArray *sortModifiers;
 
 /*! Add a new sort modifier to our list of modifiers.
  

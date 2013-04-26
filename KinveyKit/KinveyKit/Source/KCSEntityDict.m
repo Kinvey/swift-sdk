@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/21/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSEntityDict.h"
@@ -11,15 +11,12 @@
 
 // Private interface
 @interface KCSEntityDict () 
-@property (nonatomic, retain) NSMutableDictionary *entityProperties;
+@property (nonatomic, strong) NSMutableDictionary *entityProperties;
 @end
 
 
 
 @implementation KCSEntityDict
-
-@synthesize entityProperties = _entityProperties;
-@synthesize objectId = _objectId;
 
 - (id)init
 {
@@ -31,12 +28,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_entityProperties release];
-    [_objectId release];
-    [super dealloc];
-}
 
 - (id)getValueForProperty: (NSString *)property
 {
@@ -53,9 +44,9 @@
     static NSDictionary *options = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        options = [@{KCS_USE_DICTIONARY_KEY : @(YES),
+        options = @{KCS_USE_DICTIONARY_KEY : @(YES),
                      KCS_DICTIONARY_NAME_KEY : @"entityProperties"
-                    } retain];
+                    };
     });
     
     return options;
@@ -63,14 +54,7 @@
 
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
-    static NSDictionary *mappedDict = nil;
-    
-    if (mappedDict == nil){
-        mappedDict = [[NSDictionary dictionaryWithObjectsAndKeys:
-                       KCSEntityKeyId, @"objectId", nil] retain];
-    }
-    
-    return mappedDict;
+    return @{ @"objectId" : KCSEntityKeyId};
 }
 
 - (NSString *)debugDescription
