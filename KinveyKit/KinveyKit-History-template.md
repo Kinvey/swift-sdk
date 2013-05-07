@@ -4,7 +4,8 @@
 ### 1.15.1
 ** Release Date:** TBD
 
-* Add warning if the result set is equal to 10,000 objects - this is the Kinvey limit for a query, and there may actually be more results. If this is the case use the limit & skip modifiers on `KCSQuery` to page through the results. 
+* Added `+[KCSUser getAccessDictionaryFromLinkedIn:permissions:usingWebView:]` to allow you specify access permissions beyond `r_basicprofile`, such as `r_network`. 
+* Added warning if the result set is equal to 10,000 objects - this is the Kinvey limit for a query, and there may actually be more results. If this is the case use the limit & skip modifiers on `KCSQuery` to page through the results. 
 
 ### 1.15.0
 ** Release Date:** April 26, 2013
