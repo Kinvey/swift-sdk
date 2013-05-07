@@ -39,6 +39,8 @@ if (okayToProceed == NO) { \
 return; \
 }
 
+#define KCS_OBJECT_LIMIT 10000
+
 typedef KCSRESTRequest* (^RestRequestForObjBlock_t)(id obj);
 typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletionBlock completion);
 
@@ -319,6 +321,8 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
                 NSUInteger itemCount = jsonArray.count;
                 if (itemCount == 0) {
                     completionBlock(@[], nil);
+                } else if (itemCount == KCS_OBJECT_LIMIT) {
+                    KCSLogWarning(@"Returned exactly 10,000 objects. This is the Kinvey limit for a query, and there may actually be more results. If this is the case use the limit & skip modifiers on `KCSQuery` to page through the results.");
                 }
                 __block NSUInteger completedCount = 0;
                 __block NSError* resourceError = nil;
@@ -554,7 +558,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kPostRESTMethod];
     KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
     [request addBody:[writer dataWithObject:body]];
-    [request setContentType:@"application/json"];
+    [request setContentType:KCS_JSON_TYPE];
     
     KCSConnectionCompletionBlock cBlock = [self makeGroupCompletionBlock:completionBlock
                                                                      key:[function outputValueName:fields]
@@ -605,7 +609,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kPostRESTMethod];
     KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
     [request addBody:[writer dataWithObject:body]];
-    [request setContentType:@"application/json"];
+    [request setContentType:KCS_JSON_TYPE];
     
     KCSConnectionCompletionBlock cBlock = [self makeGroupCompletionBlock:completionBlock
                                                                      key: [function outputValueName:@[]]

@@ -700,4 +700,26 @@ static NSString* access_token = @"AAAGI68NkOC4BAH51tsJcxZACSdzZAjIUZAjsY5xzVAumC
     }];
     [self poll];
 }
+
+#pragma mark - check username
+- (void) testCheckUsername
+{
+    [KCSUser checkUsername:@"not exist" withCompletionBlock:^(NSString *username, BOOL usernameAlreadyTaken, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertFalse(usernameAlreadyTaken, @"should not have the user");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    KCSUser* active = [KCSUser activeUser];
+    STAssertNotNil(active, @"Should have a user");
+
+    self.done = NO;
+    [KCSUser checkUsername:@"not exist" withCompletionBlock:^(NSString *username, BOOL usernameAlreadyTaken, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertTrue(usernameAlreadyTaken, @"should have the user");
+        self.done = YES;
+    }];
+    [self poll];
+}
 @end

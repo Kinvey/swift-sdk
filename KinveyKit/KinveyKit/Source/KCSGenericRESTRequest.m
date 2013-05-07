@@ -113,8 +113,9 @@
         connection = [KCSConnectionPool asyncConnection];
     }
     
+    
     [self.request setHTTPMethod: [KCSGenericRESTRequest getHTTPMethodForConstant: self.method]];
-    [self.request setHTTPShouldUsePipelining:YES];
+    [self.request setHTTPShouldUsePipelining:self.method != kPostRESTMethod];
     
     for (NSString *key in [self.headers allKeys]) {
         [self.request setValue:[self.headers objectForKey:key] forHTTPHeaderField:key];

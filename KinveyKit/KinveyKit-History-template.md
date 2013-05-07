@@ -1,10 +1,11 @@
 # KinveyKit Release History
 
-## 1.16
-### 1.16.0
+## 1.15
+### 1.15.1
 ** Release Date:** TBD
 
-## 1.15
+* Add warning if the result set is equal to 10,000 objects - this is the Kinvey limit for a query, and there may actually be more results. If this is the case use the limit & skip modifiers on `KCSQuery` to page through the results. 
+
 ### 1.15.0
 ** Release Date:** April 26, 2013
 
