@@ -2,7 +2,7 @@
 //  KinveyUser.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2012, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -31,6 +31,7 @@ typedef enum KCSUserActionResult : NSInteger {
 
 typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result);
 typedef void (^KCSUserSendEmailBlock)(BOOL emailSent, NSError* errorOrNil);
+typedef void (^KCSUserCheckUsernameBlock)(NSString* username, BOOL usernameAlreadyTaken, NSError* error);
 
 /** Social Network login providers supported for log-in
  */
@@ -371,5 +372,8 @@ FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
  @since 1.10.1
  */
 + (void) sendEmailConfirmationForUser:(NSString*)username withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
+
++ (void) checkUsername:(NSString*)potentialUsername withCompletionBlock:(KCSUserCheckUsernameBlock)completionBlock;
+
 
 @end

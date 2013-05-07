@@ -150,6 +150,9 @@
 - (void)setServiceHostname:(NSString *)serviceHostname
 {
     // Note that we need to update the Kinvey Reachability host here...
+    if (serviceHostname == nil) {
+        serviceHostname = @"baas";
+    }
     _serviceHostname = [serviceHostname copy]; // Implicit retain here
     [self updateURLs];
     

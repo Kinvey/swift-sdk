@@ -982,6 +982,33 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
 //    [request start];
 }
 
++ (void) checkUsername:(NSString*)potentialUsername withCompletionBlock:(KCSUserCheckUsernameBlock)completionBlock
+{
+    NSParameterAssert(potentialUsername != nil);
+    
+    // /rpc/:appKey/check-username-exists
+    NSString* checkExists = [[[KCSClient sharedClient] rpcBaseURL] stringByAppendingString:@"check-username-exists"];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:checkExists usingMethod:kPostRESTMethod];
+    [request setJsonBody:@{@"username":@"foo"}];
+    [request setContentType:KCS_JSON_TYPE];
+    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
+        NSDictionary* dict = [response jsonResponseValue];
+        if (response.responseCode == KCS_HTTP_STATUS_OK) {
+            completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], nil);
+        } else {
+            NSError* error = [KCSErrorUtilities createError:dict description:@"Error checking user name" errorCode:response.responseCode domain:KCSUserErrorDomain requestId:response.requestId];
+            completionBlock(potentialUsername, NO, error);
+        }
+        //response will be a 204 if accepted by server
+        //completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
+    } failureAction:^(NSError *error) {
+        //do error
+        completionBlock(potentialUsername, NO ,error);
+    } progressAction:nil];
+    [request start];
+}
+
+
 #pragma mark - properties
 - (void)setSurname:(NSString *)surname
 {

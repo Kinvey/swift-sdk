@@ -57,6 +57,7 @@ typedef struct {
     NSData* d = [s dataWithObject:@[e]];
     NSLog(@"%@",d);
     
+    
 }
 
 - (void) ntestE
