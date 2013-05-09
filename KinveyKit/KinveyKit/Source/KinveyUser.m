@@ -730,6 +730,23 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
         self.password = nil;
         self.userId = nil;
         
+        // Extract all of the items from the Array into a set, so adding the "new" device token does
+        // the right thing.  This might be less efficient than just iterating, but these routines have
+        // been optimized, we do this now, since there's no other place guarenteed to merge.
+        // Login/create store this info
+        KCSDevice *sp = [KCSDevice currentDevice];
+        
+        if (sp.deviceToken != nil){
+            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
+            [tmpSet removeObject:[sp deviceTokenString]];
+            self.deviceTokens = [tmpSet allObjects];
+            [self saveToCollection:[KCSCollection userCollection] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                if (errorOrNil) {
+                    KCSLogError(@"Error saving user when removing device tokens: %@", errorOrNil);
+                }
+            } withProgressBlock:nil];
+        }
+        
         [KCSUser clearSavedCredentials];
         
         // Set the currentUser to nil
