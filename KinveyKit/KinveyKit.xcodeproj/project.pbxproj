@@ -146,7 +146,6 @@
 		275B426D16A82A100064B941 /* NSObject+KCS_SBJson.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C22278161DE9B200D827AE /* NSObject+KCS_SBJson.m */; };
 		275B426F16A82B7C0064B941 /* KCSConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E686D147DBA5700EE885E /* KCSConnection.m */; };
 		275B427016A82BAC0064B941 /* KCSLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3412814BD686000DB6C37 /* KCSLogManager.m */; };
-		275B428F16A85AEA0064B941 /* libUAirshipPush-1.3.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BAB38D166D467000C5D156 /* libUAirshipPush-1.3.3.a */; };
 		275B42A016A97DB00064B941 /* KinveyHeaderInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275B42A116A97DB00064B941 /* KinveyHeaderInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
@@ -174,6 +173,7 @@
 		27A93B57156AD2D500810B88 /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
 		27AC2F25161CA258008A05E1 /* KCSClient+ConfigurationTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27AC2F23161CA258008A05E1 /* KCSClient+ConfigurationTest.h */; };
 		27AC2F26161CA258008A05E1 /* KCSClient+ConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AC2F24161CA258008A05E1 /* KCSClient+ConfigurationTest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		27B0142E173BDCFB00C26EB1 /* libUAirship-1.4.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B0142D173BDCFB00C26EB1 /* libUAirship-1.4.0.a */; };
 		27B1E37E17334DF300E12333 /* KCSLinkedInHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 27D1558C16713C3C00171230 /* KCSLinkedInHelper.h */; };
 		27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B1FDC615B0C49F003CC4C6 /* KCSUserDiscovery.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -549,6 +549,7 @@
 		27AC2F24161CA258008A05E1 /* KCSClient+ConfigurationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSClient+ConfigurationTest.m"; sourceTree = "<group>"; };
 		27AFD4CE15C8866D00A44F4F /* Metatests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Metatests.h; sourceTree = "<group>"; };
 		27AFD4CF15C8866D00A44F4F /* Metatests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Metatests.m; sourceTree = "<group>"; };
+		27B0142D173BDCFB00C26EB1 /* libUAirship-1.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.4.0.a"; path = "Airship/libUAirship-1.4.0.a"; sourceTree = "<group>"; };
 		27B1FDC615B0C49F003CC4C6 /* KCSUserDiscovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSUserDiscovery.h; sourceTree = "<group>"; };
 		27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSUserDiscovery.m; sourceTree = "<group>"; };
 		27B1FDCB15B0D3B0003CC4C6 /* KCSHiddenMethods.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSHiddenMethods.h; sourceTree = "<group>"; };
@@ -561,7 +562,6 @@
 		27B425ED16C3DA6200C59E1A /* KCSWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSWebView.h; sourceTree = "<group>"; };
 		27B7724116E7C63500610D11 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		27B7724316E7C6EC00610D11 /* KCSWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSWebView.m; sourceTree = "<group>"; };
-		27BAB38D166D467000C5D156 /* libUAirshipPush-1.3.3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirshipPush-1.3.3.a"; path = "Airship/libUAirshipPush-1.3.3.a"; sourceTree = "<group>"; };
 		27BAB398166E957000C5D156 /* OAuthTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAuthTest.h; sourceTree = "<group>"; };
 		27BAB399166E957100C5D156 /* OAuthTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OAuthTest.m; sourceTree = "<group>"; };
 		27BBD91415ADD3A2005E27E1 /* TestThreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestThreads.h; sourceTree = "<group>"; };
@@ -700,32 +700,7 @@
 		D32A641B147174C300F77A3F /* UA_zip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UA_zip.h; sourceTree = "<group>"; };
 		D32A641C147174C300F77A3F /* UA_ZipArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UA_ZipArchive.h; sourceTree = "<group>"; };
 		D32A641F147174C300F77A3F /* UAirship.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAirship.h; sourceTree = "<group>"; };
-		D32A6421147174C300F77A3F /* UAInbox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAInbox.h; sourceTree = "<group>"; };
-		D32A6422147174C300F77A3F /* UAInboxDBManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAInboxDBManager.h; sourceTree = "<group>"; };
-		D32A6423147174C300F77A3F /* UAInboxDefaultJSDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAInboxDefaultJSDelegate.h; sourceTree = "<group>"; };
-		D32A6424147174C300F77A3F /* UAInboxMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAInboxMessage.h; sourceTree = "<group>"; };
-		D32A6425147174C300F77A3F /* UAInboxMessageList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAInboxMessageList.h; sourceTree = "<group>"; };
-		D32A6426147174C300F77A3F /* UAInboxMessageListObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAInboxMessageListObserver.h; sourceTree = "<group>"; };
-		D32A6427147174C300F77A3F /* UAInboxPushHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAInboxPushHandler.h; sourceTree = "<group>"; };
-		D32A6428147174C300F77A3F /* UAInboxURLCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAInboxURLCache.h; sourceTree = "<group>"; };
 		D32A642A147174C300F77A3F /* UAPush.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAPush.h; sourceTree = "<group>"; };
-		D32A642C147174C300F77A3F /* UAInventory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAInventory.h; sourceTree = "<group>"; };
-		D32A642D147174C300F77A3F /* UAProduct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAProduct.h; sourceTree = "<group>"; };
-		D32A642E147174C300F77A3F /* UAStoreFront.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAStoreFront.h; sourceTree = "<group>"; };
-		D32A642F147174C300F77A3F /* UAStoreFrontAlertProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAStoreFrontAlertProtocol.h; sourceTree = "<group>"; };
-		D32A6430147174C300F77A3F /* UAStoreFrontDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAStoreFrontDelegate.h; sourceTree = "<group>"; };
-		D32A6431147174C300F77A3F /* UAStoreFrontDownloadManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAStoreFrontDownloadManager.h; sourceTree = "<group>"; };
-		D32A6432147174C300F77A3F /* UAStoreKitObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAStoreKitObserver.h; sourceTree = "<group>"; };
-		D32A6434147174C300F77A3F /* UAContentInventory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAContentInventory.h; sourceTree = "<group>"; };
-		D32A6435147174C300F77A3F /* UAProductInventory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UAProductInventory.h; sourceTree = "<group>"; };
-		D32A6436147174C300F77A3F /* UASubscription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscription.h; sourceTree = "<group>"; };
-		D32A6437147174C300F77A3F /* UASubscriptionAlertProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionAlertProtocol.h; sourceTree = "<group>"; };
-		D32A6438147174C300F77A3F /* UASubscriptionContent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionContent.h; sourceTree = "<group>"; };
-		D32A6439147174C300F77A3F /* UASubscriptionDownloadManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionDownloadManager.h; sourceTree = "<group>"; };
-		D32A643A147174C300F77A3F /* UASubscriptionInventory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionInventory.h; sourceTree = "<group>"; };
-		D32A643B147174C300F77A3F /* UASubscriptionManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionManager.h; sourceTree = "<group>"; };
-		D32A643C147174C300F77A3F /* UASubscriptionObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionObserver.h; sourceTree = "<group>"; };
-		D32A643D147174C300F77A3F /* UASubscriptionProduct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UASubscriptionProduct.h; sourceTree = "<group>"; };
 		D32A643F147174C300F77A3F /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		D32A6440147174C300F77A3F /* README.rst */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.rst; sourceTree = "<group>"; };
 		D32A6446147174C300F77A3F /* UABeveledLoadingIndicator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UABeveledLoadingIndicator.h; sourceTree = "<group>"; };
@@ -1051,7 +1026,7 @@
 				D32A60DD14716EE300F77A3F /* UIKit.framework in Frameworks */,
 				D32A60DE14716EE300F77A3F /* Foundation.framework in Frameworks */,
 				D32A60E314716EE300F77A3F /* KinveyKit.framework in Frameworks */,
-				275B428F16A85AEA0064B941 /* libUAirshipPush-1.3.3.a in Frameworks */,
+				27B0142E173BDCFB00C26EB1 /* libUAirship-1.4.0.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1389,7 +1364,7 @@
 				27FB2A7816FCEC7B00CD7D5C /* Social.framework */,
 				27FB2A7616FCEC7400CD7D5C /* Accounts.framework */,
 				27B425E916C2C30F00C59E1A /* libXcodeTest.a */,
-				27BAB38D166D467000C5D156 /* libUAirshipPush-1.3.3.a */,
+				27B0142D173BDCFB00C26EB1 /* libUAirship-1.4.0.a */,
 				273A3E92160A1A9F00F3742C /* Accounts.framework */,
 				2785F55A160917C9004AA410 /* Twitter.framework */,
 				2764B53C15DD9242003964D1 /* libobjc.dylib */,
@@ -1611,10 +1586,7 @@
 			isa = PBXGroup;
 			children = (
 				D32A641E147174C300F77A3F /* AirshipLib */,
-				D32A6420147174C300F77A3F /* InboxLib */,
 				D32A6429147174C300F77A3F /* PushLib */,
-				D32A642B147174C300F77A3F /* StoreFrontLib */,
-				D32A6433147174C300F77A3F /* SubscriptionLib */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -1627,58 +1599,12 @@
 			path = AirshipLib;
 			sourceTree = "<group>";
 		};
-		D32A6420147174C300F77A3F /* InboxLib */ = {
-			isa = PBXGroup;
-			children = (
-				D32A6421147174C300F77A3F /* UAInbox.h */,
-				D32A6422147174C300F77A3F /* UAInboxDBManager.h */,
-				D32A6423147174C300F77A3F /* UAInboxDefaultJSDelegate.h */,
-				D32A6424147174C300F77A3F /* UAInboxMessage.h */,
-				D32A6425147174C300F77A3F /* UAInboxMessageList.h */,
-				D32A6426147174C300F77A3F /* UAInboxMessageListObserver.h */,
-				D32A6427147174C300F77A3F /* UAInboxPushHandler.h */,
-				D32A6428147174C300F77A3F /* UAInboxURLCache.h */,
-			);
-			path = InboxLib;
-			sourceTree = "<group>";
-		};
 		D32A6429147174C300F77A3F /* PushLib */ = {
 			isa = PBXGroup;
 			children = (
 				D32A642A147174C300F77A3F /* UAPush.h */,
 			);
 			path = PushLib;
-			sourceTree = "<group>";
-		};
-		D32A642B147174C300F77A3F /* StoreFrontLib */ = {
-			isa = PBXGroup;
-			children = (
-				D32A642C147174C300F77A3F /* UAInventory.h */,
-				D32A642D147174C300F77A3F /* UAProduct.h */,
-				D32A642E147174C300F77A3F /* UAStoreFront.h */,
-				D32A642F147174C300F77A3F /* UAStoreFrontAlertProtocol.h */,
-				D32A6430147174C300F77A3F /* UAStoreFrontDelegate.h */,
-				D32A6431147174C300F77A3F /* UAStoreFrontDownloadManager.h */,
-				D32A6432147174C300F77A3F /* UAStoreKitObserver.h */,
-			);
-			path = StoreFrontLib;
-			sourceTree = "<group>";
-		};
-		D32A6433147174C300F77A3F /* SubscriptionLib */ = {
-			isa = PBXGroup;
-			children = (
-				D32A6434147174C300F77A3F /* UAContentInventory.h */,
-				D32A6435147174C300F77A3F /* UAProductInventory.h */,
-				D32A6436147174C300F77A3F /* UASubscription.h */,
-				D32A6437147174C300F77A3F /* UASubscriptionAlertProtocol.h */,
-				D32A6438147174C300F77A3F /* UASubscriptionContent.h */,
-				D32A6439147174C300F77A3F /* UASubscriptionDownloadManager.h */,
-				D32A643A147174C300F77A3F /* UASubscriptionInventory.h */,
-				D32A643B147174C300F77A3F /* UASubscriptionManager.h */,
-				D32A643C147174C300F77A3F /* UASubscriptionObserver.h */,
-				D32A643D147174C300F77A3F /* UASubscriptionProduct.h */,
-			);
-			path = SubscriptionLib;
 			sourceTree = "<group>";
 		};
 		D32A6441147174C300F77A3F /* UI */ = {
@@ -3845,6 +3771,7 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = "KINVEY_DEBUG_ENABLED=1";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				INFOPLIST_FILE = "KinveyKitTests/KinveyKitTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
