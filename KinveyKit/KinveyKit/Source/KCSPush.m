@@ -122,6 +122,14 @@
     
     return YES;
 }
+
+- (void) removeDeviceToken
+{
+    [UAPush shared].pushEnabled = NO;
+    self.deviceToken = nil;
+    [KCSDevice currentDevice].deviceToken = nil;
+}
+
 #pragma mark Push
 // Push helpers
 
