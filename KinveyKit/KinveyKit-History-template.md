@@ -2,7 +2,7 @@
 
 ## 1.15
 ### 1.15.1
-** Release Date:** TBD
+** Release Date:** May 10, 2013
 
 * Updated Urban Airship library from `libUAirshipPush-1.3.3.a` to `libUAirship-1.4.0.a`. __Update your projects accordingly.__ 
 * `-[KCSUser logout]` will now attempt to remove the current device's push token from the user in the backend.
