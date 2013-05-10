@@ -152,6 +152,8 @@
 // - (void) exposeSettingsViewInView: (UIViewController *)parentViewController
 
 
+- (void) removeDeviceToken;
+
 @end
 
 #endif /* NO_URBAN_AIRSHIP_PUSH */

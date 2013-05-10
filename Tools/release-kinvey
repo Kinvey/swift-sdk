@@ -52,7 +52,7 @@ mkdir ${RKK}
 # This needs to be an option...
 
 # Copy KinveyKit.framework
-( cd ${KINVEYKITLOC}/build/Debug-iphoneos/ && tar cf - ./KinveyKit.framework )| ( cd ${RKK}/ && tar -xf - )
+( cd ${KINVEYKITLOC}/build/Release-iphoneos/ && tar cf - ./KinveyKit.framework )| ( cd ${RKK}/ && tar -xf - )
 ( cd ${KINVEYKITLOC} && tar cf - ./Airship ) | ( cd ${RKK}/ && tar -xf - )
 #cp -R ${KINVEYKITLOC}/build/Debug-iphoneos/KinveyKit.framework  ${RELEASEDIR}/KinveyKit-${RELEASENO}/
 #cp -R ${KINVEYKITLOC}/Airship ${RELEASEDIR}/KinveyKit-${RELEASENO}/

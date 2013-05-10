@@ -730,6 +730,23 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
         self.password = nil;
         self.userId = nil;
         
+        // Extract all of the items from the Array into a set, so adding the "new" device token does
+        // the right thing.  This might be less efficient than just iterating, but these routines have
+        // been optimized, we do this now, since there's no other place guarenteed to merge.
+        // Login/create store this info
+        KCSDevice *sp = [KCSDevice currentDevice];
+        
+        if (sp.deviceToken != nil){
+            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
+            [tmpSet removeObject:[sp deviceTokenString]];
+            self.deviceTokens = [tmpSet allObjects];
+            [self saveToCollection:[KCSCollection userCollection] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                if (errorOrNil) {
+                    KCSLogError(@"Error saving user when removing device tokens: %@", errorOrNil);
+                }
+            } withProgressBlock:nil];
+        }
+        
         [KCSUser clearSavedCredentials];
         
         // Set the currentUser to nil
@@ -981,6 +998,33 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
 //    } progressAction:nil];
 //    [request start];
 }
+
++ (void) checkUsername:(NSString*)potentialUsername withCompletionBlock:(KCSUserCheckUsernameBlock)completionBlock
+{
+    NSParameterAssert(potentialUsername != nil);
+    
+    // /rpc/:appKey/check-username-exists
+    NSString* checkExists = [[[KCSClient sharedClient] rpcBaseURL] stringByAppendingString:@"check-username-exists"];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:checkExists usingMethod:kPostRESTMethod];
+    [request setJsonBody:@{@"username":@"foo"}];
+    [request setContentType:KCS_JSON_TYPE];
+    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
+        NSDictionary* dict = [response jsonResponseValue];
+        if (response.responseCode == KCS_HTTP_STATUS_OK) {
+            completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], nil);
+        } else {
+            NSError* error = [KCSErrorUtilities createError:dict description:@"Error checking user name" errorCode:response.responseCode domain:KCSUserErrorDomain requestId:response.requestId];
+            completionBlock(potentialUsername, NO, error);
+        }
+        //response will be a 204 if accepted by server
+        //completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
+    } failureAction:^(NSError *error) {
+        //do error
+        completionBlock(potentialUsername, NO ,error);
+    } progressAction:nil];
+    [request start];
+}
+
 
 #pragma mark - properties
 - (void)setSurname:(NSString *)surname

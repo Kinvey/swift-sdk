@@ -38,7 +38,7 @@ typedef enum KCSCachePolicy {
  - `KCSCachePolicyNetworkFirst` - The network is queried and the cache is updated with each result. The cached value is only returned when the network is unavailable. 
  - `KCSCachePolicyBoth` - If available, the cached value is returned to `completionBlock`. The network is then queried and cache updated, afterwards. The `completionBlock` will be called again with the updated result from the server.
  
- For an individual store, the chace policy can inherit from the defaultCachePolicy, be set using storeWithOptions: factory constructor, supplying the enum for the key `KCSStoreKeyCahcePolicy`.
+ For an individual store, the cache policy can inherit from the defaultCachePolicy, be set using storeWithOptions: factory constructor, supplying the enum for the key `KCSStoreKeyCahcePolicy`.
  
  This store also provides offline save semantics. To enable offline save, supply a unique string for this store for the `KCSStoreKeyUniqueOfflineSaveIdentifier` key in the options dictionary passed in class factory method ([KCSAppdataStore storeWithCollection:options:]. You can also supply an optional `KCSStoreKeyOfflineSaveDelegate` to intercept or be notified when those saves happen when the application becomes online. 
  

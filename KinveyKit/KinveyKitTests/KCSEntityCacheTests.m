@@ -36,6 +36,7 @@
     STAssertTrue(results.count == 2, @"should have both objects");
     STAssertTrue([results containsObject:obj1], @"should have item 1");
     STAssertTrue([results containsObject:obj2], @"should have item 2");
+    
 }
 
 - (void) testRoundTripSingleId

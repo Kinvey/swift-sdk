@@ -173,20 +173,22 @@
     }
 }
 
-+ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(KCSWebViewClass*) webview
++ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock permissions:(NSString*)permissions usingWebView:(KCSWebViewClass*) webview
 {
+    if (permissions == nil) permissions = @"r_basicprofile";
+    
     NSString* linkedInKey = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_API_KEY];
     NSString* linkedInSecret = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_SECRET_KEY];
     NSString* linkedInAcceptRedirect = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_ACCEPT_REDIRECT];
     NSString* linkedInCancelRedirect = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_CANCEL_REDIRECT];
-
+    
     if (linkedInKey == nil || linkedInSecret == nil || linkedInAcceptRedirect == nil || linkedInCancelRedirect == nil) {
         NSString* description = @"Cannot use Linked In authentication without consumer app information";
         NSDictionary* info = [KCSErrorUtilities createErrorUserDictionaryWithDescription:description withFailureReason:@"Missing one or more of: Linked In api key, secret key, accept redirect or cancel redirect." withRecoverySuggestion:@"Set KCS_LINKEDIN_API_KEY, KCS_LINKEDIN_SECRET_KEY, KCS_LINKEDIN_ACCEPT_REDIRECT, and KCS_LINKEDIN_CANCEL_REDIRECT in the Kinvey client options dictionary" withRecoveryOptions:nil];
-       
+        
         NSError* error = [KCSErrorUtilities createError:info description:description errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil];
         completionBlock(nil, error);
-
+        
     } else {
         KCSLinkedInHelper* helper = [[KCSLinkedInHelper alloc] init];
         helper.apiKey = linkedInKey;
@@ -195,9 +197,18 @@
         helper.cancelRedirect = linkedInCancelRedirect;
         helper.webview = webview;
         
-        [helper requestToken:@"r_basicprofile" completionBlock:completionBlock];
+        [helper requestToken:permissions completionBlock:completionBlock];
     }
 }
+                               
+                               
++ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(KCSWebViewClass*) webview
+{
+    [self getAccessDictionaryFromLinkedIn:completionBlock permissions:@"r_basicprofile" usingWebView:webview];
+}
 
+    
 
 @end
+                               
+                               
