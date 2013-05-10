@@ -24,12 +24,12 @@
 #pragma mark -
 #pragma mark Initialization
 
-- (id)init
+- (instancetype)init
 {
     return [self initWithAuth:nil];
 }
 
-- (id)initWithAuth: (KCSAuthHandler *)auth
+- (instancetype)initWithAuth: (KCSAuthHandler *)auth
 {
     self = [super init];
     if (self) {
@@ -38,17 +38,17 @@
     return self;
 }
 
-+ (id)store
++ (instancetype)store
 {
     return [self storeWithAuthHandler:nil withOptions:nil];
 }
 
-+ (id)storeWithOptions: (NSDictionary *)options
++ (instancetype)storeWithOptions: (NSDictionary *)options
 {
     return [self storeWithAuthHandler:nil withOptions:options];
 }
 
-+ (id)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
++ (instancetype)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
 {
     KCSResourceStore *store = [[self alloc] initWithAuth:authHandler];
     [store configureWithOptions:options];

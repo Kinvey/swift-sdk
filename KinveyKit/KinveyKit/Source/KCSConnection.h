@@ -24,7 +24,7 @@
 @property (nonatomic) BOOL followRedirects;
 
 // For Mock object injection
-- (id)initWithConnection:(NSURLConnection *)theConnection; // For Mock testing
+- (instancetype)initWithConnection:(NSURLConnection *)theConnection; // For Mock testing
 
 
 - (void)performRequest:(NSURLRequest *)theRequest

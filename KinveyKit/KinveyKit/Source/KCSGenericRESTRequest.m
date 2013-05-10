@@ -28,13 +28,13 @@
 @property (nonatomic, copy) KCSConnectionCompletionBlock completionAction;
 @property (nonatomic, copy) KCSConnectionFailureBlock failureAction;
 @property (nonatomic, copy) KCSConnectionProgressBlock progressAction;
-- (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod;
+- (instancetype)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod;
 @end
 
 @implementation KCSGenericRESTRequest
 
 
-+ (KCSGenericRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failure progressAction: (KCSConnectionProgressBlock)progress
++ (instancetype)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failure progressAction: (KCSConnectionProgressBlock)progress
 {
     KCSGenericRESTRequest* req = [[self alloc] initWithResource:resource usingMethod:requestMethod];
     req.completionAction = complete;
@@ -44,7 +44,7 @@
     return req;
 }
 
-- (id)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod
+- (instancetype)initWithResource:(NSString *)resource usingMethod: (NSInteger)requestMethod
 {
     self = [super init];
     if (self){

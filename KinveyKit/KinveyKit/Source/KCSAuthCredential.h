@@ -13,7 +13,7 @@
 @property (nonatomic, retain) NSString *URL;
 @property (nonatomic) NSInteger method;
 
-- (id)initWithURL: (NSString *)URL withMethod: (NSInteger)method;
+- (instancetype)initWithURL: (NSString *)URL withMethod: (NSInteger)method;
 + (KCSAuthCredential *)credentialForURL: (NSString *)URL usingMethod: (NSInteger)method;
 - (NSURLCredential *)NSURLCredential;
 - (NSString *)HTTPBasicAuthString;

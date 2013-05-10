@@ -50,7 +50,7 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
 
 @implementation KCSUser
 
-- (id)init
+- (instancetype) init
 {
     self = [super init];
     if (self){

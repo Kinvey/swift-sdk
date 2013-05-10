@@ -35,7 +35,7 @@
 
 #pragma mark - 
 
-- (id) initWithResource:(id)resource name:(NSString*)name
+- (instancetype) initWithResource:(id)resource name:(NSString*)name
 {
     self = [super init];
     if (self) {
@@ -45,7 +45,7 @@
     return self;
 }
 
-- (id) initWithResource:(id)resource
+- (instancetype) initWithResource:(id)resource
 {
     self = [super init];
     if (self) {

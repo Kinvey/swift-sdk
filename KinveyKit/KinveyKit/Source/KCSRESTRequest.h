@@ -19,12 +19,12 @@
 @property (nonatomic, copy) KCSConnectionFailureBlock failureAction;
 @property (nonatomic, copy) KCSConnectionProgressBlock progressAction;
 
-+ (KCSRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod;
++ (instancetype) requestForResource:(NSString*)resource usingMethod:(NSInteger)requestMethod;
 
-- (id)mockRequestWithMockClass: (Class)connectionClass; // For testing ONLY!
-- (id)addHeaders: (NSDictionary *)theHeaders;
-- (id)addBody: (NSData *)theBody;
-- (id)withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failue progressAction: (KCSConnectionProgressBlock)progress;
+- (instancetype)mockRequestWithMockClass: (Class)connectionClass; // For testing ONLY!
+- (instancetype)addHeaders: (NSDictionary *)theHeaders;
+- (instancetype)addBody: (NSData *)theBody;
+- (instancetype)withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failue progressAction: (KCSConnectionProgressBlock)progress;
 
 // Modify known headers
 - (void) setJsonBody:(id)bodyObject;

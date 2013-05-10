@@ -71,7 +71,7 @@ static BOOL sFirstReached;
     return sQueues;
 }
 
-- (id) init
+- (instancetype) init
 {
     self = [super init];
     if (self) {
@@ -163,7 +163,7 @@ static BOOL sFirstReached;
 
 
 @implementation KCSSaveQueueItem
-- (id) initWithObject:(id<KCSPersistable>)obj
+- (instancetype) initWithObject:(id<KCSPersistable>)obj
 {
     self = [super init];
     if (self) {
@@ -229,7 +229,7 @@ static BOOL sFirstReached;
     return [[KCSSaveQueues sharedQueues] queueForCollection:collection identifier:identifier];
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -243,7 +243,7 @@ static BOOL sFirstReached;
     return self;
 }
 
-- (id) initWithCoder:(NSCoder *)aDecoder
+- (instancetype) initWithCoder:(NSCoder *)aDecoder
 {
     self = [self init];
     if (self) {

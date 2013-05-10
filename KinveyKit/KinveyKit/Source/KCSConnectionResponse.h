@@ -20,7 +20,7 @@
 @property (retain, readonly) NSString* requestId;
 
 
-+ (KCSConnectionResponse *)connectionResponseWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData; 
++ (instancetype)connectionResponseWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData; 
 
 - (NSString*) stringValue;
 - (id) jsonResponseValue;
