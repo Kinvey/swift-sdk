@@ -51,7 +51,7 @@ typedef void(^KCSCompletionWrapperBlock_t)();
 
 @property (nonatomic, readonly, getter = percentDone) double percentDone;
 
-- (id) initWithEntityCount:(NSUInteger)entityCount;
+- (instancetype) initWithEntityCount:(NSUInteger)entityCount;
 
 - (id) markEntity:(KCSSerializedObject*)serializedObj;
 - (id) addReference:(id<KCSPersistable>)reference entity:(KCSCompletionWrapper*)wp;

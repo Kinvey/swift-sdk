@@ -37,7 +37,7 @@
  @param result YES if a complete roundtrip request was successful, NO otherwise.
  @return The KCSPingResult object.
  */
-- (id)initWithDescription: (NSString *)description withResult: (BOOL)result;
+- (instancetype)initWithDescription: (NSString *)description withResult: (BOOL)result;
 
 @end
 

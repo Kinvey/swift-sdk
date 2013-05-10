@@ -1,5 +1,12 @@
 # KinveyKit Release History
 
+## 1.16
+#### 1.16.0
+** Release Date:** TBD
+
+* Infrastructure Updates:
+    * Replace `id` with `instancetype` return value in many classes. (See http://nshipster.com/instancetype/ for a discussion)
+
 ## 1.15
 ### 1.15.1
 ** Release Date:** May 10, 2013

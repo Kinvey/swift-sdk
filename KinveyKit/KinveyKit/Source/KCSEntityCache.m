@@ -65,7 +65,7 @@ static KCSCachedStoreCaching* sCaching;
 
 #pragma mark - classes
 
-- (id) init
+- (instancetype) init
 {
     self = [super init];
     if (self) {
@@ -105,7 +105,7 @@ static KCSCachedStoreCaching* sCaching;
 @end
 @implementation CacheValue
 
-- (id) init
+- (instancetype) init
 {
     self = [super init];
     if (self) {
@@ -114,7 +114,7 @@ static KCSCachedStoreCaching* sCaching;
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
     if (self) {
@@ -209,7 +209,7 @@ NSString* KCSMongoObjectId()
     counter = arc4random();
 }
 
-- (id) init
+- (instancetype) init
 {
     self = [super init];
     if (self) {

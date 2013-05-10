@@ -15,7 +15,7 @@
 
 @implementation KCSConnectionResponse
 
-- (id)initWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData
+- (instancetype)initWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData
 {
     self = [super init];
     if (self){
@@ -28,7 +28,7 @@
     return self;
 }
 
-+ (KCSConnectionResponse *)connectionResponseWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData
++ (instancetype) connectionResponseWithCode:(NSInteger)code responseData:(NSData *)data headerData:(NSDictionary *)header userData:(NSDictionary *)userDefinedData
 {
     // Return the autoreleased instance.
     if (code < 0){

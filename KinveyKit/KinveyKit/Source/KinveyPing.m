@@ -28,7 +28,7 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
 @synthesize description=_description;
 @synthesize pingWasSuccessful=_pingWasSuccessful;
 
-- (id)initWithDescription:(NSString *)description withResult:(BOOL)result
+- (instancetype) initWithDescription:(NSString *)description withResult:(BOOL)result
 {
     self = [super init];
     if (self){

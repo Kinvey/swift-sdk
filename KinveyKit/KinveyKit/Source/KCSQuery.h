@@ -104,7 +104,7 @@ typedef enum {
  
  @return The created object.
  */
-- (id)initWithField: (NSString *)field inDirection: (KCSSortDirection)direction;
+- (instancetype)initWithField: (NSString *)field inDirection: (KCSSortDirection)direction;
 
 @end
 
@@ -127,7 +127,7 @@ typedef enum {
  @return The object created.
  
  */
-- (id)initWithLimit: (NSInteger)limit;
+- (instancetype)initWithLimit: (NSInteger)limit;
 /*! Obtain a representation suitable for sticking in a query param string
  
  Use this function to obtain a properly escaped URL ready string
@@ -158,7 +158,7 @@ typedef enum {
  @return The newly created object.
  
  */
-- (id)initWithcount: (NSInteger)count;
+- (instancetype)initWithcount: (NSInteger)count;
 /*! Obtain a representation suitable for sticking in a query param string
  
  Use this function to obtain a properly escaped URL ready string
@@ -322,7 +322,7 @@ typedef enum {
  
  @return The new KCSQuery object (autoreleased).
  */
-+ (KCSQuery *)query;
++ (instancetype)query;
 
 /*! Creates a regular expression query on a field, with options.
  

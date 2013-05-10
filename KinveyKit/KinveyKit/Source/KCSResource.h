@@ -18,8 +18,8 @@
 @property (nonatomic, retain) id resource;
 @property (atomic, retain, getter = blobName) NSString* blobName;
 
-- (id) initWithResource:(id)resource;
-- (id) initWithResource:(id)resource name:(NSString*)name;
+- (instancetype) initWithResource:(id)resource;
+- (instancetype) initWithResource:(id)resource name:(NSString*)name;
 
 - (NSData*) data;
 

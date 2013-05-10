@@ -18,7 +18,7 @@
 
 #pragma mark - Init
 
-- (id) initWithFunction:(NSString*)function field:(NSString*)field initial:(id)initialObj
+- (instancetype) initWithFunction:(NSString*)function field:(NSString*)field initial:(id)initialObj
 {
     self = [super init];
     if (self) {

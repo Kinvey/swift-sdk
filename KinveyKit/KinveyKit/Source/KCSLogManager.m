@@ -22,7 +22,7 @@ enum {
 + (KCSLogChannel *)channelForKey:(NSString *)key;
 + (NSDictionary *)channels;
 
-- (id)initWithDisplayString: (NSString *)displayString channelID:(NSInteger)channelID;
+- (instancetype)initWithDisplayString: (NSString *)displayString channelID:(NSInteger)channelID;
 @property (strong, readonly, nonatomic) NSString *displayString;
 @property (readonly, nonatomic) NSInteger channelID;
 
@@ -30,7 +30,7 @@ enum {
 
 @implementation KCSLogChannel
 
-- (id)initWithDisplayString:(NSString *)displayString channelID:(NSInteger)channelID
+- (instancetype)initWithDisplayString:(NSString *)displayString channelID:(NSInteger)channelID
 {
     self = [super init];
     if (self){
@@ -79,7 +79,7 @@ enum {
 
 @implementation KCSLogManager
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self){}
