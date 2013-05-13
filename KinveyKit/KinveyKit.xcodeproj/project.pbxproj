@@ -159,7 +159,7 @@
 		2766E64D16834B78000D27C5 /* KinveyKit_macTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2766E64C16834B78000D27C5 /* KinveyKit_macTests.m */; };
 		2766E65916834F1D000D27C5 /* KCSGenericRESTRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E0B35E15E51F3600B83E72 /* KCSGenericRESTRequest.m */; };
 		2766E65A16835050000D27C5 /* KCSConnectionPool.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA224B148412A600666259 /* KCSConnectionPool.m */; };
-		276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 276A6F6116372FD500285884 /* KCSEntityCache.h */; };
+		276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 276A6F6116372FD500285884 /* KCSEntityCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6216372FD500285884 /* KCSEntityCache.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		276A6F6F1637834700285884 /* KCSEntityCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6E1637834700285884 /* KCSEntityCacheTests.m */; };
 		2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };

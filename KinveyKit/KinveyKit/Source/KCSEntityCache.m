@@ -28,9 +28,9 @@
 
 @interface KCSEntityCache () <NSCacheDelegate>
 {
-    NSCache* _cache;
-    NSCache* _queryCache;
-    NSCache* _groupingCache;
+    NSMutableDictionary* _cache;
+    NSMutableDictionary* _queryCache;
+    NSMutableDictionary* _groupingCache;
     NSMutableOrderedSet* _unsavedObjs;
 
 }
@@ -91,6 +91,15 @@ static KCSCachedStoreCaching* sCaching;
         }
     }
     return cache;
+}
+
+- (void) clearCaches
+{
+    @synchronized(self) {
+        for (KCSEntityCache* c in [_caches allValues]) {
+            [c clearCaches];
+        }
+    }
 }
 
 @end
@@ -213,19 +222,13 @@ NSString* KCSMongoObjectId()
 {
     self = [super init];
     if (self) {
-        _cache = [[NSCache alloc] init];
-        _queryCache = [[NSCache alloc] init];
-        _queryCache.delegate = self;
-        _groupingCache = [[NSCache alloc] init];
+        _cache = [NSMutableDictionary dictionary];
+        _queryCache = [NSMutableDictionary dictionary];
+//        _queryCache.delegate = self;
+        _groupingCache = [NSMutableDictionary dictionary];
         _unsavedObjs = [NSMutableOrderedSet orderedSet];
     }
     return self;
-}
-
-//TODO:
-- (void)cache:(NSCache *)cache willEvictObject:(id)obj
-{
-    KCSLogWarning(@"CACHE DISCARD OBJ: %@",obj);
 }
 
 #pragma mark - peristence
@@ -400,7 +403,7 @@ NSString* KCSMongoObjectId()
             [self addResult:n];
         }
     }
-    [_queryCache setObject:ids forKey:queryKey cost:100];
+    [_queryCache setObject:ids forKey:queryKey];
     if (oldIds) {
         [oldIds removeObjectsInArray:[ids array]];
         [self removeIds:[oldIds array]];
@@ -459,6 +462,11 @@ NSString* KCSMongoObjectId()
     [_queryCache removeAllObjects];
     [_groupingCache removeAllObjects];
     [_unsavedObjs removeAllObjects];
+}
+
++ (void) clearAllCaches
+{
+    [[KCSCachedStoreCaching sharedCaches] clearCaches];
 }
 
 #pragma mark - Saving
