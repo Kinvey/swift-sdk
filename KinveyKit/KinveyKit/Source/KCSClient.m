@@ -92,10 +92,9 @@
         _userAuthenticationInProgress = NO;
         _authCompleteLock   = [[NSRecursiveLock alloc] init];
         _authInProgressLock = [[NSRecursiveLock alloc] init];
-//        _currentUser = [[KCSUser alloc] init];
         _serviceHostname = @"baas";
         _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
-
+        
 #if TARGET_OS_IPHONE
         _networkReachability = [KCSReachability reachabilityForInternetConnection];
         // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)

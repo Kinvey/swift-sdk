@@ -102,7 +102,7 @@
 @property (strong) NSArray *lastFetchResults;
 
 /*! The Endpoint where we look for a request */
-@property (nonatomic, strong) NSString *baseURL;
+@property (nonatomic, strong, readonly) NSString *baseURL;
 
 
 
