@@ -133,10 +133,8 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
                 [[NSException exceptionWithName:@"Invalid Template" reason:@"User collection must have a template that is of type 'KCSUser'" userInfo:nil] raise];
             }
             _collectionName = @"";
-            _baseURL = [[KCSClient sharedClient] userBaseURL]; //use user url for user collection
         } else {
             _collectionName = name;
-            _baseURL = [[KCSClient sharedClient] appdataBaseURL]; // Initialize this to the default appdata URL
         }
         _objectTemplate = theClass;
         _lastFetchResults = nil;
@@ -149,8 +147,10 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 - (id)init
 {
-    return [self initWithName:nil forTemplateClass:[NSObject class]];
+    return [self initWithName:nil forTemplateClass:[NSMutableDictionary class]];
 }
+
+
 
 // Override isEqual method to allow comparing of Collections
 // A collection is equal if the name, object template and filter are the same
@@ -183,6 +183,17 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 
 
 #pragma mark Basic Methods
+- (NSString*) baseURL
+{
+    NSString* baseURL = @"";
+    if ([self.collectionName isEqualToString:KCSUserCollectionName]) {
+        baseURL = [[KCSClient sharedClient] userBaseURL]; //use user url for user collection
+    } else {
+        baseURL = [[KCSClient sharedClient] appdataBaseURL]; // Initialize this to the default appdata URL
+    }
+    return baseURL;
+}
+
 - (NSString*) urlForEndpoint:(NSString*)endpoint
 {
     if (endpoint == nil) {
