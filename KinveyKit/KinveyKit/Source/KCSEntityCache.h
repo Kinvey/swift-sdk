@@ -41,6 +41,9 @@ NSString* KCSMongoObjectId();
 #pragma mark Persistence
 - (void) setPersistenceId:(NSString*)key;
 - (void) clearCaches;
+
++ (void) clearAllCaches;
+
 @end
 
 @interface KCSCachedStoreCaching : NSObject
