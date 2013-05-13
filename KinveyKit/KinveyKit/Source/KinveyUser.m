@@ -1006,7 +1006,7 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
     // /rpc/:appKey/check-username-exists
     NSString* checkExists = [[[KCSClient sharedClient] rpcBaseURL] stringByAppendingString:@"check-username-exists"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:checkExists usingMethod:kPostRESTMethod];
-    [request setJsonBody:@{@"username":@"foo"}];
+    [request setJsonBody:@{@"username": potentialUsername}];
     [request setContentType:KCS_JSON_TYPE];
     request = [request withCompletionAction:^(KCSConnectionResponse *response) {
         NSDictionary* dict = [response jsonResponseValue];

@@ -373,6 +373,16 @@ FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
  */
 + (void) sendEmailConfirmationForUser:(NSString*)username withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
 
+/** Checkes the server to see if a username is already being used.
+ 
+ This method is useful to pre-check a username before a new user is created. 
+ 
+ See http://devcenter.kinvey.com/rest/guides/users#userexists for more information
+ 
+ @param potentialUsername the username to check
+ @param completionBlock if there is no error, `usernameAlreadyTaken` will be `YES` if that username is in use, and `NO` if it is available
+ @since 1.16.0
+*/
 + (void) checkUsername:(NSString*)potentialUsername withCompletionBlock:(KCSUserCheckUsernameBlock)completionBlock;
 
 

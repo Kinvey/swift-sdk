@@ -137,12 +137,12 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     return [self storeWithAuthHandler:nil withOptions:nil];
 }
 
-+ (instancetype)storeWithOptions: (NSDictionary *)options
++ (instancetype) storeWithOptions: (NSDictionary *)options
 {
     return [self storeWithAuthHandler:nil withOptions:options];
 }
 
-+ (instancetype)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
++ (instancetype) storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
 {
     KCSAppdataStore *store = [[self alloc] initWithAuth:authHandler];
     [store configureWithOptions:options];
