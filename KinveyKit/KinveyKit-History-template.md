@@ -4,6 +4,7 @@
 #### 1.16.0
 ** Release Date:** TBD
 
+* Added `+ [KCSUser checkUsername:withCompletionBlock:]` to check if an username is already taken, or is available for a new user.
 * Infrastructure Updates:
     * Replace `id` with `instancetype` return value in many classes. (See http://nshipster.com/instancetype/ for a discussion)
 
