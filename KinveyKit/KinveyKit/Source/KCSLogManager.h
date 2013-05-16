@@ -3,15 +3,13 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/11/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import "KCSLogSink.h"
 
 // Convenience Macros
-#if KINVEY_DEBUG_ENABLED
-
 #define KCSLog(channel,format,...) \
 [[KCSLogManager sharedLogManager] logChannel:(channel) file:__FILE__ lineNumber:__LINE__ \
 withFormat:(format),##__VA_ARGS__]
@@ -36,7 +34,7 @@ withFormat:(format),##__VA_ARGS__]
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ \
 withFormat:(format),##__VA_ARGS__]
 
-#else
+#if NEVER
 
 #define KCSLog(channel,format,...)
 #define KCSLogNetwork(format,...)
