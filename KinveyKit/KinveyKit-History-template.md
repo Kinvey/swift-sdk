@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.15
+### 1.15.2
+** Release Date:** May 16, 2013
+
+* Bug fix(es):
+    * Fix to console logging
+
 ### 1.15.1
 ** Release Date:** May 10, 2013
 
