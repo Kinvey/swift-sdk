@@ -26,18 +26,20 @@
 #import "KCSObjectMapper.h"
 #import "KinveyUser.h"
 
+#import "KCSEntityCache2.h"
+
+
 @interface KCSEntityCache () <NSCacheDelegate>
 {
     NSMutableDictionary* _cache;
     NSMutableDictionary* _queryCache;
     NSMutableDictionary* _groupingCache;
     NSMutableOrderedSet* _unsavedObjs;
-
+    
 }
 @property (nonatomic, strong) NSDictionary* saveContext;
 @property (nonatomic, retain) NSString* persistenceId;
 @end
-
 
 @interface KCSCachedStoreCaching () {
     NSMutableDictionary* _caches;
@@ -58,7 +60,7 @@ static KCSCachedStoreCaching* sCaching;
     return sCaching;
 }
 
-+ (KCSEntityCache*)cacheForCollection:(NSString*)collection
++ (id<KCSEntityCache>)cacheForCollection:(NSString*)collection
 {
     return [[self sharedCaches] cacheForCollection:collection];
 }
@@ -79,15 +81,20 @@ static KCSCachedStoreCaching* sCaching;
     [_caches removeAllObjects];
 }
 
-- (KCSEntityCache*)cacheForCollection:(NSString*)collection
+- (id<KCSEntityCache>)cacheForCollection:(NSString*)collection
 {
-    KCSEntityCache* cache = nil;
+    id<KCSEntityCache> cache = nil;
     @synchronized(self) {
         cache = [_caches objectForKey:collection];
         if (!cache) {
-            cache = [[KCSEntityCache alloc] init];
+            BOOL useV2 = [[[KCSClient sharedClient].options valueForKey:KCS_CACHES_USE_V2] boolValue];
+            if (useV2) {
+                cache = [[KCSEntityCache2 alloc] initWithPersistenceId:collection];
+            } else {
+                cache = [[KCSEntityCache alloc] init];
+            }
             [_caches setObject:cache forKey:collection];
-            cache.saveContext = @{@"collection" : collection};
+            [cache setSaveContext:@{@"collection" : collection}];
         }
     }
     return cache;
@@ -162,7 +169,6 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
     }
     return representation;
 }
-
 
 @implementation KCSEntityCache
 static uint counter;

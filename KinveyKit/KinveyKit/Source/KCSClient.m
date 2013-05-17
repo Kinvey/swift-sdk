@@ -86,7 +86,7 @@
         _userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
         _connectionTimeout = 10.0; // Default timeout to 10 seconds
         _analytics = [[KCSAnalytics alloc] init];
-        _cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;  // Inhibit caching for now
+        _cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;  // Inhibit caching for now
         _protocol = @"https";
         _userIsAuthenticated = NO;
         _userAuthenticationInProgress = NO;
@@ -94,6 +94,7 @@
         _authInProgressLock = [[NSRecursiveLock alloc] init];
         _serviceHostname = @"baas";
         _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
+//        _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSSZ";
         
 #if TARGET_OS_IPHONE
         _networkReachability = [KCSReachability reachabilityForInternetConnection];

@@ -19,7 +19,6 @@
 #import "KCSErrorUtilities.h"
 #import "KCSLogManager.h"
 #import "KinveyCollection.h"
-#import "KCSReachability.h"
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
 #import "NSMutableDictionary+KinveyAdditions.h"

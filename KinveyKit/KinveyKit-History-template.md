@@ -5,10 +5,19 @@
 ** Release Date:** TBD
 
 * Added `+ [KCSUser checkUsername:withCompletionBlock:]` to check if an username is already taken, or is available for a new user.
+* Deprecated `+[KCSPing kinveyServiceIsReachable]` and  `+[KCSPing networkIsReachable]`, use `- [KCSClient networkReachability]` and `-[KCSClient kinveyReachability]` instead.
 * Infrastructure Updates:
     * Replace `id` with `instancetype` return value in many classes. (See http://nshipster.com/instancetype/ for a discussion)
+* Bug fix(es):
+    * Allow for collections created before `KCSClient init…` to work properly.
 
 ## 1.15
+### 1.15.2
+** Release Date:** May 16, 2013
+
+* Bug fix(es):
+    * Fix to console logging
+    
 ### 1.15.1
 ** Release Date:** May 10, 2013
 

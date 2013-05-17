@@ -60,6 +60,8 @@
 #define KCS_SALESFORCE_REFRESH_TOKEN @"refresh_token"
 #define KCS_SALESFORCE_CLIENT_ID @"client_id"
 
+#define KCS_CACHES_USE_V2 @"kinvey.usev2caching"
+
 /*! A Singleton Class that provides access to all Kinvey Services.
 
  This class provides a single interface to most Kinvey services.  It provides access to User Servies, Collection services

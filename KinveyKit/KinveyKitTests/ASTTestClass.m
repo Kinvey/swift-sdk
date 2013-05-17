@@ -29,4 +29,16 @@
                 @"date" : @"date"};
 }
 
+- (NSUInteger)hash
+{
+    return [_objId hash];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    ASTTestClass* o = object;
+    BOOL classSame = [[self class] isEqual:[object class]];
+    return  classSame && [_objId isEqual:o.objId];
+}
+
 @end

@@ -634,16 +634,16 @@ int reachable = -1;
 }
 #endif
 
-#if TARGET_OS_IPHONE
-- (BOOL) isKinveyReachable
-{
-#if BUILD_FOR_UNIT_TEST
-    return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
-#else
-    return [[KCSClient sharedClient] kinveyReachability].isReachable;
-#endif
-}
-#endif
+//#if TARGET_OS_IPHONE
+//- (BOOL) isKinveyReachable
+//{
+//#if BUILD_FOR_UNIT_TEST
+//    return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
+//#else
+//    return [[KCSClient sharedClient] kinveyReachability].isReachable;
+//#endif
+//}
+//#endif
 
 #pragma mark - Adding/Updating
 - (BOOL) offlineSaveEnabled
