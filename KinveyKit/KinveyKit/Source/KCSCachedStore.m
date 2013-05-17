@@ -28,7 +28,7 @@
 @end
 
 @interface KCSCachedStore () {
-    KCSEntityCache* _cache;
+    id<KCSEntityCache> _cache;
 }
 
 @end

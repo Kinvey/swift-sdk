@@ -8,6 +8,7 @@
 #import "KinveyKitNSDateTests.h"
 #import "NSDate+ISO8601.h"
 #import "KCSLogManager.h"
+#import "KCSClient.h"
 
 @implementation KinveyKitNSDateTests
 

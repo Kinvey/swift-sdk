@@ -40,6 +40,11 @@
     return self;
 }
 
+- (NSDictionary*) dictionaryValue
+{
+    return @{@"aray":_array,@"key":_key, @"fields":_queriedFields};
+}
+
 - (NSArray*) fieldsAndValues
 {
     return _array;

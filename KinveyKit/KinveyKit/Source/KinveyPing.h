@@ -2,7 +2,7 @@
 //  KinveyPing.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -10,6 +10,7 @@
 //  contents is a violation of applicable laws.
 
 #import <Foundation/Foundation.h>
+#import "KinveyHeaderInfo.h"
 
 /*! Result returned from the Ping operation.
  
@@ -68,8 +69,9 @@ typedef void(^KCSPingBlock)(KCSPingResult *result);
  
  @warning This method *DOES NOT* verify that the Kinvey Service is active, only that a network request will leave the phone.
  @return YES if the network is reachable, NO if the network is not reachable.
+ @deprecatedIn 1.16.0
  */
-+ (BOOL)networkIsReachable;
++ (BOOL)networkIsReachable KCS_DEPRECATED(Use KCSClient Reachability Object Instead, 1.16.0);
 
 /*! Verify the device will be able to access a network, and that the Kinvey service is a known address
  
@@ -82,8 +84,9 @@ typedef void(^KCSPingBlock)(KCSPingResult *result);
  @warning This method *DOES NOT* verify that the Kinvey Service is active, only that a network request will leave the phone
  and be sent to Kinvey.
  @return YES if the network is reachable and Kinvey is known, NO if the network is not reachable or Kinvey is not known.
+ @deprecatedIn 1.16.0
  */
-+ (BOOL)kinveyServiceIsReachable;
++ (BOOL)kinveyServiceIsReachable KCS_DEPRECATED(Use KCSClient Reachability Object Instead, 1.16.0);
 
 
 /*! Verify the Kinvey Service is active

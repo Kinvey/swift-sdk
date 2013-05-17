@@ -72,50 +72,24 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
 
 + (void)commonPingHelper:(KCSCommonPingBlock)onComplete
 {
-    // Verify network hardware...
-    if ([KCSPing networkIsReachable] && [KCSPing kinveyServiceIsReachable]){
-        
-        KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-            if (response.responseCode == KCS_HTTP_STATUS_OK){
-                onComplete(YES, response, nil);                
-            } else {
-                NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
-                NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Unable to Ping Kinvey" errorCode:response.responseCode domain:KCSNetworkErrorDomain requestId:response.requestId];
-                onComplete(NO, nil, error);
-            }
-
-        };
-        
-        KCSConnectionFailureBlock fBlock = ^(NSError *error){
-            onComplete(NO, nil, error);
-        };
-        
-        // Dummy
-        KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
-        
-        KCSRESTRequest *request = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] appdataBaseURL] usingMethod:kGetRESTMethod];
-        [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-    } else {
-        NSString *description;
-        NSInteger errorCode;
-        if ([KCSPing networkIsReachable]){
-            errorCode = KCSKinveyUnreachableError;
-            description = @"Unable to reach Kinvey service.";
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        if (response.responseCode == KCS_HTTP_STATUS_OK){
+            onComplete(YES, response, nil);
         } else {
-            errorCode = KCSNetworkUnreachableError;
-            description = @"Unable to reach network.";
+            NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Unable to Ping Kinvey" errorCode:response.responseCode domain:KCSNetworkErrorDomain requestId:response.requestId];
+            onComplete(NO, nil, error);
         }
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:description
-                                                                           withFailureReason:@"Reachability determined that either Kinvey or the network was not reachable"
-                                                                      withRecoverySuggestion:@"Check to make sure device is not in Airplane mode and has a signal or try again later"
-                                                                         withRecoveryOptions:nil];
-        NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
-                                             code:errorCode
-                                         userInfo:userInfo];
         
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
         onComplete(NO, nil, error);
-    }
-
+    };
+    
+    
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] appdataBaseURL] usingMethod:kGetRESTMethod];
+    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:nil] start];
 }
 
 + (void)checkKinveyServiceStatusWithAction: (KCSPingBlock)completionAction

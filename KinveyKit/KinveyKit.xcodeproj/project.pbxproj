@@ -148,6 +148,9 @@
 		275B427016A82BAC0064B941 /* KCSLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F3412814BD686000DB6C37 /* KCSLogManager.m */; };
 		275B42A016A97DB00064B941 /* KinveyHeaderInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275B42A116A97DB00064B941 /* KinveyHeaderInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27623027174292E00095BAE4 /* DTReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 27623025174292E00095BAE4 /* DTReachability.h */; };
+		27623028174292E00095BAE4 /* DTReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 27623026174292E00095BAE4 /* DTReachability.m */; };
+		2762302A1742932D0095BAE4 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 276230291742932D0095BAE4 /* LICENSE */; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
 		2766E62F16834B78000D27C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2766E62E16834B78000D27C5 /* Cocoa.framework */; };
 		2766E63516834B78000D27C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2766E63316834B78000D27C5 /* InfoPlist.strings */; };
@@ -162,6 +165,18 @@
 		276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 276A6F6116372FD500285884 /* KCSEntityCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6216372FD500285884 /* KCSEntityCache.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		276A6F6F1637834700285884 /* KCSEntityCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6E1637834700285884 /* KCSEntityCacheTests.m */; };
+		278554C31742CCD9005052D6 /* KCSEntityCache2.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C11742CCD9005052D6 /* KCSEntityCache2.h */; };
+		278554C41742CCD9005052D6 /* KCSEntityCache2.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C21742CCD9005052D6 /* KCSEntityCache2.m */; };
+		278554CC1742CFDC005052D6 /* FMDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C61742CFDC005052D6 /* FMDatabase.h */; };
+		278554CD1742CFDC005052D6 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C71742CFDC005052D6 /* FMDatabase.m */; };
+		278554CE1742CFDC005052D6 /* FMDatabaseAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C81742CFDC005052D6 /* FMDatabaseAdditions.h */; };
+		278554CF1742CFDC005052D6 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C91742CFDC005052D6 /* FMDatabaseAdditions.m */; };
+		278554D01742CFDC005052D6 /* FMResultSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554CA1742CFDC005052D6 /* FMResultSet.h */; };
+		278554D11742CFDC005052D6 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554CB1742CFDC005052D6 /* FMResultSet.m */; };
+		278554D61742D42E005052D6 /* FMDatabasePool.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554D21742D42E005052D6 /* FMDatabasePool.h */; };
+		278554D71742D42E005052D6 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D31742D42E005052D6 /* FMDatabasePool.m */; };
+		278554D81742D42E005052D6 /* FMDatabaseQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554D41742D42E005052D6 /* FMDatabaseQueue.h */; };
+		278554D91742D42E005052D6 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D51742D42E005052D6 /* FMDatabaseQueue.m */; };
 		2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
 		2785F5351609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5331609179E004AA410 /* InfoPlist.strings */; };
 		2785F53D1609179E004AA410 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
@@ -511,6 +526,9 @@
 		274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLinkedAppdataStoreTests.m; sourceTree = "<group>"; };
 		2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSOfflineSaveStore.h; sourceTree = "<group>"; };
 		275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KinveyHeaderInfo.h; path = ../KinveyHeaderInfo.h; sourceTree = "<group>"; };
+		27623025174292E00095BAE4 /* DTReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTReachability.h; sourceTree = "<group>"; };
+		27623026174292E00095BAE4 /* DTReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTReachability.m; sourceTree = "<group>"; };
+		276230291742932D0095BAE4 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		2764B53C15DD9242003964D1 /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = usr/lib/libobjc.dylib; sourceTree = SDKROOT; };
 		2766E62D16834B77000D27C5 /* KinveyKit-mac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "KinveyKit-mac.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2766E62E16834B78000D27C5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
@@ -528,6 +546,18 @@
 		276A6F6216372FD500285884 /* KCSEntityCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCache.m; sourceTree = "<group>"; };
 		276A6F6D1637834700285884 /* KCSEntityCacheTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCacheTests.h; sourceTree = "<group>"; };
 		276A6F6E1637834700285884 /* KCSEntityCacheTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCacheTests.m; sourceTree = "<group>"; };
+		278554C11742CCD9005052D6 /* KCSEntityCache2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCache2.h; sourceTree = "<group>"; };
+		278554C21742CCD9005052D6 /* KCSEntityCache2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCache2.m; sourceTree = "<group>"; };
+		278554C61742CFDC005052D6 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
+		278554C71742CFDC005052D6 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		278554C81742CFDC005052D6 /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		278554C91742CFDC005052D6 /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		278554CA1742CFDC005052D6 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		278554CB1742CFDC005052D6 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
+		278554D21742D42E005052D6 /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
+		278554D31742D42E005052D6 /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		278554D41742D42E005052D6 /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
+		278554D51742D42E005052D6 /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
 		2785F52E1609179E004AA410 /* KinveyKitExtras.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; includeInIndex = 0; path = KinveyKitExtras.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2785F5321609179E004AA410 /* KinveyKitExtras-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KinveyKitExtras-Info.plist"; sourceTree = "<group>"; };
 		2785F5341609179E004AA410 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1053,6 +1083,16 @@
 			name = "UI Helpers";
 			sourceTree = "<group>";
 		};
+		27623024174292E00095BAE4 /* DTReachability */ = {
+			isa = PBXGroup;
+			children = (
+				276230291742932D0095BAE4 /* LICENSE */,
+				27623025174292E00095BAE4 /* DTReachability.h */,
+				27623026174292E00095BAE4 /* DTReachability.m */,
+			);
+			path = DTReachability;
+			sourceTree = "<group>";
+		};
 		2766E63016834B78000D27C5 /* KinveyKit-mac */ = {
 			isa = PBXGroup;
 			children = (
@@ -1092,6 +1132,23 @@
 				2766E64816834B78000D27C5 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		278554C51742CFDC005052D6 /* fmdb */ = {
+			isa = PBXGroup;
+			children = (
+				278554C61742CFDC005052D6 /* FMDatabase.h */,
+				278554C71742CFDC005052D6 /* FMDatabase.m */,
+				278554C81742CFDC005052D6 /* FMDatabaseAdditions.h */,
+				278554C91742CFDC005052D6 /* FMDatabaseAdditions.m */,
+				278554CA1742CFDC005052D6 /* FMResultSet.h */,
+				278554CB1742CFDC005052D6 /* FMResultSet.m */,
+				278554D21742D42E005052D6 /* FMDatabasePool.h */,
+				278554D31742D42E005052D6 /* FMDatabasePool.m */,
+				278554D41742D42E005052D6 /* FMDatabaseQueue.h */,
+				278554D51742D42E005052D6 /* FMDatabaseQueue.m */,
+			);
+			path = fmdb;
 			sourceTree = "<group>";
 		};
 		2785F5301609179E004AA410 /* KinveyKitExtras */ = {
@@ -1464,6 +1521,8 @@
 		D32A61231471700200F77A3F /* 3rdParty */ = {
 			isa = PBXGroup;
 			children = (
+				278554C51742CFDC005052D6 /* fmdb */,
+				27623024174292E00095BAE4 /* DTReachability */,
 				27C2225F161DE9B200D827AE /* SBJson */,
 				D32D28B41523B518008C74DD /* UDID */,
 				D3F3409514BC8AB800DB6C37 /* Reachability */,
@@ -1968,6 +2027,8 @@
 				273DB2E615D191A00072A444 /* KCSSaveQueue.m */,
 				276A6F6116372FD500285884 /* KCSEntityCache.h */,
 				276A6F6216372FD500285884 /* KCSEntityCache.m */,
+				278554C11742CCD9005052D6 /* KCSEntityCache2.h */,
+				278554C21742CCD9005052D6 /* KCSEntityCache2.m */,
 				272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */,
 				272FBE5215F90FB500EC7031 /* KCSSaveGraph.m */,
 			);
@@ -2332,6 +2393,13 @@
 				27F5D7E916F141F5001828F3 /* KCSLogSink.h in Headers */,
 				27F5D7F316F20EC5001828F3 /* NSDictionary+KinveyAdditions.h in Headers */,
 				275512011707CCDB007E8320 /* KCSFacebookHelper.h in Headers */,
+				27623027174292E00095BAE4 /* DTReachability.h in Headers */,
+				278554C31742CCD9005052D6 /* KCSEntityCache2.h in Headers */,
+				278554CC1742CFDC005052D6 /* FMDatabase.h in Headers */,
+				278554CE1742CFDC005052D6 /* FMDatabaseAdditions.h in Headers */,
+				278554D01742CFDC005052D6 /* FMResultSet.h in Headers */,
+				278554D61742D42E005052D6 /* FMDatabasePool.h in Headers */,
+				278554D81742D42E005052D6 /* FMDatabaseQueue.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2528,6 +2596,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D32A60D214716EE300F77A3F /* InfoPlist.strings in Resources */,
+				2762302A1742932D0095BAE4 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2850,6 +2919,13 @@
 				2718279F16B8A78700825D50 /* KCSImageUtils.m in Sources */,
 				27F5D7F516F20EC5001828F3 /* NSDictionary+KinveyAdditions.m in Sources */,
 				27FB2A7E16FCECBD00CD7D5C /* KCSFacebookHelper.m in Sources */,
+				27623028174292E00095BAE4 /* DTReachability.m in Sources */,
+				278554C41742CCD9005052D6 /* KCSEntityCache2.m in Sources */,
+				278554CD1742CFDC005052D6 /* FMDatabase.m in Sources */,
+				278554CF1742CFDC005052D6 /* FMDatabaseAdditions.m in Sources */,
+				278554D11742CFDC005052D6 /* FMResultSet.m in Sources */,
+				278554D71742D42E005052D6 /* FMDatabasePool.m in Sources */,
+				278554D91742D42E005052D6 /* FMDatabaseQueue.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

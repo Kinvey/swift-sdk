@@ -13,6 +13,7 @@
 #import "KCSRESTRequest.h"
 #import "KCSClient.h"
 #import "KCSReduceFunction.h"
+#import "KCSGroup.h"
 
 NSDictionary* defaultBuilders();
 
@@ -48,4 +49,8 @@ NSDictionary* defaultBuilders();
 @property (nonatomic, readonly) BOOL buildsObjects;
 @end
 
+
+@interface KCSGroup (KCSHiddenMethods)
+- (NSDictionary*) dictionaryValue;
+@end
 #endif

@@ -6,7 +6,7 @@ then
 	exit
 fi 
  
-BRANCH="$1"
+TAG="$1"
 TICKET="$2"
 
 TODAY=$(date "+%B\\x20%d,\\x20%Y")
@@ -15,22 +15,22 @@ TODAY=$(date "+%B\\x20%d,\\x20%Y")
 echo "-> updating readme..."
 UPDATE_README_CMD="/usr/bin/perl -pi -e s/CHANGE-DATE/$TODAY/g KinveyKit/README.md"
 $UPDATE_README_CMD
-UPDATE_README_CMD="/usr/bin/perl -pi -e s/TAG-ME/$BRANCH/g KinveyKit/README.md"
+UPDATE_README_CMD="/usr/bin/perl -pi -e s/TAG-ME/$TAG/g KinveyKit/README.md"
 $UPDATE_README_CMD
 
 #update 
 echo "-> updating header..."
-UPDATE_VERSION_CMD="/usr/bin/perl -pi -e s/TAG-ME/$BRANCH/g KinveyKit/KinveyKit/KinveyVersion.h"
+UPDATE_VERSION_CMD="/usr/bin/perl -pi -e s/TAG-ME/$TAG/g KinveyKit/KinveyKit/KinveyVersion.h"
 $UPDATE_VERSION_CMD
 
 #update 
 echo "-> updating appledoc..."
-UPDATE_DOC_CMD="/usr/bin/perl -pi -e s/TAG-ME/$BRANCH/g KinveyKit/AppledocSettings.plist"
+UPDATE_DOC_CMD="/usr/bin/perl -pi -e s/TAG-ME/$TAG/g KinveyKit/AppledocSettings.plist"
 $UPDATE_DOC_CMD
 
 #commit
 echo "-> Commiting changes"
-CI_COMMAND="svn ci -m \"update files for branch $BRANCH re #$TICKET\""
+CI_COMMAND="svn ci -m \"update files for tag $TAG re #$TICKET\""
 echo $CI_COMMAND
 
 STATUS=$?
@@ -41,7 +41,7 @@ then
     exit
 fi
 
-echo "-> BRANCH in svn"
+echo "-> TAG in svn"
 
-BRANCH_COMMAND="svn cp . https://subversion.assembla.com/svn/kinvey/ios-library/tags/$BRANCH -m \"branch $BRANCH re #$TICKET\""
+BRANCH_COMMAND="svn cp . https://subversion.assembla.com/svn/kinvey/ios-library/tags/$BRANCH -m \"tag $TAG re #$TICKET\""
 echo $BRANCH_COMMAND
