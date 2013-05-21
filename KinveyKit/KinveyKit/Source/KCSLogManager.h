@@ -31,19 +31,16 @@ withFormat:(format),##__VA_ARGS__]
 withFormat:(format),##__VA_ARGS__]
 
 #define KCSLogError(format,...) \
-[[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ \
+[[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ withFormat:(format), ##__VA_ARGS__]
+
+#define KCSLogNSError(msg, err) \
+if (err) { \
+[[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ withFormat:(@"%@; error: (%@) "), msg, err]; \
+}
+
+#define KCSLogCache(format,...) \
+[[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kCacheChannel] file:__FILE__ lineNumber:__LINE__ \
 withFormat:(format),##__VA_ARGS__]
-
-#if NEVER
-
-#define KCSLog(channel,format,...)
-#define KCSLogNetwork(format,...)
-#define KCSLogDebug(format,...)
-#define KCSLogTrace(format,...)
-#define KCSLogWarning(format,...)
-#define KCSLogError(format,...)
-
-#endif
 
 #define KCSLogForced(format,...) \
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kForcedChannel] file:__FILE__ lineNumber:__LINE__ \
@@ -66,7 +63,7 @@ withFormat:(format),##__VA_ARGS__]
 + (KCSLogChannel *)kWarningChannel;
 + (KCSLogChannel *)kErrorChannel;
 + (KCSLogChannel *)kForcedChannel;
-
++ (KCSLogChannel *)kCacheChannel;
 
 - (void)logChannel: (KCSLogChannel *)channel file:(char *)sourceFile lineNumber: (int)lineNumber withFormat:(NSString *)format, ...;
 

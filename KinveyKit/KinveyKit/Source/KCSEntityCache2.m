@@ -22,6 +22,8 @@
 #import "FMDatabaseAdditions.h"
 #import "FMResultSet.h"
 
+#define KCS_CACHE_VERSION @"0.1"
+
 NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQuery* condition)
 {
     NSMutableString* representation = [NSMutableString string];
@@ -43,7 +45,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 @property (nonatomic) NSUInteger count;
 @property (retain, nonatomic) NSDictionary* object;
 @property (nonatomic) BOOL unsaved;
-@property (nonatomic, strong) NSDate* lastSavedTime;
+@property (nonatomic, strong) NSDate* lastReadTime;
 @property (nonatomic, strong) NSString* objId;
 @property (nonatomic, strong) NSString* classname;
 @end
@@ -54,7 +56,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     self = [super init];
     if (self) {
         _count = 1;
-        _lastSavedTime = [NSDate date];
+        _lastReadTime = [NSDate date];
     }
     return self;
 }
@@ -64,16 +66,15 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
     NSError* error = nil;
     NSString* object = [writer stringWithObject:_object error:&error];
-    //TODO #6 - do something with error
-    return @{@"id": _objId, @"obj" : object, @"time" : _lastSavedTime, @"dirty" : @(_unsaved), @"count" : @(_count), @"classname" : _classname};
+    KCSLogNSError(@"Error serialializing dictionary object", error);
+    return @{@"id": _objId, @"obj" : object, @"time" : _lastReadTime, @"dirty" : @(_unsaved), @"count" : @(_count), @"classname" : _classname};
 }
-//TODO: lmt, 
+//TODO: #27 lmt,
 
 @end
 
 @implementation KCSEntityCache2
-//TODO #21 formalize this
-#define VERSION @"0.0"
+
 
 - (NSString*) dbPath
 {
@@ -93,26 +94,22 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 
 - (instancetype) init
 {
-    //TODO #18 - no blank inits
+    DBAssert(YES, @"should always init cache v2 with a name");
     return [self initWithPersistenceId:@"null"];
 }
 
 - (void) initDB
 {
-    //TODO: #19 handle errors
-    //TODO: #20 deal with old db
-
     NSString* path = [self dbPath];
     _db = [FMDatabase databaseWithPath:path];
     if (![_db open]) return;
-
-
     
     BOOL e = NO;
     if (![_db tableExists:@"metadata"]) {
+        KCSLogCache(@"Creating New Cache %@", path);
         e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT, data)"];
         if ([_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
-        e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", VERSION, @"2"]];
+        e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
         if ([_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
     } else {
         FMResultSet *rs = [_db executeQuery:@"SELECT version FROM metadata"];
@@ -123,12 +120,9 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
             version = d[@"version"];
         }
         
-        if ([version isEqualToString:VERSION] == NO) {
+        if ([version isEqualToString:KCS_CACHE_VERSION] == NO) {
             //TODO: #20 deal with old db        }
         }
-        
-        
-        
     }
 
     if (![_db tableExists:@"objs"]) {
@@ -150,14 +144,20 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
         }
     }
 }
+
+- (void)dealloc
+{
+    [_db close];
+}
+
 #pragma mark - objects
 
 - (KCSCacheValueDB*) dbObjectForId:(NSString*) objId
 {
     NSString* q = [NSString stringWithFormat:@"SELECT * FROM objs WHERE id='%@'", objId];
+    KCSLogCache(@"fetching %@", objId);
     FMResultSet* rs = [_db executeQuery:q];
     if ([_db hadError]) {
-        //TODO #8 separate log channel for caching
         KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
 
@@ -168,7 +168,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
             val = [[KCSCacheValueDB alloc] init];
             val.object = [d[@"obj"] JSONValue];
             val.objId = d[@"id"];
-            val.lastSavedTime = d[@"time"];
+            val.lastReadTime = d[@"time"];
             val.unsaved = [d[@"dirty"] boolValue];
             val.count = [d[@"count"] integerValue];
             val.classname = d[@"classname"];
@@ -192,9 +192,9 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     if (objIds.count == 0) return @[];
     
     NSString* q = [NSString stringWithFormat:@"SELECT * FROM objs WHERE id IN ('%@')", [objIds componentsJoinedByString:@"','"]];
+    KCSLogCache(@"Retreiving from cache: %@", objIds);
     FMResultSet* rs = [_db executeQuery:q];
     if ([_db hadError]) {
-        //TODO #14 separate log channel for caching
         KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
     
@@ -206,7 +206,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
             KCSCacheValueDB* val = [[KCSCacheValueDB alloc] init];
             val.object = [d[@"obj"] JSONValue];
             val.objId = d[@"id"];
-            val.lastSavedTime = d[@"time"];
+            val.lastReadTime = d[@"time"];
             val.unsaved = [d[@"dirty"] boolValue];
             val.count = [d[@"count"] integerValue];
             val.classname = d[@"classname"];
@@ -219,14 +219,14 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 
 - (void) insertDbObj:(KCSCacheValueDB*)val
 {
-    //TODO #4 - update LMT/saved time
+    if (val == nil) return;
 
-    //TODO #5 - Log insert/update
+    KCSLogCache(@"Insert/update %@/%@", _persistenceId, val.objId);
+
     BOOL upated = [_db executeUpdate:@"REPLACE INTO objs VALUES (:id, :obj, :time, :dirty, :count, :classname)"
              withParameterDictionary:[val parameterDict]];
     if (upated == NO) {
-        //TODO #5 separate log channel for caching
-        KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+        KCSLogCache(@"Error insert/updating %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
 }
 
@@ -234,10 +234,12 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 {
     NSError* error = nil;
     KCSSerializedObject* o = [KCSObjectMapper makeKinveyDictionaryFromObject:obj error:&error];
-    //TODO #1 - for realises handle error
+    if (error != nil) {
+        KCSLogNSError(@"Error serializing object for cache.", error);
+        return nil;
+    }
     //TODO #2 - handle references
     //TODO #3 - pass in json directly
-    DBAssert(error == nil, @"%@",error);
     
     KCSCacheValueDB* val = [self dbObjectForId:[o objectId]];
     if (val) {
@@ -249,6 +251,8 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
         val.objId = [o objectId];
         val.classname = NSStringFromClass([obj class]);
     }
+    val.lastReadTime = [NSDate date];
+    //TODO #25 save lmt - need raw JSON with meta
     
     return val;
 }
@@ -258,9 +262,9 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     KCSCacheValueDB* val = [self dbObjectForId:objId];
     val.count--;
     if (val.count == 0) {
+        KCSLogCache(@"Deleting obj %@", objId);
         BOOL updated = [_db executeUpdateWithFormat:@"DELETE FROM objs WHERE id='%@'", objId];
         if (updated == NO) {
-            //TODO #8 separate log channel for caching
             KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
         }
     }
@@ -269,12 +273,11 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 - (void) addResult:(id<KCSPersistable>)obj
 {
     NSString* objId = [(NSObject*)obj kinveyObjectId];
-    //TODO #14 do less cross-serialzation, eg parse object fewer times
+    //TODO #6 do less cross-serialzation, eg parse object fewer times
     if (objId != nil) {
         KCSCacheValueDB* db = [self insertObj:obj];
+        db.unsaved = NO;
         [self insertDbObj:db];
-        
-        //TODO #a2 - [_unsavedObjs removeObject:objId];
     } else {
         KCSLogDebug(@"attempting to cache an object without a set ID");
     }
@@ -305,7 +308,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     } else {
         NSError* error = nil;
         NSArray* ids = [[[KCS_SBJsonParser alloc] init] objectWithString:result error:&error];
-        //TODO #7 do something with error
+        KCSLogNSError(@"Error converting id array string into array", error);
         return ids;
     }
     
@@ -317,12 +320,11 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     NSString* queryKey = [query parameterStringRepresentation];
     NSArray* keys = [self idsForQuery:queryKey];
     [self removeIds:keys];
+    KCSLogCache(@"Removing stored query: '%@'", queryKey);
     BOOL updated = [_db executeUpdateWithFormat:@"DELETE FROM queries WHERE id='%@'", queryKey];
     if (updated == NO) {
-        //TODO #9 separate log channel for caching
         KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
-    //TODO #10 [self persist];
 }
 
 - (void)setResults:(NSArray *)results forQuery:(KCSQuery *)query
@@ -345,17 +347,16 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
         [self removeIds:removedIds];
     }
     
-    //-add
     NSString* jsonStr = [theseIds JSONRepresentation];
+    KCSLogCache(@"update query: '%@'", queryKey);
     BOOL updated = [_db executeUpdate:@"REPLACE INTO queries VALUES (:id, :ids)" withArgumentsInArray:@[queryKey, jsonStr]];
     if (updated == NO) {
-        //TODO #11 separate log channel for caching
         KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
 
 }
 
-//TODO #13 empty results vs not cached
+//TODO #5 empty results vs not cached
 - (NSArray*) resultsForQuery:(KCSQuery*)query
 {
     NSString* queryKey = [query parameterStringRepresentation];
@@ -375,7 +376,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     return vals;
 }
 
-//TODO #12 - force delete for when items are DELETED from the store
+//TODO #4 - force delete for when items are DELETED from the store
 
 #pragma mark - Grouping
 - (void)setResults:(KCSGroup *)results forGroup:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition
@@ -383,26 +384,23 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     NSString* key = cacheKeyForGroup2(fields, function, condition);
     NSDictionary* jdict = [results dictionaryValue];
     NSString* jsonStr = [jdict JSONRepresentation];
+    KCSLogCache(@"checking cache for group");
     BOOL updated = [_db executeUpdate:@"REPLACE INTO groups VALUES (:key, :results)" withArgumentsInArray:@[key, jsonStr]];
     if (updated == NO) {
-        //TODO #22 separate log channel for caching
         KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
-//TODO #23 [self persist];
 }
 
 - (void)removeGroup:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition
 {
     NSString* key = cacheKeyForGroup2(fields, function, condition);
+    KCSLogCache(@"Remove group from cache");
     NSString* q = [NSString stringWithFormat:@"DELETE FROM groups WHERE key='%@'", key];
     BOOL updated = [_db executeUpdate:q];
     if (updated == NO) {
-        //TODO #25 separate log channel for caching
         KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
-    //TODO #24 [self persist];
 }
-//TODO #26 actually do grouping caching
 
 #pragma mark - Saving
 - (void) addUnsavedObject:(id)obj
@@ -417,7 +415,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
         //TODO #22 combine with add query result
         KCSCacheValueDB* val = [self insertObj:obj];
         val.unsaved = YES;
-        val.lastSavedTime = [NSDate date];
+        val.lastReadTime = [NSDate date];
         //TODO #21 [_unsavedObjs addObject:objId];
         [self insertDbObj:val];
     } else {
@@ -430,7 +428,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 #pragma mark - Management
 - (void) clearCaches
 {
-    //TODO #14 - actually clear the cache
+    KCSLogCache(@"Clearing Caches");
     [_db close];
     
     NSError* error = nil;
