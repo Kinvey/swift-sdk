@@ -24,6 +24,8 @@
 
 #import "KinveyVersion.h"
 
+#import "KCSEntityCache.h"
+
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
 @interface KCSClient ()
@@ -336,4 +338,10 @@
                                                             errorEnabled:errorIsEnabled];
 }
 
+
+#pragma mark - Utilites
+- (void)clearCache
+{
+    [KCSEntityCache clearAllCaches];
+}
 @end
