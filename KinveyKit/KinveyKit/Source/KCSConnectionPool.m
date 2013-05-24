@@ -28,7 +28,7 @@ void verifyConnectionType(id connectionClass);
 
 #pragma mark -
 #pragma mark Singleton Implementation
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self){

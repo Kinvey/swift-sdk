@@ -68,7 +68,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 @implementation KCSPartialDataParser
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -115,12 +115,12 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 #pragma mark -
 #pragma mark Initialization
 
-- (id)init
+- (instancetype)init
 {
     return [self initWithAuth:nil];
 }
 
-- (id)initWithAuth: (KCSAuthHandler *)auth
+- (instancetype)initWithAuth: (KCSAuthHandler *)auth
 {
     self = [super init];
     if (self) {
@@ -132,29 +132,29 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     return self;
 }
 
-+ (id)store
++ (instancetype)store
 {
     return [self storeWithAuthHandler:nil withOptions:nil];
 }
 
-+ (id)storeWithOptions: (NSDictionary *)options
++ (instancetype) storeWithOptions: (NSDictionary *)options
 {
     return [self storeWithAuthHandler:nil withOptions:options];
 }
 
-+ (id)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
++ (instancetype) storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
 {
     KCSAppdataStore *store = [[self alloc] initWithAuth:authHandler];
     [store configureWithOptions:options];
     return store;
 }
 
-+ (id) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options
++ (instancetype) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options
 {
     return [self storeWithCollection:collection authHandler:nil withOptions:options];
 }
 
-+ (id)storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options {
++ (instancetype) storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options {
     
     if (options == nil) {
         options = @{ KCSStoreKeyResource : collection };
@@ -634,16 +634,16 @@ int reachable = -1;
 }
 #endif
 
-#if TARGET_OS_IPHONE
-- (BOOL) isKinveyReachable
-{
-#if BUILD_FOR_UNIT_TEST
-    return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
-#else
-    return [[KCSClient sharedClient] kinveyReachability].isReachable;
-#endif
-}
-#endif
+//#if TARGET_OS_IPHONE
+//- (BOOL) isKinveyReachable
+//{
+//#if BUILD_FOR_UNIT_TEST
+//    return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
+//#else
+//    return [[KCSClient sharedClient] kinveyReachability].isReachable;
+//#endif
+//}
+//#endif
 
 #pragma mark - Adding/Updating
 - (BOOL) offlineSaveEnabled

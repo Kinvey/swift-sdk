@@ -526,7 +526,7 @@ BOOL kcsIsOperator(NSString* queryField)
     return query;
 }
 
-+ (KCSQuery *)query
++ (instancetype)query
 {
     KCSQuery *query = [[self alloc] init];
     return query;

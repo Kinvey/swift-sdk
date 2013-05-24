@@ -55,7 +55,7 @@
  @return An autoreleased empty store with default options and default authentication.
  
  */
-+ (id)store;
++ (instancetype)store;
 
 /*! Initialize an empty store with the given options and the default authentication
  
@@ -68,7 +68,7 @@
  @return An autoreleased empty store with configured options and default authentication.
  
  */
-+ (id)storeWithOptions: (NSDictionary *)options;
++ (instancetype)storeWithOptions: (NSDictionary *)options;
 
 /*! Initialize an empty store with the given options and the given authentication
  
@@ -83,7 +83,7 @@
  @return An autoreleased empty store with configured options and given authentication.
  
  */
-+ (id)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options;
++ (instancetype)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options;
 
 #pragma mark -
 #pragma mark Adding/Updating

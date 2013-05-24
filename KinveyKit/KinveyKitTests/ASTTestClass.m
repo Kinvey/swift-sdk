@@ -11,7 +11,7 @@
 
 @implementation ASTTestClass
 
-- (id) init
+- (instancetype) init
 {
     self = [super init];
     if (self) {
@@ -27,6 +27,18 @@
                 @"objCount" : @"objCount",
                 @"objDescription" : @"objDescription",
                 @"date" : @"date"};
+}
+
+- (NSUInteger)hash
+{
+    return [_objId hash];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    ASTTestClass* o = object;
+    BOOL classSame = [[self class] isEqual:[object class]];
+    return  classSame && [_objId isEqual:o.objId];
 }
 
 @end

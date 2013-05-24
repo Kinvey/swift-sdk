@@ -26,18 +26,20 @@
 #import "KCSObjectMapper.h"
 #import "KinveyUser.h"
 
+#import "KCSEntityCache2.h"
+
+
 @interface KCSEntityCache () <NSCacheDelegate>
 {
-    NSCache* _cache;
-    NSCache* _queryCache;
-    NSCache* _groupingCache;
+    NSMutableDictionary* _cache;
+    NSMutableDictionary* _queryCache;
+    NSMutableDictionary* _groupingCache;
     NSMutableOrderedSet* _unsavedObjs;
-
+    
 }
 @property (nonatomic, strong) NSDictionary* saveContext;
 @property (nonatomic, retain) NSString* persistenceId;
 @end
-
 
 @interface KCSCachedStoreCaching () {
     NSMutableDictionary* _caches;
@@ -58,14 +60,14 @@ static KCSCachedStoreCaching* sCaching;
     return sCaching;
 }
 
-+ (KCSEntityCache*)cacheForCollection:(NSString*)collection
++ (id<KCSEntityCache>)cacheForCollection:(NSString*)collection
 {
     return [[self sharedCaches] cacheForCollection:collection];
 }
 
 #pragma mark - classes
 
-- (id) init
+- (instancetype) init
 {
     self = [super init];
     if (self) {
@@ -79,18 +81,32 @@ static KCSCachedStoreCaching* sCaching;
     [_caches removeAllObjects];
 }
 
-- (KCSEntityCache*)cacheForCollection:(NSString*)collection
+- (id<KCSEntityCache>)cacheForCollection:(NSString*)collection
 {
-    KCSEntityCache* cache = nil;
+    id<KCSEntityCache> cache = nil;
     @synchronized(self) {
         cache = [_caches objectForKey:collection];
         if (!cache) {
-            cache = [[KCSEntityCache alloc] init];
+            BOOL useV2 = [[[KCSClient sharedClient].options valueForKey:KCS_CACHES_USE_V2] boolValue];
+            if (useV2) {
+                cache = [[KCSEntityCache2 alloc] initWithPersistenceId:collection];
+            } else {
+                cache = [[KCSEntityCache alloc] init];
+            }
             [_caches setObject:cache forKey:collection];
-            cache.saveContext = @{@"collection" : collection};
+            [cache setSaveContext:@{@"collection" : collection}];
         }
     }
     return cache;
+}
+
+- (void) clearCaches
+{
+    @synchronized(self) {
+        for (KCSEntityCache* c in [_caches allValues]) {
+            [c clearCaches];
+        }
+    }
 }
 
 @end
@@ -105,7 +121,7 @@ static KCSCachedStoreCaching* sCaching;
 @end
 @implementation CacheValue
 
-- (id) init
+- (instancetype) init
 {
     self = [super init];
     if (self) {
@@ -114,7 +130,7 @@ static KCSCachedStoreCaching* sCaching;
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
     if (self) {
@@ -153,7 +169,6 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
     }
     return representation;
 }
-
 
 @implementation KCSEntityCache
 static uint counter;
@@ -209,23 +224,17 @@ NSString* KCSMongoObjectId()
     counter = arc4random();
 }
 
-- (id) init
+- (instancetype) init
 {
     self = [super init];
     if (self) {
-        _cache = [[NSCache alloc] init];
-        _queryCache = [[NSCache alloc] init];
-        _queryCache.delegate = self;
-        _groupingCache = [[NSCache alloc] init];
+        _cache = [NSMutableDictionary dictionary];
+        _queryCache = [NSMutableDictionary dictionary];
+//        _queryCache.delegate = self;
+        _groupingCache = [NSMutableDictionary dictionary];
         _unsavedObjs = [NSMutableOrderedSet orderedSet];
     }
     return self;
-}
-
-//TODO:
-- (void)cache:(NSCache *)cache willEvictObject:(id)obj
-{
-    KCSLogWarning(@"CACHE DISCARD OBJ: %@",obj);
 }
 
 #pragma mark - peristence
@@ -400,7 +409,7 @@ NSString* KCSMongoObjectId()
             [self addResult:n];
         }
     }
-    [_queryCache setObject:ids forKey:queryKey cost:100];
+    [_queryCache setObject:ids forKey:queryKey];
     if (oldIds) {
         [oldIds removeObjectsInArray:[ids array]];
         [self removeIds:[oldIds array]];
@@ -459,6 +468,11 @@ NSString* KCSMongoObjectId()
     [_queryCache removeAllObjects];
     [_groupingCache removeAllObjects];
     [_unsavedObjs removeAllObjects];
+}
+
++ (void) clearAllCaches
+{
+    [[KCSCachedStoreCaching sharedCaches] clearCaches];
 }
 
 #pragma mark - Saving

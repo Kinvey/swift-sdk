@@ -14,7 +14,8 @@ enum {
     kKCSWarningChannelID = 3,
     kKCSErrorChannelID = 4,
     kKCSNetworkChannelID = 5,
-    kKCSForcedChannelID = 6
+    kKCSForcedChannelID = 6,
+    kKCSCacheChannelID = 7
 };
 
 @interface KCSLogChannel : NSObject
@@ -22,7 +23,7 @@ enum {
 + (KCSLogChannel *)channelForKey:(NSString *)key;
 + (NSDictionary *)channels;
 
-- (id)initWithDisplayString: (NSString *)displayString channelID:(NSInteger)channelID;
+- (instancetype)initWithDisplayString: (NSString *)displayString channelID:(NSInteger)channelID;
 @property (strong, readonly, nonatomic) NSString *displayString;
 @property (readonly, nonatomic) NSInteger channelID;
 
@@ -30,7 +31,7 @@ enum {
 
 @implementation KCSLogChannel
 
-- (id)initWithDisplayString:(NSString *)displayString channelID:(NSInteger)channelID
+- (instancetype)initWithDisplayString:(NSString *)displayString channelID:(NSInteger)channelID
 {
     self = [super init];
     if (self){
@@ -58,7 +59,8 @@ enum {
         @"kTraceChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[Trace]" channelID:kKCSTraceChannelID],
         @"kWarningChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[WARN]" channelID:kKCSWarningChannelID],
         @"kErrorChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSErrorChannelID],
-        @"kForcedChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSForcedChannelID]
+        @"kForcedChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[ERROR]" channelID:kKCSForcedChannelID],
+        @"kCacheChannel" : [[KCSLogChannel alloc] initWithDisplayString:@"[CACHE]" channelID:kKCSCacheChannelID]
         };
     });
     
@@ -79,7 +81,7 @@ enum {
 
 @implementation KCSLogManager
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self){}
@@ -119,6 +121,11 @@ enum {
 + (KCSLogChannel *)kNetworkChannel
 {
     return [KCSLogChannel channelForKey:@"kNetworkChannel"];
+}
+
++ (KCSLogChannel *)kCacheChannel
+{
+    return [KCSLogChannel channelForKey:@"kCacheChannel"];
 }
 
 + (KCSLogChannel *)kDebugChannel
@@ -192,6 +199,7 @@ enum {
     @([[KCSLogManager kTraceChannel] channelID]) : @(traceIsEnabled),
     @([[KCSLogManager kWarningChannel] channelID]) : @(warningIsEnabled),
     @([[KCSLogManager kErrorChannel] channelID]) : @(errorIsEnabled),
+    @([[KCSLogManager kCacheChannel] channelID]) : @(traceIsEnabled)
     };
 }
 

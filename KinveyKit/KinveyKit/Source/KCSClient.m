@@ -24,6 +24,8 @@
 
 #import "KinveyVersion.h"
 
+#import "KCSEntityCache.h"
+
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
 @interface KCSClient ()
@@ -76,7 +78,7 @@
 @synthesize kinveyDomain = _kinveyDomain;
 
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     
@@ -86,16 +88,16 @@
         _userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
         _connectionTimeout = 10.0; // Default timeout to 10 seconds
         _analytics = [[KCSAnalytics alloc] init];
-        _cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;  // Inhibit caching for now
+        _cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;  // Inhibit caching for now
         _protocol = @"https";
         _userIsAuthenticated = NO;
         _userAuthenticationInProgress = NO;
         _authCompleteLock   = [[NSRecursiveLock alloc] init];
         _authInProgressLock = [[NSRecursiveLock alloc] init];
-//        _currentUser = [[KCSUser alloc] init];
         _serviceHostname = @"baas";
         _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
-
+//        _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSSZ";
+        
 #if TARGET_OS_IPHONE
         _networkReachability = [KCSReachability reachabilityForInternetConnection];
         // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
@@ -336,4 +338,10 @@
                                                             errorEnabled:errorIsEnabled];
 }
 
+
+#pragma mark - Utilites
+- (void)clearCache
+{
+    [KCSEntityCache clearAllCaches];
+}
 @end

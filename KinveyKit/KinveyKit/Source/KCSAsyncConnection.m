@@ -66,7 +66,7 @@
 
 
 #pragma mark - Constructors
-- (id)initWithConnection:(NSURLConnection *)theConnection
+- (instancetype)initWithConnection:(NSURLConnection *)theConnection
 {
     self = [self init]; // Note that in the test environment we don't need credentials
     if (self){
@@ -75,7 +75,7 @@
     return self;
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self){

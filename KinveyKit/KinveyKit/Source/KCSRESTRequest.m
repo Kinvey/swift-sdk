@@ -14,7 +14,6 @@
 #import "KCSAuthCredential.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
-#import "KCSReachability.h"
 #import "KinveyAnalytics.h"
 #import "KCS_SBJson.h"
 #import "KCSBase64.h"
@@ -64,25 +63,25 @@ NSString * getLogDate(void)
 
 @implementation KCSRESTRequest
 
-- (void)logResource: (NSString *)resource usingMethod: (NSInteger)requestMethod
+- (void)logResource: (NSString *)resource usingMethod:(NSInteger)requestMethod
 {
     KCSLogNetwork(@"logResource: (%@[%p], %d)", resource, (void *)resource, requestMethod);
 }
 
-+ (KCSRESTRequest *)requestForResource: (NSString *)resource usingMethod: (NSInteger)requestMethod
++ (instancetype) requestForResource:(NSString *)resource usingMethod:(NSInteger)requestMethod
 {
     return [[self alloc] initWithResource:resource usingMethod:requestMethod];
 }
 
 
-- (id)mockRequestWithMockClass:(Class)connection
+- (instancetype) mockRequestWithMockClass:(Class)connection
 {
     self.isMockRequest = YES;
     self.mockConnection = connection;
     return self;
 }
 
-- (id)addHeaders: (NSDictionary *)theHeaders
+- (instancetype) addHeaders:(NSDictionary*)theHeaders
 {
     NSArray *keys = [theHeaders allKeys];
     
@@ -99,14 +98,16 @@ NSString * getLogDate(void)
     [self addBody:[writer dataWithObject:bodyObject]];
 }
 
-- (id)addBody:(NSData *)theBody
+- (instancetype) addBody:(NSData *)theBody
 {
     [self.request setHTTPBody:theBody];
     [self.request setValue:[NSString stringWithFormat:@"%ld", (long) [theBody length]] forHTTPHeaderField:@"Content-Length"];
     return self;
 }
 
-- (id) withCompletionAction: (KCSConnectionCompletionBlock)complete failureAction:(KCSConnectionFailureBlock)failure progressAction: (KCSConnectionProgressBlock)progress
+- (instancetype) withCompletionAction:(KCSConnectionCompletionBlock)complete
+                        failureAction:(KCSConnectionFailureBlock)failure
+                       progressAction: (KCSConnectionProgressBlock)progress
 {
     self.completionAction = complete;
     self.progressAction = progress;

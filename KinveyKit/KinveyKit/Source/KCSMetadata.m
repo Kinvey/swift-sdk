@@ -35,7 +35,7 @@ NSString* KCSMetadataFieldCreationTime = @"_kmd.ect";
 
 @implementation KCSMetadata
 
-- (id) init
+- (instancetype) init
 {
     self = [super init];
     if (self) {
@@ -44,7 +44,7 @@ NSString* KCSMetadataFieldCreationTime = @"_kmd.ect";
     return self;
 }
 
-- (id) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)pACL
+- (instancetype) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)pACL
 {
     self = [super init];
     if (self) {

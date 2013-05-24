@@ -12,7 +12,7 @@
  */
 @interface KCSGroup : NSObject
 
-- (id) initWithJsonArray:(NSArray*)jsonData valueKey:(NSString*)key queriedFields:(NSArray*)fields;
+- (instancetype) initWithJsonArray:(NSArray*)jsonData valueKey:(NSString*)key queriedFields:(NSArray*)fields;
 
 /**
  Returns the raw array. Each group will be represented by a dictionary in that array, where the keys are the fields that they are grouped by, plus one field for the return value. 

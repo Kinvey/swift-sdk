@@ -18,7 +18,7 @@
 
 @implementation KCSGroup
 
-- (id) initWithJsonArray:(NSArray*)jsonData valueKey:(NSString*)key queriedFields:(NSArray*)fields;
+- (instancetype) initWithJsonArray:(NSArray*)jsonData valueKey:(NSString*)key queriedFields:(NSArray*)fields;
 {
     self = [super init];
     if (self) {
@@ -38,6 +38,11 @@
         _key = [key copy];
     }
     return self;
+}
+
+- (NSDictionary*) dictionaryValue
+{
+    return @{@"aray":_array,@"key":_key, @"fields":_queriedFields};
 }
 
 - (NSArray*) fieldsAndValues

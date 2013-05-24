@@ -29,7 +29,7 @@
 //           redirectResponse:(NSURLResponse *)redirectResponse
 
 
-- (id)initWithRequest:(NSURLRequest *)request delegate:(id)delegate
+- (instancetype)initWithRequest:(NSURLRequest *)request delegate:(id)delegate
 {
     self = [super initWithRequest:request delegate:delegate startImmediately:NO];
     if (self){

@@ -23,12 +23,12 @@
 
 
 @interface KCSAppdataStore (KCSCachedStore) 
-- (id)initWithAuth: (KCSAuthHandler *)auth;
+- (instancetype)initWithAuth: (KCSAuthHandler *)auth;
 - (KCSCollection*) backingCollection;
 @end
 
 @interface KCSCachedStore () {
-    KCSEntityCache* _cache;
+    id<KCSEntityCache> _cache;
 }
 
 @end
@@ -53,7 +53,7 @@
     return retVal;
 }
 
-- (id)initWithAuth: (KCSAuthHandler *)auth
+- (instancetype)initWithAuth: (KCSAuthHandler *)auth
 {
     self = [super initWithAuth:auth];
     if (self) {

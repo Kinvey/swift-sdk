@@ -33,7 +33,7 @@
 #define kTypeKey @"_type"
 
 @implementation KCSKinveyRef
-- (id) initWithObj:(id<KCSPersistable>)obj andCollection:(NSString*)collection
+- (instancetype) initWithObj:(id<KCSPersistable>)obj andCollection:(NSString*)collection
 {
     self = [super init];
     if (self) {
@@ -80,7 +80,7 @@
 @end
 
 @interface KCSMetadata ()
-- (id) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)acl;
+- (instancetype) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)acl;
 - (NSDictionary*) aclValue;
 @end
 
@@ -92,7 +92,7 @@ NSDictionary* builderOptions(id object)
 
 @implementation KCSSerializedObject
 
-- (id)initWithObject:(id<KCSPersistable>)object ofId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize resources:(NSArray*)resources references:(NSArray *)references
+- (instancetype)initWithObject:(id<KCSPersistable>)object ofId:(NSString *)objectId dataToSerialize:(NSDictionary *)dataToSerialize resources:(NSArray*)resources references:(NSArray *)references
 {
     self = [super init];
     if (self){

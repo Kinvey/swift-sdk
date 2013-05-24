@@ -61,7 +61,7 @@
  @see [KCSStore storeWithOptions:]
  @return An autoreleased empty store with configured options and default authentication. 
  */
-+ (id) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options;
++ (instancetype) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options;
 
 /** Initialize an empty store with the given options and the given authentication
  
@@ -77,7 +77,7 @@
  @see [KCSStore storeWithAuthHandler:withOptions:]
  @return An autoreleased empty store with configured options and given authentication.
  */
-+ (id)storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options;
++ (instancetype)storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options;
 
 ///---------------------------------------------------------------------------------------
 /// @name Querying/Fetching

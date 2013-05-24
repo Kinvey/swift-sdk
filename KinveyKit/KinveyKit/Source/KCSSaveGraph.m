@@ -18,7 +18,7 @@
 
 @implementation KCSCompletionWrapper
 
-- (id) initWithObject:(id)object
+- (instancetype) initWithObject:(id)object
 {
     self = [super init];
     if (self) {

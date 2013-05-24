@@ -11,7 +11,7 @@
 
 @implementation KCSConnection
 
-- (id)initWithConnection:(NSURLConnection *)theConnection
+- (instancetype)initWithConnection:(NSURLConnection *)theConnection
 {
     return nil; // Unsupported base-class constructor
 }

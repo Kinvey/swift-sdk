@@ -19,7 +19,6 @@
 #import "KCSErrorUtilities.h"
 #import "KCSLogManager.h"
 #import "KinveyCollection.h"
-#import "KCSReachability.h"
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
@@ -50,7 +49,7 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
 
 @implementation KCSUser
 
-- (id)init
+- (instancetype) init
 {
     self = [super init];
     if (self){
@@ -1006,7 +1005,7 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
     // /rpc/:appKey/check-username-exists
     NSString* checkExists = [[[KCSClient sharedClient] rpcBaseURL] stringByAppendingString:@"check-username-exists"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:checkExists usingMethod:kPostRESTMethod];
-    [request setJsonBody:@{@"username":@"foo"}];
+    [request setJsonBody:@{@"username": potentialUsername}];
     [request setContentType:KCS_JSON_TYPE];
     request = [request withCompletionAction:^(KCSConnectionResponse *response) {
         NSDictionary* dict = [response jsonResponseValue];

@@ -18,7 +18,7 @@
 
 @implementation KCSEntityDict
 
-- (id)init
+- (instancetype) init
 {
     self = [super init];
     if (self) {
@@ -29,7 +29,7 @@
 }
 
 
-- (id)getValueForProperty: (NSString *)property
+- (id) getValueForProperty: (NSString *)property
 {
     return [self.entityProperties objectForKey:property];
 }

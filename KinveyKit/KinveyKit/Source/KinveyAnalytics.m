@@ -19,7 +19,7 @@
 @synthesize UUID = _UUID;
 @synthesize UDID = _UDID;
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self){

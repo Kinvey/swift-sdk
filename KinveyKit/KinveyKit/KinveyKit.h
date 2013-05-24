@@ -14,6 +14,7 @@
 #define KinveyKit_h
 
 #import "KinveyVersion.h"
+
 #import "KCSClient.h"
 #import "KCSEntityDict.h"
 #import "KinveyCollection.h"

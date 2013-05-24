@@ -9,6 +9,7 @@
 #import "KCSEntityCacheTests.h"
 
 #import "KCSEntityCache.h"
+#import "KCSEntityCache2.h"
 
 #import "KCSQuery.h"
 #import "ASTTestClass.h"
@@ -16,10 +17,26 @@
 
 @implementation KCSEntityCacheTests
 
+- (void) setUp
+{
+    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
+}
+
+- (id<KCSEntityCache>) cache:(NSString*)pid
+{
+    id<KCSEntityCache> c;
+    if (pid) {
+        c =  [[KCSEntityCache2 alloc] initWithPersistenceId:pid];
+        [c setPersistenceId:pid];
+    } else {
+        c =  [[KCSEntityCache2 alloc] init];
+    }
+    return c;
+}
 
 - (void) testRoundTripQuery
 {
-    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
+    id<KCSEntityCache> cache = [self cache:nil];
     
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
     [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"sortOrder" inDirection:kKCSAscending]];
@@ -41,7 +58,7 @@
 
 - (void) testRoundTripSingleId
 {
-    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
+    id<KCSEntityCache> cache = [self cache:nil];
     
     ASTTestClass* obj1 = [[ASTTestClass alloc] init];
     obj1.objId = @"1";
@@ -53,7 +70,7 @@
 
 - (void) testRoundTripArray
 {
-    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
+    id<KCSEntityCache> cache = [self cache:nil];
     
     ASTTestClass* obj1 = [[ASTTestClass alloc] init];
     obj1.objId = @"1";
@@ -69,7 +86,7 @@
 
 - (void) testUpdate
 {
-    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
+    id<KCSEntityCache> cache = [self cache:nil];
     
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
     ASTTestClass* obj1 = [[ASTTestClass alloc] init];
@@ -103,7 +120,7 @@
 
 - (void) testById
 {
-    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
+    id<KCSEntityCache> cache = [self cache:nil];
     
     ASTTestClass* obj1 = [[ASTTestClass alloc] init];
     obj1.objId = @"1";
@@ -118,7 +135,7 @@
 }
 
 
-- (void) AddBySave
+- (void) testAddBySave
 {
     NSLog(@"---------- starting");
     
@@ -131,7 +148,7 @@
 //    
 //    [store setReachable:NO];
     
-    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
+    id<KCSEntityCache> cache = [self cache:nil];
     [cache addUnsavedObject:obj];
 
     NSString* objId = obj.objId;
@@ -154,12 +171,18 @@
 //    [self poll];
 //}
 
+- (NSURL*) urlForDB:(NSString*)pid
+{
+    NSURL* url = nil;
+    url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", pid]]];
+    url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.sqllite", pid]]];
+    return url;
+}
+
 - (void) testClearCaches
 {
     //setup peristence
-    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
-    NSString* pid = @"persistenceId";
-    cache.persistenceId = pid;
+    id<KCSEntityCache> cache = [self cache:@"persistenceId"];
     
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
     ASTTestClass* obj1 = [[ASTTestClass alloc] init];
@@ -168,7 +191,7 @@
     obj2.objId = @"2";
     [cache setResults:@[obj1, obj2] forQuery:query];
     
-    NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", pid]]];
+    NSURL* url = [self urlForDB:@"persistenceId"];
     STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should have cache at %@", [url path]);
 
     [cache clearCaches];
@@ -184,9 +207,7 @@
 - (void) testCacheClearasOnUserChange
 {
     
-    KCSEntityCache* cache = [[KCSEntityCache alloc] init];
-    NSString* pid = @"persistenceId";
-    cache.persistenceId = pid;
+    id<KCSEntityCache> cache = [self cache:@"persistenceId"];
     
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
     ASTTestClass* obj1 = [[ASTTestClass alloc] init];
@@ -195,7 +216,7 @@
     obj2.objId = @"2";
     [cache setResults:@[obj1, obj2] forQuery:query];
     
-    NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", pid]]];
+    NSURL* url = [self urlForDB:@"persistenceId"];
     STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should have cache at %@", [url path]);
     
     [KCSClient sharedClient].currentUser = [[KCSUser alloc] init];

@@ -1,8 +1,27 @@
 # KinveyKit Release History
 
+## 1.16
+#### 1.16.0
+** Release Date:** May 24, 2013
+
+* Added `+ [KCSUser checkUsername:withCompletionBlock:]` to check if an username is already taken, or is available for a new user.
+* Added `- [KCSClient clearCache]` to clean up all the caches maintained by the library. 
+* `KCSClient` property `dateStorageFormatString` is now undeprecated and writable. This can be overridden to convert other date formats. For example if not using the recommended UTC time stamp, the format string  `@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSSZ"` can translate most RFC 822 time zone ISO 6801 formats. __NOTE:__ this is very platform dependent and not recommended as it may cause unexpected behavior on the server or with other clients. 
+* Deprecated `+[KCSPing kinveyServiceIsReachable]` and  `+[KCSPing networkIsReachable]`, use `- [KCSClient networkReachability]` and `-[KCSClient kinveyReachability]` instead.
+* Infrastructure Updates:
+    * Replace `id` with `instancetype` return value in many classes. (See http://nshipster.com/instancetype/ for a discussion)
+* Bug fix(es):
+    * Allow for collections created before `KCSClient init…` to work properly.
+
 ## 1.15
+### 1.15.2
+** Release Date:** May 16, 2013
+
+* Bug fix(es):
+    * Fix to console logging
+    
 ### 1.15.1
-** Release Date:** TBD
+** Release Date:** May 10, 2013
 
 * Updated Urban Airship library from `libUAirshipPush-1.3.3.a` to `libUAirship-1.4.0.a`. __Update your projects accordingly.__ 
 * `-[KCSUser logout]` will now attempt to remove the current device's push token from the user in the backend.

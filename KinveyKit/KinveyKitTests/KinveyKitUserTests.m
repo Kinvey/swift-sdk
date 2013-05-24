@@ -713,9 +713,16 @@ static NSString* access_token = @"AAAGI68NkOC4BAH51tsJcxZACSdzZAjIUZAjsY5xzVAumC
     
     KCSUser* active = [KCSUser activeUser];
     STAssertNotNil(active, @"Should have a user");
+    
+    self.done = NO;
+    [active saveWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    }];
+    [self poll];
 
     self.done = NO;
-    [KCSUser checkUsername:@"not exist" withCompletionBlock:^(NSString *username, BOOL usernameAlreadyTaken, NSError *errorOrNil) {
+    [KCSUser checkUsername:active.username withCompletionBlock:^(NSString *username, BOOL usernameAlreadyTaken, NSError *errorOrNil) {
         STAssertNoError;
         STAssertTrue(usernameAlreadyTaken, @"should have the user");
         self.done = YES;

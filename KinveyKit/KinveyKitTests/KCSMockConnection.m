@@ -21,7 +21,7 @@
 }
 
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self){
@@ -36,7 +36,7 @@
     return self;
 }
 
-- (id)initWithConnection:(NSURLConnection *)theConnection
+- (instancetype)initWithConnection:(NSURLConnection *)theConnection
 {
     // We're already a mock object, so we're never going to touch the NSURLConnection...
     return [self init];
