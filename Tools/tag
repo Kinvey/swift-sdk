@@ -43,5 +43,5 @@ fi
 
 echo "-> TAG in svn"
 
-BRANCH_COMMAND="svn cp . https://subversion.assembla.com/svn/kinvey/ios-library/tags/$BRANCH -m \"tag $TAG re #$TICKET\""
+BRANCH_COMMAND="svn cp . https://subversion.assembla.com/svn/kinvey/ios-library/tags/$TAG -m \"tag $TAG re #$TICKET\""
 echo $BRANCH_COMMAND
