@@ -108,12 +108,12 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     if (![_db tableExists:@"metadata"]) {
         KCSLogCache(@"Creating New Cache %@", path);
         e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT, data)"];
-        if ([_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+        if (!e || [_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
         e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
-        if ([_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+        if (!e || [_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
     } else {
         FMResultSet *rs = [_db executeQuery:@"SELECT version FROM metadata"];
-        if ([_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+        if (!e || [_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
         NSString* version = nil;
         if ([rs next]) {
             NSDictionary* d = [rs resultDictionary];
