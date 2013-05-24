@@ -2,7 +2,7 @@
 
 ## 1.16
 #### 1.16.0
-** Release Date:** TBD
+** Release Date:** May 24, 2013
 
 * Added `+ [KCSUser checkUsername:withCompletionBlock:]` to check if an username is already taken, or is available for a new user.
 * Added `- [KCSClient clearCache]` to clean up all the caches maintained by the library. 
