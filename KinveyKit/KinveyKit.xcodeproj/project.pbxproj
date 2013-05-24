@@ -128,23 +128,12 @@
 		274330211575227000B2BF37 /* KCSResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSResource.h */; };
 		274330221575227000B2BF37 /* KCSResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330201575227000B2BF37 /* KCSResource.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		274330251575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */; };
-		2746534B174E6CFE0013546E /* KinveyKit2.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465348174E6CFE0013546E /* KinveyKit2.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2746534C174E6CFE0013546E /* KCSDataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465349174E6CFE0013546E /* KCSDataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2746534D174E6CFE0013546E /* KCSDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2746534A174E6CFE0013546E /* KCSDataStore.m */; };
-		27465350174E6D0F0013546E /* KCSQuery2.h in Headers */ = {isa = PBXBuildFile; fileRef = 2746534E174E6D0F0013546E /* KCSQuery2.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		27465351174E6D0F0013546E /* KCSQuery2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2746534F174E6D0F0013546E /* KCSQuery2.m */; };
 		27465354174E6DE40013546E /* KCSRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465352174E6DE40013546E /* KCSRequest.h */; };
-		27465355174E6DE40013546E /* KCSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27465353174E6DE40013546E /* KCSRequest.m */; };
 		27465359174E84AB0013546E /* KCSService.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465358174E84AB0013546E /* KCSService.h */; };
 		2746535F174E891D0013546E /* EXTScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 2746535C174E891D0013546E /* EXTScope.h */; };
-		27465360174E891D0013546E /* EXTScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 2746535D174E891D0013546E /* EXTScope.m */; };
 		27465361174E891D0013546E /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 2746535E174E891D0013546E /* metamacros.h */; };
 		27465365174E90DA0013546E /* KCSServerService.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465363174E90D90013546E /* KCSServerService.h */; };
-		27465366174E90DA0013546E /* KCSServerService.m in Sources */ = {isa = PBXBuildFile; fileRef = 27465364174E90D90013546E /* KCSServerService.m */; };
 		27465369174E92FC0013546E /* KCSAsyncConnection2.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465367174E92FB0013546E /* KCSAsyncConnection2.h */; };
-		2746536A174E92FC0013546E /* KCSAsyncConnection2.m in Sources */ = {isa = PBXBuildFile; fileRef = 27465368174E92FC0013546E /* KCSAsyncConnection2.m */; };
-		2746536F174EBE480013546E /* KCSDataStoreCaches.h in Headers */ = {isa = PBXBuildFile; fileRef = 2746536D174EBE470013546E /* KCSDataStoreCaches.h */; };
-		27465370174EBE480013546E /* KCSDataStoreCaches.m in Sources */ = {isa = PBXBuildFile; fileRef = 2746536E174EBE470013546E /* KCSDataStoreCaches.m */; };
 		275512001707CCD7007E8320 /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275512011707CCDB007E8320 /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2490,16 +2479,12 @@
 				278554D01742CFDC005052D6 /* FMResultSet.h in Headers */,
 				278554D61742D42E005052D6 /* FMDatabasePool.h in Headers */,
 				278554D81742D42E005052D6 /* FMDatabaseQueue.h in Headers */,
-				2746534B174E6CFE0013546E /* KinveyKit2.h in Headers */,
-				2746534C174E6CFE0013546E /* KCSDataStore.h in Headers */,
-				27465350174E6D0F0013546E /* KCSQuery2.h in Headers */,
 				27465354174E6DE40013546E /* KCSRequest.h in Headers */,
 				27465359174E84AB0013546E /* KCSService.h in Headers */,
 				2746535F174E891D0013546E /* EXTScope.h in Headers */,
 				27465361174E891D0013546E /* metamacros.h in Headers */,
 				27465365174E90DA0013546E /* KCSServerService.h in Headers */,
 				27465369174E92FC0013546E /* KCSAsyncConnection2.h in Headers */,
-				2746536F174EBE480013546E /* KCSDataStoreCaches.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3025,13 +3010,6 @@
 				278554D11742CFDC005052D6 /* FMResultSet.m in Sources */,
 				278554D71742D42E005052D6 /* FMDatabasePool.m in Sources */,
 				278554D91742D42E005052D6 /* FMDatabaseQueue.m in Sources */,
-				2746534D174E6CFE0013546E /* KCSDataStore.m in Sources */,
-				27465351174E6D0F0013546E /* KCSQuery2.m in Sources */,
-				27465355174E6DE40013546E /* KCSRequest.m in Sources */,
-				27465360174E891D0013546E /* EXTScope.m in Sources */,
-				27465366174E90DA0013546E /* KCSServerService.m in Sources */,
-				2746536A174E92FC0013546E /* KCSAsyncConnection2.m in Sources */,
-				27465370174EBE480013546E /* KCSDataStoreCaches.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
