@@ -22,7 +22,7 @@
 			<key>Path</key>
 			<string>KinveyKit.framework</string>
 		</dict>
-		<key>libUAirshipPush-1.4.0.a</key>
+		<key>libUAirship-1.4.0.a</key>
 		<dict>
 			<key>Group</key>
 			<string>Libraries</string>
