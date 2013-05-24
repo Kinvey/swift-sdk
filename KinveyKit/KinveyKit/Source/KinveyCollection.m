@@ -44,7 +44,7 @@ KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collec
         
         KCSLogTrace(@"In collection callback with response: %@", response);
         NSMutableArray *processedData = [[NSMutableArray alloc] init];
-
+        
         NSObject* jsonData = [response jsonResponseValue];
         NSArray *jsonArray = nil;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
@@ -99,16 +99,19 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 {
     
     return [^(KCSConnectionProgress *conn)
-    {
-        if (onProgress != nil) {
-            //TODO: deprecate
-            onProgress(@[], conn.percentComplete);
-        }
-    } copy];
+            {
+                if (onProgress != nil) {
+                    //TODO: deprecate
+                    onProgress(@[], conn.percentComplete);
+                }
+            } copy];
     
 }
 
+@interface KCSCollection ()
+@property (nonatomic) BOOL userCollection;
 
+@end
 
 
 @implementation KCSCollection
@@ -133,8 +136,10 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
                 [[NSException exceptionWithName:@"Invalid Template" reason:@"User collection must have a template that is of type 'KCSUser'" userInfo:nil] raise];
             }
             _collectionName = @"";
+            _userCollection = YES;
         } else {
             _collectionName = name;
+            _userCollection = NO;
         }
         _objectTemplate = theClass;
         _lastFetchResults = nil;
@@ -169,7 +174,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     if (![c.objectTemplate isEqual:c.objectTemplate]){
         return NO;
     }
-        
+    
     return YES;
 }
 
@@ -185,13 +190,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 #pragma mark Basic Methods
 - (NSString*) baseURL
 {
-    NSString* baseURL = @"";
-    if ([self.collectionName isEqualToString:KCSUserCollectionName]) {
-        baseURL = [[KCSClient sharedClient] userBaseURL]; //use user url for user collection
-    } else {
-        baseURL = [[KCSClient sharedClient] appdataBaseURL]; // Initialize this to the default appdata URL
-    }
-    return baseURL;
+    return _userCollection == YES ? [[KCSClient sharedClient] userBaseURL] /*use user url for user collection*/ : [[KCSClient sharedClient] appdataBaseURL]; /* Initialize this to the default appdata URL*/
 }
 
 - (NSString*) urlForEndpoint:(NSString*)endpoint
@@ -214,7 +213,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 {
     NSString *resource = [self urlForEndpoint:endpoint];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:method];
-    [request setContentType:KCS_JSON_TYPE];        
+    [request setContentType:KCS_JSON_TYPE];
     return request;
 }
 
@@ -223,7 +222,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 {
     NSString *resource = [self.baseURL stringByAppendingFormat:@"%@/", self.collectionName];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-
+    
     KCSConnectionCompletionBlock cBlock = makeCollectionCompletionBlock(self, delegate, nil);
     KCSConnectionFailureBlock fBlock = makeCollectionFailureBlock(self, delegate, nil);
     KCSConnectionProgressBlock pBlock = makeCollectionProgressBlock(self, delegate, nil);
@@ -258,7 +257,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-
+    
 }
 
 
@@ -287,11 +286,11 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     } else {
         format = @"%@/";
     }
-
+    
     // Here we know that we're working with a query, so now we just check each of the params...
     resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
     resource = [resource stringByAppendingString:[self.query parameterStringRepresentation]];
-
+    
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
     
     
@@ -312,16 +311,16 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
         NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
-
+        
         int count;
-
+        
         if (response.responseCode != KCS_HTTP_STATUS_OK){
             NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Information request  was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             
             [delegate collection:self informationOperationFailedWithError:error];
             return;
         }
-
+        
         NSString *val = [jsonResponse valueForKey:@"count"];
         
         if (val){
@@ -337,7 +336,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     };
     
     KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *collection) {};
-        
+    
     // Make the request happen
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }

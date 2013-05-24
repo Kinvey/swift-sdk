@@ -23,7 +23,6 @@
 #pragma clang diagnostic pop
     [df setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     NSString *dTmp = [df stringFromDate:self];
-    KCSLogDebug(@"Date conversion: %@ => %@", self, dTmp);
     return dTmp;
 }
 

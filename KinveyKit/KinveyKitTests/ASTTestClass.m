@@ -36,9 +36,12 @@
 
 - (BOOL)isEqual:(id)object
 {
+    if (self == object) return YES;
+    if (object == [NSNull null]) return NO;
     ASTTestClass* o = object;
     BOOL classSame = [[self class] isEqual:[object class]];
-    return  classSame && [_objId isEqual:o.objId];
+    BOOL objSame = (_objId == nil || o.objId == nil) ? [super isEqual:object] : [_objId isEqual:o.objId];
+    return  classSame && objSame;
 }
 
 @end
