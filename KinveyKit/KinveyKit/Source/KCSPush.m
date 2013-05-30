@@ -14,13 +14,14 @@
 #import "UAirship.h"
 #import "UAPush.h"
 
+#import "KCSLogManager.h"
 #import "KinveyErrorCodes.h"
 #import "KCSDevice.h"
 
 @interface KCSPush()
 - (BOOL)initializeUrbanAirshipWithOptions: (NSDictionary *)options error:(NSError**)error;
 @property (nonatomic, retain, readwrite) NSData  *deviceToken;
-
+@property (nonatomic) BOOL hasToken;
 @end
 
 @implementation KCSPush
@@ -62,6 +63,33 @@
 {
     return [self initializeUrbanAirshipWithOptions:options error:error];
 }
+
++ (void) initializePushWithPushKey:(NSString*)pushKey pushSecret:(NSString*)pushSecretKey mode:(KCS_PUSH_MODE)pushMode enabled:(BOOL)enabled
+{
+    NSString* modeString;
+    switch (pushMode) {
+        case KCS_PUSHMODE_DEVELOPMENT:
+            modeString = KCS_PUSH_DEVELOPMENT;
+            break;
+        case KCS_PUSHMODE_PRODUCTION:
+            modeString = KCS_PUSH_DEVELOPMENT;
+            break;
+        default:
+            [[NSException exceptionWithName:@"Invalid Push Setup" reason:@"Push Mode should be one of Development or Production" userInfo:nil] raise];
+            break;
+    }
+    
+    NSError* error = nil;
+    BOOL setUp = [[KCSPush sharedPush] initializeUrbanAirshipWithOptions:@{ KCS_PUSH_IS_ENABLED_KEY : enabled ? @"YES" : @"NO",
+                                                       KCS_PUSH_KEY_KEY : pushKey,
+                                                    KCS_PUSH_SECRET_KEY : pushSecretKey,
+                                                      KCS_PUSH_MODE_KEY : modeString
+                  } error:&error];
+    if (setUp == NO) {
+        NSAssert(error == nil, @"Push not set up correctly: %@", error);
+    }
+}
+
 
 - (void)onUnloadHelper
 {
@@ -112,16 +140,26 @@
     // Please replace these with your info from http://go.urbanairship.com
     [UAirship takeOff:takeOffOptions];
     
-    // Register for notifications through UAPush for notification type tracking
-    [[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
-                                                         UIRemoteNotificationTypeSound |
-                                                         UIRemoteNotificationTypeAlert)];
-    
-    
+    [self doRegister];
     [[UAPush shared] setAutobadgeEnabled:YES];
     [[UAPush shared] resetBadge];//zero badge
     
     return YES;
+}
+
+- (void) doRegister
+{
+    // Register for notifications through UAPush for notification type tracking
+    [[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
+                                                         UIRemoteNotificationTypeSound |
+                                                         UIRemoteNotificationTypeAlert)];
+}
+
+
+- (void) registerForRemoteNotifications
+{
+    // Register for notifications through UAPush for notification type tracking
+    [self doRegister];
 }
 
 - (void) removeDeviceToken
@@ -134,14 +172,17 @@
 #pragma mark Push
 // Push helpers
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
     UALOG(@"Received remote notification: %@", userInfo);
     
     [[UAPush shared] handleNotification:userInfo applicationState:application.applicationState];
     [[UAPush shared] resetBadge]; // zero badge after push received
 }
 
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    self.hasToken = YES;
     
     // Capture the token for us to use later
     self.deviceToken = deviceToken;
@@ -154,6 +195,14 @@
         //nil delegate because this is a silent try, and there's nothing to do if error
         [[[KCSClient sharedClient] currentUser] saveWithDelegate:nil];
     }
+}
+
+- (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    self.hasToken = NO;
+    
+    KCSLogNSError(@"Failed to register for remote notifications", error);
+    //TODO: simulator error: Error Domain=NSCocoaErrorDomain Code=3010 "remote notifications are not supported in the simulator" UserInfo=0xa6992d0 {NSLocalizedDescription=remote notifications are not supported in the simulator}
 }
 
 - (void)setPushBadgeNumber: (int)number

@@ -17,11 +17,6 @@
 
 @implementation KCSQuery2
 
-+ (void)initialize
-{
-    KCSQueryAll = [[KCSQuery2 alloc] init];
-}
-
 - (instancetype) init
 {
     self = [super init];

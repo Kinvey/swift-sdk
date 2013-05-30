@@ -8,8 +8,6 @@
 
 @class KCSQuery2;
 
-FOUNDATION_EXPORT KCSQuery2* KCSQueryAll;
-
 @interface KCSQuery2 : NSObject
 
 - (NSString*) escapedQueryString;
