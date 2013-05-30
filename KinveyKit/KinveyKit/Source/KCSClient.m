@@ -344,4 +344,15 @@
 {
     [KCSEntityCache clearAllCaches];
 }
+
+#pragma mark - KinveyKit2
+- (NSString*) kid
+{
+    return _appKey;
+}
+
+- (NSString*) baseURL
+{
+    return [NSString stringWithFormat:@"%@://%@.%@/", self.protocol, self.serviceHostname, self.kinveyDomain];
+}
 @end
