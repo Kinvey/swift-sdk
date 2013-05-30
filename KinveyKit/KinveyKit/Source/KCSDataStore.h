@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 
-FOUNDATION_EXPORT NSString* KCSUserCollectionName;
+FOUNDATION_EXPORT NSString* const KCSUserCollectionName;
 
 @interface KCSDataStore : NSObject
 

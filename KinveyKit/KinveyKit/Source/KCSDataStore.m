@@ -16,6 +16,9 @@
 
 #import "EXTScope.h"
 
+NSString* const KCSUserCollectionName = @"user";
+static KCSQuery2* KCSQueryAll;
+
 @interface KCSDataStore ()
 @property (nonatomic, strong) NSString* collectionName;
 @property (nonatomic) BOOL cacheEnabled;
@@ -25,8 +28,9 @@
 
 + (void)initialize
 {
-    KCSUserCollectionName = @"user";
+    KCSQueryAll = [[KCSQuery2 alloc] init];
 }
+
 
 - (instancetype) init
 {
