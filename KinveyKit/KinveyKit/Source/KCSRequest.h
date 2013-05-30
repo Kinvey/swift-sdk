@@ -26,15 +26,24 @@ typedef enum KCSRESTMethod : NSInteger {
 
 @end
 
+@protocol KCSCredentials <NSObject>
+
+- (NSString*) authString;
+
+@end
+
 
 @interface KCSNetworkRequest : NSObject <KCSRequest>
 
 @property (nonatomic) KCSConextRoot contextRoot;
 @property (nonatomic) KCSRESTMethod httpMethod;
+@property (nonatomic, copy) NSArray* pathComponents;
 @property (nonatomic, copy) NSString* queryString;
 @property (nonatomic, retain, readonly) NSMutableDictionary* headers;
+@property (nonatomic, copy) id body;
+@property (nonatomic, weak) id<KCSCredentials> authorization;
 
-- (void) run:(void (^)(NSData* data, NSError* error))runBlock;
+- (void) run:(void (^)(id results, NSError* error))runBlock;
 - (NSURLRequest*) nsurlRequest;
 
 @end

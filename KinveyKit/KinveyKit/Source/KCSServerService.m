@@ -12,16 +12,10 @@
 
 @implementation KCSServerService
 
-- (void)startRequest:(KCSNetworkRequest*)request
+- (void)performRequest:(NSURLRequest *)theRequest progressBlock:(KCSConnectionProgressBlock)onProgress completionBlock:(KCSConnectionCompletionBlock)onCompletion failureBlock:(KCSConnectionFailureBlock)onFailure
 {
     KCSAsyncConnection2* cxn = [[KCSAsyncConnection2 alloc] init];
-    [cxn performRequest:request.nsurlRequest progressBlock:^(KCSConnectionProgress *progress) {
-        //TODO
-    } completionBlock:^(KCSConnectionResponse *response) {
-        //TODO
-    } failureBlock:^(NSError *error) {
-        //TODO
-    }];
+    [cxn performRequest:theRequest progressBlock:onProgress completionBlock:onCompletion failureBlock:onFailure];
 }
 
 @end

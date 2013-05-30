@@ -8,12 +8,37 @@
 
 #import "KCSRequest.h"
 
+#import "KCSClient.h"
+#import "KCSClient+KinveyKit2.h"
 #import "KCSServerService.h"
+#import "KCSConnectionResponse.h"
 
-static NSString* kGETMethod = @"GET";
-static NSString* kPUTMethod = @"PUT";
-static NSString* kPOSTMethod = @"POST";
-static NSString* kDELETEMethod = @"DELETE";
+#import "KCS_SBJson.h"
+
+#define KINVEY_KCS_API_VERSION @"2"
+
+#define MAX_DATE_STRING_LENGTH_K 40 
+NSString * getLogDate2()
+{
+    time_t now = time(NULL);
+    struct tm *t = gmtime(&now);
+    
+    char timestring[MAX_DATE_STRING_LENGTH_K];
+    
+    NSInteger len = strftime(timestring, MAX_DATE_STRING_LENGTH_K - 1, "%a, %d %b %Y %T %Z", t);
+    assert(len < MAX_DATE_STRING_LENGTH_K);
+    
+    return [NSString stringWithCString:timestring encoding:NSASCIIStringEncoding];
+}
+
+static const NSString* kGETMethod = @"GET";
+static const NSString* kPUTMethod = @"PUT";
+static const NSString* kPOSTMethod = @"POST";
+static const NSString* kDELETEMethod = @"DELETE";
+static const NSString* kAPPDATARoot = @"appdata";
+static const NSString* kRPCRoot = @"rpc";
+static const NSString* kUSERRoot = @"user";
+static const NSString* kBLOBRoot = @"blob";
 
 @implementation KCSNetworkRequest
 
@@ -28,39 +53,86 @@ static NSString* kDELETEMethod = @"DELETE";
 }
 
 
-- (void)run:(void (^)(NSData* data, NSError* error))runBlock
+- (void)run:(void (^)(id results, NSError* error))runBlock
 {
     //TODO
     id <KCSService> service = [[KCSServerService alloc] init];
-    [service startRequest:self];
+    [service performRequest:[self nsurlRequest] progressBlock:^(KCSConnectionProgress *progress) {
+        //TODO
+    } completionBlock:^(KCSConnectionResponse *response) {
+        //TODO: handle kcs errors
+        runBlock([response jsonResponseValue], nil);
+    } failureBlock:^(NSError *error) {
+        runBlock(nil,error);
+    }];
 }
 
 - (NSString*) methodName
 {
     switch (_httpMethod) {
         case kKCSRESTMethodGET:
-            return kGETMethod;
+            return (NSString*)kGETMethod;
             break;
         case kKCSRESTMethodPUT:
-            return kPUTMethod;
+            return (NSString*)kPUTMethod;
             break;
         case kKCSRESTMethodPOST:
-            return kPOSTMethod;
+            return (NSString*)kPOSTMethod;
             break;
         case kKCSRESTMethodDELETE:
-            return kDELETEMethod;
+            return (NSString*)kDELETEMethod;
+            break;
+    }
+}
+
+- (NSString*) rootString
+{
+    switch (_contextRoot) {
+        case kKCSContextAPPDATA:
+            return (NSString*)kAPPDATARoot;
+            break;
+        case kKCSContextBLOB:
+            return (NSString*)kBLOBRoot;
+            break;
+        case kKCSContextRPC:
+            return (NSString*)kRPCRoot;
+            break;
+        case kKCSContextUSER:
+            return (NSString*)kUSERRoot;
             break;
     }
 }
 
 - (NSURLRequest*) nsurlRequest
 {
-    NSString* urlStr = @"";
+    KCSClient* client = [KCSClient sharedClient];
+    NSArray* path = [@[[self rootString], [client kid]] arrayByAddingObjectsFromArray:_pathComponents];
+    NSString* urlStr = [path componentsJoinedByString:@"/"];
+    urlStr = [[client baseURL] stringByAppendingString:urlStr];
     
     NSURL* url = [NSURL URLWithString:urlStr];
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url]; //TODO cache & timeout
     request.HTTPMethod = [self methodName];
     
+    KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
+    NSData* bodyData = [writer dataWithObject:_body];
+    [request setHTTPBody:bodyData];
+    
+    NSString* auth = [_authorization authString];
+    NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithCapacity:15];
+    //TODO: other headers
+    if (auth) {
+        headers[@"Authorization"] = auth;
+    }
+    headers[@"User-Agent"] = [client userAgent];
+    headers[@"X-Kinvey-Device-Information"] = [client.analytics headerString];
+    headers[@"X-Kinvey-API-Version"] = KINVEY_KCS_API_VERSION;
+    headers[@"Date"] = getLogDate2();
+    headers[@"X-Kinvey-ResponseWrapper"] = @"true";
+    [request setAllHTTPHeaderFields:headers];
+    
+    [request setHTTPShouldUsePipelining:_httpMethod != kKCSRESTMethodPOST];
+    //TODO followsRedirects
     return request;
 }
 

@@ -9,10 +9,16 @@
 #import <Foundation/Foundation.h>
 
 #import "KCSRequest.h"
-
+#import "KinveyBlocks.h"
 @protocol KCSService <NSObject>
 
-- (void) startRequest:(KCSNetworkRequest*)request;
+//TODO:
+//- (void) startRequest:(KCSNetworkRequest*)request;
 
+
+- (void)performRequest:(NSURLRequest *)theRequest
+         progressBlock:(KCSConnectionProgressBlock)onProgress
+       completionBlock:(KCSConnectionCompletionBlock)onCompletion
+          failureBlock:(KCSConnectionFailureBlock)onFailure;
 @end
 
