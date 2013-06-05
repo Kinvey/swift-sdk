@@ -29,6 +29,7 @@
 #import "KinveyErrorCodes.h"
 #import "KCSQuery.h"
 #import "KCSStore.h"
+#import "KCSCustomEndpoints.h"
 
 #import "KCSStore.h"
 #import "KCSAppdataStore.h"

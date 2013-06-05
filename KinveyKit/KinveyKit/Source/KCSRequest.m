@@ -12,6 +12,7 @@
 #import "KCSClient+KinveyKit2.h"
 #import "KCSServerService.h"
 #import "KCSConnectionResponse.h"
+#import "KCSErrorUtilities.h"
 
 #import "KCS_SBJson.h"
 
@@ -60,8 +61,14 @@ static const NSString* kBLOBRoot = @"blob";
     [service performRequest:[self nsurlRequest] progressBlock:^(KCSConnectionProgress *progress) {
         //TODO
     } completionBlock:^(KCSConnectionResponse *response) {
-        //TODO: handle kcs errors
-        runBlock([response jsonResponseValue], nil);
+        id results = [response jsonResponseValue];
+        if (response.responseCode >= 400) {
+            //TODO: domain
+            NSError* error = [KCSErrorUtilities createError:results description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+            runBlock(nil, error);
+        } else {
+            runBlock(results, nil);
+        }
     } failureBlock:^(NSError *error) {
         runBlock(nil,error);
     }];
@@ -115,8 +122,11 @@ static const NSString* kBLOBRoot = @"blob";
     request.HTTPMethod = [self methodName];
     
     KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
-    NSData* bodyData = [writer dataWithObject:_body];
-    [request setHTTPBody:bodyData];
+
+    if (_body) {
+        NSData* bodyData = [writer dataWithObject:_body];
+        [request setHTTPBody:bodyData];
+    }
     
     NSString* auth = [_authorization authString];
     NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithCapacity:15];

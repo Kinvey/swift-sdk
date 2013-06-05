@@ -21,6 +21,7 @@
 #import "KCSRESTRequest.h"
 #import "KinveyCollection.h"
 #import "NSString+KinveyAdditions.h"
+#import "KCSObjectMapper.h"
 
 #import "TestUtils.h"
 
@@ -357,6 +358,23 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     STAssertEquals((int)[[currentUser getValueForAttribute:@"age"] intValue], (int)32, @"age should match");
     STAssertTrue([[currentUser getValueForAttribute:@"isAlive"] boolValue], @"isAlive should match");
     STAssertEqualObjects([currentUser getValueForAttribute:@"birthplace"], @"Brooklyn, NY", @"birthplace should match");
+}
+
+- (void) testComplexAttribute
+{
+    NSArray* loc = @[@100,@10];
+    CLLocation* location = [CLLocation locationFromKinveyValue:loc];
+    KCSUser* user = [[KCSUser alloc] init];
+    [user setValue:location forAttribute:@"location"];
+    
+    NSError* errorOrNil = nil;
+    KCSSerializedObject* obj = [KCSObjectMapper makeResourceEntityDictionaryFromObject:user forCollection:@"user" error:&errorOrNil];
+    STAssertNoError;
+
+    NSDictionary* serialized = obj.dataToSerialize;
+    NSArray* objLoc = serialized[@"location"];
+    STAssertEqualObjects(loc, objLoc, @"Should get location back properly");
+                            
 }
 
 - (void)testCanGetCurrentUser

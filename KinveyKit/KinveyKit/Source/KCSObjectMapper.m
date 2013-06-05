@@ -521,6 +521,69 @@ void setError(NSError** error, NSString* objectId, NSString* jsonName)
     }
 }
 
+id valueForProperty(NSString* jsonName, id value, BOOL withProps, id object, NSString* collectionName, NSString* key, NSString* refCollection, NSMutableArray* resourcesToSave, NSError** error, NSString* objectId, NSMutableArray* referencesToSave)
+{
+    if (withProps == YES && isResourceType(value) == YES) {
+        NSString* objname = [object kinveyObjectId];
+        if (objname == nil) {
+            CFUUIDRef uuid = CFUUIDCreate(NULL);
+            
+            if (uuid){
+                objname = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
+                CFRelease(uuid);
+            }
+        }
+        NSString* filename = [NSString stringWithFormat:@"%@-%@-%@%@", collectionName, objname, key, extensionForResource(value)];
+        KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
+        [resourcesToSave addObject:resourceWrapper];
+        return resourceWrapper;
+    } else if (withProps == YES && refCollection != nil) {
+        // have a kinvey ref
+        BOOL shouldSaveRef = [object respondsToSelector:@selector(referenceKinveyPropertiesOfObjectsToSave)] && [[object referenceKinveyPropertiesOfObjectsToSave] containsObject:jsonName] == YES;
+        if (isCollection(value)) {
+            NSArray* arrayValue = value;
+            Class<KCSDataTypeBuilder> builder = builderForComplexType(object, [value classForCoder]);
+            if (builder != nil) {
+                arrayValue = [builder JSONCompatabileValueForObject:value];
+            }
+            NSMutableArray* refArray = [NSMutableArray arrayWithCapacity:[arrayValue count]];
+            for (id arrayVal in arrayValue) {
+                KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:arrayVal andCollection:refCollection];
+                if ([ref unableToSaveReference:shouldSaveRef]) {
+                    setError(error, objectId, jsonName);
+                    return nil;
+                }
+                [refArray addObject:ref];
+            }
+            if (shouldSaveRef) {
+                [referencesToSave addObjectsFromArray:refArray];
+            }
+            return refArray;
+        } else {
+            KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:value andCollection:refCollection];
+            if ([ref unableToSaveReference:shouldSaveRef]) {
+                setError(error, objectId, jsonName);
+                return nil;
+            }
+            if (shouldSaveRef) {
+                [referencesToSave addObject:ref];
+            }
+            return ref;
+        }
+    } else {
+        Class valClass = [value classForCoder];
+        Class<KCSDataTypeBuilder> builder = builderForComplexType(object, valClass);
+        if (builder != nil) {
+            id jsonType = [builder JSONCompatabileValueForObject:value];
+            return jsonType;
+        } else {
+            //TODO: handle complex types
+            //don't need to look at type, just save
+            return value;
+        }
+    }
+}
+
 + (KCSSerializedObject*) makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName withProps:(BOOL)withProps error:(NSError**)error
 {
     NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
@@ -551,7 +614,7 @@ void setError(NSError** error, NSString* objectId, NSString* jsonName)
                 KCSLogError(@"Error serialzing entity for use with Kinvey: '%@'", [exception reason]);
                 if (error != NULL) {
                     NSDictionary* info = @{NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Entity does not have property '%@' as specified in hostToKinveyPropertyMapping", key],
-                                           NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"Cannot map a non-existant property"], NSLocalizedRecoverySuggestionErrorKey : @"Check the hostToKinveyPropertyMapping for typos and errors."};
+                                           NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"Cannot map '%@', a non-existant property", key], NSLocalizedRecoverySuggestionErrorKey : @"Check the hostToKinveyPropertyMapping for typos and errors."};
                     *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidKCSPersistableError userInfo:info];
                 }
                 return nil;
@@ -574,67 +637,24 @@ void setError(NSError** error, NSString* objectId, NSString* jsonName)
         //serialize the fields to a dictionary
         if ([jsonName isEqualToString:KCSEntityKeyMetadata]) {
             //hijack metadata
-            [dictionaryToMap setValue:[(KCSMetadata*)value aclValue] forKey:kACLKey];
+            dictionaryToMap[kACLKey] = [(KCSMetadata*)value aclValue];
         } else {
-            if (withProps == YES && isResourceType(value) == YES) {
-                NSString* objname = [object kinveyObjectId];
-                if (objname == nil) {
-                    CFUUIDRef uuid = CFUUIDCreate(NULL);
-                    
-                    if (uuid){
-                        objname = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
-                        CFRelease(uuid);
-                    }
-                }
-                NSString* filename = [NSString stringWithFormat:@"%@-%@-%@%@", collectionName, objname, key, extensionForResource(value)];
-                KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
-                [resourcesToSave addObject:resourceWrapper];
-                [dictionaryToMap setValue:resourceWrapper forKey:jsonName];
-            } else if (withProps == YES && [kinveyRefMapping objectForKey:jsonName] != nil) {
-                // have a kinvey ref
-                BOOL shouldSaveRef = [object respondsToSelector:@selector(referenceKinveyPropertiesOfObjectsToSave)] && [[object referenceKinveyPropertiesOfObjectsToSave] containsObject:jsonName] == YES;
-                if (isCollection(value)) {
-                    NSArray* arrayValue = value;
-                    Class<KCSDataTypeBuilder> builder = builderForComplexType(object, [value classForCoder]);
-                    if (builder != nil) {
-                        arrayValue = [builder JSONCompatabileValueForObject:value];
-                    }
-                    NSMutableArray* refArray = [NSMutableArray arrayWithCapacity:[arrayValue count]];
-                    for (id arrayVal in arrayValue) {
-                        KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:arrayVal andCollection:[kinveyRefMapping objectForKey:jsonName]];
-                        if ([ref unableToSaveReference:shouldSaveRef]) {
-                            setError(error, objectId, jsonName);
-                            return nil;
-                        }
-                        [refArray addObject:ref];
-                    }
-                    if (shouldSaveRef) {
-                        [referencesToSave addObjectsFromArray:refArray];
-                    }
-                    [dictionaryToMap setValue:refArray forKey:jsonName];
-                } else {
-                    KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:value andCollection:[kinveyRefMapping objectForKey:jsonName]];
-                    if ([ref unableToSaveReference:shouldSaveRef]) {
-                        setError(error, objectId, jsonName);
-                        return nil;
-                    }
-                    [dictionaryToMap setValue:ref forKey:jsonName];
-                    if (shouldSaveRef) {
-                        [referencesToSave addObject:ref];
-                    }
-                }
-            } else {
-                Class valClass = [value classForCoder];
-                Class<KCSDataTypeBuilder> builder = builderForComplexType(object, valClass);
-                if (builder != nil) {
-                    id jsonType = [builder JSONCompatabileValueForObject:value];
-                    [dictionaryToMap setValue:jsonType forKey:jsonName];
-                } else {
-                    //TODO: handle complex types
-                    //don't need to look at type, just save
-                    [dictionaryToMap setValue:value forKey:jsonName];
-                }
+            value = valueForProperty(jsonName,
+                                     value,
+                                     withProps,
+                                     object,
+                                     collectionName,
+                                     key,
+                                     [kinveyRefMapping objectForKey:jsonName],
+                                     resourcesToSave,
+                                     error,
+                                     objectId,
+                                     referencesToSave);
+            if (value == nil) {
+                return nil;
             }
+            
+            dictionaryToMap[jsonName] = value;
         } // end test object name
     } // end for key in kinveyMapping
     
@@ -647,7 +667,19 @@ void setError(NSError** error, NSString* objectId, NSString* jsonName)
         
         NSDictionary *subDict = (NSDictionary *)[object valueForKey:dictionaryName];
         for (NSString *key in subDict) {
-            [dictionaryToMap setObject:[subDict objectForKey:key] forKey:key];
+            id value = subDict[key];
+            value = valueForProperty(key,
+                                     value,
+                                     withProps,
+                                     object,
+                                     collectionName,
+                                     key,
+                                     [kinveyRefMapping objectForKey:key],
+                                     resourcesToSave,
+                                     error,
+                                     objectId,
+                                     referencesToSave);
+            dictionaryToMap[key] = value;
         }
     }
     
