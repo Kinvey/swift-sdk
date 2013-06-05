@@ -1,19 +1,23 @@
 # KinveyKit Release History
 
-## 1.16
-### 1.16.1
+## 1.17
+### 1.17.0
 ** Release Date:** TBD
 
+
+* Added support for custom business logic endpoints `KCSCustomEndpoints`.
 * Improved Push API
-    * Deprecated `- [KCSPush onLoadHelper:error:]` in favor of ` +[ KCSPush initializePushWithPushKey:pushSecret:mode:enabled:]`
+    * Deprecated `- [KCSPush onLoadHelper:error:]` in favor of `+ [KCSPush initializePushWithPushKey:pushSecret:mode:enabled:]`
         * Set-up is now more explicit. See [http://devcenter.kinvey.com/ios/guides/push#AppSetUp](http://devcenter.kinvey.com/ios/guides/push#AppSetUp) for instructions on use.
         * Set-up errors will now raise an `NSException`.
     * Added `- [KCSPush application:didFailToRegisterForRemoteNotificationsWithError:]` to forward app delegate registration failure error to the push management.
     * Added `- [KCSPush registerForRemoteNotifications]` to call from `applicationDidBecomeActive:` in the app delegate. This retrieves the latest device token, if it has changed. 
-    
-* TODO: push in project template
-* TODO: token handling - replace with new and remove if old
+    * Added `- [KCSUser removeValueForAttribute:` to remove previously set custom user attributes.
+* Bug fix(es):
+    * Fixed bug where a `CLLocation` could be added to a `KCUser` through `setValue:forAttribute:`;
 
+
+## 1.16
 ### 1.16.0
 ** Release Date:** May 24, 2013
 

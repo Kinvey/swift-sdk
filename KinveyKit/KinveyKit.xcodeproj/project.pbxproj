@@ -120,7 +120,7 @@
 		273A3E9B160A256100F3742C /* KinveyKitExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD0876160A03A8009473A3 /* KinveyKitExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		273A3E9C160A384C00F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
 		273A3E9D160A385100F3742C /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
-		273B644F1757DE0F00E1B1B9 /* KCSCustomEndpoints.h in Headers */ = {isa = PBXBuildFile; fileRef = 273B644D1757DE0E00E1B1B9 /* KCSCustomEndpoints.h */; };
+		273B644F1757DE0F00E1B1B9 /* KCSCustomEndpoints.h in Headers */ = {isa = PBXBuildFile; fileRef = 273B644D1757DE0E00E1B1B9 /* KCSCustomEndpoints.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		273B64501757DE0F00E1B1B9 /* KCSCustomEndpoints.m in Sources */ = {isa = PBXBuildFile; fileRef = 273B644E1757DE0E00E1B1B9 /* KCSCustomEndpoints.m */; };
 		273B64541757E3B500E1B1B9 /* KCSRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 273B64531757E3B500E1B1B9 /* KCSRequestTests.m */; };
 		273B64581757E5FA00E1B1B9 /* KCSClient+KinveyKit2.h in Headers */ = {isa = PBXBuildFile; fileRef = 273B64561757E5FA00E1B1B9 /* KCSClient+KinveyKit2.h */; };
@@ -128,6 +128,7 @@
 		273B645C1757FAAA00E1B1B9 /* KCSCustomEndpointTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 273B645B1757FAAA00E1B1B9 /* KCSCustomEndpointTests.m */; };
 		273B645F1758022B00E1B1B9 /* KCSUser+KinveyKit2.h in Headers */ = {isa = PBXBuildFile; fileRef = 273B645D1758022A00E1B1B9 /* KCSUser+KinveyKit2.h */; };
 		273B64601758022B00E1B1B9 /* KCSUser+KinveyKit2.m in Sources */ = {isa = PBXBuildFile; fileRef = 273B645E1758022A00E1B1B9 /* KCSUser+KinveyKit2.m */; };
+		273B64A41758F2CB00E1B1B9 /* KCSCustomEndpoints.h in Headers */ = {isa = PBXBuildFile; fileRef = 273B644D1757DE0E00E1B1B9 /* KCSCustomEndpoints.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */; };
 		273DB2E715D191A00072A444 /* KCSSaveQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 273DB2E515D191A00072A444 /* KCSSaveQueue.h */; };
 		273DB2E815D191A00072A444 /* KCSSaveQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E615D191A00072A444 /* KCSSaveQueue.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -2424,6 +2425,7 @@
 				270BAEB41713414D005174D2 /* NSMutableDictionary+KinveyAdditions.h in Headers */,
 				270BAEB51713415E005174D2 /* NSArray+KinveyAdditions.h in Headers */,
 				27B1E37E17334DF300E12333 /* KCSLinkedInHelper.h in Headers */,
+				273B64A41758F2CB00E1B1B9 /* KCSCustomEndpoints.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -846,8 +846,58 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
             [tmpSet addObject:[sp deviceTokenString]];
             self.deviceTokens = [tmpSet allObjects];
         }
-        [self saveToCollection:[KCSCollection userCollection] withCompletionBlock:completionBlock withProgressBlock:nil];
-    }
+        
+        //-- save to collection
+        KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
+        BOOL isPostRequest = obj.isPostRequest;
+        NSString *objectId = obj.objectId;
+        NSDictionary *dictionaryToMap = obj.dataToSerialize;
+        
+        NSString *resource = nil;
+        KCSCollection* collection = [KCSCollection userCollection];
+        if ([collection.collectionName isEqualToString:@""]){
+            resource = [collection.baseURL stringByAppendingFormat:@"%@", objectId];
+        } else {
+            resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
+        }
+        
+        
+        NSInteger HTTPMethod;
+        
+        // If we need to post this, then do so
+        if (isPostRequest){
+            HTTPMethod = kPostRESTMethod;
+        } else {
+            HTTPMethod = kPutRESTMethod;
+        }
+        // Prepare our request
+        KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:HTTPMethod];
+        // This is a JSON request
+        [request setContentType:KCS_JSON_TYPE];
+        // Make sure to include the UTF-8 encoded JSONData...
+        KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
+        [request addBody:[writer dataWithObject:dictionaryToMap]];
+        
+        // Prepare our handlers
+        KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
+            NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
+            
+            if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
+                NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+                completionBlock(nil, error);
+            } else {
+                [KCSUser setupCurrentUser:self properties:jsonResponse password:self.password username:self.username];
+                completionBlock(@[self], nil);
+            }
+        };
+        
+        KCSConnectionFailureBlock fBlock = ^(NSError *error){
+            completionBlock(nil, error);
+        };
+        
+        // Make the request happen
+        [[request withCompletionAction:cBlock failureAction:fBlock progressAction:^(KCSConnectionProgress *conn){}] start];
+     }
 }
 
 - (id)getValueForAttribute: (NSString *)attribute
@@ -876,7 +926,14 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
     } else {
         [self.userAttributes setObject:value forKey:attribute];
     }
-    
+}
+
+- (void) removeValueForAttribute:(NSString*)attribute
+{
+    if (![self.userAttributes objectForKey:attribute]) {
+        KCSLogWarning(@"trying to remove attribute '%@'. This attribute does not exist for the user.", attribute);
+    }
+    [self.userAttributes removeObjectForKey:attribute];
 }
 
 - (KCSCollection *)userCollection

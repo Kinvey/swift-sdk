@@ -329,6 +329,12 @@ FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
  */
 - (void)setValue: (id)value forAttribute: (NSString *)attribute;
 
+/** Remove a stored attribute. No error if the attribute has not been set.
+ * @param attribute The attribute to modify.
+ */
+
+- (void) removeValueForAttribute:(NSString*)attribute;
+
 /*! Called when a User Request completes successfully.
  
  @return The KCSCollection to access users.

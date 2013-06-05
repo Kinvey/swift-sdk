@@ -114,9 +114,9 @@ typedef enum KCS_PUSH_MODE : NSInteger {
  @return `NO` if the push notifications are not able to be set-up correctly. Check the out error for possible reasons.
  @since 1.9
  @deprecated use +[KCSPush initializePushWithPushKey:pushSecret:mode:enabled:] instead
- @deprecatedIn 1.16.1
+ @deprecatedIn 1.17.0
  */
-- (BOOL) onLoadHelper:(NSDictionary *)options error:(NSError**)error KCS_DEPRECATED(use +initializePushWithPushKey:pushSecret:mode:enabled: instead, 1.16.1);
+- (BOOL) onLoadHelper:(NSDictionary *)options error:(NSError**)error KCS_DEPRECATED(use +initializePushWithPushKey:pushSecret:mode:enabled: instead, 1.17.0);
 
 /** Start the Push Service
  
@@ -130,7 +130,7 @@ typedef enum KCS_PUSH_MODE : NSInteger {
  @param pushSecretKey The "Push Secret" as listed in the Push Configuration in the Kinvey Console
  @param pushMode puts the app in development or production. This must match the setting in the Kinvey console. 
  @param enabled should be `YES` to enable push, set to `NO` to temporarily disable push
- @since 1.16.1
+ @since 1.17.0
  */
 + (void) initializePushWithPushKey:(NSString*)pushKey pushSecret:(NSString*)pushSecretKey mode:(KCS_PUSH_MODE)pushMode enabled:(BOOL)enabled;
 
@@ -181,7 +181,7 @@ typedef enum KCS_PUSH_MODE : NSInteger {
          //Additional become active actions
      }
  
- @since 1.16.1
+ @since 1.17.0
  */
 - (void) registerForRemoteNotifications;
 
@@ -219,7 +219,7 @@ typedef enum KCS_PUSH_MODE : NSInteger {
 
  @param application The application sending this message.
  @param error The registration failure
- @since 1.16.1
+ @since 1.17.0
  */
 - (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 
