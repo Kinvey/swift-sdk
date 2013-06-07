@@ -2,7 +2,7 @@
 
 ## 1.17
 ### 1.17.0
-** Release Date:** TBD
+** Release Date:** June 07, 2013
 
 
 * Added support for custom business logic endpoints `KCSCustomEndpoints`.
@@ -12,7 +12,10 @@
         * Set-up errors will now raise an `NSException`.
     * Added `- [KCSPush application:didFailToRegisterForRemoteNotificationsWithError:]` to forward app delegate registration failure error to the push management.
     * Added `- [KCSPush registerForRemoteNotifications]` to call from `applicationDidBecomeActive:` in the app delegate. This retrieves the latest device token, if it has changed. 
-    * Added `- [KCSUser removeValueForAttribute:` to remove previously set custom user attributes.
+    * Updated [GeoTag](http://devcenter.kinvey.com/ios/samples/geotag) sample application to support push, business logic, and custom endpoints.
+    * Added [a tutorial](http://devcenter.kinvey.com/ios/tutorials/tracking-user-location-for-targeted-push) to show off location-based push.
+* Added `- [KCSUser removeValueForAttribute:` to remove previously set custom user attributes.
+* KinveyKit distribution zip-file now includes the [TestDrive](http://devcenter.kinvey.com/ios/samples/testdrive) sample app.
 * Bug fix(es):
     * Fixed bug where a `CLLocation` could be added to a `KCUser` through `setValue:forAttribute:`;
 
