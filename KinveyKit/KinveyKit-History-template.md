@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.17
+### 1.17.1
+** Release Date:** TBD
+
+* Bug fix(es):
+    * Fixed bug where implicit users were created on logout.  
+
 ### 1.17.0
 ** Release Date:** June 07, 2013
 
