@@ -733,18 +733,20 @@ NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
         // the right thing.  This might be less efficient than just iterating, but these routines have
         // been optimized, we do this now, since there's no other place guarenteed to merge.
         // Login/create store this info
-        KCSDevice *sp = [KCSDevice currentDevice];
         
-        if (sp.deviceToken != nil){
-            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
-            [tmpSet removeObject:[sp deviceTokenString]];
-            self.deviceTokens = [tmpSet allObjects];
-            [self saveToCollection:[KCSCollection userCollection] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                if (errorOrNil) {
-                    KCSLogError(@"Error saving user when removing device tokens: %@", errorOrNil);
-                }
-            } withProgressBlock:nil];
-        }
+//TODO: comment out to keep the user from being f'ed up. Reinstate once working on the server-side.
+//        KCSDevice *sp = [KCSDevice currentDevice];
+//        
+//        if (sp.deviceToken != nil){
+//            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
+//            [tmpSet removeObject:[sp deviceTokenString]];
+//            self.deviceTokens = [tmpSet allObjects];
+//            [self saveToCollection:[KCSCollection userCollection] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//                if (errorOrNil) {
+//                    KCSLogError(@"Error saving user when removing device tokens: %@", errorOrNil);
+//                }
+//            } withProgressBlock:nil];
+//        }
         
         [KCSUser clearSavedCredentials];
         
