@@ -5,7 +5,9 @@
 ** Release Date:** TBD
 
 * Bug fix(es):
-    * Fixed bug where implicit users were created on logout.  
+    * Fixed bug where implicit users were created on logout. 
+    * Fixed zombie issue when obtaining LinkedIn credentials.
+    * Fixed unrecognized selector error when using offline save. 
 
 ### 1.17.0
 ** Release Date:** June 07, 2013
