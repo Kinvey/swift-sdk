@@ -2,7 +2,7 @@
 
 ## 1.17
 ### 1.17.1
-** Release Date:** TBD
+** Release Date:** June 25, 2013
 
 * Bug fix(es):
     * Fixed bug where implicit users were created on logout. 
