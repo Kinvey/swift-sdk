@@ -41,7 +41,7 @@
         
         if ([response responseCode] < 300) {
             //OK
-            _completionBlock = completionBlock;
+            _completionBlock = [completionBlock copy];
             [self getCredentialsFromWeb:results];
         } else {
             // error loading page
