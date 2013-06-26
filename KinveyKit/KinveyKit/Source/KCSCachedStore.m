@@ -25,6 +25,7 @@
 @interface KCSAppdataStore (KCSCachedStore) 
 - (instancetype)initWithAuth: (KCSAuthHandler *)auth;
 - (KCSCollection*) backingCollection;
+- (NSUInteger)numberOfPendingSaves;
 @end
 
 @interface KCSCachedStore () {
@@ -89,8 +90,9 @@ NSError* createCacheError(NSString* message)
 
 - (BOOL) shouldCallNetworkFirst:(id)cachedResult cachePolicy:(KCSCachePolicy)cachePolicy
 {
-    return cachePolicy == KCSCachePolicyNone || 
-          (cachePolicy == KCSCachePolicyNetworkFirst && [self isKinveyReachable]) || 
+#warning TODO: fix these
+    return cachePolicy == KCSCachePolicyNone ||
+          (cachePolicy == KCSCachePolicyNetworkFirst && YES /*[self isKinveyReachable]*/) ||
           (cachePolicy != KCSCachePolicyLocalOnly && cachedResult == nil);
 }
 

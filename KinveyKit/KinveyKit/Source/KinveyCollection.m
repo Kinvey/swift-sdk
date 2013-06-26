@@ -23,6 +23,10 @@
 #import "KCSConnectionProgress.h"
 #import "KinveyUser.h"
 
+typedef enum KCSCollectionCategory : NSInteger {
+    KCSCollectionAppdata, KCSCollectionUser, KCSCollectionBlob
+} KCSCollectionCategory;
+
 // Avoid compiler warning by prototyping here...
 KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collection,
                                                            id<KCSCollectionDelegate>delegate,
@@ -109,7 +113,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 }
 
 @interface KCSCollection ()
-@property (nonatomic) BOOL userCollection;
+@property (nonatomic) KCSCollectionCategory category;
 
 @end
 
@@ -136,10 +140,13 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
                 [[NSException exceptionWithName:@"Invalid Template" reason:@"User collection must have a template that is of type 'KCSUser'" userInfo:nil] raise];
             }
             _collectionName = @"";
-            _userCollection = YES;
+            _category = KCSCollectionUser;
+        } else if ([name isEqualToString:@"_blob"]) {
+            _collectionName = @"";
+            _category = KCSCollectionBlob;
         } else {
             _collectionName = name;
-            _userCollection = NO;
+            _category = KCSCollectionAppdata;
         }
         _objectTemplate = theClass;
         _lastFetchResults = nil;
@@ -190,7 +197,18 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 #pragma mark Basic Methods
 - (NSString*) baseURL
 {
-    return _userCollection == YES ? [[KCSClient sharedClient] userBaseURL] /*use user url for user collection*/ : [[KCSClient sharedClient] appdataBaseURL]; /* Initialize this to the default appdata URL*/
+    switch (_category) {
+        case KCSCollectionUser:
+            return [[KCSClient sharedClient] userBaseURL]; /*use user url for user collection*/
+            break;
+        case KCSCollectionBlob:
+            return [[KCSClient sharedClient] resourceBaseURL]; /*use blob url*/
+            break;
+        case KCSCollectionAppdata:
+        default:
+            return [[KCSClient sharedClient] appdataBaseURL]; /* Initialize this to the default appdata URL*/
+            break;
+    }
 }
 
 - (NSString*) urlForEndpoint:(NSString*)endpoint
@@ -384,7 +402,7 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 }
 
 #pragma mark - User collection
-+ (KCSCollection*) userCollection
++ (instancetype) userCollection
 {
     return [self collectionFromString:KCSUserCollectionName ofClass:[KCSUser class]];
 }

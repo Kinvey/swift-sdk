@@ -19,6 +19,10 @@ typedef BOOL(^SuccessAction)(NSArray *);
 typedef BOOL(^FailureAction)(NSError *);
 typedef BOOL(^InfoSuccessAction)(int);
 
+@interface KCSEntityDict ()
+@property (nonatomic, strong) NSMutableDictionary *entityProperties;
+@end
+
 @interface KinveyKitEntityDictTests ()
 @property (nonatomic) BOOL testPassed;
 @property (retain, nonatomic) NSString *testID;

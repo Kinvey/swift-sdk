@@ -119,14 +119,14 @@
  @return The collection object representing the back-end collection.
 
  */
-+ (KCSCollection *)collectionFromString: (NSString *)string ofClass: (Class)templateClass;
++ (instancetype) collectionFromString: (NSString *)string ofClass: (Class)templateClass;
 
 
 /** The special user collection
  @return a Collection that can be used to query `KCSUser` objects.
  @since 1.10.2
  */
-+ (KCSCollection*) userCollection;
++ (instancetype) userCollection;
 
 ///---------------------------------------------------------------------------------------
 /// @name Fetching Entities from Kinvey

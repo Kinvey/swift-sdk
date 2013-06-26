@@ -10,7 +10,7 @@
 
 #import <KinveyKit/KinveyKit.h>
 
-#import "KCSResource.h"
+#import "KCSFile.h"
 #import "KCSLinkedAppdataStore.h"
 
 #import "ASTTestClass.h"
@@ -20,24 +20,44 @@
 
 static NSString* _collection;
 
-@interface TestClass : ASTTestClass 
+@interface LinkedTestClass : ASTTestClass
 @property (nonatomic, retain) id resource;
 @end
 
-@implementation TestClass
-@synthesize resource;
+@implementation LinkedTestClass
 
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
     NSDictionary *map = [super hostToKinveyPropertyMapping];
     NSMutableDictionary* newmap = [NSMutableDictionary dictionaryWithDictionary:map];
-    [newmap setValue:@"resource" forKey:@"resource"];
+    newmap[@"resource"] = @"resource";
     return newmap;
+}
+
++ (NSDictionary*) kinveyPropertyToCollectionMapping
+{
+    return @{@"resource" : KCSFileStoreCollectionName};
 }
 
 @end
 
-@interface UserRefTestClass : TestClass
+@interface LinkedTestClassWithMeta : LinkedTestClass
+@property (nonatomic, retain) KCSMetadata* meta;
+@end
+@implementation LinkedTestClassWithMeta
+
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    NSDictionary *map = [super hostToKinveyPropertyMapping];
+    NSMutableDictionary* newmap = [NSMutableDictionary dictionaryWithDictionary:map];
+    newmap[@"meta"] = KCSEntityKeyMetadata;
+    return newmap;
+}
+
+
+@end
+
+@interface UserRefTestClass : LinkedTestClass
 @property (nonatomic, retain) KCSUser* auser;
 
 @end
@@ -59,12 +79,14 @@ static NSString* _collection;
 
 + (NSDictionary*) kinveyPropertyToCollectionMapping
 {
-    return @{ @"auserK" : KCSUserCollectionName};
+    NSMutableDictionary* map = [[super kinveyPropertyToCollectionMapping] mutableCopy];
+    [map addEntriesFromDictionary:@{ @"auserK" : KCSUserCollectionName}];
+    return map;
 }
 @end
 
-@interface ReffedTestClass : TestClass
-@property (nonatomic, retain) TestClass* other;
+@interface ReffedTestClass : LinkedTestClass
+@property (nonatomic, retain) LinkedTestClass* other;
 @property (nonatomic, retain) NSArray* arrayOfOthers;
 @property (nonatomic, retain) NSSet* setOfOthers;
 @property (nonatomic, retain) ReffedTestClass* thisOther;
@@ -90,12 +112,14 @@ static NSString* _collection;
 
 + (NSDictionary*) kinveyPropertyToCollectionMapping
 {
-    return @{ @"otherK" : @"OtherCollection", @"arrayOfOthersK" : @"OtherCollection", @"setOfOthersK" : @"OtherCollection", @"thisOtherK" : _collection};
+    NSMutableDictionary* map = [[super kinveyPropertyToCollectionMapping] mutableCopy];
+    [map addEntriesFromDictionary:@{ @"otherK" : @"OtherCollection", @"arrayOfOthersK" : @"OtherCollection", @"setOfOthersK" : @"OtherCollection", @"thisOtherK" : _collection}];
+    return map;
 }
 
 + (NSDictionary *)kinveyObjectBuilderOptions
 {
-    return @{KCS_REFERENCE_MAP_KEY : @{@"arrayOfOthers" : [TestClass class], @"setOfOthers" : [TestClass class]}};
+    return @{KCS_REFERENCE_MAP_KEY : @{@"arrayOfOthers" : [LinkedTestClass class], @"setOfOthers" : [LinkedTestClass class]}};
 }
 
 - (NSString *)description
@@ -104,7 +128,7 @@ static NSString* _collection;
 }
 @end
 
-@interface NestingRefClass : TestClass
+@interface NestingRefClass : LinkedTestClass
 @property (nonatomic, retain) ReffedTestClass* relatedObject;
 @end
 @implementation NestingRefClass
@@ -125,12 +149,14 @@ static NSString* _collection;
 
 + (NSDictionary*) kinveyPropertyToCollectionMapping
 {
-    return @{ @"relatedObject" : @"NestedOtherCollection", @"relatedObject.otherK" : @"OtherCollection"};
+    NSMutableDictionary* map = [[super kinveyPropertyToCollectionMapping] mutableCopy];
+    [map addEntriesFromDictionary:@{ @"relatedObject" : @"NestedOtherCollection", @"relatedObject.otherK" : @"OtherCollection"}];
+    return map;
 }
 
 @end
 
-@interface NoSaveTestClass : TestClass
+@interface NoSaveTestClass : LinkedTestClass
 @property (nonatomic, retain) ReffedTestClass* relatedObject;
 @end
 @implementation NoSaveTestClass
@@ -146,7 +172,9 @@ static NSString* _collection;
 
 + (NSDictionary*) kinveyPropertyToCollectionMapping
 {
-    return @{ @"relatedObject" : @"NestedOtherCollection", @"relatedObject.otherK" : @"OtherCollection"};
+    NSMutableDictionary* map = [[super kinveyPropertyToCollectionMapping] mutableCopy];
+    [map addEntriesFromDictionary:@{ @"relatedObject" : @"NestedOtherCollection", @"relatedObject.otherK" : @"OtherCollection"}];
+    return map;
 }
 
 @end
@@ -163,7 +191,7 @@ static NSString* _collection;
     collection = [[KCSCollection alloc] init];
     collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
     _collection =  collection.collectionName;
-    collection.objectTemplate = [TestClass class];
+    collection.objectTemplate = [LinkedTestClass class];
     store = [KCSLinkedAppdataStore storeWithCollection:collection options:nil];
 }
 
@@ -178,9 +206,9 @@ static NSString* _collection;
     return image;
 }
 
-- (void) testOne
+- (void) testOneLinkedFile
 {
-    TestClass* obj = [[TestClass alloc] init];
+    LinkedTestClass* obj = [[LinkedTestClass alloc] init];
     obj.objDescription = @"Yaaay!";
     obj.resource = [self makeImage];
     
@@ -189,18 +217,22 @@ static NSString* _collection;
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        LinkedTestClass* obj = objectsOrNil[0];
+        STAssertNotNil(obj, @"should not be nil obj");
+        STAssertNotNil(obj.resource, @"should still have an image");
+        STAssertTrue([obj.resource isKindOfClass:[UIImage class]], @"Should still be an image");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
 }
 
-- (void) testTwo //TODO: check file name matches object
+- (void) testTwoFiles //TODO: check file name matches object
 {
-    TestClass* obj1 = [[TestClass alloc] init];
+    LinkedTestClass* obj1 = [[LinkedTestClass alloc] init];
     obj1.objDescription = @"test two-1";
     obj1.resource = [self makeImage];
     
-    TestClass* obj2 = [[TestClass alloc] init];
+    LinkedTestClass* obj2 = [[LinkedTestClass alloc] init];
     obj2.objDescription = @"test two-2";
     obj2.resource = [self makeImage];
     
@@ -223,10 +255,10 @@ static NSString* _collection;
         STAssertTrue([[progArray objectAtIndex:i] doubleValue] <= 1.0, @"progres should be 0 to 1");
     }
 }
-//TODO: test with massive query string > 1 name = "1mB"
+
 - (void) testLoad
 {
-    __block TestClass* obj = [[TestClass alloc] init];
+    __block LinkedTestClass* obj = [[LinkedTestClass alloc] init];
     obj.objDescription = @"test load";
     obj.resource = [self makeImage];
     
@@ -235,7 +267,7 @@ static NSString* _collection;
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
-        TestClass* savedObj = [objectsOrNil objectAtIndex:0];
+        LinkedTestClass* savedObj = [objectsOrNil objectAtIndex:0];
         STAssertNotNil(savedObj.resource, @"need a resource filled out");
         STAssertTrue([savedObj.resource isKindOfClass:[UIImage class]], @"expecting an UIImage out");
         obj = [objectsOrNil objectAtIndex:0];
@@ -248,7 +280,7 @@ static NSString* _collection;
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         
-        TestClass* loaded = [objectsOrNil objectAtIndex:0];
+        LinkedTestClass* loaded = [objectsOrNil objectAtIndex:0];
         STAssertNotNil(loaded.resource, @"need a resource filled out");
         STAssertTrue([loaded.resource isKindOfClass:[UIImage class]], @"expecting an UIImage out");
         self.done = YES;
@@ -258,10 +290,45 @@ static NSString* _collection;
     [self poll];
 }
 
+- (void) testLinkedFilePreservesObjectMetadata
+{
+    __block LinkedTestClassWithMeta* obj = [[LinkedTestClassWithMeta alloc] init];
+    obj.objDescription = @"test load";
+    obj.resource = [self makeImage];
+    obj.meta = [[KCSMetadata alloc] init];
+    [obj.meta setGloballyReadable:YES];
+    
+    self.done = NO;
+    
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        
+        obj = [objectsOrNil objectAtIndex:0];
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    KCSAppdataStore* metaStore = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
+    //NOTE: this is highly tied to the implmentation!, not necessary for this test
+    NSString* fileId = [NSString stringWithFormat:@"%@-%@-%@",_collection,obj.objId,@"resource"];
+    self.done = NO;
+    [metaStore loadObjectWithID:fileId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        KTAssertCount(1, objectsOrNil);
+        KCSFile* thefile = objectsOrNil[0];
+        KCSMetadata* filesMetadata = thefile.metadata;
+        STAssertNotNil(filesMetadata, @"Should have metadata");
+        STAssertTrue(filesMetadata.isGloballyReadable, @"Should have inherited global write");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
+
 
 - (void) testWithQuery
 {
-    __block TestClass* obj = [[TestClass alloc] init];
+    __block LinkedTestClass* obj = [[LinkedTestClass alloc] init];
     obj.objDescription = @"test load";
     obj.resource = [self makeImage];
     
@@ -281,7 +348,7 @@ static NSString* _collection;
         STAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         
-        TestClass* loaded = [objectsOrNil objectAtIndex:0];
+        LinkedTestClass* loaded = [objectsOrNil objectAtIndex:0];
         STAssertNotNil(loaded.resource, @"need a resource filled out");
         STAssertTrue([loaded.resource isKindOfClass:[UIImage class]], @"expecting an UIImage out");
         self.done = YES;
@@ -292,9 +359,9 @@ static NSString* _collection;
 }
 //TODO: TEST1000, TEST MAGNITUTDE DIFFERENCE
 
-TestClass* randomTestClass(NSString* description)
+LinkedTestClass* randomTestClass(NSString* description)
 {
-    TestClass* ref = [[TestClass alloc] init];
+    LinkedTestClass* ref = [[LinkedTestClass alloc] init];
     ref.objDescription = description;
     ref.objCount = arc4random();
     return ref;
@@ -304,7 +371,7 @@ TestClass* randomTestClass(NSString* description)
 
 - (void) testSavingWithOneKinveyRef
 { 
-    TestClass* ref = TestClass(0);
+    LinkedTestClass* ref = TestClass(0);
     
     ReffedTestClass* obj = [[ReffedTestClass alloc] init];
     obj.objDescription = @"Yaaay!";
@@ -318,7 +385,7 @@ TestClass* randomTestClass(NSString* description)
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
-        TestClass* newRef = ret.other;
+        LinkedTestClass* newRef = ret.other;
         STAssertEquals(newRef.objCount, ref.objCount, @"Should be the same object back");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
@@ -336,7 +403,7 @@ TestClass* randomTestClass(NSString* description)
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
-        TestClass* newRef = ret.other;
+        LinkedTestClass* newRef = ret.other;
         STAssertEquals(newRef.objCount, ref.objCount, @"Should be the same object back");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
@@ -350,8 +417,8 @@ TestClass* randomTestClass(NSString* description)
 
 - (void) testSavingWithArrayOfKivneyRef
 {
-    TestClass* ref1 = TestClass(1);
-    TestClass* ref2 = TestClass(2);
+    LinkedTestClass* ref1 = TestClass(1);
+    LinkedTestClass* ref2 = TestClass(2);
     
     ReffedTestClass* obj = [[ReffedTestClass alloc] init];
     obj.objDescription = @"Save array of References";
@@ -365,7 +432,7 @@ TestClass* randomTestClass(NSString* description)
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
-        TestClass* newRef = [ret.arrayOfOthers objectAtIndex:0];
+        LinkedTestClass* newRef = [ret.arrayOfOthers objectAtIndex:0];
         STAssertEquals(newRef.objCount, ref1.objCount, @"Should be the same object back");
         newRef = [ret.arrayOfOthers objectAtIndex:1];
         STAssertEquals(newRef.objCount, ref2.objCount, @"Should be the same object back");
@@ -386,7 +453,7 @@ TestClass* randomTestClass(NSString* description)
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
         STAssertEquals((int) [ret.arrayOfOthers count], (int)2, @"Should have two saved objects");
-        TestClass* newRef = [ret.arrayOfOthers objectAtIndex:0];
+        LinkedTestClass* newRef = [ret.arrayOfOthers objectAtIndex:0];
         STAssertEquals(newRef.objCount, ref1.objCount, @"Should be the same object back");
         newRef = [ret.arrayOfOthers objectAtIndex:1];
         STAssertEquals(newRef.objCount, ref2.objCount, @"Should be the same object back");
@@ -402,9 +469,9 @@ TestClass* randomTestClass(NSString* description)
 
 - (void) testSavingArrayOfTopRefs
 {
-    TestClass* ref1 = TestClass(1);
-    TestClass* ref2 = TestClass(2);
-    TestClass* ref3 = TestClass(3);
+    LinkedTestClass* ref1 = TestClass(1);
+    LinkedTestClass* ref2 = TestClass(2);
+    LinkedTestClass* ref3 = TestClass(3);
     
     ReffedTestClass* obj1 = [[ReffedTestClass alloc] init];
     obj1.objDescription = @"Save array of arrays - 1";
@@ -431,7 +498,7 @@ TestClass* randomTestClass(NSString* description)
         STAssertTrue([objectsOrNil containsObject:obj2], @"should get our object back");
 
         ReffedTestClass* ret = obj1;
-        TestClass* newRef = [ret.arrayOfOthers objectAtIndex:0];
+        LinkedTestClass* newRef = [ret.arrayOfOthers objectAtIndex:0];
         STAssertEquals(newRef.objCount, ref2.objCount, @"Should be the same object back");
         newRef = [ret.arrayOfOthers objectAtIndex:1];
         STAssertEquals(newRef.objCount, ref3.objCount, @"Should be the same object back");
@@ -452,7 +519,7 @@ TestClass* randomTestClass(NSString* description)
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
         STAssertEquals((int) [ret.arrayOfOthers count], (int)2, @"Should have two saved objects");
-        TestClass* newRef = [ret.arrayOfOthers objectAtIndex:0];
+        LinkedTestClass* newRef = [ret.arrayOfOthers objectAtIndex:0];
         STAssertEquals(newRef.objCount, ref2.objCount, @"Should be the same object back");
         newRef = [ret.arrayOfOthers objectAtIndex:1];
         STAssertEquals(newRef.objCount, ref3.objCount, @"Should be the same object back");
@@ -469,8 +536,8 @@ TestClass* randomTestClass(NSString* description)
 
 - (void) testSavingWithSetOfKivneyRef
 {
-    TestClass* ref1 = TestClass(1);
-    TestClass* ref2 = TestClass(2);
+    LinkedTestClass* ref1 = TestClass(1);
+    LinkedTestClass* ref2 = TestClass(2);
     
     ReffedTestClass* obj = [[ReffedTestClass alloc] init];
     obj.objDescription = @"Save array of References";
@@ -485,8 +552,8 @@ TestClass* randomTestClass(NSString* description)
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
-        TestClass* newRef = [ret.setOfOthers anyObject];
-        STAssertTrue([newRef isKindOfClass:[TestClass class]], @"Should get a TestClass back");
+        LinkedTestClass* newRef = [ret.setOfOthers anyObject];
+        STAssertTrue([newRef isKindOfClass:[LinkedTestClass class]], @"Should get a TestClass back");
         STAssertTrue([newRef.objDescription hasPrefix:prefix], @"Should get our testclass back");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
@@ -504,8 +571,8 @@ TestClass* randomTestClass(NSString* description)
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
-        TestClass* newRef = [ret.setOfOthers anyObject];
-        STAssertTrue([newRef isKindOfClass:[TestClass class]], @"Should get a TestClass back");
+        LinkedTestClass* newRef = [ret.setOfOthers anyObject];
+        STAssertTrue([newRef isKindOfClass:[LinkedTestClass class]], @"Should get a TestClass back");
         STAssertTrue([newRef.objDescription hasPrefix:prefix], @"Should get our testclass back");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
@@ -519,9 +586,9 @@ TestClass* randomTestClass(NSString* description)
 
 - (void) testRefsWithQuery
 {
-    TestClass* ref1 = TestClass(1);
-    TestClass* ref2 = TestClass(2);
-    TestClass* ref3 = TestClass(3);
+    LinkedTestClass* ref1 = TestClass(1);
+    LinkedTestClass* ref2 = TestClass(2);
+    LinkedTestClass* ref3 = TestClass(3);
     
     ReffedTestClass* obj1 = [[ReffedTestClass alloc] init];
     obj1.objDescription = @"Test with a query - 1";
@@ -937,7 +1004,7 @@ TestClass* randomTestClass(NSString* description)
     obj2.objDescription = @"testNestedReferences : Middle Object";
     obj1.relatedObject = obj2;
     
-    TestClass* obj3 = [[TestClass alloc] init];
+    LinkedTestClass* obj3 = [[LinkedTestClass alloc] init];
     obj3.objCount = 3;
     obj3.objDescription = @"testNestedReferences : Bottom Object";
     obj2.other = obj3;
@@ -970,7 +1037,7 @@ TestClass* randomTestClass(NSString* description)
         NestingRefClass* ret = [objectsOrNil objectAtIndex:0];
         ReffedTestClass* newRef = ret.relatedObject;
         STAssertEquals(newRef.objCount, obj2.objCount, @"Should be the same object back");
-        TestClass* bottomRef = newRef.other;
+        LinkedTestClass* bottomRef = newRef.other;
         STAssertEquals(bottomRef.objCount, obj3.objCount, @"Should be the same object back");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {

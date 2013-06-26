@@ -21,6 +21,7 @@
 #define KCSNetworkErrorDomain @"KCSNetworkErrorDomain"
 #define KCSAppDataErrorDomain @"KCSAppDataErrorDomain"
 #define KCSResourceErrorDomain @"KCSResourceErrorDomain"
+#define KCSFileStoreErrorDomain KCSResourceErrorDomain
 #define KCSDatalinkErrorDomain @"KCSDatalinkErrorDomain"
 #define KCSUserErrorDomain @"KCSUserErrorDomain"
 #define KCSPushErrorDomain @"KCSPushErrorDomain"
@@ -74,6 +75,9 @@ typedef enum KCSErrorCodes : NSInteger {
     
     KCSReferenceNoIdSetError = 60101,
     KCSInvalidKCSPersistableError = 60102,
+    
+    KCSFileStoreServerError = 60200,
+    KCSFileStoreLocalFileError = 60201,
     
     // For testing only, no user should ever see this!
     KCSTestingError = 65535

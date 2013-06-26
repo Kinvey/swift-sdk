@@ -10,9 +10,8 @@
 #import "KCSObjectMapper.h"
 #import "KinveyCollection.h"
 #import "NSArray+KinveyAdditions.h"
-#import "KCSResourceStore.h"
-#import "KCSResource.h"
-#import "KCSBlobService.h"
+#import "KCSFile.h"
+#import "KCSFileStore.h"
 #import "KCSSaveGraph.h"
 #import "KCSHiddenMethods.h"
 
@@ -103,19 +102,15 @@
         __block NSError* resourceError = nil;
         __block int completedCount = 0;
         
-        for (KCSResource* resource in resources) {
-            NSData* aData = [resource data];
-            //TODO: check
+        for (KCSFile* resource in resources) {
             id objKey = [progress addResource:resource entity:[so.userInfo objectForKey:@"entityProgress"]];
-            
-            KCSResourceStore* resourceStore = [KCSResourceStore store];
-            [resourceStore saveData:aData toFile:[resource blobName] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                if (errorOrNil && !resourceError) {
-                    resourceError = errorOrNil;
+            [KCSFileStore uploadKCSFile:resource completionBlock:^(KCSFile* uploadInfo, NSError *error) {
+                if (error && !resourceError) {
+                    resourceError = error;
                 }
-                if (objectsOrNil != nil && objectsOrNil.count > 0) {
-                    //TODO: what do with return object?
-                    //KCSResourceResponse* r = [objectsOrNil objectAtIndex:0];
+                if (uploadInfo != nil) {
+                    //should update the reference from the server
+                    [resource updateAfterUpload:uploadInfo];
                 }
                 completedCount++;
                 if (completedCount == totalResources) {
@@ -126,7 +121,7 @@
                         [self saveEntityWithReferences:so progress:progress withCompletionBlock:completionBlock withProgressBlock:progressBlock];
                     }
                 }
-            } withProgressBlock:^(NSArray *objects, double percentComplete) {
+            } progressBlock:^(NSArray *objects, double percentComplete) {
                 //TODO: what to do with objects
                 [objKey setPc:percentComplete];
                 if (progressBlock != nil) {

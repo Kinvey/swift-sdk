@@ -23,7 +23,7 @@
     return string;
 }
 
-+ (NSArray*) wrapIfNotArray:(id)object
++ (instancetype) wrapIfNotArray:(id)object
 {
     // If we're given a class that is not an array, then we need to wrap the object
     // as an array so we do a single unified processing
@@ -38,12 +38,12 @@
     }
 }
 
-+ (NSArray*) arrayWithObjectOrNil:(id) object
++ (instancetype) arrayWithObjectOrNil:(id) object
 {
     return object == nil ? @[] : @[object];
 }
 
-+ (NSArray *) arrayIfDictionary:(id)object
++ (instancetype) arrayIfDictionary:(id)object
 {
     if ([object isKindOfClass:[NSArray class]]){
         return (NSArray *)object;
@@ -52,6 +52,15 @@
         } else {
             return @[object];
         }
+}
+
++ (instancetype) arrayWith:(NSUInteger)num copiesOf:(id<NSCopying>)val
+{
+    NSMutableArray* array = [NSMutableArray arrayWithCapacity:num];
+    for (int i=0; i<num; i++) {
+        array[i] = [val copyWithZone:NULL];
+    }
+    return array;
 }
 
 @end

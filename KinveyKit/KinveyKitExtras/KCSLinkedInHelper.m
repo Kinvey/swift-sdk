@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 12/6/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSLinkedInHelper.h"
@@ -41,7 +41,7 @@
         
         if ([response responseCode] < 300) {
             //OK
-            _completionBlock = completionBlock;
+            _completionBlock = [completionBlock copy];
             [self getCredentialsFromWeb:results];
         } else {
             // error loading page

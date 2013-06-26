@@ -9,11 +9,17 @@
 #import <Foundation/Foundation.h>
 #import <SenTestingKit/SenTestingKit.h>
 #import <KinveyKit/KinveyKit.h>
+#import <XCTest/XCTest.h>
 
 #define STAssertNoError STAssertNil(errorOrNil,@"Should not get error: %@", errorOrNil);
+#define STAssertNoError_ STAssertNil(error, @"Should not get error: %@", error);
 #define STAssertError(error, cd) STAssertNotNil(error, @"should have an error"); STAssertEquals((int)cd, (int)[error code], @"error codes should match.");
 #define STAssertObjects(cnt) STAssertNotNil(objectsOrNil,@"should get non-nil return objects"); \
                                STAssertEquals((int)[objectsOrNil count], (int)cnt, @"Expecting %i items", cnt);
+
+#define KTAssertEqualsInt(x,y, desc) STAssertEquals((int)x,(int)y, desc)
+#define KTAssertCount(c, obj) STAssertNotNil(obj, @"obj should be non-nil"); STAssertEquals((int)[obj count], (int)c, @"count did not match expectation")
+#define KTAssertCountAtLeast(c, obj) STAssertTrue( [obj count] >= c, @"count (%i) should be at least (%i)", [obj count], c);
 
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 
@@ -22,6 +28,12 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 @end
 
 @interface SenTestCase (TestUtils)
+@property (nonatomic) BOOL done;
+- (void) poll;
+- (KCSCompletionBlock) pollBlock;
+@end
+
+@interface XCTestCase (TestUtils)
 @property (nonatomic) BOOL done;
 - (void) poll;
 - (KCSCompletionBlock) pollBlock;

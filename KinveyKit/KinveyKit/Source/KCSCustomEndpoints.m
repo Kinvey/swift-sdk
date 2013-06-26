@@ -25,6 +25,8 @@
     request.contextRoot = kKCSContextRPC;
     request.pathComponents = @[@"custom",endpoint];
     
+    ifNil(params, @{});
+    
     request.body = params;
     request.authorization = [KCSUser activeUser];
     

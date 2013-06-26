@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/10/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -20,3 +20,8 @@
 + (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain requestId:(NSString*)requestId;
 
 @end
+
+@interface NSError (KCSErrorUtilities)
+- (instancetype) updateDomain:(NSString*)domain;
+@end
+

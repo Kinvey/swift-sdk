@@ -55,6 +55,8 @@
 
 + (void) publishToOpenGraph:(NSString*)entityId action:(NSString*)action objectType:(NSString*)objectType optionalParams:(NSDictionary*)extraParams completion:(FacebookOGCompletionBlock)completionBlock
 {
+    NSParameterAssert(entityId != nil);
+    
     if (entityId != nil && [entityId isKindOfClass:[NSString class]] == NO) {
         entityId = [entityId kinveyObjectId];
     }

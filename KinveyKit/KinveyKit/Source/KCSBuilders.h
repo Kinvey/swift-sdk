@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/23/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -37,6 +37,8 @@
 @interface KCSCLLocationBuilder : NSObject <KCSDataTypeBuilder>
 @end
 
-@interface KCSBuilders : NSObject
+@interface KCSURLBuilder : NSObject <KCSDataTypeBuilder>
+@end
 
+@interface KCSBuilders : NSObject
 @end

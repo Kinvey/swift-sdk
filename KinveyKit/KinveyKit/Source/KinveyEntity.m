@@ -6,6 +6,7 @@
 //  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
+
 #import "KinveyEntity.h"
 
 #import "KCSClient.h"
@@ -22,9 +23,6 @@
 #import "KCSObjectMapper.h"
 #import "KCSLogManager.h"
 #import "NSArray+KinveyAdditions.h"
-
-// For assoc storage
-#import <Foundation/Foundation.h>
 
 
 // Avoid compiler warning by prototyping here...

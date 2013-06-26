@@ -60,4 +60,15 @@
     return [self rangeOfString:substring options:NSCaseInsensitiveSearch].location != NSNotFound;
 }
 
++ (instancetype) UUID
+{
+    CFUUIDRef uuid = CFUUIDCreate(NULL);
+    NSString* str = nil;
+    if (uuid){
+        str = [self stringWithString:CFBridgingRelease(CFUUIDCreateString(NULL, uuid))];
+        CFRelease(uuid);
+    }
+    return str;
+}
+
 @end

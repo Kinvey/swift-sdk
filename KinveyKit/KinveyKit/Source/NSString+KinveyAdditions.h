@@ -2,7 +2,7 @@
 //  NSString+KinveyAdditions.h
 //  SampleApp
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -61,5 +61,9 @@
  @param substring the string to look for inside this one.
  */
 - (BOOL) containsStringCaseInsensitive:(NSString*)substring;
+
+/** Creates a a UUID string (using CFUUIDCreate)
+ */
++ (instancetype) UUID;
 
 @end

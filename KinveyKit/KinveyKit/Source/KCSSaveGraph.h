@@ -12,7 +12,7 @@
 #import <Foundation/Foundation.h>
 
 @class KCSSerializedObject;
-@class KCSResource;
+@class KCSFile;
 @protocol KCSPersistable;
 
 typedef void(^KCSCompletionWrapperBlock_t)();
@@ -55,6 +55,6 @@ typedef void(^KCSCompletionWrapperBlock_t)();
 
 - (id) markEntity:(KCSSerializedObject*)serializedObj;
 - (id) addReference:(id<KCSPersistable>)reference entity:(KCSCompletionWrapper*)wp;
-- (id) addResource:(KCSResource*)resource entity:(KCSCompletionWrapper*)wp;
+- (id) addResource:(KCSFile*)resource entity:(KCSCompletionWrapper*)wp;
 - (void) tell:(id)reference toWaitForResave:(id)referer;
 @end

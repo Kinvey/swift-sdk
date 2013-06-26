@@ -8,9 +8,10 @@
 
 @interface NSArray (KinveyAdditions)
 
-+ (NSArray*) wrapIfNotArray:(id)object;
-+ (NSArray*) arrayWithObjectOrNil:(id) object;
-+ (NSArray*) arrayIfDictionary:(id)object;
++ (instancetype) wrapIfNotArray:(id)object;
++ (instancetype) arrayWithObjectOrNil:(id) object;
++ (instancetype) arrayIfDictionary:(id)object;
++ (instancetype) arrayWith:(NSUInteger)num copiesOf:(id<NSCopying>)val;
 
 - (NSString*) join:(NSString*)delimiter;
 
