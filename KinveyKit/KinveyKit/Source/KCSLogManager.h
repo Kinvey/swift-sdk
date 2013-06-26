@@ -30,6 +30,23 @@ withFormat:(format),##__VA_ARGS__]
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kWarningChannel] file:__FILE__ lineNumber:__LINE__ \
 withFormat:(format),##__VA_ARGS__]
 
+//-------------------------------- Error Handling
+
+#ifdef BUILD_FOR_UNIT_TEST
+#define KCSLogError(format,...) \
+ if ([KCSLogManager sharedLogManager].suppressErrorToExceptionOnTest == YES) { \
+   [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ withFormat:(format), ##__VA_ARGS__]; \
+ } else { \
+     NSAssert(NO, format, ##__VA_ARGS__); \
+ }
+
+#define KCSLogNSError(msg, err) \
+if (err) { \
+    NSAssert(NO, @"%@; error: (%@) ", msg, err); \
+}
+
+#else
+
 #define KCSLogError(format,...) \
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ withFormat:(format), ##__VA_ARGS__]
 
@@ -37,6 +54,8 @@ withFormat:(format),##__VA_ARGS__]
 if (err) { \
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ withFormat:(@"%@; error: (%@) "), msg, err]; \
 }
+#endif
+//--------------------------------
 
 #define KCSLogCache(format,...) \
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kCacheChannel] file:__FILE__ lineNumber:__LINE__ \
@@ -74,5 +93,7 @@ withFormat:(format),##__VA_ARGS__]
                               errorEnabled: (BOOL)errorIsEnabled;
 
 
+
+@property (nonatomic) BOOL suppressErrorToExceptionOnTest;
 
 @end

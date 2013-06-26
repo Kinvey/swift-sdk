@@ -12,7 +12,7 @@
 #import <Foundation/Foundation.h>
 #import "KinveyHeaderInfo.h"
 
-#define MINIMUM_KCS_VERSION_SUPPORTED @"2.0"
+#define MINIMUM_KCS_VERSION_SUPPORTED @"3.0"
 
 @class KCSAnalytics;
 @class UIApplication;

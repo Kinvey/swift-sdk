@@ -2,7 +2,7 @@
 //  KinveyPersistable.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2011, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -113,6 +113,7 @@ implementing these methods.
  @return a dictionary mapping Kinvey entity fields to collections.
  @since 1.8
  */
+#warning update for LinkedFile
 + (NSDictionary*) kinveyPropertyToCollectionMapping;
 
 /** Provide a list of backend reference objects to save when this object is saved through a `KCSLinkedAppdataStore`. 

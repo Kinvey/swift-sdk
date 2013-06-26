@@ -28,7 +28,7 @@
 
 // KINVEY KCS API VERSION
 #define KINVEY_KCS_API_VERSION_HEADER @"X-Kinvey-API-Version"
-#define KINVEY_KCS_API_VERSION @"2"
+#define KINVEY_KCS_API_VERSION @"3"
 
 
 void clogResource(NSString *resource, NSInteger requestMethod);

@@ -197,7 +197,9 @@
         helper.cancelRedirect = linkedInCancelRedirect;
         helper.webview = webview;
         
-        [helper requestToken:permissions completionBlock:completionBlock];
+        [helper requestToken:permissions completionBlock:^(NSDictionary *accessDictOrNil, NSError *errorOrNil) {
+            completionBlock(accessDictOrNil, errorOrNil);
+        }];
     }
 }
                                

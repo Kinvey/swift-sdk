@@ -14,6 +14,10 @@
 #import "KCSClient.h"
 #import "KCSReduceFunction.h"
 #import "KCSGroup.h"
+#import "KinveyUser.h"
+#import "KCSMetadata.h"
+#import "KCSFileStore.h"
+#import "KCSFile.h"
 
 NSDictionary* defaultBuilders();
 
@@ -37,13 +41,6 @@ NSDictionary* defaultBuilders();
 @property (nonatomic, copy, readonly) NSString *rpcBaseURL;
 @end
 
-@interface KCSAppdataStore (KCSHiddenMethods)
-- (BOOL) isKinveyReachable;
-- (NSUInteger) numberOfPendingSaves;
-#if BUILD_FOR_UNIT_TEST
-- (void) setReachable:(BOOL)reachOverwrite;
-#endif
-@end
 
 @interface KCSReduceFunction (KCSHiddenMethods)
 @property (nonatomic, readonly) BOOL buildsObjects;
@@ -53,4 +50,24 @@ NSDictionary* defaultBuilders();
 @interface KCSGroup (KCSHiddenMethods)
 - (NSDictionary*) dictionaryValue;
 @end
+
+
+@interface KCSUser (KCSHiddenMethods)
++ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew;
+@end
+
+@interface KCSMetadata (KCSHiddenMethods)
+- (NSDictionary*) aclValue;
+@end
+
+@interface KCSFileStore (KCSHiddenMethods)
++ (void) uploadKCSFile:(KCSFile*)file completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
++ (void)downloadKCSFile:(KCSFile*) file completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock) progressBlock;
+
+@end
+
+@interface KCSFile (KCSHiddenMethods)
+- (void) updateAfterUpload:(KCSFile*)newFile;
+@end
+
 #endif

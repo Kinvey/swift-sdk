@@ -132,7 +132,7 @@ BOOL isNetworkError(NSError* error)
     //TODO #
     KCSCacheRequest* request = [[KCSCacheRequest alloc] init];
     
-    KCSEntityCache2* cache = [KCSDataStoreCaches cacheForCollection:_collectionName];
+    //TODO - implement this - KCSEntityCache2* cache = [KCSDataStoreCaches cacheForCollection:_collectionName];
     
     
     return request;

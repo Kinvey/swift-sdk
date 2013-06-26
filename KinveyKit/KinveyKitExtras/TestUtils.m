@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 6/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "TestUtils.h"
@@ -11,7 +11,8 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import <objc/runtime.h>
 
-
+#import "KCSHiddenMethods.h"
+#import "NSString+KinveyAdditions.h"
 
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 {
@@ -67,7 +68,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 + (void) initStaging:(NSDictionary*)opts
 {
     (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid10005" withAppSecret:@"8cce9613ecb7431ab580d20863a91e20" usingOptions:opts];
-    [[KCSClient sharedClient] setServiceHostname:@"v3yk1n"];
+    [[KCSClient sharedClient] setServiceHostname:STAGING_API];
     
 }
 
@@ -91,11 +92,18 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     [self justInitServer];
     __block BOOL loaded = NO;
+
+    SenTestCase* pollObj = [[SenTestCase alloc] init];
     
     [[[KCSClient sharedClient] currentUser] logout];
-    [KCSUser registerUserWithUsername:nil withPassword:nil withDelegate:nil forceNew:YES];
+    pollObj.done = NO;
+    [KCSUser registerUserWithUsername:nil withPassword:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil,
+                                                                                 KCSUserActionResult result) {
+        NSAssert(errorOrNil == nil);
+        pollObj.done = YES;
+    } forceNew:YES];
+    [pollObj poll];
     
-    SenTestCase* pollObj = [[SenTestCase alloc] init];
     pollObj.done = NO;
     [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
         loaded = result.pingWasSuccessful;
@@ -106,19 +114,15 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     }];
     [pollObj poll];
     
+    
+    loaded = loaded && [KCSUser activeUser] != nil;
+    
     return loaded;
 }
 
 + (NSString*) uuid
 {
-    CFUUIDRef uuid = CFUUIDCreate(NULL);
-    NSString *uuidString = nil;
-    
-    if (uuid){
-        uuidString = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
-        CFRelease(uuid);
-    }
-    return uuidString;
+    return [NSString UUID];
 }
 
 + (NSURL*) randomFileUrl:(NSString*)extension

@@ -7,13 +7,6 @@
 //
 
 #import "KCSResourceStore.h"
-#import "KCSBlobService.h"
-#import "KCSBlockDefs.h"
-#import "KCSResource.h"
-
-#import "NSArray+KinveyAdditions.h"
-#import "KCSErrorUtilities.h"
-#import "KinveyErrorCodes.h"
 
 @interface KCSResourceStore ()
 
@@ -21,8 +14,7 @@
 
 @implementation KCSResourceStore
 
-#pragma mark -
-#pragma mark Initialization
+#pragma mark - Initialization
 
 - (instancetype)init
 {
@@ -56,201 +48,30 @@
     return store;
 }
 
-#pragma mark - Adding/Updating
 - (void)saveObject: (id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
-    
-    NSUInteger totalObjects = objectsToProcess.count;
-    if (totalObjects == 0) {
-        completionBlock(nil, nil);
-    }
-    
-    __block int completedCount = 0;
-    NSMutableArray* completedObjects = [NSMutableArray arrayWithCapacity:totalObjects];
-    __block NSError* topError = nil;
-    
-    for (id entity in objectsToProcess) {
-        if ([entity isKindOfClass:[KCSResource class]]) {
-            [KCSResourceService saveData:[(KCSResource*)entity data] toResource:[(KCSResource*)entity blobName] completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                if (errorOrNil != nil) {
-                    topError = errorOrNil;
-                }
-                if (objectsOrNil != nil) {
-                    [completedObjects addObjectsFromArray:objectsOrNil];
-                }
-                completedCount++;
-                if (completedCount == totalObjects) {
-                    completionBlock(completedObjects, topError);
-                }
-            } progressBlock:^(NSArray *objects, double percentComplete) {
-                if (progressBlock != nil) {
-                    progressBlock(objects, completedCount / (double) totalObjects + percentComplete /(double) totalObjects);
-                }
-            }];
-        } else if ([entity isKindOfClass:[NSURL class]]) {
-            // This is where the work will be required...
-            [KCSResourceService saveLocalResourceWithURL:entity completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                if (errorOrNil != nil) {
-                    topError = errorOrNil;
-                }
-                if (objectsOrNil != nil) {
-                    [completedObjects addObjectsFromArray:objectsOrNil];
-                }
-                completedCount++;
-                if (completedCount == totalObjects) {
-                    completionBlock(completedObjects, topError);
-                }
-            } progressBlock:^(NSArray *objects, double percentComplete) {
-                if (progressBlock != nil) {
-                    progressBlock(objects, completedCount / (double) totalObjects + percentComplete /(double) totalObjects);
-                }
-            }];
-        } else {
-            //not a NSURL (only accepted type in 1.4), generate error and continue
-            completedCount++;
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource save was unsuccessful."
-                                                                               withFailureReason:@"Object was not a NSURL-type"
-                                                                          withRecoverySuggestion:@"saveObject: requires a NSURL to a local resource"
-                                                                             withRecoveryOptions:nil];
-            topError = [NSError errorWithDomain:KCSResourceErrorDomain
-                                           code:KCSPrecondFailedError
-                                       userInfo:userInfo];
-            
-            if (completedCount == totalObjects) {
-                completionBlock(completedObjects, topError);
-            }
-        }
-    }
-    
-}
+   [[NSException exceptionWithName:@"KCSFunctionalityRemoved" reason:@"+[KCSFileStore uploadFile:options:completionBlock:progressBlock:] instead." userInfo:nil] raise];}
 
 - (void)saveData:(NSData*)data toFile:(NSString*)file withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    [KCSResourceService saveData:data toResource:file completionBlock:completionBlock progressBlock:progressBlock];
+    [[NSException exceptionWithName:@"KCSFunctionalityRemoved" reason:@"+[KCSFileStore uploadData:options:completionBlock:progressBlock:] instead." userInfo:nil] raise];
 }
 
-#pragma mark -
-#pragma mark Querying/Fetching
 - (void)loadObjectWithID:(id)objectID withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    [KCSResourceService downloadResource:objectID completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        NSMutableArray* newObjects = nil;
-        if (objectsOrNil != nil && [objectsOrNil count] > 0) {
-            newObjects = [NSMutableArray arrayWithCapacity:[objectsOrNil count]];
-            for (KCSResourceResponse* response in objectsOrNil) {
-                id responseObj = response.resource;
-                [newObjects addObject:responseObj];
-            }
-        }
-        completionBlock(newObjects, errorOrNil);
-    } progressBlock:progressBlock];
+    [[NSException exceptionWithName:@"KCSFunctionalityRemoved" reason:@"Use +[KCSFileStore downloadFile:completionBlock:progressBlock:] or +[KCSFileStore downloadData:completionBlock:progressBlock:] instead." userInfo:nil] raise];
 }
 
 - (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    NSArray *objectsToProcess = [NSArray wrapIfNotArray:query];
-    NSUInteger totalObjects = objectsToProcess.count;
-    if (totalObjects == 0) {
-        completionBlock(nil, nil);
-    }
-    
-    __block int completedCount = 0;
-    NSMutableArray* completedObjects = [NSMutableArray arrayWithCapacity:totalObjects];
-    __block NSError* topError = nil;
-    
-    for (id entity in objectsToProcess) {
-        if ([entity isKindOfClass:[NSString class]]) {
-            
-            // This is where the work will be required...
-            [KCSResourceService downloadResource:entity completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                if (errorOrNil != nil) {
-                    topError = errorOrNil;
-                }
-                if (objectsOrNil != nil) {
-                    for (KCSResourceResponse* response in objectsOrNil) {
-                        [completedObjects addObject:[response resource]];
-                    }
-                }
-                completedCount++;
-                if (completedCount == totalObjects) {
-                    completionBlock(completedObjects, topError);
-                }
-            } progressBlock:^(NSArray *objects, double percentComplete) {
-                if (progressBlock != nil) {
-                    progressBlock(objects, completedCount / (double) totalObjects + percentComplete /(double) totalObjects);
-                }
-            }];
-        } else {
-            //not a NSString (only accepted type in 1.4), generate error and continue
-            completedCount++;
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource load was unsuccessful."
-                                                                               withFailureReason:@"Object was not a NSString filename"
-                                                                          withRecoverySuggestion:@"queryWithQuery: requires a NSString representing a resource"
-                                                                             withRecoveryOptions:nil];
-            topError = [NSError errorWithDomain:KCSResourceErrorDomain
-                                           code:KCSPrecondFailedError
-                                       userInfo:userInfo];
-            
-            if (completedCount == totalObjects) {
-                completionBlock(completedObjects, topError);
-            } 
-        }
-    }
+    [[NSException exceptionWithName:@"KCSFunctionalityRemoved" reason:@"Use +[KCSFileStore downloadFileByQuery:completionBlock:progressBlock:] or +[KCSFileStore downloadDataByQuery:completionBlock:progressBlock:] instead." userInfo:nil] raise];
 }
 
-#pragma mark - Removing
 - (void)removeObject:(id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
-    NSUInteger totalObjects = objectsToProcess.count;
-    if (totalObjects == 0) {
-        completionBlock(nil, nil);
-    }
-    
-    __block int completedCount = 0;
-    NSMutableArray* completedObjects = [NSMutableArray arrayWithCapacity:totalObjects];
-    __block NSError* topError = nil;
-    
-    for (id entity in objectsToProcess) {
-        if ([entity isKindOfClass:[NSString class]]) {
-            
-            // This is where the work will be required...
-            [KCSResourceService deleteResource:entity completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                if (errorOrNil != nil) {
-                    topError = errorOrNil;
-                }
-                if (objectsOrNil != nil) {
-                    [completedObjects addObjectsFromArray:objectsOrNil];
-                }
-                completedCount++;
-                if (completedCount == totalObjects) {
-                    completionBlock(completedObjects, topError);
-                }
-            } progressBlock:^(NSArray *objects, double percentComplete) {
-                if (progressBlock != nil) {
-                    progressBlock(objects, completedCount / (double) totalObjects + percentComplete /(double) totalObjects);
-                }
-            }];
-        } else {
-            //not a NSString (only accepted type in 1.4), generate error and continue
-            completedCount++;
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Resource delete was unsuccessful."
-                                                                               withFailureReason:@"Object was not a NSString filename"
-                                                                          withRecoverySuggestion:@"remove: requires a NSString representing a resource"
-                                                                             withRecoveryOptions:nil];
-            topError = [NSError errorWithDomain:KCSResourceErrorDomain
-                                           code:KCSPrecondFailedError
-                                       userInfo:userInfo];
-            
-            if (completedCount == totalObjects) {
-                completionBlock(completedObjects, topError);
-            } 
-        }
-    }
+    [[NSException exceptionWithName:@"KCSFunctionalityRemoved" reason:@"Use +[KCSFileStore deleteFile:completionBlock:] instead." userInfo:nil] raise];
 }
 
-#pragma mark - Configuring
 - (BOOL) configureWithOptions: (NSDictionary *)options
 {
     if (options) {

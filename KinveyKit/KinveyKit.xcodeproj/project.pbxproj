@@ -50,8 +50,8 @@
 		2718279716B8A55B00825D50 /* KCSAuthCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FF5FDA14C6178600680BD2 /* KCSAuthCredential.m */; };
 		2718279816B8A57C00825D50 /* KCSBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = D3FF5FE114C6373C00680BD2 /* KCSBase64.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2718279916B8A58300825D50 /* KCSBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FF5FE214C6373C00680BD2 /* KCSBase64.m */; };
-		2718279A16B8A5A300825D50 /* KCSResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSResource.h */; };
-		2718279B16B8A5AD00825D50 /* KCSResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330201575227000B2BF37 /* KCSResource.m */; };
+		2718279A16B8A5A300825D50 /* KCSFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSFile.h */; };
+		2718279B16B8A5AD00825D50 /* KCSFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330201575227000B2BF37 /* KCSFile.m */; };
 		2718279E16B8A78700825D50 /* KCSImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 2718279C16B8A78700825D50 /* KCSImageUtils.h */; };
 		2718279F16B8A78700825D50 /* KCSImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2718279D16B8A78700825D50 /* KCSImageUtils.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		271827A016B8AA1600825D50 /* KCSBuilders.h in Headers */ = {isa = PBXBuildFile; fileRef = 2726F98915E6CE370087099D /* KCSBuilders.h */; };
@@ -90,6 +90,7 @@
 		271827FD16C17B8100825D50 /* KCSSaveQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E615D191A00072A444 /* KCSSaveQueue.m */; };
 		271827FE16C17B8300825D50 /* KCSSaveGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 272FBE5115F90FB500EC7031 /* KCSSaveGraph.h */; };
 		271827FF16C17B8700825D50 /* KCSSaveGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 272FBE5215F90FB500EC7031 /* KCSSaveGraph.m */; };
+		271DE7BA17728815003541D4 /* mavericks.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 271DE7B917728815003541D4 /* mavericks.jpg */; };
 		271E8242157D70B3000AF9EF /* KCSPropertyUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */; };
 		271E8243157D70B3000AF9EF /* KCSPropertyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27223E1C157E7A3200656BCC /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
@@ -108,7 +109,6 @@
 		27302CC4155D4B4100A0183E /* NSArray+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27302CCB155D614B00A0183E /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC9155D614B00A0183E /* KCSStore.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27347F7215B4665800133F64 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7115B4665800133F64 /* CoreLocation.framework */; };
-		2735B2461578E84A0063EE62 /* KCSResourceStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */; };
 		2736B19216271D50006CF960 /* KinveyKitNSDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2736B19116271D50006CF960 /* KinveyKitNSDictionaryTests.m */; };
 		273A3E93160A1A9F00F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
 		273A3E95160A1AA900F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
@@ -134,8 +134,8 @@
 		273DB2E815D191A00072A444 /* KCSSaveQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 273DB2E615D191A00072A444 /* KCSSaveQueue.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27433012156ED63B00B2BF37 /* KCSLinkedAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27433013156ED63C00B2BF37 /* KCSLinkedAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27433011156ED63B00B2BF37 /* KCSLinkedAppdataStore.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		274330211575227000B2BF37 /* KCSResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSResource.h */; };
-		274330221575227000B2BF37 /* KCSResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330201575227000B2BF37 /* KCSResource.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		274330211575227000B2BF37 /* KCSFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 2743301F1575227000B2BF37 /* KCSFile.h */; };
+		274330221575227000B2BF37 /* KCSFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330201575227000B2BF37 /* KCSFile.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		274330251575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */; };
 		2746534B174E6CFE0013546E /* KinveyKit2.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465348174E6CFE0013546E /* KinveyKit2.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2746534C174E6CFE0013546E /* KCSDataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465349174E6CFE0013546E /* KCSDataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -154,6 +154,12 @@
 		2746536A174E92FC0013546E /* KCSAsyncConnection2.m in Sources */ = {isa = PBXBuildFile; fileRef = 27465368174E92FC0013546E /* KCSAsyncConnection2.m */; };
 		2746536F174EBE480013546E /* KCSDataStoreCaches.h in Headers */ = {isa = PBXBuildFile; fileRef = 2746536D174EBE470013546E /* KCSDataStoreCaches.h */; };
 		27465370174EBE480013546E /* KCSDataStoreCaches.m in Sources */ = {isa = PBXBuildFile; fileRef = 2746536E174EBE470013546E /* KCSDataStoreCaches.m */; };
+		27525A3917668E630054C17F /* KCSEntityCache2.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C21742CCD9005052D6 /* KCSEntityCache2.m */; };
+		27525A3A17668E910054C17F /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C71742CFDC005052D6 /* FMDatabase.m */; };
+		27525A3B17668E950054C17F /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C91742CFDC005052D6 /* FMDatabaseAdditions.m */; };
+		27525A3C17668E9A0054C17F /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554CB1742CFDC005052D6 /* FMResultSet.m */; };
+		27525A3D17668E9E0054C17F /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D31742D42E005052D6 /* FMDatabasePool.m */; };
+		27525A3E17668EA40054C17F /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D51742D42E005052D6 /* FMDatabaseQueue.m */; };
 		275512001707CCD7007E8320 /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275512011707CCDB007E8320 /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -175,6 +181,7 @@
 		275B42A016A97DB00064B941 /* KinveyHeaderInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275B42A116A97DB00064B941 /* KinveyHeaderInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2762302A1742932D0095BAE4 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 276230291742932D0095BAE4 /* LICENSE */; };
+		2764AFA4176821D400009582 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
 		2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2764B53C15DD9242003964D1 /* libobjc.dylib */; };
 		2766E62F16834B78000D27C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2766E62E16834B78000D27C5 /* Cocoa.framework */; };
 		2766E63516834B78000D27C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2766E63316834B78000D27C5 /* InfoPlist.strings */; };
@@ -302,6 +309,12 @@
 		27C5CA3216ADDB5700E44CC0 /* NSString+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610514716F2D00F77A3F /* NSString+KinveyAdditions.m */; };
 		27C5CA3316ADDB6100E44CC0 /* NSArray+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */; };
 		27C5CA3416ADDBEF00E44CC0 /* NSURL+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610714716F2D00F77A3F /* NSURL+KinveyAdditions.m */; };
+		27CD8EE7176FA8AB009463E3 /* KCSFileStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27CD8EE5176FA8AB009463E3 /* KCSFileStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27CD8EE8176FA8AB009463E3 /* KCSFileStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27CD8EE5176FA8AB009463E3 /* KCSFileStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27CD8EE9176FA8AB009463E3 /* KCSFileStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CD8EE6176FA8AB009463E3 /* KCSFileStore.m */; };
+		27CD8EEA176FA8AB009463E3 /* KCSFileStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CD8EE6176FA8AB009463E3 /* KCSFileStore.m */; };
+		27CD8EEF1770A33E009463E3 /* KCSFileStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CD8EEE1770A33E009463E3 /* KCSFileStoreTests.m */; };
+		27CD8EF01770A33E009463E3 /* KCSFileStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CD8EEE1770A33E009463E3 /* KCSFileStoreTests.m */; };
 		27D1558E16713C3C00171230 /* KCSLinkedInHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 27D1558C16713C3C00171230 /* KCSLinkedInHelper.h */; };
 		27D1558F16713C3C00171230 /* KCSLinkedInHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D1558D16713C3C00171230 /* KCSLinkedInHelper.m */; };
 		27D1559116713C7300171230 /* KCSLinkedInHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D1558D16713C3C00171230 /* KCSLinkedInHelper.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -316,6 +329,7 @@
 		27E4CDFC156A801A00B5DF55 /* KCSReduceFunction.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFA156A801A00B5DF55 /* KCSReduceFunction.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27E4CE00156A803300B5DF55 /* KCSGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4CDFE156A803300B5DF55 /* KCSGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E4CE01156A803300B5DF55 /* KCSGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFF156A803300B5DF55 /* KCSGroup.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		27EAB7371770A610008E6B32 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27EAB7361770A610008E6B32 /* XCTest.framework */; };
 		27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F360981598BF5C006B699E /* KCSMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609C1598C1CB006B699E /* KCSMetadata.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27F360A01598C250006B699E /* KCSMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609F1598C250006B699E /* KCSMetadataTests.m */; };
@@ -392,7 +406,6 @@
 		D3715AC514B695520030F5E9 /* KinveyKitEntityDictTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AC414B695520030F5E9 /* KinveyKitEntityDictTests.m */; };
 		D3715AC814B695680030F5E9 /* KinveyKitEntityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AC714B695680030F5E9 /* KinveyKitEntityTests.m */; };
 		D3715ACB14B695820030F5E9 /* KinveyKitPingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ACA14B695820030F5E9 /* KinveyKitPingTests.m */; };
-		D3715ACE14B695B00030F5E9 /* KinveyKitBlobServiceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ACD14B695B00030F5E9 /* KinveyKitBlobServiceTests.m */; };
 		D3715AD414B696D80030F5E9 /* KinveyKitConnectionPoolTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AD314B696D80030F5E9 /* KinveyKitConnectionPoolTests.m */; };
 		D3715AD714B696F30030F5E9 /* KinveyKitConnectionResponseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715AD614B696F30030F5E9 /* KinveyKitConnectionResponseTests.m */; };
 		D3715ADD14B697EA0030F5E9 /* KinveyKitNSStringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3715ADC14B697EA0030F5E9 /* KinveyKitNSStringTests.m */; };
@@ -513,6 +526,7 @@
 		271827AE16B9A27800825D50 /* KCSAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAnalytics.h; sourceTree = "<group>"; };
 		271827AF16B9A27800825D50 /* KCSAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSAnalytics.m; sourceTree = "<group>"; };
 		271827C616C0357500825D50 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		271DE7B917728815003541D4 /* mavericks.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = mavericks.jpg; sourceTree = "<group>"; };
 		271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPropertyUtil.h; sourceTree = "<group>"; };
 		271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPropertyUtil.m; sourceTree = "<group>"; };
 		27223E1A157E7A3200656BCC /* TestUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtils.h; sourceTree = "<group>"; };
@@ -533,8 +547,6 @@
 		27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+KinveyAdditions.m"; sourceTree = "<group>"; };
 		27302CC9155D614B00A0183E /* KCSStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSStore.m; sourceTree = "<group>"; };
 		27347F7115B4665800133F64 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		2735B2441578E84A0063EE62 /* KCSResourceStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSResourceStoreTests.h; sourceTree = "<group>"; };
-		2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSResourceStoreTests.m; sourceTree = "<group>"; };
 		2736B19016271D50006CF960 /* KinveyKitNSDictionaryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitNSDictionaryTests.h; sourceTree = "<group>"; };
 		2736B19116271D50006CF960 /* KinveyKitNSDictionaryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitNSDictionaryTests.m; sourceTree = "<group>"; };
 		273A3E92160A1A9F00F3742C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
@@ -554,8 +566,8 @@
 		273DB2E615D191A00072A444 /* KCSSaveQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSaveQueue.m; sourceTree = "<group>"; };
 		27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLinkedAppdataStore.h; sourceTree = "<group>"; };
 		27433011156ED63B00B2BF37 /* KCSLinkedAppdataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLinkedAppdataStore.m; sourceTree = "<group>"; };
-		2743301F1575227000B2BF37 /* KCSResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSResource.h; sourceTree = "<group>"; };
-		274330201575227000B2BF37 /* KCSResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSResource.m; sourceTree = "<group>"; };
+		2743301F1575227000B2BF37 /* KCSFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFile.h; sourceTree = "<group>"; };
+		274330201575227000B2BF37 /* KCSFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFile.m; sourceTree = "<group>"; };
 		274330231575262A00B2BF37 /* KCSLinkedAppdataStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLinkedAppdataStoreTests.h; sourceTree = "<group>"; };
 		274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLinkedAppdataStoreTests.m; sourceTree = "<group>"; };
 		27465348174E6CFE0013546E /* KinveyKit2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKit2.h; sourceTree = "<group>"; };
@@ -681,6 +693,9 @@
 		27C22276161DE9B200D827AE /* KCS_SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_SBJsonWriter.m; sourceTree = "<group>"; };
 		27C22277161DE9B200D827AE /* NSObject+KCS_SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+KCS_SBJson.h"; sourceTree = "<group>"; };
 		27C22278161DE9B200D827AE /* NSObject+KCS_SBJson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+KCS_SBJson.m"; sourceTree = "<group>"; };
+		27CD8EE5176FA8AB009463E3 /* KCSFileStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFileStore.h; sourceTree = "<group>"; };
+		27CD8EE6176FA8AB009463E3 /* KCSFileStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFileStore.m; sourceTree = "<group>"; };
+		27CD8EEE1770A33E009463E3 /* KCSFileStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFileStoreTests.m; sourceTree = "<group>"; };
 		27D1558C16713C3C00171230 /* KCSLinkedInHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLinkedInHelper.h; sourceTree = "<group>"; };
 		27D1558D16713C3C00171230 /* KCSLinkedInHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLinkedInHelper.m; sourceTree = "<group>"; };
 		27E0B35D15E51F3600B83E72 /* KCSGenericRESTRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSGenericRESTRequest.h; sourceTree = "<group>"; };
@@ -693,6 +708,7 @@
 		27E4CDFA156A801A00B5DF55 /* KCSReduceFunction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReduceFunction.m; sourceTree = "<group>"; };
 		27E4CDFE156A803300B5DF55 /* KCSGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSGroup.h; sourceTree = "<group>"; };
 		27E4CDFF156A803300B5DF55 /* KCSGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSGroup.m; sourceTree = "<group>"; };
+		27EAB7361770A610008E6B32 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		27F360981598BF5C006B699E /* KCSMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMetadata.h; sourceTree = "<group>"; };
 		27F3609C1598C1CB006B699E /* KCSMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMetadata.m; sourceTree = "<group>"; };
 		27F3609E1598C250006B699E /* KCSMetadataTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMetadataTests.h; sourceTree = "<group>"; };
@@ -953,8 +969,6 @@
 		D3715AC714B695680030F5E9 /* KinveyKitEntityTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitEntityTests.m; sourceTree = "<group>"; };
 		D3715AC914B695820030F5E9 /* KinveyKitPingTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitPingTests.h; sourceTree = "<group>"; };
 		D3715ACA14B695820030F5E9 /* KinveyKitPingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitPingTests.m; sourceTree = "<group>"; };
-		D3715ACC14B695B00030F5E9 /* KinveyKitBlobServiceTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitBlobServiceTests.h; sourceTree = "<group>"; };
-		D3715ACD14B695B00030F5E9 /* KinveyKitBlobServiceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitBlobServiceTests.m; sourceTree = "<group>"; };
 		D3715AD214B696D80030F5E9 /* KinveyKitConnectionPoolTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitConnectionPoolTests.h; sourceTree = "<group>"; };
 		D3715AD314B696D80030F5E9 /* KinveyKitConnectionPoolTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyKitConnectionPoolTests.m; sourceTree = "<group>"; };
 		D3715AD514B696F30030F5E9 /* KinveyKitConnectionResponseTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKitConnectionResponseTests.h; sourceTree = "<group>"; };
@@ -1030,6 +1044,7 @@
 				27FB2A7716FCEC7400CD7D5C /* Accounts.framework in Frameworks */,
 				27B7724216E7C63500610D11 /* WebKit.framework in Frameworks */,
 				271827C716C0357700825D50 /* Security.framework in Frameworks */,
+				2764AFA4176821D400009582 /* libsqlite3.dylib in Frameworks */,
 				271827AA16B9A1D100825D50 /* CoreLocation.framework in Frameworks */,
 				2766E62F16834B78000D27C5 /* Cocoa.framework in Frameworks */,
 			);
@@ -1090,6 +1105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27EAB7371770A610008E6B32 /* XCTest.framework in Frameworks */,
 				273A3E9D160A385100F3742C /* Twitter.framework in Frameworks */,
 				273A3E9C160A384C00F3742C /* Accounts.framework in Frameworks */,
 				2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */,
@@ -1397,8 +1413,6 @@
 				27A93B56156AD2D500810B88 /* ASTTestClass.m */,
 				274330231575262A00B2BF37 /* KCSLinkedAppdataStoreTests.h */,
 				274330241575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m */,
-				2735B2441578E84A0063EE62 /* KCSResourceStoreTests.h */,
-				2735B2451578E84A0063EE62 /* KCSResourceStoreTests.m */,
 				273DB2E115D171E80072A444 /* KCSOfflineStoreTests.h */,
 				273DB2E215D171E80072A444 /* KCSOfflineStoreTests.m */,
 				276A6F6D1637834700285884 /* KCSEntityCacheTests.h */,
@@ -1457,17 +1471,21 @@
 			name = Utils;
 			sourceTree = "<group>";
 		};
-		D312B3F7147EA5FD007F48B9 /* ResourceService */ = {
+		D312B3F7147EA5FD007F48B9 /* File Service */ = {
 			isa = PBXGroup;
 			children = (
+				D3BE9C5915524C6100ED0FDF /* KCSResourceStore.h */,
+				D3BE9C5A15524C6100ED0FDF /* KCSResourceStore.m */,
 				D32A60F714716F2D00F77A3F /* KCSBlobService.h */,
 				D32A60F814716F2D00F77A3F /* KCSBlobService.m */,
-				2743301F1575227000B2BF37 /* KCSResource.h */,
-				274330201575227000B2BF37 /* KCSResource.m */,
+				2743301F1575227000B2BF37 /* KCSFile.h */,
+				274330201575227000B2BF37 /* KCSFile.m */,
 				2718279C16B8A78700825D50 /* KCSImageUtils.h */,
 				2718279D16B8A78700825D50 /* KCSImageUtils.m */,
+				27CD8EE5176FA8AB009463E3 /* KCSFileStore.h */,
+				27CD8EE6176FA8AB009463E3 /* KCSFileStore.m */,
 			);
-			name = ResourceService;
+			name = "File Service";
 			sourceTree = "<group>";
 		};
 		D312B3F8147EA63C007F48B9 /* appdataService */ = {
@@ -1507,7 +1525,7 @@
 			name = Analytics;
 			sourceTree = "<group>";
 		};
-		D312B3FA147EA692007F48B9 /* KinveyService */ = {
+		D312B3FA147EA692007F48B9 /* KCSClient */ = {
 			isa = PBXGroup;
 			children = (
 				D3BE9C531551ED2900ED0FDF /* KCSBlockDefs.h */,
@@ -1516,7 +1534,7 @@
 				27AC2F23161CA258008A05E1 /* KCSClient+ConfigurationTest.h */,
 				27AC2F24161CA258008A05E1 /* KCSClient+ConfigurationTest.m */,
 			);
-			name = KinveyService;
+			name = KCSClient;
 			sourceTree = "<group>";
 		};
 		D32A60BA14716EE300F77A3F = {
@@ -1549,6 +1567,7 @@
 		D32A60CA14716EE300F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				27EAB7361770A610008E6B32 /* XCTest.framework */,
 				27FB2A7816FCEC7B00CD7D5C /* Social.framework */,
 				27FB2A7616FCEC7400CD7D5C /* Accounts.framework */,
 				27B425E916C2C30F00C59E1A /* libXcodeTest.a */,
@@ -1609,7 +1628,7 @@
 				D3715AB914B68E240030F5E9 /* KinveyService */,
 				D3715AB814B68E1C0030F5E9 /* Analytics */,
 				D3715AB714B68E0F0030F5E9 /* AppdataService */,
-				D3715AB614B68E050030F5E9 /* ResourceService */,
+				D3715AB614B68E050030F5E9 /* File Store */,
 				D3715AB514B68DFD0030F5E9 /* Utils */,
 				D3715AB414B68DF50030F5E9 /* Network */,
 				D3715ABC14B68E940030F5E9 /* Mocks */,
@@ -1637,17 +1656,17 @@
 		D32A60F614716F2D00F77A3F /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				273B64511757DE2100E1B1B9 /* RPC Service */,
+				D3F340FA14BD2A2900DB6C37 /* Headers */,
 				272EF18215E2BA11008E3F68 /* UI Helpers */,
 				D36118EB154F44E80001BB41 /* KinveyStore */,
 				D39CDF9314D1E65400E40D19 /* Query */,
-				D3F340FA14BD2A2900DB6C37 /* Headers */,
-				D3F7E86C148803D60044F1E8 /* UserService */,
 				D3EA22661484850B00666259 /* Push */,
-				D312B3FA147EA692007F48B9 /* KinveyService */,
-				D312B3F9147EA671007F48B9 /* Analytics */,
 				D312B3F8147EA63C007F48B9 /* appdataService */,
-				D312B3F7147EA5FD007F48B9 /* ResourceService */,
+				D312B3F7147EA5FD007F48B9 /* File Service */,
+				D3F7E86C148803D60044F1E8 /* UserService */,
+				273B64511757DE2100E1B1B9 /* RPC Service */,
+				D312B3F9147EA671007F48B9 /* Analytics */,
+				D312B3FA147EA692007F48B9 /* KCSClient */,
 				D312B3F6147EA5DE007F48B9 /* Utils */,
 				D312B3F4147EA5BA007F48B9 /* Network */,
 			);
@@ -2150,8 +2169,6 @@
 			children = (
 				D306B58D154F847C00A52CB8 /* KCSStore.h */,
 				27302CC9155D614B00A0183E /* KCSStore.m */,
-				D3BE9C5915524C6100ED0FDF /* KCSResourceStore.h */,
-				D3BE9C5A15524C6100ED0FDF /* KCSResourceStore.m */,
 				D306B5A41550B29100A52CB8 /* KCSAppdataStore.h */,
 				D306B5A51550B29100A52CB8 /* KCSAppdataStore.m */,
 				27302CBA155C66B300A0183E /* KCSCachedStore.h */,
@@ -2211,13 +2228,12 @@
 			name = Utils;
 			sourceTree = "<group>";
 		};
-		D3715AB614B68E050030F5E9 /* ResourceService */ = {
+		D3715AB614B68E050030F5E9 /* File Store */ = {
 			isa = PBXGroup;
 			children = (
-				D3715ACC14B695B00030F5E9 /* KinveyKitBlobServiceTests.h */,
-				D3715ACD14B695B00030F5E9 /* KinveyKitBlobServiceTests.m */,
+				27CD8EEE1770A33E009463E3 /* KCSFileStoreTests.m */,
 			);
-			name = ResourceService;
+			name = "File Store";
 			sourceTree = "<group>";
 		};
 		D3715AB714B68E0F0030F5E9 /* AppdataService */ = {
@@ -2346,6 +2362,7 @@
 		D3F3E88B14BABCB5009063DE /* Test Resources */ = {
 			isa = PBXGroup;
 			children = (
+				271DE7B917728815003541D4 /* mavericks.jpg */,
 				D3F3E88D14BABD5F009063DE /* 1px.png */,
 			);
 			name = "Test Resources";
@@ -2384,7 +2401,7 @@
 				27B3B08E16B8768E00E1B540 /* KCSObjectMapper.h in Headers */,
 				2718279616B8A55500825D50 /* KCSAuthCredential.h in Headers */,
 				2718279816B8A57C00825D50 /* KCSBase64.h in Headers */,
-				2718279A16B8A5A300825D50 /* KCSResource.h in Headers */,
+				2718279A16B8A5A300825D50 /* KCSFile.h in Headers */,
 				271827A016B8AA1600825D50 /* KCSBuilders.h in Headers */,
 				271827A216B8AA2700825D50 /* KCSPropertyUtil.h in Headers */,
 				271827A416B8AA5000825D50 /* KCSMetadata.h in Headers */,
@@ -2415,6 +2432,7 @@
 				27010A9A1713313F0012D1ED /* KCSEntityDict.h in Headers */,
 				27010A9B1713314A0012D1ED /* KinveyEntity.h in Headers */,
 				27010A9C1713315C0012D1ED /* KinveyPersistable.h in Headers */,
+				27CD8EE8176FA8AB009463E3 /* KCSFileStore.h in Headers */,
 				27010A9D1713316F0012D1ED /* KinveyBlocks.h in Headers */,
 				27010A9E171331730012D1ED /* KinveyErrorCodes.h in Headers */,
 				27010A9F171331790012D1ED /* KinveyHTTPStatusCodes.h in Headers */,
@@ -2491,7 +2509,7 @@
 				27E4CDFB156A801A00B5DF55 /* KCSReduceFunction.h in Headers */,
 				27E4CE00156A803300B5DF55 /* KCSGroup.h in Headers */,
 				27433012156ED63B00B2BF37 /* KCSLinkedAppdataStore.h in Headers */,
-				274330211575227000B2BF37 /* KCSResource.h in Headers */,
+				274330211575227000B2BF37 /* KCSFile.h in Headers */,
 				271E8242157D70B3000AF9EF /* KCSPropertyUtil.h in Headers */,
 				27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */,
 				27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */,
@@ -2501,6 +2519,7 @@
 				27E0B35F15E51F3700B83E72 /* KCSGenericRESTRequest.h in Headers */,
 				2726F98B15E6CE370087099D /* KCSBuilders.h in Headers */,
 				272FBE5315F90FB600EC7031 /* KCSSaveGraph.h in Headers */,
+				27CD8EE7176FA8AB009463E3 /* KCSFileStore.h in Headers */,
 				273A3E9A160A255900F3742C /* KCSUser+SocialExtras.h in Headers */,
 				273A3E9B160A256100F3742C /* KinveyKitExtras.h in Headers */,
 				27AC2F25161CA258008A05E1 /* KCSClient+ConfigurationTest.h in Headers */,
@@ -2681,7 +2700,7 @@
 		D32A60BC14716EE300F77A3F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = Kinvey;
 			};
 			buildConfigurationList = D32A60BF14716EE300F77A3F /* Build configuration list for PBXProject "KinveyKit" */;
@@ -2753,6 +2772,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				271DE7BA17728815003541D4 /* mavericks.jpg in Resources */,
 				D32A60EA14716EE300F77A3F /* InfoPlist.strings in Resources */,
 				D3F3E88E14BABD5F009063DE /* 1px.png in Resources */,
 			);
@@ -2850,7 +2870,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nset +u\nif [[ $UFW_MASTER_SCRIPT_RUNNING ]]\nthen\n    # Nothing for the slave script to do\n    exit 0\nfi\nset -u\nexport UFW_MASTER_SCRIPT_RUNNING=1\n\n\n# Functions\n\n## List files in the specified directory, storing to the specified array.\n#\n# @param $1 The path to list\n# @param $2 The name of the array to fill\n#\n##\nlist_files ()\n{\n    filelist=$(ls \"$1\")\n    while read line\n    do\n        eval \"$2[\\${#$2[*]}]=\\\"\\$line\\\"\"\n    done <<< \"$filelist\"\n}\n\n\n# Sanity check\n\nif [[ ! -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]]\nthen\n    echo \"Framework target \\\"${TARGET_NAME}\\\" had no source files to build from. Make sure your source files have the correct target membership\"\n    exit 1\nfi\n\n\n# Gather information\n\nif [[ \"$SDK_NAME\" =~ ([A-Za-z]+) ]]\nthen\n    UFW_SDK_PLATFORM=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find platform name from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$SDK_NAME\" =~ ([0-9]+.*$) ]]\nthen\n    UFW_SDK_VERSION=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find sdk version from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$UFW_SDK_PLATFORM\" = \"iphoneos\" ]]\nthen\n    UFW_OTHER_PLATFORM=iphonesimulator\nelse\n    UFW_OTHER_PLATFORM=iphoneos\nfi\n\nif [[ \"$BUILT_PRODUCTS_DIR\" =~ (.*)$UFW_SDK_PLATFORM$ ]]\nthen\n    UFW_OTHER_BUILT_PRODUCTS_DIR=\"${BASH_REMATCH[1]}${UFW_OTHER_PLATFORM}\"\nelse\n    echo \"Could not find $UFW_SDK_PLATFORM in $BUILT_PRODUCTS_DIR\"\n    exit 1\nfi\n\nONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM:-$ONLY_ACTIVE_ARCH}\n\n# Short-circuit if all binaries are up to date.\n# We already checked the other platform in the prerun script.\n\nif [[ -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && [[ -f \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && [[ ! \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -nt \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]]\nthen\n    exit 0\nfi\n\nif [ \"${ONLY_ACTIVE_PLATFORM}\" == \"YES\" ]\nthen\n    echo \"ONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM}: Skipping other platform build\"\nelse\n    # Make sure the other platform gets built\n    \n    echo \"Build other platform\"\n    \n    echo xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" $ACTION\n    xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" $ACTION\n    \n    \n    # Build the fat static library binary\n    \n    echo \"Create universal static library\"\n    \n    echo \"$PLATFORM_DEVELOPER_BIN_DIR/libtool\" -static \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -o \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\"\n    \"$PLATFORM_DEVELOPER_BIN_DIR/libtool\" -static \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -o \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\"\n    \n    echo mv \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\n    mv \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\nfi\n\n# Build embedded framework structure\n\necho \"Build Embedded Framework\"\n\necho rm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\nrm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\necho mkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources\"\nmkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources\"\necho cp -a \"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/\"\ncp -a \"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/\"\n\ndeclare -a UFW_FILE_LIST\nlist_files \"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\" UFW_FILE_LIST\nfor filename in \"${UFW_FILE_LIST[@]}\"\ndo\n    if [[ \"${filename}\" != \"Info.plist\" ]] && [[ ! \"${filename}\" =~ .*\\.lproj$ ]]\n    then\n        echo ln -sf \"../${WRAPPER_NAME}/Resources/${filename}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources/${filename}\"\n        ln -sf \"../${WRAPPER_NAME}/Resources/${filename}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources/${filename}\"\n    fi\ndone\n\n\nif [ \"${ONLY_ACTIVE_PLATFORM}\" != \"YES\" ]\nthen\n    # Replace other platform's framework with a copy of this one (so that both have the same universal binary)\n    \n    echo \"Copy from $UFW_SDK_PLATFORM to $UFW_OTHER_PLATFORM\"\n    \n    echo rm -rf \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    rm -rf \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    echo cp -a \"${BUILD_DIR}/${CONFIGURATION}-${UFW_SDK_PLATFORM}\" \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    cp -a \"${BUILD_DIR}/${CONFIGURATION}-${UFW_SDK_PLATFORM}\" \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\nfi\n";
+			shellScript = "set -e\n\nset +u\nif [[ $UFW_MASTER_SCRIPT_RUNNING ]]\nthen\n    # Nothing for the slave script to do\n    exit 0\nfi\nset -u\nexport UFW_MASTER_SCRIPT_RUNNING=1\n\n\n# Functions\n\n## List files in the specified directory, storing to the specified array.\n#\n# @param $1 The path to list\n# @param $2 The name of the array to fill\n#\n##\nlist_files ()\n{\n    filelist=$(ls \"$1\")\n    while read line\n    do\n        eval \"$2[\\${#$2[*]}]=\\\"\\$line\\\"\"\n    done <<< \"$filelist\"\n}\n\n\n# Sanity check\n\nif [[ ! -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]]\nthen\n    echo \"Framework target \\\"${TARGET_NAME}\\\" had no source files to build from. Make sure your source files have the correct target membership\"\n    exit 1\nfi\n\n\n# Gather information\n\nif [[ \"$SDK_NAME\" =~ ([A-Za-z]+) ]]\nthen\n    UFW_SDK_PLATFORM=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find platform name from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$SDK_NAME\" =~ ([0-9]+.*$) ]]\nthen\n    UFW_SDK_VERSION=${BASH_REMATCH[1]}\nelse\n    echo \"Could not find sdk version from SDK_NAME: $SDK_NAME\"\n    exit 1\nfi\n\nif [[ \"$UFW_SDK_PLATFORM\" = \"iphoneos\" ]]\nthen\n    UFW_OTHER_PLATFORM=iphonesimulator\nelse\n    UFW_OTHER_PLATFORM=iphoneos\nfi\n\nif [[ \"$BUILT_PRODUCTS_DIR\" =~ (.*)$UFW_SDK_PLATFORM$ ]]\nthen\n    UFW_OTHER_BUILT_PRODUCTS_DIR=\"${BASH_REMATCH[1]}${UFW_OTHER_PLATFORM}\"\nelse\n    echo \"Could not find $UFW_SDK_PLATFORM in $BUILT_PRODUCTS_DIR\"\n    exit 1\nfi\n\nONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM:-$ONLY_ACTIVE_ARCH}\n\n# Short-circuit if all binaries are up to date.\n# We already checked the other platform in the prerun script.\n\nif [[ -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" ]] && [[ -f \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]] && [[ ! \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -nt \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/${EXECUTABLE_PATH}\" ]]\nthen\n    exit 0\nfi\n\nif [ \"${ONLY_ACTIVE_PLATFORM}\" == \"YES\" ]\nthen\n    echo \"ONLY_ACTIVE_PLATFORM=${ONLY_ACTIVE_PLATFORM}: Skipping other platform build\"\nelse\n    # Make sure the other platform gets built\n    \n    echo \"Build other platform\"\n    \n    echo xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" $ACTION\n    xcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration \"${CONFIGURATION}\" -sdk ${UFW_OTHER_PLATFORM}${UFW_SDK_VERSION} BUILD_DIR=\"${BUILD_DIR}\" CONFIGURATION_TEMP_DIR=\"${PROJECT_TEMP_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\" $ACTION\n    \n    \n    # Build the fat static library binary\n    \n    echo \"Create universal static library\"\n    \n    echo \"$PLATFORM_DEVELOPER_BIN_DIR/libtool\" -static \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -o \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\"\n LIBTOOL_DIR=`xcrun -f --sdk ${SDK_NAME} libtool`\n# LIBTOOL_DIR=`xcrun --sdk iphonesimulator libtool`\n    \"${LIBTOOL_DIR}\" -static \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" \"${UFW_OTHER_BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" -o \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\"\n    \n    echo mv \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\n    mv \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}.temp\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\nfi\n\n# Build embedded framework structure\n\necho \"Build Embedded Framework\"\n\necho rm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\nrm -rf \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework\"\necho mkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources\"\nmkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources\"\necho cp -a \"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/\"\ncp -a \"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/\"\n\ndeclare -a UFW_FILE_LIST\nlist_files \"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\" UFW_FILE_LIST\nfor filename in \"${UFW_FILE_LIST[@]}\"\ndo\n    if [[ \"${filename}\" != \"Info.plist\" ]] && [[ ! \"${filename}\" =~ .*\\.lproj$ ]]\n    then\n        echo ln -sf \"../${WRAPPER_NAME}/Resources/${filename}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources/${filename}\"\n        ln -sf \"../${WRAPPER_NAME}/Resources/${filename}\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.embeddedframework/Resources/${filename}\"\n    fi\ndone\n\n\nif [ \"${ONLY_ACTIVE_PLATFORM}\" != \"YES\" ]\nthen\n    # Replace other platform's framework with a copy of this one (so that both have the same universal binary)\n    \n    echo \"Copy from $UFW_SDK_PLATFORM to $UFW_OTHER_PLATFORM\"\n    \n    echo rm -rf \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    rm -rf \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    echo cp -a \"${BUILD_DIR}/${CONFIGURATION}-${UFW_SDK_PLATFORM}\" \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\n    cp -a \"${BUILD_DIR}/${CONFIGURATION}-${UFW_SDK_PLATFORM}\" \"${BUILD_DIR}/${CONFIGURATION}-${UFW_OTHER_PLATFORM}\"\nfi\n";
 		};
 		D32A60D714716EE300F77A3F /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2894,6 +2914,7 @@
 				275B426416A82A100064B941 /* KCS_SBJsonStreamParserAccumulator.m in Sources */,
 				275B426516A82A100064B941 /* KCS_SBJsonStreamParserAdapter.m in Sources */,
 				275B426616A82A100064B941 /* KCS_SBJsonStreamParserState.m in Sources */,
+				27CD8EEA176FA8AB009463E3 /* KCSFileStore.m in Sources */,
 				275B426716A82A100064B941 /* KCS_SBJsonStreamWriter.m in Sources */,
 				275B426816A82A100064B941 /* KCS_SBJsonStreamWriterAccumulator.m in Sources */,
 				275B426916A82A100064B941 /* KCS_SBJsonStreamWriterState.m in Sources */,
@@ -2902,11 +2923,13 @@
 				275B426C16A82A100064B941 /* KCS_SBJsonWriter.m in Sources */,
 				275B426D16A82A100064B941 /* NSObject+KCS_SBJson.m in Sources */,
 				275B426F16A82B7C0064B941 /* KCSConnection.m in Sources */,
+				27525A3E17668EA40054C17F /* FMDatabaseQueue.m in Sources */,
 				275B427016A82BAC0064B941 /* KCSLogManager.m in Sources */,
 				27C5CA3216ADDB5700E44CC0 /* NSString+KinveyAdditions.m in Sources */,
 				27C5CA3316ADDB6100E44CC0 /* NSArray+KinveyAdditions.m in Sources */,
 				27C5CA3416ADDBEF00E44CC0 /* NSURL+KinveyAdditions.m in Sources */,
 				27B3B07C16B872EC00E1B540 /* KCSAsyncConnection.m in Sources */,
+				27525A3917668E630054C17F /* KCSEntityCache2.m in Sources */,
 				27B3B07E16B8741400E1B540 /* KCSConnectionResponse.m in Sources */,
 				27B3B08016B8742000E1B540 /* KCSConnectionProgress.m in Sources */,
 				27B3B08216B8743500E1B540 /* KCSClient.m in Sources */,
@@ -2916,7 +2939,7 @@
 				27B3B08F16B8769300E1B540 /* KCSObjectMapper.m in Sources */,
 				2718279716B8A55B00825D50 /* KCSAuthCredential.m in Sources */,
 				2718279916B8A58300825D50 /* KCSBase64.m in Sources */,
-				2718279B16B8A5AD00825D50 /* KCSResource.m in Sources */,
+				2718279B16B8A5AD00825D50 /* KCSFile.m in Sources */,
 				271827A116B8AA1900825D50 /* KCSBuilders.m in Sources */,
 				271827A316B8AA2A00825D50 /* KCSPropertyUtil.m in Sources */,
 				271827A516B8AA5500825D50 /* KCSMetadata.m in Sources */,
@@ -2926,8 +2949,10 @@
 				271827C516C0356000825D50 /* KCSKeyChain.m in Sources */,
 				271827C916C0910700825D50 /* KCSQuery.m in Sources */,
 				271827EF16C17A8100825D50 /* KCSReduceFunction.m in Sources */,
+				27525A3D17668E9E0054C17F /* FMDatabasePool.m in Sources */,
 				271827F116C17A8B00825D50 /* KCSGroup.m in Sources */,
 				271827F316C17AE100825D50 /* KCSUserDiscovery.m in Sources */,
+				27525A3C17668E9A0054C17F /* FMResultSet.m in Sources */,
 				271827F516C17AEF00825D50 /* KCSStore.m in Sources */,
 				271827F716C17AF700825D50 /* KCSResourceStore.m in Sources */,
 				271827F916C17B0300825D50 /* KCSAppdataStore.m in Sources */,
@@ -2939,6 +2964,8 @@
 				27B7724516E7C71300610D11 /* KCSWebView.m in Sources */,
 				27F5D7F616F20EC5001828F3 /* NSDictionary+KinveyAdditions.m in Sources */,
 				27FB2A7A16FCEC9E00CD7D5C /* KCS_TWSignedRequest.m in Sources */,
+				27525A3A17668E910054C17F /* FMDatabase.m in Sources */,
+				27525A3B17668E950054C17F /* FMDatabaseAdditions.m in Sources */,
 				27FB2A7B16FCECA200CD7D5C /* KCS_OAuthCore.m in Sources */,
 				27FB2A7C16FCECA500CD7D5C /* KCS_OAuth+Additions.m in Sources */,
 				27FB2A7D16FCECBB00CD7D5C /* KCSFacebookHelper.m in Sources */,
@@ -2961,6 +2988,7 @@
 				2766E64D16834B78000D27C5 /* KinveyKit_macTests.m in Sources */,
 				27B425DF16C2BFF900C59E1A /* KinveyKitNSStringTests.m in Sources */,
 				27B425E016C2BFFC00C59E1A /* KinveyKitNSDictionaryTests.m in Sources */,
+				27CD8EF01770A33E009463E3 /* KCSFileStoreTests.m in Sources */,
 				27B425E116C2C00000C59E1A /* KinveyKitNSURLTests.m in Sources */,
 				27B425E216C2C00400C59E1A /* KinveyKitNSDateTests.m in Sources */,
 				27B425E316C2C00700C59E1A /* KinveyKitBase64Tests.m in Sources */,
@@ -3007,6 +3035,7 @@
 				D33E686F147DBA5700EE885E /* KCSConnection.m in Sources */,
 				D33E6874147DBA7200EE885E /* KCSAsyncConnection.m in Sources */,
 				D33E6879147DC1A400EE885E /* KCSConnectionResponse.m in Sources */,
+				27CD8EE9176FA8AB009463E3 /* KCSFileStore.m in Sources */,
 				D3EA224D148412A600666259 /* KCSConnectionPool.m in Sources */,
 				D3EA22581484228300666259 /* KCSRESTRequest.m in Sources */,
 				D3EA226A1484852B00666259 /* KCSPush.m in Sources */,
@@ -3034,7 +3063,7 @@
 				27E4CDFC156A801A00B5DF55 /* KCSReduceFunction.m in Sources */,
 				27E4CE01156A803300B5DF55 /* KCSGroup.m in Sources */,
 				27433013156ED63C00B2BF37 /* KCSLinkedAppdataStore.m in Sources */,
-				274330221575227000B2BF37 /* KCSResource.m in Sources */,
+				274330221575227000B2BF37 /* KCSFile.m in Sources */,
 				271E8243157D70B3000AF9EF /* KCSPropertyUtil.m in Sources */,
 				27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */,
 				27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */,
@@ -3105,7 +3134,6 @@
 				D3715AC514B695520030F5E9 /* KinveyKitEntityDictTests.m in Sources */,
 				D3715AC814B695680030F5E9 /* KinveyKitEntityTests.m in Sources */,
 				D3715ACB14B695820030F5E9 /* KinveyKitPingTests.m in Sources */,
-				D3715ACE14B695B00030F5E9 /* KinveyKitBlobServiceTests.m in Sources */,
 				D3715AD414B696D80030F5E9 /* KinveyKitConnectionPoolTests.m in Sources */,
 				D3715AD714B696F30030F5E9 /* KinveyKitConnectionResponseTests.m in Sources */,
 				D3715ADD14B697EA0030F5E9 /* KinveyKitNSStringTests.m in Sources */,
@@ -3114,11 +3142,11 @@
 				D3FF5FE814C6392A00680BD2 /* KinveyKitBase64Tests.m in Sources */,
 				D3792A1F14D20C0D003D75BD /* KinveyKitQueryTests.m in Sources */,
 				D306B5A3155095A800A52CB8 /* KinveyAppdataStoreTests.m in Sources */,
+				27CD8EEF1770A33E009463E3 /* KCSFileStoreTests.m in Sources */,
 				27302CC0155C66FF00A0183E /* KCSCachedStoreTests.m in Sources */,
 				27A93B53156AD14800810B88 /* KCSReduceFunctionTests.m in Sources */,
 				27A93B57156AD2D500810B88 /* ASTTestClass.m in Sources */,
 				274330251575262A00B2BF37 /* KCSLinkedAppdataStoreTests.m in Sources */,
-				2735B2461578E84A0063EE62 /* KCSResourceStoreTests.m in Sources */,
 				27223E1C157E7A3200656BCC /* TestUtils.m in Sources */,
 				27F360A01598C250006B699E /* KCSMetadataTests.m in Sources */,
 				27BBD91615ADD3A2005E27E1 /* TestThreads.m in Sources */,
@@ -3229,9 +3257,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -3248,12 +3277,16 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = DebugForTest_run_tests;
 		};
@@ -3327,10 +3360,6 @@
 		272B7BF4161DCC490001132C /* DebugForTest_run_tests */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					"$(ARCHS_STANDARD_32_BIT)",
-				);
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -3382,7 +3411,6 @@
 		2766E64E16834B78000D27C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -3413,7 +3441,6 @@
 		2766E64F16834B78000D27C5 /* DebugForTest */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -3444,7 +3471,6 @@
 		2766E65016834B78000D27C5 /* DebugForTest_run_tests */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -3475,7 +3501,6 @@
 		2766E65116834B78000D27C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -3506,7 +3531,6 @@
 		2766E65216834B78000D27C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -3531,7 +3555,6 @@
 		2766E65316834B78000D27C5 /* DebugForTest */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -3556,7 +3579,6 @@
 		2766E65416834B78000D27C5 /* DebugForTest_run_tests */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -3581,7 +3603,6 @@
 		2766E65516834B78000D27C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -3606,10 +3627,6 @@
 		2785F5501609179F004AA410 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					"$(ARCHS_STANDARD_32_BIT)",
-				);
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -3635,10 +3652,6 @@
 		2785F5511609179F004AA410 /* DebugForTest */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					"$(ARCHS_STANDARD_32_BIT)",
-				);
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -3664,10 +3677,6 @@
 		2785F5521609179F004AA410 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					"$(ARCHS_STANDARD_32_BIT)",
-				);
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -3772,9 +3781,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -3791,12 +3801,16 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = DebugForTest;
 		};
@@ -3862,9 +3876,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -3881,12 +3896,17 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -3894,9 +3914,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -3906,12 +3927,16 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

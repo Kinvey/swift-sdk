@@ -31,8 +31,8 @@
 #import "KCSReachability.h"
 #import "KCSSaveQueue.h"
 #import "KCSSaveGraph.h"
-#import "KCSResourceStore.h"
-#import "KCSResource.h"
+#import "KCSBlobService.h"
+#import "KCSFile.h"
 
 #define KCSSTORE_VALIDATE_PRECONDITION BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock]; \
 if (okayToProceed == NO) { \
@@ -322,7 +322,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
                 if (itemCount == 0) {
                     completionBlock(@[], nil);
                 } else if (itemCount == KCS_OBJECT_LIMIT) {
-                    KCSLogWarning(@"Returned exactly 10,000 objects. This is the Kinvey limit for a query, and there may actually be more results. If this is the case use the limit & skip modifiers on `KCSQuery` to page through the results.");
+                    KCSLogWarning(@"Returned exactly %i objects. This is the Kinvey limit for a query, and there may actually be more results. If this is the case use the limit & skip modifiers on `KCSQuery` to page through the results.", KCS_OBJECT_LIMIT);
                 }
                 __block NSUInteger completedCount = 0;
                 __block NSError* resourceError = nil;
@@ -336,15 +336,14 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
                         //need to load the resources
                         __block NSUInteger completedResourceCount = 0;
                         [resources enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-                            KCSResourceStore* resourceStore = [KCSResourceStore store];
-                            [resourceStore loadObjectWithID:[obj objectForKey:@"_loc"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                            [KCSFileStore downloadKCSFile:obj completionBlock:^(NSArray *downloadedResources, NSError *error) {
                                 completedResourceCount++;
-                                if (errorOrNil != nil) {
-                                    resourceError = errorOrNil;
+                                if (error != nil) {
+                                    resourceError = error;
                                 }
-                                if (objectsOrNil != nil && objectsOrNil.count > 0) {
-                                    NSData* resourceData = [objectsOrNil objectAtIndex:0];
-                                    id loadedResource = [KCSResource resourceObjectFromData:resourceData type:[obj objectForKey:@"_mime-type"]];
+                                if (downloadedResources != nil && downloadedResources.count > 0) {
+                                    KCSFile* downloadedFile = downloadedResources[0];
+                                    id loadedResource = [downloadedFile resolvedObject];
                                     [newobj setValue:loadedResource forKey:key];
                                 }
                                 if (completedResourceCount == resourceCount) {
@@ -354,7 +353,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
                                         completionBlock(returnObjects, resourceError);
                                     }
                                 }
-                            } withProgressBlock:^(NSArray *objects, double percentComplete) {
+                            } progressBlock:^(NSArray *objects, double percentComplete) {
                                 //TODO: sub progress
                             }];
                         }];
@@ -786,7 +785,7 @@ int reachable = -1;
 
 - (void) drainQueueWithProgressGraph:(KCSSaveGraph*)progress doSaveBlock:(KCSCompletionBlock)doSaveblock alreadySavedBlock:(KCSCompletionBlock)alreadySavedBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    if ([self offlineSaveEnabled] && [self isKinveyReachable] == NO) {
+    if ([self offlineSaveEnabled] && /*[self isKinveyReachable]*/ YES == NO) {
         NSDictionary* info = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Could not reach Kinvey" withFailureReason:@"Application is offline" withRecoverySuggestion:@"Try again when app is online" withRecoveryOptions:nil];
         NSMutableDictionary* offlineErrorInfo = [NSMutableDictionary dictionaryWithDictionary:info];
         [offlineErrorInfo setObject:[_saveQueue ids] forKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];

@@ -16,9 +16,9 @@
 
 #import "KCS_SBJson.h"
 
-#define KINVEY_KCS_API_VERSION @"2"
+#define KINVEY_KCS_API_VERSION @"3"
 
-#define MAX_DATE_STRING_LENGTH_K 40 
+#define MAX_DATE_STRING_LENGTH_K 40  
 NSString * getLogDate2()
 {
     time_t now = time(NULL);
@@ -56,6 +56,8 @@ static const NSString* kBLOBRoot = @"blob";
 
 - (void)run:(void (^)(id results, NSError* error))runBlock
 {
+    DBAssert(_authorization != nil, @"Cannot send request, no auth provided");
+    
     //TODO
     id <KCSService> service = [[KCSServerService alloc] init];
     [service performRequest:[self nsurlRequest] progressBlock:^(KCSConnectionProgress *progress) {
@@ -124,7 +126,8 @@ static const NSString* kBLOBRoot = @"blob";
     KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
 
     if (_body) {
-        NSData* bodyData = [writer dataWithObject:_body];
+        NSData* bodyData = [writer dataWithObject:_body];        
+        DBAssert(bodyData != nil, @"should be able to parse body");
         [request setHTTPBody:bodyData];
     }
     
@@ -139,11 +142,19 @@ static const NSString* kBLOBRoot = @"blob";
     headers[@"X-Kinvey-API-Version"] = KINVEY_KCS_API_VERSION;
     headers[@"Date"] = getLogDate2();
     headers[@"X-Kinvey-ResponseWrapper"] = @"true";
+    headers[@"Content-Type"] = @"application/json";
+    [headers addEntriesFromDictionary:_headers];
     [request setAllHTTPHeaderFields:headers];
     
     [request setHTTPShouldUsePipelining:_httpMethod != kKCSRESTMethodPOST];
     //TODO followsRedirects
     return request;
+}
+
+- (void)setAuthorization:(id<KCSCredentials>)authorization
+{
+    NSParameterAssert(authorization);
+    _authorization = authorization;
 }
 
 @end

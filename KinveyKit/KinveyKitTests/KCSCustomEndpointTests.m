@@ -31,4 +31,15 @@
     [self poll];
 }
 
+- (void) testHS1468
+{
+    self.done = NO;
+//    [KCSCustomEndpoints callEndpoint:@"hs1468" params:@{@"email":@"michael@kinvey.com"} completionBlock:^(id results,
+    [KCSCustomEndpoints callEndpoint:@"hs1468" params:@{@"email":@""} completionBlock:^(id results, NSError *error) {
+        STAssertNoError_;
+        self.done= YES;
+    }];
+    [self poll];
+}
+
 @end

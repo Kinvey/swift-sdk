@@ -9,7 +9,7 @@
 #import "KCSSaveGraph.h"
 
 #import "KCSObjectMapper.h"
-#import "KCSResource.h"
+#import "KCSFile.h"
 #import "KinveyEntity.h"
 
 #import "KCS_SBJson.h"
@@ -272,7 +272,7 @@ double countBytesRf(id referenceObj)
     return w;
 }
 
-- (id) addResource:(KCSResource*)resource entity:(KCSCompletionWrapper*)wp
+- (id) addResource:(KCSFile*)resource entity:(KCSCompletionWrapper*)wp
 {
     KCSCompletionWrapper* w = [[KCSCompletionWrapper alloc] init];
     w.type = 2;

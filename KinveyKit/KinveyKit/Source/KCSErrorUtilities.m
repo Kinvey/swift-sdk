@@ -126,3 +126,12 @@
 }
 
 @end
+
+
+@implementation NSError (KCSErrorUtilities)
+- (instancetype)updateDomain:(NSString *)domain
+{
+    NSError* error = [NSError errorWithDomain:domain code:self.code userInfo:[self.userInfo copy]];
+    return error;
+}
+@end

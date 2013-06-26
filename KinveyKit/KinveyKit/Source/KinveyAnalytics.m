@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "KinveyAnalytics.h"
 #import "KCSKinveyUDID.h"
+#import "NSString+KinveyAdditions.h"
 
 // For hardware platform information
 #include <sys/types.h>
@@ -33,16 +34,7 @@
 
 - (NSString *)generateUUID
 {
-    CFUUIDRef uuid = CFUUIDCreate(NULL);
-    NSString *uuidString = nil;
-    
-    if (uuid){
-        uuidString = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
-        CFRelease(uuid);
-    }
-    // CreateString creates the string, so we own this string.
-    // We must ensure it gets destroyed
-    return uuidString;
+    return [NSString UUID];
 }
 
 // Always return the same UUID for all users.

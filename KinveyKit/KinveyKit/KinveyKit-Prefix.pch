@@ -8,7 +8,11 @@
 
 
 #define ifNotNil(x,val) (x == nil) ? nil : val;
+#define setIfValNotNil(propToSet, val) if (val != nil) propToSet = val;
 #define ifNil(x, val) if (x == nil) x = val;
+
+#define constantsEqual(str, const) str == const || [str isEqualToString:const]
+#define setIfEmpty(dict,key,val) if (dict[key] == nil) dict[key] = val
 
 #ifdef BUILD_FOR_UNIT_TEST
 #define DBAssert(condition,description, ...) NSAssert(condition, description, ##__VA_ARGS__)

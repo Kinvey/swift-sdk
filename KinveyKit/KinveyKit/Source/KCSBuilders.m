@@ -135,6 +135,21 @@
 
 @end
 
+@implementation KCSURLBuilder
+
++ (id) JSONCompatabileValueForObject:(id)object
+{
+    return [(NSURL*)object absoluteString];
+}
+
++ (id) objectForJSONObject:(id)object
+{
+    NSURL* url = [NSURL URLWithString:object];
+    return url ? url : [NSNull null];
+}
+
+@end
+
 @implementation KCSBuilders
 
 @end

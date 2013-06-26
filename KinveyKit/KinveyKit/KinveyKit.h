@@ -21,7 +21,6 @@
 #import "KinveyEntity.h"
 #import "KinveyPersistable.h"
 #import "KCSMetadata.h"
-#import "KCSBlobService.h"
 #import "KinveyPing.h"
 #import "KinveyUser.h"
 #import "KCSUserDiscovery.h"
@@ -33,12 +32,16 @@
 
 #import "KCSStore.h"
 #import "KCSAppdataStore.h"
-#import "KCSResourceStore.h"
 #import "KCSCachedStore.h"
 #import "KCSGroup.h"
 #import "KCSReduceFunction.h"
 #import "KCSLinkedAppdataStore.h"
 #import "KCSOfflineSaveStore.h"
+
+#import "KCSFile.h"
+#import "KCSBlobService.h"
+#import "KCSResourceStore.h"
+#import "KCSFileStore.h"
 
 #import "KCSLogSink.h"
 
@@ -54,3 +57,5 @@
 #import "KinveyKitExtras.h"
 
 #endif
+
+#warning merge in 1.17.1 fixes

@@ -185,6 +185,8 @@
 
 - (void)setCachedStatement:(FMStatement*)statement forQuery:(NSString*)query {
     
+    NSParameterAssert(query != nil);
+    
     query = [query copy]; // in case we got handed in a mutable string...
     
     [statement setQuery:query];

@@ -20,7 +20,7 @@ typedef enum KCSRESTMethod : NSInteger {
     kKCSRESTMethodPUT,
     kKCSRESTMethodPOST,
     kKCSRESTMethodDELETE
-} KCSRESTMethod;
+} KCSRESTMethod2;
 
 @protocol KCSRequest <NSObject>
 
@@ -36,7 +36,7 @@ typedef enum KCSRESTMethod : NSInteger {
 @interface KCSNetworkRequest : NSObject <KCSRequest>
 
 @property (nonatomic) KCSConextRoot contextRoot;
-@property (nonatomic) KCSRESTMethod httpMethod;
+@property (nonatomic) KCSRESTMethod2 httpMethod;
 @property (nonatomic, copy) NSArray* pathComponents;
 @property (nonatomic, copy) NSString* queryString;
 @property (nonatomic, retain, readonly) NSMutableDictionary* headers;

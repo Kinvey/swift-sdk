@@ -19,18 +19,25 @@
 #import "KCSClient.h"
 #import "KinveyEntity.h"
 #import "KCSLogManager.h"
-#import "KCSResource.h"
+
+#import "KCSFile.h"
 #import "KCSMetadata.h"
+#import "KCSFileStore.h"
 
 #import "KCSBuilders.h"
 
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
 #import "KCSImageUtils.h"
+#import "NSString+KinveyAdditions.h"
 
 #define kKMDKey @"_kmd"
 #define kACLKey @"_acl"
 #define kTypeKey @"_type"
+
+typedef enum KCSRefType : NSInteger {
+    NotARef, FileRef, AppdataRef
+} KCSRefType;
 
 @implementation KCSKinveyRef
 - (instancetype) initWithObj:(id<KCSPersistable>)obj andCollection:(NSString*)collection
@@ -133,163 +140,49 @@ NSDictionary* builderOptions(id object)
     return [self populateObjectWithLinkedResources:object withData:data resourceDictionary:nil];
 }
 
-NSString* specialTypeOfValue(id value)
+KCSRefType specialTypeOfValue(id value)
 {
-    NSString* type = nil;
+    KCSRefType type = NotARef;
     if ([value isKindOfClass:[NSDictionary class]]) {
-        type = [value objectForKey:kTypeKey];
+        NSString* typeString = [value objectForKey:kTypeKey];
+        if ([typeString isEqualToString:@"resource"] || [typeString isEqualToString:@"KinveyFile"]) {
+            type = FileRef;
+        } else if ([typeString isEqualToString:@"KinveyRef"]) {
+            type = AppdataRef;
+        }
     } else if ([value isKindOfClass:[NSArray class]] && [value count] > 0) {
-        type = specialTypeOfValue(value[0]);
+        return specialTypeOfValue(value[0]);
     }
     return type;
 }
 
-+ (id)populateExistingObject:(KCSSerializedObject*)serializedObject withNewData:(NSDictionary*)data
+id makeObjectWithResourcesOfType(Class objectClass, NSDictionary* data, NSMutableDictionary* resources)
 {
-    id object = serializedObject.handleToOriginalObject;
     
-    BOOL hasFlatMap = NO;
-    NSString *dictName = nil;
-    
-    NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
-    NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
-    
-    NSDictionary *specialOptions = builderOptions(object);
+    // Check for special options to building this class
+    NSDictionary *specialOptions = [objectClass kinveyObjectBuilderOptions];
+    BOOL hasDesignatedInit = NO;
     
     if (specialOptions != nil){
-        dictName = [specialOptions objectForKey:KCS_DICTIONARY_NAME_KEY];
-        if ([specialOptions objectForKey:KCS_USE_DICTIONARY_KEY]){
-            hasFlatMap = YES;
-        }
-        
-        if ([specialOptions objectForKey:KCS_IS_DYNAMIC_ENTITY] != nil && [[specialOptions objectForKey:KCS_IS_DYNAMIC_ENTITY] boolValue] == YES) {
-            NSMutableDictionary* d  = [NSMutableDictionary dictionaryWithDictionary:hostToJsonMap];
-            [d setValuesForKeysWithDictionary:[NSDictionary dictionaryWithObjects:[data allKeys] forKeys:[data allKeys]]];
-            
-            if ([d objectForKey:kKMDKey] || [d objectForKey:kACLKey]) {
-                [d removeObjectForKey:kKMDKey];
-                [d removeObjectForKey:kACLKey];
-                [d setObject:KCSEntityKeyMetadata forKey:KCSEntityKeyMetadata];
-            }
-            hostToJsonMap = d;
-        }
-
-    }
-    
-    
-    
-    for (NSString *hostKey in hostToJsonMap) {
-        NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
-        id value = nil;
-        
-        if ([jsonKey isEqualToString:KCSEntityKeyMetadata]) {
-            NSDictionary* kmd = [data objectForKey:kKMDKey];
-            NSDictionary* acl = [data objectForKey:kACLKey];
-            KCSMetadata* metadata = [[KCSMetadata alloc] initWithKMD:kmd acl:acl];
-            value = metadata;
-        } else {
-            value = [data valueForKey:jsonKey];
-        }
-        
-        if (value == nil) {
-            if ([object isKindOfClass:[NSDictionary class]] == NO)  {
-                //dictionaries don't have set properties, so no need to warn, just continue
-                KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
-            }
-            continue;
-        } else {
-            NSString* maybeType = specialTypeOfValue(value);
-            if (maybeType && [maybeType isEqualToString:@"resource"]) {
-                //this is a linked resource; TODO: should support array?
-                NSArray* resources = serializedObject.resourcesToSave;
-                NSUInteger resIdx = [resources indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-                    return [obj isEqual:value];
-                }];
-                if (resIdx != NSNotFound) {
-                    [object setValue:[resources[resIdx] resource] forKey:hostKey];
-                } else {
-                    [object setValue:value forKey:hostKey];
-                }
-            } else if (maybeType && [maybeType isEqualToString:@"KinveyRef"]) {
-                //this is a reference
-                NSArray* references = serializedObject.referencesToSave;
-                if ([value isKindOfClass:[NSArray class]]) {
-                    NSString* valueType = [properties valueForKey:hostKey];
-                    Class valClass = objc_getClass([valueType UTF8String]);
-                    id objVals = [NSMutableArray arrayWithCapacity:[value count]];
-                    if (valClass != nil) {
-                        objVals = [[[valClass alloc] init] mutableCopy];
-                    }
-                    
-                   
-                    for (id arVal in value) {
-                        NSUInteger refIdx = [references indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-                            return [obj isEqual:arVal];
-                        }];
-                        if (refIdx == NSNotFound) {
-                            [objVals addObject:arVal];
-                        } else {
-                            [objVals addObject:[references[refIdx] object]];
-                        }
-                    }
-                    [object setValue:objVals forKey:hostKey];
-                } else {
-                    NSUInteger refIdx = [references indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-                        return [obj isEqual:value];
-                    }];
-                    if (refIdx != NSNotFound) {
-                        [object setValue:[references[refIdx] object] forKey:hostKey];
-                    } else {
-                        id oldVal = [object valueForKey:hostKey];
-                        NSString* refId = [value objectForKey:@"_id"];
-                        BOOL hasAnObjectAlreadyAssigned = oldVal != nil && refId != nil && [refId isEqualToString:[oldVal kinveyObjectId]];
-                        if (hasAnObjectAlreadyAssigned == NO) {
-                            [object setValue:value forKey:hostKey];
-                        }
-                    }
-                }
-            } else {
-                NSString* valueType = [properties valueForKey:hostKey];
-                Class valClass = objc_getClass([valueType UTF8String]);
-                Class<KCSDataTypeBuilder> builder = builderForComplexType(object, valClass);
-                if (builder != nil) {
-                    id builtValue = [builder objectForJSONObject:value];
-                    [object setValue:builtValue forKey:hostKey];
-                } else {
-                    if ([jsonKey isEqualToString:KCSEntityKeyId] && [object kinveyObjectId] != nil && [[object kinveyObjectId] isEqualToString:value] == NO) {
-                        KCSLogWarning(@"%@ is having it's id overwritten.", object);
-                    }
-                    if ([object respondsToSelector:@selector(setValue:forKey:)]) {
-                        [object setValue:value forKey:hostKey];
-                    } else {
-                        KCSLogWarning(@"%@ cannot setValue for %@", hostKey);
-                    }
-                }
-            }
+        if ([specialOptions objectForKey:KCS_USE_DESIGNATED_INITIALIZER_MAPPING_KEY] != nil){
+            hasDesignatedInit = YES;
         }
     }
     
-    // We've processed all the known keys, let's put the rest in our "dictionary" if required
-    if (hasFlatMap){
-        if (dictName){
-            NSArray *knownJsonProps = [hostToJsonMap allValues];
-            for (NSString *property in data) {
-                // Check if in known set
-                if ([knownJsonProps containsObject:property]){
-                    continue;
-                } else {
-                    // otherwise build key path and insert.
-                    NSString *keyPath = [dictName stringByAppendingFormat:@".%@", property];
-                    [object setValue:[data objectForKey:property] forKeyPath:keyPath];
-                }
-            }
-        }
+    // Actually generate the instance of the class
+    id copiedObject = nil;
+    if (hasDesignatedInit){
+        // If we need to use a designated initializer we do so here
+        copiedObject = [objectClass kinveyDesignatedInitializer];
+    } else {
+        // Normal path
+        copiedObject = [[objectClass alloc] init];
     }
     
-    return object;
+    return [KCSObjectMapper populateObjectWithLinkedResources:copiedObject withData:data resourceDictionary:resources];
 }
 
-+ (id) makeObjectFromKinveyRef:(id)refDict forClass:(Class) valClass
+id makeObjectFromKinveyRef(id refDict, Class valClass)
 {
     if ([refDict isEqual:[NSNull null]]) {
         return [NSNull null];
@@ -301,7 +194,7 @@ NSString* specialTypeOfValue(id value)
     if (referencedObj != nil) {
         BOOL isAKCSPersistable = [valClass conformsToProtocol:@protocol(KCSPersistable)];
         if (isAKCSPersistable == YES) {
-            newObj = [self makeObjectWithResourcesOfType:valClass withData:referencedObj withResourceDictionary:nil];
+            newObj = makeObjectWithResourcesOfType(valClass, referencedObj, nil);
         } else {
             newObj = referencedObj;
         }
@@ -310,12 +203,10 @@ NSString* specialTypeOfValue(id value)
     
 }
 
-//TODO: figure out how to combine with above
-+ (id)populateObjectWithLinkedResources:(id)object withData: (NSDictionary *)data resourceDictionary:(NSMutableDictionary*)resourcesToLoad
+void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NSMutableDictionary* resourcesToLoad, KCSSerializedObject* serializedObject)
 {
     BOOL hasFlatMap = NO;
     NSString *dictName = nil;
-    NSDictionary* referencesClasses = @{};
     
     NSDictionary *hostToJsonMap = [object hostToKinveyPropertyMapping];
     NSDictionary* properties = [KCSPropertyUtil classPropsFor:[object class]];
@@ -327,7 +218,8 @@ NSString* specialTypeOfValue(id value)
         if ([specialOptions objectForKey:KCS_USE_DICTIONARY_KEY]){
             hasFlatMap = YES;
         }
-        if ([specialOptions objectForKey:KCS_REFERENCE_MAP_KEY] != nil) {
+        if (referencesClasses != nil && [specialOptions objectForKey:KCS_REFERENCE_MAP_KEY] != nil) {
+            //only populate from newobj with linked resources, not existing
             referencesClasses = [specialOptions objectForKey:KCS_REFERENCE_MAP_KEY];
         }
         if ([specialOptions objectForKey:KCS_IS_DYNAMIC_ENTITY] != nil && [[specialOptions objectForKey:KCS_IS_DYNAMIC_ENTITY] boolValue] == YES) {
@@ -356,27 +248,43 @@ NSString* specialTypeOfValue(id value)
             value = [data valueForKey:jsonKey];
         }
         
-        if (value == nil){
-            KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
+        if (value == nil) {
+            if ([object isKindOfClass:[NSDictionary class]] == NO)  {
+                //dictionaries don't have set properties, so no need to warn, just continue
+                KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
+            }
             continue;
         } else {
-            NSString* maybeType = specialTypeOfValue(value);
-            if (resourcesToLoad && maybeType && [maybeType isEqualToString:@"resource"]) {
-                //if there is no resourcesToLoad dict, then it's not a linked store and the object shoul be replaced by a dictionary
+            KCSRefType maybeType = specialTypeOfValue(value);
+            Class valClass = referencesClasses[hostKey];
+            if (!valClass) {
+                NSString* valueType = properties[hostKey];
+                valClass = objc_getClass([valueType UTF8String]);
+            }
+            
+            if ((resourcesToLoad || serializedObject) && maybeType == FileRef) {
+                //if there is no resourcesToLoad dict, then it's not a linked store and the object should be replaced by a dictionary
                 
                 //this is a linked resource; TODO: should support array?
-                //TODO: DIFF-----
-                [resourcesToLoad setObject:value forKey:hostKey];
-            } else if (maybeType && [maybeType isEqualToString:@"KinveyRef"]) {
-                //this is a reference
-                //TODO: DIFF-----
-                //TODO: update sig
-                
-                Class valClass = [referencesClasses objectForKey:hostKey];
-                if (!valClass) {
-                    NSString* valueType = [properties valueForKey:hostKey];
-                    valClass = objc_getClass([valueType UTF8String]);
+                if (serializedObject) {
+                    //this is an existing object - no need to reload resources (or at least for saving network connection)
+                    NSArray* resources = serializedObject.resourcesToSave;
+                    NSUInteger resIdx = [resources indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                        return [obj isEqual:value];
+                    }];
+                    if (resIdx != NSNotFound && resources != nil) {
+                        [object setValue:[resources[resIdx] resolvedObject] forKey:hostKey];
+                    } else {
+                        [object setValue:value forKey:hostKey];
+                    }
+                } else {
+                    //this is a new object & need to download resources
+                    KCSFile* file = [KCSFile fileRefFromKinvey:value class:valClass];
+                    resourcesToLoad[hostKey] = file;
                 }
+            } else if (maybeType == AppdataRef) {
+                //this is a reference
+                //TODO: update sig
                 
                 if ([value isKindOfClass:[NSArray class]]) {
                     NSString* valueType = [properties valueForKey:hostKey];
@@ -386,11 +294,42 @@ NSString* specialTypeOfValue(id value)
                         objVals = [[[collectionClass alloc] init] mutableCopy];
                     }
                     for (id arVal in value) {
-                        [objVals addObject:[self makeObjectFromKinveyRef:arVal forClass:valClass]];
+                        if (serializedObject != nil) {
+                            //populate with existing refs
+                            NSArray* references = serializedObject.referencesToSave;
+                            NSUInteger refIdx = [references indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                                return [obj isEqual:arVal];
+                            }];
+                            if (refIdx == NSNotFound || references == nil) {
+                                [objVals addObject:arVal];
+                            } else {
+                                [objVals addObject:[references[refIdx] object]];
+                            }
+                        } else {
+                            //create for new
+                            [objVals addObject:makeObjectFromKinveyRef(arVal, valClass)];
+                        }
                     }
                     [object setValue:objVals forKey:hostKey];
                 } else {
-                    [object setValue:[self makeObjectFromKinveyRef:value forClass:valClass] forKey:hostKey];
+                    if (serializedObject != nil) {
+                        NSArray* references = serializedObject.referencesToSave;
+                        NSUInteger refIdx = [references indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                            return [obj isEqual:value];
+                        }];
+                        if (refIdx != NSNotFound) {
+                            [object setValue:[references[refIdx] object] forKey:hostKey];
+                        } else {
+                            id oldVal = [object valueForKey:hostKey];
+                            NSString* refId = [value objectForKey:@"_id"];
+                            BOOL hasAnObjectAlreadyAssigned = oldVal != nil && refId != nil && [refId isEqualToString:[oldVal kinveyObjectId]];
+                            if (hasAnObjectAlreadyAssigned == NO) {
+                                [object setValue:value forKey:hostKey];
+                            }
+                        }
+                    } else {
+                        [object setValue:makeObjectFromKinveyRef(value, valClass) forKey:hostKey];
+                    }
                 }
                 
             } else {
@@ -401,7 +340,15 @@ NSString* specialTypeOfValue(id value)
                     id builtValue = [builder objectForJSONObject:value];
                     [object setValue:builtValue forKey:hostKey];
                 } else {
-                    [object setValue:value forKey:hostKey];
+                    if ([jsonKey isEqualToString:KCSEntityKeyId] && [object kinveyObjectId] != nil && [[object kinveyObjectId] isEqualToString:value] == NO) {
+                        KCSLogWarning(@"%@ is having it's id overwritten.", object);
+                    }
+                    if ([object respondsToSelector:@selector(setValue:forKey:)]) {
+                        [object setValue:value forKey:hostKey];
+                    } else {
+                        KCSLogWarning(@"%@ cannot setValue for %@", hostKey);
+                    }
+                    
                 }
             }
         }
@@ -423,7 +370,18 @@ NSString* specialTypeOfValue(id value)
             }
         }
     }
-    
+}
+
++ (id)populateExistingObject:(KCSSerializedObject*)serializedObject withNewData:(NSDictionary*)data
+{
+    id object = serializedObject.handleToOriginalObject;
+    populate(object, nil, data, nil, serializedObject);
+    return object;
+}
+
++ (id)populateObjectWithLinkedResources:(id)object withData: (NSDictionary *)data resourceDictionary:(NSMutableDictionary*)resourcesToLoad
+{
+    populate(object, @{}, data, resourcesToLoad, nil);
     return object;
 }
 
@@ -458,38 +416,25 @@ NSString* specialTypeOfValue(id value)
     return [self makeObjectWithResourcesOfType:objectClass withData:data withResourceDictionary:nil];
 }
 
-//TODO: builder options
-BOOL isResourceType(id object);
-BOOL isResourceType(id object)
-{
-    return [object isKindOfClass:[ImageClass class]];
-}
-
-NSString* extensionForResource(id object);
-NSString* extensionForResource(id object)
-{
-    if ([object isKindOfClass:[ImageClass class]]) {
-        return @".png";
-    }
-    return @"";
-}
-
 static NSDictionary* _defaultBuilders;
 NSDictionary* defaultBuilders();
 NSDictionary* defaultBuilders()
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _defaultBuilders = @{(id)[NSDate class] : [KCSDateBuilder class],
-        (id)[NSSet class] : [KCSSetBuilder class],
-        (id)[NSMutableSet class] : [KCSMSetBuilder class],
-        (id)[NSOrderedSet class] : [KCSOrderedSetBuilder class],
-        (id)[NSMutableOrderedSet class] : [KCSMOrderedSetBuilder class],
-        (id)[NSMutableAttributedString class] : [KCSMAttributedStringBuilder class],
-        (id)[NSAttributedString class] : [KCSAttributedStringBuilder class],
-        (id)[CLLocation class] : [KCSCLLocationBuilder class]};
+        _defaultBuilders = @{
+                             (id)[NSDate class] : [KCSDateBuilder class],
+                             (id)[NSSet class] : [KCSSetBuilder class],
+                             (id)[NSMutableSet class] : [KCSMSetBuilder class],
+                             (id)[NSOrderedSet class] : [KCSOrderedSetBuilder class],
+                             (id)[NSMutableOrderedSet class] : [KCSMOrderedSetBuilder class],
+                             (id)[NSMutableAttributedString class] : [KCSMAttributedStringBuilder class],
+                             (id)[NSAttributedString class] : [KCSAttributedStringBuilder class],
+                             (id)[CLLocation class] : [KCSCLLocationBuilder class],
+                             (id)[NSURL class] : [KCSURLBuilder class]
+                             };
     });
-
+    
     return _defaultBuilders;
 }
 
@@ -511,33 +456,41 @@ BOOL isCollection(id obj)
     return [obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSSet class]] || [obj isKindOfClass:[NSOrderedSet class]];
 }
 
-
 void setError(NSError** error, NSString* objectId, NSString* jsonName)
 {
     if (error != NULL) {
         NSDictionary* info = @{NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Reference object does not have ID set."],
-        NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"Object (id=%@) is trying to create a reference in field '%@', but that object does not yet have an assigned id. Save this object to its collection first", objectId, jsonName], NSLocalizedRecoverySuggestionErrorKey : @"Save reference object first or pre-assign it an id."};
+                               NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"Object (id=%@) is trying to create a reference in field '%@', but that object does not yet have an assigned id. Save this object to its collection first", objectId, jsonName], NSLocalizedRecoverySuggestionErrorKey : @"Save reference object first or pre-assign it an id."};
         *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSReferenceNoIdSetError userInfo:info];
     }
 }
 
-id valueForProperty(NSString* jsonName, id value, BOOL withProps, id object, NSString* collectionName, NSString* key, NSString* refCollection, NSMutableArray* resourcesToSave, NSError** error, NSString* objectId, NSMutableArray* referencesToSave)
+id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSString* collectionName, NSString* key, NSString* refCollection, NSMutableArray* resourcesToSave, NSError** error, NSString** objectId, NSMutableArray* referencesToSave)
 {
-    if (withProps == YES && isResourceType(value) == YES) {
-        NSString* objname = [object kinveyObjectId];
-        if (objname == nil) {
-            CFUUIDRef uuid = CFUUIDCreate(NULL);
-            
-            if (uuid){
-                objname = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
-                CFRelease(uuid);
+    if (withRefs == YES && constantsEqual(refCollection, KCSFileStoreCollectionName)) {
+        if (*objectId == nil) {
+            *objectId = [NSString UUID];
+            [object setKinveyObjectId:*objectId];
+        }
+        NSString* fileId = [NSString stringWithFormat:@"%@-%@-%@", collectionName, *objectId, key];
+        KCSFile* fileRef = [KCSFile fileRef:value collectionIdProperty:fileId];
+        
+        //pass parent ACLs to ref file
+        NSDictionary* hostToJsonMap = [object hostToKinveyPropertyMapping];
+        if (hostToJsonMap != nil) {
+            NSArray* metaProperties = [hostToJsonMap allKeysForObject:KCSEntityKeyMetadata];
+            if (metaProperties && metaProperties.count > 0) {
+                NSString* metaProperty = metaProperties[0];
+                KCSMetadata* meta = [object valueForKey:metaProperty];
+                if (meta) {
+                    fileRef.metadata = meta;
+                }
             }
         }
-        NSString* filename = [NSString stringWithFormat:@"%@-%@-%@%@", collectionName, objname, key, extensionForResource(value)];
-        KCSResource* resourceWrapper = [[KCSResource alloc] initWithResource:value name:filename];
-        [resourcesToSave addObject:resourceWrapper];
-        return resourceWrapper;
-    } else if (withProps == YES && refCollection != nil) {
+        
+        [resourcesToSave addObject:fileRef];
+        return fileRef;
+    } else if (withRefs == YES && refCollection != nil) {
         // have a kinvey ref
         BOOL shouldSaveRef = [object respondsToSelector:@selector(referenceKinveyPropertiesOfObjectsToSave)] && [[object referenceKinveyPropertiesOfObjectsToSave] containsObject:jsonName] == YES;
         if (isCollection(value)) {
@@ -550,7 +503,7 @@ id valueForProperty(NSString* jsonName, id value, BOOL withProps, id object, NSS
             for (id arrayVal in arrayValue) {
                 KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:arrayVal andCollection:refCollection];
                 if ([ref unableToSaveReference:shouldSaveRef]) {
-                    setError(error, objectId, jsonName);
+                    setError(error, *objectId, jsonName);
                     return nil;
                 }
                 [refArray addObject:ref];
@@ -562,7 +515,7 @@ id valueForProperty(NSString* jsonName, id value, BOOL withProps, id object, NSS
         } else {
             KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:value andCollection:refCollection];
             if ([ref unableToSaveReference:shouldSaveRef]) {
-                setError(error, objectId, jsonName);
+                setError(error, *objectId, jsonName);
                 return nil;
             }
             if (shouldSaveRef) {
@@ -584,49 +537,53 @@ id valueForProperty(NSString* jsonName, id value, BOOL withProps, id object, NSS
     }
 }
 
-+ (KCSSerializedObject*) makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName withProps:(BOOL)withProps error:(NSError**)error
++ (KCSSerializedObject*) raiseUnkownKeyException:(NSException*)exception error:(NSError**)error key:(NSString*)clientPropertyName;
+{
+    if ([[exception name] isEqualToString:@"NSUnknownKeyException"]) {
+        KCSLogError(@"Error serialzing entity for use with Kinvey: '%@'", [exception reason]);
+        if (error != NULL) {
+            NSDictionary* info = @{NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Entity does not have property '%@' as specified in hostToKinveyPropertyMapping", clientPropertyName],
+                                   NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"Cannot map '%@', a non-existant property", clientPropertyName], NSLocalizedRecoverySuggestionErrorKey : @"Check the hostToKinveyPropertyMapping for typos and errors."};
+            *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidKCSPersistableError userInfo:info];
+        }
+        return nil;
+    } else {
+        [exception raise];
+    }
+    return nil;
+}
+
++ (KCSSerializedObject*) makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName withReferences:(BOOL)withRefs error:(NSError**)error
 {
     NSMutableDictionary *dictionaryToMap = [[NSMutableDictionary alloc] init];
     NSDictionary *kinveyMapping = [object hostToKinveyPropertyMapping];
-    NSString *objectId = @"";
+    NSString* objectId = nil;
+    @try {
+        objectId = [object kinveyObjectId]; //need to get the id up front for kinveyfile naming
+    }
+    @catch (NSException *exception) {
+        return [self raiseUnkownKeyException:exception error:error key:@"_id"];
+    }
     
     NSMutableArray* resourcesToSave = nil;
     NSMutableArray* referencesToSave = nil;
     NSDictionary* kinveyRefMapping = nil;
     
-    if (withProps == YES) {
+    if (withRefs == YES && [[object class] respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
         resourcesToSave = [NSMutableArray array];
-        if ([[object class] respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
-            referencesToSave = [NSMutableArray array];
-            kinveyRefMapping = [[object class] kinveyPropertyToCollectionMapping];
-        }
+        referencesToSave = [NSMutableArray array];
+        kinveyRefMapping = [[object class] kinveyPropertyToCollectionMapping];
     }
     
-    for (NSString* key in kinveyMapping) {
-        NSString *jsonName = [kinveyMapping valueForKey:key];
-
-        id value;
+    for (NSString* clientPropertyName in [kinveyMapping allKeys]) {
+        NSString *jsonName = [kinveyMapping valueForKey:clientPropertyName];
+        
+        id value = nil;
         @try {
-            value = [object valueForKey:key];
+            value = [object valueForKey:clientPropertyName];
         }
         @catch (NSException *exception) {
-            if ([[exception name] isEqualToString:@"NSUnknownKeyException"]) {
-                KCSLogError(@"Error serialzing entity for use with Kinvey: '%@'", [exception reason]);
-                if (error != NULL) {
-                    NSDictionary* info = @{NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Entity does not have property '%@' as specified in hostToKinveyPropertyMapping", key],
-                                           NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"Cannot map '%@', a non-existant property", key], NSLocalizedRecoverySuggestionErrorKey : @"Check the hostToKinveyPropertyMapping for typos and errors."};
-                    *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidKCSPersistableError userInfo:info];
-                }
-                return nil;
-            } else {
-                [exception raise];
-            }
-        }
-        
-        
-        //get the id
-        if ([jsonName isEqualToString:KCSEntityKeyId] && value != nil){
-            objectId = value;
+            return [self raiseUnkownKeyException:exception error:error key:clientPropertyName];
         }
         
         if (value == nil) {
@@ -636,20 +593,20 @@ id valueForProperty(NSString* jsonName, id value, BOOL withProps, id object, NSS
         
         //serialize the fields to a dictionary
         if ([jsonName isEqualToString:KCSEntityKeyMetadata]) {
-            //hijack metadata
+            //hijack metadata & only save ACLs (kmd can't be overwritten yet)
             dictionaryToMap[kACLKey] = [(KCSMetadata*)value aclValue];
         } else {
-            value = valueForProperty(jsonName,
-                                     value,
-                                     withProps,
-                                     object,
-                                     collectionName,
-                                     key,
-                                     [kinveyRefMapping objectForKey:jsonName],
-                                     resourcesToSave,
-                                     error,
-                                     objectId,
-                                     referencesToSave);
+            value = valueForProperty(jsonName, //jsonName
+                                     value, //value
+                                     withRefs, //withRefs
+                                     object, //object
+                                     collectionName, //collectionName (the object's collection)
+                                     clientPropertyName,// key
+                                     kinveyRefMapping[jsonName], //ref Collection
+                                     resourcesToSave, //resourcesTo Save
+                                     error, //error
+                                     &objectId, //objectId
+                                     referencesToSave); //referencesToSave
             if (value == nil) {
                 return nil;
             }
@@ -670,14 +627,14 @@ id valueForProperty(NSString* jsonName, id value, BOOL withProps, id object, NSS
             id value = subDict[key];
             value = valueForProperty(key,
                                      value,
-                                     withProps,
+                                     withRefs,
                                      object,
                                      collectionName,
                                      key,
-                                     [kinveyRefMapping objectForKey:key],
+                                     kinveyRefMapping[key],
                                      resourcesToSave,
                                      error,
-                                     objectId,
+                                     &objectId,
                                      referencesToSave);
             dictionaryToMap[key] = value;
         }
@@ -688,12 +645,12 @@ id valueForProperty(NSString* jsonName, id value, BOOL withProps, id object, NSS
 
 + (KCSSerializedObject *)makeResourceEntityDictionaryFromObject:(id)object forCollection:(NSString*)collectionName error:(NSError**)error
 {
-    return [self makeResourceEntityDictionaryFromObject:object forCollection:collectionName withProps:YES error:error];
+    return [self makeResourceEntityDictionaryFromObject:object forCollection:collectionName withReferences:YES error:error];
 }
 
 + (KCSSerializedObject *)makeKinveyDictionaryFromObject: (id)object error:(NSError**)error
 {
-    return [self makeResourceEntityDictionaryFromObject:object forCollection:nil withProps:NO error:error];
+    return [self makeResourceEntityDictionaryFromObject:object forCollection:nil withReferences:NO error:error];
 }
 
 @end
