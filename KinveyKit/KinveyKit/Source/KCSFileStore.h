@@ -30,6 +30,8 @@ FOUNDATION_EXPORT NSString* const KCSFileFileName;
 FOUNDATION_EXPORT NSString* const KCSFileSize;
 /** Option to only download the file if the server has been updated since the last download.*/
 FOUNDATION_EXPORT NSString* const KCSFileOnlyIfNewer;
+/** Option to only download the missing bytes of the file. */
+FOUNDATION_EXPORT NSString* const KCSFileResume;
 
 
 @interface KCSCollection (KCSFileStore)
@@ -155,6 +157,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  
  * KCSFileOnlyIfNewer - set to `@(YES)` to only download if the metadata has been updated after the file was last downloaded (if file exists).
  * KCSFileFileName - the destination filename. If no filename is provided, its name will be dervied from the filename of on the server.
+ * KCSFileResume - set to `@(YES)` to only download the remaining bytes in the file. This assumes that the server file has not changed since the previous partial download.
  
  @param url a resolved GCS file URL. This request must be sucessfully sent before the `expirationTime` or the request will fail.
  @param options an optional (can be `nil`) options dictionary (see above)

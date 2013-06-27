@@ -13,6 +13,7 @@
 #import "KCSFile.h"
 #import "KCSFileStore.h"
 #import "NSArray+KinveyAdditions.h"
+#import "KCSHiddenMethods.h"
 
 #define KTAssertIncresing(var) \
 { \
@@ -40,6 +41,9 @@
     KTAssertIncresing(progresses); \
     KTAssertIncresing(datas);
 
+#define SLEEP_TIMEINTERVAL 20
+#define PAUSE NSLog(@"sleeping for %u seconds.",SLEEP_TIMEINTERVAL); [NSThread sleepForTimeInterval:SLEEP_TIMEINTERVAL];
+
 
 #define kTestId @"testData"
 #define kTestMimeType @"text/plain"
@@ -48,6 +52,12 @@
 #define kImageFilename @"mavericks.jpg"
 #define kImageMimeType @"image/jpeg"
 #define kImageSize 3510397
+
+//copy for testing
+@interface KCSDownloadStreamRequest : NSObject
+@property (nonatomic) unsigned long long bytesWritten;
+@end
+
 
 @interface KCSFileStoreTests : SenTestCase
 
@@ -419,7 +429,7 @@ NSData* testData()
     [self poll];
     
     
-    [NSThread sleepForTimeInterval:0.5];
+    PAUSE
     
     //then re-upload file
     self.done = NO;
@@ -450,7 +460,8 @@ NSData* testData()
         NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[dlFile.localURL path] error:&error];
         STAssertNoError_;
         NSDate* thisDate = attributes[NSFileModificationDate];
-        STAssertTrue([firstDate compare:thisDate] == NSOrderedAscending, @"file should not have been modified");
+        NSComparisonResult oldComparedToNew = [firstDate compare:thisDate];
+        STAssertTrue(oldComparedToNew == NSOrderedAscending, @"file should not have been modified");
         
         [[NSFileManager defaultManager] removeItemAtURL:dlFile.localURL error:&error];
         STAssertNoError_
@@ -519,59 +530,197 @@ NSData* testData()
 
 - (void) testDownloadWithResolvedURLStopAndResume
 {
-    STFail(@"NIY");
-    NSURL* downloadURL = [self getDownloadURLForId:kTestId];
+    self.done = NO;
+    __block NSString* fileId;
+    [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        fileId = uploadInfo.fileId;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    NSURL* downloadURL = [self getDownloadURLForId:fileId];
     
     self.done = NO;
+    __block NSDate* localLMT = nil;
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNotNil(error, @"Should get an error");
+        KTAssertCount(1, downloadedResources);
+        KCSFile* dlFile = downloadedResources[0];
+        STAssertNil(dlFile.data, @"no data");
+        STAssertEqualObjects(dlFile.filename, kImageFilename, @"should match filenames");
+        STAssertEqualObjects(dlFile.fileId, fileId, @"should match ids");
+        STAssertTrue(dlFile.length < kImageSize, @"lengths should match");
+        STAssertEqualObjects(dlFile.mimeType, kImageMimeType, @"mime types should match");
+        STAssertNotNil(dlFile.localURL, @"should be a local URL");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[dlFile.localURL path]], @"should exist");
+        
+        error = nil;
+        NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[dlFile.localURL path] error:&error];
+        STAssertNoError_;
+        localLMT = attributes[NSFileModificationDate];
+
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    id lastRequest = [KCSFileStore lastRequest];
+    double delayInSeconds = 0.25;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        NSLog(@"cancelling...");
+        [lastRequest cancel];
+    });
+    [self poll];
+    ASSERT_PROGESS
+    
+    unsigned long long firstWritten = [lastRequest bytesWritten];
+    
+    [NSThread sleepForTimeInterval:1];
+    self.done = NO;
+    [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileResume : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
         KCSFile* dlFile = downloadedResources[0];
         STAssertNil(dlFile.data, @"no data");
+        STAssertEqualObjects(dlFile.filename, kImageFilename, @"should match filenames");
+        STAssertEqualObjects(dlFile.fileId, fileId, @"should match ids");
+        KTAssertEqualsInt(dlFile.length, kImageSize, @"lengths should match");
+        STAssertEqualObjects(dlFile.mimeType, kImageMimeType, @"mime types should match");
+        STAssertNotNil(dlFile.localURL, @"should be a local URL");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[dlFile.localURL path]], @"should exist");
+        
+        NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[dlFile.localURL path] error:&error];
+        STAssertNoError_;
+        NSDate* newLMT = attributes[NSFileModificationDate];
+        NSComparisonResult oldComparedToNew = [localLMT compare:newLMT];
+        STAssertTrue(oldComparedToNew == NSOrderedAscending, @"file should be updated");
+
+        [[NSFileManager defaultManager] removeItemAtURL:dlFile.localURL error:&error];
+        STAssertNoError_
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+    
+    lastRequest = [KCSFileStore lastRequest];
+    unsigned long long secondWritten = [lastRequest bytesWritten];
+    STAssertEquals(firstWritten + secondWritten, (unsigned long long) kImageSize, @"should have only downloaded the total num bytes");
+}
+
+- (void) testDownloadWithResolvedURLStopAndResumeFromBeginningIfNewer
+{
+    self.done = NO;
+    __block NSString* fileId;
+    [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        fileId = uploadInfo.fileId;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    NSURL* downloadURL = [self getDownloadURLForId:fileId];
+    
+    //start a download and then abort it
+    self.done = NO;
+    __block NSDate* localLMT = nil;
+    SETUP_PROGRESS
+    [KCSFileStore downloadFileWithResolvedURL:downloadURL options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNotNil(error, @"Should get an error");
+        KTAssertCount(1, downloadedResources);
+        KCSFile* dlFile = downloadedResources[0];
+        STAssertNil(dlFile.data, @"no data");
+        STAssertEqualObjects(dlFile.filename, kImageFilename, @"should match filenames");
+        STAssertEqualObjects(dlFile.fileId, fileId, @"should match ids");
+        STAssertTrue(dlFile.length < kImageSize, @"lengths should match");
+        STAssertEqualObjects(dlFile.mimeType, kImageMimeType, @"mime types should match");
+        STAssertNotNil(dlFile.localURL, @"should be a local URL");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[dlFile.localURL path]], @"should exist");
+        
+        error = nil;
+        NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[dlFile.localURL path] error:&error];
+        STAssertNoError_;
+        localLMT = attributes[NSFileModificationDate];
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    id lastRequest = [KCSFileStore lastRequest];
+    double delayInSeconds = 0.25;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        NSLog(@"cancelling...");
+        [lastRequest cancel];
+    });
+    [self poll];
+    ASSERT_PROGESS
+    unsigned long long firstWritten = [lastRequest bytesWritten];
+    
+    //update the file
+    PAUSE
+    self.done = NO;
+    [KCSFileStore uploadFile:[self largeImageURL] options:@{KCSFileId : fileId} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        fileId = uploadInfo.fileId;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    //restart the download and make sure it starts over from the beginning
+    self.done = NO;
+    [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileResume : @(YES), KCSFileOnlyIfNewer : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_
+        KTAssertCount(1, downloadedResources);
+        KCSFile* dlFile = downloadedResources[0];
+        STAssertNil(dlFile.data, @"no data");
+        STAssertEqualObjects(dlFile.filename, kImageFilename, @"should match filenames");
+        STAssertEqualObjects(dlFile.fileId, fileId, @"should match ids");
+        KTAssertEqualsInt(dlFile.length, kImageSize, @"lengths should match");
+        STAssertEqualObjects(dlFile.mimeType, kImageMimeType, @"mime types should match");
+        STAssertNotNil(dlFile.localURL, @"should be a local URL");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[dlFile.localURL path]], @"should exist");
+        
+        NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[dlFile.localURL path] error:&error];
+        STAssertNoError_;
+        NSDate* newLMT = attributes[NSFileModificationDate];
+        STAssertTrue([localLMT compare:newLMT] == NSOrderedAscending, @"file should be updated");
+        
+        [[NSFileManager defaultManager] removeItemAtURL:dlFile.localURL error:&error];
+        STAssertNoError_
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    //Note: don't ASSERT_PROGRESS becuase progress is going to go 0, .1, .2.. for first download and start back at 0 for second download - no longer monotonically increasing
+    
+    lastRequest = [KCSFileStore lastRequest];
+    unsigned long long secondWritten = [lastRequest bytesWritten];
+    STAssertEquals(secondWritten, (unsigned long long) kImageSize, @"second download should be full file");
+    STAssertEquals(firstWritten + secondWritten, (unsigned long long) kImageSize + firstWritten, @"should have restarted download");
+}
+
+- (void) testDownloadWithURLData
+{
+    NSURL* downloadURL = [self getDownloadURLForId:kTestId];
+    
+    self.done = NO;
+    SETUP_PROGRESS
+    [KCSFileStore downloadDataWithResolvedURL:downloadURL completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_
+        KTAssertCount(1, downloadedResources);
+        KCSFile* dlFile = downloadedResources[0];
+        STAssertNotNil(dlFile.data, @"should have data");
         STAssertEqualObjects(dlFile.filename, kTestFilename, @"should match filenames");
         STAssertEqualObjects(dlFile.fileId, kTestId, @"should match ids");
         STAssertEquals(dlFile.length, testData().length, @"lengths should match");
         STAssertEqualObjects(dlFile.mimeType, kTestMimeType, @"mime types should match");
-        STAssertNotNil(dlFile.localURL, @"should be a local URL");
-        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[dlFile.localURL path]], @"should exist");
-        NSData* downloadedData = [NSData dataWithContentsOfURL:dlFile.localURL];
-        STAssertEqualObjects(downloadedData, testData(), @"should get our test data back");
-        [[NSFileManager defaultManager] removeItemAtURL:dlFile.localURL error:&error];
-        STAssertNoError_
+        STAssertNil(dlFile.localURL, @"should not have a local URL");
+        STAssertEqualObjects(dlFile.data, testData(), @"should get our test data back");
         self.done = YES;
     } progressBlock:PROGRESS_BLOCK];
     [self poll];
     ASSERT_PROGESS
 }
 
-- (void) testDownloadWithResolvedURLStopAndResumeFromBeginningIfNewer
-{
-    STFail(@"NIY");
-    NSURL* downloadURL = [self getDownloadURLForId:kTestId];
-    
-    self.done = NO;
-    SETUP_PROGRESS
-    [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileOnlyIfNewer : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
-        STAssertNoError_
-        KTAssertCount(1, downloadedResources);
-        KCSFile* dlFile = downloadedResources[0];
-        STAssertNil(dlFile.data, @"no data");
-        STAssertEqualObjects(dlFile.filename, kTestFilename, @"should match filenames");
-        STAssertEqualObjects(dlFile.fileId, kTestId, @"should match ids");
-        STAssertEquals(dlFile.length, testData().length, @"lengths should match");
-        STAssertEqualObjects(dlFile.mimeType, kTestMimeType, @"mime types should match");
-        STAssertNotNil(dlFile.localURL, @"should be a local URL");
-        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[dlFile.localURL path]], @"should exist");
-        NSData* downloadedData = [NSData dataWithContentsOfURL:dlFile.localURL];
-        STAssertEqualObjects(downloadedData, testData(), @"should get our test data back");
-        [[NSFileManager defaultManager] removeItemAtURL:dlFile.localURL error:&error];
-        STAssertNoError_
-        self.done = YES;
-    } progressBlock:PROGRESS_BLOCK];
-    [self poll];
-    ASSERT_PROGESS
-}
 
 #pragma mark - Streaming
 
