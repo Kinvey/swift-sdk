@@ -32,15 +32,33 @@ NSString* const KCSFileFileName = @"_filename";
 NSString* const KCSFileSize = @"size";
 NSString* const KCSFileOnlyIfNewer = @"fileStoreNewer";
 NSString* const KCSFileResume = @"fileStoreResume";
+NSString* const KCSFileLocalURL = @"fileStoreLocalURL";
 
 #define kServerLMT @"serverlmt"
 #define TIME_INTERVAL 10
 
+NSString* mimeTypeForFilename(NSString* filename)
+{
+    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[filename pathExtension], NULL);
+    CFStringRef MIMEType = nil;
+    if (UTI != nil) {
+        MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+        CFRelease(UTI);
+    }
+    NSString* mimeType = MIMEType ? (NSString*)CFBridgingRelease(MIMEType) : @"application/octet-stream";
+    
+    return mimeType;
+}
+
+
 NSString* mimeTypeForFileURL(NSURL* fileURL)
 {
     CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[fileURL pathExtension], NULL);
-    CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
-    CFRelease(UTI);
+    CFStringRef MIMEType = nil;
+    if (UTI != nil) {
+        MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+        CFRelease(UTI);
+    }
     NSString* mimeType = MIMEType ? (NSString*)CFBridgingRelease(MIMEType) : @"application/octet-stream";
 
     return mimeType;
@@ -353,10 +371,15 @@ static id lastRequest = nil;
 {
     NSParameterAssert(data != nil);
     NSParameterAssert(completionBlock != nil);
+    if (uploadOptions && uploadOptions[KCSFileSize]) {
+        [[NSException exceptionWithName:@"KCSInvalidParameter" reason:@"Specifing upload file size (`KCSFileSize`) is not supported. Size is determined by the data." userInfo:nil] raise];
+    }
 
     NSMutableDictionary* opts = [NSMutableDictionary dictionaryWithDictionary:uploadOptions];
-    setIfEmpty(opts, @"size", @(data.length));
-    setIfEmpty(opts, KCSFileMimeType, @"application/octet-stream");
+    opts[KCSFileSize] = @(data.length);
+    NSString* mimeType = opts[KCSFileMimeType];
+    ifNil(mimeType, mimeTypeForFilename(opts[KCSFileFileName]));
+    setIfEmpty(opts, KCSFileMimeType, mimeType);
     
     KCSNetworkRequest* request = [self _getUploadLoc:opts];    
     [request run:^(id results, NSError *error) {
@@ -384,6 +407,9 @@ static id lastRequest = nil;
 {
     NSParameterAssert(fileURL != nil);
     NSParameterAssert(completionBlock != nil);
+    if (uploadOptions && uploadOptions[KCSFileSize]) {
+        [[NSException exceptionWithName:@"KCSInvalidParameter" reason:@"Specifing upload file size (`KCSFileSize`) is not supported. Size is determined by the size of the file's data." userInfo:nil] raise];
+    }
     
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]];
     if (exists == NO) {
@@ -401,7 +427,7 @@ static id lastRequest = nil;
     }
     
     NSMutableDictionary* opts = [NSMutableDictionary dictionaryWithDictionary:uploadOptions];
-    setIfEmpty(opts, @"size", attr[NSFileSize]);
+    opts[KCSFileSize] = attr[NSFileSize]; //overwrite size
     setIfEmpty(opts, KCSFileFileName, [fileURL lastPathComponent]);
     
     NSString* mimeType = mimeTypeForFileURL(fileURL);
@@ -785,17 +811,20 @@ static id lastRequest = nil;
 
 + (void)downloadFileWithResolvedURL:(NSURL *)url options:(NSDictionary *)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
+    NSParameterAssert(url);
+    NSParameterAssert(completionBlock);
+    
+    ifNil(options, @{});
+    
     NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
     
     //NOTE: this logic is heavily based on GCS url structure
     NSArray* pathComponents = [url pathComponents];
-    NSString* filename = nil;
-    if (options != nil) {
-        filename = options[KCSFileFileName];
-    }
+    NSString* filename = options[KCSFileFileName];
     ifNil(filename, [url lastPathComponent]);
     DBAssert(filename != nil, @"should have a valid filename");
-    NSURL* destinationFile = [NSURL URLWithString:filename relativeToURL:downloadsDir];
+    NSURL* destinationFile = options[KCSFileLocalURL];
+    ifNil(destinationFile, [NSURL URLWithString:filename relativeToURL:downloadsDir]);
     NSString* fileId = pathComponents[MAX(pathComponents.count - 2, 1)];
     
     BOOL onlyIfNewer = (options == nil) ? NO : [options[KCSFileOnlyIfNewer] boolValue];
@@ -816,6 +845,9 @@ static id lastRequest = nil;
 
 + (void)downloadDataWithResolvedURL:(NSURL *)url completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
+    NSParameterAssert(url);
+    NSParameterAssert(completionBlock);
+    
     [self downloadFileWithResolvedURL:url options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
         if (!error && downloadedResources != nil && downloadedResources.count > 0) {
             KCSFile* file = downloadedResources[0];
@@ -837,6 +869,15 @@ static id lastRequest = nil;
             completionBlock(downloadedResources, error);
         }
     } progressBlock:progressBlock];
+}
+
++ (void)resumeDownload:(NSURL *)partialLocalFile from:(NSURL *)resolvedURL completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+{
+    NSParameterAssert(partialLocalFile);
+    NSParameterAssert(resolvedURL);
+    NSParameterAssert(completionBlock);
+    
+    [self downloadFileWithResolvedURL:resolvedURL options:@{KCSFileLocalURL : partialLocalFile, KCSFileResume : @(YES)} completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 #pragma mark - Streaming

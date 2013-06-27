@@ -106,6 +106,8 @@ implementing these methods.
  
  The actual value stored in backend will be a `KinveyRef` dictionary that stores the related object's `_id` and collection name. When loading the entity where this method is not implemented and not going through a KCSLinkedAppdataStore, the value will be a NSDictionary with the KinveyRef value, and not the associated object.
  
+ Binary data (UIImage, NSData, etc) can also be referenced in properties. This is done by mapping those properties to the collection name: `KCSFileStoreCollectionName`.
+ 
  Use this method with kinveyObjectBuilderOptions `KCS_REFERENCE_MAP_KEY` to specify object types.
  
  See the online Kinvey documentation for more information.
@@ -113,7 +115,6 @@ implementing these methods.
  @return a dictionary mapping Kinvey entity fields to collections.
  @since 1.8
  */
-#warning update for LinkedFile
 + (NSDictionary*) kinveyPropertyToCollectionMapping;
 
 /** Provide a list of backend reference objects to save when this object is saved through a `KCSLinkedAppdataStore`. 

@@ -57,9 +57,6 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 /// @name Creating & Updating Files
 ///---------------------------------------------------------------------------------------
 
-//TODO: match ref-files ACLs to entity ACLs
-//TODO: check that LMT gets updated even if metadata does not
-
 /**
  Uploads a local file to Kinvey's file store
  
@@ -247,7 +244,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This will count the total bytes to download, and thus will start with percentage previously downloaded. 
  @since 1.18.0
  */
-+ (void) resumeDownload:(NSURL*)partialLocalFile from:(NSURL*)resolvedURL completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
++ (void) resumeDownload:(NSURL*)partialLocalFile from:(NSURL*)resolvedURL completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
 #pragma mark - Deleting Files
 ///---------------------------------------------------------------------------------------
