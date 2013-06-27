@@ -82,6 +82,4 @@
 //internal methods
 + (instancetype) fileRef:(id)objectToRef collectionIdProperty:(NSString*)idStr;
 + (instancetype) fileRefFromKinvey:(NSDictionary*)kinveyDict class:(Class)klass;
-
-#warning doc - how to be cool at the thing
 @end

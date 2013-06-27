@@ -64,9 +64,12 @@ NSDictionary* defaultBuilders();
 + (void) uploadKCSFile:(KCSFile*)file completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 + (void)downloadKCSFile:(KCSFile*) file completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock) progressBlock;
 
++ (id) lastRequest;
 @end
 
 @interface KCSFile (KCSHiddenMethods)
+@property (nonatomic, retain) NSURL* localURL;
+@property (nonatomic, retain) NSData* data;
 - (void) updateAfterUpload:(KCSFile*)newFile;
 @end
 

@@ -31,8 +31,10 @@ NSString* const KCSFileMimeType = @"mimeType";
 NSString* const KCSFileFileName = @"_filename";
 NSString* const KCSFileSize = @"size";
 NSString* const KCSFileOnlyIfNewer = @"fileStoreNewer";
+NSString* const KCSFileResume = @"fileStoreResume";
 
 #define kServerLMT @"serverlmt"
+#define TIME_INTERVAL 10
 
 NSString* mimeTypeForFileURL(NSURL* fileURL)
 {
@@ -45,6 +47,10 @@ NSString* mimeTypeForFileURL(NSURL* fileURL)
 }
 
 typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSError* error);
+
+#if BUILD_FOR_UNIT_TEST
+static id lastRequest = nil;
+#endif
 
 @interface KCSHeadRequest : NSObject <NSURLConnectionDataDelegate, NSURLConnectionDelegate>
 @property (nonatomic, copy) StreamCompletionBlock completionBlock;
@@ -112,6 +118,7 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
     [request setHTTPBodyStream:stream];
     [request addValue:[@(length) stringValue] forHTTPHeaderField:@"Content-Length"];
     [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
+#warning    [request addValue:@"start" forHTTPHeaderField:@"x-goog-resumable"];
     
     NSURLConnection* connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     [connection start];
@@ -163,17 +170,18 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
 
 
 @interface KCSDownloadStreamRequest : NSObject <NSURLConnectionDataDelegate, NSURLConnectionDelegate>
-//@property (nonatomic, retain) NSOutputStream* outputStream;
 @property (nonatomic, retain) NSFileHandle* outputHandle;
 @property (nonatomic) NSUInteger maxLength;
 @property (nonatomic, copy) StreamCompletionBlock completionBlock;
 @property (nonatomic, copy) KCSProgressBlock progressBlock;
 @property (nonatomic, retain) KCSFile* intermediateFile;
 @property (nonatomic, retain) NSString* serverContentType;
+@property (nonatomic, retain) NSURLConnection* connection;
+@property (nonatomic) unsigned long long bytesWritten;
 @end
 
 @implementation KCSDownloadStreamRequest
-- (void) downloadStream:(KCSFile*)intermediate fromURL:(NSURL*)url completionBlock:(StreamCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+- (void) downloadStream:(KCSFile*)intermediate fromURL:(NSURL*)url alreadyWrittenBytes:(NSNumber*)alreadyWritten completionBlock:(StreamCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     self.completionBlock = completionBlock;
     self.progressBlock = progressBlock;
@@ -183,7 +191,9 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
 
     NSURL* file = [intermediate localURL];
     NSError* error = nil;
-    [[NSFileManager defaultManager] createFileAtPath:[file path] contents:nil attributes:nil];//createDirectoryAtURL:[file URLByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&error];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[file path]] == NO) {
+        [[NSFileManager defaultManager] createFileAtPath:[file path] contents:nil attributes:nil];
+    }
     if (error != nil) {
         error = [KCSErrorUtilities createError:nil description:@"Unable to write to intermediate file" errorCode:KCSFileError domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
         completionBlock(NO, @{}, error);
@@ -195,18 +205,44 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
         completionBlock(NO, @{}, error);
         return;
     }
+    if (alreadyWritten != nil) {
+        unsigned long long written = [_outputHandle seekToEndOfFile];
+        if ([alreadyWritten unsignedLongLongValue] == written) {
+            //TODO: handle here
+            [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
+        }
+    }
+    
     _intermediateFile = intermediate;
+    _bytesWritten = 0;
+    
+    _connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+    [_connection start];
 
     
-    NSURLConnection* connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    [connection start];
+#if BUILD_FOR_UNIT_TEST
+    lastRequest = self;
+#endif
+}
+
+- (void) cancel
+{
+    [_connection cancel];
+    [_outputHandle closeFile];
+    NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
+
+    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
+    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
+    _completionBlock(NO, returnVals, error);
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     //TODO: handle error
     [_outputHandle closeFile];
-    _completionBlock(NO, @{}, error);
+    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
+    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
+    _completionBlock(NO, returnVals, error);
 }
 
 
@@ -237,6 +273,7 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
     KCSLogTrace(@"downloaded %u bytes from file service", [data length]);
     
     [_outputHandle writeData:data];
+    _bytesWritten += data.length;
     if (_progressBlock) {
         //TODO handle intermediate progress
         NSUInteger downloadedAmount = [_outputHandle offsetInFile];
@@ -400,6 +437,7 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
                 filename:(NSString*)filename
                 mimeType:(NSString*)mimeType
              onlyIfNewer:(BOOL)onlyIfNewer
+         downloadedBytes:(NSNumber*)bytes
          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
            progressBlock:(KCSProgressBlock)progressBlock
 {
@@ -427,19 +465,18 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
                         NSLog(@"%@",returnInfo);
                         if (done && returnInfo && returnInfo[kServerLMT]) {
                             NSDate* serverLMT = returnInfo[kServerLMT];
-                            NSComparisonResult localComparedToServer = [localLMT compare:serverLMT];
-                            if (localComparedToServer == NSOrderedDescending || localComparedToServer == NSOrderedSame) {
+                            if (ABS([localLMT timeIntervalSinceDate:serverLMT]) < TIME_INTERVAL) {
                                 //don't re-download the file
                                 intermediateFile.mimeType = mimeType;
                                 intermediateFile.length = [attributes[NSFileSize] unsignedIntegerValue];
                                 completionBlock(@[intermediateFile], nil);
                             } else {
                                 //redownload the file
-                                [self _downloadToFile:localFile fromURL:url fileId:fileId filename:filename mimeType:mimeType onlyIfNewer:NO completionBlock:completionBlock progressBlock:progressBlock];
+                                [self _downloadToFile:localFile fromURL:url fileId:fileId filename:filename mimeType:mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:completionBlock progressBlock:progressBlock];
                             }
                         } else {
-                            // do download the file
-                            [self _downloadToFile:localFile fromURL:url fileId:fileId filename:filename mimeType:mimeType onlyIfNewer:NO completionBlock:completionBlock progressBlock:progressBlock];
+                            // do download the whole if we can't determine the server lmt (assume it's new)
+                            [self _downloadToFile:localFile fromURL:url fileId:fileId filename:filename mimeType:mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:completionBlock progressBlock:progressBlock];
                         }
                     }];
                     return; // stop here, otherwise keep doing the righteous path
@@ -452,14 +489,15 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
     
     KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
-    [downloader downloadStream:intermediateFile fromURL:url completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:bytes completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+        if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
+            intermediateFile.mimeType = returnInfo[KCSFileMimeType];
+        }
+
         if (error) {
             //TODO: handle partial download
-            completionBlock(nil, error);
+            completionBlock(@[intermediateFile], error);
         } else {
-            if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
-                intermediateFile.mimeType = returnInfo[KCSFileMimeType];
-            }
             completionBlock(@[intermediateFile], nil);
         }
     } progressBlock:progressBlock];
@@ -486,7 +524,7 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
     
     KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
-    [downloader downloadStream:intermediateFile fromURL:url completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
         if (error) {
             //TODO: handle partial download
             completionBlock(nil, error);
@@ -535,7 +573,7 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
                 NSURL*  destinationFile = [NSURL URLWithString:destinationName relativeToURL:downloadsDir];
                 
                 //TODO: handle onlyIfNewer - check time on downloadObject
-                [self _downloadToFile:destinationFile fromURL:file.remoteURL fileId:fileId filename:file.filename mimeType:file.mimeType onlyIfNewer:NO completionBlock:completionBlock progressBlock:progressBlock];
+                [self _downloadToFile:destinationFile fromURL:file.remoteURL fileId:fileId filename:file.filename mimeType:file.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:completionBlock progressBlock:progressBlock];
             } else {
                 NSError* error = nil; //TODO: make a bad url error
                 completionBlock(nil, error);
@@ -606,7 +644,7 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
                     }
 
                     //TODO: onlyIfNewer check download object
-                    [self _downloadToFile:destinationFile fromURL:thisFile.remoteURL fileId:thisFile.fileId filename:thisFile.filename mimeType:thisFile.mimeType onlyIfNewer:NO completionBlock:^(NSArray *downloadedResources, NSError *error) {
+                    [self _downloadToFile:destinationFile fromURL:thisFile.remoteURL fileId:thisFile.fileId filename:thisFile.filename mimeType:thisFile.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
                         if (error != nil && firstError != nil) {
                             firstError = error;
                         }
@@ -761,8 +799,44 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
     NSString* fileId = pathComponents[MAX(pathComponents.count - 2, 1)];
     
     BOOL onlyIfNewer = (options == nil) ? NO : [options[KCSFileOnlyIfNewer] boolValue];
+    NSNumber* bytes = nil;
+    if (options != nil && [options[KCSFileResume] boolValue] == YES) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[destinationFile path]] == YES) {
+            NSError* error = nil;
+            NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[destinationFile path] error:&error];
+            if (error == nil) {
+                bytes = attributes[NSFileSize];
+            }
+        }
+    }
     
-    [self _downloadToFile:destinationFile fromURL:url fileId:fileId filename:filename mimeType:nil onlyIfNewer:onlyIfNewer completionBlock:completionBlock progressBlock:progressBlock];
+    
+    [self _downloadToFile:destinationFile fromURL:url fileId:fileId filename:filename mimeType:nil onlyIfNewer:onlyIfNewer downloadedBytes:bytes completionBlock:completionBlock progressBlock:progressBlock];
+}
+
++ (void)downloadDataWithResolvedURL:(NSURL *)url completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+{
+    [self downloadFileWithResolvedURL:url options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        if (!error && downloadedResources != nil && downloadedResources.count > 0) {
+            KCSFile* file = downloadedResources[0];
+            NSURL* localFile = file.localURL;
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[localFile path]]) {
+                NSData* data = [NSData dataWithContentsOfURL:localFile];
+                file.data = data;
+                NSError* fileError = nil;
+                [[NSFileManager defaultManager] removeItemAtPath:[localFile path] error:&fileError];
+                if (fileError == nil) {
+                    file.localURL = nil;
+                } else {
+                    NSString* errMessage = [NSString stringWithFormat:@"Error cleaning up file on download data %@", file.localURL];
+                    KCSLogNSError(errMessage, fileError);
+                }
+                completionBlock(@[file], error);
+            }
+        } else {
+            completionBlock(downloadedResources, error);
+        }
+    } progressBlock:progressBlock];
 }
 
 #pragma mark - Streaming
@@ -887,6 +961,15 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
         }
     }
 }
+
+#pragma mark - test Helpers
+
+#if BUILD_FOR_UNIT_TEST
++ (id) lastRequest
+{
+    return lastRequest;
+}
+#endif
 
 @end
 
