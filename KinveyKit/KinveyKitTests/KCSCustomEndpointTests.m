@@ -31,4 +31,14 @@
     [self poll];
 }
 
+
+- (void) testHS1468
+{
+    self.done = NO;
+    [KCSCustomEndpoints callEndpoint:@"hs1468" params:@{@"email":@""} completionBlock:^(id results, NSError *error) {
+        STAssertNil(error, @"error should be nil");
+        self.done= YES;
+    }];
+    [self poll];
+}
 @end
