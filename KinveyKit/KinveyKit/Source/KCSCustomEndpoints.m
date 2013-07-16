@@ -25,7 +25,7 @@
     request.contextRoot = kKCSContextRPC;
     request.pathComponents = @[@"custom",endpoint];
     
-    request.body = params;
+    request.body = params ? params : @{};
     request.authorization = [KCSUser activeUser];
     
     [request run:^(id results, NSError *error) {

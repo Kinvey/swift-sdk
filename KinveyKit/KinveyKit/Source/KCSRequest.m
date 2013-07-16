@@ -139,6 +139,7 @@ static const NSString* kBLOBRoot = @"blob";
     headers[@"X-Kinvey-API-Version"] = KINVEY_KCS_API_VERSION;
     headers[@"Date"] = getLogDate2();
     headers[@"X-Kinvey-ResponseWrapper"] = @"true";
+    headers[@"Content-Type"] = @"application/json";
     [request setAllHTTPHeaderFields:headers];
     
     [request setHTTPShouldUsePipelining:_httpMethod != kKCSRESTMethodPOST];
