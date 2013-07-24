@@ -24,6 +24,7 @@
     request.httpMethod = kKCSRESTMethodPOST;
     request.contextRoot = kKCSContextRPC;
     request.pathComponents = @[@"custom",endpoint];
+    request.headers[@"Content-Type"] = @"application/json";
     
     ifNil(params, @{});
     

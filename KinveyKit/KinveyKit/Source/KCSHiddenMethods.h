@@ -25,10 +25,17 @@ NSDictionary* defaultBuilders();
 + (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
 @end
 
+@interface KCSQueryTTLModifier : NSObject
+@property (nonatomic, strong) NSNumber* ttl;
+- (instancetype) initWithTTL:(NSNumber*)ttl;
+@end
 @interface KCSQuery (KCSHiddenMethods)
 @property (nonatomic, retain) NSArray* referenceFieldsToResolve;
 @property (nonatomic, readwrite, copy) NSMutableDictionary *query;
+@property (nonatomic, strong) KCSQueryTTLModifier* ttlModifier;
 @end
+
+
 
 @interface KCSCollection (KCSHiddenMethods)
 

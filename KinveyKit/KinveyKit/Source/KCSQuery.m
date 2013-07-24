@@ -24,11 +24,21 @@ typedef enum KCSQueryType : NSUInteger {
     KCSQueryTypeNull = 10
 } KCSQueryType;
 
-#pragma mark -
-#pragma mark KCSQuerySortModifier
+@protocol KCSQueryModifier <NSObject, NSCopying>
+- (NSString *)parameterStringRepresentation;
+@end
+
+#pragma mark - KCSQuerySortModifier
+@interface KCSQuerySortModifier () <KCSQueryModifier>
+@end
 @implementation KCSQuerySortModifier
 
-- (id)initWithField:(NSString *)field inDirection:(KCSSortDirection)direction
+- (instancetype) copyWithZone:(NSZone *)zone
+{
+    return [[[self class] allocWithZone:zone] initWithField:_field inDirection:_direction];
+}
+
+- (instancetype)initWithField:(NSString *)field inDirection:(KCSSortDirection)direction
 {
     self = [super init];
     if (self) {
@@ -38,13 +48,25 @@ typedef enum KCSQueryType : NSUInteger {
     return self;
 }
 
+- (NSString*) parameterStringRepresentation
+{   //TODO: find out how to include these
+    KCSLogError(@"tried to PSR on a Sort Modifier");
+    return @"";
+}
+
 @end
 
-#pragma mark -
-#pragma mark KCSQueryLimitModifier
+#pragma mark - KCSQueryLimitModifier
+@interface KCSQueryLimitModifier () <KCSQueryModifier>
+@end
 @implementation KCSQueryLimitModifier
 
-- (id)initWithLimit:(NSInteger)limit
+- (instancetype) copyWithZone:(NSZone *)zone
+{
+    return [[[self class] allocWithZone:zone] initWithLimit:_limit];
+}
+
+- (instancetype) initWithLimit:(NSInteger)limit
 {
     self = [super init];
     if (self){
@@ -57,16 +79,19 @@ typedef enum KCSQueryType : NSUInteger {
 {
     KCSLogDebug(@"Limit String: %@", [NSString stringWithFormat:@"limit=%d", self.limit]);
     return [NSString stringWithFormat:@"limit=%d", (int) self.limit];
-    
 }
-
 @end
 
-#pragma mark -
-#pragma mark KCSQuerySkipModifier
+#pragma mark - KCSQuerySkipModifier
+@interface KCSQuerySkipModifier () <KCSQueryModifier>
+@end
 @implementation KCSQuerySkipModifier
+- (instancetype) copyWithZone:(NSZone *)zone
+{
+    return [[[self class] allocWithZone:zone] initWithcount:_count];
+}
 
--(id)initWithcount:(NSInteger)count
+- (instancetype)initWithcount:(NSInteger)count
 {
     self = [super init];
     if (self){
@@ -83,8 +108,31 @@ typedef enum KCSQueryType : NSUInteger {
 
 @end
 
-#pragma mark -
-#pragma mark Private Interface
+#pragma mark - TTL modifier
+@interface KCSQueryTTLModifier () <KCSQueryModifier>
+@end
+@implementation KCSQueryTTLModifier
+- (instancetype) copyWithZone:(NSZone *)zone
+{
+    return [[[self class] alloc] initWithTTL:_ttl];
+}
+- (instancetype) initWithTTL:(NSNumber*)ttl
+{
+    self = [super init];
+    if (self) {
+        self.ttl = ttl;
+    }
+    return self;
+}
+- (NSString *)parameterStringRepresentation
+{
+    NSString* ttlStr = [NSString stringWithFormat:@"ttl_in_seconds=%@",_ttl];
+    KCSLogDebug(@"TTL String: %@", ttlStr);
+    return ttlStr;
+}
+@end
+
+#pragma mark - Private Interface
 
 // Private interface
 @interface KCSQuery ()
@@ -92,6 +140,7 @@ typedef enum KCSQueryType : NSUInteger {
 @property (nonatomic, strong) KCS_SBJsonWriter *JSONwriter;
 @property (nonatomic, strong, readwrite) NSArray *sortModifiers;
 @property (nonatomic, strong) NSArray* referenceFieldsToResolve;
+@property (nonatomic, strong) KCSQueryTTLModifier* ttlModifier;
 
 
 NSString *KCSConditionalStringFromEnum(KCSQueryConditional conditional);
@@ -475,8 +524,6 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     query.query = [[KCSQuery queryDictionaryWithFieldname:nil operation:joiningOperator forQueries:queries useQueriesForOps:NO] mutableCopy];
     
     return query;
-    
-    
 }
 
 BOOL kcsIsOperator(NSString* queryField)
@@ -540,13 +587,13 @@ BOOL kcsIsOperator(NSString* queryField)
     //limit
     KCSQueryLimitModifier* oldLimit = query.limitModifer;
     if (oldLimit != nil) {
-        newQuery.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:oldLimit.limit];
+        newQuery.limitModifer = [oldLimit copy];
     }
     
     //skip
     KCSQuerySkipModifier* oldSKip = query.skipModifier;
     if (oldSKip != nil) {
-        newQuery.skipModifier = [[KCSQuerySkipModifier alloc] initWithcount:oldSKip.count];
+        newQuery.skipModifier = [oldLimit copy];
     }
     
     //sort
@@ -559,12 +606,16 @@ BOOL kcsIsOperator(NSString* queryField)
         newQuery.sortModifiers = newSorts;
     }
     
+    //ttl
+    if (query.ttlModifier != nil) {
+        newQuery.ttlModifier = [query.ttlModifier copy];
+    }
+    
     return newQuery;
 }
 
 
-#pragma mark -
-#pragma mark Modifying Queries
+#pragma mark - Modifying Queries
 - (void)addQuery: (KCSQuery *)query
 {
     for (NSString *key in query.query) {
@@ -746,8 +797,15 @@ BOOL kcsIsOperator(NSString* queryField)
     if (self.skipModifier != nil){
         stringRepresentation = [stringRepresentation stringByAppendingQueryString:[self.skipModifier parameterStringRepresentation]];
     }
+    
+    //Add any references
     if ([self hasReferences]) {
         stringRepresentation = [stringRepresentation stringByAppendingQueryString:[@"resolve=" stringByAppendingString:[self.referenceFieldsToResolve join:@","]]];
+    }
+    
+    //add ttls
+    if (self.ttlModifier != nil) {
+        stringRepresentation = [stringRepresentation stringByAppendingQueryString:[self.ttlModifier parameterStringRepresentation]];
     }
     
     KCSLogDebug(@"query: %@",stringRepresentation);
@@ -765,7 +823,7 @@ BOOL kcsIsOperator(NSString* queryField)
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:self.sortModifiers.count];
     for (KCSQuerySortModifier *sortKey in self.sortModifiers) {
-        NSNumber *direction = [NSNumber numberWithInt:sortKey.direction];
+        NSNumber *direction = @(sortKey.direction);
         [dict setValue:direction forKey:sortKey.field];
     }
     

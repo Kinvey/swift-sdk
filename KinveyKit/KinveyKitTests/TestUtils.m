@@ -69,46 +69,46 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 @end
 
-@implementation XCTestCase (TestUtils)
-@dynamic done;
-
-- (void) poll
-{
-    int pollCount = 0;
-    while (self.done == NO && pollCount < MAX_POLL_COUNT) {
-        NSLog(@"polling... %i", pollCount);
-        NSRunLoop* loop = [NSRunLoop mainRunLoop];
-        NSDate* until = [NSDate dateWithTimeIntervalSinceNow:POLL_INTERVAL];
-        [loop runUntilDate:until];
-        pollCount++;
-    }
-    if (pollCount == MAX_POLL_COUNT) {
-        STFail(@"polling timed out");
-    }
-}
-
-- (BOOL)done {
-    return [objc_getAssociatedObject(self, @"doneval") boolValue];
-}
-
-- (void)setDone:(BOOL)newDone {
-    objc_setAssociatedObject(self, @"doneval", [NSNumber numberWithBool:newDone], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (KCSCompletionBlock) pollBlock
-{
-    self.done = NO;
-    return [^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        if (errorOrNil != nil) {
-            STFail(@"%@", errorOrNil);
-        }
-        self.done = YES;
-    } copy];
-}
-
-
-
-@end
+//@implementation XCTestCase (TestUtils)
+//@dynamic done;
+//
+//- (void) poll
+//{
+//    int pollCount = 0;
+//    while (self.done == NO && pollCount < MAX_POLL_COUNT) {
+//        NSLog(@"polling... %i", pollCount);
+//        NSRunLoop* loop = [NSRunLoop mainRunLoop];
+//        NSDate* until = [NSDate dateWithTimeIntervalSinceNow:POLL_INTERVAL];
+//        [loop runUntilDate:until];
+//        pollCount++;
+//    }
+//    if (pollCount == MAX_POLL_COUNT) {
+//        STFail(@"polling timed out");
+//    }
+//}
+//
+//- (BOOL)done {
+//    return [objc_getAssociatedObject(self, @"doneval") boolValue];
+//}
+//
+//- (void)setDone:(BOOL)newDone {
+//    objc_setAssociatedObject(self, @"doneval", [NSNumber numberWithBool:newDone], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+//}
+//
+//- (KCSCompletionBlock) pollBlock
+//{
+//    self.done = NO;
+//    return [^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        if (errorOrNil != nil) {
+//            STFail(@"%@", errorOrNil);
+//        }
+//        self.done = YES;
+//    } copy];
+//}
+//
+//
+//
+//@end
 
 
 

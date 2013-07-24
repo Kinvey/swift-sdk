@@ -20,6 +20,39 @@
 #import "KCSFile.h"
 #import "KCSFileStore.h"
 
+@interface HS1789 : NSObject <KCSPersistable>
+@property (nonatomic, copy) NSMutableSet* users;
+@property (nonatomic, strong) NSArray* location;
+@property (nonatomic, strong) NSString* entityId;
+@property (nonatomic, strong) KCSMetadata* metadata;
+@property (nonatomic, strong) NSString* name;
+@end
+
+@implementation HS1789
+
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    return @{
+             @"name" : @"name",
+             @"metadata" : KCSEntityKeyMetadata,
+             @"entityId" : KCSEntityKeyId,
+             @"location" : KCSEntityKeyGeolocation,
+             @"users" : @"users",
+             };
+}
+
++ (NSDictionary*) kinveyPropertyToCollectionMapping
+{
+    return @{@"users": KCSUserCollectionName};
+}
+
++ (NSDictionary *)kinveyObjectBuilderOptions
+{
+    return @{ KCS_REFERENCE_MAP_KEY : @{ @"users" : [KCSUser class]}};
+}
+
+@end
+
 @interface TestObject : NSObject <KCSPersistable>
 
 @property (nonatomic, retain) NSString *testId;
@@ -239,4 +272,28 @@
     STAssertNotNil(resolvedImage, @"should still be an image");
     STAssertTrue([resolvedImage isKindOfClass:[UIImage class]], @"still an image");
 }
+
+//Test for addObject to set 'nil' values into a set
+//needs the BL onPostSave hooks
+- (void) testHS1789
+{
+    
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    STAssertTrue(setup, @"Should be set-up");
+
+    
+    HS1789* newFlat = [[HS1789 alloc] init];
+    newFlat.name = @"Roberto";
+    KCSAppdataStore* store = [KCSLinkedAppdataStore storeWithOptions:@{ KCSStoreKeyCollectionName : @"HS1789", KCSStoreKeyCollectionTemplateClass : [HS1789 class]}];
+    self.done = NO;
+    [store saveObject:newFlat withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertObjects(1);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
+
 @end
+
+

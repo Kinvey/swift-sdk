@@ -2,7 +2,7 @@
 //  KCSStore.h
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey, Inc. All rights reserved.
 //
 //  This software contains valuable confidential and proprietary information of
 //  KINVEY, INC and is subject to applicable licensing agreements.
@@ -48,6 +48,7 @@
 ///---------------------------------------------------------------------------------------
 /// @name Initialization
 ///---------------------------------------------------------------------------------------
+
 /*! Initialize an empty Kinvey Store with the default options
  
  This routine is called to return an empty store with default options and default authentication.
@@ -90,6 +91,7 @@
 ///---------------------------------------------------------------------------------------
 /// @name Adding/Updating
 ///---------------------------------------------------------------------------------------
+
 /*! Add or update an object (or objects) in the store.
  
  This is the basic method to add or update objects in a Kinvey Store.  Specific stores may
@@ -124,6 +126,7 @@
 ///---------------------------------------------------------------------------------------
 /// @name Removing
 ///---------------------------------------------------------------------------------------
+
 /*! Remove an object (or objects) from the store.
  
  @param object An object (or query) to remove from the store (if the object is a NSArray or query, matching objects will be removed)
@@ -140,6 +143,7 @@
 ///---------------------------------------------------------------------------------------
 /// @name Configuring
 ///---------------------------------------------------------------------------------------
+
 /*! This is the general configuration routine for a Kinvey Store
  
  This routine is used to pass a Store specific options dictionary to the store
