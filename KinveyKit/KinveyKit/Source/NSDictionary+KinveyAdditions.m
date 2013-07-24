@@ -13,7 +13,9 @@
 - (NSDictionary*) stripKeys:(NSArray*)keys
 {
     NSMutableDictionary* copy = [self mutableCopy];
-    [copy removeObjectsForKeys:keys];
+    for (NSString* key in keys) {
+        copy[key] = @"XXXXXXXXX";
+    }
     return copy;
 }
 @end

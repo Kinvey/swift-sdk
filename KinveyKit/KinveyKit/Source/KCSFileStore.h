@@ -32,6 +32,11 @@ FOUNDATION_EXPORT NSString* const KCSFileSize;
 FOUNDATION_EXPORT NSString* const KCSFileOnlyIfNewer;
 /** Option to only download the missing bytes of the file. */
 FOUNDATION_EXPORT NSString* const KCSFileResume;
+/** Option to make the file publicly available (whole internet) */
+FOUNDATION_EXPORT NSString* const KCSFilePublic;
+
+/** Internal Use Only */
+FOUNDATION_EXPORT NSString* const KCSFileLinkExpirationTimeInterval; //Should be a NSTimerInterval (or double in seconds)
 
 
 @interface KCSCollection (KCSFileStore)
@@ -216,6 +221,10 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 + (void) getStreamingURL:(NSString*)fileId completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;
+
+//with internal options
++ (void) getStreamingURL:(NSString *)fileId options:(NSDictionary*)options completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;
+
 
 /** Obtains a URL to stream the file.
  

@@ -33,8 +33,12 @@ NSString* const KCSFileSize = @"size";
 NSString* const KCSFileOnlyIfNewer = @"fileStoreNewer";
 NSString* const KCSFileResume = @"fileStoreResume";
 NSString* const KCSFileLocalURL = @"fileStoreLocalURL";
+NSString* const KCSFilePublic = @"_public";
+NSString* const KCSFileLinkExpirationTimeInterval = @"ttl_in_seconds";
+
 
 #define kServerLMT @"serverlmt"
+#define kRequiredHeaders @"_requiredHeaders"
 #define TIME_INTERVAL 10
 
 NSString* mimeTypeForFilename(NSString* filename)
@@ -129,13 +133,21 @@ static id lastRequest = nil;
 @end
 
 @implementation KCSUploadStreamRequest
-- (void) uploadStream:(NSInputStream*)stream length:(NSUInteger)length contentType:(NSString*)contentType toURL:(NSURL*)url
+- (void) uploadStream:(NSInputStream*)stream
+               length:(NSUInteger)length
+          contentType:(NSString*)contentType
+                toURL:(NSURL*)url
+      requiredHeaders:(NSDictionary*)requiredHeaders
 {
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
     [request setHTTPMethod:@"PUT"];
     [request setHTTPBodyStream:stream];
-    [request addValue:[@(length) stringValue] forHTTPHeaderField:@"Content-Length"];
-    [request addValue:contentType forHTTPHeaderField:@"Content-Type"];
+    
+    NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithDictionary:requiredHeaders];
+    headers[@"Content-Length"] = [@(length) stringValue];
+    headers[@"Content-Type"] = contentType;
+    [request setAllHTTPHeaderFields:headers];
+    
 #warning    [request addValue:@"start" forHTTPHeaderField:@"x-goog-resumable"];
     
     NSURLConnection* connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
@@ -309,7 +321,12 @@ static id lastRequest = nil;
 @implementation KCSFileStore
 
 #pragma mark - Uploads
-+ (void) _uploadStream:(NSInputStream*)stream toURL:(NSURL*)url uploadFile:(KCSFile*)uploadFile completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++ (void) _uploadStream:(NSInputStream*)stream
+                 toURL:(NSURL*)url
+       requiredHeaders:(NSDictionary*)requiredHeaders
+            uploadFile:(KCSFile*)uploadFile
+       completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+         progressBlock:(KCSProgressBlock)progressBlock
 {
     KCSLogTrace(@"Upload location found, uploading file to: %@", url);
 
@@ -327,19 +344,19 @@ static id lastRequest = nil;
             progressBlock(@[uploadFile], progress);
         };
     }
-    [request uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:url];
+    [request uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:url requiredHeaders:requiredHeaders];
 }
 
-+ (void) _uploadData:(NSData*)data toURL:(NSURL*)url uploadFile:(KCSFile*)uploadFile completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++ (void) _uploadData:(NSData*)data toURL:(NSURL*)url requiredHeaders:(NSDictionary*)requiredHeaders uploadFile:(KCSFile*)uploadFile completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     NSInputStream* stream = [NSInputStream inputStreamWithData:data];
-    [self _uploadStream:stream toURL:url uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
+    [self _uploadStream:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
 }
 
-+ (void) _uploadFile:(NSURL*)localFile toURL:(NSURL*)url uploadFile:(KCSFile*)uploadFile completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++ (void) _uploadFile:(NSURL*)localFile toURL:(NSURL*)url requiredHeaders:(NSDictionary*)requiredHeaders uploadFile:(KCSFile*)uploadFile completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     NSInputStream* stream = [NSInputStream inputStreamWithURL:localFile];
-    [self _uploadStream:stream toURL:url uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
+    [self _uploadStream:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 + (KCSNetworkRequest*) _getUploadLoc:(NSMutableDictionary *)body
@@ -394,7 +411,11 @@ static id lastRequest = nil;
                 uploadFile.mimeType = results[KCSFileMimeType];
                 uploadFile.fileId = results[KCSFileId];
                 uploadFile.filename = results[KCSFileFileName];
-                [self _uploadData:data toURL:[NSURL URLWithString:url] uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
+                uploadFile.public = results[KCSFilePublic];
+
+                NSDictionary* requiredHeaders = results[kRequiredHeaders];
+                
+                [self _uploadData:data toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
             } else {
                 NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:nil];
                 completionBlock(nil, error);
@@ -447,7 +468,10 @@ static id lastRequest = nil;
                 uploadFile.mimeType = results[KCSFileMimeType];
                 uploadFile.fileId = results[KCSFileId];
                 uploadFile.filename = results[KCSFileFileName];
-                [self _uploadFile:fileURL toURL:[NSURL URLWithString:url] uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
+
+                NSDictionary* requiredHeaders = results[kRequiredHeaders];
+
+                [self _uploadFile:fileURL toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
             } else {
                 NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:nil];
                 completionBlock(nil, error);
@@ -568,16 +592,26 @@ static id lastRequest = nil;
     } progressBlock:progressBlock];
 }
 
-+ (void) _getDownloadObject:(NSString*)fileId intermediateCompletionBlock:(KCSCompletionBlock)completionBlock
++ (void) _getDownloadObject:(NSString*)fileId options:(NSDictionary*)options intermediateCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
-    [store loadObjectWithID:fileId withCompletionBlock:completionBlock withProgressBlock:nil];
+    
+    if (options) {
+        KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:fileId];
+        if (options[KCSFileLinkExpirationTimeInterval]) {
+            KCSQueryTTLModifier* ttl = [[KCSQueryTTLModifier alloc] initWithTTL:options[KCSFileLinkExpirationTimeInterval]];
+            query.ttlModifier = ttl;
+        }
+        [store queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:nil];
+    } else {
+        [store loadObjectWithID:fileId withCompletionBlock:completionBlock withProgressBlock:nil];
+    }
 }
 
 + (void) _downloadFile:(NSString*)toFilename fileId:(NSString*)fileId completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     __block NSString* destinationName = toFilename;
-    [self _getDownloadObject:fileId intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [self _getDownloadObject:fileId options:nil intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
             NSError* fileError = [KCSErrorUtilities createError:nil
                                        description:[NSString stringWithFormat:@"Error downloading file, id='%@'", fileId]
@@ -614,7 +648,7 @@ static id lastRequest = nil;
 + (void) _downloadData:(NSString*)fileId completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     //TODO: combine with above
-    [self _getDownloadObject:fileId intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [self _getDownloadObject:fileId options:nil intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
             NSError* fileError = [KCSErrorUtilities createError:nil
                                                     description:[NSString stringWithFormat:@"Error downloading file, id='%@'", fileId]
@@ -883,10 +917,15 @@ static id lastRequest = nil;
 #pragma mark - Streaming
 + (void) getStreamingURL:(NSString *)fileId completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
 {
+    [self getStreamingURL:fileId options:nil completionBlock:completionBlock];
+}
+
++ (void) getStreamingURL:(NSString *)fileId options:(NSDictionary*)options completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
+{
     NSParameterAssert(fileId != nil);
     NSParameterAssert(completionBlock != nil);
     
-    [self _getDownloadObject:fileId intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [self _getDownloadObject:fileId options:options intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
             //TODO: hanlde erorr and make a resource error
             completionBlock(nil, errorOrNil);

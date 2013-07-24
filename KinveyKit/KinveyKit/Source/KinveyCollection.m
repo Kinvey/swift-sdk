@@ -197,18 +197,21 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 #pragma mark Basic Methods
 - (NSString*) baseURL
 {
+    NSString* baseURL = nil;
     switch (_category) {
         case KCSCollectionUser:
-            return [[KCSClient sharedClient] userBaseURL]; /*use user url for user collection*/
+            baseURL = [[KCSClient sharedClient] userBaseURL]; /*use user url for user collection*/
             break;
         case KCSCollectionBlob:
-            return [[KCSClient sharedClient] resourceBaseURL]; /*use blob url*/
+            baseURL = [[KCSClient sharedClient] resourceBaseURL]; /*use blob url*/
             break;
         case KCSCollectionAppdata:
         default:
-            return [[KCSClient sharedClient] appdataBaseURL]; /* Initialize this to the default appdata URL*/
+            baseURL = [[KCSClient sharedClient] appdataBaseURL]; /* Initialize this to the default appdata URL*/
             break;
     }
+    DBAssert(baseURL != nil, @"Should have a base url for the collection %@", _collectionName);
+    return baseURL;
 }
 
 - (NSString*) urlForEndpoint:(NSString*)endpoint

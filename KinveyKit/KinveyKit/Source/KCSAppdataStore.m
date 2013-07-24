@@ -1,4 +1,3 @@
-    
 //
 //  KCSAppdataStore.m
 //  KinveyKit
@@ -687,7 +686,7 @@ int reachable = -1;
         NSString *resource = [collection urlForEndpoint:objectId];
         
         // If we need to post this, then do so
-        NSInteger HTTPMethod = (isPostRequest) ? kPostRESTMethod : kPutRESTMethod;
+        KCSRESTMethod HTTPMethod = (isPostRequest) ? kPostRESTMethod : kPutRESTMethod;
         
         // Prepare our request
         KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:HTTPMethod];
