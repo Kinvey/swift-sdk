@@ -65,6 +65,7 @@ NSDictionary* defaultBuilders();
 
 @interface KCSMetadata (KCSHiddenMethods)
 - (NSDictionary*) aclValue;
+- (instancetype) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)pACL;
 @end
 
 @interface KCSFileStore (KCSHiddenMethods)

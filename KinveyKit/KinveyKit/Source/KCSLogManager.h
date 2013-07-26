@@ -32,7 +32,7 @@ withFormat:(format),##__VA_ARGS__]
 
 //-------------------------------- Error Handling
 
-#ifdef BUILD_FOR_UNIT_TEST
+#ifdef NEVER //BUILD_FOR_UNIT_TEST
 #define KCSLogError(format,...) \
  if ([KCSLogManager sharedLogManager].suppressErrorToExceptionOnTest == YES) { \
    [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ withFormat:(format), ##__VA_ARGS__]; \

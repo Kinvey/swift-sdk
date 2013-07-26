@@ -109,8 +109,7 @@
 		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %@!", @(res));
 		
 	} else {
-        KCSLogError(@"results = %@", o);
-		NSAssert1(NO, @"Received %@ from SecItemCopyMatching!", @(res));
+        KCSLogError(@"SecItemCopyMatching returned %@ for key '%@'!", @(res), key);
 	}
 	
 	return YES;
@@ -139,8 +138,8 @@
 	if (res == errSecSuccess) {
 		NSString *string = [[NSString alloc] initWithData:(NSData*)CFBridgingRelease(data) encoding:NSUTF8StringEncoding];
 		return string;
-	} else {
-		NSAssert1(res == errSecItemNotFound, @"SecItemCopyMatching returned %@!", @(res));
+	} else if (res == errSecItemNotFound) {
+		KCSLogError(@"SecItemCopyMatching returned %@ for key '%@'!", @(res), key);
 	}		
 	
 	return nil;

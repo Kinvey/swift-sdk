@@ -384,6 +384,23 @@ static id lastRequest = nil;
     return request;
 }
 
+KCSFile* fileFromResults(NSDictionary* results)
+{
+    KCSFile* uploadFile = [[KCSFile alloc] init];
+    uploadFile.length = [results[@"size"] unsignedIntegerValue];
+    uploadFile.mimeType = results[KCSFileMimeType];
+    uploadFile.fileId = results[KCSFileId];
+    uploadFile.filename = results[KCSFileFileName];
+    uploadFile.public = results[KCSFilePublic];
+    
+    NSDictionary* kmd = results[@"_kmd"];
+    NSDictionary* acl = results[@"_acl"];
+    KCSMetadata* metadata = [[KCSMetadata alloc] initWithKMD:kmd acl:acl];
+    uploadFile.metadata = metadata;
+
+    return uploadFile;
+}
+
 + (void)uploadData:(NSData *)data options:(NSDictionary *)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(data != nil);
@@ -406,13 +423,7 @@ static id lastRequest = nil;
         } else {
             NSString* url = results[@"_uploadURL"];
             if (url) {
-                KCSFile* uploadFile = [[KCSFile alloc] init];
-                uploadFile.length = [results[@"size"] unsignedIntegerValue];
-                uploadFile.mimeType = results[KCSFileMimeType];
-                uploadFile.fileId = results[KCSFileId];
-                uploadFile.filename = results[KCSFileFileName];
-                uploadFile.public = results[KCSFilePublic];
-
+                KCSFile* uploadFile = fileFromResults(results);
                 NSDictionary* requiredHeaders = results[kRequiredHeaders];
                 
                 [self _uploadData:data toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
@@ -463,12 +474,7 @@ static id lastRequest = nil;
         } else {
             NSString* url = results[@"_uploadURL"];
             if (url) {
-                KCSFile* uploadFile = [[KCSFile alloc] init];
-                uploadFile.length = [results[@"size"] unsignedIntegerValue];
-                uploadFile.mimeType = results[KCSFileMimeType];
-                uploadFile.fileId = results[KCSFileId];
-                uploadFile.filename = results[KCSFileFileName];
-
+                KCSFile* uploadFile = fileFromResults(results);
                 NSDictionary* requiredHeaders = results[kRequiredHeaders];
 
                 [self _uploadFile:fileURL toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile completionBlock:completionBlock progressBlock:progressBlock];
