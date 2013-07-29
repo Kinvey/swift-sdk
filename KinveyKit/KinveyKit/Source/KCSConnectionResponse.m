@@ -101,4 +101,10 @@
     return [self.responseHeaders objectForKey:@"X-Kinvey-Request-Id"];
 }
 
+#pragma mark - debug
+- (NSString *)debugDescription
+{
+    return [NSString stringWithFormat:@"%@ code: %d", [super debugDescription], _responseCode];
+}
+
 @end

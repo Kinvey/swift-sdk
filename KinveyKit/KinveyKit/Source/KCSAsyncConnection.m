@@ -122,8 +122,7 @@
     self.completionBlock = onCompletion;
     self.basicAuthCred = credentials;
 
-    KCSLogNetwork(@"Request URL:%@", self.request.URL);
-    KCSLogNetwork(@"Request Method:%@", self.request.HTTPMethod);
+    KCSLogNetwork(@"Request resource:%@ %@",self.request.HTTPMethod, self.request.URL);
     KCSLogNetwork(@"Request Headers:%@", [self.request.allHTTPHeaderFields stripKeys:@[@"Authorization"]]);
 
     

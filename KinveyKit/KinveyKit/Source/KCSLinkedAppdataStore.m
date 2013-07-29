@@ -104,7 +104,7 @@
         
         for (KCSFile* resource in resources) {
             id objKey = [progress addResource:resource entity:[so.userInfo objectForKey:@"entityProgress"]];
-            [KCSFileStore uploadKCSFile:resource completionBlock:^(KCSFile* uploadInfo, NSError *error) {
+            [KCSFileStore uploadKCSFile:resource options:nil completionBlock:^(KCSFile* uploadInfo, NSError *error) {
                 if (error && !resourceError) {
                     resourceError = error;
                 }

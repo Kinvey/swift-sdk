@@ -110,7 +110,7 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
     if (self.authRequired == KCSAuthNoAuth){
         return nil;
     } else if (self.authRequired == KCSAuthBasicAuthAppKey){
-        KCSLogDebug(@"Using app key/app secret for auth: (%@, %@) => %@", [[KCSClient sharedClient] appKey], [[KCSClient sharedClient] appSecret], self.appKeyBase64);
+        KCSLogDebug(@"Using app key/app secret for auth: (%@, <APP_SECRET>) => XXXXXXXXX", [[KCSClient sharedClient] appKey]);
         return self.appKeyBase64;
     } else if (self.authRequired == KCSAuthBasicAuthUser){
         KCSUser *curUser = [KCSUser activeUser];
