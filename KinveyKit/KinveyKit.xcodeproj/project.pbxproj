@@ -328,7 +328,6 @@
 		27E4CDFC156A801A00B5DF55 /* KCSReduceFunction.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFA156A801A00B5DF55 /* KCSReduceFunction.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27E4CE00156A803300B5DF55 /* KCSGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4CDFE156A803300B5DF55 /* KCSGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27E4CE01156A803300B5DF55 /* KCSGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4CDFF156A803300B5DF55 /* KCSGroup.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		27EAB7371770A610008E6B32 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27EAB7361770A610008E6B32 /* XCTest.framework */; };
 		27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F360981598BF5C006B699E /* KCSMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609C1598C1CB006B699E /* KCSMetadata.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27F360A01598C250006B699E /* KCSMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609F1598C250006B699E /* KCSMetadataTests.m */; };
@@ -1105,7 +1104,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27EAB7371770A610008E6B32 /* XCTest.framework in Frameworks */,
 				273A3E9D160A385100F3742C /* Twitter.framework in Frameworks */,
 				273A3E9C160A384C00F3742C /* Accounts.framework in Frameworks */,
 				2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */,

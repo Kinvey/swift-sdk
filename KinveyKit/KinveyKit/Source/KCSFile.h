@@ -78,6 +78,12 @@
  */
 @property (nonatomic, retain, readonly) NSDate* expirationDate;
 
+
+//---
+// @name Uploading Data
+//---
+@property (nonatomic) unsigned long long bytesWritten;
+
 #pragma mark - Linked Files API
 //internal methods
 + (instancetype) fileRef:(id)objectToRef collectionIdProperty:(NSString*)idStr;

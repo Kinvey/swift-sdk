@@ -69,7 +69,7 @@ NSDictionary* defaultBuilders();
 @end
 
 @interface KCSFileStore (KCSHiddenMethods)
-+ (void) uploadKCSFile:(KCSFile*)file completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
++ (void) uploadKCSFile:(KCSFile*)file options:(NSDictionary*)options completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 + (void)downloadKCSFile:(KCSFile*) file completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock) progressBlock;
 
 + (id) lastRequest;

@@ -79,6 +79,8 @@ NSData* testData()
     KCSMetadata* metadata = [[KCSMetadata alloc] init];
     [metadata setGloballyWritable:YES];
     [metadata setGloballyReadable:YES];
+
+    self.done = NO;
     [KCSFileStore uploadData:testData() options:@{ KCSFileId : kTestId, KCSFileACL : metadata, KCSFileMimeType : kTestMimeType, KCSFileFileName : kTestFilename} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         self.done = YES;
@@ -724,7 +726,7 @@ NSData* testData()
     ASSERT_PROGESS
 }
 
-- (void) testResumse
+- (void) testResume
 {
     //1. Upload Image
     self.done = NO;
@@ -810,6 +812,67 @@ NSData* testData()
     unsigned long long secondWritten = [lastRequest bytesWritten];
     STAssertEquals(firstWritten + secondWritten, (unsigned long long) kImageSize, @"should have only downloaded the total num bytes");
 }
+
+- (void) testTTLExpiresMidUpdate
+{
+    //1. Set a low ttl
+    //2. Upload a large file w/pause
+    
+    self.done = NO;
+    SETUP_PROGRESS
+    __block NSString* newFileId = nil;
+    NSURL* fileURL = [self largeImageURL];
+    [KCSFileStore uploadFile:fileURL options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
+        STAssertNotNil(uploadInfo.filename, @"filename should have faule");
+        STAssertNotNil(uploadInfo.fileId, @"should have a file id");
+        STAssertFalse([uploadInfo.fileId isEqualToString:uploadInfo.filename], @"file id should be unique");
+        
+        KTAssertEqualsInt(uploadInfo.length, kImageSize, @"sizes should match");
+        STAssertNil(uploadInfo.remoteURL, @"should be nil");
+        STAssertNil(uploadInfo.data, @"should have nil data");
+        STAssertEqualObjects(uploadInfo.mimeType, kImageMimeType, @"should use default mimetype");
+        
+        newFileId = uploadInfo.fileId;
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    
+    [self poll];
+    ASSERT_PROGESS
+    STAssertNotNil(newFileId, @"Should get a file id");
+    
+    self.done = NO;
+    [KCSFileStore downloadFile:newFileId options:@{KCSFileLinkExpirationTimeInterval : @0.01} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_
+        KTAssertCount(1, downloadedResources);
+        KCSFile* dlFile = downloadedResources[0];
+        STAssertNil(dlFile.data, @"no data");
+        STAssertEqualObjects(dlFile.filename, kImageFilename, @"should match filenames");
+        STAssertEqualObjects(dlFile.fileId, newFileId, @"should match ids");
+        KTAssertEqualsInt(dlFile.length, kImageSize, @"lengths should match");
+        STAssertEqualObjects(dlFile.mimeType, kImageMimeType, @"mime types should match");
+        STAssertNotNil(dlFile.localURL, @"should be a local URL");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[dlFile.localURL path]], @"should exist");
+        
+        [[NSFileManager defaultManager] removeItemAtURL:dlFile.localURL error:&error];
+        STAssertNoError_
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    }];
+    [self poll];
+    
+    
+}
+
+
 
 #pragma mark - Streaming
 
@@ -1019,7 +1082,7 @@ NSData* testData()
         STAssertEqualObjects(uploadInfo.public, @(YES), @"should be public");
         
         KTAssertEqualsInt(uploadInfo.length, kImageSize, @"sizes should match");
-        STAssertNil(uploadInfo.localURL, @"should be nil");
+        STAssertNotNil(uploadInfo.localURL, @"should not be nil");
         STAssertNil(uploadInfo.remoteURL, @"should be nil");
         STAssertNil(uploadInfo.data, @"should have nil data");
         STAssertEqualObjects(uploadInfo.mimeType, kImageMimeType, @"should use default mimetype");
@@ -1079,7 +1142,7 @@ NSData* testData()
 
         
         KTAssertEqualsInt(uploadInfo.length, kImageSize, @"sizes should match");
-        STAssertNil(uploadInfo.localURL, @"should be nil");
+        STAssertNotNil(uploadInfo.localURL, @"should not be nil");
         STAssertNil(uploadInfo.remoteURL, @"should be nil");
         STAssertNil(uploadInfo.data, @"should have nil data");
         STAssertEqualObjects(uploadInfo.mimeType, kImageMimeType, @"should use default mimetype");
@@ -1313,6 +1376,79 @@ NSData* testData()
     //3. Upload rest
     //4. check # bytes written should be single total
     //5. dl file and check that the file size is correct.
+    NSLog(@"---------------------- TEST START ------------------------");
+    
+    //1. Upload partial
+    self.done = NO;
+    __block double progress = 0.;
+    __block NSString* fileId = nil;
+    __block KCSFile* file = nil;
+    [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNotNil(uploadInfo, @"should still have this info");
+        fileId = uploadInfo.fileId;
+        file = uploadInfo;
+        STAssertNotNil(fileId, @"should have a fileid");
+        STAssertNotNil(error, @"should get an errror");
+        
+        self.done = YES;
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        progress = percentComplete;
+    }];
+    
+    //2. Cancel    
+    double delayInSeconds = 0.65;
+    __block id lastRequest;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_current_queue(), ^(void){
+        NSLog(@"cancelling...");
+        lastRequest = [KCSFileStore lastRequest];
+        STAssertNotNil(lastRequest, @"should have a request");
+        [lastRequest cancel];
+    });
+    [self poll];
+
+    STAssertTrue(progress > 0 && progress < 1., @"Should have had some but not all progress");
+    unsigned long long firstWritten = [lastRequest bytesWritten];
+    [NSThread sleepForTimeInterval:1];
+
+    
+    //3. Upload Rest
+    self.done = NO;
+    [KCSFileStore uploadKCSFile:file options:@{KCSFileResume : @(YES)} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    //4. check # bytes written should be single total
+    lastRequest = [KCSFileStore lastRequest];
+    unsigned long long totalBytes = firstWritten + [lastRequest bytesWritten];
+    KTAssertEqualsInt(totalBytes, kImageSize, @"should have only written the total bytes");
+    
+    //5. dl file and check that the file size is correct.
+    self.done = NO;
+    [KCSFileStore downloadData:fileId completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        KCSFile* file = downloadedResources[0];
+        NSData* d = file.data;
+        KTAssertEqualsInt(d.length, kImageSize, @"should be full data");
+        UIImage* image = [UIImage imageWithData:d];
+        STAssertNotNil(image, @"should have a valid image");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    // Cleanup
+    self.done = NO;
+    [KCSFileStore deleteFile:fileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    }];
+    [self poll];
+}
+
+- (void) testStreamingUpload
+{
     STFail(@"NIY");
 }
 
