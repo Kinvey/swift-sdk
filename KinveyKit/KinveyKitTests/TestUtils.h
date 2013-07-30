@@ -3,13 +3,12 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 6/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <SenTestingKit/SenTestingKit.h>
 #import <KinveyKit/KinveyKit.h>
-#import <XCTest/XCTest.h>
 
 #define STAssertNoError STAssertNil(errorOrNil,@"Should not get error: %@", errorOrNil);
 #define STAssertNoError_ STAssertNil(error, @"Should not get error: %@", error);
@@ -33,11 +32,11 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 - (KCSCompletionBlock) pollBlock;
 @end
 
-@interface XCTestCase (TestUtils)
-@property (nonatomic) BOOL done;
-- (void) poll;
-- (KCSCompletionBlock) pollBlock;
-@end
+//@interface XCTestCase (TestUtils)
+//@property (nonatomic) BOOL done;
+//- (void) poll;
+//- (KCSCompletionBlock) pollBlock;
+//@end
 
 @interface TestUtils : NSObject
 

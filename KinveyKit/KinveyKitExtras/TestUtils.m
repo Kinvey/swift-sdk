@@ -87,12 +87,12 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 + (void) justInitServer
 {
     NSDictionary* opts = @{KCS_TWITTER_CLIENT_SECRET : @"u48B6AIxebTJwsDcZ3Si7SfvkJLeA9CRuR6VYtk0", KCS_TWITTER_CLIENT_KEY : @"LXRntT0sroPASCBM4p4Hw"};
-//    if (YES) {
-//        [self initStaging:opts];
-//    } else {
-//        [self initProduction:opts];
-//    }
-    [self initCustom:opts];
+    if (YES) {
+        [self initStaging:opts];
+    } else {
+        [self initProduction:opts];
+        [self initCustom:opts];
+    }
 }
 
 + (BOOL) setUpKinveyUnittestBackend

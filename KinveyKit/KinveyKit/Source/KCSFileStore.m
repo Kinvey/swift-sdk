@@ -40,6 +40,7 @@ NSString* const KCSFileLinkExpirationTimeInterval = @"ttl_in_seconds";
 #define kServerLMT @"serverlmt"
 #define kRequiredHeaders @"_requiredHeaders"
 #define kBytesWritten @"bytesWritten"
+#define kGCSULID @"ulid"
 #define TIME_INTERVAL 10
 
 NSString* mimeTypeForFilename(NSString* filename)
@@ -366,7 +367,7 @@ static id lastRequest = nil;
     
     NSLog(@"STEP #4-------------");
     
-    NSString* urlstr = [[url absoluteString] stringByAppendingFormat:@"&%@", options[@"ulid"]];
+    NSString* urlstr = [[url absoluteString] stringByAppendingFormat:@"&%@", options[kGCSULID]];
     
     
     KCSGenericRESTRequest* req = [KCSGenericRESTRequest requestForResource:urlstr usingMethod:kPutRESTMethod withCompletionAction:^(KCSConnectionResponse *response) {
@@ -466,7 +467,7 @@ static id lastRequest = nil;
         d[KCSFileSize] = @(uploadFile.length);
         d[KCSFileMimeType] = uploadFile.mimeType;
         //TODO: check tempULID
-        d[@"ulid"] = uploadFile.tempULID;
+        d[kGCSULID] = uploadFile.tempULID;
 //        [self _getUploadHeader:url options:d requiredHeaders:requiredHeaders];
         [self _getUploadHeader:url options:d requiredHeaders:requiredHeaders uploadFile:uploadFile stream:stream completionBlock:completionBlock progressBlock:progressBlock];
         
@@ -554,10 +555,12 @@ static id lastRequest = nil;
     [self _uploadStream:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
 }
 
-+ (KCSNetworkRequest*) _getUploadLoc:(NSMutableDictionary *)body
++ (KCSNetworkRequest*) _getUploadLoc:(NSMutableDictionary *)options
 {
     //remove unwanted keys
+    NSMutableDictionary* body = [NSMutableDictionary dictionaryWithDictionary:options];
     [body removeObjectForKey:KCSFileResume];
+    [body removeObjectForKey:kGCSULID];
     
     NSString* fileId = body[KCSFileId];
     
@@ -626,8 +629,9 @@ KCSFile* fileFromResults(NSDictionary* results)
                 KCSFile* uploadFile = fileFromResults(results);
 //TODO: ? is needed?                uploadFile.data = data;
                 NSDictionary* requiredHeaders = results[kRequiredHeaders];
+//                NSDicti
                 
-                [self _uploadData:data toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:uploadOptions completionBlock:completionBlock progressBlock:progressBlock];
+                [self _uploadData:data toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
             } else {
                 NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:nil];
                 completionBlock(nil, error);
