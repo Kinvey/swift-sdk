@@ -11,6 +11,8 @@
 
 #import "KinveyKit.h"
 
+#import "KinveyCore.h"
+
 #pragma mark - Data & Storage
 
 #import "KCSDataStore.h"

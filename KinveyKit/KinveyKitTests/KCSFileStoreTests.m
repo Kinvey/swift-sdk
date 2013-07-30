@@ -120,7 +120,7 @@ NSData* testData()
     STAssertTrue([TestUtils setUpKinveyUnittestBackend], @"Should be set up.");
     
     self.done = NO;
-#warning TOREINSTATe  [self setUpTestFile];
+    [self setUpTestFile];
 }
 
 - (void)tearDown
@@ -1456,7 +1456,7 @@ NSData* testData()
 
 - (void) testStreamingUpload
 {
-    STFail(@"NIY");
+    //TODO: try this out in the future
 }
 
 #pragma mark - Delete

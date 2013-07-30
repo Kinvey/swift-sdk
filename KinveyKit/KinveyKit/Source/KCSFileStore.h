@@ -48,7 +48,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 + (instancetype) fileMetadataCollection;
 @end
 
-
+#warning TODO: doc in Release Notes
 /* Methods for finding, downloading, uploading, and removing files from Kinvey's file storage.
  
  This class superceedes `KCSResourceService` and `KCSResourceStore`. Those classes' methods will no longer work.
