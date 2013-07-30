@@ -8,6 +8,8 @@
     * Deprecated and deleted `KCSResourceStore` and `KCSResourceService` APIs. These methods will now throw exceptions when used. They are marked as deprecated to make them easy to find, check the deprecation warning message for suggested replacement API.
     * See our migration guide for examples. 
 * Added support for `NSURL` data types.
+* Bug fix(es):
+    * Better handling of broken references
 
 ## 1.17
 ### 1.17.2

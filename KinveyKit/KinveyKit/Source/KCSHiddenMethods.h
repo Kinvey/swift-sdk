@@ -46,6 +46,10 @@ NSDictionary* defaultBuilders();
 
 @interface KCSClient (KCSHiddenMethods)
 @property (nonatomic, copy, readonly) NSString *rpcBaseURL;
+@property (nonatomic, strong) NSString* kinveyDomain;
+@property (nonatomic, strong) NSString *protocol;
+@property (nonatomic, strong) NSString* port;
+
 @end
 
 

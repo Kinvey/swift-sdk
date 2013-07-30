@@ -65,6 +65,13 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 @implementation TestUtils
 
++ (void) initCustom:(NSDictionary*)opts
+{
+    void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_TT1n4clp2M" withAppSecret:@"967c00679c004660bb356fdc92f436b2" usingOptions:opts];
+    [[KCSClient sharedClient] setKinveyDomain:@"192.168.1.18"];
+    [[KCSClient sharedClient] setServiceHostname:@""];
+}
+
 + (void) initStaging:(NSDictionary*)opts
 {
     (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid10005" withAppSecret:@"8cce9613ecb7431ab580d20863a91e20" usingOptions:opts];
@@ -80,11 +87,12 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 + (void) justInitServer
 {
     NSDictionary* opts = @{KCS_TWITTER_CLIENT_SECRET : @"u48B6AIxebTJwsDcZ3Si7SfvkJLeA9CRuR6VYtk0", KCS_TWITTER_CLIENT_KEY : @"LXRntT0sroPASCBM4p4Hw"};
-    if (YES) {
-        [self initStaging:opts];
-    } else {
-        [self initProduction:opts];
-    }
+//    if (YES) {
+//        [self initStaging:opts];
+//    } else {
+//        [self initProduction:opts];
+//    }
+    [self initCustom:opts];
 }
 
 + (BOOL) setUpKinveyUnittestBackend

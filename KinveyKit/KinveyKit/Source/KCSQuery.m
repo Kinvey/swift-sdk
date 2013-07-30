@@ -469,6 +469,8 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 + (KCSQuery *)queryOnField:(NSString *)field withExactMatchForValue:(NSObject *)value
 {
+    if (!value) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"value should not be `nil`" userInfo:nil] raise];
+    
     if ([value isEqual:[NSNull null]]) {
         //for the special case using 'null' in mongo is not exist or null; but since this is an exact value test, we are hijacking and returing the matches `null` query
         return [KCSQuery queryOnField:field usingConditional:kKCSType forValue:@(KCSQueryTypeNull)];
@@ -625,6 +627,8 @@ BOOL kcsIsOperator(NSString* queryField)
 
 - (void)addQueryOnField:(NSString *)field usingConditional:(KCSQueryConditional)conditional forValue: (NSObject *)value
 {
+    if (!value) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"value should not be `nil`" userInfo:nil] raise];
+    
     value = [KCSQuery valueOrKCSPersistableId:value field:field];
     
     NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:conditional forQueries:@[value] useQueriesForOps:NO];
@@ -634,8 +638,10 @@ BOOL kcsIsOperator(NSString* queryField)
     }
 }
 
-- (void)addQueryOnField:(NSString *)field withExactMatchForValue: (NSObject *)value
+- (void)addQueryOnField:(NSString *)field withExactMatchForValue:(NSObject *)value
 {
+    if (!value) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"value should not be `nil`" userInfo:nil] raise];
+    
     value = [KCSQuery valueOrKCSPersistableId:value field:field];
     
     NSDictionary *tmp = [KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:@[value] useQueriesForOps:NO];
