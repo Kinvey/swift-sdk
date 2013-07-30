@@ -172,7 +172,7 @@
         completionBlock(nil, error);
     }
 }
-
+                            
 + (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock permissions:(NSString*)permissions usingWebView:(KCSWebViewClass*) webview
 {
     if (permissions == nil) permissions = @"r_basicprofile";
@@ -190,7 +190,8 @@
         completionBlock(nil, error);
         
     } else {
-        KCSLinkedInHelper* helper = [[KCSLinkedInHelper alloc] init];
+        static KCSLinkedInHelper* helper;
+        helper = [[KCSLinkedInHelper alloc] init];
         helper.apiKey = linkedInKey;
         helper.secretKey = linkedInSecret;
         helper.acceptRedirect = linkedInAcceptRedirect;
