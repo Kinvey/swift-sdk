@@ -52,13 +52,15 @@
 
 #endif
 
-@property (strong, nonatomic, readonly) NSString *kinveyDomain;
+@property (strong, nonatomic) NSString *kinveyDomain;
 
 ///---------------------------------------------------------------------------------------
 /// @name Connection Properties
 ///---------------------------------------------------------------------------------------
+
 /*! Protocol used to connection to Kinvey Service (nominally HTTPS)*/
-@property (nonatomic, copy, readonly) NSString *protocol;
+@property (nonatomic, strong) NSString *protocol;
+@property (nonatomic, strong) NSString* port;
 
 - (void)killAppViaExceptionNamed: (NSString *)class withReason: (NSString *)reason;
 - (void)updateURLs;
@@ -90,6 +92,7 @@
         _analytics = [[KCSAnalytics alloc] init];
         _cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;  // Inhibit caching for now
         _protocol = @"https";
+        _port = @"";
         _userIsAuthenticated = NO;
         _userAuthenticationInProgress = NO;
         _authCompleteLock   = [[NSRecursiveLock alloc] init];
@@ -238,11 +241,11 @@
 
 - (void)updateURLs
 {
-    self.appdataBaseURL  = [NSString stringWithFormat:@"%@://%@.%@/appdata/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
-    self.resourceBaseURL = [NSString stringWithFormat:@"%@://%@.%@/blob/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
-    self.userBaseURL     = [NSString stringWithFormat:@"%@://%@.%@/user/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
+    self.appdataBaseURL  = [NSString stringWithFormat:@"%@://%@.%@%@/appdata/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.port, self.appKey];
+    self.resourceBaseURL = [NSString stringWithFormat:@"%@://%@.%@%@/blob/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.port, self.appKey];
+    self.userBaseURL     = [NSString stringWithFormat:@"%@://%@.%@%@/user/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.port, self.appKey];
     //rpc/:kid/:username/user-password-reset-initiate
-    self.rpcBaseURL      = [NSString stringWithFormat:@"%@://%@.%@/rpc/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.appKey];
+    self.rpcBaseURL      = [NSString stringWithFormat:@"%@://%@.%@%@/rpc/%@/", self.protocol, self.serviceHostname,self.kinveyDomain, self.port, self.appKey];
 
 }
 
@@ -353,6 +356,6 @@
 
 - (NSString*) baseURL
 {
-    return [NSString stringWithFormat:@"%@://%@.%@/", self.protocol, self.serviceHostname, self.kinveyDomain];
+    return [NSString stringWithFormat:@"%@://%@.%@%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.port];
 }
 @end

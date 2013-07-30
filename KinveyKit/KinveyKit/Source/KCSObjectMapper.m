@@ -188,6 +188,10 @@ id makeObjectFromKinveyRef(id refDict, Class valClass)
         return [NSNull null];
     }
     id referencedObj = [refDict objectForKey:@"_obj"];
+    if ([referencedObj isEqual:[NSNull null]]) {
+        KCSLogWarning(@"Could not resolve reference, setting related object to `nil`: %@", refDict);
+        return nil;
+    }
     
     //TODO: how to handle resources!
     id newObj = refDict;

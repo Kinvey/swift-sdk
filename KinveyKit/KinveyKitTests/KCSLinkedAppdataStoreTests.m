@@ -1211,4 +1211,14 @@ LinkedTestClass* randomTestClass(NSString* description)
     [self poll];
 }
 
+- (void) testBrokenRefence
+{
+    STFail(@"NIY");
+}
+
+- (void) testBrokenFile
+{
+    STFail(@"NIY");
+}
+
 @end

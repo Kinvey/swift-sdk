@@ -120,7 +120,7 @@ NSData* testData()
     STAssertTrue([TestUtils setUpKinveyUnittestBackend], @"Should be set up.");
     
     self.done = NO;
-    [self setUpTestFile];
+#warning TOREINSTATe  [self setUpTestFile];
 }
 
 - (void)tearDown
@@ -1396,7 +1396,7 @@ NSData* testData()
     }];
     
     //2. Cancel    
-    double delayInSeconds = 0.65;
+    double delayInSeconds = 1.6;
     __block id lastRequest;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_current_queue(), ^(void){
@@ -1424,6 +1424,13 @@ NSData* testData()
     lastRequest = [KCSFileStore lastRequest];
     unsigned long long totalBytes = firstWritten + [lastRequest bytesWritten];
     KTAssertEqualsInt(totalBytes, kImageSize, @"should have only written the total bytes");
+    
+    self.done = NO;
+    [KCSFileStore uploadKCSFile:file options:@{KCSFileResume : @(YES)} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
     
     //5. dl file and check that the file size is correct.
     self.done = NO;
