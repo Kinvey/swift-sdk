@@ -184,14 +184,15 @@ implementing these methods.
 /** Override the initializer that KinveyKit uses to build objects of this type
  
  If specified in the kinveyObjectBuilderOptions dictionary, this method will be
- called to build objects instead of [[[self class] alloc] init].  This method
+ called to build objects instead of `[[[self class] alloc] init]`.  This method
  _must_ return an instantiated object of the class that implements this protocol.
  This routine does not release the generated object.
  
+ @updatedIn 1.17.3
+ @param jsonDocument the raw server object. This can be used to fetch an existing object instead of creating a brand new one. E.g. use `jsonDocument[KCSEntityKeyId]` to get the object id and search using a `NSFetchedRequest` to find an existing NSManagedObject in the context.
  @return An instantiated object of the class implementing this protocol
- 
  */
-+ (id)kinveyDesignatedInitializer;
++ (id)kinveyDesignatedInitializer:(NSDictionary*)jsonDocument;
 
 #pragma mark - Don't Override these methods
 ///---------------------------------------------------------------------------------------
