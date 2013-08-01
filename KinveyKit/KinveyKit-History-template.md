@@ -9,9 +9,42 @@
     * See our migration guide for examples. 
 * Added support for `NSURL` data types.
 * Bug fix(es):
-    * Better handling of broken references
+    * Better handling of broken references.
 
 ## 1.17
+### 1.17.3
+** Release Date:** Aug 1, 2013
+
+* Updated `KCSPersistable` protocol with method `+kinveyDesignatedInitializer:`. This builder method is supplied the unedited json document from the server. This means the `KCSEntityKeyId` can be extracted and used to load objects from a persistent store instead of having to create a new one each time. <br><br> For example, when using Core Data, the following code will try to find an existing object with a matching property `kinveyID` before inserting a new one. 
+<pre>
+    &plus; (id)kinveyDesignatedInitializer:(NSDictionary *)jsonDocument
+    {
+        NSString* existingID = jsonDocument[KCSEntityKeyId];
+        id obj = nil;
+    
+        NSManagedObjectContext* context = [(AppDelegate*)[[UIApplication sharedApplication] delegate] managedObjectContext];
+        NSEntityDescription* entity = [NSEntityDescription entityForName:@"<#ENTITY#>" inManagedObjectContext:context];
+    
+	    if (existingID) {
+    	    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        	[request setEntity:entity];
+	        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"kinveyID = %@", existingID];
+    	    [request setPredicate:predicate];
+        	NSArray* results = [context executeFetchRequest:request error:NULL];
+	        if (results != nil && results.count > 0) {
+    	        obj = results[0];
+        	}
+	    }
+    
+    	if (obj == nil) {
+        	//fall back to creating a new if one if there is an error, or if it is new
+	        obj = [[self alloc] initWithEntity:entity insertIntoManagedObjectContext:context];
+    	}
+    
+    	return obj;
+	}
+</pre>
+
 ### 1.17.2
 ** Release Date:** July 16, 2013
 

@@ -45,11 +45,13 @@ NSString* const KCSFileLinkExpirationTimeInterval = @"ttl_in_seconds";
 
 NSString* mimeTypeForFilename(NSString* filename)
 {
-    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[filename pathExtension], NULL);
     CFStringRef MIMEType = nil;
-    if (UTI != nil) {
-        MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
-        CFRelease(UTI);
+    if (filename != nil) {
+        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[filename pathExtension], NULL);
+        if (UTI != nil) {
+            MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+            CFRelease(UTI);
+        }
     }
     NSString* mimeType = MIMEType ? (NSString*)CFBridgingRelease(MIMEType) : @"application/octet-stream";
     
@@ -134,6 +136,7 @@ static id lastRequest = nil;
 @property (nonatomic, copy) KCSProgressBlock progressBlock;
 @property (nonatomic, strong) NSURLConnection* connection;
 @property (nonatomic) unsigned long long bytesWritten;
+@property (nonatomic, strong) NSHTTPURLResponse* response;
 @end
 
 @implementation KCSUploadStreamRequest
@@ -159,7 +162,7 @@ static id lastRequest = nil;
         [stream setProperty:@(offset) forKey:NSStreamFileCurrentOffsetKey];
     }
 
-    [request addValue:@"start" forHTTPHeaderField:@"x-goog-resumable"];
+#warning RE-INSTATE    [request addValue:@"start" forHTTPHeaderField:@"x-goog-resumable"];
     [request setAllHTTPHeaderFields:headers];
     
     KCSLogTrace(@"upload stream: PUT %@ headers=%@", url, headers);
@@ -194,7 +197,8 @@ static id lastRequest = nil;
 {
     NSLog(@"Upload received response %@", response);
     NSLog(@"response headers: %@", [(NSHTTPURLResponse*)response allHeaderFields]);
-    //TODO: handle response
+
+    self.response = (NSHTTPURLResponse*) response;
     NSString* length = [(NSHTTPURLResponse*)response allHeaderFields][@"Content-Length"];
     NSUInteger expectedSize = [length longLongValue];
     _data = [NSMutableData dataWithCapacity:expectedSize];
@@ -204,8 +208,18 @@ static id lastRequest = nil;
 {
     //TODO: handle did finish
     //TODO: hanndle 4/500s
+    
+    NSInteger responseCode = self.response.statusCode;
+    NSError* error = nil;
+    if (responseCode >= 400) {
+        NSString* errorStr = [[NSString alloc] initWithData:_data encoding:NSUTF8StringEncoding];
+        ifNil(errorStr, @"");
+        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Upload to GCS Failed", NSLocalizedFailureReasonErrorKey : errorStr};
+        error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:responseCode userInfo:userInfo];
+    }
+    
     NSDictionary* returnVals = @{kBytesWritten: @(_bytesWritten)};
-    _completionBlock(YES, returnVals, nil);
+    _completionBlock(YES, returnVals, error);
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
@@ -214,7 +228,7 @@ static id lastRequest = nil;
     
     //TODO: handle this as an error message
     NSString* respStr = [NSString stringWithUTF8String:_data.bytes];
-    NSLog(@"%@",respStr);
+    NSLog(@"upload response: %@",respStr);
 }
 
 - (void) cancel
@@ -321,7 +335,7 @@ static id lastRequest = nil;
 - (void) connectionDidFinishLoading:(NSURLConnection *)connection
 {
     //TODO: handle did finish
-    //TODO: hanndle 4/500s
+    //warning: hanndle 4/500s
     [_outputHandle closeFile];
     NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
     setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
@@ -761,15 +775,13 @@ KCSFile* fileFromResults(NSDictionary* results)
     [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:bytes completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
         if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
             intermediateFile.mimeType = returnInfo[KCSFileMimeType];
+        } else if (intermediateFile.mimeType == nil) {
+            intermediateFile.mimeType = mimeTypeForFilename(intermediateFile.filename);
         }
         intermediateFile.bytesWritten = [returnInfo[kBytesWritten] unsignedLongLongValue];
+        intermediateFile.length = [[[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:NULL] fileSize];
 
-        if (error) {
-            //TODO: handle partial download
-            completionBlock(@[intermediateFile], error);
-        } else {
-            completionBlock(@[intermediateFile], nil);
-        }
+        completionBlock(@[intermediateFile], error);
     } progressBlock:progressBlock];
 }
 

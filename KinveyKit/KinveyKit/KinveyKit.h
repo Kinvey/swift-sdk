@@ -57,5 +57,3 @@
 #import "KinveyKitExtras.h"
 
 #endif
-
-#warning merge in 1.17.1 fixes
