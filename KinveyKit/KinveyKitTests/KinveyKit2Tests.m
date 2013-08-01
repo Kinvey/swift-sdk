@@ -79,6 +79,7 @@
 
 - (void)testExample
 {
+    //TODO: mock server
     NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
     NSURL* pingURL = [NSURL URLWithString:pingStr];
     

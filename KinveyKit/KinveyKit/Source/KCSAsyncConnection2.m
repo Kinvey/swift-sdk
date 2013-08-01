@@ -110,8 +110,7 @@
     
 }
 
-#pragma mark -
-#pragma mark Primary Interface
+#pragma mark - Primary Interface
 
 - (void)performRequest:(NSURLRequest *)theRequest
          progressBlock:(KCSConnectionProgressBlock)onProgress
@@ -123,8 +122,7 @@
     self.failureBlock = onFailure;
     self.completionBlock = onCompletion;
     
-    KCSLogNetwork(@"Request URL:%@", self.request.URL);
-    KCSLogNetwork(@"Request Method:%@", self.request.HTTPMethod);
+    KCSLogNetwork(@"Request URL:%@ %@", self.request.HTTPMethod, self.request.URL);
     KCSLogNetwork(@"Request Headers:%@", [self.request.allHTTPHeaderFields stripKeys:@[@"Authorization"]]);
     
     
