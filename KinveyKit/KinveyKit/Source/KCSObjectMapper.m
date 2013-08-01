@@ -406,7 +406,11 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
     id copiedObject = nil;
     if (hasDesignatedInit){
         // If we need to use a designated initializer we do so here
-        copiedObject = [objectClass kinveyDesignatedInitializer];
+        if ([(id)objectClass respondsToSelector:@selector(kinveyDesignatedInitializer:)]) {
+            copiedObject = [objectClass kinveyDesignatedInitializer:data];
+        } else {
+            copiedObject = [(id)objectClass performSelector:@selector(kinveyDesignatedInitializer)];
+        }
     } else {
         // Normal path
         copiedObject = [[objectClass alloc] init];
