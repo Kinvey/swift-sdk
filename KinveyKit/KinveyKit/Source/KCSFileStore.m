@@ -198,7 +198,7 @@ static id lastRequest = nil;
 
 - (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    NSLog(@"Upload received response %@", response);
+    NSLog(@"Upload received GCS response code: %d", [(NSHTTPURLResponse*)response statusCode]);
     NSLog(@"response headers: %@", [(NSHTTPURLResponse*)response allHeaderFields]);
 
     self.response = (NSHTTPURLResponse*) response;
@@ -1060,6 +1060,11 @@ KCSFile* fileFromResults(NSDictionary* results)
                                                     sourceError:errorOrNil];
             completionBlock(nil, fileError);
         } else {
+            if (objectsOrNil == nil || objectsOrNil.count == 0) {
+                completionBlock(objectsOrNil, errorOrNil);
+                return; //short circuit since there is no work
+            }
+            
             NSUInteger totalBytes = [[objectsOrNil valueForKeyPath:@"@sum.length"] unsignedIntegerValue];
             NSMutableArray* files = [NSMutableArray arrayWith:objectsOrNil.count copiesOf:[NSNull null]];
             __block NSUInteger completedCount = 0;
