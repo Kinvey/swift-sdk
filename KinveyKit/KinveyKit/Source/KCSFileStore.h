@@ -49,7 +49,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 @end
 
 #warning TODO: doc in Release Notes
-/* Methods for finding, downloading, uploading, and removing files from Kinvey's file storage.
+/** Methods for finding, downloading, uploading, and removing files from Kinvey's file storage.
  
  This class superceedes `KCSResourceService` and `KCSResourceStore`. Those classes' methods will no longer work.
  
@@ -75,7 +75,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  * any other `options` fields will be set as properties on the metadata object
  
  @param fileURL a url to a local file
- @param options upload options (see above)
+ @param uploadOptions upload options (see above)
  @param completionBlock called when the upload is complete or error occurs. The `KCSFile` return object will have its `fileName` and `fileId` properties set to their new values.
  @param progressBlock called 0+ times with intermediate progress as the file is uploaded. This only counts data transferred to the file storage service, and not the intermediate call to Kinvey to obtain the upload location.
  @since 1.18.0
@@ -95,7 +95,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  * any other `options` fields will be set as properties on the metadata object
  
  @param data the bytes to upload
- @param options upload options (see above)
+ @param uploadOptions upload options (see above)
  @param completionBlock called when the upload is complete or error occurs. The `KCSFile` return object will have its `fileName` and `fileId` properties set to their new values.
  @param progressBlock called 0+ times with intermediate progress as the file is uploaded. This only counts data transferred to the file storage service, and not the intermediate call to Kinvey to obtain the upload location.
  @since 1.18.0
@@ -125,41 +125,29 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) downloadFile:(id)idOrIds options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
-/** Downloads the specified file or files to the `NSCachesDirectory`.
+/** Downloads the specified file or files.
  
- The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
- 
- Available options:
- 
- * KCSFileOnlyIfNewer - set to `@(YES)` to only download if the metadata has been updated after the file was last downloaded (if file exists).
- * KCSFileFileName - the destination filename. If multiple files are specified, this must be an array with the same number of elements as requested.
+ The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. 
  
  @param nameOrNames a single string file name or an array of file names
- @param options an optional (can be `nil`) options dictionary (see above)
- @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `localURL`, `filename`, `fileId`, `length`, and `mimeType` properties filled. These objects may not be in the same order 
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `localURL`, `filename`, `fileId`, `length`, and `mimeType` properties filled. These objects may not be in the same order
  @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location. This will be represented as a percentage of overall progress.
  @since 1.18.0
  */
 + (void) downloadFileByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
-/** Downloads the matching file or files to the `NSCachesDirectory`.
+/** Downloads the matching file or files.
  
- The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
- 
- Available options:
- 
- * KCSFileOnlyIfNewer - set to `@(YES)` to only download if the metadata has been updated after the file was last downloaded (if file exists).
- * KCSFileFileName - the destination filename. If multiple files are specified, this must be an array with the same number of elements as requested.
+ The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. 
  
  @param query a standard Kinvey Query object
- @param options an optional (can be `nil`) options dictionary (see above)
  @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `localURL`, `filename`, `fileId`, `length`, and `mimeType` properties filled.
  @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location. This will be represented as a percentage of overall progress.
  @since 1.18.0
  */
 + (void) downloadFileByQuery:(KCSQuery*)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
-/** Downloads the specified URL to `NSCachesDirectory`.
+/** Downloads the specified URL.
  
  The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
  

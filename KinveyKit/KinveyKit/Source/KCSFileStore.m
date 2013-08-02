@@ -888,7 +888,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                 }
                 
                 //TODO: handle onlyIfNewer - check time on downloadObject
-                [self _downloadToFile:destinationFile fromURL:file.remoteURL fileId:fileId filename:file.filename mimeType:file.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:completionBlock progressBlock:progressBlock];
+                [self _downloadToFile:destinationFile fromURL:file.remoteURL fileId:fileId filename:destinationName mimeType:file.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:completionBlock progressBlock:progressBlock];
             } else {
                 NSError* error = nil; //TODO: make a bad url error
                 completionBlock(nil, error);
@@ -896,8 +896,6 @@ KCSFile* fileFromResults(NSDictionary* results)
         }
     }];
 }
-//TODO: doc that it goes to caches by default
-//TODO: support additional directories
 //TODO: support backup flag
 
 + (void) _downloadData:(NSString*)fileId completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
@@ -929,6 +927,11 @@ KCSFile* fileFromResults(NSDictionary* results)
 
 + (void)downloadFileByQuery:(KCSQuery *)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
+    [self downloadFileByQuery:query filenames:nil options:nil completionBlock:completionBlock progressBlock:progressBlock];
+}
+
++ (void)downloadFileByQuery:(KCSQuery *)query filenames:(NSArray*)filenames options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+{
     NSParameterAssert(query != nil);
     NSParameterAssert(completionBlock != nil);
     
@@ -945,20 +948,41 @@ KCSFile* fileFromResults(NSDictionary* results)
         } else {
             NSUInteger totalBytes = [[objectsOrNil valueForKeyPath:@"@sum.length"] unsignedIntegerValue];
             NSMutableArray* files = [NSMutableArray arrayWith:objectsOrNil.count copiesOf:[NSNull null]];
+
+            //get ids to match the out-of order return file objects
+            NSArray* destinationIds = nil;
+            if (query.query != nil) {
+                //parse the query object
+                NSDictionary* idQuery = query.query[KCSEntityKeyId];
+                if (idQuery != nil) {
+                    NSArray* inIds = idQuery[@"$in"]; // mongo ql dependency
+                    if (inIds && [inIds isKindOfClass:[NSArray class]]) {
+                        destinationIds = inIds;
+                    }
+                }
+            }
+            
             __block NSUInteger completedCount = 0;
             __block NSError* firstError = nil;
             [objectsOrNil enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 KCSFile* thisFile = obj;
                 if (thisFile && thisFile.remoteURL) {
                     
-                    NSURL* destinationFile = nil; //TODO
-                    if (destinationFile == nil) {
-                        NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
-                        destinationFile = [NSURL URLWithString:thisFile.filename relativeToURL:downloadsDir];
+                    NSURL* destinationFile = nil;
+                    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+                    NSString* destinationFilename = thisFile.filename;
+                    
+                    if (destinationIds != nil && filenames != nil) {
+                        NSUInteger specifiedFileIndex = [destinationIds indexOfObject:thisFile.fileId];
+                        if (specifiedFileIndex != NSNotFound && specifiedFileIndex < filenames.count) {
+                            destinationFilename = filenames[specifiedFileIndex];
+                        }
                     }
+                    
+                    destinationFile = [NSURL URLWithString:destinationFilename relativeToURL:downloadsDir];
 
                     //TODO: onlyIfNewer check download object
-                    [self _downloadToFile:destinationFile fromURL:thisFile.remoteURL fileId:thisFile.fileId filename:thisFile.filename mimeType:thisFile.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+                    [self _downloadToFile:destinationFile fromURL:thisFile.remoteURL fileId:thisFile.fileId filename:destinationFilename mimeType:thisFile.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
                         if (error != nil && firstError != nil) {
                             firstError = error;
                         }
@@ -1006,14 +1030,14 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     BOOL idIsString = [idOrIds isKindOfClass:[NSString class]];
     BOOL idIsArray = [idOrIds isKindOfClass:[NSArray class]];
+
+    id filename = (options != nil) ? options[KCSFileFileName] : nil;
     
     if (idIsString || (idIsArray && [idOrIds count] == 1)) {        
-        NSString* filename = (options != nil) ? options[KCSFileFileName] : nil;
         [self _downloadFile:filename fileId:idOrIds options:options completionBlock:completionBlock progressBlock:progressBlock];
     } else if (idIsArray) {
         KCSQuery* idQuery = [KCSQuery queryOnField:KCSFileId usingConditional:kKCSIn forValue:idOrIds];
-#warning to test & do the by query with options/newer
-        [self downloadFileByQuery:idQuery completionBlock:completionBlock progressBlock:progressBlock];
+        [self downloadFileByQuery:idQuery filenames:filename options:options completionBlock:completionBlock progressBlock:progressBlock];
     } else {
         [[NSException exceptionWithName:@"KCSInvalidParameter" reason:@"idOrIds is not single id or array of ids" userInfo:nil] raise];
     }
