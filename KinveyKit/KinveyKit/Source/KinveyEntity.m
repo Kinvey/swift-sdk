@@ -438,7 +438,7 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
     return nil;
 }
 
-+ (id)kinveyDesignatedInitializer
++ (id)kinveyDesignatedInitializer:(NSDictionary*)jsonDocument
 {
     // Eventually this will be used to allow a default scanning of "self" to build and cache a
     // 1-1 mapping of the client properties

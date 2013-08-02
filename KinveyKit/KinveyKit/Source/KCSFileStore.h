@@ -108,7 +108,9 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 /// @name Downloading Files
 ///---------------------------------------------------------------------------------------
 
-/** Downloads the specified file or files to the `NSCachesDirectory`. The files will be named by their `filename` properties.
+/** Downloads the specified file or files.
+ 
+ The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
  
  Available options:
  
@@ -123,7 +125,9 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) downloadFile:(id)idOrIds options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
-/** Downloads the specified file or files to the `NSCachesDirectory`. The files will be named by their `filename` properties.
+/** Downloads the specified file or files to the `NSCachesDirectory`.
+ 
+ The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
  
  Available options:
  
@@ -132,13 +136,15 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  
  @param nameOrNames a single string file name or an array of file names
  @param options an optional (can be `nil`) options dictionary (see above)
- @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `localURL`, `filename`, `fileId`, `length`, and `mimeType` properties filled.
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `localURL`, `filename`, `fileId`, `length`, and `mimeType` properties filled. These objects may not be in the same order 
  @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location. This will be represented as a percentage of overall progress.
  @since 1.18.0
  */
 + (void) downloadFileByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
-/** Downloads the matching file or files to the `NSCachesDirectory`. The files will be named by their `filename` properties.
+/** Downloads the matching file or files to the `NSCachesDirectory`.
+ 
+ The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
  
  Available options:
  
@@ -153,7 +159,9 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) downloadFileByQuery:(KCSQuery*)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
-/** Downloads the specified URL to `NSCachesDirectory`. The file will be named by its `filename` property.
+/** Downloads the specified URL to `NSCachesDirectory`.
+ 
+ The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
  
  Available options:
  

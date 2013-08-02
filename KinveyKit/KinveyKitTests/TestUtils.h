@@ -19,6 +19,7 @@
 #define KTAssertEqualsInt(x,y, desc) STAssertEquals((int)x,(int)y, desc)
 #define KTAssertCount(c, obj) STAssertNotNil(obj, @"obj should be non-nil"); STAssertEquals((int)[obj count], (int)c, @"count did not match expectation")
 #define KTAssertCountAtLeast(c, obj) STAssertTrue( [obj count] >= c, @"count (%i) should be at least (%i)", [obj count], c);
+#define KTAssertEqualsDates(date1,date2) STAssertTrue([date1 isEqualToDate:date2], @"Dates should match.");
 
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 
