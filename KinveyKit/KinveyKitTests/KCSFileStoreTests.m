@@ -70,6 +70,13 @@ NSData* testData()
     return ipsumData;
 }
 
+NSData* testData2()
+{
+    NSString* hipsterIpsum = @"Selfies magna deep v consequat, esse dolor Banksy Marfa quis. Banh mi gastropub tofu, gluten-free twee literally narwhal. Narwhal fanny pack cardigan duis ex meh. Tofu cornhole nihil viral intelligentsia Tonx nisi DIY. Kogi chillwave helvetica, fap artisan mumblecore eu sapiente PBR irure put a bird on it fixie dolore small batch. Aliquip consequat proident, before they sold out street art letterpress vegan Tonx helvetica Williamsburg Terry Richardson Godard. Vero trust fund photo booth, artisan dolor irure ennui Cosby sweater labore Tonx fixie gastropub.";
+    NSData* ipsumData = [hipsterIpsum dataUsingEncoding:NSUTF16BigEndianStringEncoding];
+    return ipsumData;
+}
+
 - (NSURL*) largeImageURL
 {
     return [[NSBundle bundleForClass:[self class]] URLForResource:@"mavericks" withExtension:@"jpg"];
@@ -578,18 +585,160 @@ NSData* testData()
 
 - (void) testDownloadFileSpecifyFilename
 {
-    STFail(@"NIY");
-}
-
-- (void) testDownloadFilesSpecifyFilenamesError
-{
-    STFail(@"NIY");
+    NSString* filename = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* destinationURL = [NSURL URLWithString:filename relativeToURL:downloadsDir];
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL path]], @"Should start with a fresh file");
+    
+    self.done = NO;
+    SETUP_PROGRESS;
+    __block KCSFile* file;
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileFileName : filename} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        KTAssertCount(1, downloadedResources);
+        file = downloadedResources[0];
+        
+        STAssertNotNil(file.filename, @"should have a filename");
+        STAssertEqualObjects(file.filename, filename, @"filename should match specified");
+        STAssertNotNil(file.localURL, @"should have a local url");
+        STAssertEqualObjects(file.localURL, destinationURL, @"should have gone to specified location");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+    
+    NSError* error;
+    [[NSFileManager defaultManager] removeItemAtPath:[file.localURL path] error:&error];
+    STAssertNoError_;
 }
 
 - (void) testDownloadFilesSpecifyFilenames
 {
-    STFail(@"NIY");
+    //1. upload two files
+    //2. download two files with names
+    //3. check there are two valid files & have specified names
+    __block NSString* file2Id = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData2() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        file2Id = uploadInfo.fileId;
+        STAssertFalse([file2Id isEqualToString:kTestId], @"file 2 should be different");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    NSString* filename1 = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSString* filename2 = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* destinationURL1 = [NSURL URLWithString:filename1 relativeToURL:downloadsDir];
+    NSURL* destinationURL2 = [NSURL URLWithString:filename2 relativeToURL:downloadsDir];
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL1 path]], @"Should start with a fresh file");
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL2 path]], @"Should start with a fresh file");
+    
+    self.done = NO;
+    __block NSArray* downloads;
+    [KCSFileStore downloadFile:@[kTestId, file2Id] options:@{KCSFileFileName : @[filename1, filename2]} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        downloads = downloadedResources;
+        KTAssertCount(2, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+        KCSFile* f2 = downloadedResources[1];
+        
+        BOOL idIn = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn, @"test id should match");
+        STAssertNotNil(f1.localURL, @"should have a local id");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f1.localURL path]], @"file should exist");
+        
+        BOOL idIn2 = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn2, @"test id should match");
+        STAssertNotNil(f2.localURL, @"should have a local id");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f2.localURL path]], @"file should exist");
+        
+        STAssertFalse([f1.fileId isEqual:f2.fileId], @"should be different ids");
+        STAssertFalse([f1.localURL isEqual:f2.localURL], @"Should be different files");
+        
+        BOOL nameIn1 = [@[filename1, filename2] containsObject:f1.filename];
+        BOOL nameIn2 = [@[filename1, filename2] containsObject:f2.filename];
+        STAssertTrue(nameIn1, @"file 1 should have the appropriate filename");
+        STAssertTrue(nameIn2, @"file 1 should have the appropriate filename");
+        
+        KCSFile* data2File = [f1.fileId isEqualToString:file2Id] ? f1 : f2;
+        STAssertEqualObjects(data2File.filename, filename2, @"f2 should match filename 2");
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[data2File.localURL path] error:&error];
+        STAssertNoError_
+        KTAssertEqualsInt([attr fileSize], testData2().length, @"should be tesdata2");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    for (KCSFile* f in downloads) {
+        NSError* error = nil;
+        [[NSFileManager defaultManager] removeItemAtURL:f.localURL error:&error];
+        STAssertNoError_;
+    }
 }
+
+- (void) testDownloadFilesSpecifyFilenamesError
+{
+    //2. download two files with names, but only 1 has a file
+    //3. check that one is good and the other is null
+    
+    NSString* file2Id = @"NOFILE";
+    
+    NSString* filename1 = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSString* filename2 = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* destinationURL1 = [NSURL URLWithString:filename1 relativeToURL:downloadsDir];
+    NSURL* destinationURL2 = [NSURL URLWithString:filename2 relativeToURL:downloadsDir];
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL1 path]], @"Should start with a fresh file");
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL2 path]], @"Should start with a fresh file");
+    
+    self.done = NO;
+    __block NSArray* downloads;
+    [KCSFileStore downloadFile:@[kTestId, file2Id] options:@{KCSFileFileName : @[filename1, filename2]} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        downloads = downloadedResources;
+        KTAssertCount(1, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+//        KCSFile* f2 = downloadedResources[1];
+        
+        BOOL idIn = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn, @"test id should match");
+        STAssertNotNil(f1.localURL, @"should have a local id");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f1.localURL path]], @"file should exist");
+        
+        BOOL idIn2 = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn2, @"test id should match");
+//        STAssertNotNil(f2.localURL, @"should have a local id");
+//        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f2.localURL path]], @"file should exist");
+//        
+//        STAssertFalse([f1.fileId isEqual:f2.fileId], @"should be different ids");
+//        STAssertFalse([f1.localURL isEqual:f2.localURL], @"Should be different files");
+        
+        BOOL nameIn1 = [@[filename1, filename2] containsObject:f1.filename];
+//        BOOL nameIn2 = [@[filename1, filename2] containsObject:f2.filename];
+        STAssertTrue(nameIn1, @"file 1 should have the appropriate filename");
+//        STAssertTrue(nameIn2, @"file 1 should have the appropriate filename");
+        
+//        KCSFile* data2File = [f1.fileId isEqualToString:file2Id] ? f1 : f2;
+        STAssertEqualObjects(f1.filename, filename1, @"f1 should match filename 21");
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[f1.localURL path] error:&error];
+        STAssertNoError_
+        KTAssertEqualsInt([attr fileSize], testData().length, @"should be tesdata");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    for (KCSFile* f in downloads) {
+        NSError* error = nil;
+        [[NSFileManager defaultManager] removeItemAtURL:f.localURL error:&error];
+        STAssertNoError_;
+    }
+}
+
 
 - (void) testGetByFileName
 {
