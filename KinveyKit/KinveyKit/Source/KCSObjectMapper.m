@@ -39,6 +39,10 @@ typedef enum KCSRefType : NSInteger {
     NotARef, FileRef, AppdataRef
 } KCSRefType;
 
+@protocol KCSPersistableInternal <NSObject>
++(id)kinveyDesignatedInitializer;
+@end
+
 @implementation KCSKinveyRef
 - (instancetype) initWithObj:(id<KCSPersistable>)obj andCollection:(NSString*)collection
 {
@@ -173,7 +177,11 @@ id makeObjectWithResourcesOfType(Class objectClass, NSDictionary* data, NSMutabl
     id copiedObject = nil;
     if (hasDesignatedInit){
         // If we need to use a designated initializer we do so here
-        copiedObject = [objectClass kinveyDesignatedInitializer];
+        if ([(id)objectClass respondsToSelector:@selector(kinveyDesignatedInitializer:)]) {
+            copiedObject = [objectClass kinveyDesignatedInitializer:data];
+        } else {
+            copiedObject = [(id)objectClass performSelector:@selector(kinveyDesignatedInitializer)];
+        }
     } else {
         // Normal path
         copiedObject = [[objectClass alloc] init];
@@ -205,6 +213,13 @@ id makeObjectFromKinveyRef(id refDict, Class valClass)
     }
     return newObj;
     
+}
+
+bool isAUserObject(id object)
+{
+    BOOL isDictionary = [object isKindOfClass:[NSDictionary class]];
+    BOOL isKCSObject = [NSStringFromClass([object class]) hasPrefix:@"KCS"];
+    return isDictionary == NO && isKCSObject == NO;
 }
 
 void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NSMutableDictionary* resourcesToLoad, KCSSerializedObject* serializedObject)
@@ -239,6 +254,8 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
         }
     }
     
+    BOOL isUserObject = isAUserObject(object);
+    
     for (NSString *hostKey in hostToJsonMap) {
         NSString *jsonKey = [hostToJsonMap objectForKey:hostKey];
         id value = nil;
@@ -253,7 +270,7 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
         }
         
         if (value == nil) {
-            if ([object isKindOfClass:[NSDictionary class]] == NO)  {
+            if (isUserObject == YES)  {
                 //dictionaries don't have set properties, so no need to warn, just continue
                 KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
             }
