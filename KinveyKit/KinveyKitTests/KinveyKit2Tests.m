@@ -124,6 +124,9 @@
     if (obj != nil && [obj isKindOfClass:[NSDictionary class]]) {
         NSString* appHello = obj[@"kinvey"];
         NSString* kcsVersion = obj[@"version"];
+        
+        STAssertNotNil(appHello, @"should get a hello");
+        STAssertNotNil(kcsVersion, @"should get a version");
     } else {
         //TODO: is an error
     }

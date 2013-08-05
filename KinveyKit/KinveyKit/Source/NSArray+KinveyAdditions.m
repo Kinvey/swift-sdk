@@ -7,6 +7,7 @@
 //
 
 #import "NSArray+KinveyAdditions.h"
+#import "NSString+KinveyAdditions.h"
 
 @implementation NSArray (KinveyAdditions)
 
@@ -59,6 +60,15 @@
     NSMutableArray* array = [NSMutableArray arrayWithCapacity:num];
     for (int i=0; i<num; i++) {
         array[i] = [val copyWithZone:NULL];
+    }
+    return array;
+}
+
+- (instancetype) arrayByPercentEncoding
+{
+    NSMutableArray* array = [NSMutableArray arrayWithCapacity:self.count];
+    for (NSString* s in self) {
+        [array addObject:[NSString stringByPercentEncodingString:s]];
     }
     return array;
 }

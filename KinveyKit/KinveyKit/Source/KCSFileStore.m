@@ -23,6 +23,7 @@
 #import "KCSAppdataStore.h"
 #import "KCSErrorUtilities.h"
 #import "NSDate+KinveyAdditions.h"
+#import "NSString+KinveyAdditions.h"
 
 #warning  remove NSLogs
 
@@ -272,13 +273,13 @@ static id lastRequest = nil;
         [[NSFileManager defaultManager] createFileAtPath:[file path] contents:nil attributes:nil];
     }
     if (error != nil) {
-        error = [KCSErrorUtilities createError:nil description:@"Unable to write to intermediate file" errorCode:KCSFileError domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
+        error = [KCSErrorUtilities createError:nil description:@"Unable to write to intermediate file" errorCode:error.code domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
         completionBlock(NO, @{}, error);
         return;
     }
     _outputHandle = [NSFileHandle fileHandleForWritingToURL:file error:&error];
     if (error != nil) {
-        error = [KCSErrorUtilities createError:nil description:@"Unable to write to intermediate file" errorCode:KCSFileError domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
+        error = [KCSErrorUtilities createError:nil description:@"Unable to write to intermediate file" errorCode:error.code domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
         completionBlock(NO, @{}, error);
         return;
     }
@@ -598,7 +599,6 @@ static id lastRequest = nil;
     request.body = body;
     
     request.headers[@"x-Kinvey-content-type"] = body[@"mimeType"];
-#warning TEMP
     request.headers[@"x-kinvey-resumable-upload"] = @"true";
     
     return request;
@@ -797,7 +797,10 @@ KCSFile* fileFromResults(NSDictionary* results)
            progressBlock:(KCSProgressBlock)progressBlock
 {
     NSURL* cachesDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
-    NSURL* localFile = [NSURL URLWithString:fileId relativeToURL:cachesDir];
+    NSString* tempName = [NSString stringByPercentEncodingString:[fileId stringByReplacingOccurrencesOfString:@"/" withString:@""]];
+    NSURL* localFile = [NSURL URLWithString:tempName relativeToURL:cachesDir];
+    
+    NSAssert(localFile != nil, @"%@ is not a valid file name for temp storage", fileId);
 
     //TODO: figure out with above
     KCSFile* intermediateFile = [[KCSFile alloc] initWithLocalFile:localFile
@@ -946,6 +949,11 @@ KCSFile* fileFromResults(NSDictionary* results)
                                                     sourceError:errorOrNil];
             completionBlock(nil, fileError);
         } else {
+            if (objectsOrNil == nil || objectsOrNil.count == 0) {
+                completionBlock(objectsOrNil, errorOrNil);
+                return; //short circuit since there is no work
+            }
+            
             NSUInteger totalBytes = [[objectsOrNil valueForKeyPath:@"@sum.length"] unsignedIntegerValue];
             NSMutableArray* files = [NSMutableArray arrayWith:objectsOrNil.count copiesOf:[NSNull null]];
 
@@ -1215,7 +1223,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     [self _getDownloadObject:fileId options:options intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
-            //TODO: hanlde erorr and make a resource error
+            errorOrNil = [errorOrNil updateDomain:KCSResourceErrorDomain];
             completionBlock(nil, errorOrNil);
         } else {
             if (objectsOrNil.count != 1) {
@@ -1228,7 +1236,6 @@ KCSFile* fileFromResults(NSDictionary* results)
     }];
 }
 
-//TODO: test this
 + (void)getStreamingURLByName:(NSString *)fileName completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
 {
     NSParameterAssert(fileName != nil);
@@ -1238,15 +1245,16 @@ KCSFile* fileFromResults(NSDictionary* results)
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
     [store queryWithQuery:nameQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
-            //TODO: hanlde erorr and make a resource error
+            errorOrNil = [errorOrNil updateDomain:KCSResourceErrorDomain];
             completionBlock(nil, errorOrNil);
         } else {
             if (objectsOrNil.count != 1) {
-                KCSLogError(@"returned %u results for file metadata with query", objectsOrNil.count, nameQuery);
+                KCSLogError(@"returned %u results for file metadata with query: %@", objectsOrNil.count, nameQuery);
+                errorOrNil = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"No matching file by name: %@", fileName] errorCode:KCSNotFoundError domain:KCSResourceErrorDomain requestId:nil];
+                completionBlock(nil, errorOrNil);
+            } else {
+                completionBlock( objectsOrNil[0], nil);
             }
-            
-            KCSFile* file = objectsOrNil[0];
-            completionBlock(file, nil);
         }
 
     } withProgressBlock:nil];
@@ -1274,7 +1282,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                                             domain:KCSFileStoreErrorDomain
                                          requestId:nil
                                        sourceError:error];
-            completionBlock(-1, error);
+            completionBlock(0, error);
         } else {
             completionBlock([results[@"count"] unsignedLongValue], nil);
         }

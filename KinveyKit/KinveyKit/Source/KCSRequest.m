@@ -15,6 +15,8 @@
 #import "KCSErrorUtilities.h"
 
 #import "KCS_SBJson.h"
+#import "NSString+KinveyAdditions.h"
+#import "NSArray+KinveyAdditions.h"
 
 #define KINVEY_KCS_API_VERSION @"3"
 
@@ -115,9 +117,10 @@ static const NSString* kBLOBRoot = @"blob";
 - (NSURLRequest*) nsurlRequest
 {
     KCSClient* client = [KCSClient sharedClient];
-    NSArray* path = [@[[self rootString], [client kid]] arrayByAddingObjectsFromArray:_pathComponents];
+    NSArray* path = [@[[self rootString], [client kid]] arrayByAddingObjectsFromArray:[_pathComponents arrayByPercentEncoding]];
     NSString* urlStr = [path componentsJoinedByString:@"/"];
     urlStr = [[client baseURL] stringByAppendingString:urlStr];
+                     
     
     NSURL* url = [NSURL URLWithString:urlStr];
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url]; //TODO cache & timeout

@@ -127,6 +127,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 + (void) downloadFile:(id)idOrIds options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
 /** Downloads the specified file or files.
+
+ __NOTE:__ If there is no matching file by the specified name, the result will be an empty `downloadedResources` array, and NOT a 404 error. This is a change of behavior from previous versions.
  
  The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. 
  
@@ -176,6 +178,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 + (void) downloadData:(id)idOrIds completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
 /** Downloads the specified file or files to memory.
+ 
+  __NOTE:__ If there is no matching file by the specified name, the result will be an empty `downloadedResources` array, and NOT a 404 error. This is a change of behavior from previous versions.
  
  @param nameOrNames a single string file name or an array of file names
  @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `filename`, `fileId`, `length`, and `mimeType` properties filled.  The `data` property will contain the corresponing NSData values.

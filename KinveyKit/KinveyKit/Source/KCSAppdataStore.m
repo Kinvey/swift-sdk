@@ -434,7 +434,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     NSString* query = @"";
     BOOL hasArray = NO;
     if (array.count == 1) {
-        query = [self getObjIdFromObject:array[0] completionBlock:completionBlock];
+        query = [NSString stringByPercentEncodingString:[self getObjIdFromObject:array[0] completionBlock:completionBlock]];
         if (query == nil) {
             //already sent an error;
             return;
