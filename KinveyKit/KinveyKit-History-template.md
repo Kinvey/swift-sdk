@@ -9,6 +9,8 @@
         * See our migration guide for examples. 
     * Added `KCSFileStore` with class methods for working with files:
     	* __Uploading__
+    	   * `+ (void) uploadFile:(NSURL*)fileURL options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+           * `+ (void) uploadData:(NSData*)data options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
     	* __Downloading__
     	* __Deleting__
     * Added `KCSFile` completionBlock object to represent a file object with both local and backend metadata.

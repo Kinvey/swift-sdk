@@ -48,8 +48,6 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 + (instancetype) fileMetadataCollection;
 @end
 
-#warning TODO: doc in Release Notes
-#warning TODO: doc resume flow in documentation
 /** Methods for finding, downloading, uploading, and removing files from Kinvey's file storage.
  
  This class superceedes `KCSResourceService` and `KCSResourceStore`. Those classes' methods will no longer work.
@@ -70,15 +68,15 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 
  * KCSFileFileName - the destination filename, if absent the source file's name will be used.
  * KCSFileId - the destination's unique resource id, if absent, one will be generated.
- * KCSFilePublic - set to `@(YES)` if the file it to be publically avaiable on the Internet
- * KCSFileACL - provide a `KCSMetadata` object ot set the read and write permissions. By default the file will only be available to the creating user.
+ * KCSFilePublic - set to `@(YES)` if the file it to be publicly available on the Internet.
+ * KCSFileACL - provide a `KCSMetadata` object to set the read and write permissions. By default the file will only be available to the creating user.
  * KCSFileMimeType - the file's mime type. If absent, it will be inferred from the file extension. 
  * any other `options` fields will be set as properties on the metadata object
  
- @param fileURL a url to a local file
- @param uploadOptions upload options (see above)
+ @param fileURL         a url to a local file
+ @param uploadOptions   upload options (see above)
  @param completionBlock called when the upload is complete or error occurs. The `KCSFile` return object will have its `fileName` and `fileId` properties set to their new values.
- @param progressBlock called 0+ times with intermediate progress as the file is uploaded. This only counts data transferred to the file storage service, and not the intermediate call to Kinvey to obtain the upload location.
+ @param progressBlock   called 0+ times with intermediate progress as the file is uploaded. This only counts data transferred to the file storage service, and not the intermediate call to Kinvey to obtain the upload location.
  @since 1.18.0
  */
 + (void) uploadFile:(NSURL*)fileURL options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
@@ -90,8 +88,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  
  * KCSFileFileName - the destination filename, if absent, one will be generated.
  * KCSFileId - the destination's unique resource id, if absent, one will be generated.
- * KCSFilePublic - set to `@(YES)` if the file it to be publically avaiable on the Internet
- * KCSFileACL - provide a `KCSMetadata` object ot set the read and write permissions. By default the file will only be available to the creating user.
+ * KCSFilePublic - set to `@(YES)` if the file it to be publicly available on the Internet.
+ * KCSFileACL - provide a `KCSMetadata` object to set the read and write permissions. By default the file will only be available to the creating user.
  * KCSFileMimeType - the file's mime type. If absent, it will be `application/octet-stream`.
  * any other `options` fields will be set as properties on the metadata object
  
@@ -261,9 +259,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 /// @name Deleting Files
 ///---------------------------------------------------------------------------------------
 
-#warning doc To delete a file by name.
 /** Removes a file from the file storage.
- 
  
  @param fileId the file id. This can only be a single string
  @param completionBlock called when the operation completes or fails. The count will be 0 or 1 or an error will be provided.

@@ -16,9 +16,6 @@
  */
 @interface KCSFile : NSObject <KCSPersistable>
 
-#warning REMOVE:
-@property (nonatomic, copy) NSString* tempULID;
-
 ///---
 /// @name Basic Info
 ///---

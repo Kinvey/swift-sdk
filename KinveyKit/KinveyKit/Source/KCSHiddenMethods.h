@@ -79,9 +79,12 @@ NSDictionary* defaultBuilders();
 + (id) lastRequest;
 @end
 
+
+#define KCSFileStoreTestExpries @"KCSFileStore.Test.Expires"
 @interface KCSFile (KCSHiddenMethods)
 @property (nonatomic, retain) NSURL* localURL;
 @property (nonatomic, retain) NSData* data;
+@property (nonatomic, copy) NSString* gcsULID;
 - (void) updateAfterUpload:(KCSFile*)newFile;
 @end
 
