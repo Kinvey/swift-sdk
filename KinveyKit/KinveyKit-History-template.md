@@ -6,8 +6,17 @@
 
 * Improved Resource/File Handling
     * Deprecated and deleted `KCSResourceStore` and `KCSResourceService` APIs. These methods will now throw exceptions when used. They are marked as deprecated to make them easy to find, check the deprecation warning message for suggested replacement API.
-    * See our migration guide for examples. 
+        * See our migration guide for examples. 
+    * Added `KCSFileStore` with class methods for working with files:
+    	* __Uploading__
+    	* __Downloading__
+    	* __Deleting__
+    * Added `KCSFile` completionBlock object to represent a file object with both local and backend metadata.
+    * Added support for "public" files (i.e. files that accessible without authorization).
+    * Improved support for resuming incomplete uploads/downloads.
+    * Improved behavior and accuracy with file upload/download progress.
 * Added support for `NSURL` data types.
+* Warning log will no longer complain about incomplete `KCSUser` and other KinveyKit objects on most queries.
 * Bug fix(es):
     * Better handling of broken references.
 

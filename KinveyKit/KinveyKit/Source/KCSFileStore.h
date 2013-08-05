@@ -257,7 +257,9 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 /// @name Deleting Files
 ///---------------------------------------------------------------------------------------
 
+#warning doc To delete a file by name.
 /** Removes a file from the file storage.
+ 
  
  @param fileId the file id. This can only be a single string
  @param completionBlock called when the operation completes or fails. The count will be 0 or 1 or an error will be provided.
