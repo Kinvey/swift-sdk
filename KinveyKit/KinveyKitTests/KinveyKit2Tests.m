@@ -121,6 +121,12 @@
 - (void) connectionDidFinishLoading:(NSURLConnection *)connection
 {
     id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
+    if (obj != nil && [obj isKindOfClass:[NSDictionary class]]) {
+        NSString* appHello = obj[@"kinvey"];
+        NSString* kcsVersion = obj[@"version"];
+    } else {
+        //TODO: is an error
+    }
     NSLog(@"obj: %@", obj);
     STAssertNotNil(obj, @"should have an object back");
     KTPollDone;

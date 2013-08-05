@@ -177,11 +177,23 @@ NSData* testData2()
     ASSERT_PROGESS
 }
 
-//TODO: Test error conditions
-//TODO: Test multiple ids
-//TODO: test path components slashes, spaces, etc, dots
-//TODO: test no mimeType
-//TODO: test content type
+- (void) testDownloadDataError
+{
+    //step 1. download data that doesn't exist
+    self.done = NO;
+    SETUP_PROGRESS
+    [KCSFileStore downloadData:@"BAD-ID" completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNil(downloadedResources, @"no resources");
+        STAssertNotNil(error, @"should get an error");
+        
+        KTAssertEqualsInt(error.code, 404, @"no item error");
+        STAssertEqualObjects(error.domain, KCSResourceErrorDomain, @"is a file error");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    KTAssertCount(0, progresses);
+}
 
 - (void) testDownloadToFile
 {
@@ -461,7 +473,10 @@ NSData* testData2()
     self.done = NO;
     [KCSFileStore uploadData:testData() options:@{KCSFileId : kTestId, KCSFileMimeType : kTestMimeType} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
-        //TODO: test lmt
+
+        NSDate* uploadLMT = uploadInfo.metadata.lastModifiedTime;
+        STAssertTrue([uploadLMT isLaterThan:firstDate], @"should update the LMT");
+        
         self.done = YES;
     } progressBlock:nil];
     [self poll];
@@ -939,6 +954,64 @@ NSData* testData2()
     [self poll];
     KTAssertCount(0, progresses);
     KTAssertCount(0, datas);
+}
+
+#pragma mark - download by data
+- (void) testDownloadDataByMultipleIds
+{
+    //1. upload two files
+    //2. download two files
+    //3. check there are two valid files
+    __block NSString* file2Id = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        file2Id = uploadInfo.fileId;
+        STAssertFalse([file2Id isEqualToString:kTestId], @"file 2 should be different");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    __block NSArray* downloads;
+    [KCSFileStore downloadData:@[kTestId, file2Id] completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        downloads = downloadedResources;
+        KTAssertCount(2, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+        KCSFile* f2 = downloadedResources[1];
+        
+        BOOL idIn = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn, @"test id should match");
+        STAssertNil(f1.localURL, @"should not have a local id");
+        STAssertNotNil(f1.data, @"should have data");
+        STAssertEqualObjects(f1.data, testData(), @"data should match");
+        
+        BOOL idIn2 = [@[kTestId, file2Id] containsObject:f2.fileId];
+        STAssertTrue(idIn2, @"test id should match");
+        STAssertNil(f2.localURL, @"should not have a local id");
+        STAssertNotNil(f2.data, @"should have data");
+        STAssertEqualObjects(f2.data, testData(), @"data should match");
+        
+        STAssertFalse([f1.fileId isEqual:f2.fileId], @"should be different ids");
+        STAssertFalse([f1.filename isEqual:f2.filename], @"Should be different files");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+}
+
+- (void) testDownloadDataByName
+{
+    STFail(@"NIY");
+    //check filename, fileid,lenghth,mimtype,data
+}
+
+- (void) testDownloadDataByMultipleNames
+{
+    STFail(@"NIY");
+    //check filename, fileid,lenghth,mimtype,data
+    
 }
 
 #pragma mark - download from a resolved URL
@@ -1448,6 +1521,14 @@ NSData* testData2()
     STAssertEquals(firstWritten + secondWritten, (unsigned long long) kImageSize, @"should have only downloaded the total num bytes");
 }
 
+- (void) testTTLExpiresBeforeDownload
+{
+    //1. set a low ttl
+    //2. wait
+    //3. download
+    STFail(@"NIY");
+}
+
 - (void) testTTLExpiresMidUpdate
 {
     //1. Set a low ttl
@@ -1530,9 +1611,21 @@ NSData* testData2()
     }];
     [self poll];
 }
-//test error conditions
-//test streaming by name
-//to get uiimage with url
+
+- (void) testStreamingError
+{
+    STFail(@"NIY");
+}
+
+- (void) testStreamingByName
+{
+    STFail(@"NIY");
+}
+
+- (void) testGetUIImageWithURL
+{
+    STFail(@"NIY");
+}
 
 #pragma mark - Uploading
 
@@ -2004,6 +2097,12 @@ NSData* testData2()
     [self poll];
 }
 
+- (void) testUploadDownloadFileWithPathCharacters
+{
+    //test path components slashes, spaces, etc, dots
+    STFail(@"NIY");
+}
+
 //TODO: implement this
 - (void) TODO_testUploadResume
 {
@@ -2090,7 +2189,7 @@ NSData* testData2()
     [self poll];
 }
 
-- (void) testStreamingUpload
+- (void) TODO_testStreamingUpload
 {
     //TODO: try this out in the future
 }
@@ -2115,6 +2214,11 @@ NSData* testData2()
         self.done = YES;
     } progressBlock:nil];
     [self poll];
+}
+
+- (void) testDeleteByName
+{
+    STFail(@"NIY");
 }
 
 @end
