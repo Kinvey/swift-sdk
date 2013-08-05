@@ -1733,6 +1733,21 @@ NSData* testData2()
     [self poll];
 }
 
+- (void) testTTLExpires
+{
+    SETUP_PROGRESS;
+    self.done = NO;
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileStoreTestExpries : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNotNil(error, @"Should have an error");
+        STAssertEquals(error.code, 400, @"Should be a 400");
+        STAssertEqualObjects(error.domain, KCSFileStoreErrorDomain, @"should be a file error");
+
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_NO_PROGRESS;
+}
+
 #pragma mark - Streaming
 
 - (void) testStreamingBasic

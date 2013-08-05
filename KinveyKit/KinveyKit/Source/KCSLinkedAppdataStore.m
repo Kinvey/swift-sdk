@@ -2,7 +2,7 @@
 //  KCSLinkedAppdataStore.m
 //  KinveyKit
 //
-//  Copyright (c) 2012 Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey, Inc. All rights reserved.
 //
 
 #import "KCSLinkedAppdataStore.h"
