@@ -1611,71 +1611,6 @@ NSData* testData2()
     STAssertEquals(firstWritten + secondWritten, (unsigned long long) kImageSize, @"should have only downloaded the total num bytes");
 }
 
-//TODO: figure out how to properly test this. downloadKCSFile will re-up the TTL, and just using the URL will fail appropriately
-- (void) TODO_testTTLExpiresBeforeDownload
-{
-    //1. set a low ttl
-    //2. wait
-    //3. download
-    self.done = NO;
-    SETUP_PROGRESS
-    __block NSString* newFileId = nil;
-    NSURL* fileURL = [self largeImageURL];
-    [KCSFileStore uploadFile:fileURL options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
-        STAssertNoError_;
-        STAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
-        STAssertNotNil(uploadInfo.filename, @"filename should have faule");
-        STAssertNotNil(uploadInfo.fileId, @"should have a file id");
-        STAssertFalse([uploadInfo.fileId isEqualToString:uploadInfo.filename], @"file id should be unique");
-        
-        KTAssertEqualsInt(uploadInfo.length, kImageSize, @"sizes should match");
-        STAssertNil(uploadInfo.remoteURL, @"should be nil");
-        STAssertNil(uploadInfo.data, @"should have nil data");
-        STAssertEqualObjects(uploadInfo.mimeType, kImageMimeType, @"should use default mimetype");
-        
-        newFileId = uploadInfo.fileId;
-        self.done = YES;
-    } progressBlock:PROGRESS_BLOCK];
-    
-    [self poll];
-    ASSERT_PROGESS
-    STAssertNotNil(newFileId, @"Should get a file id");
-    
-    __block KCSFile* streamingFile = nil;
-    self.done = NO;
-    [KCSFileStore getStreamingURL:newFileId options:@{KCSFileLinkExpirationTimeInterval : @0.01} completionBlock:^(KCSFile *streamingResource, NSError *error) {
-        STAssertNoError_
-        STAssertNotNil(streamingResource, @"should be not nil");
-        STAssertNotNil(streamingResource.remoteURL, @"Should get back a valid URL");
-        streamingFile = streamingResource;
-        
-        self.done = YES;
-    }];
-    [self poll];
-    
-    PAUSE;
-    STAssertNotNil(streamingFile, @"should get back a valid file");
-    
-    
-    CLEAR_PROGRESS;
-    self.done = NO;
-    [KCSFileStore downloadKCSFile:streamingFile completionBlock:^(NSArray *downloadedResources, NSError *error) {
-        STAssertNotNil(error, @"should get an error");
-        KTAssertCount(0, downloadedResources);
-        
-        self.done = YES;
-    } progressBlock:PROGRESS_BLOCK];
-    [self poll];
-    ASSERT_PROGESS
-    
-    self.done = NO;
-    [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
-        STAssertNoError;
-        self.done = YES;
-    }];
-    [self poll];
-}
-
 - (void) testTTLExpiresMidUpdate
 {
     //1. Set a low ttl
@@ -1706,7 +1641,7 @@ NSData* testData2()
     STAssertNotNil(newFileId, @"Should get a file id");
     
     self.done = NO;
-    [KCSFileStore downloadFile:newFileId options:@{KCSFileLinkExpirationTimeInterval : @0.01} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    [KCSFileStore downloadFile:newFileId options:@{KCSFileLinkExpirationTimeInterval : @0.7} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
         KCSFile* dlFile = downloadedResources[0];
@@ -2446,7 +2381,7 @@ NSData* testData2()
 }
 
 //TODO: implement this
-- (void) TODO_testUploadResume
+- (void) testUploadResume
 {
     //1. Upload partial
     //2. Cancel
@@ -2610,8 +2545,22 @@ NSData* testData2()
         self.done = YES;
     }];
     [self poll];
-    
 }
 
-
+- (void) xx
+{
+    UIImage* image = nil;
+    NSData* data = UIImageJPEGRepresentation(image, 0.9); //conver to a 90% quality jpeg
+    [KCSFileStore uploadData:data options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        NSLog(@"Upload finished. File id='%@', error='%@'.", [uploadInfo fileId], error);
+    } progressBlock:nil];
+    
+    NSString* filename = @"<#my file.ext#>";
+    NSURL* documentsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* sourceURL = [NSURL URLWithString:filename relativeToURL:documentsDir];
+    [KCSFileStore uploadFile:sourceURL options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        NSLog(@"Upload finished. File id='%@', error='%@'.", [uploadInfo fileId], error);
+    } progressBlock:nil];
+    
+}
 @end
