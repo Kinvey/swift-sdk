@@ -14,8 +14,23 @@
 @class KCSFile;
 @class KCSQuery;
 
+/** The Upload Completion Block
+ @param uploadInfo an object with the uploaded file's metadata
+ @param error a non-nil object if the upload failed
+ @since 1.18.0
+ */
 typedef void (^KCSFileUploadCompletionBlock)(KCSFile* uploadInfo, NSError* error);
+/** The Download Completion Block
+ @param downloadedResources an array of `KCSFile` objects representing the metadata and actual data or local file URL of the downloaded objects.
+ @param error non-nil if any of the download request(s) failed
+ @since 1.18.0
+ */
 typedef void (^KCSFileDownloadCompletionBlock)(NSArray* downloadedResources, NSError* error);
+/** A Completion block for a streaming url request
+ @param streamingResource the corresponding file metadata object. The `remoteURL` property will have the download location
+ @param error non-nil if the request to get the URL failed
+ @since 1.18.0
+ */
 typedef void (^KCSFileStreamingURLCompletionBlock)(KCSFile* streamingResource, NSError* error);
 
 /** Sets the file id on the server side. */
@@ -75,7 +90,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  
  @param fileURL         a url to a local file
  @param uploadOptions   upload options (see above)
- @param completionBlock called when the upload is complete or error occurs. The `KCSFile` return object will have its `fileName` and `fileId` properties set to their new values.
+ @param completionBlock called when the upload is complete or error occurs. The `KCSFile` return object will have its `filename` and `fileId` properties set to their new values.
  @param progressBlock   called 0+ times with intermediate progress as the file is uploaded. This only counts data transferred to the file storage service, and not the intermediate call to Kinvey to obtain the upload location.
  @since 1.18.0
  */
@@ -95,7 +110,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  
  @param data the bytes to upload
  @param uploadOptions upload options (see above)
- @param completionBlock called when the upload is complete or error occurs. The `KCSFile` return object will have its `fileName` and `fileId` properties set to their new values.
+ @param completionBlock called when the upload is complete or error occurs. The `KCSFile` return object will have its `filename` and `fileId` properties set to their new values.
  @param progressBlock called 0+ times with intermediate progress as the file is uploaded. This only counts data transferred to the file storage service, and not the intermediate call to Kinvey to obtain the upload location.
  @since 1.18.0
  */

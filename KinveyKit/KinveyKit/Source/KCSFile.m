@@ -1,5 +1,5 @@
 //
-//  KCSResource.m
+//  KCSFile.m
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/29/12.
