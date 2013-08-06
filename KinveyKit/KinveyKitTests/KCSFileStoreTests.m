@@ -2550,17 +2550,40 @@ NSData* testData2()
 - (void) xx
 {
     UIImage* image = nil;
+    UIImage* uiImage = nil;
     NSData* data = UIImageJPEGRepresentation(image, 0.9); //conver to a 90% quality jpeg
     [KCSFileStore uploadData:data options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         NSLog(@"Upload finished. File id='%@', error='%@'.", [uploadInfo fileId], error);
     } progressBlock:nil];
     
+    UIProgressView* progressView = nil;
+    
     NSString* filename = @"<#my file.ext#>";
     NSURL* documentsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
     NSURL* sourceURL = [NSURL URLWithString:filename relativeToURL:documentsDir];
-    [KCSFileStore uploadFile:sourceURL options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
-        NSLog(@"Upload finished. File id='%@', error='%@'.", [uploadInfo fileId], error);
-    } progressBlock:nil];
     
+    KCSMetadata* metadata = [[KCSMetadata alloc] init]; // make the image findable by al users
+    [metadata setGloballyReadable:YES];
+    
+    [KCSFileStore uploadFile:sourceURL options:@{KCSFileFileName : @"myFile.ext", KCSFileMimeType : @"image/jpeg", KCSFileACL : metadata} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        NSLog(@"Upload finished. File id='%@', error='%@'.", [uploadInfo fileId], error);
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        progressView.progress = percentComplete;
+    }];
+    
+    
+    [KCSFileStore uploadData:UIImageJPEGRepresentation(uiImage, 0.9) options:@{KCSFileFileName : @"newimage.jpg"} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        if (error != nil) {
+            //error occurred
+            [[[UIAlertView alloc] initWithTitle:@"Upload Failed"
+                                        message:@"newimage.jpg not uploaded"
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil] show];
+        } else {
+            NSLog(@"New file id = %@", uploadInfo.fileId);
+        }
+    } progressBlock:nil];
+
 }
 @end

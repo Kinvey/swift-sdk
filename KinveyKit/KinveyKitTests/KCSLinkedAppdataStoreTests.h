@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/29/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import <SenTestingKit/SenTestingKit.h>
@@ -13,7 +13,7 @@
 
 @interface KCSLinkedAppdataStoreTests : SenTestCase {
     KCSLinkedAppdataStore* store;
-    KCSCollection* collection;
+    KCSCollection* _collection;
 }
 
 @end

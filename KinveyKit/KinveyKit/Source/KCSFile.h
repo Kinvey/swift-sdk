@@ -1,5 +1,5 @@
 //
-//  KCSResource.h
+//  KCSFile.h
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/29/12.
@@ -48,7 +48,6 @@
 /// @name Downloaded Data
 ///---
 
-
 /** The URL to the file where the resource was saved to.
  
  Either only `localURL` or `data` will be valid for downloaded data.
@@ -59,13 +58,8 @@
  
  Either only `localURL` or `data` will be valid for downloaded data.
  */
-
 @property (nonatomic, retain, readonly) NSData* data;
 
-@property (nonatomic, retain, readonly) id resolvedObject;
-
-- (instancetype)initWithData:(NSData *)data fileId:(NSString*)fileId filename:(NSString*)filename mimeType:(NSString*)mimeType;
-- (instancetype)initWithLocalFile:(NSURL *)localURL fileId:(NSString*)fileId filename:(NSString*)filename mimeType:(NSString*)mimeType;
 ///----
 /// @name Streaming Data
 ///---
@@ -82,10 +76,19 @@
 //---
 // @name Uploading Data
 //---
+
+/** The number of bytes sent to GCS. If the file upload fails in the middle, this will be less than the total `length`. This value will be >= the number of byte actually received by the server.
+ */
 @property (nonatomic) unsigned long long bytesWritten;
 
 #pragma mark - Linked Files API
 //internal methods
+
+@property (nonatomic, retain, readonly) id resolvedObject;
+
+- (instancetype)initWithData:(NSData *)data fileId:(NSString*)fileId filename:(NSString*)filename mimeType:(NSString*)mimeType;
+- (instancetype)initWithLocalFile:(NSURL *)localURL fileId:(NSString*)fileId filename:(NSString*)filename mimeType:(NSString*)mimeType;
+
 + (instancetype) fileRef:(id)objectToRef collectionIdProperty:(NSString*)idStr;
 + (instancetype) fileRefFromKinvey:(NSDictionary*)kinveyDict class:(Class)klass;
 @end

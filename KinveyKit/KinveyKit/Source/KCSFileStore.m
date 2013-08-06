@@ -164,7 +164,7 @@ static id lastRequest = nil;
         [stream setProperty:@(offset) forKey:NSStreamFileCurrentOffsetKey];
     }
 
-#warning RE-INSTATE    [request addValue:@"start" forHTTPHeaderField:@"x-goog-resumable"];
+    [request addValue:@"start" forHTTPHeaderField:@"x-goog-resumable"];
     [request setAllHTTPHeaderFields:headers];
     
     KCSLogTrace(@"upload stream: PUT %@ headers=%@", url, headers);
@@ -466,18 +466,8 @@ static id lastRequest = nil;
     }
     
     unsigned long long bytes = 0;
-//    if (NO && options[KCSFileResume] != nil && [options[KCSFileResume] boolValue] == YES) {
-//        NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:options];
-//        d[KCSFileSize] = @(uploadFile.length);
-//        d[KCSFileMimeType] = uploadFile.mimeType;
-//        [self _getUploadHeader:url options:d requiredHeaders:requiredHeaders];
-//    } else {
-    
     // GCS RESUMABLE UPLOAD STEP #3 ---------------
     [request uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:url offset:bytes requiredHeaders:requiredHeaders];
-        
-//    }
-    
 }
 
 
@@ -508,7 +498,6 @@ static id lastRequest = nil;
             NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Error uploading to GCS: %@", [response jsonResponseValue]] errorCode:response.responseCode domain:KCSFileStoreErrorDomain requestId:nil];
             completionBlock(nil, error);
         } else {
-            NSDictionary* d = [response jsonResponseValue];
             NSDictionary* h = [response responseHeaders];
             NSString* loc = h[@"Location"];
             NSString* queryParams = [[NSURL URLWithString:loc] query];
@@ -528,7 +517,6 @@ static id lastRequest = nil;
             [self _uploadStream3:stream toURL:newurl requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
         }
     } failureAction:^(NSError *error) {
-        error = [error updateDomain:KCSFileStoreErrorDomain];
         completionBlock(nil, error);
     } progressAction:nil];
     req.headers[@"Content-Length"] = @"0";
@@ -790,7 +778,6 @@ KCSFile* fileFromResults(NSDictionary* results)
     KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
     [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
         if (error) {
-            error = [error updateDomain:KCSFileStoreErrorDomain];
             completionBlock(nil, error);
         } else {
             KCSFile* file = [[KCSFile alloc] initWithData:[NSData dataWithContentsOfURL:localFile]

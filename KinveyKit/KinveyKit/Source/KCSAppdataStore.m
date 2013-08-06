@@ -344,6 +344,9 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
                                     KCSFile* downloadedFile = downloadedResources[0];
                                     id loadedResource = [downloadedFile resolvedObject];
                                     [newobj setValue:loadedResource forKey:key];
+                                } else {
+                                    //set nil for the resource
+                                    [newobj setValue:nil forKey:key];
                                 }
                                 if (completedResourceCount == resourceCount) {
                                     //all resources loaded
