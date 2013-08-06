@@ -9,7 +9,9 @@
 
 #import "KCSFileStore.h"
 
+#if TARGET_OS_IPHONE
 #import <MobileCoreServices/MobileCoreServices.h>
+#endif
 
 #import "KCSGenericRESTRequest.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
@@ -842,7 +844,7 @@ KCSFile* fileFromResults(NSDictionary* results)
             if (file && file.remoteURL) {
                 
                 NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
-                ifNil(destinationName, file.filename)
+                ifNil(destinationName, file.filename);
                 NSURL*  destinationFile = [NSURL URLWithString:destinationName relativeToURL:downloadsDir];
                 
                 

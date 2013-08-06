@@ -23,4 +23,5 @@
 
 @property (nonatomic, retain) NSString* analyticsHeaderName;
 - (BOOL) supportsUDID;
+- (NSString*) headerString;
 @end
