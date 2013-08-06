@@ -60,6 +60,10 @@ mkdir ${REXTRAS}
 ( cd doc/install/ && tar cf - ./com.kinvey.KinveyKit.docset ) | ( cd ${RKK}/ && tar -xf - )
 #cp -R ${KINVEYKITLOC}/doc/built-docs/com.kinvey.KinveyKit.docset ${RELEASEDIR}/KinveyKit-API-Reference-${RELEASENO}/
 
+# Copy LICENSE
+( cd ${KINVEYKITLOC}/ && tar cf - ./LICENSES ) | ( cd ${RKK}/ && tar -xf - )
+
+
 # Copy Project & Add Lib
 ( cd ${KINVEYKITLOC}/.. && tar cf - ./ProjectTemplates) | (cd ${REXTRAS}/ && tar -xf - ) 
 cp -R ${RKK}/KinveyKit.framework "${REXTRAS}/ProjectTemplates/Single View Application (Kinvey).xctemplate/"
