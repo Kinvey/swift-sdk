@@ -3,7 +3,7 @@
 //  KitTest
 //
 //  Created by Brian Wilson on 11/14/11.
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 
 #import "KCSAppDelegate.h"
@@ -19,12 +19,6 @@
 #import <KinveyKit/KinveyKit.h>
 
 @implementation KCSAppDelegate
-
-@synthesize window = _window;
-@synthesize viewController = _viewController;
-@synthesize imageViewController=_imageViewController;
-@synthesize rootViewController=_rootViewController;
-@synthesize kinvey=_kinvey;
 
 - (void)dealloc
 {
@@ -64,33 +58,11 @@
     ///////////////////////////
     // START OF KINVEY CODE
     //////////////////////////
-//    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-//                             @"kid1089", KCS_APP_KEY_KEY,
-//                             @"ad8f7ea0538147f89a7f75dd95491fdf", KCS_APP_SECRET_KEY,
-//                             @"CFtR0JwxT3uVipC2YiRutA", KCS_PUSH_KEY_KEY,
-//                             @"S3sloGMtS8yC_lNBSHQHlQ", KCS_PUSH_SECRET_KEY,
-//                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
-//                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
 
-    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             @"kid1095", KCS_APP_KEY_KEY,                             
-                             @"f1d070d7fc1e4470bedb0b07a1fd3253", KCS_APP_SECRET_KEY,
-                             @"vUxZ0EX0RLG2vxnfGJEgRg", KCS_PUSH_KEY_KEY,
-                             @"-SfD84xsTay1ufWXbaGwZQ", KCS_PUSH_SECRET_KEY,
-                             @"YES", KCS_PUSH_IS_ENABLED_KEY,
-                             KCS_PUSH_DEBUG, KCS_PUSH_MODE_KEY, nil];
-//
-////      [KCSUser clearSavedCredentials];
-//    
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:[options valueForKey:KCS_APP_KEY_KEY] withAppSecret:[options valueForKey:KCS_APP_SECRET_KEY] usingOptions:options];
-    [KCSClient sharedClient].serviceHostname = @"v3yk1n";
-//    [[KCSPush sharedPush] onLoadHelper:options error:NULL];
-    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_PTG6wqYyeM"
-                                                        withAppSecret:@"09889d16f2694e078a989b83d24e9480"
+    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_TTO8REn0-M"
+                                                        withAppSecret:@"a52ba04eb3dc4aa9b344790082ea6e01"
                                                          usingOptions:nil];
-//    [[[KCSClient sharedClient] currentUser] logout];
-//    
-//    exit(EXIT_SUCCESS);
+
     
     
     

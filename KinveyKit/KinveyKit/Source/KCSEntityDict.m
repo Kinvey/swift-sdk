@@ -75,7 +75,7 @@
     return @{KCS_USE_DESIGNATED_INITIALIZER_MAPPING_KEY : @(YES), KCS_IS_DYNAMIC_ENTITY: @(YES)};
 }
 
-+ (id)kinveyDesignatedInitializer
++ (id)kinveyDesignatedInitializer:(NSDictionary*)jsonDocument
 {
     return [NSMutableDictionary dictionary];
 }

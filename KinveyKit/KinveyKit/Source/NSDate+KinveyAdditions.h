@@ -1,7 +1,9 @@
 //
-// Prefix header for all source files of the 'KinveyKit' target in the 'KinveyKit' project
+//  NSDate+KinveyAdditions.h
+//  KinveyKit
 //
-// Copyright (c) Kinvey, Inc.
+//  Created by Michael Katz on 8/1/13.
+//  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -15,21 +17,12 @@
 // contents is a violation of applicable laws.
 //
 
-#ifdef __OBJC__
-    #import <Foundation/Foundation.h>
-#endif
+#import <Foundation/Foundation.h>
+
+@interface NSDate (KinveyAdditions)
+
+- (BOOL) isLaterThan:(NSDate*)date;
+- (BOOL) isEarlierThan:(NSDate*)date;
 
 
-#define ifNotNil(x,val) (x == nil) ? nil : val;
-#define setIfValNotNil(propToSet, val) if (val != nil) propToSet = val;
-#define ifNil(x, val) if (x == nil) x = val;
-
-#define constantsEqual(str, const) str == const || [str isEqualToString:const]
-#define setIfEmpty(dict,key,val) if (dict[key] == nil) dict[key] = val
-
-#ifdef BUILD_FOR_UNIT_TEST
-#define DBAssert(condition,description, ...) NSAssert(condition, description, ##__VA_ARGS__)
-#else
-#define DBAssert(condition,description, ...)
-#endif
-
+@end

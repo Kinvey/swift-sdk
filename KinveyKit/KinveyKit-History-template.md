@@ -2,12 +2,35 @@
 
 ## 1.18
 ### 1.18.0
-** Release Date:** TBD
+** Release Date:** August 06, 2013
 
 * Improved Resource/File Handling
     * Deprecated and deleted `KCSResourceStore` and `KCSResourceService` APIs. These methods will now throw exceptions when used. They are marked as deprecated to make them easy to find, check the deprecation warning message for suggested replacement API.
-    * See our migration guide for examples. 
+        * See our migration guide for examples. 
+    * Added `KCSFileStore` with class methods for working with files:
+    	* __Uploading__
+    	   * `+ (void) uploadFile:(NSURL*)fileURL options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+           * `+ (void) uploadData:(NSData*)data options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	* __Downloading__
+    	    * `+ (void) downloadFile:(id)idOrIds options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) downloadFileByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) downloadFileByQuery:(KCSQuery*)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) downloadFileWithResolvedURL:(NSURL*)url options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) downloadData:(id)idOrIds completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) downloadDataByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) downloadDataByQuery:(KCSQuery*)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) downloadDataWithResolvedURL:(NSURL*)url completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) resumeDownload:(NSURL*)partialLocalFile from:(NSURL*)resolvedURL completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) getStreamingURL:(NSString*)fileId completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;`
+    	    * `+ (void) getStreamingURLByName:(NSString*)fileName completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;`
+    	* __Deleting__
+    	    * `+ (void) deleteFile:(NSString*)fileId completionBlock:(KCSCountBlock)completionBlock;`
+    * Added `KCSFile` completionBlock object to represent a file object with both local and backend metadata.
+    * Added support for "public" files (i.e. files that accessible without authorization).
+    * Improved support for resuming incomplete uploads/downloads.
+    * Improved behavior and accuracy with file upload/download progress.
 * Added support for `NSURL` data types.
+* Warning log will no longer complain about incomplete `KCSUser` and other KinveyKit objects on most queries.
 * Bug fix(es):
     * Better handling of broken references.
 

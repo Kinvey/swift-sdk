@@ -344,6 +344,9 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
                                     KCSFile* downloadedFile = downloadedResources[0];
                                     id loadedResource = [downloadedFile resolvedObject];
                                     [newobj setValue:loadedResource forKey:key];
+                                } else {
+                                    //set nil for the resource
+                                    [newobj setValue:nil forKey:key];
                                 }
                                 if (completedResourceCount == resourceCount) {
                                     //all resources loaded
@@ -434,7 +437,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     NSString* query = @"";
     BOOL hasArray = NO;
     if (array.count == 1) {
-        query = [self getObjIdFromObject:array[0] completionBlock:completionBlock];
+        query = [NSString stringByPercentEncodingString:[self getObjIdFromObject:array[0] completionBlock:completionBlock]];
         if (query == nil) {
             //already sent an error;
             return;
@@ -492,7 +495,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     NSString* queryString = query != nil ? [query parameterStringRepresentation] : @"";
     
     KCSRESTRequest *request = [collection restRequestForMethod:kGetRESTMethod apiEndpoint:queryString];
-    ProcessDataBlock_t processBlock = [self makeProcessDictBlockForNewObject];
+    ProcessDataBlock_t processBlock =  [self makeProcessDictBlockForNewObject];
     
     KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
         KCSLogTrace(@"In collection callback with response: %@", response);

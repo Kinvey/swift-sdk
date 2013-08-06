@@ -3,20 +3,25 @@
 //  KitTest
 //
 //  Created by Brian Wilson on 11/16/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "ImageViewController.h"
 #import "RootViewController.h"
 
 @implementation ImageViewController
-
-@synthesize kinveyClient=_kinveyClient;
-@synthesize ourImage = _ourImage;
-@synthesize imageName = _imageName;
-@synthesize imageState = _imageState;
-@synthesize currentOperation = _currentOperation;
-@synthesize rootViewController=_rootViewController;
 
 - (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -77,60 +82,63 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (void)resourceServiceDidCompleteWithResult:(KCSResourceResponse *)result
-{
-    NSLog(@"Request Completed with: %@", result);
-    [result retain];
-    if ([_currentOperation isEqualToString:@"GET"]){
-        NSData *imageData = [result resource];
-        _ourImage.image = [UIImage imageWithData:imageData];
-        [self.ourImage setHidden:NO];
-        self.imageState.text = @"Image from Kinvey";
-    } else if ([_currentOperation isEqualToString:@"PUT"]) {
-        self.imageState.text = @"Image sent to Kinvey!";
-        [self refreshImage:self];
-    } else {
-        self.imageState.text = @"Image deleted from Kinvey";
-        [self.ourImage setHidden:YES];
-    }
-    [result release];
-}
-
-- (void)resourceServiceDidFailWithError:(NSError *)error
-{
-    NSError *err = (NSError *)error;
-    NSLog(@"BLOB Failed with error: %@ (%@)", err, [err userInfo]);
-    NSString *errMsg = [NSString stringWithFormat:@"FAILED with error %d", [err code]];
-    self.imageState.text = errMsg;
-}
-
-
 - (void)dealloc {
     [_ourImage release];
     [_imageName release];
     [_imageState release];
     [super dealloc];
 }
-- (IBAction)uploadImage:(id)sender {
+
+- (IBAction)uploadImage:(id)sender
+{
     // Do File API here
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"metal_kinvey_1280x800" ofType:@"png"];  
     NSData *data = [NSData dataWithContentsOfFile:filePath];
     
-    _currentOperation = @"PUT";
-    [KCSResourceService saveData:data toResource:self.imageName.text withDelegate:self];
+    [KCSFileStore uploadData:data options:@{KCSFileId : self.imageName.text, KCSFileFileName : self.imageName.text} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        if (!error) {
+            self.imageState.text = @"Image sent to Kinvey!";
+            [self refreshImage:self];
+        } else {
+            NSLog(@"BLOB Failed with error: %@ (%@)", error, [error userInfo]);
+            NSString *errMsg = [NSString stringWithFormat:@"FAILED with error %d", [error code]];
+            self.imageState.text = errMsg;
+        }
+    } progressBlock:nil];
 }
 
-- (IBAction)deleteImage:(id)sender {
-    _currentOperation = @"DELETE";
-    [KCSResourceService deleteResource:self.imageName.text withDelegate:self];
+- (IBAction)deleteImage:(id)sender
+{
+    [KCSFileStore deleteFile:self.imageName.text completionBlock:^(unsigned long count, NSError *error) {
+        if (!error) {
+            self.imageState.text = @"Image deleted from Kinvey";
+            [self.ourImage setHidden:YES];
+        } else {
+            NSLog(@"BLOB Failed with error: %@ (%@)", error, [error userInfo]);
+            NSString *errMsg = [NSString stringWithFormat:@"FAILED with error %d", [error code]];
+            self.imageState.text = errMsg;
+        }
+    }];
 }
 
-- (IBAction)refreshImage:(id)sender {
-    _currentOperation = @"GET";
-    [KCSResourceService downloadResource:self.imageName.text withResourceDelegate:self];
+- (IBAction)refreshImage:(id)sender
+{
+    [KCSFileStore downloadData:self.imageName.text completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        if (!error) {
+            NSData *imageData = [downloadedResources[0] data];
+            _ourImage.image = [UIImage imageWithData:imageData];
+            [self.ourImage setHidden:NO];
+            self.imageState.text = @"Image from Kinvey";
+        } else {
+            NSLog(@"BLOB Failed with error: %@ (%@)", error, [error userInfo]);
+            NSString *errMsg = [NSString stringWithFormat:@"FAILED with error %d", [error code]];
+            self.imageState.text = errMsg;
+        }
+    } progressBlock:nil];
 }
 
-- (IBAction)flipView:(id)sender {
+- (IBAction)flipView:(id)sender
+{
     return [self.rootViewController switchViews:sender];
 }
 @end

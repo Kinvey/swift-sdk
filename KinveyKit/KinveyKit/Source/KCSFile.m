@@ -1,5 +1,5 @@
 //
-//  KCSResource.m
+//  KCSFile.m
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/29/12.
@@ -24,6 +24,7 @@
 @property (nonatomic, retain) NSDate* expirationDate;
 @property (nonatomic, retain) id resolvedObject;
 @property (nonatomic, retain) Class valClass;
+@property (nonatomic, copy) NSString* gcsULID;
 @end
 
 @implementation KCSFile
@@ -97,7 +98,7 @@
     NSString* url = kinveyDict[@"_downloadURL"];
     ifNil(url, kinveyDict[@"_uploadURL"]);
     file.remoteURL = url ? [NSURL URLWithString:url] : nil;
-    //TODO: skip metadata for now
+
     file.expirationDate = kinveyDict[@"_expiresAt"];
     file.refType = kinveyDict[@"_type"];
     if ([file.refType isEqualToString:kTypeResourceValue]) {
@@ -196,5 +197,4 @@
     }
     return descr;
 }
-#warning upload should check expiresAt
 @end

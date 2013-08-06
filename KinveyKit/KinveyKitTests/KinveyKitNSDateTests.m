@@ -7,6 +7,7 @@
 
 #import "KinveyKitNSDateTests.h"
 #import "NSDate+ISO8601.h"
+#import "NSDate+KinveyAdditions.h"
 #import "KCSLogManager.h"
 #import "KCSClient.h"
 
@@ -58,4 +59,21 @@
     STAssertTrue(abs(deltaDate) < 1, @"should be within the delta");
 }
 
+
+- (void) testLaterThan
+{
+    NSDate* origDate = [NSDate date];
+    NSDate* sameDate = [origDate copy];
+    
+    NSDate* earlierDate = [origDate dateByAddingTimeInterval:-1000];
+    NSDate* laterDate = [origDate dateByAddingTimeInterval:1000];
+    
+    STAssertTrue([origDate isLaterThan:earlierDate], @"");
+    STAssertFalse([origDate isLaterThan:laterDate], @"");
+    STAssertFalse([origDate isLaterThan:sameDate], @"");
+    
+    STAssertFalse([origDate isEarlierThan:earlierDate], @"");
+    STAssertTrue([origDate isEarlierThan:laterDate], @"");
+    STAssertFalse([origDate isEarlierThan:sameDate], @"");
+}
 @end

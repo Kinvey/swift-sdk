@@ -18,7 +18,7 @@
 #import "TestUtils.h"
 #import "KCSHiddenMethods.h"
 
-static NSString* _collection;
+static NSString* _collectionName;
 
 @interface LinkedTestClass : ASTTestClass
 @property (nonatomic, retain) id resource;
@@ -113,7 +113,7 @@ static NSString* _collection;
 + (NSDictionary*) kinveyPropertyToCollectionMapping
 {
     NSMutableDictionary* map = [[super kinveyPropertyToCollectionMapping] mutableCopy];
-    [map addEntriesFromDictionary:@{ @"otherK" : @"OtherCollection", @"arrayOfOthersK" : @"OtherCollection", @"setOfOthersK" : @"OtherCollection", @"thisOtherK" : _collection}];
+    [map addEntriesFromDictionary:@{ @"otherK" : @"OtherCollection", @"arrayOfOthersK" : @"OtherCollection", @"setOfOthersK" : @"OtherCollection", @"thisOtherK" : _collectionName}];
     return map;
 }
 
@@ -188,11 +188,11 @@ static NSString* _collection;
     BOOL loaded = [TestUtils setUpKinveyUnittestBackend];
     STAssertTrue(loaded, @"should be loaded");
     
-    collection = [[KCSCollection alloc] init];
-    collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
-    _collection =  collection.collectionName;
-    collection.objectTemplate = [LinkedTestClass class];
-    store = [KCSLinkedAppdataStore storeWithCollection:collection options:nil];
+    _collection = [[KCSCollection alloc] init];
+    _collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
+    _collectionName =  _collection.collectionName;
+    _collection.objectTemplate = [LinkedTestClass class];
+    store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
 }
 
 - (UIImage*) makeImage
@@ -311,7 +311,7 @@ static NSString* _collection;
     
     KCSAppdataStore* metaStore = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
     //NOTE: this is highly tied to the implmentation!, not necessary for this test
-    NSString* fileId = [NSString stringWithFormat:@"%@-%@-%@",_collection,obj.objId,@"resource"];
+    NSString* fileId = [NSString stringWithFormat:@"%@-%@-%@",_collectionName,obj.objId,@"resource"];
     self.done = NO;
     [metaStore loadObjectWithID:fileId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
@@ -380,12 +380,13 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
         LinkedTestClass* newRef = ret.other;
+        STAssertNotNil(newRef, @"should be a valid object");
         STAssertEquals(newRef.objCount, ref.objCount, @"Should be the same object back");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
@@ -427,7 +428,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -489,7 +490,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:@[obj1, obj2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -546,7 +547,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     NSString* prefix = [NSString stringWithFormat:@"%s", __PRETTY_FUNCTION__];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
@@ -603,7 +604,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:@[obj1, obj2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -727,7 +728,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"- 2" options:kKCSRegexpCaseInsensitive];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
@@ -764,7 +765,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:@[obj1] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -820,7 +821,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:@[obj1, obj2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -880,7 +881,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:@[obj1, obj2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -950,7 +951,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:@[obj1] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -1012,7 +1013,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[NestingRefClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[NestingRefClass class]] options:nil];
     [store saveObject:obj1 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -1065,7 +1066,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[NestingRefClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[NestingRefClass class]] options:nil];
     [store saveObject:obj1 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -1108,7 +1109,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj.auser = [KCSClient sharedClient].currentUser;
     
     STAssertNotNil(obj.auser, @"should have a nonnull user");
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[UserRefTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[UserRefTestClass class]] options:nil];
     
     self.done = NO;
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -1141,7 +1142,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[NoSaveTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[NoSaveTestClass class]] options:nil];
     [store saveObject:t withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertObjects(0);
         STAssertNotNil(errorOrNil, @"should have an error");
@@ -1192,7 +1193,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:collection.collectionName ofClass:[NoSaveTestClass class]] options:nil];
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[NoSaveTestClass class]] options:nil];
     [store saveObject:t withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(1);
@@ -1211,14 +1212,114 @@ LinkedTestClass* randomTestClass(NSString* description)
     [self poll];
 }
 
-- (void) testBrokenRefence
+- (void) testBrokenReference
 {
-    STFail(@"NIY");
+    LinkedTestClass* ref = TestClass(0);
+    
+    ReffedTestClass* obj = [[ReffedTestClass alloc] init];
+    obj.objDescription = @"Yaaay!";
+    obj.other = ref;
+    
+    self.done = NO;
+    __block double done = -1;
+    
+    store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
+        LinkedTestClass* newRef = ret.other;
+        STAssertEquals(newRef.objCount, ref.objCount, @"Should be the same object back");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
+        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        done = percentComplete;
+    }];
+    [self poll];
+    
+    self.done = NO;
+    done = -1;
+    
+    KCSAppdataStore* otherStore = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"OtherCollection" ofClass:[LinkedTestClass class]] options:nil];
+    [otherStore removeObject:ref withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    
+    self.done = NO;
+    [store loadObjectWithID:[obj kinveyObjectId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
+        LinkedTestClass* newRef = ret.other;
+        STAssertNil(newRef, @"should be nil");
+        self.done = YES;
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
+        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        done = percentComplete;
+    }];
+    [self poll];
 }
 
 - (void) testBrokenFile
 {
-    STFail(@"NIY");
+    LinkedTestClass* obj = [[LinkedTestClass alloc] init];
+    obj.objDescription = @"Yaaay!";
+    obj.resource = [self makeImage];
+    
+    self.done = NO;
+    
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        LinkedTestClass* obj = objectsOrNil[0];
+        STAssertNotNil(obj, @"should not be nil obj");
+        STAssertNotNil(obj.resource, @"should still have an image");
+        STAssertTrue([obj.resource isKindOfClass:[UIImage class]], @"Should still be an image");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    __block NSString* imageId = nil;
+    KCSAppdataStore* noRefStore = [KCSAppdataStore storeWithCollection:_collection options:nil];
+    [noRefStore loadObjectWithID:obj.objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertObjects(1);
+        LinkedTestClass* foo = objectsOrNil[0];
+        NSDictionary* resourceDict = foo.resource;
+        imageId = resourceDict[@"_id"];
+        self.done = YES;
+    } withProgressBlock: nil];
+    [self poll];
+
+    STAssertNotNil(imageId, @"Should have an image id");
+    
+    self.done = NO;
+    [KCSFileStore deleteFile:imageId completionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError;
+        KTAssertEqualsInt(count, 1, @"Should be one deletion");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    self.done = NO;
+    [store loadObjectWithID:obj.objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNotNil(errorOrNil, @"should be an error");
+        KTAssertEqualsInt(errorOrNil.code, 404, @"file not found");
+        STAssertEqualObjects(errorOrNil.domain, KCSFileStoreErrorDomain, @"should be a file error");
+        STAssertObjects(1);
+        LinkedTestClass* o = objectsOrNil[0];
+        STAssertNil(o.resource, @"should be nilled");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
 
 @end

@@ -61,14 +61,12 @@
     
 	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, NULL);
 
-    if (res == errSecItemNotFound){
-        return NO;
-    } else {
+    if (res == errSecSuccess){
         res = SecItemDelete((__bridge CFDictionaryRef)existsQueryDictionary);
         NSAssert(res == errSecSuccess, @"Recieved %@ from SecItemDelete!", @(res));
+        return YES;
     }
-    
-    return YES;
+    return NO;
 }
 
 + (BOOL)setString:(NSString *)string forKey:(NSString *)key {

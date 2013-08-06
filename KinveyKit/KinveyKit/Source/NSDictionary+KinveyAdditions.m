@@ -14,7 +14,9 @@
 {
     NSMutableDictionary* copy = [self mutableCopy];
     for (NSString* key in keys) {
-        copy[key] = @"XXXXXXXXX";
+        if (copy[key]) {
+            copy[key] = @"XXXXXXXXX";
+        }
     }
     return copy;
 }

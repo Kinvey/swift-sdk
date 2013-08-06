@@ -14,6 +14,7 @@
 #import "NSArray+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSHiddenMethods.h"
+#import "NSDate+KinveyAdditions.h"
 
 #define KTAssertIncresing(var) \
 { \
@@ -41,6 +42,9 @@
     KTAssertIncresing(progresses); \
     KTAssertIncresing(datas);
 
+#define CLEAR_PROGRESS [progresses removeAllObjects]; [datas removeAllObjects];
+#define ASSERT_NO_PROGRESS KTAssertCount(0,progresses);
+
 #define SLEEP_TIMEINTERVAL 20
 #define PAUSE NSLog(@"sleeping for %u seconds....",SLEEP_TIMEINTERVAL); [NSThread sleepForTimeInterval:SLEEP_TIMEINTERVAL];
 
@@ -66,6 +70,13 @@ NSData* testData()
 {
     NSString* loremIpsum = @"Et quidem saepe quaerimus verbum Latinum par Graeco et quod idem valeat; Non quam nostram quidem, inquit Pomponius iocans; Ex rebus enim timiditas, non ex vocabulis nascitur. Nunc vides, quid faciat. Tum Piso: Quoniam igitur aliquid omnes, quid Lucius noster? Graece donan, Latine voluptatem vocant. Mihi, inquam, qui te id ipsum rogavi? Quem Tiberina descensio festo illo die tanto gaudio affecit, quanto L. Primum in nostrane potestate est, quid meminerimus? Si quidem, inquit, tollerem, sed relinquo. Quo modo autem philosophus loquitur? Sic enim censent, oportunitatis esse beate vivere.";
     NSData* ipsumData = [loremIpsum dataUsingEncoding:NSUTF16BigEndianStringEncoding];
+    return ipsumData;
+}
+
+NSData* testData2()
+{
+    NSString* hipsterIpsum = @"Selfies magna deep v consequat, esse dolor Banksy Marfa quis. Banh mi gastropub tofu, gluten-free twee literally narwhal. Narwhal fanny pack cardigan duis ex meh. Tofu cornhole nihil viral intelligentsia Tonx nisi DIY. Kogi chillwave helvetica, fap artisan mumblecore eu sapiente PBR irure put a bird on it fixie dolore small batch. Aliquip consequat proident, before they sold out street art letterpress vegan Tonx helvetica Williamsburg Terry Richardson Godard. Vero trust fund photo booth, artisan dolor irure ennui Cosby sweater labore Tonx fixie gastropub.";
+    NSData* ipsumData = [hipsterIpsum dataUsingEncoding:NSUTF16BigEndianStringEncoding];
     return ipsumData;
 }
 
@@ -169,11 +180,23 @@ NSData* testData()
     ASSERT_PROGESS
 }
 
-//TODO: Test error conditions
-//TODO: Test multiple ids
-//TODO: test path components slashes, spaces, etc, dots
-//TODO: test no mimeType
-//TODO: test content type
+- (void) testDownloadDataError
+{
+    //step 1. download data that doesn't exist
+    self.done = NO;
+    SETUP_PROGRESS
+    [KCSFileStore downloadData:@"BAD-ID" completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNil(downloadedResources, @"no resources");
+        STAssertNotNil(error, @"should get an error");
+        
+        KTAssertEqualsInt(error.code, 404, @"no item error");
+        STAssertEqualObjects(error.domain, KCSResourceErrorDomain, @"is a file error");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    KTAssertCount(0, progresses);
+}
 
 - (void) testDownloadToFile
 {
@@ -190,6 +213,7 @@ NSData* testData()
         STAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
         STAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
         STAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
+        STAssertNotNil(resource.remoteURL, @"should have a remote URL");
         
         NSURL* localURL = resource.localURL;
         STAssertNotNil(localURL, @"should have a URL");
@@ -239,8 +263,593 @@ NSData* testData()
     [self poll];
 }
 
-//TODO: test specifying location
-//TODO: get by filename!
+- (void) testDownloadArrayOfFileIds
+{
+    //1. upload two files
+    //2. download two files
+    //3. check there are two valid files
+    __block NSString* file2Id = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        file2Id = uploadInfo.fileId;
+        STAssertFalse([file2Id isEqualToString:kTestId], @"file 2 should be different");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    __block NSArray* downloads;
+    [KCSFileStore downloadFile:@[kTestId, file2Id] options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        downloads = downloadedResources;
+        KTAssertCount(2, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+        KCSFile* f2 = downloadedResources[1];
+        
+        BOOL idIn = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn, @"test id should match");
+        STAssertNotNil(f1.localURL, @"should have a local id");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f1.localURL path]], @"file should exist");
+        
+        BOOL idIn2 = [@[kTestId, file2Id] containsObject:f2.fileId];
+        STAssertTrue(idIn2, @"test id should match");
+        STAssertNotNil(f2.localURL, @"should have a local id");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f2.localURL path]], @"file should exist");
+        
+        STAssertFalse([f1.fileId isEqual:f2.fileId], @"should be different ids");
+        STAssertFalse([f1.localURL isEqual:f2.localURL], @"Should be different files");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    for (KCSFile* f in downloads) {
+        NSError* error = nil;
+        [[NSFileManager defaultManager] removeItemAtURL:f.localURL error:&error];
+         STAssertNoError_;
+    }
+}
+
+- (void) testDownloadArrayOfDatas
+{
+    //1. upload two files
+    //2. download two dats
+    //3. check there are two datas files
+    __block NSString* file2Id = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        file2Id = uploadInfo.fileId;
+        STAssertFalse([file2Id isEqualToString:kTestId], @"file 2 should be different");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    __block NSArray* downloads;
+    [KCSFileStore downloadData:@[kTestId, file2Id] completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        downloads = downloadedResources;
+        KTAssertCount(2, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+        KCSFile* f2 = downloadedResources[1];
+        
+        BOOL idIn = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn, @"test id should match");
+        STAssertNotNil(f1.data, @"should have data");
+        
+        BOOL idIn2 = [@[kTestId, file2Id] containsObject:f2.fileId];
+        STAssertTrue(idIn2, @"test id should match");
+        STAssertNotNil(f2.data, @"should have data");
+        
+        STAssertFalse([f1.fileId isEqual:f2.fileId], @"should be different ids");
+        STAssertFalse([f1.localURL isEqual:f2.localURL], @"Should be different files");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+}
+
+
+- (void) testDownloadToFileOnlyIfNewerAndIsNotNewer
+{
+    //1. download a file
+    //2. try to redownload that file and see the short-circuit
+    
+    __block NSDate* firstDate = nil;
+    self.done = NO;
+    SETUP_PROGRESS
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* resource = downloadedResources[0];
+        STAssertNil(resource.data, @"should have no local data");
+        STAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
+        STAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
+        STAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
+        
+        NSURL* localURL = resource.localURL;
+        STAssertNotNil(localURL, @"should have a URL");
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
+        STAssertTrue(exists, @"file should exist");
+        
+        error = nil;
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
+        STAssertNil(error, @"%@",error);
+        
+        NSData* origData = testData();
+        KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
+        
+        firstDate = [attr fileModificationDate];
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+    
+    PAUSE
+    
+    [progresses removeAllObjects];
+    [datas removeAllObjects];
+    self.done = NO;
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* resource = downloadedResources[0];
+        STAssertNil(resource.data, @"should have no local data");
+        STAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
+        STAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
+        STAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
+        
+        NSURL* localURL = resource.localURL;
+        STAssertNotNil(localURL, @"should have a URL");
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
+        STAssertTrue(exists, @"file should exist");
+        
+        error = nil;
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
+        STAssertNil(error, @"%@",error);
+        
+        NSDate* secondDate = [attr fileModificationDate];
+        KTAssertEqualsDates(secondDate, firstDate);
+        
+        NSData* origData = testData();
+        KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
+        
+        [[NSFileManager defaultManager] removeItemAtURL:resource.localURL error:&error];
+        STAssertNoError_
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    KTAssertCount(0, progresses);
+}
+
+- (void) testDownloadToFileOnlyIfNewerAndIsNewer
+{
+    //1. download a file
+    //2. update the file
+    //3. try to redownload that file and see the short-circuit
+    
+    __block NSDate* firstDate = nil;
+    self.done = NO;
+    SETUP_PROGRESS
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* resource = downloadedResources[0];
+        STAssertNil(resource.data, @"should have no local data");
+        STAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
+        STAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
+        STAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
+        
+        NSURL* localURL = resource.localURL;
+        STAssertNotNil(localURL, @"should have a URL");
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
+        STAssertTrue(exists, @"file should exist");
+        
+        error = nil;
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
+        STAssertNil(error, @"%@",error);
+        
+        NSData* origData = testData();
+        KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
+        
+        firstDate = [attr fileModificationDate];
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+    
+    PAUSE;
+    
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:@{KCSFileId : kTestId, KCSFileMimeType : kTestMimeType} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+
+        NSDate* uploadLMT = uploadInfo.metadata.lastModifiedTime;
+        STAssertTrue([uploadLMT isLaterThan:firstDate], @"should update the LMT");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    [progresses removeAllObjects];
+    [datas removeAllObjects];
+    self.done = NO;
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* resource = downloadedResources[0];
+        STAssertNil(resource.data, @"should have no local data");
+        STAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
+        STAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
+        STAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
+        
+        NSURL* localURL = resource.localURL;
+        STAssertNotNil(localURL, @"should have a URL");
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
+        STAssertTrue(exists, @"file should exist");
+        
+        error = nil;
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
+        STAssertNil(error, @"%@",error);
+        
+        NSDate* secondDate = [attr fileModificationDate];
+        STAssertTrue([secondDate isLaterThan:firstDate], @"should be updated");
+        
+        NSData* origData = testData();
+        KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
+        
+        [[NSFileManager defaultManager] removeItemAtURL:resource.localURL error:&error];
+        STAssertNoError_
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS;
+}
+
+- (void) testDownloadToFileIfNewerButFileDeleted
+{
+    //1. download a file
+    //2. delete the file
+    //3. try to redownload that file and see the short-circuit
+    
+    self.done = NO;
+    SETUP_PROGRESS
+    __block KCSFile* file;
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(1, downloadedResources);
+        
+        file = downloadedResources[0];
+        STAssertNil(file.data, @"should have no local data");
+        STAssertEqualObjects(file.fileId, kTestId, @"file ids should match");
+        STAssertEqualObjects(file.filename, kTestFilename, @"should have a filename");
+        STAssertEqualObjects(file.mimeType, kTestMimeType, @"should have a mime type");
+        
+        NSURL* localURL = file.localURL;
+        STAssertNotNil(file, @"should have a URL");
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
+        STAssertTrue(exists, @"file should exist");
+        
+        error = nil;
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
+        STAssertNil(error, @"%@",error);
+        
+        NSData* origData = testData();
+        KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+    
+    NSError* error = nil;
+    [[NSFileManager defaultManager] removeItemAtPath:[file.localURL path] error:&error];
+    STAssertNoError_;
+    
+    [progresses removeAllObjects];
+    [datas removeAllObjects];
+    self.done = NO;
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* resource = downloadedResources[0];
+        STAssertNil(resource.data, @"should have no local data");
+        STAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
+        STAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
+        STAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
+        
+        NSURL* localURL = resource.localURL;
+        STAssertNotNil(localURL, @"should have a URL");
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
+        STAssertTrue(exists, @"file should exist");
+        
+        error = nil;
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
+        STAssertNil(error, @"%@",error);
+        
+        NSData* origData = testData();
+        KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
+        
+        [[NSFileManager defaultManager] removeItemAtURL:resource.localURL error:&error];
+        STAssertNoError_
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS;
+}
+
+- (void) testDownloadFileSpecifyFilename
+{
+    NSString* filename = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* destinationURL = [NSURL URLWithString:filename relativeToURL:downloadsDir];
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL path]], @"Should start with a fresh file");
+    
+    self.done = NO;
+    SETUP_PROGRESS;
+    __block KCSFile* file;
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileFileName : filename} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        KTAssertCount(1, downloadedResources);
+        file = downloadedResources[0];
+        
+        STAssertNotNil(file.filename, @"should have a filename");
+        STAssertEqualObjects(file.filename, filename, @"filename should match specified");
+        STAssertNotNil(file.localURL, @"should have a local url");
+        STAssertEqualObjects(file.localURL, destinationURL, @"should have gone to specified location");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+    
+    NSError* error;
+    [[NSFileManager defaultManager] removeItemAtPath:[file.localURL path] error:&error];
+    STAssertNoError_;
+}
+
+- (void) testDownloadFilesSpecifyFilenames
+{
+    //1. upload two files
+    //2. download two files with names
+    //3. check there are two valid files & have specified names
+    __block NSString* file2Id = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData2() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        file2Id = uploadInfo.fileId;
+        STAssertFalse([file2Id isEqualToString:kTestId], @"file 2 should be different");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    NSString* filename1 = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSString* filename2 = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* destinationURL1 = [NSURL URLWithString:filename1 relativeToURL:downloadsDir];
+    NSURL* destinationURL2 = [NSURL URLWithString:filename2 relativeToURL:downloadsDir];
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL1 path]], @"Should start with a fresh file");
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL2 path]], @"Should start with a fresh file");
+    
+    self.done = NO;
+    __block NSArray* downloads;
+    [KCSFileStore downloadFile:@[kTestId, file2Id] options:@{KCSFileFileName : @[filename1, filename2]} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        downloads = downloadedResources;
+        KTAssertCount(2, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+        KCSFile* f2 = downloadedResources[1];
+        
+        BOOL idIn = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn, @"test id should match");
+        STAssertNotNil(f1.localURL, @"should have a local id");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f1.localURL path]], @"file should exist");
+        
+        BOOL idIn2 = [@[kTestId, file2Id] containsObject:f2.fileId];
+        STAssertTrue(idIn2, @"test id should match");
+        STAssertNotNil(f2.localURL, @"should have a local id");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f2.localURL path]], @"file should exist");
+        
+        STAssertFalse([f1.fileId isEqual:f2.fileId], @"should be different ids");
+        STAssertFalse([f1.localURL isEqual:f2.localURL], @"Should be different files");
+        
+        BOOL nameIn1 = [@[filename1, filename2] containsObject:f1.filename];
+        BOOL nameIn2 = [@[filename1, filename2] containsObject:f2.filename];
+        STAssertTrue(nameIn1, @"file 1 should have the appropriate filename");
+        STAssertTrue(nameIn2, @"file 1 should have the appropriate filename");
+        
+        KCSFile* data2File = [f1.fileId isEqualToString:file2Id] ? f1 : f2;
+        STAssertEqualObjects(data2File.filename, filename2, @"f2 should match filename 2");
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[data2File.localURL path] error:&error];
+        STAssertNoError_
+        KTAssertEqualsInt([attr fileSize], testData2().length, @"should be tesdata2");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    for (KCSFile* f in downloads) {
+        NSError* error = nil;
+        [[NSFileManager defaultManager] removeItemAtURL:f.localURL error:&error];
+        STAssertNoError_;
+    }
+}
+
+- (void) testDownloadFilesSpecifyFilenamesError
+{
+    //1. download two files with names, but only 1 has a file
+    //2. check that one is good and the other is null
+    
+    NSString* file2Id = @"NOFILE";
+    
+    NSString* filename1 = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSString* filename2 = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
+    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* destinationURL1 = [NSURL URLWithString:filename1 relativeToURL:downloadsDir];
+    NSURL* destinationURL2 = [NSURL URLWithString:filename2 relativeToURL:downloadsDir];
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL1 path]], @"Should start with a fresh file");
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL2 path]], @"Should start with a fresh file");
+    
+    self.done = NO;
+    __block NSArray* downloads;
+    [KCSFileStore downloadFile:@[kTestId, file2Id] options:@{KCSFileFileName : @[filename1, filename2]} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        downloads = downloadedResources;
+        KTAssertCount(1, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+        
+        BOOL idIn = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn, @"test id should match");
+        STAssertNotNil(f1.localURL, @"should have a local id");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f1.localURL path]], @"file should exist");
+        
+        BOOL nameIn1 = [@[filename1, filename2] containsObject:f1.filename];
+        STAssertTrue(nameIn1, @"file 1 should have the appropriate filename");
+
+        STAssertEqualObjects(f1.filename, filename1, @"f1 should match filename 21");
+        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[f1.localURL path] error:&error];
+        STAssertNoError_
+        KTAssertEqualsInt([attr fileSize], testData().length, @"should be tesdata");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    for (KCSFile* f in downloads) {
+        NSError* error = nil;
+        [[NSFileManager defaultManager] removeItemAtURL:f.localURL error:&error];
+        STAssertNoError_;
+    }
+}
+
+- (void) testDownloadFileByQuery
+{
+    //step 1. upload known type - weird mimetype
+    //step 2. query and expect the file back
+    //step 3. cleanup
+    
+    self.done = NO;
+    __block KCSFile* uploadedFile = nil;
+    NSString* umt = [NSString stringWithFormat:@"test/%@", [NSString UUID]];
+    [KCSFileStore uploadData:testData2() options:@{KCSFileMimeType : umt} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(uploadInfo, @"should have a file");
+        STAssertEqualObjects(uploadInfo.mimeType, umt, @"mimesshould match");
+        STAssertNotNil(uploadInfo.fileId, @"should have an id");
+        uploadedFile = uploadInfo;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    STAssertNotNil(uploadedFile, @"file should be ready");
+    
+    self.done = NO;
+    SETUP_PROGRESS;
+    KCSQuery* query = [KCSQuery queryOnField:KCSFileMimeType withExactMatchForValue:umt];
+    [KCSFileStore downloadFileByQuery:query completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(downloadedResources, @"get a download");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* dlFile = downloadedResources[0];
+        STAssertEqualObjects(dlFile, uploadedFile, @"files should match");
+        STAssertNotNil(dlFile.localURL, @"should be file file");
+        STAssertNil(dlFile.data, @"should have no data");
+
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS;
+    
+    NSError* error = nil;
+    [[NSFileManager defaultManager] removeItemAtURL:uploadedFile.localURL error:&error];
+    STAssertNoError_;
+}
+
+- (void) testDownloadDataByQuery
+{
+    //step 1. upload known type - weird mimetype
+    //step 2. query and expect the file back
+    //step 3. cleanup
+    
+    self.done = NO;
+    __block KCSFile* uploadedFile = nil;
+    NSString* umt = [NSString stringWithFormat:@"test/%@", [NSString UUID]];
+    [KCSFileStore uploadData:testData2() options:@{KCSFileMimeType : umt} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(uploadInfo, @"should have a file");
+        STAssertEqualObjects(uploadInfo.mimeType, umt, @"mimesshould match");
+        STAssertNotNil(uploadInfo.fileId, @"should have an id");
+        uploadedFile = uploadInfo;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    STAssertNotNil(uploadedFile, @"file should be ready");
+    
+    self.done = NO;
+    SETUP_PROGRESS;
+    KCSQuery* query = [KCSQuery queryOnField:KCSFileMimeType withExactMatchForValue:umt];
+    [KCSFileStore downloadDataByQuery:query completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(downloadedResources, @"get a download");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* dlFile = downloadedResources[0];
+        STAssertEqualObjects(dlFile, uploadedFile, @"files should match");
+        STAssertNil(dlFile.localURL, @"should be no file");
+        STAssertNotNil(dlFile.data, @"should have some data");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS;
+    
+    NSError* error = nil;
+    [[NSFileManager defaultManager] removeItemAtURL:uploadedFile.localURL error:&error];
+    STAssertNoError_;
+}
+
+- (void) testDownloadFileByQueryNoneFound
+{
+    //step 1. query and expect nothing back (e.g. weird mimetype
+    //step 2. cleanup
+    
+    self.done = NO;
+    SETUP_PROGRESS;
+    KCSQuery* query = [KCSQuery queryOnField:KCSFileMimeType withExactMatchForValue:@"test/NO-VALUE"];
+    [KCSFileStore downloadDataByQuery:query completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(downloadedResources, @"get a download");
+        KTAssertCount(0, downloadedResources);
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    KTAssertCount(0, progresses);
+}
 
 - (void) testGetByFileName
 {
@@ -285,8 +894,71 @@ NSData* testData()
     }
 }
 
+- (void) testGetByFilenames
+{
+    //1. upload two files
+    //2. download two files
+    //3. check there are two valid files
+    __block NSString* file2name = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        file2name = uploadInfo.filename;
+        STAssertFalse([file2name isEqualToString:kTestFilename], @"file 2 should be different");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    __block NSArray* downloads;
+    NSArray* names = @[kTestFilename, file2name];
+    [KCSFileStore downloadFileByName:names completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        downloads = downloadedResources;
+        KTAssertCount(2, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+        KCSFile* f2 = downloadedResources[1];
+        
+        BOOL idIn = [names containsObject:f1.filename];
+        STAssertTrue(idIn, @"test name should match");
+        STAssertNotNil(f1.localURL, @"should have a local url");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f1.localURL path]], @"file should exist");
+        
+        BOOL idIn2 = [names containsObject:f2.filename];
+        STAssertTrue(idIn2, @"test name should match");
+        STAssertNotNil(f2.localURL, @"should have a local url");
+        STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[f2.localURL path]], @"file should exist");
+        
+        STAssertFalse([f1.fileId isEqual:f2.fileId], @"should be different ids");
+        STAssertFalse([f1.localURL isEqual:f2.localURL], @"Should be different files");
+        STAssertFalse([f1.filename isEqual:f2.filename], @"should have different filenames");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    for (KCSFile* f in downloads) {
+        NSError* error = nil;
+        [[NSFileManager defaultManager] removeItemAtURL:f.localURL error:&error];
+        STAssertNoError_;
+    }
+}
 
-//TODO: query by filename
+- (void) testDownloadByFileByFilenameError
+{
+    self.done = NO;
+    SETUP_PROGRESS
+    [KCSFileStore downloadFileByName:@"NO-NAME" completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(0, downloadedResources);
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    KTAssertCount(0, progresses);
+}
 
 - (void) testGetFileIsNotThere
 {
@@ -302,6 +974,135 @@ NSData* testData()
     [self poll];
     KTAssertCount(0, progresses);
     KTAssertCount(0, datas);
+}
+
+#pragma mark - download by data
+- (void) testDownloadDataByMultipleIds
+{
+    //1. upload two files
+    //2. download two files
+    //3. check there are two valid files
+    __block NSString* file2Id = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        file2Id = uploadInfo.fileId;
+        STAssertFalse([file2Id isEqualToString:kTestId], @"file 2 should be different");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    __block NSArray* downloads;
+    [KCSFileStore downloadData:@[kTestId, file2Id] completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        downloads = downloadedResources;
+        KTAssertCount(2, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+        KCSFile* f2 = downloadedResources[1];
+        
+        BOOL idIn = [@[kTestId, file2Id] containsObject:f1.fileId];
+        STAssertTrue(idIn, @"test id should match");
+        STAssertNil(f1.localURL, @"should not have a local id");
+        STAssertNotNil(f1.data, @"should have data");
+        STAssertEqualObjects(f1.data, testData(), @"data should match");
+        
+        BOOL idIn2 = [@[kTestId, file2Id] containsObject:f2.fileId];
+        STAssertTrue(idIn2, @"test id should match");
+        STAssertNil(f2.localURL, @"should not have a local id");
+        STAssertNotNil(f2.data, @"should have data");
+        STAssertEqualObjects(f2.data, testData(), @"data should match");
+        
+        STAssertFalse([f1.fileId isEqual:f2.fileId], @"should be different ids");
+        STAssertFalse([f1.filename isEqual:f2.filename], @"Should be different files");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+}
+
+- (void) testDownloadDataByName
+{
+    self.done = NO;
+    SETUP_PROGRESS
+    [KCSFileStore downloadDataByName:kTestFilename completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* resource = downloadedResources[0];
+        STAssertNil(resource.localURL, @"should have no local url for data");
+        STAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
+        STAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
+        STAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
+        
+        NSData* origData = testData();
+        
+        STAssertEqualObjects(resource.data, origData, @"should have matching data");
+        STAssertEquals(resource.length, origData.length, @"should have matching lengths");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+}
+
+- (void) testDownloadByNameError
+{
+    self.done = NO;
+    SETUP_PROGRESS
+    [KCSFileStore downloadDataByName:@"NO-SUCH-FILE" completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(0, downloadedResources);
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_NO_PROGRESS
+}
+
+- (void) testDownloadDataByMultipleNames
+{
+    //1. upload two files
+    //2. download two files
+    //3. check there are two valid files
+    __block NSString* file2name = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        file2name = uploadInfo.filename;
+        STAssertFalse([file2name isEqualToString:kTestFilename], @"file 2 should be different");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    NSArray* names = @[kTestFilename, file2name];
+    [KCSFileStore downloadDataByName:names completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        KTAssertCount(2, downloadedResources);
+        KCSFile* f1 = downloadedResources[0];
+        KCSFile* f2 = downloadedResources[1];
+        
+        BOOL idIn = [names containsObject:f1.filename];
+        STAssertTrue(idIn, @"test name should match");
+        STAssertNil(f1.localURL, @"should not have a local url");
+        STAssertNotNil(f1.data, @"should have data");
+        
+        BOOL idIn2 = [names containsObject:f2.filename];
+        STAssertTrue(idIn2, @"test name should match");
+        STAssertNil(f2.localURL, @"should not have a local url");
+        STAssertNotNil(f2.data, @"should have data");
+        
+        STAssertFalse([f1.fileId isEqual:f2.fileId], @"should be different ids");
+        STAssertFalse([f1.filename isEqual:f2.filename], @"should have different filenames");
+        
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
 }
 
 #pragma mark - download from a resolved URL
@@ -401,7 +1202,7 @@ NSData* testData()
         NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[dlFile.localURL path] error:&error];
         STAssertNoError_;
         NSDate* thisDate = attributes[NSFileModificationDate];
-        STAssertEqualObjects(thisDate, firsDate, @"file should not have been modified");
+        KTAssertEqualsDates(thisDate, firsDate);
         
         [[NSFileManager defaultManager] removeItemAtURL:dlFile.localURL error:&error];
         STAssertNoError_
@@ -841,7 +1642,7 @@ NSData* testData()
     STAssertNotNil(newFileId, @"Should get a file id");
     
     self.done = NO;
-    [KCSFileStore downloadFile:newFileId options:@{KCSFileLinkExpirationTimeInterval : @0.01} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    [KCSFileStore downloadFile:newFileId options:@{KCSFileLinkExpirationTimeInterval : @0.7} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
         KCSFile* dlFile = downloadedResources[0];
@@ -866,11 +1667,22 @@ NSData* testData()
         self.done = YES;
     }];
     [self poll];
-    
-    
 }
 
+- (void) testTTLExpires
+{
+    SETUP_PROGRESS;
+    self.done = NO;
+    [KCSFileStore downloadFile:kTestId options:@{KCSFileStoreTestExpries : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNotNil(error, @"Should have an error");
+        STAssertEquals(error.code, 400, @"Should be a 400");
+        STAssertEqualObjects(error.domain, KCSFileStoreErrorDomain, @"should be a file error");
 
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_NO_PROGRESS;
+}
 
 #pragma mark - Streaming
 
@@ -893,9 +1705,101 @@ NSData* testData()
     }];
     [self poll];
 }
-//test error conditions
-//test streaming by name
-//to get uiimage with url
+
+- (void) testStreamingError
+{
+    self.done = NO;
+    [KCSFileStore getStreamingURL:@"NO-FILE" completionBlock:^(KCSFile *streamingResource, NSError *error) {
+        STAssertNotNil(error, @"should get an error");
+        STAssertNil(streamingResource, @"no resources");
+        STAssertNotNil(error, @"should get an error");
+        
+        KTAssertEqualsInt(error.code, 404, @"no item error");
+        STAssertEqualObjects(error.domain, KCSResourceErrorDomain, @"is a file error");
+        
+        self.done = YES;
+    }];
+    [self poll];
+}
+
+- (void) testStreamingByName
+{
+    self.done = NO;
+    __block NSURL* streamURL = nil;
+    [KCSFileStore getStreamingURLByName:kTestFilename completionBlock:^(KCSFile *streamingResource, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(streamingResource, @"need a resource");
+        streamURL = streamingResource.remoteURL;
+        STAssertNotNil(streamURL, @"need a stream");
+        self.done = YES;
+    }];
+    [self poll];
+    STAssertNotNil(streamURL, @"streaming URL");
+    
+    NSData* data = [NSData dataWithContentsOfURL:streamURL];
+    STAssertNotNil(data, @"have valid data");
+    STAssertEqualObjects(data, testData(), @"data should match");
+}
+
+- (void) testStreamingByNameError
+{
+    self.done = NO;
+    [KCSFileStore getStreamingURLByName:@"NO-FILE" completionBlock:^(KCSFile *streamingResource, NSError *error) {
+        STAssertNotNil(error, @"should get an error");
+        STAssertNil(streamingResource, @"no resources");
+        STAssertNotNil(error, @"should get an error");
+        
+        KTAssertEqualsInt(error.code, 404, @"no item error");
+        STAssertEqualObjects(error.domain, KCSResourceErrorDomain, @"is a file error");
+        
+        self.done = YES;
+    }];
+    [self poll];
+}
+
+- (void) testGetUIImageWithURL
+{
+    self.done = NO;
+    SETUP_PROGRESS
+    __block NSString* newFileId = nil;
+    NSURL* fileURL = [self largeImageURL];
+    [KCSFileStore uploadFile:fileURL options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
+        STAssertNotNil(uploadInfo.filename, @"filename should have faule");
+        STAssertNotNil(uploadInfo.fileId, @"should have a file id");
+        STAssertFalse([uploadInfo.fileId isEqualToString:uploadInfo.filename], @"file id should be unique");
+        
+        KTAssertEqualsInt(uploadInfo.length, kImageSize, @"sizes should match");
+        STAssertNil(uploadInfo.remoteURL, @"should be nil");
+        STAssertNil(uploadInfo.data, @"should have nil data");
+        STAssertEqualObjects(uploadInfo.mimeType, kImageMimeType, @"should use default mimetype");
+        
+        newFileId = uploadInfo.fileId;
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    
+    [self poll];
+    ASSERT_PROGESS
+    STAssertNotNil(newFileId, @"Should get a file id");
+    
+    __block KCSFile* streamingFile = nil;
+    self.done = NO;
+    [KCSFileStore getStreamingURL:newFileId completionBlock:^(KCSFile *streamingResource, NSError *error) {
+        STAssertNoError_
+        STAssertNotNil(streamingResource, @"should be not nil");
+        STAssertNotNil(streamingResource.remoteURL, @"Should get back a valid URL");
+        streamingFile = streamingResource;
+        self.done = YES;
+    }];
+    [self poll];
+    
+    STAssertNotNil(streamingFile, @"should get back a valid file");
+    
+    NSData* data = [NSData dataWithContentsOfURL:streamingFile.remoteURL];
+    UIImage* image = [UIImage imageWithData:data];
+    STAssertNotNil(image, @"Should be a valid image");
+}
 
 #pragma mark - Uploading
 
@@ -1367,8 +2271,118 @@ NSData* testData()
     [self poll];
 }
 
+- (void) testUploadDownloadFileWithPathCharacters
+{
+    //test path components slashes, spaces, etc, dots
+    NSString* myFilename = @"FOO/re space%rkm.me👍\\か、最新bcf";
+
+    NSString* myID = [NSString stringWithFormat:@"BED__ R/fsda.faめセレクションse‱🌇e/SCHME’-%@", [NSString UUID]];
+    
+    SETUP_PROGRESS;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:@{KCSFileFileName : myFilename, KCSFileId : myID} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
+        STAssertEqualObjects(uploadInfo.filename, myFilename, @"filename should match");
+        STAssertNotNil(uploadInfo.fileId, @"should have a file id");
+        STAssertEqualObjects(uploadInfo.fileId, myID, @"file id should be match");
+        STAssertEqualObjects(uploadInfo.mimeType, @"application/octet-stream", @"mime type should match");
+        KTAssertEqualsInt(uploadInfo.length, kTestSize, @"sizes shoukld match");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    
+    
+    CLEAR_PROGRESS;
+    self.done = NO;
+    [KCSFileStore downloadData:myID completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* resource = downloadedResources[0];
+        STAssertNil(resource.localURL, @"should have no local url for data");
+        STAssertEqualObjects(resource.fileId, myID, @"file ids should match");
+        STAssertEqualObjects(resource.filename, myFilename, @"should have a filename");
+        STAssertEqualObjects(resource.mimeType, @"application/octet-stream", @"should have a mime type");
+        
+        NSData* origData = testData();
+        
+        STAssertEqualObjects(resource.data, origData, @"should have matching data");
+        STAssertEquals(resource.length, origData.length, @"should have matching lengths");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+    
+    self.done = NO;
+    [KCSFileStore deleteFile:myID completionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    }];
+    [self poll];
+}
+
+- (void) testUploadDownloadFileWithPathCharactersArray
+{
+    //test path components slashes, spaces, etc, dots
+    NSString* myFilename = @"FOO/re space%rkm.me👍\\か、最新bcf";
+    
+    NSString* myID = [NSString stringWithFormat:@"BED__ R/fsda.faめセレクションse‱🌇e/SCHME’-%@", [NSString UUID]];
+    
+    SETUP_PROGRESS;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:@{KCSFileFileName : myFilename, KCSFileId : myID} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        STAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
+        STAssertEqualObjects(uploadInfo.filename, myFilename, @"filename should match");
+        STAssertNotNil(uploadInfo.fileId, @"should have a file id");
+        STAssertEqualObjects(uploadInfo.fileId, myID, @"file id should be match");
+        STAssertEqualObjects(uploadInfo.mimeType, @"application/octet-stream", @"mime type should match");
+        KTAssertEqualsInt(uploadInfo.length, kTestSize, @"sizes shoukld match");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    
+    
+    CLEAR_PROGRESS;
+    self.done = NO;
+    [KCSFileStore downloadData:@[myID, @"🎡♝Forsyth xe/mme.afoo"] completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        //assert one KCSFile & its data is the right data
+        STAssertNotNil(downloadedResources, @"should have a resource");
+        KTAssertCount(1, downloadedResources);
+        
+        KCSFile* resource = downloadedResources[0];
+        STAssertNil(resource.localURL, @"should have no local url for data");
+        STAssertEqualObjects(resource.fileId, myID, @"file ids should match");
+        STAssertEqualObjects(resource.filename, myFilename, @"should have a filename");
+        STAssertEqualObjects(resource.mimeType, @"application/octet-stream", @"should have a mime type");
+        
+        NSData* origData = testData();
+        
+        STAssertEqualObjects(resource.data, origData, @"should have matching data");
+        STAssertEquals(resource.length, origData.length, @"should have matching lengths");
+        
+        self.done = YES;
+    } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+    
+    self.done = NO;
+    [KCSFileStore deleteFile:myID completionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    }];
+    [self poll];
+}
+
 //TODO: implement this
-- (void) TODO_testUploadResume
+- (void) testUploadResume
 {
     //1. Upload partial
     //2. Cancel
@@ -1453,7 +2467,7 @@ NSData* testData()
     [self poll];
 }
 
-- (void) testStreamingUpload
+- (void) TODO_testStreamingUpload
 {
     //TODO: try this out in the future
 }
@@ -1477,6 +2491,60 @@ NSData* testData()
         KTAssertEqualsInt(error.code, KCSNotFoundError, @"should be a 404");
         self.done = YES;
     } progressBlock:nil];
+    [self poll];
+}
+
+- (void) testDeleteByName
+{
+    self.done = NO;
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
+    KCSQuery* nameQuery = [KCSQuery queryOnField:KCSFileFileName withExactMatchForValue:kTestFilename];
+    
+    self.done = NO;
+    __block NSString* fileId = nil;
+    [store queryWithQuery:nameQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        KTAssertCount(1, objectsOrNil);
+        KCSFile* file = objectsOrNil[0];
+        fileId = file.fileId;
+        
+        STAssertNotNil(fileId, @"should have a valid file");
+        STAssertEqualObjects(fileId, kTestId, @"should be the test id");
+        
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    STAssertNotNil(fileId, @"should have a valid file");
+    
+    self.done = NO;
+    [KCSFileStore deleteFile:fileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError;
+        KTAssertEqualsInt(count, 1, @"should have deleted one file");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    self.done = NO;
+    [KCSFileStore downloadData:fileId completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNotNil(error, @"should get an error");
+        STAssertEqualObjects(error.domain, KCSFileStoreErrorDomain, @"Should be a file error");
+        KTAssertEqualsInt(error.code, KCSNotFoundError, @"should be a 404");
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+}
+
+- (void) testDeleteError
+{
+    self.done = NO;
+    [KCSFileStore deleteFile:@"NO_FILE" completionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNotNil(errorOrNil, @"should get an error");
+        KTAssertEqualsInt(errorOrNil.code, 404, @"should be no file found");
+        STAssertEqualObjects(errorOrNil.domain, KCSResourceErrorDomain, @"should be a file error");
+        KTAssertEqualsInt(count, 0, @"should have deleted no files");
+        self.done = YES;
+    }];
     [self poll];
 }
 
