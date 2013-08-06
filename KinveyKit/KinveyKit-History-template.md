@@ -2,7 +2,7 @@
 
 ## 1.18
 ### 1.18.0
-** Release Date:** TBD
+** Release Date:** August 06, 2013
 
 * Improved Resource/File Handling
     * Deprecated and deleted `KCSResourceStore` and `KCSResourceService` APIs. These methods will now throw exceptions when used. They are marked as deprecated to make them easy to find, check the deprecation warning message for suggested replacement API.
