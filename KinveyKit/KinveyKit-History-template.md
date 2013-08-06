@@ -24,6 +24,7 @@
     	    * `+ (void) getStreamingURL:(NSString*)fileId completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;`
     	    * `+ (void) getStreamingURLByName:(NSString*)fileName completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;`
     	* __Deleting__
+    	    * `+ (void) deleteFile:(NSString*)fileId completionBlock:(KCSCountBlock)completionBlock;`
     * Added `KCSFile` completionBlock object to represent a file object with both local and backend metadata.
     * Added support for "public" files (i.e. files that accessible without authorization).
     * Improved support for resuming incomplete uploads/downloads.
