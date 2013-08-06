@@ -1,3 +1,4 @@
+
 //
 //  KCSFileStore.m
 //  KinveyKit
@@ -164,7 +165,6 @@ static id lastRequest = nil;
         [stream setProperty:@(offset) forKey:NSStreamFileCurrentOffsetKey];
     }
 
-    [request addValue:@"start" forHTTPHeaderField:@"x-goog-resumable"];
     [request setAllHTTPHeaderFields:headers];
     
     KCSLogTrace(@"upload stream: PUT %@ headers=%@", url, headers);
@@ -570,7 +570,6 @@ static id lastRequest = nil;
     request.body = body;
     
     request.headers[@"x-Kinvey-content-type"] = body[@"mimeType"];
-    request.headers[@"x-kinvey-resumable-upload"] = @"true";
     
     return request;
 }
