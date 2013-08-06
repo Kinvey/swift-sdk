@@ -213,6 +213,7 @@ NSData* testData2()
         STAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
         STAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
         STAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
+        STAssertNotNil(resource.remoteURL, @"should have a remote URL");
         
         NSURL* localURL = resource.localURL;
         STAssertNotNil(localURL, @"should have a URL");
@@ -2585,5 +2586,86 @@ NSData* testData2()
         }
     } progressBlock:nil];
 
+    
+    [KCSFileStore downloadData:@"myId" completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        if (error != nil) {
+            KCSFile* file = downloadedResources[0];
+            NSData* fileData = file.data;
+            id outputObject = nil;
+            if ([file.mimeType hasPrefix:@"text"]) {
+                outputObject = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
+            } else if ([file.mimeType hasPrefix:@"image"]) {
+                outputObject = [UIImage imageWithData:fileData];
+            }
+            NSLog(@"downloaded: %@", outputObject);
+        } else {
+            NSLog(@"Got an error: %@", error);
+        }
+    } progressBlock:nil];
+    
+    UIImageView* imageView;
+    
+    [KCSFileStore downloadFile:@"myId" options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        if (error != nil) {
+            KCSFile* file = downloadedResources[0];
+            NSURL* fileURL = file.localURL;
+            UIImage* image = [UIImage imageWithContentsOfFile:[fileURL path]]; //note this blocks for awhile
+            imageView.image = image;
+        } else {
+            NSLog(@"Got an error: %@", error);
+        }
+    } progressBlock:nil];
+    
+//    KCSFileOnlyIfNewer
+    [KCSFileStore downloadFile:@"myId" options:@{KCSFileOnlyIfNewer : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        if (error != nil) {
+            KCSFile* file = downloadedResources[0];
+            NSURL* fileURL = file.localURL;
+            UIImage* image = [UIImage imageWithContentsOfFile:[fileURL path]]; //note this blocks for awhile
+            imageView.image = image;
+        } else {
+            NSLog(@"Got an error: %@", error);
+        }
+    } progressBlock:nil];
+    
+
+    
+    [KCSFileStore downloadFile:@"myId" options:@{KCSFileOnlyIfNewer : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        if (error != nil) {
+            KCSFile* file = downloadedResources[0];
+            NSURL* fileURL = file.localURL;
+
+            NSURL* documentsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+            NSURL* documentsFile = [NSURL URLWithString:file.filename relativeToURL:documentsDir];
+            
+            //move the file to the NSDocuments Directory
+            [[NSFileManager defaultManager] moveItemAtURL:fileURL toURL:documentsFile error:NULL];
+        } else {
+            NSLog(@"Got an error: %@", error);
+        }
+    } progressBlock:nil];
+    
+    KCSQuery* pngQuery = [KCSQuery queryOnField:KCSFileMimeType withExactMatchForValue:@"image/png"];
+    [KCSFileStore downloadFileByQuery:pngQuery completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        if (error != nil) {
+            NSLog(@"Downloaded %i images.", downloadedResources.count);
+        } else {
+            NSLog(@"Got an error: %@", error);
+        }
+    } progressBlock:nil];
+    
+    [KCSFileStore downloadFile:@"myId" options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        KCSFile* file = (downloadedResources!= nil) ? downloadedResources[0] : nil;
+        if (error) {
+            if ([error.domain isEqualToString:(id)kCFErrorDomainCFNetwork]) {
+                //implement a retry later...
+                [KCSFileStore resumeDownload:file.localURL from:file.remoteURL completionBlock:^(NSArray *downloadedResources, NSError *error) {
+                    //handle success or failure here
+                } progressBlock:nil];
+            }
+        } else {
+            NSLog(@"got a good file: %@", file.localURL);
+        }
+    } progressBlock:nil];
 }
 @end

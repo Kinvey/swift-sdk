@@ -93,6 +93,7 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
 {
     pollTime = 0.1;
     _callbackCount = 0;
+    [TestUtils justInitServer];
 }
 
 - (void) tearDown

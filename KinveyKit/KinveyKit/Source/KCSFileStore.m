@@ -701,6 +701,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                                                             fileId:fileId
                                                           filename:filename
                                                           mimeType:mimeType];
+    intermediateFile.remoteURL = url;
     
     if (onlyIfNewer == YES) {
         BOOL fileAlreadyExists = [[NSFileManager defaultManager] fileExistsAtPath:[localFile path]];
