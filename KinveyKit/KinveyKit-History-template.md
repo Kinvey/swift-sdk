@@ -1,5 +1,14 @@
 # KinveyKit Release History
 
+## 1.19
+### 1.19.0
+** Release Date:** TBD
+
+* Code Cleanup:
+    * Removed old and deprecated `findEntity` methods on `KCSEntity` category on `NSObject` (KinveyEntity.h)
+    * Deprecated `KCSEntityDelegate` API for directly loading objects.
+    * Removed deprecated `+[KCSPush onLoadHelper:]` method.
+
 ## 1.18
 ### 1.18.0
 ** Release Date:** August 06, 2013

@@ -42,6 +42,7 @@ static const NSString* kAPPDATARoot = @"appdata";
 static const NSString* kRPCRoot = @"rpc";
 static const NSString* kUSERRoot = @"user";
 static const NSString* kBLOBRoot = @"blob";
+static const NSString* kPUSHRoot = @"push";
 
 @implementation KCSNetworkRequest
 
@@ -110,6 +111,9 @@ static const NSString* kBLOBRoot = @"blob";
             break;
         case kKCSContextUSER:
             return (NSString*)kUSERRoot;
+            break;
+        case kKCSContextPUSH:
+            return (NSString*)kPUSHRoot;
             break;
     }
 }

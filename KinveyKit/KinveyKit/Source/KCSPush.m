@@ -54,11 +54,6 @@
     return sKCSPush;
 }
 
-- (void) onLoadHelper:(NSDictionary *)options
-{
-    (void)[self initializeUrbanAirshipWithOptions:options error:NULL];
-}
-
 - (BOOL) onLoadHelper:(NSDictionary *)options error:(NSError**)error
 {
     return [self initializeUrbanAirshipWithOptions:options error:error];

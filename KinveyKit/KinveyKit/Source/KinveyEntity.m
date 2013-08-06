@@ -31,6 +31,8 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      id objectOfInterest,
                      id <KCSEntityDelegate> delegate);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 void
 makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      id objectOfInterest,
@@ -64,73 +66,9 @@ makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
 //       since NSObject implements it.  I'm not 100% positive
 //       how we should really be removing these warnings, but
 //       we should fix this for real in the future!
-#pragma clang diagnostic push
+
 #pragma clang diagnostic ignored "-Wprotocol"
 @implementation NSObject (KCSEntity)
-
-
-- (void)fetchOneFromCollection:(KCSCollection *)collection matchingQuery:(NSString *)query withDelegate:(id<KCSEntityDelegate>)delegate
-{
-    NSString *resource = nil;
-    // This is the user collection...
-    if ([collection.collectionName isEqualToString:@""]){
-        resource = [collection.baseURL stringByAppendingFormat:@"%@",
-                    [NSString stringByPercentEncodingString:query]];
-
-    } else {
-        resource = [collection.baseURL stringByAppendingFormat:@"%@/%@",
-                    [collection collectionName],
-                    [NSString stringByPercentEncodingString:query]];
-
-    }
-
-
-    KCSConnectionCompletionBlock cBlock;
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate entity:self fetchDidFailWithError:error];
-    };
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn)
-    {
-        // Do nothing...
-    };
-    
-    makeConnectionBlocks(&cBlock, self, delegate);
-    [[[KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod] withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-}
-
-- (void)findEntityWithProperty:(NSString *)property matchingBoolValue:(BOOL)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
-{
-    
-    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:value], property, nil] JSONRepresentation];
-    
-    [self fetchOneFromCollection:collection matchingQuery:[NSString stringByPercentEncodingString:query] withDelegate:delegate];
-    
-}
-
-- (void)findEntityWithProperty:(NSString *)property matchingDoubleValue:(double)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
-{
-    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithDouble:value], property, nil] JSONRepresentation];
-    
-    [self fetchOneFromCollection:collection matchingQuery:[NSString stringByPercentEncodingString:query] withDelegate:delegate];
-    
-}
-
-- (void)findEntityWithProperty:(NSString *)property matchingIntegerValue:(int)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
-{
-    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:value], property, nil] JSONRepresentation];
-    
-    [self fetchOneFromCollection:collection matchingQuery:[NSString stringByPercentEncodingString:query] withDelegate:delegate];
-    
-}
-
-- (void)findEntityWithProperty:(NSString *)property matchingStringValue:(NSString *)value fromCollection:(KCSCollection *)collection withDelegate:(id<KCSEntityDelegate>)delegate
-{
-    NSString *query = [[NSDictionary dictionaryWithObjectsAndKeys:value, property, nil] JSONRepresentation];
-    
-    [self fetchOneFromCollection:collection matchingQuery:[NSString stringByPercentEncodingString:query] withDelegate:delegate];
-    
-}
-
 - (NSString *)kinveyObjectIdHostProperty
 {
     NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];

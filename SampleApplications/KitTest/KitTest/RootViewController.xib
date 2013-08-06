@@ -18,7 +18,7 @@
             <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
             <nil key="simulatedDestinationMetrics"/>
-            <tabBar key="tabBar" contentMode="scaleToFill" selectedItem="12" id="9">
+            <tabBar key="tabBar" contentMode="scaleToFill" id="9">
                 <rect key="frame" x="0.0" y="431" width="320" height="49"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

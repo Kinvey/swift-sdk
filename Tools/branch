@@ -37,6 +37,7 @@ then
 fi
 
 #generate api file
+echo "-> generating api file
 MINOR_VERSION="$BRANCH.0"
 Tools/iOSReleaseNotesBuilder buildapi KinveyKit $MINOR_VERSION
 svn add DocTemplates/apis/api$MINOR_VERSION.xml
@@ -50,6 +51,7 @@ then
 fi
 
 #generate diff html
+echo "-> generating diff html"
 Tools/iOSReleaseNotesBuilder diff KinveyKit/
 svn add KinveyKit/Documents/releasenotes/General/*
 

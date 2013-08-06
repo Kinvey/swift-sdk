@@ -61,7 +61,6 @@
 		271827A416B8AA5000825D50 /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F360981598BF5C006B699E /* KCSMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		271827A516B8AA5500825D50 /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609C1598C1CB006B699E /* KCSMetadata.m */; };
 		271827AA16B9A1D100825D50 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271827A916B9A1D000825D50 /* CoreLocation.framework */; };
-		271827B016B9A27800825D50 /* KCSAnalytics.h in Headers */ = {isa = PBXBuildFile; fileRef = 271827AE16B9A27800825D50 /* KCSAnalytics.h */; };
 		271827B116B9A27800825D50 /* KCSAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 271827AF16B9A27800825D50 /* KCSAnalytics.m */; };
 		271827B216B9A40700825D50 /* KCSImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 2718279C16B8A78700825D50 /* KCSImageUtils.h */; };
 		271827B316B9A40B00825D50 /* KCSImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2718279D16B8A78700825D50 /* KCSImageUtils.m */; };
@@ -108,6 +107,8 @@
 		27302CC3155D4B4100A0183E /* NSArray+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */; };
 		27302CC4155D4B4100A0183E /* NSArray+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC2155D4B4100A0183E /* NSArray+KinveyAdditions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27302CCB155D614B00A0183E /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CC9155D614B00A0183E /* KCSStore.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2732003C17B1897500CCA70D /* KCSRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465352174E6DE40013546E /* KCSRequest.h */; };
+		2732003D17B1897B00CCA70D /* KCSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27465353174E6DE40013546E /* KCSRequest.m */; };
 		27347F7215B4665800133F64 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7115B4665800133F64 /* CoreLocation.framework */; };
 		2736B19216271D50006CF960 /* KinveyKitNSDictionaryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2736B19116271D50006CF960 /* KinveyKitNSDictionaryTests.m */; };
 		273A3E93160A1A9F00F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
@@ -2453,7 +2454,6 @@
 				271827A016B8AA1600825D50 /* KCSBuilders.h in Headers */,
 				271827A216B8AA2700825D50 /* KCSPropertyUtil.h in Headers */,
 				271827A416B8AA5000825D50 /* KCSMetadata.h in Headers */,
-				271827B016B9A27800825D50 /* KCSAnalytics.h in Headers */,
 				271827B216B9A40700825D50 /* KCSImageUtils.h in Headers */,
 				271827C216C0354500825D50 /* KCSDevice.h in Headers */,
 				271827C416C0355C00825D50 /* KCSKeyChain.h in Headers */,
@@ -2476,6 +2476,7 @@
 				27FB2A8116FCEDDB00CD7D5C /* KCSOfflineSaveStore.h in Headers */,
 				27FB2A8316FCEE8A00CD7D5C /* KCSLinkedAppdataStore.h in Headers */,
 				27FB2A8416FCEE8F00CD7D5C /* KCSCachedStore.h in Headers */,
+				2732003C17B1897500CCA70D /* KCSRequest.h in Headers */,
 				274D395517A7FDFE00587886 /* KinveyCoreInternal.h in Headers */,
 				275512001707CCD7007E8320 /* KCSFacebookHelper.h in Headers */,
 				27010A97171330F40012D1ED /* KinveyKit.h in Headers */,
@@ -2961,6 +2962,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2766E63916834B78000D27C5 /* KinveyKit_mac.m in Sources */,
+				2732003D17B1897B00CCA70D /* KCSRequest.m in Sources */,
 				2766E65916834F1D000D27C5 /* KCSGenericRESTRequest.m in Sources */,
 				2766E65A16835050000D27C5 /* KCSConnectionPool.m in Sources */,
 				275B426116A829AF0064B941 /* KCSErrorUtilities.m in Sources */,

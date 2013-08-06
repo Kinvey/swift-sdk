@@ -27,22 +27,26 @@
 *
 * This Protocol should be implemented by a client for processing the results of an Entity request against the KCS
 * service.
+* @deprecatedIn 1.19.0
 */
+KCS_DEPRECATED(Use KCSStore API instead, 1.19.0)
 @protocol KCSEntityDelegate <NSObject>
 
 /*!
 *  Called when a request fails for some reason (including network failure, internal server failure, request issues...)
  @param entity The Object that was attempting to be fetched.
  @param error The error that occurred
+ @deprecatedIn 1.19.0
 */
-- (void) entity: (id <KCSPersistable>)entity fetchDidFailWithError: (NSError *)error;
+- (void) entity: (id <KCSPersistable>)entity fetchDidFailWithError: (NSError *)error KCS_DEPRECATED(Use KCSStore methods instead, 1.19.0);
 
 /*!
 * Called when a request completes successfully.
  @param entity The Object that was attempting to be fetched.
  @param result The result of the completed request as an NSDictionary
+ @deprecatedIn 1.19.0
 */
-- (void) entity: (id <KCSPersistable>)entity fetchDidCompleteWithResult: (NSObject *)result;
+- (void) entity: (id <KCSPersistable>)entity fetchDidCompleteWithResult: (NSObject *)result KCS_DEPRECATED(Use KCSStore methods instead, 1.19.0);
 
 @end
 
@@ -51,55 +55,6 @@
 * This category is used to cause any NSObject to be able to be saved into the Kinvey Cloud Service.
 */
 @interface NSObject (KCSEntity) <KCSPersistable>
-
-/*! Fetch one instance of this entity from KCS (Depricated as of version 1.2)
-*
-* @param collection Collection to pull the entity from
-* @param query Arbitrary JSON query to execute on KCS (See Queries in KCS documentation for details on Queries)
-* @param delegate Delegate object to inform upon completion or failure of this request 
-* @dprecated 1.2
-*/
-- (void)fetchOneFromCollection: (KCSCollection *)collection matchingQuery: (NSString *)query withDelegate: (id<KCSEntityDelegate>)delegate KCS_DEPRECATED(Deprecated,1.2);
-
-/*! Fetch first entity with a given Boolean value for a property (Depricated as of version 1.2)
-*
-* @param property property to query
-* @param value Boolean value (YES or NO) to query against value
-* @param collection Collection to pull the entity from
-* @param delegate Delegate object to inform upon completion or failure of this request
-* @deprecated 1.2
-*/
-- (void)findEntityWithProperty: (NSString *)property matchingBoolValue: (BOOL)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate KCS_DEPRECATED(Deprecated,1.2);
-
-/*! Fetch first entity with a given Double value for a property (Depricated as of version 1.2)
-*
-* @param property property to query
-* @param value Real value to query against value
-* @param collection Collection to pull the entity from
-* @param delegate Delegate object to inform upon completion or failure of this request
-* @deprecated 1.2
-*/
-- (void)findEntityWithProperty: (NSString *)property matchingDoubleValue: (double)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate KCS_DEPRECATED(Deprecated,1.2);
-
-/*! Fetch first entity with a given Integer value for a property (Depricated as of version 1.2)
-*
-* @param property property to query
-* @param value Integer to query against value
-* @param collection Collection to pull the entity from
-* @param delegate Delegate object to inform upon completion or failure of this request
-* @deprecated 1.2
-*/
-- (void)findEntityWithProperty: (NSString *)property matchingIntegerValue: (int)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate  KCS_DEPRECATED(Deprecated,1.2);
-
-/*! Fetch first entity with a given String value for a property (Depricated as of version 1.2)
-*
-* @param property property to query
-* @param value String to query against value
-* @param collection Collection to pull the entity from
-* @param delegate Delegate object to inform upon completion or failure of this request
-* @deprecated 1.2
-*/
-- (void)findEntityWithProperty: (NSString *)property matchingStringValue: (NSString *)value fromCollection: (KCSCollection *)collection withDelegate: (id<KCSEntityDelegate>)delegate KCS_DEPRECATED(Deprecated,1.2);
 
 /*! Return the client property name for the kinvey id
  *
@@ -136,8 +91,9 @@
 * @param objectID The ID of the entity to request
 * @param collection Collection to pull the entity from
 * @param delegate The delegate to notify upon completion of the load.
+* @deprecatedIn 1.19.0
 */
-- (void)loadObjectWithID: (NSString *)objectID fromCollection: (KCSCollection *)collection withDelegate:(id <KCSEntityDelegate>)delegate;
+- (void)loadObjectWithID: (NSString *)objectID fromCollection: (KCSCollection *)collection withDelegate:(id <KCSEntityDelegate>)delegate KCS_DEPRECATED(Use KCSStore API Instead, 1.19.0);
 
 // Undocumented
 - (void)saveToCollection: (KCSCollection *)collection

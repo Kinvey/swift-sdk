@@ -23,7 +23,8 @@ typedef enum KCSContextRoot : NSInteger {
     kKCSContextAPPDATA,
     kKCSContextUSER,
     kKCSContextBLOB,
-    kKCSContextRPC
+    kKCSContextRPC,
+    kKCSContextPUSH
 } KCSConextRoot;
 
 typedef enum KCSRESTMethod : NSInteger {

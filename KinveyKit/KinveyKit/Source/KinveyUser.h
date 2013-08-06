@@ -310,6 +310,7 @@ FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
 /*! Load the data for the given user, user must be logged-in.
  *
  * @param delegate The delegate to inform once the action is complete.
+ * @deprecatedIn 1.19.0
  */
 - (void)loadWithDelegate: (id<KCSEntityDelegate>)delegate;
 

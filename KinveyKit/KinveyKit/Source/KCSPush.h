@@ -86,23 +86,6 @@ typedef enum KCS_PUSH_MODE : NSInteger {
 ///---------------------------------------------------------------------------------------
 /// @name Startup / Shutdown
 ///---------------------------------------------------------------------------------------
-/*! Start the Push Service
- 
- This routine is used to register with the Kinvey Push service (not the same as registering with APNS)
- and to prepare to receive notifications.  This handles device management and user management.
- 
- To use this routine, place a call to this in the applicationDidLoad:withOptions method in the App Delegate.
- `[[KCSPush sharedPush] onLoadHelper:options];`
- 
- Where options (documented in KCSClient) contains the Keys for the Push service.
- 
- @warning Push notifications will not work if this method has not been called.
- 
- @param options The options dictionary (see KCSClient) that contains the settings for the push service.
- @deprecated Use onLoadHelper:error: instead.
- @depcratedIn 1.9
- */
-- (void)onLoadHelper: (NSDictionary *)options KCS_DEPRECATED(use +initializePushWithPushKey:pushSecret:mode:enabled: instead, 1.9);
 
 /*! Start the Push Service
  
