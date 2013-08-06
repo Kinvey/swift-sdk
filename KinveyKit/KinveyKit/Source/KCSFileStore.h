@@ -2,8 +2,16 @@
 //  KCSFileStore.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 6/17/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
 //
 
 #import <Foundation/Foundation.h>
@@ -56,7 +64,7 @@ FOUNDATION_EXPORT NSString* const KCSFileLinkExpirationTimeInterval; //Should be
 
 @interface KCSCollection (KCSFileStore)
 
-/** Constant to represent the File metdata collection */
+/** Constant to represent the File metadata collection */
 FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 
 /** Helper method to access the file store metadata. Objects will be `KCSFile` type. */
@@ -124,7 +132,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 
 /** Downloads the specified file or files.
  
- The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
+ The file(s) will be saved to the `NSCachesDirectory` and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
  
  Available options:
  

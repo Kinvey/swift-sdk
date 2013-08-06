@@ -495,7 +495,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     NSString* queryString = query != nil ? [query parameterStringRepresentation] : @"";
     
     KCSRESTRequest *request = [collection restRequestForMethod:kGetRESTMethod apiEndpoint:queryString];
-    ProcessDataBlock_t processBlock = [self makeProcessDictBlockForNewObject];
+    ProcessDataBlock_t processBlock =  [self makeProcessDictBlockForNewObject];
     
     KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
         KCSLogTrace(@"In collection callback with response: %@", response);

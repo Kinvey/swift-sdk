@@ -20,6 +20,9 @@
     	    * `+ (void) downloadDataByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
     	    * `+ (void) downloadDataByQuery:(KCSQuery*)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
     	    * `+ (void) downloadDataWithResolvedURL:(NSURL*)url completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) resumeDownload:(NSURL*)partialLocalFile from:(NSURL*)resolvedURL completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;`
+    	    * `+ (void) getStreamingURL:(NSString*)fileId completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;`
+    	    * `+ (void) getStreamingURLByName:(NSString*)fileName completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;`
     	* __Deleting__
     * Added `KCSFile` completionBlock object to represent a file object with both local and backend metadata.
     * Added support for "public" files (i.e. files that accessible without authorization).
