@@ -3,7 +3,18 @@
 //  KitTest
 //
 //  Created by Brian Wilson on 11/14/11.
-//  Copyright (c) 2011 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
 //
 
 #import "KitTestObject.h"
@@ -15,25 +26,6 @@
 
 @implementation KCSViewController
 
-@synthesize testObject=_testObject;
-@synthesize collectionCount=_collectionCount;
-@synthesize currentTest=_currentTest;
-@synthesize lastName = _lastName;
-@synthesize lastCount = _lastCount;
-@synthesize lastObjectId = _lastObjectId;
-@synthesize currentCount = _currentCount;
-@synthesize updatedName = _updatedName;
-@synthesize updatedCount = _updatedCount;
-@synthesize networkActivity = _networkActivity;
-@synthesize testStore = _testStore;
-@synthesize lastObject=_lastObject;
-
-@synthesize viewShiftedForKeyboard=_viewShiftedForKeyboard;
-@synthesize keyboardShiftAmount=_keyboardShiftAmount;
-@synthesize keyboardSlideDuration=_keyboardSlideDuration;
-
-@synthesize rootViewController=_rootViewController;
-
 - (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -41,12 +33,6 @@
         self.title = @"Basic";
     }
     return self;
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Release any cached data, images, etc that aren't in use.
 }
 
 #pragma mark - View lifecycle
@@ -292,7 +278,7 @@
 - (void)prepareDataForView
 {
     if (self.testStore == nil){
-        KCSCollection *collection = [[KCSClient sharedClient] collectionFromString:@"test_objects" withClass:[KitTestObject class]];
+        KCSCollection *collection = [KCSCollection collectionFromString:@"test_objects" ofClass:[KitTestObject class]];
         
         self.testStore = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:KCSCachePolicyNone], KCSStoreKeyCachePolicy, collection, KCSStoreKeyResource, nil]];
         

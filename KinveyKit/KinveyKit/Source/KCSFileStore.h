@@ -2,6 +2,8 @@
 //  KCSFileStore.h
 //  KinveyKit
 //
+// Copyright (c) 2013, Kinvey, Inc. All rights reserved.
+//
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
 // software, you hereby accept such terms of service  (and any agreement referenced
