@@ -29,7 +29,6 @@
     ifNil(params, @{});
     
     request.body = params;
-    DBAssert([KCSUser activeUser], @"should have an active user");
     request.authorization = [KCSUser activeUser];
     
     [request run:^(id results, NSError *error) {

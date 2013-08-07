@@ -136,21 +136,6 @@
     STAssertEqualObjects(coll1, coll2, @"should be equal");
 }
 
-- (void)testAuthCredentials
-{
-    NSString *appKey = @"name";
-    NSString *appSecret = @"secret";
-    
-    (void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:appKey
-                                                 withAppSecret:appSecret
-                                                  usingOptions:nil];
-    
-    NSURLCredential *cred = [NSURLCredential credentialWithUser:appKey
-                                                       password:appSecret
-                                                    persistence:NSURLCredentialPersistenceNone];
-    STAssertEqualObjects([[KCSClient sharedClient] authCredentials], cred, @"should be equal");
-}
-
 - (void)testSingletonIsSingleton
 {
     KCSClient *client1 = [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969"

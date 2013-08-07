@@ -162,7 +162,6 @@
     
     // TODO extract options to something meaningful...
     self.options = options;
-    self.authCredentials = [NSURLCredential credentialWithUser:appKey password:appSecret persistence:NSURLCredentialPersistenceNone];
     
     // Check to make sure appdata URL is good
     NSURL *tmpURL = [NSURL URLWithString:self.appdataBaseURL]; // Will get autoreleased during next drain
@@ -208,8 +207,10 @@
 
 - (void) setCurrentUser:(KCSUser *)currentUser
 {
+    if (currentUser != _currentUser) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:nil];
+    }
     _currentUser = currentUser;
-    [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:nil];
 }
 
 #pragma mark - Store Interface

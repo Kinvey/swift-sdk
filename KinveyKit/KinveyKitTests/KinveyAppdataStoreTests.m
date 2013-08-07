@@ -108,6 +108,7 @@ NSString* largeString()
 - (void)testQueryHuge
 {
     self.done = NO;
+    [KCSClient sharedClient].connectionTimeout = 1000;
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:largeString()];
     [_store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
@@ -115,7 +116,7 @@ NSString* largeString()
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"progress = %f", percentComplete);
     }];
-    [self poll];
+    [self poll:120];
 }
 
 NSArray* largeArray() 
@@ -130,6 +131,7 @@ NSArray* largeArray()
 
 - (void)testQueryLargeIn
 {
+    [KCSClient sharedClient].connectionTimeout = 1000;
     self.done = NO;
     KCSQuery* query = [KCSQuery queryOnField:@"foo" usingConditional:kKCSIn forValue:largeArray()];
     [_store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -138,7 +140,7 @@ NSArray* largeArray()
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"progress = %f", percentComplete);
     }];
-    [self poll];
+    [self poll:120];
 }
 
 - (void)testRemoveOne
@@ -333,10 +335,10 @@ NSArray* largeArray()
     [_store group:[NSArray arrayWithObjects:@"objDescription", @"objCount", nil] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
-        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", [NSNumber numberWithInt:10], @"objCount", nil]];
+        NSNumber* value = [valuesOrNil reducedValueForFields:@{@"objDescription":@"one", @"objCount" :@10}];
         STAssertEquals([value intValue], 2, @"expecting two objects of 'one' & count == 0");
         
-        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
+        value = [valuesOrNil reducedValueForFields:@{@"objDescription":@"two",@"objCount":@30}];
         STAssertEquals([value intValue], 1, @"expecting just one object of 'two', because this should bail after finding the first match of two");
         
         self.done = YES;
@@ -352,7 +354,7 @@ NSArray* largeArray()
         STAssertEquals([value intValue], 20, @"expecting to have sumed objects of 'one' and count == 10");
         
         value = [valuesOrNil reducedValueForFields:@{@"objDescription" : @"two"}];
-        STAssertTrue([value intValue] == 30 || [value intValue] == 10, @"expecting just the first obj of 'two'");
+        STAssertTrue([value intValue] == 30 || [value intValue] == 70, @"expecting just the first obj of 'two'");
         
         self.done = YES;
     } progressBlock:nil];
