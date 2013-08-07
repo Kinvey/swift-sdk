@@ -130,8 +130,6 @@
 @property (nonatomic, strong, readonly) KCSReachability *kinveyReachability;
 #endif
 
-
-
 ///---------------------------------------------------------------------------------------
 /// @name User Authentication
 ///---------------------------------------------------------------------------------------
@@ -141,12 +139,6 @@
  */
 @property (nonatomic, strong) KCSUser *currentUser KCS_DEPRECATED(Use [KCSuser activeUser] instead, 1.19.0);
 
-/*! Stored authentication credentials */
-@property (nonatomic, copy) NSURLCredential *authCredentials;
-
-
-
-// Do not expose this to clients yet... soon?
 
 ///---------------------------------------------------------------------------------------
 /// @name Analytics

@@ -29,21 +29,28 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 @implementation SenTestCase (TestUtils)
 @dynamic done;
 #define POLL_INTERVAL 0.05
-#define MAX_POLL_COUNT 30 / POLL_INTERVAL
+#define MAX_POLL_SECONDS 30
 
 - (void) poll
 {
+    [self poll:MAX_POLL_SECONDS];
+}
+
+- (void) poll:(NSTimeInterval)timeout
+{
     int pollCount = 0;
-    while (self.done == NO && pollCount < MAX_POLL_COUNT) {
-        NSLog(@"polling... %4.2fs", pollCount * POLL_INTERVAL);
+    int maxPollCount = timeout / POLL_INTERVAL;
+    while (self.done == NO && pollCount < maxPollCount) {
+        NSLog(@"polling... %i", pollCount);
         NSRunLoop* loop = [NSRunLoop mainRunLoop];
         NSDate* until = [NSDate dateWithTimeIntervalSinceNow:POLL_INTERVAL];
         [loop runUntilDate:until];
         pollCount++;
     }
-    if (pollCount == MAX_POLL_COUNT) {
+    if (pollCount == maxPollCount) {
         STFail(@"polling timed out");
     }
+    
 }
 
 - (BOOL)done {

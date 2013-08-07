@@ -466,6 +466,13 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     STAssertEqualObjects([currentUser getValueForAttribute:bKey], bPlace_, @"birthplace should match");
 }
 
+- (void) testNeedUsernameAndPassword
+{
+    STAssertThrowsSpecificNamed([KCSUser userWithUsername:nil password:@"foo" withCompletionBlock:nil], NSException, NSInvalidArgumentException, @"need invalid arg");
+    STAssertThrowsSpecificNamed([KCSUser userWithUsername:@"foo" password:nil withCompletionBlock:nil], NSException, NSInvalidArgumentException, @"need invalid arg");
+}
+
+
 - (void)testCanTreatUsersAsCollection
 {
     [[KCSUser activeUser] logout];

@@ -41,15 +41,14 @@
     [self poll];
 }
 
-- (void) testHS1928_CallInitsCurrentUser
+- (void) testHS1928_CallDoesNotInitCurrentUser
 {
     [[KCSUser activeUser] logout];
     STAssertNil([KCSUser activeUser], @"user should be nil'd");
     self.done = NO;
     [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
-        STAssertNoError;
-        NSDictionary* expBody = @{@"a":@1,@"b":@2};
-        STAssertEqualObjects(expBody, results, @"bodies should match");
+        STAssertNotNil(errorOrNil, @"should have an error");
+        KTAssertEqualsInt(errorOrNil.code, 401, @"no auth error");
         self.done = YES;
     }];
     [self poll];

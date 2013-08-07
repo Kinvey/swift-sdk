@@ -60,10 +60,18 @@ static const NSString* kPUSHRoot = @"push";
 
 - (void)run:(void (^)(id results, NSError* error))runBlock
 {
-    DBAssert(_authorization != nil, @"Cannot send request, no auth provided");
-    
-    //TODO
     id <KCSService> service = [[KCSServerService alloc] init];
+    
+    if (_authorization == nil) {
+        // then this is a no-credentials error
+        NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSDeniedError userInfo:@{NSLocalizedDescriptionKey : @"No Authorization Found", NSLocalizedFailureReasonErrorKey : @"There is no active user/client and this request requires credentials.", NSURLErrorFailingURLStringErrorKey : [self urlString]}];
+        runBlock(nil, error);
+        return;
+
+    }
+    DBAssert(_authorization != nil, @"Cannot send request, no auth provided");
+
+    
     [service performRequest:[self nsurlRequest] progressBlock:^(KCSConnectionProgress *progress) {
         //TODO
     } completionBlock:^(KCSConnectionResponse *response) {
@@ -119,15 +127,19 @@ static const NSString* kPUSHRoot = @"push";
     }
 }
 
-- (NSURLRequest*) nsurlRequest
+- (NSString*) urlString
 {
     KCSClient* client = [KCSClient sharedClient];
     NSArray* path = [@[[self rootString], [client kid]] arrayByAddingObjectsFromArray:[_pathComponents arrayByPercentEncoding]];
     NSString* urlStr = [path componentsJoinedByString:@"/"];
     urlStr = [[client baseURL] stringByAppendingString:urlStr];
-                     
-    
-    NSURL* url = [NSURL URLWithString:urlStr];
+    return urlStr;
+}
+
+
+- (NSURLRequest*) nsurlRequest
+{
+    NSURL* url = [NSURL URLWithString:[self urlString]];
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url]; //TODO cache & timeout
     request.HTTPMethod = [self methodName];
     
@@ -145,6 +157,8 @@ static const NSString* kPUSHRoot = @"push";
     if (auth) {
         headers[@"Authorization"] = auth;
     }
+    
+    KCSClient* client = [KCSClient sharedClient];
     headers[@"User-Agent"] = [client userAgent];
     headers[@"X-Kinvey-Device-Information"] = [client.analytics headerString];
     headers[@"X-Kinvey-API-Version"] = KINVEY_KCS_API_VERSION;
@@ -161,7 +175,6 @@ static const NSString* kPUSHRoot = @"push";
 
 - (void)setAuthorization:(id<KCSCredentials>)authorization
 {
-    NSParameterAssert(authorization);    
     _authorization = authorization;
 }
 
