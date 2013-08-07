@@ -23,5 +23,6 @@
 #import "KinveyCore.h"
 
 #import "KCSPlatformUtils.h"
+#import "KCSLog.h"
 
 #endif
