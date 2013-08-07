@@ -15,6 +15,19 @@
          *TODO show to wait for kinvey init
 * TODO forgot uname
 * TODO push 
+* Removed Urban Airship library dependency. (Note that Push notifications still uses Urban Airship on the backend).
+    * libUAriship-1.4.0 is no longer needed, can be removed from the project
+    * The frameworks now used by the library are:
+         * Foundation.framework
+         * Accounts.framework
+         * CoreGraphics.framework 
+         * CoreLocation.framework
+         * libsqlite3.dylib
+         * MobileCoreServices.framework
+         * Security.framework 
+         * SystemConfiguration.framework
+         * Twitter.framework
+         * UIKit.framework
 * Code Cleanup:
     * Removed old and deprecated `findEntity` methods on `KCSEntity` category on `NSObject` (KinveyEntity.h)
     * Deprecated `KCSEntityDelegate` API for directly loading objects.
