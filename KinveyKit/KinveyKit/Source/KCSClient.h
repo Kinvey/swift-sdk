@@ -41,9 +41,6 @@
 /** This object shoul implement the `KCSLogSink` protocol. Use this along with +[KinveyKit configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:] to send log messages to a custom sink.*/
 #define KCS_LOG_SINK @"kcsLogSink"
 
-/** Set this key's value to @NO to turn off the ability to create implict users. This will generate an error if a user is not logged in and a request is made. **/
-#define KCS_USER_CAN_CREATE_IMPLICT @"kcsCreateImplicitUsers"
-
 #define KCS_PUSH_KEY_KEY @"kcsPushKey"
 #define KCS_PUSH_SECRET_KEY @"kcsPushSecret"
 #define KCS_PUSH_IS_ENABLED_KEY @"kcsPushEnabled"
@@ -144,10 +141,6 @@
  */
 @property (nonatomic, strong) KCSUser *currentUser KCS_DEPRECATED(Use [KCSuser activeUser] instead, 1.19.0);
 
-/*! Has the current user been authenticated?  (NOTE: Thread Safe) */
-@property (nonatomic) BOOL userIsAuthenticated;
-/*! Is user authentication in progress?  (NOTE: Thread Safe, can be used to spin for completion) */
-@property (nonatomic) BOOL userAuthenticationInProgress;
 /*! Stored authentication credentials */
 @property (nonatomic, copy) NSURLCredential *authCredentials;
 

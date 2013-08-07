@@ -85,7 +85,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     [KCSKeyChain setString:@"12345" forKey:@"password"];
     
     // Needed, otherwise we burn a connection later...
-    [KCSUser initCurrentUser];
+    [KCSUser activeUser];
 
     
     // Seed data types

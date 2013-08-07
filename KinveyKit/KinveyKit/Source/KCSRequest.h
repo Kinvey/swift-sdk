@@ -18,6 +18,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "KCSCredentials.h"
 
 typedef enum KCSContextRoot : NSInteger {
     kKCSContextAPPDATA,
@@ -35,12 +36,6 @@ typedef enum KCSRESTMethod : NSInteger {
 } KCSRESTMethod2;
 
 @protocol KCSRequest <NSObject>
-
-@end
-
-@protocol KCSCredentials <NSObject>
-
-- (NSString*) authString;
 
 @end
 

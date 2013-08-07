@@ -4,13 +4,15 @@
 ### 1.19.0
 ** Release Date:** TBD
 
-* User object enhancements:
+* The library no longer creates implicit users. All users must be explicitly set. However auto-generated users are still possible.
+	* Removed `KCSClient` key `KCS_USER_CAN_CREATE_IMPLICT`.
 	* `+[KCSUser hasSavedCredentials]` will check if the keychain has stored credentials and active user can be restored.
     * `+[KCSUser activeUser]` will instantiate the user from the keychain if credentials are saved.
     * If no active user is found, the client _must_ create a new user or login an existing user.
     
     * Added init method
     * Added create explicit method
+         *TODO show to wait for kinvey init
 * TODO forgot uname
 * TODO push 
 * Code Cleanup:

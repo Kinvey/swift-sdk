@@ -164,36 +164,22 @@ NSString * getLogDate(void)
     [self.request setValue:@"true" forHTTPHeaderField:@"X-Kinvey-ResponseWrapper"];
     
     if ([self.request.allHTTPHeaderFields objectForKey:@"Authorization"] == nil) {
-        KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
+        KCSAuthCredential* cred = [KCSAuthCredential credentialForURL:self.resourceLocation usingMethod:self.method];
         if (cred.requiresAuthentication){
-            NSString *authString = [cred HTTPBasicAuthString];
-            // If authString is nil and we needed it (requiresAuthentication is true),
-            // then there is no current user, so we need to retry this "later", say 500 msec
-            if (authString == nil){
-                // We're only going to try this so many times before we just give up
-                if (self.retriesAttempted >= MAX_NUMBER_OF_RETRIES_K){
-                    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Authentication Request Timeout"
-                                                                                       withFailureReason:@"Authentication service failed to return valid credentials after multiple attempts."
-                                                                                  withRecoverySuggestion:@"Check to see if the network is active."
-                                                                                     withRecoveryOptions:nil];
-                    
-                    self.failureAction([NSError errorWithDomain:KCSUserErrorDomain
-                                                           code:KCSAuthenticationRetryError
-                                                       userInfo:userInfo]);
-                } else {
-                    self.retriesAttempted++;
-                    [self performSelector:@selector(start) withObject:nil afterDelay:KCS_RETRY_DELAY];
-                    // This iteration is done.
-                }
+            NSString* authString = [[cred credentials] authString];
+            if (authString != nil) {
+                [self.request setValue:authString forHTTPHeaderField:@"Authorization"];
+            } else {
+                // If authString is nil and we needed it (requiresAuthentication is true),
+                // then this is a no-credentials error
+                NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSDeniedError userInfo:@{NSLocalizedDescriptionKey : @"No Authorization Found", NSLocalizedFailureReasonErrorKey : @"There is no active user/client and this request requires credentials.", NSURLErrorFailingURLStringErrorKey : self.resourceLocation}];
+                self.failureAction(error);
                 return;
             }
-            [self.request setValue:authString forHTTPHeaderField:@"Authorization"];
         }
     }
     
-    if (!self.followRedirects){
-        connection.followRedirects = NO;
-    }
+    connection.followRedirects = self.followRedirects;
     
     [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:nil];    
 }

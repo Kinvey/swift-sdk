@@ -28,6 +28,20 @@
 #import "KCSObjectMapper.h"
 #import "KCSRESTRequest.h"
 
+#pragma mark - Constants
+
+NSString* const KCSUserAccessTokenKey = @"access_token";
+NSString* const KCSUserAccessTokenSecretKey = @"access_token_secret";
+NSString* const KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
+
+NSString* const KCSUserAttributeUsername = @"username";
+NSString* const KCSUserAttributeSurname = @"last_name";
+NSString* const KCSUserAttributeGivenname = @"first_name";
+NSString* const KCSUserAttributeEmail = @"email";
+NSString* const KCSUserAttributeFacebookId = @"_socialIdentity.facebook.id";
+
+#pragma mark - defines & functions
+
 #define kKeychainPasswordKey @"password"
 #define kKeychainUsernameKey @"username"
 #define kKeychainUserIdKey @"_id"
@@ -36,8 +50,6 @@
 
 #define KCSUserAttributeOAuthTokens @"_oauth"
 @class GTMOAuth2Authentication;
-
-NSString* KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
 
 void setActive(KCSUser* user)
 {
@@ -50,8 +62,6 @@ void setActive(KCSUser* user)
 @interface KCSUser()
 @property (nonatomic, strong) NSMutableDictionary *userAttributes;
 @property (nonatomic, strong) NSDictionary* oauthTokens;
-
-+ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew;
 @end
 
 @implementation KCSUser
@@ -155,10 +165,6 @@ void setActive(KCSUser* user)
     }
     
     setActive(user);
-    
-    // Indicate that threads are free to proceed
-    client.userIsAuthenticated = YES;
-    client.userAuthenticationInProgress = NO;
 }
 
 + (void) updateUserInBackground:(KCSUser*)user
@@ -189,9 +195,11 @@ void setActive(KCSUser* user)
     }
 }
 
+#pragma mark - Create new Users
+
 + (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew
 {
-    NSNumber* canCreate = [[KCSClient sharedClient].options valueForKey:KCS_USER_CAN_CREATE_IMPLICT];
+    NSNumber* canCreate = NO;
     if (uname == nil && canCreate != nil && [canCreate boolValue] == NO) {
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
                                                                            withFailureReason:@"KCSClient not allowed to create implicit users."
@@ -206,58 +214,7 @@ void setActive(KCSUser* user)
         return;
 
     }
-    
-    
-    BOOL localInitInProgress = NO;
-    KCSClient *client = [KCSClient sharedClient];
-    
-    @synchronized(client){
-        if (client.userAuthenticationInProgress == NO){
-            client.userAuthenticationInProgress = YES;
-            localInitInProgress = YES;
-        }
-    }
-    
-    // Note!!! This is a spin lock!  If we hold the lock for 10 seconds we're hosed, so this timeout
-    // is REALLY big, hopefully we only hit it when the network is down (likely a minute timeout, so these guys will start timing out early...)
-    NSDate *timeoutTime = [NSDate dateWithTimeIntervalSinceNow:10];
-    
-    if (!localInitInProgress && !client.userIsAuthenticated){
-        while (!client.userIsAuthenticated) {
-            NSDate *now = [NSDate dateWithTimeIntervalSinceNow:0];
-            // From NSDate documentation:
-            //      The receiver and anotherDate are exactly equal to each other, NSOrderedSame
-            //      The receiver is later in time than anotherDate, NSOrderedDescending
-            //      The receiver is earlier in time than anotherDate, NSOrderedAscending.
-            // So we're checking to see if now (the receiver) is later than timeoutTime (anotherDate), so we use NSOrderedDescending.
-            if ([now compare:timeoutTime] == NSOrderedDescending){
-                // TIMEOUT!  Give up!
-                // We're not in a critical section and we don't have anything locked, so do some work before we quit.
-                if (completionBlock != nil){
-                    // We're going to Make a failure happen here...
-                    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
-                                                                                       withFailureReason:@"User creation timed out with one request holding the lock."
-                                                                                  withRecoverySuggestion:@"Try request again later."
-                                                                                     withRecoveryOptions:nil];
-                    
-                    // No user, it's during creation
-                    NSError* error = [NSError errorWithDomain:KCSUserErrorDomain
-                                                         code:KCSUserCreationContentionTimeoutError
-                                                     userInfo:userInfo];
-                    completionBlock(nil, error, 0);
-                    return;
-                } else {
-                    // There is no request, the current user was not initialized by us, but someone was initializing the user, so we can
-                    // just return and assume that all is well.
-                    KCSLogWarning(@"While trying to initialize the current user this call was blocked by an existing attempt to initialize the current user.");
-                    return;
-                }
-                break;
-            }
-        }
-    }
-    
-    
+#warning cleanup
     // Did we get a username and password?  If we did, then we're not interested in being already logged in
     // If we didn't, we need to check to see if there are keychain items.
     
@@ -266,8 +223,9 @@ void setActive(KCSUser* user)
     }
     
     KCSUser *createdUser = [[KCSUser alloc] init];
-    
     createdUser.username = [KCSKeyChain getStringForKey:kKeychainUsernameKey];
+    
+    KCSClient *client = [KCSClient sharedClient];
     
     if (createdUser.username == nil){
         // No user, generate it, note, use the APP KEY/APP SECRET!
@@ -313,9 +271,6 @@ void setActive(KCSUser* user)
                 // I really don't know what to do here, we can't continue... Something died...
                 KCSLogError(@"Received Response code %d, but expected %d with response: %@", response.responseCode, KCS_HTTP_STATUS_CREATED, [response stringValue]);
                 
-                client.userIsAuthenticated = NO;
-                client.userAuthenticationInProgress = NO;
-                
                 NSError* error = nil;
                 if (response.responseCode == KCS_HTTP_STATUS_CONFLICT) {
                     error = [KCSErrorUtilities createError:(NSDictionary*)[response jsonResponseValue] description:@"User already exists" errorCode:KCSConflictError domain:KCSUserErrorDomain requestId:response.requestId];
@@ -339,9 +294,6 @@ void setActive(KCSUser* user)
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
             // I really don't know what to do here, we can't continue... Something died...
             KCSLogError(@"Internal Error: %@", error);
-            
-            client.userIsAuthenticated = NO;
-            client.userAuthenticationInProgress = NO;
             
             NSDictionary *errorDict = [NSDictionary dictionaryWithObjectsAndKeys:error, @"error",
                                        @"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo", @"reason", nil];
@@ -377,8 +329,6 @@ void setActive(KCSUser* user)
             [self setupCurrentUser:createdUser properties:properties password:createdUser.password username:createdUser.username];
         }
         
-        client.userIsAuthenticated = YES;
-        client.userAuthenticationInProgress = NO;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
         [[KCSClient sharedClient] setCurrentUser:createdUser];
@@ -411,9 +361,7 @@ void setActive(KCSUser* user)
 // These routines all do similar work, but the first two are for legacy support
 - (void)initializeCurrentUserWithRequest: (KCSRESTRequest *)request
 {
-    [KCSUser registerUserWithUsername:[KCSKeyChain getStringForKey:kKeychainUsernameKey] withPassword:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        //... do nothing with result
-    } forceNew:NO];
+    [KCSUser activeUser];
     if (request){
         [request start];
     }
@@ -421,14 +369,7 @@ void setActive(KCSUser* user)
 
 - (void)initializeCurrentUser
 {
-    [self initializeCurrentUserWithRequest:nil];
-}
-
-+ (void)initCurrentUser
-{
-    [KCSUser registerUserWithUsername:[KCSKeyChain getStringForKey:kKeychainUsernameKey] withPassword:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        //... do nothing with result
-    } forceNew:NO];
+    [KCSUser activeUser];
 }
 
 + (KCSUser *)initAndActivateWithSavedCredentials
@@ -446,9 +387,7 @@ void setActive(KCSUser* user)
         if (properties) {
             [self setupCurrentUser:createdUser properties:properties password:createdUser.password username:createdUser.username];
         }
-#warning TODO: rmove the auth in progress stuff
-        [KCSClient sharedClient].userIsAuthenticated = YES;
-        [KCSClient sharedClient].userAuthenticationInProgress = NO;
+
         setActive(createdUser);
         [self updateUserInBackground:createdUser];
     }
@@ -493,8 +432,6 @@ void setActive(KCSUser* user)
         createdUser.username = username;
         createdUser.password = password;
         if (response.responseCode != KCS_HTTP_STATUS_OK){
-            client.userIsAuthenticated = NO;
-            client.userAuthenticationInProgress = NO;
             setActive(nil);
             // This is expected here, user auth failed, do the right thing
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
@@ -518,8 +455,6 @@ void setActive(KCSUser* user)
         // I really don't know what to do here, we can't continue... Something died...
         KCSLogError(@"Internal Error: %@", error);
         
-        client.userIsAuthenticated = NO;
-        client.userAuthenticationInProgress = NO;
         setActive(nil);
         
         completionBlock(nil, error, 0);
@@ -531,8 +466,7 @@ void setActive(KCSUser* user)
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"_me"] usingMethod:kGetRESTMethod];
     
     // We need to init the current user to something before trying this
-    client.userAuthenticationInProgress = YES;
-    
+
     // Create a temp user with uname/password and use it it init currentUser
     KCSUser *tmpCurrentUser = [[KCSUser alloc] init];
     tmpCurrentUser.username = username;
@@ -570,7 +504,6 @@ void setActive(KCSUser* user)
     if (createdUser.sessionAuth != nil) {
         status = KCSUserFound;
     } else {
-        client.userIsAuthenticated = NO;
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
                                                                            withFailureReason:@"User could not be authorized"
                                                                       withRecoverySuggestion:@"Try again with different access token"
@@ -665,8 +598,6 @@ void setActive(KCSUser* user)
         // I really don't know what to do here, we can't continue... Something died...
         KCSLogError(@"Internal Error: %@", error);
         
-        client.userIsAuthenticated = NO;
-        client.userAuthenticationInProgress = NO;
         setActive(nil);
 
         completionBlock(nil, error, 0);
@@ -678,8 +609,6 @@ void setActive(KCSUser* user)
         if ([response responseCode] >= 400) {
             KCSUser *createdUser = [[KCSUser alloc] init];
             
-            client.userIsAuthenticated = NO;
-            client.userAuthenticationInProgress = NO;
             setActive(nil);
             // This is expected here, user auth failed, do the right thing
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
@@ -695,7 +624,6 @@ void setActive(KCSUser* user)
         
     };
     
-    client.userAuthenticationInProgress = YES;
     [loginRequest setContentType:KCS_JSON_TYPE];
     [loginRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
     [loginRequest start];
@@ -724,14 +652,11 @@ void setActive(KCSUser* user)
     [loginRequest setJsonBody:loginDict];
     
     // We need to init the current user to something before trying this
-    client.userAuthenticationInProgress = YES;
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
         // I really don't know what to do here, we can't continue... Something died...
         KCSLogError(@"Internal Error: %@", error);
         
-        client.userIsAuthenticated = NO;
-        client.userAuthenticationInProgress = NO;
         setActive(nil);
         
         completionBlock(nil, error, 0);
@@ -793,7 +718,6 @@ void setActive(KCSUser* user)
         
         // Set the currentUser to nil
         setActive(nil);
-        [[KCSClient sharedClient] setUserIsAuthenticated:NO];
     }
 }
 

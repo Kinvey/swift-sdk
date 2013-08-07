@@ -75,7 +75,6 @@ NSDictionary* defaultBuilders();
 
 
 @interface KCSUser (KCSHiddenMethods)
-+ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withCompletionBlock:(KCSUserCompletionBlock)completionBlock forceNew:(BOOL)forceNew;
 @end
 
 @interface KCSMetadata (KCSHiddenMethods)

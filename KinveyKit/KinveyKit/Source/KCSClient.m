@@ -40,10 +40,6 @@
 @property (nonatomic, copy, readwrite) NSString *appKey;
 @property (nonatomic, copy, readwrite) NSString *appSecret;
 
-
-@property (atomic, strong) NSRecursiveLock *authInProgressLock;
-@property (atomic, strong) NSRecursiveLock *authCompleteLock;
-
 @property (nonatomic, strong, readwrite) NSDictionary *options;
 
 #if TARGET_OS_IPHONE
@@ -69,8 +65,6 @@
 
 @implementation KCSClient
 
-@synthesize userIsAuthenticated=_userIsAuthenticated;
-@synthesize userAuthenticationInProgress=_userAuthenticationInProgress;
 
 #if TARGET_OS_IPHONE
 @synthesize networkReachability = _networkReachability;
@@ -93,13 +87,8 @@
         _cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;  // Inhibit caching for now
         _protocol = @"https";
         _port = @"";
-        _userIsAuthenticated = NO;
-        _userAuthenticationInProgress = NO;
-        _authCompleteLock   = [[NSRecursiveLock alloc] init];
-        _authInProgressLock = [[NSRecursiveLock alloc] init];
         _serviceHostname = @"baas";
         _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
-//        _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSSZ";
         
 #if TARGET_OS_IPHONE
         _networkReachability = [KCSReachability reachabilityForInternetConnection];
@@ -116,40 +105,6 @@
     }
     
     return self;
-}
-
-
-- (BOOL)userIsAuthenticated
-{
-    BOOL retVal;
-    
-    [_authCompleteLock lock];
-    retVal = _userIsAuthenticated;
-    [_authCompleteLock unlock];
-    return retVal;
-}
-
-- (void)setUserIsAuthenticated:(BOOL)userIsAuthenticated
-{
-    [_authCompleteLock lock];
-    _userIsAuthenticated = userIsAuthenticated;
-    [_authCompleteLock unlock];
-}
-
-- (BOOL)userAuthenticationInProgress
-{
-    BOOL retVal;
-    [_authInProgressLock lock];
-    retVal = _userAuthenticationInProgress;
-    [_authInProgressLock unlock];
-    return retVal;
-}
-
-- (void)setUserAuthenticationInProgress:(BOOL)userAuthenticationInProgress
-{
-    [_authInProgressLock lock];
-    _userAuthenticationInProgress = userAuthenticationInProgress;
-    [_authInProgressLock unlock];
 }
 
 - (void)setServiceHostname:(NSString *)serviceHostname

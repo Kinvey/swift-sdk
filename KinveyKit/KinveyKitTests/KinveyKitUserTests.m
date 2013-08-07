@@ -97,7 +97,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     [KCSKeyChain setString:@"12345" forKey:@"password"];
     [KCSKeyChain setString:@"That's the combination for my luggage" forKey:@"_id"];
     
-    [KCSUser initCurrentUser];
+    [KCSUser activeUser];
 
     cUser = [KCSUser activeUser];
     NSLog(@"Current user passowrd: %@", cUser.password);
@@ -116,42 +116,25 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     STAssertNil(cUser.password, @"pw should start nil");
 }
 
-- (void)testAAACCInitializeCurrentUserInitializesCurrentUserNetwork
+- (void)testRequestDoesNotCreateImplictUser
 {
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     
-    KCSUser *cUser = [[KCSClient sharedClient] currentUser];
+    KCSUser *cUser = [KCSUser activeUser];
     STAssertNil(cUser.username, @"uname should start nil");
     STAssertNil(cUser.password, @"pw should start nil");
     
-    // Create a Mock Object
-    KCSMockConnection *connection = [[KCSMockConnection alloc] init];
-    
-    connection.connectionShouldReturnNow = YES;
-    connection.delayInMSecs = 0.0;
-    
-    // Success dictionary
-    NSDictionary *dictionary = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:@"brian", @"username",
-                                @"12345", @"password",
-                                @"hello", @"_id", nil]);
-    
-    connection.responseForSuccess = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_CREATED
-                                                                         responseData:[self.writer dataWithObject:dictionary]
-                                                                           headerData:nil
-                                                                             userData:nil];
-    
-    [[KCSConnectionPool sharedPool] topPoolsWithConnection:connection];
-
-    [KCSUser initCurrentUser];
-    cUser = [[KCSClient sharedClient] currentUser];
-    
-    STAssertEqualObjects(cUser.username, @"brian", @"uname should match");
-    STAssertEqualObjects(cUser.password, @"12345", @"pw should match");
-
-    // Make sure we log-out
-    [cUser logout];
-    
-    [[KCSConnectionPool sharedPool] drainPools];
+    self.done = NO;
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"foo" ofClass:[NSDictionary class]] options:nil];
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(objectsOrNil, @"no objects");
+        STAssertNotNil(errorOrNil, @"should get an error");
+        KTAssertEqualsInt(errorOrNil.code, 401, @"should be a no creds");
+        STAssertNil([KCSUser activeUser], @"should still have no user");
+        
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
 
 //TODO: remove this test point it's no longer needed since PING does not cause a user create should instead try some other request
@@ -159,7 +142,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 {
     [TestUtils justInitServer];
     // Ensure user is logged out
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
 
     // Create a mock object for the real request
     KCSMockConnection *realRequest = [[KCSMockConnection alloc] init];
@@ -204,7 +187,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     STAssertFalse([description containsStringCaseInsensitive:@"brian"], @"username should be in the description");
     
     // Check to make sure the auth worked
-    KCSUser *cUser = [[KCSClient sharedClient] currentUser];
+    KCSUser *cUser = [KCSUser activeUser];
     STAssertFalse([cUser.username isEqualToString:@"brian"], @"uname should match");
     STAssertFalse([cUser.password isEqualToString:@"12345"], @"pw should match");
     
@@ -217,7 +200,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanCreateArbitraryUser
 {
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     
     NSString *testUsername = @"arbitrary";
     NSString *testPassword = @"54321";
@@ -254,7 +237,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanLoginExistingUser
 {
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     
     NSString *testUsername = @"existing";
     NSString *testPassword = @"56789";
@@ -293,13 +276,13 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanLogoutUser
 {
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     
     [KCSKeyChain setString:@"logout" forKey:@"username"];
     [KCSKeyChain setString:@"98765" forKey:@"password"];
     [KCSKeyChain setString:@"That's the combination for my luggage" forKey:@"_id"];
-    [KCSUser initCurrentUser];
-    [[[KCSClient sharedClient] currentUser] logout];
+    [KCSUser activeUser];
+    [[KCSUser activeUser] logout];
     
     
     // Check to make sure keychain is clean
@@ -307,75 +290,55 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     STAssertNil([KCSKeyChain getStringForKey:@"password"], @"password should be clean");
     STAssertNil([KCSKeyChain getStringForKey:@"_id"], @"_id should be clean");
     
-    // Check to make sure we're not authd'
-    STAssertFalse([[KCSClient sharedClient] userIsAuthenticated], @"user should be deauthed");
-    
     // Check to make sure user is nil
-    STAssertNil([[KCSClient sharedClient] currentUser], @"cuser should be nilled");
+    STAssertNil([KCSUser activeUser], @"cuser should be nilled");
 }
 
-- (void)testAnonymousUserCreatedIfNoNamedUser
+- (void)testAnonymousUser
 {
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     
-    NSString *testUsername = @"anon";
-    NSString *testPassword = @"72727";
-    KCSMockConnection *connection = [[KCSMockConnection alloc] init];
+    STAssertNil([KCSUser activeUser], @"should have no user");
     
-    connection.connectionShouldReturnNow = YES;
-    connection.connectionShouldFail = NO;
+    __block NSString* uname = nil;
+    self.done = NO;
+    [KCSUser createAutogeneratedUser:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNoError;
+        STAssertNotNil(user, @"should have a user");
+        STAssertEqualObjects(user, [KCSUser activeUser], @"user should be set");
+        uname = user.username;
+        self.done = YES;
+    }];
+    [self poll];
+    STAssertNotNil([KCSUser activeUser], @"should have an active User");
     
-    // Success dictionary
-    // Success dictionary
-    NSDictionary *dictionary = wrapResponseDictionary([NSDictionary dictionaryWithObjectsAndKeys:testUsername, @"username",
-                                testPassword, @"password",
-                                @"hello", @"_id", nil]);
     
-    connection.responseForSuccess = [KCSConnectionResponse connectionResponseWithCode:KCS_HTTP_STATUS_CREATED
-                                                                         responseData:[self.writer dataWithObject:dictionary]
-                                                                           headerData:nil
-                                                                             userData:nil];
-    
-    [[KCSConnectionPool sharedPool] topPoolsWithConnection:connection];
-    
-    self.onSuccess = [^(KCSUser *user, KCSUserActionResult result){
-        if ([user.username isEqualToString:testUsername] &&
-            [user.password isEqualToString:testPassword] &&
-            result == KCSUserCreated){
-            return YES;
-        } else {
-            return NO;
-        }
-    } copy];
-    
-    KCSAuthCredential *cred = [KCSAuthCredential credentialForURL:[[[KCSClient sharedClient] appdataBaseURL] stringByAppendingString:@"/1234"] usingMethod:kGetRESTMethod];
-
-    KCSUser *preCurrentUser = [[KCSClient sharedClient] currentUser];    
-   
-    [cred HTTPBasicAuthString];
-    
-    KCSUser *postCurrentUser = [[KCSClient sharedClient] currentUser];
-
-    STAssertNil(preCurrentUser, @"should be nil pre");
-    STAssertNotNil(postCurrentUser, @"should not be nil after");
-    STAssertEqualObjects(postCurrentUser.username, testUsername, @"usernames should match");
-    STAssertEqualObjects(postCurrentUser.password, testPassword, @"passwords should match");
+    self.done = NO;
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"foo" ofClass:[NSDictionary class]] options:nil];
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        STAssertObjects(0);
+        
+        STAssertEqualObjects([KCSUser activeUser].username, uname, @"should still be the same anon user");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
 
 - (void)testCanAddArbitraryDataToUser
 {
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     
     // Make sure we have a user
-    if ([[KCSClient sharedClient] currentUser] == nil){
+    if ([KCSUser activeUser] == nil){
         [KCSKeyChain setString:@"brian" forKey:@"username"];
         [KCSKeyChain setString:@"12345" forKey:@"password"];
         [KCSKeyChain setString:@"That's the combination for my luggage" forKey:@"_id"];
         
-        [KCSUser initCurrentUser];
+        [KCSUser activeUser];
     }
     
-    KCSUser *currentUser = [[KCSClient sharedClient] currentUser];
+    KCSUser *currentUser = [KCSUser activeUser];
     
     [currentUser setValue:[NSNumber numberWithInt:32] forAttribute:@"age"];
     [currentUser setValue:@"Brooklyn, NY" forAttribute:@"birthplace"];
@@ -435,19 +398,19 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanGetCurrentUser
 {
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     
     
     // Make sure we have a user
-    if ([[KCSClient sharedClient] currentUser] == nil){
+    if ([KCSUser activeUser] == nil){
         [KCSKeyChain setString:@"brian" forKey:@"username"];
         [KCSKeyChain setString:@"12345" forKey:@"password"];
         [KCSKeyChain setString:@"That's the combination for my luggage" forKey:@"_id"];
         
-        [KCSUser initCurrentUser];
+        [KCSUser activeUser];
     }
     
-    KCSUser *currentUser = [[KCSClient sharedClient] currentUser];
+    KCSUser *currentUser = [KCSUser activeUser];
 
     NSString *aKey = @"age";
     int age = 32;
@@ -495,7 +458,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
         return YES;
     } copy];
 
-    [[[KCSClient sharedClient] currentUser] loadWithDelegate:self];
+    [[KCSUser activeUser] loadWithDelegate:self];
     
     // Current user is primed
     STAssertEquals((int)[[currentUser getValueForAttribute:aKey] intValue], age_, @"age should match");
@@ -505,15 +468,15 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 - (void)testCanTreatUsersAsCollection
 {
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     
     // Make sure we have a user
-    if ([[KCSClient sharedClient] currentUser] == nil){
+    if ([KCSUser activeUser] == nil){
         [KCSKeyChain setString:@"brian" forKey:@"username"];
         [KCSKeyChain setString:@"12345" forKey:@"password"];
         [KCSKeyChain setString:@"That's the combination for my luggage" forKey:@"_id"];
         
-        [KCSUser initCurrentUser];
+        [KCSUser activeUser];
     }
     STAssertTrue([[KCSCollection userCollection] isKindOfClass:[KCSCollection class]], @"user collection should be a collection");
 }
@@ -552,7 +515,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 
 static NSString* lastUser;
-static NSString* access_token = @"CAAGI68NkOC4BANdoCmw6ScnpOi0zBNwYURwHAR18EhBfDPliXAtrZCggd0WAie7qPmcKvs2W7l5H4ZB7RYli6OZCHCqHYc6VdH5McIHuuZB8oyKHIIVIKkewT7yjGeurypCuhnZCaZCyHKwLY3AzptMZBbPPoZAagawZD";
+static NSString* access_token = @"CAAGI68NkOC4BAB6yYrWF4tlvky3Sxfir4kQcyAobt9WpWt4oNAcFYYaVa8vLdGprVKOyVXKyeb9g5zg7Ldw520JsszFnLER7DlASz30qzZBQ0A0Kpbk0LtPWl6vzyDzwfZCLG05hZC6IHIjqPOp2ZBPmCAL45ZAYZD";
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -561,7 +524,7 @@ static NSString* access_token = @"CAAGI68NkOC4BANdoCmw6ScnpOi0zBNwYURwHAR18EhBfD
 {
     [TestUtils justInitServer];
     // Ensure user is logged out
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     self.done = NO;
     [KCSUser loginWithFacebookAccessToken:access_token withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError;
@@ -586,7 +549,7 @@ static NSString* access_token = @"CAAGI68NkOC4BANdoCmw6ScnpOi0zBNwYURwHAR18EhBfD
 {
     [TestUtils justInitServer];
     // Ensure user is logged out
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     self.done = NO;
     [KCSUser loginWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : access_token} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError;
@@ -627,7 +590,7 @@ static NSString* access_token = @"CAAGI68NkOC4BANdoCmw6ScnpOi0zBNwYURwHAR18EhBfD
 {
     [TestUtils justInitServer];
     // Ensure user is logged out
-    [[[KCSClient sharedClient] currentUser] logout];
+    [[KCSUser activeUser] logout];
     self.done = NO;
     
     [KCSUser loginWithSocialIdentity:KCSSocialIDTwitter accessDictionary:@{@"access_token" : @"823982046-Z0OrwAWQO3Ys2jtGM1k7hDnD6Ty9f54T1JRaDHHi",         @"access_token_secret" : @"3yIDGXVZV67m3G480stFgYk5eHZ7UCOSlOVHxh5RQ3g"}
