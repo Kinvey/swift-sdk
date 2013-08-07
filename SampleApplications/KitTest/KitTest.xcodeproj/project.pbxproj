@@ -9,34 +9,29 @@
 /* Begin PBXBuildFile section */
 		272FBE5C15FA8CE700EC7031 /* KinveyRefViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 272FBE5A15FA8CE700EC7031 /* KinveyRefViewController.m */; };
 		272FBE5D15FA8CE700EC7031 /* KinveyRefViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 272FBE5B15FA8CE700EC7031 /* KinveyRefViewController.xib */; };
-		27347F7F15B4839500133F64 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7E15B4839500133F64 /* CoreLocation.framework */; };
 		27347F8315B484E400133F64 /* UserDiscoveryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27347F8115B484E300133F64 /* UserDiscoveryViewController.m */; };
 		27347F8415B484E400133F64 /* UserDiscoveryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 27347F8215B484E400133F64 /* UserDiscoveryViewController.xib */; };
 		274EBF731594A4BD004A29C7 /* LinkedResourceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 274EBF711594A4BD004A29C7 /* LinkedResourceViewController.m */; };
 		274EBF741594A4BD004A29C7 /* LinkedResourceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 274EBF721594A4BD004A29C7 /* LinkedResourceViewController.xib */; };
 		2770A9F0156451DF00D619B3 /* CachingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2770A9EE156451DE00D619B3 /* CachingViewController.m */; };
 		2770A9F1156451DF00D619B3 /* CachingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2770A9EF156451DE00D619B3 /* CachingViewController.xib */; };
-		27C2229B161E32BE00D827AE /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C2229A161E32BE00D827AE /* Accounts.framework */; };
-		27C2229E161E32C300D827AE /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C2229D161E32C300D827AE /* Twitter.framework */; };
+		278BB06117B2B75E0035B3D6 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C2229D161E32C300D827AE /* Twitter.framework */; };
+		278BB06217B2B7620035B3D6 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65211471A5E300F77A3F /* libsqlite3.dylib */; };
+		278BB06317B2B76B0035B3D6 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C2229A161E32BE00D827AE /* Accounts.framework */; };
+		278BB06417B2B7750035B3D6 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A651B1471A57700F77A3F /* SystemConfiguration.framework */; };
+		278BB06517B2B77E0035B3D6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A64EF14717B4800F77A3F /* UIKit.framework */; };
+		278BB06617B2B78C0035B3D6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A64F314717B4800F77A3F /* CoreGraphics.framework */; };
+		278BB06717B2B7930035B3D6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A651A1471A57700F77A3F /* Security.framework */; };
+		278BB06817B2B79D0035B3D6 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7E15B4839500133F64 /* CoreLocation.framework */; };
+		278BB06917B2B7A20035B3D6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A64F114717B4800F77A3F /* Foundation.framework */; };
+		278BB06A17B2B7B40035B3D6 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65191471A57700F77A3F /* MobileCoreServices.framework */; };
 		27ED01DF17B175D20070D7A0 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 27ED01DE17B175D20070D7A0 /* Default-568h@2x.png */; };
-		27ED01E117B176030070D7A0 /* libUAirship-1.4.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27ED01E017B176030070D7A0 /* libUAirship-1.4.0.a */; };
 		D30F7DDE14743C2F0005D2EC /* metal_kinvey_1280x800.png in Resources */ = {isa = PBXBuildFile; fileRef = D30F7DDD14743C2F0005D2EC /* metal_kinvey_1280x800.png */; };
-		D32A64F014717B4800F77A3F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A64EF14717B4800F77A3F /* UIKit.framework */; };
-		D32A64F214717B4800F77A3F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A64F114717B4800F77A3F /* Foundation.framework */; };
-		D32A64F414717B4800F77A3F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A64F314717B4800F77A3F /* CoreGraphics.framework */; };
 		D32A64FA14717B4800F77A3F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D32A64F814717B4800F77A3F /* InfoPlist.strings */; };
 		D32A64FC14717B4800F77A3F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A64FB14717B4800F77A3F /* main.m */; };
 		D32A650014717B4800F77A3F /* KCSAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A64FF14717B4800F77A3F /* KCSAppDelegate.m */; };
 		D32A650314717B4800F77A3F /* KCSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A650214717B4800F77A3F /* KCSViewController.m */; };
 		D32A650614717B4800F77A3F /* KCSViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D32A650414717B4800F77A3F /* KCSViewController.xib */; };
-		D32A65181471A55600F77A3F /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65171471A55600F77A3F /* CFNetwork.framework */; };
-		D32A651C1471A57700F77A3F /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65191471A57700F77A3F /* MobileCoreServices.framework */; };
-		D32A651D1471A57700F77A3F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A651A1471A57700F77A3F /* Security.framework */; };
-		D32A651E1471A57700F77A3F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A651B1471A57700F77A3F /* SystemConfiguration.framework */; };
-		D32A65201471A5BA00F77A3F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A651F1471A5BA00F77A3F /* StoreKit.framework */; };
-		D32A65231471A5E300F77A3F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65211471A5E300F77A3F /* libsqlite3.dylib */; };
-		D32A65241471A5E300F77A3F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65221471A5E300F77A3F /* libz.dylib */; };
-		D32A65261471A5FC00F77A3F /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65251471A5FC00F77A3F /* CoreTelephony.framework */; };
 		D3503D20149B98B200460879 /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3503D1F149B98B200460879 /* KinveyKit.framework */; };
 		D35E07DB1471D5B100DD9E41 /* logo57.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E07DA1471D5B100DD9E41 /* logo57.png */; };
 		D35E07DE1471D5B400DD9E41 /* logo114.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E07DD1471D5B400DD9E41 /* logo114.png */; };
@@ -66,7 +61,6 @@
 		27C2229A161E32BE00D827AE /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		27C2229D161E32C300D827AE /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		27ED01DE17B175D20070D7A0 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		27ED01E017B176030070D7A0 /* libUAirship-1.4.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libUAirship-1.4.0.a"; path = "../../KinveyKit/Airship/libUAirship-1.4.0.a"; sourceTree = "<group>"; };
 		D30F7DDD14743C2F0005D2EC /* metal_kinvey_1280x800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = metal_kinvey_1280x800.png; path = KitTest/metal_kinvey_1280x800.png; sourceTree = SOURCE_ROOT; };
 		D32A64EB14717B4800F77A3F /* KitTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KitTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D32A64EF14717B4800F77A3F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -108,21 +102,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27C2229E161E32C300D827AE /* Twitter.framework in Frameworks */,
-				27C2229B161E32BE00D827AE /* Accounts.framework in Frameworks */,
-				27347F7F15B4839500133F64 /* CoreLocation.framework in Frameworks */,
-				D32A65261471A5FC00F77A3F /* CoreTelephony.framework in Frameworks */,
-				D32A65231471A5E300F77A3F /* libsqlite3.dylib in Frameworks */,
-				D32A65241471A5E300F77A3F /* libz.dylib in Frameworks */,
-				D32A65201471A5BA00F77A3F /* StoreKit.framework in Frameworks */,
-				D32A651C1471A57700F77A3F /* MobileCoreServices.framework in Frameworks */,
-				D32A651D1471A57700F77A3F /* Security.framework in Frameworks */,
-				D32A651E1471A57700F77A3F /* SystemConfiguration.framework in Frameworks */,
-				D32A65181471A55600F77A3F /* CFNetwork.framework in Frameworks */,
-				27ED01E117B176030070D7A0 /* libUAirship-1.4.0.a in Frameworks */,
-				D32A64F014717B4800F77A3F /* UIKit.framework in Frameworks */,
-				D32A64F214717B4800F77A3F /* Foundation.framework in Frameworks */,
-				D32A64F414717B4800F77A3F /* CoreGraphics.framework in Frameworks */,
+				278BB06A17B2B7B40035B3D6 /* MobileCoreServices.framework in Frameworks */,
+				278BB06917B2B7A20035B3D6 /* Foundation.framework in Frameworks */,
+				278BB06817B2B79D0035B3D6 /* CoreLocation.framework in Frameworks */,
+				278BB06717B2B7930035B3D6 /* Security.framework in Frameworks */,
+				278BB06617B2B78C0035B3D6 /* CoreGraphics.framework in Frameworks */,
+				278BB06517B2B77E0035B3D6 /* UIKit.framework in Frameworks */,
+				278BB06417B2B7750035B3D6 /* SystemConfiguration.framework in Frameworks */,
+				278BB06317B2B76B0035B3D6 /* Accounts.framework in Frameworks */,
+				278BB06217B2B7620035B3D6 /* libsqlite3.dylib in Frameworks */,
+				278BB06117B2B75E0035B3D6 /* Twitter.framework in Frameworks */,
 				D3503D20149B98B200460879 /* KinveyKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -154,7 +143,6 @@
 		D32A64EE14717B4800F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				27ED01E017B176030070D7A0 /* libUAirship-1.4.0.a */,
 				27C2229D161E32C300D827AE /* Twitter.framework */,
 				27C2229A161E32BE00D827AE /* Accounts.framework */,
 				27347F7E15B4839500133F64 /* CoreLocation.framework */,
@@ -402,10 +390,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KitTest/KitTest-Prefix.pch";
 				INFOPLIST_FILE = "KitTest/KitTest-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../KinveyKit/Airship\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -425,10 +410,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KitTest/KitTest-Prefix.pch";
 				INFOPLIST_FILE = "KitTest/KitTest-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../KinveyKit/Airship\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
