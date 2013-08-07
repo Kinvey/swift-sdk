@@ -5,23 +5,26 @@
 //  Created by Brian Wilson on 11/28/11.
 //  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
-#ifndef NO_URBAN_AIRSHIP_PUSH
 
 #import "KCSPush.h"
 #import "KCSClient.h"
 #import "KinveyUser.h"
 
-#import "UAirship.h"
-#import "UAPush.h"
-
 #import "KCSLogManager.h"
 #import "KinveyErrorCodes.h"
 #import "KCSDevice.h"
+#import "NSMutableDictionary+KinveyAdditions.h"
+
+#import "KCSRequest.h"
+#import "KCSUser+KinveyKit2.h"
+
+#define UAPushBadgeSettingsKey @"UAPushBadge"
 
 @interface KCSPush()
 - (BOOL)initializeUrbanAirshipWithOptions: (NSDictionary *)options error:(NSError**)error;
 @property (nonatomic, retain, readwrite) NSData  *deviceToken;
 @property (nonatomic) BOOL hasToken;
+@property (nonatomic) BOOL pushEnabled;
 @end
 
 @implementation KCSPush
@@ -36,20 +39,18 @@
 }
 
 
-#pragma mark UA Init
+#pragma mark - Init
 + (KCSPush *)sharedPush
 {
     static KCSPush *sKCSPush;
     // This can be called on any thread, so we synchronise.  We only do this in 
     // the sKCSClient case because, once sKCSClient goes non-nil, it can 
     // never go nil again.
-    
-    if (sKCSPush == nil) {
-        @synchronized (self) {
-            sKCSPush = [[KCSPush alloc] init];
-            assert(sKCSPush != nil);
-        }
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sKCSPush = [[KCSPush alloc] init];
+        assert(sKCSPush != nil);
+    });
     
     return sKCSPush;
 }
@@ -85,95 +86,101 @@
     }
 }
 
-
-- (void)onUnloadHelper
-{
-    [UAirship land];
-}
-
+#warning remove options in doc & api
 - (BOOL) initializeUrbanAirshipWithOptions:(NSDictionary *)options error:(NSError**)error
 {
-    NSNumber *val = [options valueForKey:KCS_PUSH_IS_ENABLED_KEY];
-
-    if ([val boolValue] == NO){
+    if (fieldExistsAndIsNO(options, KCS_PUSH_IS_ENABLED_KEY)){
         // We don't want any of this code, so... we're done.
+        self.pushEnabled = NO;
         return NO;
     }
     
-    // Set up the UA stuff
-    //Init Airship launch options
+    self.pushEnabled = YES;
+    [self registerForRemoteNotifications];
     
-    NSMutableDictionary *airshipConfigOptions = [NSMutableDictionary dictionary];
-    NSMutableDictionary *takeOffOptions = [NSMutableDictionary dictionary];
-    
-    NSString* pushKey = [options valueForKey:KCS_PUSH_KEY_KEY];
-    NSString* pushSecret = [options valueForKey:KCS_PUSH_SECRET_KEY];
-    
-    NSPredicate *matchPred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"^\\S{22}+$"]; //borrowed from UAirship.m
-    if (pushKey == nil || pushSecret == nil || [matchPred evaluateWithObject:pushKey] == NO || [matchPred evaluateWithObject:pushSecret] == NO) {
-        //error - key not set or not set properly
-        if (error != NULL) {
-            NSDictionary *errorDictionary = @{ NSLocalizedDescriptionKey : @"KCS_PUSH_KEY_KEY and/or KCS_PUSH_SECRET KEY not set properly in options dictionary."};
-            *error = [[NSError alloc] initWithDomain:KCSPushErrorDomain code:KCSPrecondFailedError userInfo:errorDictionary];
-        }
-        return NO;
-    }
-    
-    if ([[options valueForKey:KCS_PUSH_MODE_KEY] isEqualToString:KCS_PUSH_DEVELOPMENT]){
-        [airshipConfigOptions setValue:@"NO" forKey:@"APP_STORE_OR_AD_HOC_BUILD"];
-        [airshipConfigOptions setValue:pushKey forKey:@"DEVELOPMENT_APP_KEY"];
-        [airshipConfigOptions setValue:pushSecret forKey:@"DEVELOPMENT_APP_SECRET"];
-    } else {
-        [airshipConfigOptions setValue:@"YES" forKey:@"APP_STORE_OR_AD_HOC_BUILD"];
-        [airshipConfigOptions setValue:pushKey forKey:@"PRODUCTION_APP_KEY"];
-        [airshipConfigOptions setValue:pushSecret forKey:@"PRODUCTION_APP_SECRET"];
-    }
-    
-    [takeOffOptions setValue:airshipConfigOptions forKey:UAirshipTakeOffOptionsAirshipConfigKey];
-    
-    // Create Airship singleton that's used to talk to Urban Airship servers.
-    // Please replace these with your info from http://go.urbanairship.com
-    [UAirship takeOff:takeOffOptions];
-    
-    [self doRegister];
-    [[UAPush shared] setAutobadgeEnabled:YES];
-    [[UAPush shared] resetBadge];//zero badge
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:UAPushBadgeSettingsKey];
+    [self resetPushBadge];//zero badge
     
     return YES;
 }
 
-- (void) doRegister
+- (BOOL) autobadgeEnabled
 {
-    // Register for notifications through UAPush for notification type tracking
-    [[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
-                                                         UIRemoteNotificationTypeSound |
-                                                         UIRemoteNotificationTypeAlert)];
+    return [[NSUserDefaults standardUserDefaults] boolForKey:UAPushBadgeSettingsKey];
 }
 
+#pragma mark - unloading
+- (void)onUnloadHelper
+{
+    //do nothing for now
+}
+
+#pragma mark - Events
 
 - (void) registerForRemoteNotifications
 {
-    // Register for notifications through UAPush for notification type tracking
-    [self doRegister];
+    // Register for notifications
+    if (self.pushEnabled) {
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
+                                                                               UIRemoteNotificationTypeSound |
+                                                                               UIRemoteNotificationTypeAlert)];
+    }
 }
 
-- (void) removeDeviceToken
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
-    [UAPush shared].pushEnabled = NO;
-    self.deviceToken = nil;
-    [KCSDevice currentDevice].deviceToken = nil;
-}
-
-#pragma mark Push
-// Push helpers
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
-    UALOG(@"Received remote notification: %@", userInfo);
+    KCSLogDebug(@"Received remote notification: %@", notification);
     
-    [[UAPush shared] handleNotification:userInfo applicationState:application.applicationState];
-    [[UAPush shared] resetBadge]; // zero badge after push received
+    UIApplicationState state = application.applicationState;
+    
+    if (state != UIApplicationStateActive) {
+        KCSLogTrace(@"Received a push notification for an inactive application state.");
+        return;
+    }
+    
+    // Please refer to the following Apple documentation for full details on handling the userInfo payloads
+	// http://developer.apple.com/library/ios/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ApplePushService/ApplePushService.html#//apple_ref/doc/uid/TP40008194-CH100-SW1
+	
+	if ([[notification allKeys] containsObject:@"aps"]) {
+        NSDictionary *apsDict = [notification objectForKey:@"aps"];
+        
+		if ([[apsDict allKeys] containsObject:@"alert"]) {
+			//handle alert message?
+		}
+        
+        //badge
+        NSString *badgeNumber = [apsDict valueForKey:@"badge"];
+        if (badgeNumber) {
+			if([self autobadgeEnabled]) {
+				[[UIApplication sharedApplication] setApplicationIconBadgeNumber:[badgeNumber intValue]];
+			}
+        }
+		
+        //sound
+		NSString *soundName = [apsDict valueForKey:@"sound"];
+		if (soundName) {
+			//handle sound?
+		}
+        
+	}//aps
+    
+	// Now remove all the UA and Apple payload items
+	NSMutableDictionary *customPayload = [notification mutableCopy];
+    [customPayload removeObjectForKey:@"aps"];
+    [customPayload removeObjectForKey:@"_uamid"];
+    [customPayload removeObjectForKey:@"_"];
+	
+	// If any top level items remain, those are custom payload, pass it to the handler
+	// Note: There is some convenience built into this check, if for some reason there's a key collision
+	//	and we're stripping yours above, it's safe to remove this conditional
+	if([[customPayload allKeys] count] > 0) {
+        //handle custom payload
+    }
+    
+    [self resetPushBadge]; // zero badge after push received
 }
+
+#pragma mark - Device Tokens
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
@@ -182,13 +189,11 @@
     // Capture the token for us to use later
     self.deviceToken = deviceToken;
     [KCSDevice currentDevice].deviceToken = deviceToken;
-    // Updates the device token and registers the token with UA
-    [[UAPush shared] registerDeviceToken:deviceToken];
     
     if ([KCSUser activeUser] != nil) {
         //if we have a current user, saving it will register the device token with the user collection on the backend
         //nil delegate because this is a silent try, and there's nothing to do if error
-        [[KCSUser activeUser] saveWithDelegate:nil];
+        [self registerDeviceToken];
     }
 }
 
@@ -200,21 +205,103 @@
     //TODO: simulator error: Error Domain=NSCocoaErrorDomain Code=3010 "remote notifications are not supported in the simulator" UserInfo=0xa6992d0 {NSLocalizedDescription=remote notifications are not supported in the simulator}
 }
 
+- (void) removeDeviceToken
+{
+    self.pushEnabled = NO;
+    self.deviceToken = nil;
+    [KCSDevice currentDevice].deviceToken = nil;
+#warning remove from server
+#warning remove kcsdevice
+}
+
+- (NSString *)deviceTokenString
+{
+    NSString *deviceToken = [[self.deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""];
+    deviceToken = [deviceToken stringByReplacingOccurrencesOfString: @">" withString: @""] ;
+    deviceToken = [deviceToken stringByReplacingOccurrencesOfString: @" " withString: @""];
+    return deviceToken;
+}
+
+- (void) registerDeviceToken
+{
+    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
+    request.httpMethod = kKCSRESTMethodPOST;
+    request.contextRoot = kKCSContextPUSH;
+    request.pathComponents = @[@"register-device"];
+    request.body = @{@"userId"   : [KCSUser activeUser].userId,
+                     @"deviceId" : [self deviceTokenString],
+                     @"platform" : @"ios"};
+    
+    request.authorization = [KCSUser activeUser];
+    
+    [request run:^(id results, NSError *error) {
+        //TODO handle here
+        if (error) {
+            KCSLogError(@"Device token did not register");
+        } else {
+            KCSLogDebug(@"Device token registered");
+        }
+    }];
+
+}
+
+- (void) unRegisterDeviceToken
+{
+    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
+    request.httpMethod = kKCSRESTMethodPOST;
+    request.contextRoot = kKCSContextPUSH;
+    request.pathComponents = @[@"unregister-device"];
+    request.body = @{@"userId"   : [KCSUser activeUser].userId,
+                     @"deviceId" : [self deviceTokenString],
+                     @"platform" : @"ios"};
+    
+    request.authorization = [KCSUser activeUser];
+    
+    [request run:^(id results, NSError *error) {
+        //TODO handle here
+        if (error) {
+            KCSLogError(@"Device token did not un-register");
+        } else {
+            KCSLogDebug(@"Device token un-registered");
+        }
+    }];
+    
+}
+
+#pragma mark - Badges
+
 - (void)setPushBadgeNumber: (int)number
 {
-    [[UAPush shared] setBadgeNumber:number];
+    if ([[UIApplication sharedApplication] applicationIconBadgeNumber] == number) {
+        return;
+    }
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:number];
 }
 
 - (void)resetPushBadge
 {
-    [[UAPush shared] resetBadge];//zero badge
+    [self setPushBadgeNumber:0];
 }
 
-- (void) exposeSettingsViewInView: (UIViewController *)parentViewController
-{
-    [UAPush openApnsSettings:parentViewController animated:YES];
-}
+/* TODO
+ - (void)applicationDidBecomeActive {
+ UALOG(@"Checking registration status after foreground notification");
+ if (hasEnteredBackground) {
+ registrationRetryDelay = 0;
+ [self updateRegistration];
+ }
+ else {
+ UALOG(@"Checking registration on app foreground disabled on app initialization");
+ }
+ }
+ 
+ - (void)applicationDidEnterBackground {
+ hasEnteredBackground = YES;
+ [[NSNotificationCenter defaultCenter] removeObserver:self
+ name:UIApplicationDidEnterBackgroundNotification
+ object:[UIApplication sharedApplication]];
+ }
+ */
 
 @end
-#endif /* NO_URBAN_AIRSHIP_PUSH */
 
