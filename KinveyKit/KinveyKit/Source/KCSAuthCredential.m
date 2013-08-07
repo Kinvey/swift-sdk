@@ -86,7 +86,7 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
     } else if (self.authRequired == KCSAuthBasicAuthAppKey){
         return self.appKeyAuth;
     } else if (self.authRequired == KCSAuthBasicAuthUser){
-        KCSUser *curUser = [[KCSClient sharedClient] currentUser];
+        KCSUser *curUser = [KCSUser activeUser];
         if (curUser == nil){
             // We need to start auth proceeding here
             if (![[KCSClient sharedClient] userAuthenticationInProgress]){

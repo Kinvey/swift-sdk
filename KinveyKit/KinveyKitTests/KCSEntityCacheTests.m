@@ -218,8 +218,10 @@
     
     NSURL* url = [self urlForDB:@"persistenceId"];
     STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should have cache at %@", [url path]);
-    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
     [KCSClient sharedClient].currentUser = [[KCSUser alloc] init];
+#pragma clang diagnostic pop
     
     STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should not have cache at %@", [url path]);
 }

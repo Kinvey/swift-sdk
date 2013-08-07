@@ -113,7 +113,7 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 - (void)tearDown
 {
-    [[[KCSClient sharedClient] currentUser] logout];    
+    [[KCSUser activeUser] logout];
 }
 
 - (void)collection:(KCSCollection *)collection didCompleteWithResult:(NSArray *)result

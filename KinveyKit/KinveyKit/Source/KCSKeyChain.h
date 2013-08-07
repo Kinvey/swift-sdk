@@ -41,4 +41,5 @@
 
 + (BOOL)setDict:(NSDictionary *)dict forKey:(NSString *)key;
 + (NSDictionary *)getDictForKey:(NSString *)key;
++ (BOOL)removeDictForKey:(NSString*)key;
 @end

@@ -1106,7 +1106,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     UserRefTestClass* obj = [[UserRefTestClass alloc] init];
     obj.objCount = -3000;
     obj.objDescription = @"auser that knows about another user";
-    obj.auser = [KCSClient sharedClient].currentUser;
+    obj.auser = [KCSUser activeUser];
     
     STAssertNotNil(obj.auser, @"should have a nonnull user");
     store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[UserRefTestClass class]] options:nil];
@@ -1118,7 +1118,7 @@ LinkedTestClass* randomTestClass(NSString* description)
         UserRefTestClass* ret = [objectsOrNil objectAtIndex:0];
         KCSUser* retUser = ret.auser;
         STAssertTrue([retUser isKindOfClass:[KCSUser class]], @"should be a user");
-        STAssertEqualObjects([retUser username], [KCSClient sharedClient].currentUser.username, @"usernames should match");
+        STAssertEqualObjects([retUser username],[KCSUser activeUser].username, @"usernames should match");
         
         self.done = YES;
     } withProgressBlock:nil];
