@@ -40,11 +40,10 @@
     [KCSKeyChain setString:@"12345" forKey:@"password"];
     
     // Needed, otherwise we burn a connection later...
-    [KCSUser initCurrentUser];
+    [KCSUser activeUser];
     
     _parser = [[KCS_SBJsonParser alloc] init];
     _writer = [[KCS_SBJsonWriter alloc] init];
-
 }
 
 - (void)tearDown

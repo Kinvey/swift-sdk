@@ -1,9 +1,9 @@
 //
-//  KinveyHeaderInfo.h
+//  KCSCredentials.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 10/11/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Created by Michael Katz on 8/7/13.
+//  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -17,12 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyHeaderInfo_h
-#define KinveyKit_KinveyHeaderInfo_h
+#import <Foundation/Foundation.h>
 
-
-#define KCS_DEPRECATED(message,version) __attribute__((deprecated(#message " Deprecated in: KinveyKit " #version ".")))
-
-#define KCS_CONSTANT FOUNDATION_EXPORT NSString* const
-
-#endif
+@protocol KCSCredentials <NSObject>
+- (NSString*) authString;
+@end

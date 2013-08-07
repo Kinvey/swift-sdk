@@ -55,12 +55,12 @@ typedef enum  {
 } KCSUserSocialIdentifyProvider;
 
 /** Access Dictionary key for the token: both Facebook & Twitter */
-#define KCSUserAccessTokenKey @"access_token"
+KCS_CONSTANT KCSUserAccessTokenKey;
 /** Access Dictionary key for the token secret: just Twitter */
-#define KCSUserAccessTokenSecretKey @"access_token_secret"
+KCS_CONSTANT KCSUserAccessTokenSecretKey;
 
 /** Notification type. This is called when a user is logged in or logged out. `userInfo` and `object` are nil. Query `+[KCSUser activeUser] to get the new value. */
-FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
+KCS_CONSTANT KCSActiveUserChangedNotification;
 
 /*!  Describes required methods for an object wishing to be notified about the status of user actions.
  *
@@ -101,17 +101,17 @@ FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
 @end
 
 /** Constant for use in querying the username field */
-#define KCSUserAttributeUsername @"username"
+KCS_CONSTANT KCSUserAttributeUsername;
 /** Constant for use in querying the surname field */
-#define KCSUserAttributeSurname @"last_name"
+KCS_CONSTANT KCSUserAttributeSurname;
 /** Constant for use in querying the given name field */
-#define KCSUserAttributeGivenname @"first_name"
+KCS_CONSTANT KCSUserAttributeGivenname;
 /** Constant for use in querying the email field */
-#define KCSUserAttributeEmail @"email"
+KCS_CONSTANT KCSUserAttributeEmail;
 /** Constant for querying by Facebook id 
  @since 1.10.5
  */
-#define KCSUserAttributeFacebookId @"_socialIdentity.facebook.id"
+KCS_CONSTANT KCSUserAttributeFacebookId;
 
 /*! User in the Kinvey System
  
@@ -206,9 +206,6 @@ FOUNDATION_EXPORT NSString* KCSActiveUserChangedNotification;
  @deprecatedIn 1.19.0
  */
 - (void)initializeCurrentUser KCS_DEPRECATED(do not call this directly, 1.19.0);
-
-// Private method
-+ (void)initCurrentUser KCS_DEPRECATED(do not call this directly --use initAndActivateWithSavedCredentials, 1.19.0);;
 
 ///---------------------------------------------------------------------------------------
 /// @name Creating Users

@@ -18,14 +18,16 @@
 //
 
 #import <KinveyKit/KinveyKit.h>
+#import "KCSCredentials.h"
 
 @protocol KCSRequestInfoProvider <NSObject>
 
+@optional
 - (NSString*) kid;
 - (NSString*) baseURL;
 
 @end
 
-@interface KCSClient (KinveyKit2) <KCSRequestInfoProvider>
+@interface KCSClient (KinveyKit2) <KCSRequestInfoProvider, KCSCredentials>
 
 @end

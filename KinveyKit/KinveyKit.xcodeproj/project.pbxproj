@@ -366,6 +366,8 @@
 		27FB2A8216FCEE8400CD7D5C /* KCSLinkedAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27433011156ED63B00B2BF37 /* KCSLinkedAppdataStore.m */; };
 		27FB2A8316FCEE8A00CD7D5C /* KCSLinkedAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27433010156ED63B00B2BF37 /* KCSLinkedAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27FB2A8416FCEE8F00CD7D5C /* KCSCachedStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CBA155C66B300A0183E /* KCSCachedStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27FEBF3017B26AEB006E7FBD /* KCSCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */; };
+		27FEBF3117B26AEB006E7FBD /* KCSCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */; };
 		D306B58E154F847C00A52CB8 /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B58D154F847C00A52CB8 /* KCSStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D306B5A3155095A800A52CB8 /* KinveyAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */; };
 		D306B5A61550B29100A52CB8 /* KCSAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B5A41550B29100A52CB8 /* KCSAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -741,6 +743,7 @@
 		27F5D7F216F20EC4001828F3 /* NSDictionary+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+KinveyAdditions.m"; sourceTree = "<group>"; };
 		27FB2A7616FCEC7400CD7D5C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Accounts.framework; sourceTree = DEVELOPER_DIR; };
 		27FB2A7816FCEC7B00CD7D5C /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Social.framework; sourceTree = DEVELOPER_DIR; };
+		27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCredentials.h; sourceTree = "<group>"; };
 		D306B58D154F847C00A52CB8 /* KCSStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSStore.h; sourceTree = "<group>"; };
 		D306B5A1155095A800A52CB8 /* KinveyAppdataStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyAppdataStoreTests.h; sourceTree = "<group>"; };
 		D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyAppdataStoreTests.m; sourceTree = "<group>"; };
@@ -1246,6 +1249,7 @@
 				27465364174E90D90013546E /* KCSServerService.m */,
 				27465367174E92FB0013546E /* KCSAsyncConnection2.h */,
 				27465368174E92FC0013546E /* KCSAsyncConnection2.m */,
+				27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -2494,6 +2498,7 @@
 				27010AA3171332140012D1ED /* CLLocation+Kinvey.h in Headers */,
 				270BAEB41713414D005174D2 /* NSMutableDictionary+KinveyAdditions.h in Headers */,
 				270BAEB51713415E005174D2 /* NSArray+KinveyAdditions.h in Headers */,
+				27FEBF3117B26AEB006E7FBD /* KCSCredentials.h in Headers */,
 				27B1E37E17334DF300E12333 /* KCSLinkedInHelper.h in Headers */,
 				273B64A41758F2CB00E1B1B9 /* KCSCustomEndpoints.h in Headers */,
 			);
@@ -2622,6 +2627,7 @@
 				27465369174E92FC0013546E /* KCSAsyncConnection2.h in Headers */,
 				2746536F174EBE480013546E /* KCSDataStoreCaches.h in Headers */,
 				273B644F1757DE0F00E1B1B9 /* KCSCustomEndpoints.h in Headers */,
+				27FEBF3017B26AEB006E7FBD /* KCSCredentials.h in Headers */,
 				273B64581757E5FA00E1B1B9 /* KCSClient+KinveyKit2.h in Headers */,
 				273B645F1758022B00E1B1B9 /* KCSUser+KinveyKit2.h in Headers */,
 			);

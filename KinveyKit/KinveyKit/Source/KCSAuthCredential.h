@@ -18,16 +18,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "KCSCredentials.h"
 
 @interface KCSAuthCredential : NSObject
 
-@property (nonatomic, retain) NSString *URL;
-@property (nonatomic) NSInteger method;
-
-- (instancetype)initWithURL: (NSString *)URL withMethod: (NSInteger)method;
-+ (KCSAuthCredential *)credentialForURL: (NSString *)URL usingMethod: (NSInteger)method;
-- (NSURLCredential *)NSURLCredential;
-- (NSString *)HTTPBasicAuthString;
++ (instancetype)credentialForURL: (NSString *)URL usingMethod: (NSInteger)method;
+- (id<KCSCredentials>)credentials;
 - (BOOL)requiresAuthentication;
 
 @end

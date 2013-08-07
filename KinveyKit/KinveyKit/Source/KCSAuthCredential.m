@@ -13,6 +13,8 @@
 #import "KCSLogManager.h"
 #import "KCSBase64.h"
 #import "KCSHiddenMethods.h"
+#import "KCSUser+KinveyKit2.h"
+#import "KCSClient+KinveyKit2.h"
 
 enum {
     KCSAuthNoAuth = 0,
@@ -55,8 +57,8 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
 
 @interface KCSAuthCredential ()
 @property (nonatomic) NSInteger authRequired;
-@property (nonatomic, strong) NSURLCredential *appKeyAuth;
-@property (nonatomic, strong) NSString *appKeyBase64;
+@property (nonatomic, retain) NSString *URL;
+@property (nonatomic) NSInteger method;
 @end
 
 @implementation KCSAuthCredential
@@ -68,8 +70,6 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
         _URL = URL;
         _method = method;
         _authRequired = deriveAuth(_URL, _method);
-        _appKeyAuth = [NSURLCredential credentialWithUser:[[KCSClient sharedClient] appKey] password:[[KCSClient sharedClient] appSecret] persistence:NSURLCredentialPersistenceNone];
-        _appKeyBase64 = KCSbasicAuthString([[KCSClient sharedClient] appKey], [[KCSClient sharedClient] appSecret]);
     }
     return self;
 }
@@ -79,60 +79,14 @@ NSInteger deriveAuth(NSString *URL, NSInteger method)
     return [[KCSAuthCredential alloc] initWithURL:URL withMethod:method];
 }
 
-- (NSURLCredential *)NSURLCredential
+- (id<KCSCredentials>)credentials
 {
     if (self.authRequired == KCSAuthNoAuth){
         return nil;
     } else if (self.authRequired == KCSAuthBasicAuthAppKey){
-        return self.appKeyAuth;
+        return [KCSClient sharedClient];
     } else if (self.authRequired == KCSAuthBasicAuthUser){
-        KCSUser *curUser = [KCSUser activeUser];
-        if (curUser == nil){
-            // We need to start auth proceeding here
-            if (![[KCSClient sharedClient] userAuthenticationInProgress]){
-                // We're the first!
-                [KCSUser initCurrentUser];
-            }
-            return nil;
-        } else {
-            return [NSURLCredential credentialWithUser:curUser.username password:curUser.password persistence:NSURLCredentialPersistenceNone];
-        }
-    }
-    
-    KCSLogError(@"The type of auth required for this request (in NSURLCredential) is not known: %d", self.authRequired);
-    return nil;
-}
-
-
-- (NSString *)HTTPBasicAuthString
-{
-    KCSLogDebug(@"Request for Basic Auth String with authRequired: %d", self.authRequired);
-    if (self.authRequired == KCSAuthNoAuth){
-        return nil;
-    } else if (self.authRequired == KCSAuthBasicAuthAppKey){
-        KCSLogDebug(@"Using app key/app secret for auth: (%@, <APP_SECRET>) => XXXXXXXXX", [[KCSClient sharedClient] appKey]);
-        return self.appKeyBase64;
-    } else if (self.authRequired == KCSAuthBasicAuthUser){
-        KCSUser *curUser = [KCSUser activeUser];
-        if (curUser == nil){
-            KCSLogDebug(@"No current user, auth needed.");
-            // We need to start auth proceeding here
-            if (![[KCSClient sharedClient] userAuthenticationInProgress]) {
-                // We're the first!
-                [KCSUser initCurrentUser];
-            }
-            return nil;
-        } else {
-            NSString *authString = nil;
-            if (curUser.sessionAuth) {
-                authString = [@"Kinvey " stringByAppendingString: curUser.sessionAuth];
-                KCSLogDebug(@"Current user found, using sessionauth (%@) => XXXXXXXXX", curUser.username);
-            } else {
-                authString = KCSbasicAuthString(curUser.username, curUser.password);
-                KCSLogDebug(@"Current user found (%@, XXXXXXXXX) => XXXXXXXXX", curUser.username);
-            }
-            return authString;
-        }
+        return [KCSUser activeUser];
     }
     
     KCSLogError(@"The type of auth required for this request (in NSURLCredential) is not known: %d", self.authRequired);
