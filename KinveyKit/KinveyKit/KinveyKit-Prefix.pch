@@ -24,6 +24,11 @@
 #define setIfValNotNil(propToSet, val) if (val != nil) propToSet = val;
 #define ifNil(x, val) if (x == nil) x = val;
 
+#define fieldExistsAndIsYES(dict, field) dict != nil && dict[field] != nil && [dict[field] boolValue] == YES
+
+#define fieldExistsAndIsNO(dict, field) dict != nil && dict[field] != nil && [dict[field] boolValue] == NO
+
+
 #define constantsEqual(str, const) str == const || [str isEqualToString:const]
 #define setIfEmpty(dict,key,val) if (dict[key] == nil) dict[key] = val
 

@@ -16,8 +16,6 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef NO_URBAN_AIRSHIP_PUSH
-
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
@@ -239,6 +237,3 @@ typedef enum KCS_PUSH_MODE : NSInteger {
 - (void) removeDeviceToken;
 
 @end
-
-#endif /* NO_URBAN_AIRSHIP_PUSH */
-

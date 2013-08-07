@@ -46,8 +46,6 @@ NSString* const KCSFileLinkExpirationTimeInterval = @"ttl_in_seconds";
 #define kGCSULID @"ulid"
 #define TIME_INTERVAL 10
 
-#define fieldExistsAndIsYES(dict, field) dict != nil && dict[field] != nil && [dict[field] boolValue] == YES
-
 NSString* mimeTypeForFilename(NSString* filename)
 {
     CFStringRef MIMEType = nil;
