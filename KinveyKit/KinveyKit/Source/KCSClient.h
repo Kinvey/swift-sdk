@@ -138,8 +138,12 @@
 ///---------------------------------------------------------------------------------------
 /// @name User Authentication
 ///---------------------------------------------------------------------------------------
-/*! Current Kinvey User */
-@property (nonatomic, strong) KCSUser *currentUser;
+
+/*! Current Kinvey User
+ @deprecatedIn 1.19.0
+ */
+@property (nonatomic, strong) KCSUser *currentUser KCS_DEPRECATED(Use [KCSuser activeUser] instead, 1.19.0);
+
 /*! Has the current user been authenticated?  (NOTE: Thread Safe) */
 @property (nonatomic) BOOL userIsAuthenticated;
 /*! Is user authentication in progress?  (NOTE: Thread Safe, can be used to spin for completion) */
@@ -154,12 +158,14 @@
 ///---------------------------------------------------------------------------------------
 /// @name Analytics
 ///---------------------------------------------------------------------------------------
+
 /*! The suite of Kinvey Analytics Services */
 @property (nonatomic, readonly) KCSAnalytics *analytics;
 
 ///---------------------------------------------------------------------------------------
 /// @name Data Type Support
 ///---------------------------------------------------------------------------------------
+
 /*! NSDateFormatter String for Date storage */
 @property (retain, nonatomic) NSString *dateStorageFormatString;
 

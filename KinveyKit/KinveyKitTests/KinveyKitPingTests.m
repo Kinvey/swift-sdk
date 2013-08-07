@@ -49,7 +49,7 @@
 
 - (void)tearDown
 {
-    [[[KCSClient sharedClient] currentUser] logout];    
+    [[KCSUser activeUser] logout];    
 }
 
 

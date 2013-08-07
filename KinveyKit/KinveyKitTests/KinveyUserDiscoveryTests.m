@@ -40,7 +40,7 @@
         }
     }];
     [self poll];
-    STAssertEqualObjects(fname,[[[KCSClient sharedClient] currentUser] givenName], @"names should match");
+    STAssertEqualObjects(fname,[[KCSUser activeUser] givenName], @"names should match");
 
 }
 

@@ -26,13 +26,13 @@
 
 
 // Avoid compiler warning by prototyping here...
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 void
 makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      id objectOfInterest,
                      id <KCSEntityDelegate> delegate);
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
 void
 makeConnectionBlocks(KCSConnectionCompletionBlock *cBlock,
                      id objectOfInterest,

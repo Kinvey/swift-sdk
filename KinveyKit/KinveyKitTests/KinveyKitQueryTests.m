@@ -285,7 +285,7 @@
     
     //setup a test user
     [self loginWithUser:@"testMetadataQueryCreator1" password:@"b"];    
-    NSString* origId = [[[KCSClient sharedClient].currentUser kinveyObjectId] copy];
+    NSString* origId = [[[KCSUser activeUser] kinveyObjectId] copy];
     STAssertNotNil(origId, @"expecting an id");
     
     KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
@@ -311,7 +311,7 @@
     
     //create t2 as second user
     [self loginWithUser:@"testMetadataQueryCreator2" password:@"b"];    
-    NSString* secondId = [[KCSClient sharedClient].currentUser kinveyObjectId];
+    NSString* secondId = [[KCSUser activeUser] kinveyObjectId];
     
     self.done = NO;
     [store saveObject:t2 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -330,7 +330,7 @@
     [self poll];
     
     self.done = NO;
-    [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator withExactMatchForValue:[KCSClient sharedClient].currentUser] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator withExactMatchForValue:[KCSUser activeUser]] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(1);
         self.done = YES;

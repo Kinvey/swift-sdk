@@ -83,7 +83,7 @@
     STAssertNotNil([obj.meta lastModifiedTime], @"shoul have a lmt");
     STAssertNotNil([obj.meta creationTime], @"shoul have an ect");
     STAssertEqualObjects([obj.meta lastModifiedTime], [obj.meta creationTime], @"creation and ect should be the same time");
-    STAssertEqualObjects([obj.meta creatorId], [[[KCSClient sharedClient] currentUser] kinveyObjectId], @"this user should be the creator");
+    STAssertEqualObjects([obj.meta creatorId], [[KCSUser activeUser] kinveyObjectId], @"this user should be the creator");
     STAssertFalse([obj.meta isGloballyReadable], @"expecting to have set that value");
     
     [obj.meta setGloballyReadable:NO];
@@ -98,7 +98,7 @@
     STAssertNotNil([obj.meta lastModifiedTime], @"shoul have a lmt");
     STAssertNotNil([obj.meta creationTime], @"shoul have an ect");
     STAssertTrue([[obj.meta lastModifiedTime] compare:[obj.meta creationTime]] == NSOrderedDescending, @"lmt should be newer than ect");
-    STAssertEqualObjects([obj.meta creatorId], [[[KCSClient sharedClient] currentUser] kinveyObjectId], @"this user should be the creator");
+    STAssertEqualObjects([obj.meta creatorId], [[KCSUser activeUser] kinveyObjectId], @"this user should be the creator");
     STAssertFalse([obj.meta isGloballyReadable], @"expecting to have set that value");
     
     self.done = NO;

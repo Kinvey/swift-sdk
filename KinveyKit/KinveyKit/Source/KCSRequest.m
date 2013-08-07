@@ -17,6 +17,7 @@
 #import "KCS_SBJson.h"
 #import "NSString+KinveyAdditions.h"
 #import "NSArray+KinveyAdditions.h"
+#import "KCSAuthCredential.h"
 
 #define KINVEY_KCS_API_VERSION @"3"
 
@@ -160,7 +161,7 @@ static const NSString* kPUSHRoot = @"push";
 
 - (void)setAuthorization:(id<KCSCredentials>)authorization
 {
-    NSParameterAssert(authorization);
+    NSParameterAssert(authorization);    
     _authorization = authorization;
 }
 

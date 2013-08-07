@@ -102,7 +102,7 @@
 //        [NSOperationQueue 
         [KCSPing checkKinveyServiceStatusWithAction:^(KCSPingResult *result){
             NSLog(@"Kinvey ping performed. Success? %d. Result: %@", result.pingWasSuccessful, result.description);
-            NSString *username = [[[KCSClient sharedClient] currentUser] username];
+            NSString *username = [[KCSUser activeUser] username];
             
             // The local user is associated with the default context, which is associated with the main thread, so
             // we will dispatch to that before accessing and setting values on the local user object.
@@ -136,7 +136,7 @@
     [q addOperationWithBlock:^{
         [KCSPing checkKinveyServiceStatusWithAction:^(KCSPingResult *result){
             NSLog(@"Kinvey ping performed. Success? %d. Result: %@", result.pingWasSuccessful, result.description);
-            NSString *username = [[[KCSClient sharedClient] currentUser] username];
+            NSString *username = [[KCSUser activeUser] username];
             
             // The local user is associated with the default context, which is associated with the main thread, so
             // we will dispatch to that before accessing and setting values on the local user object.

@@ -73,7 +73,7 @@ NSString* KCSMetadataFieldCreationTime = @"_kmd.ect";
 
 - (BOOL) hasWritePermission
 {
-    KCSUser* user = [[KCSClient sharedClient] currentUser];
+    KCSUser* user = [KCSUser activeUser];
     NSString* userId = [user userId];
     return [[self creatorId] isEqualToString:userId] || [self.writers containsObject:userId] || [self isGloballyWritable];
 }

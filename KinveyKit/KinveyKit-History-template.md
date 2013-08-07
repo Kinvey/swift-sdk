@@ -4,10 +4,23 @@
 ### 1.19.0
 ** Release Date:** TBD
 
+* User object enhancements:
+	* `+[KCSUser hasSavedCredentials]` will check if the keychain has stored credentials and active user can be restored.
+    * `+[KCSUser activeUser]` will instantiate the user from the keychain if credentials are saved.
+    * If no active user is found, the client _must_ create a new user or login an existing user.
+    
+    * Added init method
+    * Added create explicit method
+* TODO forgot uname
+* TODO push 
 * Code Cleanup:
     * Removed old and deprecated `findEntity` methods on `KCSEntity` category on `NSObject` (KinveyEntity.h)
     * Deprecated `KCSEntityDelegate` API for directly loading objects.
     * Removed deprecated `+[KCSPush onLoadHelper:]` method.
+    * Deprecated old delegate-style `KCSUser` methods. 
+    * Deprecated `-[KCSClient currentUser]`, use `+[KCSUser activeUser]` instead.
+* Bug fix(es):
+    * 
 
 ## 1.18
 ### 1.18.0
