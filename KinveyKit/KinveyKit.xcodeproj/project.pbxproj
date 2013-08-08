@@ -64,8 +64,6 @@
 		271827B116B9A27800825D50 /* KCSAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 271827AF16B9A27800825D50 /* KCSAnalytics.m */; };
 		271827B216B9A40700825D50 /* KCSImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 2718279C16B8A78700825D50 /* KCSImageUtils.h */; };
 		271827B316B9A40B00825D50 /* KCSImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2718279D16B8A78700825D50 /* KCSImageUtils.m */; };
-		271827C216C0354500825D50 /* KCSDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B23D1B16443ECF00A78D7D /* KCSDevice.h */; };
-		271827C316C0354C00825D50 /* KCSDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B23D1C16443ECF00A78D7D /* KCSDevice.m */; };
 		271827C416C0355C00825D50 /* KCSKeyChain.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F7E86E148807900044F1E8 /* KCSKeyChain.h */; };
 		271827C516C0356000825D50 /* KCSKeyChain.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7E86F148807900044F1E8 /* KCSKeyChain.m */; };
 		271827C716C0357700825D50 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271827C616C0357500825D50 /* Security.framework */; };
@@ -269,8 +267,6 @@
 		27B1FDC815B0C4A0003CC4C6 /* KCSUserDiscovery.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B1FDC615B0C49F003CC4C6 /* KCSUserDiscovery.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDC715B0C49F003CC4C6 /* KCSUserDiscovery.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */; };
-		27B23D1D16443ECF00A78D7D /* KCSDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B23D1B16443ECF00A78D7D /* KCSDevice.h */; };
-		27B23D1E16443ECF00A78D7D /* KCSDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B23D1C16443ECF00A78D7D /* KCSDevice.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27B3B07C16B872EC00E1B540 /* KCSAsyncConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E6872147DBA7200EE885E /* KCSAsyncConnection.m */; };
 		27B3B07D16B8740D00E1B540 /* KCSConnectionResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = D33E6876147DC1A400EE885E /* KCSConnectionResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27B3B07E16B8741400E1B540 /* KCSConnectionResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = D33E6877147DC1A400EE885E /* KCSConnectionResponse.m */; };
@@ -710,8 +706,6 @@
 		27B1FDCB15B0D3B0003CC4C6 /* KCSHiddenMethods.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSHiddenMethods.h; sourceTree = "<group>"; };
 		27B1FDCD15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyUserDiscoveryTests.h; sourceTree = "<group>"; };
 		27B1FDCE15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyUserDiscoveryTests.m; sourceTree = "<group>"; };
-		27B23D1B16443ECF00A78D7D /* KCSDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDevice.h; sourceTree = "<group>"; };
-		27B23D1C16443ECF00A78D7D /* KCSDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSDevice.m; sourceTree = "<group>"; };
 		27B3B08316B8756900E1B540 /* KinveyVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyVersion.h; sourceTree = "<group>"; };
 		27B425ED16C3DA6200C59E1A /* KCSWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSWebView.h; sourceTree = "<group>"; };
 		27B7724116E7C63500610D11 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -1794,8 +1788,6 @@
 			children = (
 				D3EA22671484852B00666259 /* KCSPush.h */,
 				D3EA22681484852B00666259 /* KCSPush.m */,
-				27B23D1B16443ECF00A78D7D /* KCSDevice.h */,
-				27B23D1C16443ECF00A78D7D /* KCSDevice.m */,
 			);
 			name = Push;
 			sourceTree = "<group>";
@@ -1873,7 +1865,6 @@
 				271827A216B8AA2700825D50 /* KCSPropertyUtil.h in Headers */,
 				271827A416B8AA5000825D50 /* KCSMetadata.h in Headers */,
 				271827B216B9A40700825D50 /* KCSImageUtils.h in Headers */,
-				271827C216C0354500825D50 /* KCSDevice.h in Headers */,
 				271827C416C0355C00825D50 /* KCSKeyChain.h in Headers */,
 				271827C816C0910200825D50 /* KCSQuery.h in Headers */,
 				271827EE16C17A7C00825D50 /* KCSReduceFunction.h in Headers */,
@@ -2023,7 +2014,6 @@
 				270E4CAD16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.h in Headers */,
 				276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */,
 				27041AFE163B0ADB00538656 /* MD5Helpers.h in Headers */,
-				27B23D1D16443ECF00A78D7D /* KCSDevice.h in Headers */,
 				27BAB3EB166FED0500C5D156 /* KCS_OAuthCore.h in Headers */,
 				27D1559216713DD000171230 /* KCSLinkedInHelper.h in Headers */,
 				275B42A016A97DB00064B941 /* KinveyHeaderInfo.h in Headers */,
@@ -2440,7 +2430,6 @@
 				278BADAE17B28EC70035B3D6 /* DDASLLogger.m in Sources */,
 				271827B116B9A27800825D50 /* KCSAnalytics.m in Sources */,
 				271827B316B9A40B00825D50 /* KCSImageUtils.m in Sources */,
-				271827C316C0354C00825D50 /* KCSDevice.m in Sources */,
 				278BADB217B28EC70035B3D6 /* DDFileLogger.m in Sources */,
 				271827C516C0356000825D50 /* KCSKeyChain.m in Sources */,
 				271827C916C0910700825D50 /* KCSQuery.m in Sources */,
@@ -2599,7 +2588,6 @@
 				270E4CAE16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m in Sources */,
 				276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */,
 				27041AFF163B0ADB00538656 /* MD5Helpers.m in Sources */,
-				27B23D1E16443ECF00A78D7D /* KCSDevice.m in Sources */,
 				27D1559116713C7300171230 /* KCSLinkedInHelper.m in Sources */,
 				2718279F16B8A78700825D50 /* KCSImageUtils.m in Sources */,
 				27F5D7F516F20EC5001828F3 /* NSDictionary+KinveyAdditions.m in Sources */,

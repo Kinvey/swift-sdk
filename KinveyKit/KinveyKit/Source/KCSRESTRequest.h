@@ -39,4 +39,6 @@
 - (void)setContentLength: (NSInteger)contentLength;
 - (void) setAuth:(NSString*)username password:(NSString*)password;
 
+- (void) cancel;
+
 @end

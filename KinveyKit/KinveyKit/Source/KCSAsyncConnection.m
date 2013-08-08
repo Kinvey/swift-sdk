@@ -341,6 +341,11 @@
     return newRequest;
 }
 
+- (void) cancel
+{
+    [self.connection cancel];
+}
+
 #pragma mark - Background Handling
 
 #if TARGET_OS_IPHONE

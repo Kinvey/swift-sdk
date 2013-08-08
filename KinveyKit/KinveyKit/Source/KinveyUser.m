@@ -23,7 +23,6 @@
 #import "NSString+KinveyAdditions.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
 #import "KinveyCollection.h"
-#import "KCSDevice.h"
 
 #import "KCSObjectMapper.h"
 #import "KCSRESTRequest.h"
@@ -48,6 +47,8 @@ NSString* const KCSUserAttributeFacebookId = @"_socialIdentity.facebook.id";
 #define kKeychainAuthTokenKey @"authtoken"
 #define kKeychainPropertyDictKey @"propertyDict"
 
+#define kDeviceTokensKey @"_devicetokens"
+
 #define KCSUserAttributeOAuthTokens @"_oauth"
 @class GTMOAuth2Authentication;
 
@@ -62,6 +63,7 @@ void setActive(KCSUser* user)
 @interface KCSUser()
 @property (nonatomic, strong) NSMutableDictionary *userAttributes;
 @property (nonatomic, strong) NSDictionary* oauthTokens;
+@property (nonatomic, strong) NSMutableDictionary* push;
 @end
 
 @implementation KCSUser
@@ -74,12 +76,12 @@ void setActive(KCSUser* user)
         _password = @"";
         _userId = @"";
         _userAttributes = [NSMutableDictionary dictionary];
-        _deviceTokens = nil;
         _oauthTokens = [NSMutableDictionary dictionary];
         _sessionAuth = nil;
         _surname = nil;
         _email = nil;
         _givenName = nil;
+        _push = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -113,11 +115,12 @@ void setActive(KCSUser* user)
     user.userId   = propId;
     
     if (user.userId == nil || user.username == nil) {
-        //prevent that weird assertion that Colden was seeing
+        //prevent that weird assertion that Colden was seeinƒƒg
         return;
     }
     
-    user.deviceTokens = [properties popObjectForKey:@"_deviceTokens"];
+    NSMutableDictionary* tokens = [[properties popObjectForKey:@"_push"] mutableCopy];
+    user.push = tokens;
     user.oauthTokens = [properties popObjectForKey:KCSUserAttributeOAuthTokens];
     
     user.surname = [properties popObjectForKey:KCSUserAttributeSurname];
@@ -161,16 +164,25 @@ void setActive(KCSUser* user)
     }
     
     setActive(user);
+    
+    [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
+#warning        //TODO handle push
+    }];
 }
+
+static KCSRESTRequest* lastBGUpdate = nil;
 
 + (void) updateUserInBackground:(KCSUser*)user
 {
     if (user.userId != nil) {
-        KCSRESTRequest *userRequest = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", user.userId] usingMethod:kGetRESTMethod];
-        [userRequest setContentType:KCS_JSON_TYPE];
+        [lastBGUpdate cancel];
+        
+        lastBGUpdate = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", user.userId] usingMethod:kGetRESTMethod];
+        [lastBGUpdate setContentType:KCS_JSON_TYPE];
         
         // Set up our callbacks
         KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+            lastBGUpdate = nil;
             
             // Ok, we're really authd
             if ([response responseCode] < 300) {
@@ -182,12 +194,13 @@ void setActive(KCSUser* user)
         };
         
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
+            lastBGUpdate = nil;
             KCSLogError(@"Internal Error Updating user: %@", error);
             return;
         };
         
-        [userRequest withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
-        [userRequest start];
+        [lastBGUpdate withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
+        [lastBGUpdate start];
     }
 }
 
@@ -224,13 +237,6 @@ void setActive(KCSUser* user)
         if (uname && password){
             [userJSONPaylod setObject:uname forKey:@"username"];
             [userJSONPaylod setObject:password forKey:@"password"];
-        }
-        
-        // Finally we check for the device token, we're creating the user,
-        // so we just need to set the one value, no merging/etc
-        KCSDevice *sp = [KCSDevice currentDevice];
-        if (sp.deviceToken != nil){
-            [userJSONPaylod setObject:@[[sp deviceTokenString]] forKey:@"_deviceTokens"];
         }
         
         NSDictionary *userData = [NSDictionary dictionaryWithDictionary:userJSONPaylod];
@@ -659,6 +665,7 @@ void setActive(KCSUser* user)
     if (![self isEqual:[KCSUser activeUser]]){
         KCSLogError(@"Attempted to log out a user who is not the KCS Current User!");
     } else {
+        [lastBGUpdate cancel];
         
         self.username = nil;
         self.password = nil;
@@ -746,17 +753,6 @@ void setActive(KCSUser* user)
         NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
         [delegate entity:self operationDidFailWithError:userError];
     } else {
-        // Extract all of the items from the Array into a set, so adding the "new" device token does
-        // the right thing.  This might be less efficient than just iterating, but these routines have
-        // been optimized, we do this now, since there's no other place guarenteed to merge.
-        // Login/create store this info
-        KCSDevice *sp = [KCSDevice currentDevice];
-        
-        if (sp.deviceToken != nil){
-            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
-            [tmpSet addObject:[sp deviceTokenString]];
-            self.deviceTokens = [tmpSet allObjects];
-        }
         [self saveToCollection:[KCSCollection userCollection] withDelegate:delegate];
     }
 }
@@ -772,17 +768,6 @@ void setActive(KCSUser* user)
         NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
         completionBlock(nil, userError);
     } else {
-        // Extract all of the items from the Array into a set, so adding the "new" device token does
-        // the right thing.  This might be less efficient than just iterating, but these routines have
-        // been optimized, we do this now, since there's no other place guarenteed to merge.
-        // Login/create store this info
-        KCSDevice *sp = [KCSDevice currentDevice];
-        
-        if (sp.deviceToken != nil){
-            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
-            [tmpSet addObject:[sp deviceTokenString]];
-            self.deviceTokens = [tmpSet allObjects];
-        }
         
         //-- save to collection
         KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
@@ -898,7 +883,7 @@ void setActive(KCSUser* user)
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         mappedDict = @{@"userId" : KCSEntityKeyId,
-                      @"deviceTokens" : @"_deviceTokens",
+                      @"push" : @"_push",
                       @"username" : KCSUserAttributeUsername,
                       @"password" : @"password",
                       @"email" : KCSUserAttributeEmail,
@@ -1066,6 +1051,19 @@ void setActive(KCSUser* user)
     return user;
 }
 
+- (NSMutableSet*) deviceTokens
+{
+    if (_push == nil) {
+        self.push = [NSMutableDictionary dictionary];
+    }
+    if (_push[kDeviceTokensKey] == nil) {
+        _push[kDeviceTokensKey] = [NSMutableSet set];
+    } else if ([_push[kDeviceTokensKey] isKindOfClass:[NSArray class]]) {
+        _push[kDeviceTokensKey] = [NSMutableSet setWithArray:_push[kDeviceTokensKey]];
+    }
+    return _push[kDeviceTokensKey];
+}
+
 - (void) changePassword:(NSString*)newPassword completionBlock:(KCSCompletionBlock)completionBlock
 {
     if (![self isEqual:[KCSUser activeUser]]){
@@ -1080,18 +1078,6 @@ void setActive(KCSUser* user)
         NSString* pwd = [self.password copy];
         
         self.password = newPassword;
-        
-        // Extract all of the items from the Array into a set, so adding the "new" device token does
-        // the right thing.  This might be less efficient than just iterating, but these routines have
-        // been optimized, we do this now, since there's no other place guarenteed to merge.
-        // Login/create store this info
-        KCSDevice *sp = [KCSDevice currentDevice];
-        
-        if (sp.deviceToken != nil){
-            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
-            [tmpSet addObject:[sp deviceTokenString]];
-            self.deviceTokens = [tmpSet allObjects];
-        }
         
         KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
         BOOL isPostRequest = obj.isPostRequest;

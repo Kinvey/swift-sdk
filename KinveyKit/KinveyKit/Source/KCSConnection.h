@@ -40,5 +40,6 @@
           failureBlock:(KCSConnectionFailureBlock)onFailure
       usingCredentials:(NSURLCredential *)credentials;
 
+- (void) cancel;
 
 @end
