@@ -60,6 +60,13 @@ void setActive(KCSUser* user)
 #pragma clang diagnostic pop
 }
 
+#warning cleanup
+@interface KCSPush()
+@property (nonatomic, retain, readwrite) NSData  *deviceToken;
+@property (nonatomic) BOOL hasToken;
+@property (nonatomic) BOOL pushEnabled;
+@end
+
 @interface KCSUser()
 @property (nonatomic, strong) NSMutableDictionary *userAttributes;
 @property (nonatomic, strong) NSDictionary* oauthTokens;
@@ -100,7 +107,7 @@ void setActive(KCSUser* user)
     [KCSKeyChain removeStringForKey: kKeychainPropertyDictKey];
 }
 
-+ (void) setupCurrentUser:(KCSUser*)user properties:(NSDictionary*)dictionary password:(NSString*)password username:(NSString*)username
++ (void) setupCurrentUser:(KCSUser*)user properties:(NSDictionary*)dictionary password:(NSString*)password username:(NSString*)username completionBlock:(KCSUserCompletionBlock)block
 {
     [KCSKeyChain setDict:dictionary forKey:kKeychainPropertyDictKey];
     
@@ -166,7 +173,7 @@ void setActive(KCSUser* user)
     setActive(user);
     
     [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
-#warning        //TODO handle push
+        block(self, error, -1);
     }];
 }
 
@@ -187,7 +194,9 @@ static KCSRESTRequest* lastBGUpdate = nil;
             // Ok, we're really authd
             if ([response responseCode] < 300) {
                 NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-                [self setupCurrentUser:user properties:dictionary password:user.password username:user.username];
+                [self setupCurrentUser:user properties:dictionary password:user.password username:user.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                    //TODO: handle error
+                }];
             } else {
                 KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
             }
@@ -271,10 +280,12 @@ static KCSRESTRequest* lastBGUpdate = nil;
             
             // Ok, we're really authd
             NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-            [self setupCurrentUser:createdUser properties:dictionary password:password username:uname];
-            
-            // NB: The delegate MUST retain created user!
-            completionBlock(createdUser, nil, KCSUserCreated);
+            [self setupCurrentUser:createdUser properties:dictionary password:password username:uname completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                //TODO: handle register error
+                
+                // NB: The delegate MUST retain created user!
+                completionBlock(createdUser, nil, KCSUserCreated);
+            }];
         };
         
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
@@ -309,15 +320,19 @@ static KCSRESTRequest* lastBGUpdate = nil;
         createdUser.sessionAuth = [KCSKeyChain getStringForKey:kKeychainAuthTokenKey];
         
         NSDictionary* properties = [KCSKeyChain getDictForKey:kKeychainPropertyDictKey];
-        if (properties) {
-            [self setupCurrentUser:createdUser properties:properties password:createdUser.password username:createdUser.username];
-        }
         
         setActive(createdUser);
         [self updateUserInBackground:createdUser];
-        
-        // Delegate must retain createdUser
-        completionBlock(createdUser, nil, KCSUserFound);
+
+        if (properties) {
+            [self setupCurrentUser:createdUser properties:properties password:createdUser.password username:createdUser.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                //TODO: handle register error
+                
+                // Delegate must retain createdUser
+                completionBlock(createdUser, nil, KCSUserFound);
+
+            }];
+        }
     }
 }
 
@@ -360,12 +375,15 @@ static KCSRESTRequest* lastBGUpdate = nil;
         createdUser.sessionAuth = [KCSKeyChain getStringForKey:kKeychainAuthTokenKey];
         
         NSDictionary* properties = [KCSKeyChain getDictForKey:kKeychainPropertyDictKey];
-        if (properties) {
-            [self setupCurrentUser:createdUser properties:properties password:createdUser.password username:createdUser.username];
-        }
-        
         setActive(createdUser);
         [self updateUserInBackground:createdUser];
+
+        if (properties) {
+            [self setupCurrentUser:createdUser properties:properties password:createdUser.password username:createdUser.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                //TODO: handle error
+            }];
+        }
+        
     }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
@@ -420,10 +438,12 @@ static KCSRESTRequest* lastBGUpdate = nil;
         }
         // Ok, we're really authd
         NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-        [self setupCurrentUser:createdUser properties:dictionary password:password username:username];
-        
-        // Delegate must retain createdUser
-        completionBlock(createdUser, nil, KCSUserFound);
+        [self setupCurrentUser:createdUser properties:dictionary password:password username:username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+            //TODO: handle registration error
+            
+            // Delegate must retain createdUser
+            completionBlock(createdUser, nil, KCSUserFound);
+        }];
     };
     
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
@@ -472,7 +492,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
     [self clearSavedCredentials];
     NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
     KCSUser* createdUser = [[KCSUser alloc] init];
-    [self setupCurrentUser:createdUser properties:dictionary password:nil username:nil];
     
     NSError* error = nil;
     int status = 0;
@@ -485,8 +504,14 @@ static KCSRESTRequest* lastBGUpdate = nil;
                                                                          withRecoveryOptions:nil];
         error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
     }
-    // Delegate must retain createdUser
-    completionBlock(createdUser, error, status);
+    [self setupCurrentUser:createdUser properties:dictionary password:nil username:nil completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        //TODO: handle registration error
+        
+        
+        // Delegate must retain createdUser
+        completionBlock(createdUser, error, status);
+    }];
+
 }
 
 //TODO: constants for fields
@@ -689,6 +714,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
 //                }
 //            } withProgressBlock:nil];
 //        }
+        [[KCSPush sharedPush] setDeviceToken:nil];
         
         [KCSUser clearSavedCredentials];
         
@@ -808,8 +834,10 @@ static KCSRESTRequest* lastBGUpdate = nil;
                 NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
                 completionBlock(nil, error);
             } else {
-                [KCSUser setupCurrentUser:self properties:jsonResponse password:self.password username:self.username];
-                completionBlock(@[self], nil);
+                [KCSUser setupCurrentUser:self properties:jsonResponse password:self.password username:self.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                    //TODO: handle registration error
+                    completionBlock(@[self], nil);
+                }];
             }
         };
         
@@ -1121,8 +1149,11 @@ static KCSRESTRequest* lastBGUpdate = nil;
                 NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
                 completionBlock(nil, error);
             } else {
-                [KCSUser setupCurrentUser:self properties:jsonResponse password:newPassword username:self.username];
-                completionBlock([NSArray arrayWithObject:self], nil);
+                [KCSUser setupCurrentUser:self properties:jsonResponse password:newPassword username:self.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                    //TODO: handle registration error
+                    completionBlock(@[self], nil);
+                }];
+                
             }
         };
         

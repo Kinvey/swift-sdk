@@ -187,8 +187,10 @@ typedef enum KCS_PUSH_MODE : NSInteger {
  @param application The application sending this message.
  @param deviceToken The device token of the device this instance of the application is running on.
  @param completionBlock
+ 
  @since 1.19.0
  */
+#warning doc example and completionBlock
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken completionBlock:(void (^)(BOOL success, NSError* error))completionBlock;
 
 /*! Failed to register device for remote notifications
