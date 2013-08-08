@@ -228,6 +228,7 @@
 - (void) unRegisterDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock
 {
     if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == YES) {
+        
         KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
         request.httpMethod = kKCSRESTMethodPOST;
         request.contextRoot = kKCSContextPUSH;
@@ -246,7 +247,7 @@
                 [[KCSUser activeUser].deviceTokens removeObject:[self deviceTokenString]];
             }
             if (completionBlock) {
-                completionBlock(error != nil, error);
+                completionBlock(error == nil, error);
             }
         }];
     } else {
