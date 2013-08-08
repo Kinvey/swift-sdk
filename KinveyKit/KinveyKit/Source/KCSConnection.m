@@ -32,5 +32,9 @@
 
 }
 
+- (void) cancel
+{
+    [self doesNotRecognizeSelector:_cmd];
+}
 
 @end

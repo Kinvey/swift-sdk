@@ -12,7 +12,6 @@
 
 #import "KCSLogManager.h"
 #import "KinveyErrorCodes.h"
-#import "KCSDevice.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
 
 #import "KCSRequest.h"
@@ -21,7 +20,6 @@
 #define UAPushBadgeSettingsKey @"UAPushBadge"
 
 @interface KCSPush()
-- (BOOL)initializeUrbanAirshipWithOptions: (NSDictionary *)options error:(NSError**)error;
 @property (nonatomic, retain, readwrite) NSData  *deviceToken;
 @property (nonatomic) BOOL hasToken;
 @property (nonatomic) BOOL pushEnabled;
@@ -57,52 +55,30 @@
 
 - (BOOL) onLoadHelper:(NSDictionary *)options error:(NSError**)error
 {
-    return [self initializeUrbanAirshipWithOptions:options error:error];
+    [self doRegister];
+    return YES;
 }
 
 + (void) initializePushWithPushKey:(NSString*)pushKey pushSecret:(NSString*)pushSecretKey mode:(KCS_PUSH_MODE)pushMode enabled:(BOOL)enabled
 {
-    NSString* modeString;
-    switch (pushMode) {
-        case KCS_PUSHMODE_DEVELOPMENT:
-            modeString = KCS_PUSH_DEVELOPMENT;
-            break;
-        case KCS_PUSHMODE_PRODUCTION:
-            modeString = KCS_PUSH_DEVELOPMENT;
-            break;
-        default:
-            [[NSException exceptionWithName:@"Invalid Push Setup" reason:@"Push Mode should be one of Development or Production" userInfo:nil] raise];
-            break;
-    }
-    
-    NSError* error = nil;
-    BOOL setUp = [[KCSPush sharedPush] initializeUrbanAirshipWithOptions:@{ KCS_PUSH_IS_ENABLED_KEY : enabled ? @"YES" : @"NO",
-                                                       KCS_PUSH_KEY_KEY : pushKey,
-                                                    KCS_PUSH_SECRET_KEY : pushSecretKey,
-                                                      KCS_PUSH_MODE_KEY : modeString
-                  } error:&error];
-    if (setUp == NO) {
-        NSAssert(error == nil, @"Push not set up correctly: %@", error);
-    }
+    [self registerForPush];
 }
 
-#warning remove options in doc & api
-- (BOOL) initializeUrbanAirshipWithOptions:(NSDictionary *)options error:(NSError**)error
++ (void) registerForPush
 {
-    if (fieldExistsAndIsNO(options, KCS_PUSH_IS_ENABLED_KEY)){
-        // We don't want any of this code, so... we're done.
-        self.pushEnabled = NO;
-        return NO;
-    }
-    
+    [[KCSPush sharedPush] doRegister];
+}
+
+- (void) doRegister
+{
     self.pushEnabled = YES;
     [self registerForRemoteNotifications];
     
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:UAPushBadgeSettingsKey];
     [self resetPushBadge];//zero badge
-    
-    return YES;
 }
+
+#pragma mark - Properties
 
 - (BOOL) autobadgeEnabled
 {
@@ -181,20 +157,18 @@
 }
 
 #pragma mark - Device Tokens
-
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    [self application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken completionBlock:nil];
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken completionBlock:(void (^)(BOOL success, NSError* error))completionBlock
 {
     self.hasToken = YES;
     
     // Capture the token for us to use later
     self.deviceToken = deviceToken;
-    [KCSDevice currentDevice].deviceToken = deviceToken;
-    
-    if ([KCSUser activeUser] != nil) {
-        //if we have a current user, saving it will register the device token with the user collection on the backend
-        //nil delegate because this is a silent try, and there's nothing to do if error
-        [self registerDeviceToken];
-    }
+    [self registerDeviceToken:completionBlock];
 }
 
 - (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -205,13 +179,12 @@
     //TODO: simulator error: Error Domain=NSCocoaErrorDomain Code=3010 "remote notifications are not supported in the simulator" UserInfo=0xa6992d0 {NSLocalizedDescription=remote notifications are not supported in the simulator}
 }
 
-- (void) removeDeviceToken
+- (void) removeDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock
+
 {
     self.pushEnabled = NO;
+    [self unRegisterDeviceToken:completionBlock];
     self.deviceToken = nil;
-    [KCSDevice currentDevice].deviceToken = nil;
-#warning remove from server
-#warning remove kcsdevice
 }
 
 - (NSString *)deviceTokenString
@@ -222,50 +195,63 @@
     return deviceToken;
 }
 
-- (void) registerDeviceToken
+- (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock
 {
-    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-    request.httpMethod = kKCSRESTMethodPOST;
-    request.contextRoot = kKCSContextPUSH;
-    request.pathComponents = @[@"register-device"];
-    request.body = @{@"userId"   : [KCSUser activeUser].userId,
-                     @"deviceId" : [self deviceTokenString],
-                     @"platform" : @"ios"};
-    
-    request.authorization = [KCSUser activeUser];
-    
-    [request run:^(id results, NSError *error) {
-        //TODO handle here
-        if (error) {
-            KCSLogError(@"Device token did not register");
-        } else {
-            KCSLogDebug(@"Device token registered");
-        }
-    }];
-
+    if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == NO) {
+        
+        KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
+        request.httpMethod = kKCSRESTMethodPOST;
+        request.contextRoot = kKCSContextPUSH;
+        request.pathComponents = @[@"register-device"];
+        request.body = @{@"userId"   : [KCSUser activeUser].userId,
+                         @"deviceId" : [self deviceTokenString],
+                         @"platform" : @"ios"};
+        
+        request.authorization = [KCSUser activeUser];
+        
+        [request run:^(id results, NSError *error) {
+            if (error) {
+                KCSLogError(@"Device token did not register");
+            } else {
+                KCSLogDebug(@"Device token registered");
+                [[KCSUser activeUser].deviceTokens addObject:[self deviceTokenString]];
+            }
+            if (completionBlock) {
+                completionBlock(error == nil, error);
+            }
+        }];
+    } else {
+        completionBlock(NO, nil);
+    }
 }
 
-- (void) unRegisterDeviceToken
+- (void) unRegisterDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock
 {
-    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-    request.httpMethod = kKCSRESTMethodPOST;
-    request.contextRoot = kKCSContextPUSH;
-    request.pathComponents = @[@"unregister-device"];
-    request.body = @{@"userId"   : [KCSUser activeUser].userId,
-                     @"deviceId" : [self deviceTokenString],
-                     @"platform" : @"ios"};
-    
-    request.authorization = [KCSUser activeUser];
-    
-    [request run:^(id results, NSError *error) {
-        //TODO handle here
-        if (error) {
-            KCSLogError(@"Device token did not un-register");
-        } else {
-            KCSLogDebug(@"Device token un-registered");
-        }
-    }];
-    
+    if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == YES) {
+        KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
+        request.httpMethod = kKCSRESTMethodPOST;
+        request.contextRoot = kKCSContextPUSH;
+        request.pathComponents = @[@"unregister-device"];
+        request.body = @{@"userId"   : [KCSUser activeUser].userId,
+                         @"deviceId" : [self deviceTokenString],
+                         @"platform" : @"ios"};
+        
+        request.authorization = [KCSUser activeUser];
+        
+        [request run:^(id results, NSError *error) {
+            if (error) {
+                KCSLogError(@"Device token did not un-register");
+            } else {
+                KCSLogDebug(@"Device token un-registered");
+                [[KCSUser activeUser].deviceTokens removeObject:[self deviceTokenString]];
+            }
+            if (completionBlock) {
+                completionBlock(error != nil, error);
+            }
+        }];
+    } else {
+        completionBlock(NO, nil);
+    }
 }
 
 #pragma mark - Badges

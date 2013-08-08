@@ -15,6 +15,8 @@
          *TODO show to wait for kinvey init
 * TODO forgot uname
 * TODO push 
+    * Deprecated `-[KCSPush application:didRegisterForRemoteNotificationsWithDeviceToken:]` for `application:didRegisterForRemoteNotificationsWithDeviceToken:completionBlock:`.
+    * Deprecated `+[KCSPush initializePushWithPushKey:pushSecret:mode:enabled:` for `registerForPush`.
 * Removed Urban Airship library dependency. (Note that Push notifications still uses Urban Airship on the backend).
     * libUAriship-1.4.0 is no longer needed, can be removed from the project
     * The frameworks now used by the library are:

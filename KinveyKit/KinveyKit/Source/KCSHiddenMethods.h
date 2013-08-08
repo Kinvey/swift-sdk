@@ -29,6 +29,7 @@
 #import "KCSMetadata.h"
 #import "KCSFileStore.h"
 #import "KCSFile.h"
+#import "KCSPush.h"
 
 NSDictionary* defaultBuilders();
 
@@ -98,5 +99,12 @@ NSDictionary* defaultBuilders();
 @property (nonatomic, retain) NSURL* remoteURL;
 - (void) updateAfterUpload:(KCSFile*)newFile;
 @end
+
+
+@interface KCSPush (KCSHiddenMethods)
+- (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
+- (void) unRegisterDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
+@end
+
 
 #endif

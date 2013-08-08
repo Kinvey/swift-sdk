@@ -61,6 +61,10 @@ NSString * getLogDate(void)
 + (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
 @end
 
+@interface KCSRESTRequest ()
+@property (nonatomic, strong) KCSConnection *connection;
+@end
+
 @implementation KCSRESTRequest
 
 - (void)logResource: (NSString *)resource usingMethod:(NSInteger)requestMethod
@@ -129,13 +133,12 @@ NSString * getLogDate(void)
 
 - (void)start
 {
-    KCSConnection *connection;
     KCSClient *kinveyClient = [KCSClient sharedClient];
       
     if (self.isMockRequest) {
-        connection = [KCSConnectionPool connectionWithConnectionType:self.mockConnection];
+        self.connection = [KCSConnectionPool connectionWithConnectionType:self.mockConnection];
     } else {
-        connection = [KCSConnectionPool asyncConnection];
+        self.connection = [KCSConnectionPool asyncConnection];
     }
     
     [self.request setHTTPMethod: [KCSGenericRESTRequest getHTTPMethodForConstant: self.method]];
@@ -179,9 +182,9 @@ NSString * getLogDate(void)
         }
     }
     
-    connection.followRedirects = self.followRedirects;
+    self.connection.followRedirects = self.followRedirects;
     
-    [connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:nil];    
+    [self.connection performRequest:self.request progressBlock:self.progressAction completionBlock:self.completionAction failureBlock:self.failureAction usingCredentials:nil];
 }
 
 - (void) setAuth:(NSString*)username password:(NSString*)password
@@ -190,4 +193,9 @@ NSString * getLogDate(void)
     [self.request setValue:authString forHTTPHeaderField:@"Authorization"];
 }
 
+- (void) cancel
+{
+    KCSLogNetwork(@"Cancelling request...");
+    [self.connection cancel];
+}
 @end
