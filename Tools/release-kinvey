@@ -52,9 +52,7 @@ mkdir ${REXTRAS}
 
 # Copy KinveyKit.framework
 ( cd ${KINVEYKITLOC}/build/Release-iphoneos/ && tar cf - ./KinveyKit.framework )| ( cd ${RKK}/ && tar -xf - )
-( cd ${KINVEYKITLOC} && tar cf - ./Airship ) | ( cd ${RKK}/ && tar -xf - )
 #cp -R ${KINVEYKITLOC}/build/Debug-iphoneos/KinveyKit.framework  ${RELEASEDIR}/KinveyKit-${RELEASENO}/
-#cp -R ${KINVEYKITLOC}/Airship ${RELEASEDIR}/KinveyKit-${RELEASENO}/
 
 # Copy Docs
 ( cd doc/install/ && tar cf - ./com.kinvey.KinveyKit.docset ) | ( cd ${RKK}/ && tar -xf - )
@@ -67,7 +65,7 @@ mkdir ${REXTRAS}
 # Copy Project & Add Lib
 ( cd ${KINVEYKITLOC}/.. && tar cf - ./ProjectTemplates) | (cd ${REXTRAS}/ && tar -xf - ) 
 cp -R ${RKK}/KinveyKit.framework "${REXTRAS}/ProjectTemplates/Single View Application (Kinvey).xctemplate/"
-cp ${RKK}/Airship/*.a "${REXTRAS}/ProjectTemplates/Single View Application (Kinvey).xctemplate/"
+#cp ${RKK}/Airship/*.a "${REXTRAS}/ProjectTemplates/Single View Application (Kinvey).xctemplate/"
 
 # Clean up SVN
 find ${RELEASEDIR}/ -name '.svn' -print0 | xargs -0 rm -r

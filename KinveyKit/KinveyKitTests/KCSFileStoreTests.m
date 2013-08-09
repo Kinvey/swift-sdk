@@ -2382,6 +2382,7 @@ NSData* testData2()
 }
 
 //TODO: implement this
+/*
 - (void) testUploadResume
 {
     //1. Upload partial
@@ -2466,7 +2467,7 @@ NSData* testData2()
     }];
     [self poll];
 }
-
+*/
 - (void) TODO_testStreamingUpload
 {
     //TODO: try this out in the future

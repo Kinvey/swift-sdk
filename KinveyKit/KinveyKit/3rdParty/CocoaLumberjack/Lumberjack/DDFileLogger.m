@@ -1017,14 +1017,19 @@
 
 - (NSString *)description
 {
-	return [@{@"filePath": self.filePath,
-		@"fileName": self.fileName,
-		@"fileAttributes": self.fileAttributes,
-		@"creationDate": self.creationDate,
-		@"modificationDate": self.modificationDate,
-		@"fileSize": @(self.fileSize),
-		@"age": @(self.age),
-		@"isArchived": @(self.isArchived)} description];
+    id date = self.creationDate == nil ? @"" : self.creationDate;
+    id modDate = self.modificationDate == nil ? @"" : self.modificationDate;
+    id fs = @(self.fileSize);
+    id a = @(self.age);
+    NSDictionary* properties = @{@"filePath": self.filePath,
+                                 @"fileName": self.fileName,
+                                 @"fileAttributes": self.fileAttributes,
+                                 @"creationDate": date,
+                                 @"modificationDate": modDate,
+                                 @"fileSize": fs,
+                                 @"age": a,
+                                 @"isArchived": @(self.isArchived)};
+	return [properties description];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

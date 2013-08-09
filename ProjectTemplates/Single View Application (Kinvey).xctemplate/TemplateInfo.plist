@@ -22,13 +22,6 @@
 			<key>Path</key>
 			<string>KinveyKit.framework</string>
 		</dict>
-		<key>libUAirship-1.4.0.a</key>
-		<dict>
-			<key>Group</key>
-			<string>Libraries</string>
-			<key>Path</key>
-			<string>libUAirship-1.4.0.a</string>
-		</dict>
 		<key>*:*:importKinvey</key>
 		<string>#import &lt;KinveyKit/KinveyKit.h&gt;
 </string>
@@ -55,7 +48,6 @@
 		<string>___VARIABLE_classPrefix:identifier___ViewController.m:implementation:viewDidLoad</string>
 		<string>___VARIABLE_classPrefix:identifier___ViewController.m:implementation:didReceiveMemoryWarning</string>
 		<string>KinveyKit.framework</string>
-		<string>libUAirship-1.4.0.a</string>
 		<string>___VARIABLE_classPrefix:identifier___AppDelegate.m:import:importKinvey</string>
 		<string>___VARIABLE_classPrefix:identifier___AppDelegate.m:applicationdidFinishLaunchingWithOptions:kinvey</string>
 	</array>

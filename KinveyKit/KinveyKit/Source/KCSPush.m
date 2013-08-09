@@ -221,7 +221,9 @@
             }
         }];
     } else {
-        completionBlock(NO, nil);
+        if (completionBlock) {
+            completionBlock(NO, nil);
+        }
     }
 }
 
@@ -245,12 +247,14 @@
             } else {
                 KCSLogDebug(@"Device token un-registered");
                 [[KCSUser activeUser].deviceTokens removeObject:[self deviceTokenString]];
+                self.deviceToken = nil;
             }
             if (completionBlock) {
                 completionBlock(error == nil, error);
             }
         }];
     } else {
+        self.deviceToken = nil;
         completionBlock(NO, nil);
     }
 }

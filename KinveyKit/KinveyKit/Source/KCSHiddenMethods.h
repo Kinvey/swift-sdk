@@ -104,6 +104,7 @@ NSDictionary* defaultBuilders();
 @interface KCSPush (KCSHiddenMethods)
 - (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
 - (void) unRegisterDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
+@property (nonatomic, retain) id deviceToken;
 @end
 
 

@@ -59,6 +59,12 @@
 
 - (id) jsonResponseValue:(NSError**) anError
 {
+    if (self.responseData == nil) {
+        return nil;
+    }
+    if (self.responseData.length == 0) {
+        return [NSData data];
+    }
     //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
     NSDictionary *jsonResponse = [parser objectWithData:self.responseData];
