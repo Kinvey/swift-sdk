@@ -41,6 +41,7 @@ typedef enum KCS_PUSH_MODE : NSInteger {
 ///---------------------------------------------------------------------------------------
 /// @name Initialization & disposal
 ///---------------------------------------------------------------------------------------
+
 /*! Return the single shared instance of the Push Notification Service
  
  This routine returns the shared Push Service object, creating it if required.  This should be used
@@ -174,8 +175,8 @@ typedef enum KCS_PUSH_MODE : NSInteger {
 /*! Register device for remote notifications
  
  The Kinvey library requires information from the registration of remote notifications to perform several tasks.
- This information needs to be forwarded to the library when received by the App Delegate.
- 
+ This information needs to be forwarded to the library when received by the App Delegate. This method registers the token with the active user. If there is no active user at the time, the push token is cached and registered automatically registered when the active user is set.
+
  Call this in your implementation for handling registration:
  
  - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -186,11 +187,10 @@ typedef enum KCS_PUSH_MODE : NSInteger {
  
  @param application The application sending this message.
  @param deviceToken The device token of the device this instance of the application is running on.
- @param completionBlock
+ @param completionBlock called after the token is registered on the server. `success` will be no if there is active user or the registration fails. If there is a user and the registration fails, then there will be an error object. In the error case, the request should be tried again later if it was a network error.
  
  @since 1.19.0
  */
-#warning doc example and completionBlock
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken completionBlock:(void (^)(BOOL success, NSError* error))completionBlock;
 
 /*! Failed to register device for remote notifications

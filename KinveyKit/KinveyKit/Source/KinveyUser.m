@@ -60,13 +60,6 @@ void setActive(KCSUser* user)
 #pragma clang diagnostic pop
 }
 
-#warning cleanup
-@interface KCSPush()
-@property (nonatomic, retain, readwrite) NSData  *deviceToken;
-@property (nonatomic) BOOL hasToken;
-@property (nonatomic) BOOL pushEnabled;
-@end
-
 @interface KCSUser()
 @property (nonatomic, strong) NSMutableDictionary *userAttributes;
 @property (nonatomic, strong) NSDictionary* oauthTokens;
@@ -173,7 +166,7 @@ void setActive(KCSUser* user)
     setActive(user);
     
     [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
-        block(self, error, -1);
+        block(user, error, -1);
     }];
 }
 
