@@ -26,6 +26,59 @@
 
 #import "KCSEntityCache.h"
 
+@interface KCSClientConfiguration : NSObject
+@property (nonatomic, copy) NSString* appKey;
+@property (nonatomic, copy) NSString* appSecret;
+@property (nonatomic, copy) NSString* serviceHostname;
+@end
+@implementation KCSClientConfiguration
++ (instancetype) loadFromEnvironment
+{
+    KCSClientConfiguration* configuration = nil;
+    NSString* bundleId = [[NSBundle mainBundle] bundleIdentifier];
+    if (bundleId != nil) {
+        NSString* appKeyKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_APP_KEY"];
+        NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:appKeyKey];
+        if (appKey) {
+            NSString* appSecretKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_APP_KEY"];
+            NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:appSecretKey];
+            if (appSecret) {
+                configuration = [[KCSClientConfiguration alloc] init];
+                configuration.appKey = appKey;
+                configuration.appSecret = appSecret;
+                
+                NSString* serviceHostnameKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_SERVICE_KEY"];
+                NSString* serviceHostname = [[[NSProcessInfo processInfo] environment] objectForKey:serviceHostnameKey];
+                configuration.serviceHostname = serviceHostname;
+                return configuration;
+            }
+        }
+        
+    }
+    
+    NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
+    if (appKey) {
+        NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
+        if (appSecret) {
+            configuration = [[KCSClientConfiguration alloc] init];
+            configuration.appKey = appKey;
+            configuration.appSecret = appSecret;
+            
+            NSString* serviceHostname = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_SERVICE_KEY"];
+            configuration.serviceHostname = serviceHostname;
+            return configuration;
+        }
+    }
+
+    return configuration;
+}
+
+- (BOOL) valid
+{
+    return _appKey != nil && _appSecret != nil;
+}
+@end
+
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
 @interface KCSClient ()
@@ -144,6 +197,17 @@
     } else if (appSecret == nil) {
         [self killAppViaExceptionNamed:@"KinveyInitializationError"
                             withReason:@"Nil value used for appKey, cannot use KinveyService, no recovery available"];
+    }
+    
+    if ([appKey hasPrefix:@"<"] || [appSecret hasPrefix:@"<"]) {
+        KCSClientConfiguration* config = [KCSClientConfiguration loadFromEnvironment];
+        if (config) {
+            appKey = config.appKey;
+            appSecret = config.appSecret;
+            if (config.serviceHostname) {
+                self.serviceHostname = config.serviceHostname;
+            }
+        }
     }
     
     NSString* oldAppKey = [KCSKeyChain getStringForKey:@"kinveykit.appkey"];
