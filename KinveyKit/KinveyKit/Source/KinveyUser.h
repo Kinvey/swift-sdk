@@ -413,6 +413,13 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  */
 + (void) sendPasswordResetForUser:(NSString*)usernameOrEmail withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
 
+/** Sends a username reminder email to the specified user.
+ 
+ @param email the email address to send a reminder to
+ @param completionBlock returns `true` if the system received the request, regardless if the email is valid, associated with a user, or actually sent. The error object will be non-nil if a network error occurred.
+ @since 1.19.0
+ */
++ (void) sendForgotUsername:(NSString*)email withCompletionBlock:(KCSUserSendEmailBlock)completionBlock;
 
 /** Sends an request to confirm email address to the specified user.
  
