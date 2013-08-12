@@ -172,38 +172,60 @@ void setActive(KCSUser* user)
 
 static KCSRESTRequest* lastBGUpdate = nil;
 
-+ (void) updateUserInBackground:(KCSUser*)user
+- (void) refreshFromServer:(KCSCompletionBlock)completionBlock
 {
-    if (user.userId != nil) {
-        [lastBGUpdate cancel];
-        
-        lastBGUpdate = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", user.userId] usingMethod:kGetRESTMethod];
-        [lastBGUpdate setContentType:KCS_JSON_TYPE];
-        
-        // Set up our callbacks
-        KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-            lastBGUpdate = nil;
-            
-            // Ok, we're really authd
-            if ([response responseCode] < 300) {
-                NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-                [self setupCurrentUser:user properties:dictionary password:user.password username:user.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-                    //TODO: handle error
-                }];
-            } else {
-                KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
-            }
-        };
-        
-        KCSConnectionFailureBlock fBlock = ^(NSError *error){
-            lastBGUpdate = nil;
-            KCSLogError(@"Internal Error Updating user: %@", error);
-            return;
-        };
-        
-        [lastBGUpdate withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
-        [lastBGUpdate start];
+    if ([KCSUser activeUser] != self) {
+        KCSLogError(@"Error: Attempting to refresh a non-activeUser");
+        NSDictionary* errorInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"User refresh is not on active user" withFailureReason:@"" withRecoverySuggestion:@"" withRecoveryOptions:@[]];
+        NSError* error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
+        completionBlock(nil, error);
+        return;
     }
+    if (self.userId == nil) {
+        KCSLogError(@"Error refreshing user, no user id.");
+        NSDictionary* errorInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"User refresh is not on active user" withFailureReason:@"" withRecoverySuggestion:@"" withRecoveryOptions:@[]];
+        NSError* error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
+        completionBlock(nil, error);
+        return;
+    }
+    [lastBGUpdate cancel];
+    
+    lastBGUpdate = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", self.userId] usingMethod:kGetRESTMethod];
+    [lastBGUpdate setContentType:KCS_JSON_TYPE];
+    
+    // Set up our callbacks
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        lastBGUpdate = nil;
+
+        if ([KCSUser activeUser] != self) {
+            KCSLogError(@"Error: Attempting to refresh a non-activeUser");
+            NSDictionary* errorInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"User refresh is not on active user" withFailureReason:@"" withRecoverySuggestion:@"" withRecoveryOptions:@[]];
+            NSError* error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
+            completionBlock(nil, error);
+            return;
+        }
+        
+        // Ok, we're really auth'd
+        if ([response responseCode] < 300) {
+            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
+            [KCSUser setupCurrentUser:self properties:dictionary password:self.password username:self.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                completionBlock(@[user], errorOrNil);
+            }];
+        } else {
+            KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
+            NSError* error = [KCSErrorUtilities createError:[response jsonResponseValue] description:@"Error updating active User" errorCode:response.responseCode domain:KCSUserErrorDomain requestId:response.requestId];
+            completionBlock(@[self], error);
+        }
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        lastBGUpdate = nil;
+        KCSLogError(@"Internal Error Updating user: %@", error);
+        completionBlock(nil, error);
+    };
+    
+    [lastBGUpdate withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
+    [lastBGUpdate start];
 }
 
 #pragma mark - Create new Users
@@ -312,20 +334,10 @@ static KCSRESTRequest* lastBGUpdate = nil;
         createdUser.userId = [KCSKeyChain getStringForKey:kKeychainUserIdKey];
         createdUser.sessionAuth = [KCSKeyChain getStringForKey:kKeychainAuthTokenKey];
         
-        NSDictionary* properties = [KCSKeyChain getDictForKey:kKeychainPropertyDictKey];
-        
         setActive(createdUser);
-        [self updateUserInBackground:createdUser];
-
-        if (properties) {
-            [self setupCurrentUser:createdUser properties:properties password:createdUser.password username:createdUser.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-                //TODO: handle register error
-                
-                // Delegate must retain createdUser
-                completionBlock(createdUser, nil, KCSUserFound);
-
-            }];
-        }
+        [createdUser refreshFromServer:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+            completionBlock(createdUser, errorOrNil, KCSUserFound);
+        }];
     }
 }
 
@@ -369,14 +381,14 @@ static KCSRESTRequest* lastBGUpdate = nil;
         
         NSDictionary* properties = [KCSKeyChain getDictForKey:kKeychainPropertyDictKey];
         setActive(createdUser);
-        [self updateUserInBackground:createdUser];
-
         if (properties) {
             [self setupCurrentUser:createdUser properties:properties password:createdUser.password username:createdUser.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
                 //TODO: handle error
             }];
         }
-        
+        [createdUser refreshFromServer:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+            //TODO: handle error
+        }];
     }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"

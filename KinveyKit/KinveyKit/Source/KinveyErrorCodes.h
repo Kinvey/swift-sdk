@@ -75,8 +75,10 @@ typedef enum KCSErrorCodes : NSInteger {
     KCSUserNoImplictUserError = 60014,
     KCSUnexpectedResultFromServerError = 60004,
     KCSAuthenticationRetryError = 60005,
+
     KCSUserAlreadyLoggedInError = 60006,
     KCSUserAlreadyExistsError = 60007,
+    
     KCSOperationRequiresCurrentUserError = 60008,
     KCSLoginFailureError = 60009,
     KCSUnexpectedError = 60010,
@@ -89,6 +91,8 @@ typedef enum KCSErrorCodes : NSInteger {
     
     KCSFileStoreServerError = 60200,
     KCSFileStoreLocalFileError = 60201,
+    
+    KCSUserObjectNotActiveError = 60300,
     
     // For testing only, no user should ever see this!
     KCSTestingError = 65535
