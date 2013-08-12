@@ -322,8 +322,9 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 - (void)logout;
 
 ///---------------------------------------------------------------------------------------
-/// @name Using User Attributes
+/// @name Updating the user object
 ///---------------------------------------------------------------------------------------
+                                                                                                                                                 
 /*! Load the data for the given user, user must be logged-in.
  *
  * @param delegate The delegate to inform once the action is complete.
@@ -334,6 +335,17 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 - (void)loadWithDelegate: (id<KCSEntityDelegate>)delegate;
 #pragma clang diagnostic pop
 
+/** Update the user object from the server.
+ 
+ The block will return and automatically update the `activeUser`.
+ 
+ __NOTE:__ this only works for the active user. Otherwise there will be an error.
+ 
+ @param completionBlock called when the refresh is complete or fails. The `objectsOrNil` property will have only the user, if there is no error.
+ @since 1.19.0
+ */
+- (void) refreshFromServer:(KCSCompletionBlock)completionBlock;
+                                                                                                                                                 
 /*! Called to update the Kinvey state of a user.
  * @param delegate The delegate to inform once the action is complete.
  * @deprecatedIn 1.19.0
@@ -347,6 +359,10 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  */
 - (void) saveWithCompletionBlock:(KCSCompletionBlock)completionBlock;
 
+//---------------------------------------------------------------------------------------
+/// @name Using User Attributes
+///---------------------------------------------------------------------------------------
+                                                                                                                                                 
 /*! Return the value for an attribute for this user
  * @param attribute The attribute to retrieve
  */

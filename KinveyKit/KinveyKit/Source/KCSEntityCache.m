@@ -272,13 +272,16 @@ NSString* KCSMongoObjectId()
         //TODO handle errors
         NSURL* url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", _persistenceId]]];
         BOOL wrote = [NSKeyedArchiver archiveRootObject:_cache toFile:[url path]];
+        KCSLogTrace(@"writing cache: %d", wrote);
         DBAssert(wrote, @"should have written cache");
         url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheq.plist", _persistenceId]]];
         wrote = [NSKeyedArchiver archiveRootObject:_queryCache toFile:[url path]];
+        KCSLogTrace(@"writing cache: %d", wrote);
         DBAssert(wrote, @"should have written cache");
 
         url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cacheg.plist", _persistenceId]]];
         wrote = [NSKeyedArchiver archiveRootObject:_groupingCache toFile:[url path]];
+        KCSLogTrace(@"writing cache: %d", wrote);
         DBAssert(wrote, @"should have written cache");
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearCaches) name:KCSActiveUserChangedNotification object:nil];
     }
