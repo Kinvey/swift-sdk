@@ -995,20 +995,21 @@ static KCSRESTRequest* lastBGUpdate = nil;
 
 + (void) sendForgotUsername:(NSString*)email withCompletionBlock:(KCSUserSendEmailBlock)completionBlock
 {
-    //app secret
+    NSParameterAssert(email);
     
-    // /rpc/:kid/:username/user-password-reset-initiate
-//    NSString* pwdReset = [[[[KCSClient sharedClient] rpcBaseURL] stringByAppendingStringWithPercentEncoding:username] stringByAppendingString:@"/user-password-reset-initiate"];
-//    //[NSString stringWithFormat:@"%@/user-password-reset-initiate",username]];
-//    KCSRESTRequest *request = [KCSRESTRequest requestForResource:pwdReset usingMethod:kPostRESTMethod];
-//    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
-//        //response will be a 204 if accepted by server
-//        completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
-//    } failureAction:^(NSError *error) {
-//        //do error
-//        completionBlock(NO, error);
-//    } progressAction:nil];
-//    [request start];
+    NSString* pwdReset = [[[KCSClient sharedClient] rpcBaseURL] stringByAppendingString:@"user-forgot-username"];
+    KCSRESTRequest *request = [KCSRESTRequest requestForResource:pwdReset usingMethod:kPostRESTMethod];
+    [request addHeaders:@{@"Content-Type":@"application/json"}];
+    [request setJsonBody:@{@"email" : email}];
+    
+    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
+        //response will be a 204 if accepted by server
+        completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
+    } failureAction:^(NSError *error) {
+        //do error
+        completionBlock(NO, error);
+    } progressAction:nil];
+    [request start];
 }
 
 + (void) checkUsername:(NSString*)potentialUsername withCompletionBlock:(KCSUserCheckUsernameBlock)completionBlock
