@@ -9,6 +9,7 @@
 #import <SenTestingKit/SenTestingKit.h>
 
 #import "KinveyCoreInternal.h"
+#import "KCSRequest2.h"
 
 @interface KinveyKit2Tests : SenTestCase
 //TODO: remove
@@ -77,63 +78,70 @@
     [super tearDown];
 }
 
-- (void)testExample
+- (void) testExample
 {
-    //TODO: mock server
-    NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
-    NSURL* pingURL = [NSURL URLWithString:pingStr];
-    
-    if ([KCSPlatformUtils supportsNSURLSession] == YES) {
-        KTNIY
-    } else {
-        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
-        
-        NSMutableDictionary* headers = [NSMutableDictionary dictionary];
-        headers[@"Content-Type"] = @"application/json";
-        headers[@"Authorization"] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
-        headers[@"X-Kinvey-Api-Version"] = @"3";
-        [request setAllHTTPHeaderFields:headers];
-        
-        NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
-        
-        self.downloadedData = [NSMutableData data];
-        
-        [connection start];
-    }
-    KTPollStart;
-    
-    //Client - init from plist
-    //client init from options
-    //client init from params
+    KCSRequest2* a = [[KCSRequest2 alloc] init];
+    [a start];
+    [self poll];
 }
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    KTAssertNoError;
-    KTPollDone;
-}
-
-- (void) connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    [self.downloadedData appendData:data];
-}
-
-- (void) connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
-    if (obj != nil && [obj isKindOfClass:[NSDictionary class]]) {
-        NSString* appHello = obj[@"kinvey"];
-        NSString* kcsVersion = obj[@"version"];
-        
-        STAssertNotNil(appHello, @"should get a hello");
-        STAssertNotNil(kcsVersion, @"should get a version");
-    } else {
-        //TODO: is an error
-    }
-    NSLog(@"obj: %@", obj);
-    STAssertNotNil(obj, @"should have an object back");
-    KTPollDone;
-}
+//- (void)testExample
+//{
+//    //TODO: mock server
+//    NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
+//    NSURL* pingURL = [NSURL URLWithString:pingStr];
+//    
+//    if ([KCSPlatformUtils supportsNSURLSession] == YES) {
+//        KTNIY
+//    } else {
+//        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
+//        
+//        NSMutableDictionary* headers = [NSMutableDictionary dictionary];
+//        headers[@"Content-Type"] = @"application/json";
+//        headers[@"Authorization"] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
+//        headers[@"X-Kinvey-Api-Version"] = @"3";
+//        [request setAllHTTPHeaderFields:headers];
+//        
+//        NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
+//        
+//        self.downloadedData = [NSMutableData data];
+//        
+//        [connection start];
+//    }
+//    KTPollStart;
+//    
+//    //Client - init from plist
+//    //client init from options
+//    //client init from params
+//}
+//
+//- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+//{
+//    KTAssertNoError;
+//    KTPollDone;
+//}
+//
+//- (void) connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+//{
+//    [self.downloadedData appendData:data];
+//}
+//
+//- (void) connectionDidFinishLoading:(NSURLConnection *)connection
+//{
+//    id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
+//    if (obj != nil && [obj isKindOfClass:[NSDictionary class]]) {
+//        NSString* appHello = obj[@"kinvey"];
+//        NSString* kcsVersion = obj[@"version"];
+//        
+//        STAssertNotNil(appHello, @"should get a hello");
+//        STAssertNotNil(kcsVersion, @"should get a version");
+//    } else {
+//        //TODO: is an error
+//    }
+//    NSLog(@"obj: %@", obj);
+//    STAssertNotNil(obj, @"should have an object back");
+//    KTPollDone;
+//}
 
 
 @end

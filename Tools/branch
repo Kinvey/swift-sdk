@@ -37,8 +37,9 @@ then
 fi
 
 #generate api file
-echo "-> generating api file
+echo "... generating api file"
 MINOR_VERSION="$BRANCH.0"
+
 Tools/iOSReleaseNotesBuilder buildapi KinveyKit $MINOR_VERSION
 svn add DocTemplates/apis/api$MINOR_VERSION.xml
 
@@ -51,7 +52,7 @@ then
 fi
 
 #generate diff html
-echo "-> generating diff html"
+echo "... generating diff html"
 Tools/iOSReleaseNotesBuilder diff KinveyKit/
 svn add KinveyKit/Documents/releasenotes/General/*
 
@@ -63,7 +64,7 @@ then
     exit
 fi
 
-echo "-> Commiting changes"
+echo "... Committing changes"
 CI_COMMAND="svn ci -m \"update files for branch $BRANCH re #$TICKET\""
 echo $CI_COMMAND
 
@@ -75,7 +76,7 @@ then
     exit
 fi
 
-echo "-> BRANCH in svn"
+echo "... BRANCH in svn"
 
 BRANCH_COMMAND="svn cp . https://subversion.assembla.com/svn/kinvey/ios-library/branches/$BRANCH -m \"branch $BRANCH re #$TICKET\""
 echo $BRANCH_COMMAND
