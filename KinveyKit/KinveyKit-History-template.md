@@ -2,7 +2,7 @@
 
 ## 1.19
 ### 1.19.0
-** Release Date:** TBD
+** Release Date:** August 13, 2013
 
 * The library no longer creates implicit users. All users must be explicitly set. However auto-generated users are still possible.
 	* Removed `KCSClient` key `KCS_USER_CAN_CREATE_IMPLICT`.
