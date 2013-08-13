@@ -1,0 +1,147 @@
+//
+//  KCSRequest2.m
+//  KinveyKit
+//
+//  Created by Michael Katz on 8/12/13.
+//  Copyright (c) 2013 Kinvey. All rights reserved.
+//
+
+#import "KCSRequest2.h"
+#import "KCS_SBJson.h"
+#import "KinveyCoreInternal.h"
+
+@interface KCSNSURLRequestOperation : NSOperation
+@property (nonatomic, strong) NSMutableData* downloadedData;
+@end
+
+@implementation KCSNSURLRequestOperation
+
+-(void)main {
+    // a lengthy operation
+    @autoreleasepool {
+        NSLog(@"started");
+        self.downloadedData = [NSMutableData data];
+        NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
+         NSURL* pingURL = [NSURL URLWithString:pingStr];
+     
+         NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
+     
+         NSMutableDictionary* headers = [NSMutableDictionary dictionary];
+         headers[@"Content-Type"] = @"application/json";
+         headers[@"Authorization"] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
+         headers[@"X-Kinvey-Api-Version"] = @"3";
+         [request setAllHTTPHeaderFields:headers];
+     
+         NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
+         [connection setDelegateQueue:[NSOperationQueue currentQueue]];
+         [connection start];
+    }
+}
+
+//- (void)start
+//{
+//    NSLog(@"started");
+//    self.downloadedData = [NSMutableData data];
+//    NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
+//    NSURL* pingURL = [NSURL URLWithString:pingStr];
+//
+//    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
+//    
+//    NSMutableDictionary* headers = [NSMutableDictionary dictionary];
+//    headers[@"Content-Type"] = @"application/json";
+//    headers[@"Authorization"] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
+//    headers[@"X-Kinvey-Api-Version"] = @"3";
+//    [request setAllHTTPHeaderFields:headers];
+//    
+//    NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
+//    [connection setDelegateQueue:[NSOperationQueue currentQueue]];
+//    [connection start];
+//
+//}
+
+- (BOOL)isFinished
+{
+    return NO;
+}
+
+- (void) complete:(NSError*) error
+{
+    
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    [self complete:error];
+}
+
+- (void) connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [self.downloadedData appendData:data];
+}
+
+- (void) connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
+    if (obj != nil && [obj isKindOfClass:[NSDictionary class]]) {
+        NSString* appHello = obj[@"kinvey"];
+        NSString* kcsVersion = obj[@"version"];
+        
+        [self complete:nil];
+    } else {
+        //TODO: is an error
+        NSError* error = nil;
+        [self complete:error];
+    }
+}
+
+
+@end
+
+@interface KCSRequest2 ()
+@end
+
+@implementation KCSRequest2
+
+static NSOperationQueue* queue;
+
++ (void)initialize
+{
+    queue = [[NSOperationQueue alloc] init];
+    queue.name = @"com.kinvey.KinveyKit.RequestQueue";
+}
+
+- (void)start
+{
+    //TODO: mock server
+    NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
+    NSURL* pingURL = [NSURL URLWithString:pingStr];
+    
+    NSOperation* op = nil;
+    
+//    if ([KCSPlatformUtils supportsNSURLSession] == YES) {
+//        KCS_BREAK
+//    } else {
+        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
+        
+        NSMutableDictionary* headers = [NSMutableDictionary dictionary];
+        headers[@"Content-Type"] = @"application/json";
+        headers[@"Authorization"] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
+        headers[@"X-Kinvey-Api-Version"] = @"3";
+        [request setAllHTTPHeaderFields:headers];
+        
+        NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
+        
+        
+        op = [[KCSNSURLRequestOperation alloc] init];
+//    }
+    
+    
+    [queue addOperation:op];
+    //Client - init from plist
+    //client init from options
+    //client init from params
+}
+
+
+
+@end
