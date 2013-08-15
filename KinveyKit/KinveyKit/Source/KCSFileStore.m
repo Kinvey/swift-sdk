@@ -827,6 +827,11 @@ KCSFile* fileFromResults(NSDictionary* results)
                                        sourceError:errorOrNil];
             completionBlock(nil, fileError);
         } else {
+            if (objectsOrNil == nil || objectsOrNil.count == 0) {
+                completionBlock(@[],nil);
+                return;
+            }
+            
             if (objectsOrNil.count != 1) {
                 KCSLogError(@"returned %u results for file metadata at id '%@', expecting only 1.", objectsOrNil.count, fileId);
             }
@@ -936,7 +941,8 @@ KCSFile* fileFromResults(NSDictionary* results)
             if (query.query != nil) {
                 //parse the query object
                 NSDictionary* idQuery = query.query[KCSEntityKeyId];
-                if (idQuery != nil) {
+                //need to also check for dictionary b/c id query could be a exact match on id
+                if (idQuery != nil && [idQuery isKindOfClass:[NSDictionary class]]) {
                     NSArray* inIds = idQuery[@"$in"]; // mongo ql dependency
                     if (inIds && [inIds isKindOfClass:[NSArray class]]) {
                         destinationIds = inIds;

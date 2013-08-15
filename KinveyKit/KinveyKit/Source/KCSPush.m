@@ -206,7 +206,7 @@
         request.body = @{@"userId"   : [KCSUser activeUser].userId,
                          @"deviceId" : [self deviceTokenString],
                          @"platform" : @"ios"};
-        
+        request.errorDomain = KCSUserErrorDomain;
         request.authorization = [KCSUser activeUser];
         
         [request run:^(id results, NSError *error) {
@@ -238,7 +238,7 @@
         request.body = @{@"userId"   : [KCSUser activeUser].userId,
                          @"deviceId" : [self deviceTokenString],
                          @"platform" : @"ios"};
-        
+        request.errorDomain = KCSUserErrorDomain;
         request.authorization = [KCSUser activeUser];
         
         [request run:^(id results, NSError *error) {

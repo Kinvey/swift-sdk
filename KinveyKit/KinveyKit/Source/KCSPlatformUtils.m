@@ -13,7 +13,12 @@
 
 + (BOOL) supportsNSURLSession
 {
-    return NSClassFromString(@"NSURLSession") != nil;
+    static BOOL supports;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+         supports = NSClassFromString(@"NSURLSession") != nil;
+    });
+    return supports;
 }
 
 

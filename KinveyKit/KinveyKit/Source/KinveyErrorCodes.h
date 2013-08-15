@@ -39,6 +39,9 @@
 #define KCSErrorDomain @"KCSErrorDomain"
 #define KCSServerErrorDomain @"KCSServerErrorDomain"
 
+/** Error occurred when using BL */
+#define KCSBusinessLogicErrorDomain @"KCSBusinessLogicErrorDomain"
+
 // Error Codes
 typedef enum KCSErrorCodes : NSInteger {
     // Error Codes Based on HTTP

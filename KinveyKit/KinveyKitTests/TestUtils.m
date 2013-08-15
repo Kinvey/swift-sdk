@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 6/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "TestUtils.h"
@@ -41,7 +41,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     int pollCount = 0;
     int maxPollCount = timeout / POLL_INTERVAL;
     while (self.done == NO && pollCount < maxPollCount) {
-        NSLog(@"polling... %i", pollCount);
+        NSLog(@"polling... %3.2f", pollCount * POLL_INTERVAL);
         NSRunLoop* loop = [NSRunLoop mainRunLoop];
         NSDate* until = [NSDate dateWithTimeIntervalSinceNow:POLL_INTERVAL];
         [loop runUntilDate:until];

@@ -49,6 +49,7 @@ typedef enum KCSRESTMethod : NSInteger {
 @property (nonatomic, retain, readonly) NSMutableDictionary* headers;
 @property (nonatomic, copy) id body;
 @property (nonatomic, weak) id<KCSCredentials> authorization;
+@property (nonatomic, copy) NSString* errorDomain;
 
 - (void) run:(void (^)(id results, NSError* error))runBlock;
 - (NSURLRequest*) nsurlRequest;

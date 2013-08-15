@@ -835,5 +835,28 @@ static NSString* access_token = @"CAAGI68NkOC4BAB6yYrWF4tlvky3Sxfir4kQcyAobt9WpW
     }];
     [self poll];
 }
-@end
 #pragma clang diagnostic pop
+
+#pragma mark - Others
+- (void) testUsesSessionAuthCredentials
+{
+//    //create the user
+//    self.done = NO;
+//    [KCSUser userWithUsername:@"foo" password:@"bar" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+//        STAssertNoError;
+//        self.done = YES;
+//    }];
+//    [self poll];
+//    
+    [[KCSUser activeUser] logout];
+    
+    self.done = NO;
+    [KCSUser loginWithUsername:@"foo" password:@"bar" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNoError
+        STAssertNotNil(user.sessionAuth, @"should have a session token");
+        self.done = YES;
+    }];
+    [self poll];
+}
+
+@end
