@@ -1,10 +1,13 @@
 # KinveyKit Release History
 
-## 1.20
-### 1.20.0 
+## 1.19
+### 1.19.1
 ** Release Date:** TBD
 
-## 1.19
+* Bug fix(es):
+    * Fixed crash when using file download query by `_id`.
+    * Fixed sporadic crash when file download query returns 0 results.
+
 ### 1.19.0
 ** Release Date:** August 13, 2013
 

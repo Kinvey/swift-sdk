@@ -210,6 +210,8 @@
 		276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 276A6F6116372FD500285884 /* KCSEntityCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6216372FD500285884 /* KCSEntityCache.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		276A6F6F1637834700285884 /* KCSEntityCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6E1637834700285884 /* KCSEntityCacheTests.m */; };
+		278519BB17BAD5660044D877 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 278519B917BAD5660044D877 /* KCSPush.h */; };
+		278519BC17BAD5660044D877 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 278519BA17BAD5660044D877 /* KCSPush.m */; };
 		278554C31742CCD9005052D6 /* KCSEntityCache2.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C11742CCD9005052D6 /* KCSEntityCache2.h */; };
 		278554C41742CCD9005052D6 /* KCSEntityCache2.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C21742CCD9005052D6 /* KCSEntityCache2.m */; };
 		278554CC1742CFDC005052D6 /* FMDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C61742CFDC005052D6 /* FMDatabase.h */; };
@@ -656,6 +658,8 @@
 		276A6F6216372FD500285884 /* KCSEntityCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCache.m; sourceTree = "<group>"; };
 		276A6F6D1637834700285884 /* KCSEntityCacheTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCacheTests.h; sourceTree = "<group>"; };
 		276A6F6E1637834700285884 /* KCSEntityCacheTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCacheTests.m; sourceTree = "<group>"; };
+		278519B917BAD5660044D877 /* KCSPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPush.h; sourceTree = "<group>"; };
+		278519BA17BAD5660044D877 /* KCSPush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPush.m; sourceTree = "<group>"; };
 		278554C11742CCD9005052D6 /* KCSEntityCache2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCache2.h; sourceTree = "<group>"; };
 		278554C21742CCD9005052D6 /* KCSEntityCache2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCache2.m; sourceTree = "<group>"; };
 		278554C61742CFDC005052D6 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
@@ -1142,6 +1146,8 @@
 				2766E63816834B78000D27C5 /* KinveyKit_mac.m */,
 				271827AE16B9A27800825D50 /* KCSAnalytics.h */,
 				271827AF16B9A27800825D50 /* KCSAnalytics.m */,
+				278519B917BAD5660044D877 /* KCSPush.h */,
+				278519BA17BAD5660044D877 /* KCSPush.m */,
 				2766E63116834B78000D27C5 /* Supporting Files */,
 			);
 			path = "KinveyKit-mac";
@@ -1908,6 +1914,7 @@
 				27CD8EE8176FA8AB009463E3 /* KCSFileStore.h in Headers */,
 				27010A9D1713316F0012D1ED /* KinveyBlocks.h in Headers */,
 				27010A9E171331730012D1ED /* KinveyErrorCodes.h in Headers */,
+				278519BB17BAD5660044D877 /* KCSPush.h in Headers */,
 				27010A9F171331790012D1ED /* KinveyHTTPStatusCodes.h in Headers */,
 				27010AA0171331AD0012D1ED /* KCSBlockDefs.h in Headers */,
 				27010AA1171331C60012D1ED /* KinveyPing.h in Headers */,
@@ -2427,6 +2434,7 @@
 				27B3B07E16B8741400E1B540 /* KCSConnectionResponse.m in Sources */,
 				27B3B08016B8742000E1B540 /* KCSConnectionProgress.m in Sources */,
 				27B3B08216B8743500E1B540 /* KCSClient.m in Sources */,
+				278519BC17BAD5660044D877 /* KCSPush.m in Sources */,
 				27B3B08916B875F100E1B540 /* KinveyCollection.m in Sources */,
 				27B3B08B16B8760100E1B540 /* KinveyUser.m in Sources */,
 				27B3B08D16B8764200E1B540 /* KCSRESTRequest.m in Sources */,

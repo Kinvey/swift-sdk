@@ -146,10 +146,13 @@
                                                                            withFailureReason:@"connectionWithRequest:delegate: returned nil connection."
                                                                       withRecoverySuggestion:@"Retry request."
                                                                          withRecoveryOptions:nil];
-        
+        userInfo = [userInfo mutableCopy];
+        ((NSMutableDictionary*)userInfo)[NSURLErrorFailingURLStringErrorKey] = [self.request.URL absoluteString];
+
         NSError *error = [NSError errorWithDomain:KCSNetworkErrorDomain
                                              code:KCSUnderlyingNetworkConnectionCreationFailureError
                                          userInfo:userInfo];
+        
         self.failureBlock(error);
     }
     
@@ -276,7 +279,7 @@
                     [error localizedDescription],
                     [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
         
-        NSError* error2 = [KCSErrorUtilities createError:@{} description:[error localizedDescription] errorCode:[error code] domain:KCSNetworkErrorDomain requestId:nil sourceError:error];
+        NSError* error2 = [KCSErrorUtilities createError:@{NSURLErrorFailingURLStringErrorKey : self.request.URL} description:[error localizedDescription] errorCode:[error code] domain:KCSNetworkErrorDomain requestId:nil sourceError:error];
         
         // Notify client that the operation failed!
         self.failureBlock(error2);
@@ -294,7 +297,7 @@
         NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
         KCSLogNetwork(@"Response completed with code %d and response headers: %@", statusCode, [headers stripKeys:@[@"Authorization"]]);
         KCSLogRequestId(@"Kinvey Request ID: %@", [headers objectForKey:@"X-Kinvey-Request-Id"]);
-        self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:nil]);
+        self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:@{NSURLErrorFailingURLStringErrorKey : [self.request.URL absoluteString]}]);
         
         [self cleanUp];
     }];
