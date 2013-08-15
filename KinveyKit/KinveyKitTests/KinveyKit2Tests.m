@@ -18,7 +18,6 @@
 @end
 
 
-#define KTNIY STFail(@"Not Implemented Yet.");
 #define KTPollDone self.done = YES;
 #define KTPollStart self.done = NO; [self poll];
 #define KTAssertNoError STAssertNil(error, @"Should not get an error: %@", error);
