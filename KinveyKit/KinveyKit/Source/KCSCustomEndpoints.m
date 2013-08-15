@@ -13,6 +13,7 @@
 #import "KCSRequest.h"
 #import "KCS_SBJson.h"
 #import "KCSUser+KinveyKit2.h"
+#import "KinveyErrorCodes.h"
 
 
 @implementation KCSCustomEndpoints
@@ -25,6 +26,7 @@
     request.contextRoot = kKCSContextRPC;
     request.pathComponents = @[@"custom",endpoint];
     request.headers[@"Content-Type"] = @"application/json";
+    request.errorDomain = KCSBusinessLogicErrorDomain;
     
     ifNil(params, @{});
     

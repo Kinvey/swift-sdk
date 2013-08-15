@@ -50,7 +50,7 @@
     if (parser.error) {
         KCSLogError(@"JSON Serialization retry failed: %@", parser.error);
         if (anError != NULL) {
-            *anError = [KCSErrorUtilities createError:nil description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain requestId:self.requestId];
+            *anError = [KCSErrorUtilities createError:@{NSURLErrorFailingURLStringErrorKey : _userData[NSURLErrorFailingURLStringErrorKey]} description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain requestId:self.requestId];
         }
     }
     NSObject *jsonData = [jsonResponse valueForKey:@"result"];
@@ -76,13 +76,19 @@
             return reevaluatedObject;
         } else {
             if (anError != NULL) {
-                *anError = [KCSErrorUtilities createError:nil description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain requestId:self.requestId];
+                *anError = [KCSErrorUtilities createError:@{NSURLErrorFailingURLStringErrorKey : _userData[NSURLErrorFailingURLStringErrorKey]}  description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain requestId:self.requestId];
             }
         }
     } else {
         jsonData = [jsonResponse valueForKey:@"result"];
         jsonData = jsonData ? jsonData : jsonResponse;
     }
+    
+    if (self.responseCode >= 400 && [jsonData isKindOfClass:[NSDictionary class]] && self.userData != nil && self.userData[NSURLErrorFailingURLStringErrorKey] != nil) {
+        jsonData = [jsonData mutableCopy];
+        ((NSMutableDictionary*)jsonData)[NSURLErrorFailingURLStringErrorKey] = self.userData[NSURLErrorFailingURLStringErrorKey];
+    }
+    
     return jsonData;
 }
 

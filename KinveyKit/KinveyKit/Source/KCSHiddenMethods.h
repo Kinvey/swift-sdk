@@ -29,7 +29,10 @@
 #import "KCSMetadata.h"
 #import "KCSFileStore.h"
 #import "KCSFile.h"
+
+#if TARGET_OS_IPHONE
 #import "KCSPush.h"
+#endif
 
 NSDictionary* defaultBuilders();
 
@@ -100,12 +103,12 @@ NSDictionary* defaultBuilders();
 - (void) updateAfterUpload:(KCSFile*)newFile;
 @end
 
-
+#if TARGET_OS_IPHONE
 @interface KCSPush (KCSHiddenMethods)
 - (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
 - (void) unRegisterDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
 @property (nonatomic, retain) id deviceToken;
 @end
-
+#endif
 
 #endif

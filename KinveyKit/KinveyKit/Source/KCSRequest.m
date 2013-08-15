@@ -77,8 +77,9 @@ static const NSString* kPUSHRoot = @"push";
     } completionBlock:^(KCSConnectionResponse *response) {
         id results = [response jsonResponseValue];
         if (response.responseCode >= 400) {
-            //TODO: domain
-            NSError* error = [KCSErrorUtilities createError:results description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+
+            _errorDomain = _errorDomain == nil ? KCSAppDataErrorDomain : _errorDomain;
+            NSError* error = [KCSErrorUtilities createError:results description:nil errorCode:response.responseCode domain:_errorDomain requestId:response.requestId];
             runBlock(nil, error);
         } else {
             runBlock(results, nil);

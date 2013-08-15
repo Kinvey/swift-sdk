@@ -53,6 +53,18 @@
     }];
     [self poll];
 
-    
+}
+
+- (void) testCustomEndpointError
+{
+    self.done = NO;
+    [KCSCustomEndpoints callEndpoint:@"bltest-error" params:nil completionBlock:^(id results, NSError *errorOrNil) {
+        STAssertNotNil(errorOrNil, @"should have an error");
+        STAssertEqualObjects(errorOrNil.domain, KCSBusinessLogicErrorDomain, @"Should be a bl error");
+        STAssertNotNil(errorOrNil.userInfo[NSURLErrorFailingURLStringErrorKey], @"should list the URL");
+        KTAssertEqualsInt(errorOrNil.code, 400, @"should be a 400");
+        self.done = YES;
+    }];
+    [self poll];
 }
 @end

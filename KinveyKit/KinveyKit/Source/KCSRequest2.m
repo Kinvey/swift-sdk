@@ -11,30 +11,39 @@
 #import "KinveyCoreInternal.h"
 
 @interface KCSNSURLRequestOperation : NSOperation
+@property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, strong) NSMutableData* downloadedData;
+@property (nonatomic, strong) NSURLConnection* connection;
+@property (nonatomic) BOOL done;
 @end
 
 @implementation KCSNSURLRequestOperation
 
--(void)main {
-    // a lengthy operation
+- (instancetype) initWithRequest:(NSMutableURLRequest*) request
+{
+    self = [super init];
+    if (self) {
+        _request = request;
+    }
+    return self;
+}
+
+-(void)start {
     @autoreleasepool {
+        [super start];
+        
+        [[NSThread currentThread] setName:@"KinveyKit"];
+        
+        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+        
         NSLog(@"started");
         self.downloadedData = [NSMutableData data];
-        NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
-         NSURL* pingURL = [NSURL URLWithString:pingStr];
      
-         NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
-     
-         NSMutableDictionary* headers = [NSMutableDictionary dictionary];
-         headers[@"Content-Type"] = @"application/json";
-         headers[@"Authorization"] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
-         headers[@"X-Kinvey-Api-Version"] = @"3";
-         [request setAllHTTPHeaderFields:headers];
-     
-         NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
-         [connection setDelegateQueue:[NSOperationQueue currentQueue]];
-         [connection start];
+        _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
+       // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
+        [_connection scheduleInRunLoop:runLoop forMode:NSRunLoopCommonModes];
+        [_connection start];
+        [runLoop run];
     }
 }
 
@@ -61,12 +70,23 @@
 
 - (BOOL)isFinished
 {
-    return NO;
+    return _done;
+}
+
+ -(BOOL)isExecuting
+{
+    return YES;
+}
+
+- (BOOL)isReady
+{
+    return YES;
 }
 
 - (void) complete:(NSError*) error
 {
-    
+    NSLog(@"-----");
+    _done = YES;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
@@ -85,6 +105,8 @@
     if (obj != nil && [obj isKindOfClass:[NSDictionary class]]) {
         NSString* appHello = obj[@"kinvey"];
         NSString* kcsVersion = obj[@"version"];
+        NSLog(@"%@-%@", appHello, kcsVersion);
+        
         
         [self complete:nil];
     } else {
@@ -129,11 +151,7 @@ static NSOperationQueue* queue;
         headers[@"X-Kinvey-Api-Version"] = @"3";
         [request setAllHTTPHeaderFields:headers];
         
-        NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
-        
-        
-        op = [[KCSNSURLRequestOperation alloc] init];
-//    }
+    op = [[KCSNSURLRequestOperation alloc] initWithRequest:request];
     
     
     [queue addOperation:op];
