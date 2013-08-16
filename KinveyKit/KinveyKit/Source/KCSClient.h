@@ -31,12 +31,17 @@
 
 
 // Keys for options hash
-#define KCS_APP_KEY_KEY @"kcsAppKey"
-#define KCS_APP_SECRET_KEY @"kcsSecret"
+/** App Key plist key: "KCS_APP_KEY" */
+KCS_CONSTANT KCS_APP_KEY;
+/** App Secret plist key: "KCS_APP_SECRET" */
+KCS_CONSTANT KCS_APP_SECRET;
+
+/** Timeout plist key: "KCS_CONNECTION_TIMEOUT" */
+KCS_CONSTANT KCS_CONNETION_TIMEOUT;
+
 #define KCS_BASE_URL_KEY @"kcsBaseUrl"
 #define KCS_PORT_KEY @"kcsPortKey"
 #define KCS_SERVICE_KEY @"kcsServiceKey"
-#define KCS_CONNECTION_TIMEOUT_KEY @"kcsConnectionTimeout"
 
 /** This object shoul implement the `KCSLogSink` protocol. Use this along with +[KinveyKit configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:] to send log messages to a custom sink.*/
 #define KCS_LOG_SINK @"kcsLogSink"
@@ -65,6 +70,8 @@
 #define KCS_SALESFORCE_CLIENT_ID @"client_id"
 
 #define KCS_CACHES_USE_V2 @"kinvey.usev2caching"
+
+@class KCSClientConfiguration;
 
 /*! A Singleton Class that provides access to all Kinvey Services.
 
@@ -104,8 +111,10 @@
 /// @name Kinvey Service URL Access
 ///---------------------------------------------------------------------------------------
 
-/*! Kinvey Service Hostname */
-@property (nonatomic, copy) NSString *serviceHostname;
+/*! Kinvey Service Hostname 
+ @deprecatedIn 1.20.0
+ */
+@property (nonatomic, readonly) NSString *serviceHostname KCS_DEPRECATED(@"set via KCSConfiguration", 1.20.0);
 
 /*! Base URL for Kinvey data service */
 @property (nonatomic, copy, readonly) NSString *appdataBaseURL;
@@ -121,6 +130,9 @@
 
 /*! Current Kinvey Cacheing policy */
 @property (nonatomic, readonly) NSURLCacheStoragePolicy cachePolicy;
+
+/** The Configuration Options */
+@property (nonatomic, retain) KCSClientConfiguration* configuration;
 
 #if TARGET_OS_IPHONE
 /*! Overall Network Status Reachability Object */

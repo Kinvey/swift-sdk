@@ -29,6 +29,7 @@
 #import "KCSMetadata.h"
 #import "KCSFileStore.h"
 #import "KCSFile.h"
+#import "KCSClientConfiguration.h"
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
@@ -65,6 +66,10 @@ NSDictionary* defaultBuilders();
 @property (nonatomic, strong) NSString *protocol;
 @property (nonatomic, strong) NSString* port;
 
+@end
+
+@interface KCSClientConfiguration (KCSHiddenMethods)
+@property (nonatomic, copy) NSString* serviceHostname;
 @end
 
 
