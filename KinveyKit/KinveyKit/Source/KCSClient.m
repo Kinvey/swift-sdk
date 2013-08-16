@@ -5,6 +5,18 @@
 //  Created by Brian Wilson on 10/13/11.
 //  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 
 #import "KCSClient.h"
@@ -25,59 +37,15 @@
 #import "KinveyVersion.h"
 
 #import "KCSEntityCache.h"
+#import "KCSClientConfiguration.h"
+#import "KCSHiddenMethods.h"
 
-@interface KCSClientConfiguration : NSObject
-@property (nonatomic, copy) NSString* appKey;
-@property (nonatomic, copy) NSString* appSecret;
-@property (nonatomic, copy) NSString* serviceHostname;
-@end
-@implementation KCSClientConfiguration
-+ (instancetype) loadFromEnvironment
-{
-    KCSClientConfiguration* configuration = nil;
-    NSString* bundleId = [[NSBundle mainBundle] bundleIdentifier];
-    if (bundleId != nil) {
-        NSString* appKeyKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_APP_KEY"];
-        NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:appKeyKey];
-        if (appKey) {
-            NSString* appSecretKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_APP_KEY"];
-            NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:appSecretKey];
-            if (appSecret) {
-                configuration = [[KCSClientConfiguration alloc] init];
-                configuration.appKey = appKey;
-                configuration.appSecret = appSecret;
-                
-                NSString* serviceHostnameKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_SERVICE_KEY"];
-                NSString* serviceHostname = [[[NSProcessInfo processInfo] environment] objectForKey:serviceHostnameKey];
-                configuration.serviceHostname = serviceHostname;
-                return configuration;
-            }
-        }
-        
-    }
-    
-    NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
-    if (appKey) {
-        NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
-        if (appSecret) {
-            configuration = [[KCSClientConfiguration alloc] init];
-            configuration.appKey = appKey;
-            configuration.appSecret = appSecret;
-            
-            NSString* serviceHostname = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_SERVICE_KEY"];
-            configuration.serviceHostname = serviceHostname;
-            return configuration;
-        }
-    }
+#pragma mark - Constants
 
-    return configuration;
-}
+NSString* const KCS_APP_KEY = @"KCS_APP_KEY";
+NSString* const KCS_APP_SECRET = @"KCS_APP_SECRET";
+NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
 
-- (BOOL) valid
-{
-    return _appKey != nil && _appSecret != nil;
-}
-@end
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
@@ -90,10 +58,6 @@
 @property (nonatomic, copy, readwrite) NSString *userBaseURL;
 @property (nonatomic, copy, readwrite) NSString *rpcBaseURL;
 
-@property (nonatomic, copy, readwrite) NSString *appKey;
-@property (nonatomic, copy, readwrite) NSString *appSecret;
-
-@property (nonatomic, strong, readwrite) NSDictionary *options;
 
 #if TARGET_OS_IPHONE
 @property (nonatomic, strong, readwrite) KCSReachability *networkReachability;
@@ -111,7 +75,6 @@
 @property (nonatomic, strong) NSString *protocol;
 @property (nonatomic, strong) NSString* port;
 
-- (void)killAppViaExceptionNamed: (NSString *)class withReason: (NSString *)reason;
 - (void)updateURLs;
 
 @end
@@ -127,6 +90,19 @@
 @synthesize kinveyDomain = _kinveyDomain;
 
 
++ (KCSClient *)sharedClient
+{
+    static KCSClient *sKCSClient;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sKCSClient = [[self alloc] init];
+        NSAssert(sKCSClient != nil, @"Unable to instantiate KCSClient");
+    });
+    
+    return sKCSClient;
+}
+
 - (instancetype)init
 {
     self = [super init];
@@ -135,21 +111,11 @@
         _kinveyDomain = @"kinvey.com";
         _libraryVersion = __KINVEYKIT_VERSION__;
         _userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
-        _connectionTimeout = 10.0; // Default timeout to 10 seconds
         _analytics = [[KCSAnalytics alloc] init];
         _cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;  // Inhibit caching for now
         _protocol = @"https";
         _port = @"";
-        _serviceHostname = @"baas";
         _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
-        
-#if TARGET_OS_IPHONE
-        _networkReachability = [KCSReachability reachabilityForInternetConnection];
-        // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
-        // We start this in init in the hopes that it will be (mostly) complete by the time we need to use it.
-        // TODO: Investigate being notified of changes in KCS Client
-        _kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", _serviceHostname, _kinveyDomain]];
-#endif
         
         if (![self respondsToSelector:@selector(testCanUseCategories)]) {
             NSException* myException = [NSException exceptionWithName:@"CategoriesNotLoaded" reason:@"KinveyKit setup: Categories could not be loaded. Be sure to set '-ObjC' in the 'Other Linker Flags'." userInfo:nil];
@@ -160,110 +126,76 @@
     return self;
 }
 
-- (void)setServiceHostname:(NSString *)serviceHostname
+- (void) setConfiguration:(KCSClientConfiguration*)configuration
 {
-    // Note that we need to update the Kinvey Reachability host here...
-    if (serviceHostname == nil) {
-        serviceHostname = @"baas";
-    }
-    _serviceHostname = [serviceHostname copy]; // Implicit retain here
-    [self updateURLs];
-    
-#if TARGET_OS_IPHONE
-    // We do this here because there is latency on DNS resolution of the hostname.  We need to do this ASAP when the hostname changes
-    self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.serviceHostname, self.kinveyDomain]];
-#endif
-}
+    _configuration = configuration;
 
-+ (KCSClient *)sharedClient
-{
-    static KCSClient *sKCSClient;
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sKCSClient = [[self alloc] init];
-        NSAssert(sKCSClient != nil, @"Unable to instantiate KCSClient");
-    });
-
-    return sKCSClient;
-}
-
-- (KCSClient *)initializeKinveyServiceForAppKey:(NSString *)appKey withAppSecret:(NSString *)appSecret usingOptions:(NSDictionary *)options
-{
-    
-    if (appKey == nil) {
-        [self killAppViaExceptionNamed:@"KinveyInitializationError"
-                            withReason:@"Nil value used for appKey, cannot use Kinvey Service, no recovery available"];
-    } else if (appSecret == nil) {
-        [self killAppViaExceptionNamed:@"KinveyInitializationError"
-                            withReason:@"Nil value used for appKey, cannot use KinveyService, no recovery available"];
-    }
-    
-    if ([appKey hasPrefix:@"<"] || [appSecret hasPrefix:@"<"]) {
-        KCSClientConfiguration* config = [KCSClientConfiguration loadFromEnvironment];
-        if (config) {
-            appKey = config.appKey;
-            appSecret = config.appSecret;
-            if (config.serviceHostname) {
-                self.serviceHostname = config.serviceHostname;
-            }
-        }
-    }
-    
     NSString* oldAppKey = [KCSKeyChain getStringForKey:@"kinveykit.appkey"];
-    if (oldAppKey != nil && [appKey isEqualToString:oldAppKey] == NO) {
+    if (oldAppKey != nil && [configuration.appKey isEqualToString:oldAppKey] == NO) {
         //clear the saved user if the kid changes
         [KCSUser clearSavedCredentials];
     }
-    [KCSKeyChain setString:appKey forKey:@"kinveykit.appkey"];
-    
-    self.appKey = appKey;
-    self.appSecret = appSecret;
-    
-    _serviceHostname = @"baas";
-    
+    //TODO: use defaults
+    [KCSKeyChain setString:configuration.appKey forKey:@"kinveykit.appkey"];
+
+#if TARGET_OS_IPHONE
+    _networkReachability = [KCSReachability reachabilityForInternetConnection];
+    // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
+    // We start this in init in the hopes that it will be (mostly) complete by the time we need to use it.
+    // TODO: Investigate being notified of changes in KCS Client
+
+    // We do this here because there is latency on DNS resolution of the hostname.  We need to do this ASAP when the hostname changes
+    self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.configuration.serviceHostname, self.kinveyDomain]];
+#endif
+
     [self updateURLs];
-    
-    // TODO extract options to something meaningful...
-    self.options = options;
-    
     // Check to make sure appdata URL is good
     NSURL *tmpURL = [NSURL URLWithString:self.appdataBaseURL]; // Will get autoreleased during next drain
     if (!tmpURL){
-        [self killAppViaExceptionNamed:@"KinveyInitializationError"
-                            withReason:@"App Key contains invalid characters, check to make sure App Key is correct!"];
+        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"App Key contains invalid characters, check to make sure App Key is correct!" userInfo:nil] raise];
     }
+    
+    if (self.options[KCS_CONNETION_TIMEOUT]) {
+        _connectionTimeout = [self.options[KCS_CONNETION_TIMEOUT] doubleValue];
+    }
+
     
     if ([self.options objectForKey:KCS_LOG_SINK] != nil) {
         [KCSLogManager setLogSink:[self.options objectForKey:KCS_LOG_SINK]];
     }
-    
+}
+
+- (NSString *)serviceHostname
+{
+    return self.configuration.serviceHostname;
+}
+
+- (NSDictionary *)options
+{
+    return self.configuration.options;
+}
+
+
+
+- (KCSClient *)initializeKinveyServiceForAppKey:(NSString *)appKey withAppSecret:(NSString *)appSecret usingOptions:(NSDictionary *)options
+{
+    self.configuration = [KCSClientConfiguration configurationWithAppKey:appKey secret:appSecret options:options];
     return self;
 }
 
 - (KCSClient *)initializeKinveyServiceWithPropertyList
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"KinveyOptions" ofType:@"plist"];
-    NSDictionary *opt = [NSDictionary dictionaryWithContentsOfFile:path];
-    
-    if (opt == nil){
-        // Something failed, bail
-        [self killAppViaExceptionNamed:@"KinveyInitializationError"
-                            withReason:@"Failed to open plist, cannot run service, no recovery available."];
-    }
-    
-    return [self initializeKinveyServiceForAppKey:[opt valueForKey:KCS_APP_KEY_KEY] 
-                                    withAppSecret:[opt valueForKey:KCS_APP_SECRET_KEY]
-                                     usingOptions:opt];
+    self.configuration = [KCSClientConfiguration configurationFromPlist];
+    return self;
 }
 
 - (void)updateURLs
 {
-    self.appdataBaseURL  = [NSString stringWithFormat:@"%@://%@.%@%@/appdata/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.port, self.appKey];
-    self.resourceBaseURL = [NSString stringWithFormat:@"%@://%@.%@%@/blob/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.port, self.appKey];
-    self.userBaseURL     = [NSString stringWithFormat:@"%@://%@.%@%@/user/%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.port, self.appKey];
+    self.appdataBaseURL  = [NSString stringWithFormat:@"%@://%@.%@%@/appdata/%@/", self.protocol, self.configuration.serviceHostname, self.kinveyDomain, self.port, self.appKey];
+    self.resourceBaseURL = [NSString stringWithFormat:@"%@://%@.%@%@/blob/%@/", self.protocol, self.configuration.serviceHostname, self.kinveyDomain, self.port, self.appKey];
+    self.userBaseURL     = [NSString stringWithFormat:@"%@://%@.%@%@/user/%@/", self.protocol, self.configuration.serviceHostname, self.kinveyDomain, self.port, self.appKey];
     //rpc/:kid/:username/user-password-reset-initiate
-    self.rpcBaseURL      = [NSString stringWithFormat:@"%@://%@.%@%@/rpc/%@/", self.protocol, self.serviceHostname,self.kinveyDomain, self.port, self.appKey];
+    self.rpcBaseURL      = [NSString stringWithFormat:@"%@://%@.%@%@/rpc/%@/", self.protocol, self.configuration.serviceHostname,self.kinveyDomain, self.port, self.appKey];
 
 }
 
@@ -334,18 +266,7 @@
     return [KCSCollection collectionFromString:collection ofClass:collectionClass];
 }
 
-// Notice the name?  Unless the user really tries to stop this, their app will die
-// only use this if you think killing the app is a good idea (so it doesn't die later perhaps?)
-- (void)killAppViaExceptionNamed: (NSString *)name withReason: (NSString *)reason
-{
-    KCSLogForced(@"EXCEPTION Encountered: Name => %@, Reason => %@", name, reason);
-    NSException* myException = [NSException exceptionWithName:name
-                                                       reason:reason
-                                                     userInfo:nil];
-    
-    @throw myException;
-    
-}
+#pragma mark - Logging
 
 
 + (void)configureLoggingWithNetworkEnabled: (BOOL)networkIsEnabled
@@ -376,6 +297,6 @@
 
 - (NSString*) baseURL
 {
-    return [NSString stringWithFormat:@"%@://%@.%@%@/", self.protocol, self.serviceHostname, self.kinveyDomain, self.port];
+    return [NSString stringWithFormat:@"%@://%@.%@%@/", self.protocol, self.configuration.serviceHostname, self.kinveyDomain, self.port];
 }
 @end

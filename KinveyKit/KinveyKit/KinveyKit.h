@@ -22,7 +22,9 @@
 
 #import "KinveyVersion.h"
 
+#import "KCSClientConfiguration.h"
 #import "KCSClient.h"
+
 #import "KCSEntityDict.h"
 #import "KinveyCollection.h"
 #import "KinveyEntity.h"

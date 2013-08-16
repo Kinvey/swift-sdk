@@ -2583,13 +2583,7 @@ NSData* testData2()
          {
              if (downloadedResources.count > 0)
              {
-                 KCSFile* file = downloadedResources[0];
-                 NSURL* fileURL = file.localURL;
-                 UIImage* image = [UIImage imageWithContentsOfFile:[fileURL path]]; //note this blocks for awhile
-                 
-                 //                 [sharedAPI saveImageToDisk:image withKCSFile:file];
-                 //
-                 //                 successBlock(image, remote);
+                 STFail(@"should have no resources");
              }
              
          }
