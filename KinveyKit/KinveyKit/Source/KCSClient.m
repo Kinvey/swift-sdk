@@ -59,11 +59,8 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
 @property (nonatomic, copy, readwrite) NSString *rpcBaseURL;
 
 
-#if TARGET_OS_IPHONE
 @property (nonatomic, strong, readwrite) KCSReachability *networkReachability;
 @property (nonatomic, strong, readwrite) KCSReachability *kinveyReachability;
-
-#endif
 
 @property (strong, nonatomic) NSString *kinveyDomain;
 
@@ -80,15 +77,6 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
 @end
 
 @implementation KCSClient
-
-
-#if TARGET_OS_IPHONE
-@synthesize networkReachability = _networkReachability;
-@synthesize kinveyReachability = _kinveyReachability;
-#endif
-
-@synthesize kinveyDomain = _kinveyDomain;
-
 
 + (KCSClient *)sharedClient
 {
@@ -138,7 +126,6 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
     //TODO: use defaults
     [KCSKeyChain setString:configuration.appKey forKey:@"kinveykit.appkey"];
 
-#if TARGET_OS_IPHONE
     _networkReachability = [KCSReachability reachabilityForInternetConnection];
     // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
     // We start this in init in the hopes that it will be (mostly) complete by the time we need to use it.
@@ -146,7 +133,6 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
 
     // We do this here because there is latency on DNS resolution of the hostname.  We need to do this ASAP when the hostname changes
     self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.configuration.serviceHostname, self.kinveyDomain]];
-#endif
 
     [self updateURLs];
     // Check to make sure appdata URL is good

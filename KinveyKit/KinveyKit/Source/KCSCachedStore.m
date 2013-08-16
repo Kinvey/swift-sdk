@@ -20,6 +20,7 @@
 #import "KCSEntityCache.h"
 
 #import "KCSHiddenMethods.h"
+#import "KCSReachability.h"
 
 
 @interface KCSAppdataStore (KCSCachedStore) 
@@ -90,9 +91,8 @@ NSError* createCacheError(NSString* message)
 
 - (BOOL) shouldCallNetworkFirst:(id)cachedResult cachePolicy:(KCSCachePolicy)cachePolicy
 {
-#warning TODO: fix these
     return cachePolicy == KCSCachePolicyNone ||
-          (cachePolicy == KCSCachePolicyNetworkFirst && YES /*[self isKinveyReachable]*/) ||
+          (cachePolicy == KCSCachePolicyNetworkFirst && [[KCSClient sharedClient].kinveyReachability isReachable]) ||
           (cachePolicy != KCSCachePolicyLocalOnly && cachedResult == nil);
 }
 
