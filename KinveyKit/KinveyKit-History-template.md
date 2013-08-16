@@ -1,5 +1,9 @@
 # KinveyKit Release History
 
+## 1.20
+### 1.20.1
+
+
 ## 1.19
 ### 1.19.1
 ** Release Date:** TBD

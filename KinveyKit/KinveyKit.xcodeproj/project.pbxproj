@@ -119,6 +119,10 @@
 		2737D3C017BE5A4800FE7ACC /* KCSClientConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 2737D3BD17BE5A4800FE7ACC /* KCSClientConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2737D3C117BE5A4800FE7ACC /* KCSClientConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2737D3BE17BE5A4800FE7ACC /* KCSClientConfiguration.m */; };
 		2737D3C217BE5A4800FE7ACC /* KCSClientConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2737D3BE17BE5A4800FE7ACC /* KCSClientConfiguration.m */; };
+		2737D3C917BE9C3D00FE7ACC /* KCS_KSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 2737D3C717BE9C3D00FE7ACC /* KCS_KSReachability.h */; };
+		2737D3CA17BE9C3D00FE7ACC /* KCS_KSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 2737D3C717BE9C3D00FE7ACC /* KCS_KSReachability.h */; };
+		2737D3CB17BE9C3D00FE7ACC /* KCS_KSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 2737D3C817BE9C3D00FE7ACC /* KCS_KSReachability.m */; };
+		2737D3CC17BE9C3D00FE7ACC /* KCS_KSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 2737D3C817BE9C3D00FE7ACC /* KCS_KSReachability.m */; };
 		273A3E93160A1A9F00F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
 		273A3E95160A1AA900F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
 		273A3E96160A254900F3742C /* KCS_TWSignedRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E33EB21609525600D01C97 /* KCS_TWSignedRequest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -606,6 +610,8 @@
 		2737D3BB17BD559600FE7ACC /* TestUtils2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtils2.m; sourceTree = "<group>"; };
 		2737D3BD17BE5A4800FE7ACC /* KCSClientConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSClientConfiguration.h; sourceTree = "<group>"; };
 		2737D3BE17BE5A4800FE7ACC /* KCSClientConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSClientConfiguration.m; sourceTree = "<group>"; };
+		2737D3C717BE9C3D00FE7ACC /* KCS_KSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_KSReachability.h; sourceTree = "<group>"; };
+		2737D3C817BE9C3D00FE7ACC /* KCS_KSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_KSReachability.m; sourceTree = "<group>"; };
 		273A3E92160A1A9F00F3742C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		273B644D1757DE0E00E1B1B9 /* KCSCustomEndpoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCustomEndpoints.h; sourceTree = "<group>"; };
 		273B644E1757DE0E00E1B1B9 /* KCSCustomEndpoints.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCustomEndpoints.m; sourceTree = "<group>"; };
@@ -907,8 +913,8 @@
 		D3EA226F148543D600666259 /* KinveyBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyBlocks.h; sourceTree = "<group>"; };
 		D3EA22C51486B0BD00666259 /* KinveyPing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyPing.h; sourceTree = "<group>"; };
 		D3EA22C61486B0BD00666259 /* KinveyPing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyPing.m; sourceTree = "<group>"; };
-		D3F3409614BC8AB800DB6C37 /* KCSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReachability.h; sourceTree = "<group>"; };
-		D3F3409714BC8AB800DB6C37 /* KCSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReachability.m; sourceTree = "<group>"; };
+		D3F3409614BC8AB800DB6C37 /* KCSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KCSReachability.h; path = ../3rdParty/Reachability/KCSReachability.h; sourceTree = "<group>"; };
+		D3F3409714BC8AB800DB6C37 /* KCSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KCSReachability.m; path = ../3rdParty/Reachability/KCSReachability.m; sourceTree = "<group>"; };
 		D3F340A514BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSAnalytics+UniqueHardwareID.h"; sourceTree = "<group>"; };
 		D3F340A614BCCA8700DB6C37 /* KCSAnalytics+UniqueHardwareID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSAnalytics+UniqueHardwareID.m"; sourceTree = "<group>"; };
 		D3F340AB14BCCEBB00DB6C37 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1496,6 +1502,8 @@
 				2737D3BE17BE5A4800FE7ACC /* KCSClientConfiguration.m */,
 				D32A60F914716F2D00F77A3F /* KCSClient.h */,
 				D32A60FA14716F2D00F77A3F /* KCSClient.m */,
+				D3F3409614BC8AB800DB6C37 /* KCSReachability.h */,
+				D3F3409714BC8AB800DB6C37 /* KCSReachability.m */,
 				27AC2F23161CA258008A05E1 /* KCSClient+ConfigurationTest.h */,
 				27AC2F24161CA258008A05E1 /* KCSClient+ConfigurationTest.m */,
 			);
@@ -1833,8 +1841,8 @@
 		D3F3409514BC8AB800DB6C37 /* Reachability */ = {
 			isa = PBXGroup;
 			children = (
-				D3F3409614BC8AB800DB6C37 /* KCSReachability.h */,
-				D3F3409714BC8AB800DB6C37 /* KCSReachability.m */,
+				2737D3C717BE9C3D00FE7ACC /* KCS_KSReachability.h */,
+				2737D3C817BE9C3D00FE7ACC /* KCS_KSReachability.m */,
 			);
 			path = Reachability;
 			sourceTree = "<group>";
@@ -1918,6 +1926,7 @@
 				27B425E716C2C04C00C59E1A /* KinveyKitExtras.h in Headers */,
 				278BADC017B28EC70035B3D6 /* DispatchQueueLogFormatter.h in Headers */,
 				27B425E816C2C1D000C59E1A /* KCSUser+SocialExtras.h in Headers */,
+				2737D3CA17BE9C3D00FE7ACC /* KCS_KSReachability.h in Headers */,
 				278BADAC17B28EC70035B3D6 /* DDASLLogger.h in Headers */,
 				27B425EF16C3DA6700C59E1A /* KCSWebView.h in Headers */,
 				27F5D7EA16F141F5001828F3 /* KCSLogSink.h in Headers */,
@@ -2054,6 +2063,7 @@
 				27C2228A161DE9B200D827AE /* KCS_SBJsonTokeniser.h in Headers */,
 				27C2228C161DE9B200D827AE /* KCS_SBJsonUTF8Stream.h in Headers */,
 				27C2228E161DE9B200D827AE /* KCS_SBJsonWriter.h in Headers */,
+				2737D3C917BE9C3D00FE7ACC /* KCS_KSReachability.h in Headers */,
 				27C22290161DE9B200D827AE /* NSObject+KCS_SBJson.h in Headers */,
 				270E4CAD16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.h in Headers */,
 				276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */,
@@ -2434,6 +2444,7 @@
 				2766E63916834B78000D27C5 /* KinveyKit_mac.m in Sources */,
 				2732003D17B1897B00CCA70D /* KCSRequest.m in Sources */,
 				2766E65916834F1D000D27C5 /* KCSGenericRESTRequest.m in Sources */,
+				2737D3CC17BE9C3D00FE7ACC /* KCS_KSReachability.m in Sources */,
 				2766E65A16835050000D27C5 /* KCSConnectionPool.m in Sources */,
 				275B426116A829AF0064B941 /* KCSErrorUtilities.m in Sources */,
 				275B426216A82A100064B941 /* KCS_SBJsonParser.m in Sources */,
@@ -2608,6 +2619,7 @@
 				27433013156ED63C00B2BF37 /* KCSLinkedAppdataStore.m in Sources */,
 				274330221575227000B2BF37 /* KCSFile.m in Sources */,
 				271E8243157D70B3000AF9EF /* KCSPropertyUtil.m in Sources */,
+				2737D3CB17BE9C3D00FE7ACC /* KCS_KSReachability.m in Sources */,
 				27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */,
 				278BADC117B28EC70035B3D6 /* DispatchQueueLogFormatter.m in Sources */,
 				27B1FDC915B0C4A0003CC4C6 /* KCSUserDiscovery.m in Sources */,

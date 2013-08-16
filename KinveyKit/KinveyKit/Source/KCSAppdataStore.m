@@ -629,20 +629,17 @@ int reachable = -1;
 - (void) setReachable:(BOOL)reachOverwrite
 {
     reachable = reachOverwrite;
-    SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithName(NULL, [(reachable ? @"127.0.0.1" : @"nevernever") UTF8String]); //TODO: based on ref
-    KCSReachability* testReachability = [[KCSReachability alloc] initWithReachabilityRef:ref];
-    [[NSNotificationCenter defaultCenter] postNotificationName: kKCSReachabilityChangedNotification object:testReachability];
+    KCSReachability* testReachability = reachable ? [KCSReachability reachabilityWithHostName:@"localhost"] : [KCSReachability unreachableReachability];
+    [[NSNotificationCenter defaultCenter] postNotificationName: KCSReachabilityChangedNotification object:testReachability];
 }
-#endif
-
-#if TARGET_OS_IPHONE
 - (BOOL) isKinveyReachable
 {
-#if BUILD_FOR_UNIT_TEST
     return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
+}
 #else
+- (BOOL) isKinveyReachable
+{
     return [[KCSClient sharedClient] kinveyReachability].isReachable;
-#endif
 }
 #endif
 

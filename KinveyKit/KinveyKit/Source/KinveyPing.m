@@ -42,8 +42,6 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
 
 @implementation KCSPing
 
-#if TARGET_OS_IPHONE
-// NETWORK checks for iPhone
 + (BOOL)networkIsReachable
 {
     KCSReachability *reachability = [[KCSClient sharedClient] networkReachability];
@@ -55,20 +53,6 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
     KCSReachability *reachability = [[KCSClient sharedClient] kinveyReachability];
     return [reachability isReachable];    
 }
-#else
-// NETWORK checks for Mac OS-X, stub to true
-+ (BOOL)networkIsReachable
-{
-    return YES;
-}
-
-+ (BOOL)kinveyServiceIsReachable
-{
-    return YES;
-}
-#endif
-
-
 
 + (void)commonPingHelper:(KCSCommonPingBlock)onComplete
 {

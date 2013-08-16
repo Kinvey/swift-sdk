@@ -134,13 +134,11 @@ KCS_CONSTANT KCS_CONNETION_TIMEOUT;
 /** The Configuration Options */
 @property (nonatomic, retain) KCSClientConfiguration* configuration;
 
-#if TARGET_OS_IPHONE
 /*! Overall Network Status Reachability Object */
 @property (nonatomic, strong, readonly) KCSReachability *networkReachability;
 
 /*! Kinvey Host Specific Reachability Object */
 @property (nonatomic, strong, readonly) KCSReachability *kinveyReachability;
-#endif
 
 ///---------------------------------------------------------------------------------------
 /// @name User Authentication
