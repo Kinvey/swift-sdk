@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitPingTests.h"
@@ -19,6 +19,7 @@
 #import "KCSErrorUtilities.h"
 #import "TestUtils.h"
 #import "NSString+KinveyAdditions.h"
+#import "KCSHiddenMethods.h"
 
 @interface KinveyKitPingTests()
 @property (nonatomic, retain) KCS_SBJsonParser *parser;
@@ -30,7 +31,7 @@
 - (void)setUp
 {
     KCSClient *client = [KCSClient sharedClient];
-    [client setServiceHostname:@"baas"];
+    [client.configuration setServiceHostname:@"baas"];
     (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     

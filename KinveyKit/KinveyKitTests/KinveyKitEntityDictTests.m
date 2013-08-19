@@ -12,6 +12,7 @@
 
 #import "TestUtils.h"
 #import "KCSKeyChain.h"
+#import "KCSHiddenMethods.h"
 
 #import "KCS_SBJson.h"
 
@@ -55,7 +56,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     // Ensure that KCSClient is alive
     KCSClient *client = [KCSClient sharedClient];
-    [client setServiceHostname:@"baas"];
+    [client.configuration setServiceHostname:@"baas"];
     (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
     
     

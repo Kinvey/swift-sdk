@@ -28,7 +28,6 @@
 
 
 @interface KCSClientConfiguration ()
-@property (nonatomic, copy) NSString* serviceHostname;
 
 @end
 

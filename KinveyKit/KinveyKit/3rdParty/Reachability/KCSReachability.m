@@ -19,7 +19,7 @@
 #import "KCSReachability.h"
 #import "KCS_KSReachability.h"
 
-NSString* const KCSReachabilityChangedNotification = kDefaultNetworkReachabilityChangedNotification;
+NSString* const KCSReachabilityChangedNotification = @"KinveyKit.Notification.ReachabilityChanged";
 
 @interface KCSReachability ()
 @property (strong) KCS_KSReachability* reachability;
@@ -55,8 +55,12 @@ NSString* const KCSReachabilityChangedNotification = kDefaultNetworkReachability
 + (instancetype) reachabilityWithHostName:(NSString *)hostName
 {
     KCS_KSReachability* reachability = [KCS_KSReachability reachabilityToHost:hostName];
-    reachability.notificationName = KCSReachabilityChangedNotification;
-    return [[KCSReachability alloc] initWithReachability:reachability];
+    KCSReachability* reachy = [[KCSReachability alloc] initWithReachability:reachability];
+    reachability.onReachabilityChanged = ^(KCS_KSReachability* reachability) {
+        NSNotificationCenter* nCenter = [NSNotificationCenter defaultCenter];
+        [nCenter postNotificationName:KCSReachabilityChangedNotification object:reachy];
+    };
+    return reachy;
 }
 
 + (instancetype) unreachableReachability
@@ -86,6 +90,26 @@ NSString* const KCSReachabilityChangedNotification = kDefaultNetworkReachability
 - (BOOL) isReachableViaWiFi
 {
     return !_reachability.initialized || (_reachability && !_reachability.WWANOnly);
+}
+
+#pragma mark -
+
+- (NSString *)description
+{
+    SCNetworkReachabilityFlags flags = self.reachability.flags;
+    NSString* flagString = [NSString stringWithFormat:@"%c%c %c%c%c%c%c%c%c",
+                            (flags & kSCNetworkReachabilityFlagsIsWWAN)               ? 'W' : '-',
+                            (flags & kSCNetworkReachabilityFlagsReachable)            ? 'R' : '-',
+                            
+                            (flags & kSCNetworkReachabilityFlagsTransientConnection)  ? 't' : '-',
+                            (flags & kSCNetworkReachabilityFlagsConnectionRequired)   ? 'c' : '-',
+                            (flags & kSCNetworkReachabilityFlagsConnectionOnTraffic)  ? 'C' : '-',
+                            (flags & kSCNetworkReachabilityFlagsInterventionRequired) ? 'i' : '-',
+                            (flags & kSCNetworkReachabilityFlagsConnectionOnDemand)   ? 'D' : '-',
+                            (flags & kSCNetworkReachabilityFlagsIsLocalAddress)       ? 'l' : '-',
+                            (flags & kSCNetworkReachabilityFlagsIsDirect)             ? 'd' : '-'];
+    
+    return [NSString stringWithFormat:@"%@ : %@, [%@]", [super description], self.reachability.hostname, flagString];
 }
 
 @end

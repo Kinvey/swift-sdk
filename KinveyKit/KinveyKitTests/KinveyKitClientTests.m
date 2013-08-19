@@ -9,6 +9,7 @@
 #import "KinveyKitClientTests.h"
 #import "KCSClient.h"
 #import "KinveyCollection.h"
+#import "KCSHiddenMethods.h"
 
 @implementation KinveyKitClientTests
 
@@ -102,7 +103,7 @@
     // Make sure starting value is good
     STAssertEqualObjects([[KCSClient sharedClient] userBaseURL], urlString, @"should match");
     
-    [[KCSClient sharedClient] setServiceHostname:newHost];
+    [[KCSClient sharedClient].configuration setServiceHostname:newHost];
 
     NSString* testStr = [NSString stringWithFormat:@"https://%@.kinvey.com/appdata/%@/", newHost, kidID];
     STAssertEqualObjects([[KCSClient sharedClient] appdataBaseURL], testStr, @"should match");

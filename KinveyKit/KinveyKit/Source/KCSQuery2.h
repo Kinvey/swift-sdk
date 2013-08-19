@@ -21,6 +21,7 @@
 
 @interface KCSQuery2 : NSObject
 
-- (NSString*) escapedQueryString;
++ (instancetype) queryWithPredicate:(NSPredicate*)predicate error:(NSError**)error;
+
 
 @end

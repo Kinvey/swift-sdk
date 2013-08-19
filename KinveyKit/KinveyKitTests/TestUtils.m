@@ -139,14 +139,14 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     [[KCSClient sharedClient] setKinveyDomain:@"168.1.18"];
     [[KCSClient sharedClient] setProtocol:@"http" ];
     [[KCSClient sharedClient] setPort:@":7007"];
-    [[KCSClient sharedClient] setServiceHostname:@"192"];
+    [[KCSClient sharedClient].configuration setServiceHostname:@"192"];
 }
 
 
 + (void) initStaging:(NSDictionary*)opts
 {
     (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid10005" withAppSecret:@"8cce9613ecb7431ab580d20863a91e20" usingOptions:opts];
-    [[KCSClient sharedClient] setServiceHostname:STAGING_API];
+    [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
     
 }
 

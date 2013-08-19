@@ -30,6 +30,8 @@
 @property (nonatomic, copy) NSString* appSecret;
 @property (nonatomic, copy) NSDictionary* options;
 
+@property (nonatomic, copy) NSString* serviceHostname;
+
 + (instancetype) configurationWithAppKey:(NSString*)appKey secret:(NSString*)appSecret;
 + (instancetype) configurationWithAppKey:(NSString*)appKey secret:(NSString*)appSecret options:(NSDictionary*)dictionary;
 + (instancetype) configurationFromPlist;
