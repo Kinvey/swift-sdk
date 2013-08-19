@@ -1,8 +1,8 @@
 //
-//  KinveyKit2.h
+//  KCSQuery2+KCSInternal.m
 //  KinveyKit
 //
-//  Created by Michael Katz on 5/23/13.
+//  Created by Michael Katz on 8/19/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -17,19 +17,9 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
 
-#import "KinveyKit.h"
+#import "KCSQuery2+KCSInternal.h"
 
-#import "KinveyCore.h"
+@implementation KCSQuery2 (KCSInternal)
 
-#pragma mark - Data & Storage
-
-#import "KinveyDataStore.h"
-
-#pragma mark - Service
-
-#import "KCSRequest.h"
-
-#endif
+@end

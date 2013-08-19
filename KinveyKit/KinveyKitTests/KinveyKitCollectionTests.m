@@ -19,6 +19,7 @@
 #import "KCSConnectionPool.h"
 #import "KCSQuery.h"
 #import "TestUtils.h"
+#import "KCSHiddenMethods.h"
 
 
 typedef BOOL(^SuccessAction)(NSArray *);
@@ -76,7 +77,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     // Ensure that KCSClient is alive
     KCSClient *client = [KCSClient sharedClient];
-    [client setServiceHostname:@"baas"];
+    [client.configuration setServiceHostname:@"baas"];
     (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
     
     

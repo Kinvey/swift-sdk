@@ -11,6 +11,7 @@
 
 #import "KCSRequest.h"
 #import "KCSClient.h"
+#import "KCSHiddenMethods.h"
 
 @implementation KCSRequestTests
 
@@ -32,7 +33,7 @@
     NSURL* url = urlRequest.URL;
     
     KCSClient* client = [KCSClient sharedClient];
-    NSString* expectedURL = [NSString stringWithFormat:@"https://%@.kinvey.com/rpc/%@/custom/endpoint", client.serviceHostname, client.appKey];
+    NSString* expectedURL = [NSString stringWithFormat:@"https://%@.kinvey.com/rpc/%@/custom/endpoint", client.configuration.serviceHostname, client.appKey];
     
     STAssertEqualObjects(expectedURL, url.absoluteString, @"should have a url match");
     

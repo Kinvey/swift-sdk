@@ -17,7 +17,9 @@
 // contents is a violation of applicable laws.
 //
 
-FOUNDATION_EXPORT NSString* const KCSUserCollectionName;
+#import "KinveyHeaderInfo.h"
+
+//KCS_CONSTANT KCSUserCollectionName;
 
 @interface KCSDataStore : NSObject
 
