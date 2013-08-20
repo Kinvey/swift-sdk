@@ -2586,12 +2586,8 @@ NSData* testData2()
                  KCSFile* file = downloadedResources[0];
                  NSURL* fileURL = file.localURL;
                  UIImage* image = [UIImage imageWithContentsOfFile:[fileURL path]]; //note this blocks for awhile
-                 
-                 //                 [sharedAPI saveImageToDisk:image withKCSFile:file];
-                 //
-                 //                 successBlock(image, remote);
+                 STAssertNotNil(image, @"image should be valid");
              }
-             
          }
          self.done = YES;
      }
@@ -2608,6 +2604,83 @@ NSData* testData2()
         self.done = YES;
     } progressBlock:nil];
     [self poll];
+}
+
+//hs20413
+- (void) testMultipleSimultaneousDownloads
+{
+    self.done = NO;
+    SETUP_PROGRESS
+    __block NSString* newFileId = nil;
+    NSString* filename = [NSString UUID];
+    [KCSFileStore uploadFile:[self largeImageURL]
+                     options:@{KCSFileFileName: filename}
+             completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+                 STAssertNoError_;
+                 STAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
+                 STAssertEqualObjects(uploadInfo.filename, filename, @"filename should match");
+                 STAssertNotNil(uploadInfo.fileId, @"should have a file id");
+                 KTAssertEqualsInt(uploadInfo.length, kImageSize, @"sizes shoukld match");
+                 
+                 newFileId = uploadInfo.fileId;
+                 self.done = YES;
+             } progressBlock:PROGRESS_BLOCK];
+    [self poll];
+    ASSERT_PROGESS
+    
+
+    __block int count = 0;
+    self.done = NO;
+    [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        NSLog(@"$$$$ COUNT = %d", count);
+        STAssertNoError_;
+        KTAssertCount(1, downloadedResources);
+        self.done = ++count == 5;
+    } progressBlock:nil];
+    [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        NSLog(@"$$$$ COUNT = %d", count);
+        STAssertNotNil(error, @"should be error");
+        KTAssertCount(0, downloadedResources);
+        self.done = ++count == 5;
+    } progressBlock:nil];
+    [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        NSLog(@"$$$$ COUNT = %d", count);
+        STAssertNotNil(error, @"should be error");
+        KTAssertCount(0, downloadedResources);
+        self.done = ++count == 5;
+    } progressBlock:nil];
+    [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        NSLog(@"$$$$ COUNT = %d", count);
+        STAssertNotNil(error, @"should be error");
+        KTAssertCount(0, downloadedResources);
+        self.done = ++count == 5;
+    } progressBlock:nil];
+    [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        NSLog(@"$$$$ COUNT = %d", count);
+        STAssertNotNil(error, @"should be error");
+        KTAssertCount(0, downloadedResources);
+        self.done = ++count == 5;
+    } progressBlock:nil];
+    [self poll];
+    
+    //make sure state is cleared and redownload when done
+
+    self.done = NO;
+    [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        KTAssertCount(1, downloadedResources);
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    if (newFileId) {
+        self.done = NO;
+        [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
+            STAssertNoError;
+            self.done = YES;
+        }];
+        [self poll];
+    }
 }
 
 @end

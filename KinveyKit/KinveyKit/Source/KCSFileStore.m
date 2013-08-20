@@ -373,6 +373,15 @@ static id lastRequest = nil;
 @end
 
 @implementation KCSFileStore
+static NSMutableSet* _ongoingDownloads;
+
++ (void)initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _ongoingDownloads = [NSMutableSet set];
+    });
+}
 
 #pragma mark - Uploads
 + (void) _getUploadHeader:(NSURL*)url
@@ -696,6 +705,16 @@ KCSFile* fileFromResults(NSDictionary* results)
     if (!localFile) {
         [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"no local file to download to." userInfo:nil] raise];
     }
+    
+    if ([_ongoingDownloads containsObject:fileId]) {
+        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download already in progress."};
+        NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
+        completionBlock(nil, error);
+        return;
+    } else {
+        [_ongoingDownloads addObject:fileId];
+    }
+    
     KCSFile* intermediateFile = [[KCSFile alloc] initWithLocalFile:localFile
                                                             fileId:fileId
                                                           filename:filename
@@ -720,6 +739,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                                 //don't re-download the file
                                 intermediateFile.mimeType = mimeType;
                                 intermediateFile.length = [attributes[NSFileSize] unsignedIntegerValue];
+                                [_ongoingDownloads removeObject:fileId];
                                 completionBlock(@[intermediateFile], nil);
                             } else {
                                 //redownload the file
@@ -741,6 +761,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
     [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:bytes completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+        [_ongoingDownloads removeObject:fileId];
         if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
             intermediateFile.mimeType = returnInfo[KCSFileMimeType];
         } else if (intermediateFile.mimeType == nil) {
@@ -761,6 +782,15 @@ KCSFile* fileFromResults(NSDictionary* results)
          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
            progressBlock:(KCSProgressBlock)progressBlock
 {
+    if ([_ongoingDownloads containsObject:fileId]) {
+        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download already in progress."};
+        NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
+        completionBlock(nil, error);
+        return;
+    } else {
+        [_ongoingDownloads addObject:fileId];
+    }
+    
     NSURL* cachesDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
     NSString* tempName = [NSString stringByPercentEncodingString:[fileId stringByReplacingOccurrencesOfString:@"/" withString:@""]];
     NSURL* localFile = [NSURL URLWithString:tempName relativeToURL:cachesDir];
@@ -777,10 +807,21 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
     [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+        [_ongoingDownloads removeObject:fileId];
+        
         if (error) {
             completionBlock(nil, error);
         } else {
-            KCSFile* file = [[KCSFile alloc] initWithData:[NSData dataWithContentsOfURL:localFile]
+            NSData* data = [NSData dataWithContentsOfURL:localFile];
+            if (data == nil) {
+                KCSLogError(@"Error reading temp file for data download: %@", localFile);
+                NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Error reading temp file for data download.", NSLocalizedRecoverySuggestionErrorKey : @"Retry download."};
+                NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
+                completionBlock(nil, error);
+                return;
+            }
+            
+            KCSFile* file = [[KCSFile alloc] initWithData:data
                                                    fileId:fileId
                                                  filename:filename
                                                  mimeType:mimeType];
@@ -971,7 +1012,7 @@ KCSFile* fileFromResults(NSDictionary* results)
 
                     //TODO: onlyIfNewer check download object
                     [self _downloadToFile:destinationFile fromURL:thisFile.remoteURL fileId:thisFile.fileId filename:destinationFilename mimeType:thisFile.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
-                        if (error != nil && firstError != nil) {
+                        if (error != nil && firstError == nil) {
                             firstError = error;
                         }
                         DBAssert(downloadedResources.count == 1, @"should only get 1 per download");
@@ -1059,10 +1100,10 @@ KCSFile* fileFromResults(NSDictionary* results)
                 KCSFile* thisFile = obj;
                 if (thisFile && thisFile.remoteURL) {
                     [self _downloadToData:thisFile.remoteURL fileId:thisFile.fileId filename:thisFile.filename mimeType:thisFile.mimeType completionBlock:^(NSArray *downloadedResources, NSError *error) {
-                        if (error != nil && firstError != nil) {
+                        if (error != nil && firstError == nil) {
                             firstError = error;
                         }
-                        DBAssert(downloadedResources.count == 1, @"should only get 1 per download");
+                        DBAssert(downloadedResources == nil || downloadedResources.count == 1, @"should only get 1 per download");
                         if (downloadedResources != nil && downloadedResources.count > 0) {
                             files[idx] = downloadedResources[0];
                         }
