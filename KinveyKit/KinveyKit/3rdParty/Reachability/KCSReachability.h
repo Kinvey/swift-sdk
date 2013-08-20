@@ -20,22 +20,32 @@
 /** Notification for kinvey reachability changes */
 KCS_CONSTANT KCSReachabilityChangedNotification;
 
+/** Reachability helper object. Use to test for existence of connection or changes in connectivity. Note that a `YES` isReachable doesn't necessarily mean that the conncetion will succeed, just that it is possible. */
 @interface KCSReachability: NSObject
 
-// Use to check the reachability to the network
+/** Use to check the reachability to the network */
 + (instancetype) reachabilityForInternetConnection;
 
-// Use to check the reachability of a particular host name.
+/** Use to check the reachability of a particular host name. */
 + (instancetype) reachabilityWithHostName:(NSString*)hostName;
 
 // for testing
 + (instancetype) unreachableReachability;
 
-// The main direct test of reachability.
-// Always true before reachability is initialized (async)
+/** The main direct test of reachability.
+ 
+ Always true before reachability is initialized (async).
+ @return `YES` if a network connection is available.
+ */
 - (BOOL) isReachable;
 
-// Routines for specific connection testing by your app.
+/** Test if the connection is cellular 
+ @return `YES` if 3G, EDGE, LTE etc
+ */
 - (BOOL) isReachableViaWWAN;
+
+/** Test if connection is wifi. 
+ @return `YES` if connection is wifi.
+ */
 - (BOOL) isReachableViaWiFi;
 @end
