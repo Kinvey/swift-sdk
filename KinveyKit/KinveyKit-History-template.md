@@ -6,11 +6,12 @@
 
 ## 1.19
 ### 1.19.1
-** Release Date:** TBD
+** Release Date:** August 20, 2013
 
 * Bug fix(es):
     * Fixed crash when using file download query by `_id`.
     * Fixed sporadic crash when file download query returns 0 results.
+    * Multiple simultaneous downloads of the same file are not allowed. The completion block for subsequent downloads will contain an error.
 
 ### 1.19.0
 ** Release Date:** August 13, 2013
