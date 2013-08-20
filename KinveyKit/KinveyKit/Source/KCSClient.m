@@ -161,7 +161,14 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
     return self.configuration.options;
 }
 
-
+- (NSString*) appKey
+{
+    return self.configuration.appKey;
+}
+- (NSString *)appSecret
+{
+    return self.configuration.appSecret;
+}
 
 - (KCSClient *)initializeKinveyServiceForAppKey:(NSString *)appKey withAppSecret:(NSString *)appSecret usingOptions:(NSDictionary *)options
 {
@@ -278,7 +285,7 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
 #pragma mark - KinveyKit2
 - (NSString*) kid
 {
-    return _appKey;
+    return self.configuration.appKey;
 }
 
 - (NSString*) baseURL
