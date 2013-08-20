@@ -149,6 +149,9 @@
         serviceHostname = KCS_DEFAULT_HOSTNAME;
     }
     _serviceHostname = [serviceHostname copy]; // Implicit retain here
+    if ([KCSClient sharedClient].configuration == self) {
+        [[KCSClient sharedClient] setConfiguration:self];
+    }
 }
 
 - (BOOL) valid
