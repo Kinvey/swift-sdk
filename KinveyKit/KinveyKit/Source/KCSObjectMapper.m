@@ -13,6 +13,8 @@
 //TODO: remove core location as dependency injection
 #import <CoreLocation/CoreLocation.h>
 
+#import "KCS_SBJson.h"
+
 #import "KCSPropertyUtil.h"
 
 #import "KinveyPersistable.h"
@@ -38,6 +40,16 @@
 typedef enum KCSRefType : NSInteger {
     NotARef, FileRef, AppdataRef
 } KCSRefType;
+
+@interface NSSet (JSON)
+- (id) proxyForJSON;
+@end
+@implementation NSSet (JSON)
+- (id)proxyForJSON
+{
+    return [self allObjects];
+}
+@end
 
 @protocol KCSPersistableInternal <NSObject>
 +(id)kinveyDesignatedInitializer;

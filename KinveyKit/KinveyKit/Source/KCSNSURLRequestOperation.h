@@ -1,8 +1,8 @@
 //
-//  KinveyKit2.h
+//  KCSNSURLRequestOperation.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 5/23/13.
+//  Created by Michael Katz on 8/20/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -17,19 +17,10 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
 
-#import "KinveyKit.h" //
+#import <Foundation/Foundation.h>
 
-#import "KinveyCore.h"
+@interface KCSNSURLRequestOperation : NSOperation
+- (instancetype) initWithRequest:(NSMutableURLRequest*) request;
 
-#pragma mark - Data & Storage
-
-#import "KinveyDataStore.h"
-
-#pragma mark - Service
-
-#import "KCSRequest.h" //
-
-#endif
+@end
