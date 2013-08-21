@@ -233,7 +233,10 @@ static NSNumber *kNegativeInfinity;
 
 	} else if ([o isKindOfClass:[NSNull class]]) {
 		return [self writeNull];
-
+        
+    } else if ([o isKindOfClass:[NSSet class]]) {
+		return [self writeArray:[o allObjects]];
+        
 	} else if ([o respondsToSelector:@selector(proxyForJson)]) {
 		return [self writeValue:[o proxyForJson]];
 

@@ -1,7 +1,11 @@
 # KinveyKit Release History
 
 ## 1.20
-### 1.20.1
+### 1.20.0
+** Release Date:** TBD
+
+* Bug fix(es):
+    * Fix issue saving `KCSUser` object with push tokens.
 
 
 ## 1.19
