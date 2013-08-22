@@ -4,11 +4,20 @@
 ### 1.20.0
 ** Release Date:** TBD
 
+
+* Code Cleanup:
+    * Removed old KCS_PUSH_XXX client setup constants since they no longer do anything.
 * Bug fix(es):
     * Fix issue saving `KCSUser` object with push tokens.
 
 
 ## 1.19
+### 1.19.2 
+** Release Date:** August 22, 2013
+
+* Bug fix(es):
+    * Fixed build error when using library.
+
 ### 1.19.1
 ** Release Date:** August 20, 2013
 

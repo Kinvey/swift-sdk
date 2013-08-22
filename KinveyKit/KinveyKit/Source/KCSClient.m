@@ -22,8 +22,6 @@
 #import "KCSClient.h"
 #import "KinveyUser.h"
 
-
-#import "KinveyCollection.h"
 #import "KinveyAnalytics.h"
 #import "NSURL+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
@@ -44,7 +42,11 @@
 
 NSString* const KCS_APP_KEY = @"KCS_APP_KEY";
 NSString* const KCS_APP_SECRET = @"KCS_APP_SECRET";
-NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
+NSString* const KCS_CONNECTION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
+NSString* const KCS_SERVICE_HOST = @"KCS_SERVICE_HOST";
+NSString* const KCS_URL_CACHE_POLICY = @"KCS_URL_CACHE_POLICY";
+NSString* const KCS_DATE_FORMAT = @"KCS_DATE_FORMAT";
+NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
 
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
@@ -62,15 +64,9 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
 @property (nonatomic, strong, readwrite) KCSReachability *networkReachability;
 @property (nonatomic, strong, readwrite) KCSReachability *kinveyReachability;
 
-@property (strong, nonatomic) NSString *kinveyDomain;
-
 ///---------------------------------------------------------------------------------------
 /// @name Connection Properties
 ///---------------------------------------------------------------------------------------
-
-/*! Protocol used to connection to Kinvey Service (nominally HTTPS)*/
-@property (nonatomic, strong) NSString *protocol;
-@property (nonatomic, strong) NSString* port;
 
 - (void)updateURLs;
 
@@ -96,14 +92,9 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
     self = [super init];
     
     if (self){
-        _kinveyDomain = @"kinvey.com";
         _libraryVersion = __KINVEYKIT_VERSION__;
         _userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
         _analytics = [[KCSAnalytics alloc] init];
-        _cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;  // Inhibit caching for now
-        _protocol = @"https";
-        _port = @"";
-        _dateStorageFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
         
         if (![self respondsToSelector:@selector(testCanUseCategories)]) {
             NSException* myException = [NSException exceptionWithName:@"CategoriesNotLoaded" reason:@"KinveyKit setup: Categories could not be loaded. Be sure to set '-ObjC' in the 'Other Linker Flags'." userInfo:nil];
@@ -132,7 +123,7 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
     // TODO: Investigate being notified of changes in KCS Client
 
     // We do this here because there is latency on DNS resolution of the hostname.  We need to do this ASAP when the hostname changes
-    self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.configuration.serviceHostname, self.kinveyDomain]];
+    self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.configuration.serviceHostname, configuration.options[@"KCS_HOST_DOMAIN"]]];
 
     [self updateURLs];
     // Check to make sure appdata URL is good
@@ -141,13 +132,12 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
         [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"App Key contains invalid characters, check to make sure App Key is correct!" userInfo:nil] raise];
     }
     
-    if (self.options[KCS_CONNETION_TIMEOUT]) {
-        _connectionTimeout = [self.options[KCS_CONNETION_TIMEOUT] doubleValue];
+    if (self.options[KCS_CONNECTION_TIMEOUT]) {
+        _connectionTimeout = [self.options[KCS_CONNECTION_TIMEOUT] doubleValue];
     }
-
     
-    if ([self.options objectForKey:KCS_LOG_SINK] != nil) {
-        [KCSLogManager setLogSink:[self.options objectForKey:KCS_LOG_SINK]];
+    if (self.options[KCS_LOG_SINK] != nil) {
+        [KCSLogManager setLogSink:self.options[KCS_LOG_SINK]];
     }
 }
 
@@ -169,26 +159,46 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
 {
     return self.configuration.appSecret;
 }
-
-- (KCSClient *)initializeKinveyServiceForAppKey:(NSString *)appKey withAppSecret:(NSString *)appSecret usingOptions:(NSDictionary *)options
+- (NSURLCacheStoragePolicy) cachePolicy
 {
-    self.configuration = [KCSClientConfiguration configurationWithAppKey:appKey secret:appSecret options:options];
+    return [self.configuration.options[KCS_URL_CACHE_POLICY] intValue];
+}
+- (NSString *)dateStorageFormatString
+{
+    return self.configuration.options[KCS_DATE_FORMAT];
+}
+
+#pragma mark INITS
+
+- (void) initializeWithConfiguration:(KCSClientConfiguration*)configuration
+{
+    self.configuration = configuration;
+}
+
+- (instancetype) initializeKinveyServiceForAppKey:(NSString *)appKey withAppSecret:(NSString *)appSecret usingOptions:(NSDictionary *)options
+{
+    [self initializeWithConfiguration:[KCSClientConfiguration configurationWithAppKey:appKey secret:appSecret options:options]];
     return self;
 }
 
-- (KCSClient *)initializeKinveyServiceWithPropertyList
+- (instancetype) initializeKinveyServiceWithPropertyList
 {
-    self.configuration = [KCSClientConfiguration configurationFromPlist];
+    [self initializeWithConfiguration:[KCSClientConfiguration configurationFromPlist:@"KinveyOptions"]];
     return self;
 }
 
 - (void)updateURLs
 {
-    self.appdataBaseURL  = [NSString stringWithFormat:@"%@://%@.%@%@/appdata/%@/", self.protocol, self.configuration.serviceHostname, self.kinveyDomain, self.port, self.appKey];
-    self.resourceBaseURL = [NSString stringWithFormat:@"%@://%@.%@%@/blob/%@/", self.protocol, self.configuration.serviceHostname, self.kinveyDomain, self.port, self.appKey];
-    self.userBaseURL     = [NSString stringWithFormat:@"%@://%@.%@%@/user/%@/", self.protocol, self.configuration.serviceHostname, self.kinveyDomain, self.port, self.appKey];
+    NSString* protocol = self.configuration.options[@"KCS_HOST_PROTOCOL"];
+    NSString* hostname = self.configuration.serviceHostname;
+    NSString* hostdomain = self.configuration.options[@"KCS_HOST_DOMAIN"];
+    NSString* port = self.configuration.options[@"KCS_HOST_PORT"];
+    NSString* host = [NSString stringWithFormat:@"%@://%@.%@%@", protocol, hostname, hostdomain, port];
+    self.appdataBaseURL  = [NSString stringWithFormat:@"%@/appdata/%@/", host, self.appKey];
+    self.resourceBaseURL = [NSString stringWithFormat:@"%@/blob/%@/", host, self.appKey];
+    self.userBaseURL     = [NSString stringWithFormat:@"%@/user/%@/", host, self.appKey];
     //rpc/:kid/:username/user-password-reset-initiate
-    self.rpcBaseURL      = [NSString stringWithFormat:@"%@://%@.%@%@/rpc/%@/", self.protocol, self.configuration.serviceHostname,self.kinveyDomain, self.port, self.appKey];
+    self.rpcBaseURL      = [NSString stringWithFormat:@"%@/rpc/%@/", host, self.appKey];
 
 }
 
@@ -290,6 +300,10 @@ NSString* const KCS_CONNETION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
 
 - (NSString*) baseURL
 {
-    return [NSString stringWithFormat:@"%@://%@.%@%@/", self.protocol, self.configuration.serviceHostname, self.kinveyDomain, self.port];
+    NSString* protocol = self.configuration.options[@"KCS_HOST_PROTOCOL"];
+    NSString* hostname = self.configuration.serviceHostname;
+    NSString* hostdomain = self.configuration.options[@"KCS_HOST_DOMAIN"];
+    NSString* port = self.configuration.options[@"KCS_HOST_PORT"];
+    return [NSString stringWithFormat:@"%@://%@.%@%@/", protocol, hostname, hostdomain, port];
 }
 @end

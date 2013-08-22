@@ -34,6 +34,6 @@
 
 + (instancetype) configurationWithAppKey:(NSString*)appKey secret:(NSString*)appSecret;
 + (instancetype) configurationWithAppKey:(NSString*)appKey secret:(NSString*)appSecret options:(NSDictionary*)dictionary;
-+ (instancetype) configurationFromPlist;
++ (instancetype) configurationFromPlist:(NSString*)plistName;
 
 @end

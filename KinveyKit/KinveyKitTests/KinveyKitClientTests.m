@@ -146,26 +146,5 @@
     STAssertEquals(client1, client2, @"should be same instance");
 }
 
-// Still need tests for push and initializing via plist
-
-- (void) testEnvironmentVariable
-{
-    NSString* bundleId = [[NSBundle mainBundle] bundleIdentifier];
-    if (bundleId != nil) {
-        NSString* appKeyKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_APP_KEY"];
-        NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:appKey];
-        if (appKey) {
-            NSString* appSecretKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_APP_KEY"];
-            NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:appSecretKey];
-            NSString* serviceHostnameKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_SERVICE_KEY"];
-            NSString* serviceHostname = [[[NSProcessInfo processInfo] environment] objectForKey:appSecretKey];
-        }
-        
-    }
-    NSLog(@"Got a bundle id: %@", bundleId);
-    
-    NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
-    NSLog(@"%@", appKey);
-}
 
 @end
