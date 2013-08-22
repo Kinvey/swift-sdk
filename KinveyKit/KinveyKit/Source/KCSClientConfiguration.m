@@ -23,12 +23,19 @@
 #import "KCSClient.h"
 #import "KCSLogManager.h"
 
-#define KCS_DEFAULT_HOSTNAME @"baas"
-#define KCS_DEFAULT_CONNETION_TIMEOUT @10.0 // Default timeout to 10 seconds
+#define KCS_HOST_PORT @"KCS_HOST_PORT"
+#define KCS_HOST_PROTOCOL @"KCS_HOST_PROTOCOL"
+#define KCS_HOST_DOMAIN @"KCS_HOST_DOMAIN"
 
+#define KCS_DEFAULT_HOSTNAME @"baas"
+#define KCS_DEFAULT_HOST_PORT @""
+#define KCS_DEFAULT_HOST_PROTOCOL @"https"
+#define KCS_DEFAULT_HOST_DOMAIN @"kinvey.com"
+#define KCS_DEFAULT_CONNETION_TIMEOUT @10.0 // Default timeout to 10 seconds
+#define KCS_DEFAULT_URL_CACHE_POLICY NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+#define KCS_DEFAULT_DATE_FORMAT @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
 
 @interface KCSClientConfiguration ()
-
 @end
 
 @implementation KCSClientConfiguration
@@ -39,10 +46,16 @@
     if (self) {
         _appKey = nil;
         _appSecret = nil;
-        _options = @{KCS_CONNETION_TIMEOUT : KCS_DEFAULT_CONNETION_TIMEOUT};
+        _options = @{KCS_CONNECTION_TIMEOUT : KCS_DEFAULT_CONNETION_TIMEOUT,
+                     KCS_URL_CACHE_POLICY   : @(KCS_DEFAULT_URL_CACHE_POLICY),
+                     KCS_HOST_PORT          : KCS_DEFAULT_HOST_PORT,
+                     KCS_HOST_PROTOCOL      : KCS_DEFAULT_HOST_PROTOCOL,
+                     KCS_HOST_DOMAIN        : KCS_DEFAULT_HOST_DOMAIN,
+                     KCS_DATE_FORMAT        : KCS_DEFAULT_DATE_FORMAT
+                     };
         _serviceHostname = KCS_DEFAULT_HOSTNAME;
     }
-    return  self;
+    return self;
 }
 
 + (instancetype)configurationWithAppKey:(NSString *)appKey secret:(NSString *)appSecret
@@ -71,53 +84,43 @@
     return config;
 }
 
-+ (instancetype)configurationFromPlist
++ (instancetype)configurationFromPlist:(NSString*)plist
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"KinveyOptions" ofType:@"plist"];
+    NSString *path = [[NSBundle mainBundle] pathForResource:plist ofType:@"plist"];
+#if BUILD_FOR_UNIT_TEST
+    path = [[[NSBundle bundleForClass:[self class]] URLForResource:plist withExtension:@"plist"] path];
+#endif
     NSDictionary *opt = [NSDictionary dictionaryWithContentsOfFile:path];
     
-    if (opt == nil){
+    if (plist == nil){
         opt = [[NSBundle mainBundle] infoDictionary];
     }
     
-    return [self configurationWithAppKey:[opt valueForKey:KCS_APP_KEY]
-                                    secret:[opt valueForKey:KCS_APP_SECRET]
-                                     options:opt];
-}
-
-+ (instancetype) configurationFromEnvironment
-{ //TODO: cleanup
-    KCSClientConfiguration* configuration = nil;
-    NSString* bundleId = [[NSBundle mainBundle] bundleIdentifier];
-    if (bundleId != nil) {
-        NSString* appKeyKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_APP_KEY"];
-        NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:appKeyKey];
-        if (appKey) {
-            NSString* appSecretKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_APP_KEY"];
-            NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:appSecretKey];
-            if (appSecret) {
-                configuration = [[KCSClientConfiguration alloc] init];
-                configuration.appKey = appKey;
-                configuration.appSecret = appSecret;
-                
-                NSString* serviceHostnameKey = [NSString stringWithFormat:@"%@.%@", bundleId, @"KCS_SERVICE_KEY"];
-                NSString* serviceHostname = [[[NSProcessInfo processInfo] environment] objectForKey:serviceHostnameKey];
-                configuration.serviceHostname = serviceHostname;
-                return configuration;
-            }
-        }
-        
+    if (opt == nil) {
+        [[NSException exceptionWithName:@"KinveyInitializationError" reason:[NSString stringWithFormat:@"Unable to read configuration plist: '%@'.", plist] userInfo:nil] raise];
     }
     
-    NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
+    NSString* appKey = [opt valueForKey:KCS_APP_KEY];
+    NSString* appSecret = [opt valueForKey:KCS_APP_SECRET];
+    
+    return [self configurationWithAppKey:appKey
+                                  secret:appSecret
+                                 options:opt];
+}
+
+
++ (instancetype) configurationFromEnvironment
+{
+    KCSClientConfiguration* configuration = nil;
+    NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:KCS_APP_KEY];
     if (appKey) {
-        NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
+        NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:KCS_APP_SECRET];
         if (appSecret) {
             configuration = [[KCSClientConfiguration alloc] init];
             configuration.appKey = appKey;
             configuration.appSecret = appSecret;
             
-            NSString* serviceHostname = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_SERVICE_KEY"];
+            NSString* serviceHostname = [[[NSProcessInfo processInfo] environment] objectForKey:KCS_SERVICE_HOST];
             configuration.serviceHostname = serviceHostname;
             return configuration;
         }
