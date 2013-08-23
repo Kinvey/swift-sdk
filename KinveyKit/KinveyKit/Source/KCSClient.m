@@ -108,6 +108,10 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
 - (void) setConfiguration:(KCSClientConfiguration*)configuration
 {
     _configuration = configuration;
+    
+    if (configuration.appKey==nil || configuration.appSecret == nil) {
+        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"App Key or Secret is `nil`." userInfo:nil] raise];
+    }
 
     NSString* oldAppKey = [KCSKeyChain getStringForKey:@"kinveykit.appkey"];
     if (oldAppKey != nil && [configuration.appKey isEqualToString:oldAppKey] == NO) {
@@ -161,7 +165,7 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
 }
 - (NSURLCacheStoragePolicy) cachePolicy
 {
-    return [self.configuration.options[KCS_URL_CACHE_POLICY] intValue];
+    return [self.configuration.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue];
 }
 - (NSString *)dateStorageFormatString
 {

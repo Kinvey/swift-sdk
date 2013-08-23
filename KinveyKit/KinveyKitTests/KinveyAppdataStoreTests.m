@@ -105,10 +105,20 @@ NSString* largeString()
     return largeStringOfSize(1e6);
 }
 
+- (void) upTimeout
+{
+    KCSClientConfiguration* conifg = [KCSClient sharedClient].configuration;
+    NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:conifg.options];
+    d[KCS_CONNECTION_TIMEOUT] = @1000;
+    conifg.options = d;
+    [[KCSClient sharedClient] setConfiguration:conifg];
+}
+
 - (void)testQueryHuge
 {
+    [self upTimeout];
+    
     self.done = NO;
-    [KCSClient sharedClient].connectionTimeout = 1000;
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:largeString()];
     [_store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
@@ -131,7 +141,7 @@ NSArray* largeArray()
 
 - (void)testQueryLargeIn
 {
-    [KCSClient sharedClient].connectionTimeout = 1000;
+    [self upTimeout];
     self.done = NO;
     KCSQuery* query = [KCSQuery queryOnField:@"foo" usingConditional:kKCSIn forValue:largeArray()];
     [_store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {

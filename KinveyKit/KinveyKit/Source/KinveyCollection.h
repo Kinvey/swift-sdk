@@ -19,13 +19,12 @@
 #import <Foundation/Foundation.h>
 #import "KinveyPersistable.h"
 #import "KCSBlockDefs.h"
+#import "KinveyHeaderInfo.h"
 
 /** The name of the special case user collection
  @since 1.10.2
  */
-#define KCSUserCollectionName @"user"
-
-@class JSONDecoder;
+KCS_CONSTANT KCSUserCollectionName;
 
 
 /*!  Describes required methods for requesting entities from the Kinvey Service.

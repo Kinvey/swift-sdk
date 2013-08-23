@@ -590,7 +590,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     uploadFile.mimeType = results[KCSFileMimeType];
     uploadFile.fileId = results[KCSFileId];
     uploadFile.filename = results[KCSFileFileName];
-    uploadFile.public = results[KCSFilePublic];
+    uploadFile.publicFile = results[KCSFilePublic];
     
     NSDictionary* kmd = results[@"_kmd"];
     NSDictionary* acl = results[@"_acl"];

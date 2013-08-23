@@ -32,7 +32,7 @@
 #define KCS_DEFAULT_HOST_PROTOCOL @"https"
 #define KCS_DEFAULT_HOST_DOMAIN @"kinvey.com"
 #define KCS_DEFAULT_CONNETION_TIMEOUT @10.0 // Default timeout to 10 seconds
-#define KCS_DEFAULT_URL_CACHE_POLICY NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+#define KCS_DEFAULT_URL_CACHE_POLICY @(NSURLRequestReloadIgnoringLocalAndRemoteCacheData)
 #define KCS_DEFAULT_DATE_FORMAT @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
 
 @interface KCSClientConfiguration ()
@@ -47,7 +47,7 @@
         _appKey = nil;
         _appSecret = nil;
         _options = @{KCS_CONNECTION_TIMEOUT : KCS_DEFAULT_CONNETION_TIMEOUT,
-                     KCS_URL_CACHE_POLICY   : @(KCS_DEFAULT_URL_CACHE_POLICY),
+                     KCS_URL_CACHE_POLICY   : KCS_DEFAULT_URL_CACHE_POLICY,
                      KCS_HOST_PORT          : KCS_DEFAULT_HOST_PORT,
                      KCS_HOST_PROTOCOL      : KCS_DEFAULT_HOST_PROTOCOL,
                      KCS_HOST_DOMAIN        : KCS_DEFAULT_HOST_DOMAIN,
@@ -56,6 +56,17 @@
         _serviceHostname = KCS_DEFAULT_HOSTNAME;
     }
     return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    KCSClientConfiguration* c = [[KCSClientConfiguration allocWithZone:zone] init];
+    c.appKey = self.appKey;
+    c.appSecret = self.appSecret;
+    c.options = self.options;
+    c.serviceHostname = self.serviceHostname;
+    
+    return c;
 }
 
 + (instancetype)configurationWithAppKey:(NSString *)appKey secret:(NSString *)appSecret
