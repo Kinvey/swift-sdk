@@ -275,6 +275,10 @@
 		278BADC217B28EC70035B3D6 /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 278BABA717B28EC40035B3D6 /* DispatchQueueLogFormatter.m */; };
 		278BB05B17B290610035B3D6 /* KCSLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 278BB05A17B290420035B3D6 /* KCSLog.h */; };
 		278BB05C17B290630035B3D6 /* KCSLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 278BB05A17B290420035B3D6 /* KCSLog.h */; };
+		2798E32D17C7B69D00284F2A /* NSError+KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 2798E32B17C7B69D00284F2A /* NSError+KinveyKit.h */; };
+		2798E32E17C7B69D00284F2A /* NSError+KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 2798E32B17C7B69D00284F2A /* NSError+KinveyKit.h */; };
+		2798E32F17C7B69D00284F2A /* NSError+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */; };
+		2798E33017C7B69D00284F2A /* NSError+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */; };
 		27A93B53156AD14800810B88 /* KCSReduceFunctionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */; };
 		27A93B57156AD2D500810B88 /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
 		27AC2F25161CA258008A05E1 /* KCSClient+ConfigurationTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27AC2F23161CA258008A05E1 /* KCSClient+ConfigurationTest.h */; };
@@ -738,6 +742,8 @@
 		2795FC1216091570002ED162 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2795FC3A160915A1002ED162 /* KCSUser+SocialExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSUser+SocialExtras.h"; sourceTree = "<group>"; };
 		2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSUser+SocialExtras.m"; sourceTree = "<group>"; };
+		2798E32B17C7B69D00284F2A /* NSError+KinveyKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+KinveyKit.h"; sourceTree = "<group>"; };
+		2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+KinveyKit.m"; sourceTree = "<group>"; };
 		27A93B51156AD14800810B88 /* KCSReduceFunctionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReduceFunctionTests.h; sourceTree = "<group>"; };
 		27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReduceFunctionTests.m; sourceTree = "<group>"; };
 		27A93B55156AD2D500810B88 /* ASTTestClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASTTestClass.h; sourceTree = "<group>"; };
@@ -1174,6 +1180,8 @@
 				278BB05A17B290420035B3D6 /* KCSLog.h */,
 				274D395B17A8009100587886 /* KCSPlatformUtils.h */,
 				274D395C17A8009100587886 /* KCSPlatformUtils.m */,
+				2798E32B17C7B69D00284F2A /* NSError+KinveyKit.h */,
+				2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */,
 				27E0696317B972BC00B91910 /* KCSRequest2.h */,
 				27E0696417B972BC00B91910 /* KCSRequest2.m */,
 				27DA141817C3E7D000EAB3B7 /* KCSNSURLRequestOperation.h */,
@@ -2013,6 +2021,7 @@
 				27B1E37E17334DF300E12333 /* KCSLinkedInHelper.h in Headers */,
 				278BADBC17B28EC70035B3D6 /* ContextFilterLogFormatter.h in Headers */,
 				273B64A41758F2CB00E1B1B9 /* KCSCustomEndpoints.h in Headers */,
+				2798E32E17C7B69D00284F2A /* NSError+KinveyKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2157,6 +2166,7 @@
 				273B64581757E5FA00E1B1B9 /* KCSClient+KinveyKit2.h in Headers */,
 				273B645F1758022B00E1B1B9 /* KCSUser+KinveyKit2.h in Headers */,
 				27C95C0417C26BC60003498D /* KCSQuery2+KCSInternal.h in Headers */,
+				2798E32D17C7B69D00284F2A /* NSError+KinveyKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2585,6 +2595,7 @@
 				27E0696817B972BC00B91910 /* KCSRequest2.m in Sources */,
 				270BAEB317134107005174D2 /* KinveyEntity.m in Sources */,
 				270BAEB617134193005174D2 /* KCSEntityDict.m in Sources */,
+				2798E33017C7B69D00284F2A /* NSError+KinveyKit.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2732,6 +2743,7 @@
 				273B64501757DE0F00E1B1B9 /* KCSCustomEndpoints.m in Sources */,
 				273B64591757E5FA00E1B1B9 /* KCSClient+KinveyKit2.m in Sources */,
 				273B64601758022B00E1B1B9 /* KCSUser+KinveyKit2.m in Sources */,
+				2798E32F17C7B69D00284F2A /* NSError+KinveyKit.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

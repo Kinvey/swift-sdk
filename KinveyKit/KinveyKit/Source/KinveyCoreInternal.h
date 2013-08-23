@@ -22,8 +22,12 @@
 
 #import "KinveyCore.h"
 
+#import "KinveyVersion.h"
+
 #import "KCSPlatformUtils.h"
 #import "KCSLog.h"
+
+#import "NSError+KinveyKit.h"
 
 #define KCS_BREAK NSAssert(YES, @"BROKEN");
 

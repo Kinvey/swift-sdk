@@ -22,6 +22,8 @@
 
 #import "KinveyKit.h" //
 
+#import "KinveyVersion.h"
+
 #import "KinveyCore.h"
 
 #pragma mark - Data & Storage

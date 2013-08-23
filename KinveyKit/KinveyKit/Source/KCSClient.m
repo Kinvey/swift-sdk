@@ -115,6 +115,10 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
 
     NSString* oldAppKey = [KCSKeyChain getStringForKey:@"kinveykit.appkey"];
     if (oldAppKey != nil && [configuration.appKey isEqualToString:oldAppKey] == NO) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+        [self setCurrentUser:nil];
+#pragma clang diagnostic pop
         //clear the saved user if the kid changes
         [KCSUser clearSavedCredentials];
     }

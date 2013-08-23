@@ -1981,7 +1981,7 @@ NSData* testData2()
         STAssertNotNil(uploadInfo.filename, @"filename should have faule");
         STAssertNotNil(uploadInfo.fileId, @"should have a file id");
         STAssertFalse([uploadInfo.fileId isEqualToString:uploadInfo.filename], @"file id should be unique");
-        STAssertEqualObjects(uploadInfo.public, @(YES), @"should be public");
+        STAssertEqualObjects(uploadInfo.publicFile, @(YES), @"should be public");
         
         KTAssertEqualsInt(uploadInfo.length, kImageSize, @"sizes should match");
         STAssertNotNil(uploadInfo.localURL, @"should not be nil");
@@ -2175,7 +2175,7 @@ NSData* testData2()
         STAssertNotNil(uploadInfo.filename, @"filename should have faule");
         STAssertNotNil(uploadInfo.fileId, @"should have a file id");
         STAssertFalse([uploadInfo.fileId isEqualToString:uploadInfo.filename], @"file id should be unique");
-        STAssertEqualObjects(uploadInfo.public, @(YES), @"should be public");
+        STAssertEqualObjects(uploadInfo.publicFile, @(YES), @"should be public");
         
         KTAssertEqualsInt(uploadInfo.length, testData().length, @"sizes should match");
         STAssertNil(uploadInfo.localURL, @"should be nil");
