@@ -79,9 +79,10 @@
 
 - (void) testExample
 {
-    KCSRequest2* a = [[KCSRequest2 alloc] init];
-    [a start];
-    [self poll];
+    //    KCSRequest2* a = [[KCSRequest2 alloc] init];
+    //    [a start];
+    // [self poll];
+    STFail(@"NIY");
 }
 
 //- (void)testExample

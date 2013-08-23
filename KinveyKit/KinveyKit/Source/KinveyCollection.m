@@ -23,6 +23,9 @@
 #import "KCSConnectionProgress.h"
 #import "KinveyUser.h"
 
+
+NSString* const KCSUserCollectionName = @"user";
+
 typedef enum KCSCollectionCategory : NSInteger {
     KCSCollectionAppdata, KCSCollectionUser, KCSCollectionBlob
 } KCSCollectionCategory;

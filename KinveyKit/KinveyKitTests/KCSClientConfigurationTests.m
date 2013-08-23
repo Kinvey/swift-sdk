@@ -77,7 +77,8 @@
 
 - (void) testThrowsIfNoSecretOrKey
 {
-    STFail(@"NIY");
+    KCSClientConfiguration* badConfig = [KCSClientConfiguration new];
+    STAssertThrows([[KCSClient sharedClient] initializeWithConfiguration:badConfig], @"throws");
 }
 
 @end

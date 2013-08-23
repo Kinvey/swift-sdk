@@ -135,11 +135,11 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 + (void) initCustom:(NSDictionary*)opts
 {
-    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_TT1n4clp2M" withAppSecret:@"4ffcb1c73a0847f28d54ff75225a3944" usingOptions:opts];
-    [[KCSClient sharedClient] setKinveyDomain:@"168.1.18"];
-    [[KCSClient sharedClient] setProtocol:@"http" ];
-    [[KCSClient sharedClient] setPort:@":7007"];
-    [[KCSClient sharedClient].configuration setServiceHostname:@"192"];
+//    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_TT1n4clp2M" withAppSecret:@"4ffcb1c73a0847f28d54ff75225a3944" usingOptions:opts];
+//    [[KCSClient sharedClient] setKinveyDomain:@"168.1.18"];
+//    [[KCSClient sharedClient] setProtocol:@"http" ];
+//    [[KCSClient sharedClient] setPort:@":7007"];
+//    [[KCSClient sharedClient].configuration setServiceHostname:@"192"];
 }
 
 
@@ -158,7 +158,9 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 + (void) justInitServer
 {
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
-    NSDictionary* opts = @{KCS_TWITTER_CLIENT_SECRET : @"rLUxyvve0neLqO8P8pWY6S8fOToXtL7qcNzxNMaUSA", KCS_TWITTER_CLIENT_KEY : @"5sCifD1tKCjA6zQD5jE6A", KCS_FACEBOOK_APP_KEY: @"432021153527854"};
+    NSDictionary* opts = @{KCS_TWITTER_CLIENT_SECRET : @"rLUxyvve0neLqO8P8pWY6S8fOToXtL7qcNzxNMaUSA",
+                           KCS_TWITTER_CLIENT_KEY : @"5sCifD1tKCjA6zQD5jE6A",
+                           KCS_FACEBOOK_APP_KEY: @"432021153527854"};
     if (YES) {
         [self initStaging:opts];
     } else {

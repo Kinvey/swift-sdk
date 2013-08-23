@@ -47,8 +47,19 @@
 @property (nonatomic, copy) NSString* mimeType;
 
 /** `YES` if the file is public on the Internet.
+ 
+ @bug You can comment this out with no side effect if you're not using this property. If you are, switch to `publicFile`.
+ 
+ @deprecated deprcated for 3p compatbility- use publicFile property instead
+ @deprecatedIn 1.20.0
  */
-@property (nonatomic, copy) NSNumber* public;
+@property (nonatomic, copy) NSNumber* public KCS_DEPRECATED(Use publicFile property instead, 1.20.0);
+
+/** `YES` if the file is public on the Internet.
+ @since 1.20.0
+ */
+@property (nonatomic, copy) NSNumber* publicFile;
+
 
 /** Control a resource's ACLs.
  */

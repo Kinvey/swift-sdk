@@ -76,7 +76,7 @@
         NSURL *url = [NSURL URLWithString:resource];
         
         KCSLogNetwork(@"Requesting resource: %@", resource);
-        _request = [NSMutableURLRequest requestWithURL:url cachePolicy:[kinveyClient.options[KCS_URL_CACHE_POLICY] intValue] timeoutInterval:kinveyClient.connectionTimeout];
+        _request = [NSMutableURLRequest requestWithURL:url cachePolicy:[kinveyClient.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue] timeoutInterval:kinveyClient.connectionTimeout];
     }
     return self;
 }
