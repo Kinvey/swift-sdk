@@ -1,8 +1,7 @@
 //
-//  KCSPlatformUtils.h
+//  NSError+KinveyKit.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 7/30/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -17,12 +16,11 @@
 // contents is a violation of applicable laws.
 //
 
+
 #import <Foundation/Foundation.h>
 
-@interface KCSPlatformUtils : NSObject
+@interface NSError (KinveyKit)
 
-
-+ (BOOL) supportsNSURLSession;
-+ (NSString*) platformString;
++ (instancetype) createKCSError:(NSString*)domain code:(NSInteger)code userInfo:(NSDictionary*)userInfo;
 
 @end
