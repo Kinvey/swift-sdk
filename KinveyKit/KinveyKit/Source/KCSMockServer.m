@@ -19,23 +19,7 @@
 
 
 #import "KCSMockServer.h"
-
-@interface KCSNetworkResponse ()
-@property (nonatomic) NSInteger code;
-@property (nonatomic, copy) id jsonData;
-@end
-
-@implementation KCSNetworkResponse
-
-+ (instancetype) MockResponseWith:(NSInteger)code data:(id)data
-{
-    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
-    response.code = code;
-    response.jsonData = data;
-    return response;
-}
-
-@end
+#import "KinveyCoreInternal.h"
 
 @interface KCSMockServer ()
 @property (nonatomic, strong) NSMutableDictionary* routes;

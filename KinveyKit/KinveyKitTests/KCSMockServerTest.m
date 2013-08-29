@@ -9,6 +9,7 @@
 #import <SenTestingKit/SenTestingKit.h>
 
 #import "KCSMockServer.h"
+#import "KinveyCoreInternal.h"
 #import "TestUtils2.h"
 
 @interface KCSMockServerTest : SenTestCase

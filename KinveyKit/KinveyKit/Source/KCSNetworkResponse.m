@@ -1,8 +1,9 @@
 //
-//  KCSKinveyUDID.h
+//  KCSNetworkResponse.m
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Created by Michael Katz on 8/23/13.
+//  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,10 +17,20 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
 
-@interface KCSKinveyUDID : NSObject
+#import "KCSNetworkResponse.h"
 
-+ (NSString *)uniqueIdentifier;
+@interface KCSNetworkResponse ()
+@end
+
+@implementation KCSNetworkResponse
+
++ (instancetype) MockResponseWith:(NSInteger)code data:(id)data
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = code;
+    response.jsonData = data;
+    return response;
+}
 
 @end
