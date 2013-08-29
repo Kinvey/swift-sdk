@@ -242,20 +242,10 @@ static KCSRESTRequest* lastBGUpdate = nil;
     KCSUser *createdUser = [[KCSUser alloc] init];
     createdUser.username = [KCSKeyChain getStringForKey:kKeychainUsernameKey];
     
-    KCSClient *client = [KCSClient sharedClient];
-    
     if (createdUser.username == nil){
         // No user, generate it, note, use the APP KEY/APP SECRET!
-        KCSAnalytics *analytics = [client analytics];
         NSMutableDictionary *userJSONPaylod = [NSMutableDictionary dictionary];
         // Build the dictionary that will be JSON-ified here
-        if ([analytics supportsUDID] == YES) {
-            // We have three optional, internal fields and 2 manditory fields
-            [userJSONPaylod setObject:[analytics UDID] forKey:@"UDID"];
-            [userJSONPaylod setObject:[analytics UUID] forKey:@"UUID"];
-        }
-        
-
         
         // Next we check for the username and password
         if (uname && password){
