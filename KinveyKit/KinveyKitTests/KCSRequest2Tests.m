@@ -42,10 +42,6 @@
 
 - (void)testExample
 {
-//    STFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
-//    STFail(@"No implementation for \"%s\"", _cmd);
-//
-    
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         KTPollDone
     } options:@{KCSRequestOptionUseMock: @(YES)}];
