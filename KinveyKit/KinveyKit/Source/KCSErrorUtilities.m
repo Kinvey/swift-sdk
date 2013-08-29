@@ -9,6 +9,7 @@
 #import "KCSErrorUtilities.h"
 #import "KinveyErrorCodes.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
+#import "NSError+KinveyKit.h"
 
 #define KCS_ERROR_DEBUG_KEY @"debug"
 #define KCS_ERROR_DESCRIPTION_KEY @"description"
@@ -107,7 +108,8 @@
         [userInfo setValue:underlyingError forKey:NSUnderlyingErrorKey];
     }
     
-    NSError *error = [NSError errorWithDomain:domain code:errorCode userInfo:userInfo];
+    NSError *error = [NSError createKCSError:domain code:errorCode userInfo:userInfo];
+    
     return error;
 }
 

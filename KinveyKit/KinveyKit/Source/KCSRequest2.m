@@ -22,9 +22,21 @@
 #import "KinveyCoreInternal.h"
 
 #import "KCSNSURLRequestOperation.h"
+#import "KCSMockRequestOperation.h"
+
+KCS_CONST_IMPL KCSRequestOptionUseMock = @"UseMock";
+
+#define kHeaderContentType @"Content-Type"
+#define kHeaderAuthorization @"Authorization"
+
+#define KCS_VERSION @"3"
+
 
 
 @interface KCSRequest2 ()
+@property (nonatomic) BOOL useMock;
+@property (nonatomic, copy) KCSRequestCompletionBlock completionBlock;
+@property (nonatomic, copy) NSString* contentType;
 @end
 
 @implementation KCSRequest2
@@ -34,10 +46,30 @@ static NSOperationQueue* queue;
 + (void)initialize
 {
     queue = [[NSOperationQueue alloc] init];
-    queue.name = @"com.kinvey.KinveyKit.RequestQueue";
+    [queue setName:@"com.kinvey.KinveyKit.RequestQueue"];
 }
 
-- (void)start
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion options:(NSDictionary*)options;
+{
+    KCSRequest2* request = [[KCSRequest2 alloc] init];
+    request.useMock = [options[KCSRequestOptionUseMock] boolValue];
+    request.completionBlock = completion;
+    return request;
+}
+
+- (instancetype) init
+{
+    self = [super init];
+    if (self) {
+        _contentType = @"application/json";
+    }
+    return self;
+}
+
+
+# pragma mark -
+
+- (NSOperation*) start
 {
     //TODO: mock server
     NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
@@ -48,18 +80,23 @@ static NSOperationQueue* queue;
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
-    headers[@"Content-Type"] = @"application/json";
-    headers[@"Authorization"] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
-    headers[@"X-Kinvey-Api-Version"] = @"3";
+    headers[kHeaderContentType] = _contentType;
+    headers[kHeaderAuthorization] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
+    headers[@"X-Kinvey-Api-Version"] = KCS_VERSION;
     [request setAllHTTPHeaderFields:headers];
     
-    op = [[KCSNSURLRequestOperation alloc] initWithRequest:request];
+    if (_useMock == YES) {
+        op = [[KCSMockRequestOperation alloc] initWithRequest:request];
+    } else {
+        op = [[KCSNSURLRequestOperation alloc] initWithRequest:request];
+    }
     
     
     [queue addOperation:op];
     //Client - init from plist
     //client init from options
     //client init from params
+    return op;
 }
 
 

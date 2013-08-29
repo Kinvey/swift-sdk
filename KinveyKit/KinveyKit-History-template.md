@@ -6,6 +6,7 @@
 
 * Added `KCSClientConfiguration` to make managing multiple `KCSClient` configurations easier. See the [using environments tutorial](http://devcenter.kinvey.com/ios/tutorials/using-environments) for more details. 
 * Deprecated `KCSFile`'s `public` property. This is replaced with the new `publicFile` property. This was done for compatability with C++ libraries. The usage semantics are the same. If you have build errors due to the `public` property, just comment out the header line. 
+* Replaced SecureUDID with `identifierForVendor` on iOS 6+. 
 * Code Cleanup:
     * Removed old KCS_PUSH_XXX client setup constants since they no longer do anything.
 * Bug fix(es):
@@ -13,6 +14,12 @@
 
 
 ## 1.19
+### 1.19.3
+** Release Date:** Auguest 26, 2013
+
+* Bug fix(es):
+    * Try again fixing the build errors for XCode 4.6.
+    
 ### 1.19.2 
 ** Release Date:** August 22, 2013
 
