@@ -151,4 +151,54 @@
     STAssertEqualObjects(@"Bill", obj.meta.readers[0], @"expecting set object");
 }
 
+- (void) testArchiving
+{
+    KCSCollection* collection = [KCSCollection collectionFromString:@"testmetadata" ofClass:[ASTTestClass class]];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
+    __block ASTTestClass* obj = [[ASTTestClass alloc] init];
+    obj.objDescription = @"testGloballyReadable";
+    obj.objCount = __LINE__;
+    obj.meta = [[KCSMetadata alloc] init];
+    [obj.meta setGloballyReadable:NO];
+    
+    self.done = NO;
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"Should not have gotten error: %@", errorOrNil);
+        obj = [objectsOrNil objectAtIndex:0];
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+
+    NSData* metadata = [NSKeyedArchiver archivedDataWithRootObject:obj.meta];
+    KCSMetadata* restored = [NSKeyedUnarchiver unarchiveObjectWithData:metadata];
+    STAssertEqualObjects(obj.meta, restored, @"Should be archived correctly");
+}
+
+- (void) testCopy
+{
+    
+    KCSCollection* collection = [KCSCollection collectionFromString:@"testmetadata" ofClass:[ASTTestClass class]];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
+    __block ASTTestClass* obj = [[ASTTestClass alloc] init];
+    obj.objDescription = @"testGloballyReadable";
+    obj.objCount = __LINE__;
+    obj.meta = [[KCSMetadata alloc] init];
+    [obj.meta setGloballyReadable:NO];
+    
+    self.done = NO;
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"Should not have gotten error: %@", errorOrNil);
+        obj = [objectsOrNil objectAtIndex:0];
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    KCSMetadata* o1 = obj.meta;
+    KCSMetadata* o2 = [o1 copy];
+    
+    STAssertEqualObjects(o1, o2, @"equals should equal");
+    STAssertFalse(o1 == o2, @"should be different pointers");
+    
+}
+
 @end
