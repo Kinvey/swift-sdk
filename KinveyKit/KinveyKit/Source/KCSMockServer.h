@@ -22,6 +22,11 @@
 @class KCSNetworkResponse;
 
 @interface KCSMockServer : NSObject
++ (instancetype)sharedServer;
+
+//default is nil - will match any kid
+@property (nonatomic, retain) NSString* appKey;
+
 - (KCSNetworkResponse*) responseForURL:(NSString*)url;
 - (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route;
 @end

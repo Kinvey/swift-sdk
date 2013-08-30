@@ -25,6 +25,7 @@
 #import "KCSMockRequestOperation.h"
 
 KCS_CONST_IMPL KCSRequestOptionUseMock = @"UseMock";
+KCS_CONST_IMPL KCSRESTRouteAppdata = @"appdata";
 
 #define kHeaderContentType @"Content-Type"
 #define kHeaderAuthorization @"Authorization"
@@ -75,7 +76,7 @@ static NSOperationQueue* queue;
     NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
     NSURL* pingURL = [NSURL URLWithString:pingStr];
     
-    NSOperation* op = nil;
+    NSOperation<KCSNetworkOperation>* op = nil;
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
     
@@ -90,7 +91,12 @@ static NSOperationQueue* queue;
     } else {
         op = [[KCSNSURLRequestOperation alloc] initWithRequest:request];
     }
-    
+    @weakify(op);
+    op.completionBlock = ^() {
+        //TODO: error/response
+        @strongify(op);
+        self.completionBlock(op.response, op.error);
+    };
     
     [queue addOperation:op];
     //Client - init from plist

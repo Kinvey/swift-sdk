@@ -28,6 +28,8 @@
 @property (nonatomic, strong) NSMutableData* downloadedData;
 @property (nonatomic, strong) NSURLConnection* connection;
 @property (nonatomic) BOOL done;
+@property (nonatomic, strong) KCSNetworkResponse* response;
+@property (nonatomic, strong) NSError* error;
 @end
 
 @implementation KCSNSURLRequestOperation
