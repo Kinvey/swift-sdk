@@ -2,7 +2,7 @@
 
 ## 1.20
 ### 1.20.0
-** Release Date:** TBD
+** Release Date:** August 30, 2013
 
 * Added `KCSClientConfiguration` to make managing multiple `KCSClient` configurations easier. See the [using environments tutorial](http://devcenter.kinvey.com/ios/tutorials/using-environments) for more details. 
 * Deprecated `KCSFile`'s `public` property. This is replaced with the new `publicFile` property. This was done for compatability with C++ libraries. The usage semantics are the same. If you have build errors due to the `public` property, just comment out the header line. 

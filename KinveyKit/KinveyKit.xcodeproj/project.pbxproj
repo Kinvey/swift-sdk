@@ -32,6 +32,8 @@
 		27010AA1171331C60012D1ED /* KinveyPing.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA22C51486B0BD00666259 /* KinveyPing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27010AA2171331FB0012D1ED /* KCSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F3409614BC8AB800DB6C37 /* KCSReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27010AA3171332140012D1ED /* CLLocation+Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		270198B317CFED6D00E9AAB2 /* KCSNetworkOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 270198B217CFED6D00E9AAB2 /* KCSNetworkOperation.h */; };
+		270198B417CFED6D00E9AAB2 /* KCSNetworkOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 270198B217CFED6D00E9AAB2 /* KCSNetworkOperation.h */; };
 		27041AFE163B0ADB00538656 /* MD5Helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 27041AFC163B0ADB00538656 /* MD5Helpers.h */; };
 		27041AFF163B0ADB00538656 /* MD5Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 27041AFD163B0ADB00538656 /* MD5Helpers.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		270BAEB317134107005174D2 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610214716F2D00F77A3F /* KinveyEntity.m */; };
@@ -594,6 +596,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		270198B217CFED6D00E9AAB2 /* KCSNetworkOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNetworkOperation.h; sourceTree = "<group>"; };
 		27041AFC163B0ADB00538656 /* MD5Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MD5Helpers.h; sourceTree = "<group>"; };
 		27041AFD163B0ADB00538656 /* MD5Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MD5Helpers.m; sourceTree = "<group>"; };
 		270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+KinveyAdditions.h"; sourceTree = "<group>"; };
@@ -1366,6 +1369,7 @@
 			children = (
 				27E0696317B972BC00B91910 /* KCSRequest2.h */,
 				27E0696417B972BC00B91910 /* KCSRequest2.m */,
+				270198B217CFED6D00E9AAB2 /* KCSNetworkOperation.h */,
 				27B5F00517C7E7530050DFD0 /* KCSNetworkResponse.h */,
 				27B5F00617C7E7530050DFD0 /* KCSNetworkResponse.m */,
 				2737D3AF17BD517300FE7ACC /* KCSMockServer.h */,
@@ -2030,6 +2034,7 @@
 				27C95C0117C26B810003498D /* KinveyDataStore.h in Headers */,
 				27010AA2171331FB0012D1ED /* KCSReachability.h in Headers */,
 				27C95C0517C26BC60003498D /* KCSQuery2+KCSInternal.h in Headers */,
+				270198B417CFED6D00E9AAB2 /* KCSNetworkOperation.h in Headers */,
 				27010AA3171332140012D1ED /* CLLocation+Kinvey.h in Headers */,
 				270BAEB41713414D005174D2 /* NSMutableDictionary+KinveyAdditions.h in Headers */,
 				270BAEB51713415E005174D2 /* NSArray+KinveyAdditions.h in Headers */,
@@ -2180,6 +2185,7 @@
 				2746536F174EBE480013546E /* KCSDataStoreCaches.h in Headers */,
 				273B644F1757DE0F00E1B1B9 /* KCSCustomEndpoints.h in Headers */,
 				27FEBF3017B26AEB006E7FBD /* KCSCredentials.h in Headers */,
+				270198B317CFED6D00E9AAB2 /* KCSNetworkOperation.h in Headers */,
 				273B64581757E5FA00E1B1B9 /* KCSClient+KinveyKit2.h in Headers */,
 				273B645F1758022B00E1B1B9 /* KCSUser+KinveyKit2.h in Headers */,
 				27C95C0417C26BC60003498D /* KCSQuery2+KCSInternal.h in Headers */,

@@ -18,10 +18,13 @@
 //
 
 #import "KCSMockRequestOperation.h"
+#import "KCSMockServer.h"
 
 @interface KCSMockRequestOperation ()
 @property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic) BOOL done;
+@property (nonatomic, strong) KCSNetworkResponse* response;
+@property (nonatomic, strong) NSError* error;
 @end
 
 @implementation KCSMockRequestOperation
@@ -58,6 +61,7 @@
 
 - (void) resolveRequest
 {
+    self.response = [[KCSMockServer sharedServer] responseForURL:[self.request.URL absoluteString]];
     self.done = YES;
 }
 

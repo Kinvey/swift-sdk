@@ -23,6 +23,8 @@
 
 KCS_CONSTANT KCSRequestOptionUseMock;
 
+KCS_CONSTANT KCSRESTRouteAppdata;
+
 @class KCSNetworkResponse;
 
 typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*error);

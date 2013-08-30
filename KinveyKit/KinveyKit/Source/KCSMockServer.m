@@ -35,8 +35,17 @@
     return self;
 }
 
++ (instancetype)sharedServer
+{
+    static KCSMockServer* server;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        server = [[KCSMockServer alloc] init];
+    });
+    return server;
+}
 
-- (KCSNetworkResponse*) responseForURL:(NSString*)url
+- (KCSNetworkResponse*) make404
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 404;
@@ -46,6 +55,38 @@
                           @"debug": @""
                           };
 
+    return response;
+}
+
+- (KCSNetworkResponse*) make401
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 401;
+    response.jsonData = @{
+                          @"error": @"InvalidCredentials",
+                          @"description": @"Invalid credentials. Please retry your request with correct credentials",
+                          @"debug": @""
+                          };
+    
+    return response;
+}
+
+- (KCSNetworkResponse*) makePingResponse
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 200;
+    response.jsonData = @{
+                          @"version": @"3.1.6-snapshot", //TODO: match from header
+                          @"kinvey": @"Hello mock server", //TODO: pull from somewhere else
+                          };
+    return response;
+}
+
+
+
+- (KCSNetworkResponse*) responseForURL:(NSString*)url
+{
+    KCSNetworkResponse* response = [self make404];
     
     url = [url stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
     NSArray* components = [url pathComponents];
@@ -53,14 +94,23 @@
 //        NSString* protocol = components[0];
 //        NSString* host = components[1];
         NSString* route = components[2];
-//        NSString* kid = components[3];
+        NSString* kid = components[3];
+        if (self.appKey != nil && [kid isEqualToString:self.appKey] == NO) {
+            return [self make401];
+        }
   
-        NSDictionary* d = _routes[route];
-        if (d) {
-            for (int i = 4; i < components.count - 1; i++) {
-                d = d[components[i]];
+        if (components.count > 4) {
+            NSDictionary* d = _routes[route];
+            if (d) {
+                for (int i = 4; i < components.count - 1; i++) {
+                    d = d[components[i]];
+                }
+                response = d[components[components.count-1]];
             }
-            response = d[components[components.count-1]];
+        } else {
+            if ([route isEqualToString:KCSRESTRouteAppdata]) {
+                return [self makePingResponse];
+            }
         }
         
     }
@@ -93,6 +143,13 @@
         }
         ld[components[components.count - 1]] = response;
     }
+}
+
+#pragma mark - debug
+
+- (NSString *)debugDescription
+{
+    return [NSString stringWithFormat:@"%@ (%@)", [super debugDescription], self.appKey];
 }
 
 @end

@@ -43,6 +43,7 @@
 - (void)testExample
 {
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        STFail(@"fail");
         KTPollDone
     } options:@{KCSRequestOptionUseMock: @(YES)}];
     [request start];
