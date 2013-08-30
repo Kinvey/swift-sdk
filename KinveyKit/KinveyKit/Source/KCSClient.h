@@ -228,7 +228,7 @@ KCS_CONSTANT KCS_SERVICE_HOST;
 
 /** Initialize the singleton KCSClient with the supplied conifguration.
  
- @param conifguration the app's configuration, including the app key and app secret
+ @param configuration the app's configuration, including the app key and app secret
  @return The KCSClient singleton (can be used to chain several calls)
  @since 1.20.0
  */

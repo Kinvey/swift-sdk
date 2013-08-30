@@ -18,9 +18,7 @@
 @end
 
 
-#define KTPollDone self.done = YES;
-#define KTPollStart self.done = NO; [self poll];
-#define KTAssertNoError STAssertNil(error, @"Should not get an error: %@", error);
+
 
 #import <objc/runtime.h>
 @interface KinveyKit2Tests (KinveyKit2Tests)

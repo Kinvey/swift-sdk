@@ -5,6 +5,18 @@
 //  Created by Brian Wilson on 5/1/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 //TODO: check headers
 
@@ -660,7 +672,13 @@ int reachable = -1;
         NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+            NSString* description = nil;
+            if (response.responseCode == KCSDeniedError) {
+                NSString* format401 = @"Active user (username:'%@') does not have permission to write object (%@) to collection '%@'";
+                NSString* objectTitle = serializedObject.objectId ? [NSString stringWithFormat:@"_id:'%@'", serializedObject.objectId] : @"New Object";
+                description = [NSString stringWithFormat:format401, [[KCSUser activeUser] username], objectTitle, self.backingCollection.collectionName];
+            }
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:description errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             completionBlock(nil, error);
         } else {
             if (jsonResponse != nil && serializedObject != nil) {

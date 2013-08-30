@@ -99,7 +99,7 @@
  @see options
  @since 1.20.0
  */
-+ (instancetype) configurationWithAppKey:(NSString*)appKey secret:(NSString*)appSecret options:(NSDictionary*)dictionary;
++ (instancetype) configurationWithAppKey:(NSString*)appKey secret:(NSString*)appSecret options:(NSDictionary*)options;
 
 /** Builds the configuration from the specified plist.
  

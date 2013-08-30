@@ -27,6 +27,11 @@
     return supports;
 }
 
++ (BOOL) supportsVendorID
+{
+    return [[UIDevice currentDevice] respondsToSelector:@selector(identifierForVendor)];
+}
+
 // From: http://www.cocos2d-iphone.org/forum/topic/21923
 // NB: This is not 100% awesome and needs cleaned up
 + (NSString *) platform {

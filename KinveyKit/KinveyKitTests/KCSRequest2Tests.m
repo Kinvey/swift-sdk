@@ -1,8 +1,8 @@
 //
-//  Query2Tests.m
+//  KCSRequest2Tests.m
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/19/13.
+//  Created by Michael Katz on 8/23/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -17,16 +17,16 @@
 // contents is a violation of applicable laws.
 //
 
-
 #import <SenTestingKit/SenTestingKit.h>
-#import "KinveyDataStoreInternal.h"
-#import "TestUtils.h"
 
-@interface Query2Tests : SenTestCase
+#import "KinveyCoreInternal.h"
+#import "TestUtils2.h"
+
+@interface KCSRequest2Tests : SenTestCase
 
 @end
 
-@implementation Query2Tests
+@implementation KCSRequest2Tests
 
 - (void)setUp
 {
@@ -40,15 +40,14 @@
     [super tearDown];
 }
 
-- (void)testPredicateBasic
+- (void)testExample
 {
-    NSPredicate* basicPredicate = [NSPredicate predicateWithFormat:@"foo=X"];
-    KCSQuery2* query = [KCSQuery2 queryWithPredicate:basicPredicate error:NULL];
-    
-    STAssertNotNil(query, @"should be valid");
-    STAssertEqualObjects([query queryString], @"query={\"foo\":\"X\"}", @"basic");
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        STFail(@"fail");
+        KTPollDone
+    } options:@{KCSRequestOptionUseMock: @(YES)}];
+    [request start];
+    KTPollStart
 }
-
-
 
 @end

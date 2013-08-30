@@ -20,7 +20,9 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KCSNSURLRequestOperation : NSOperation
+#import "KCSNetworkOperation.h"
+
+@interface KCSNSURLRequestOperation : NSOperation <KCSNetworkOperation>
 - (instancetype) initWithRequest:(NSMutableURLRequest*) request;
 
 @end

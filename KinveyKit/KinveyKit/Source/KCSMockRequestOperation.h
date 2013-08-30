@@ -1,9 +1,8 @@
 //
-//  KCSStore.m
+//  KCSMockRequestOperation.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 5/11/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -17,18 +16,10 @@
 // contents is a violation of applicable laws.
 //
 
+#import <Foundation/Foundation.h>
 
-#import "KCSStore.h"
+#import "KCSNetworkOperation.h"
 
-@implementation KCSAllObjects
-
-- (BOOL) isEqual:(id)object
-{
-    return [object isKindOfClass:[self class]];
-}
-
-- (NSUInteger)hash
-{
-    return [NSStringFromClass([self class]) hash];
-}
+@interface KCSMockRequestOperation : NSOperation <KCSNetworkOperation>
+- (instancetype) initWithRequest:(NSMutableURLRequest*) request;
 @end

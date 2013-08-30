@@ -19,6 +19,17 @@
 
 #import <Foundation/Foundation.h>
 
+#import "KinveyHeaderInfo.h"
+
+KCS_CONSTANT KCSRequestOptionUseMock;
+
+KCS_CONSTANT KCSRESTRouteAppdata;
+
+@class KCSNetworkResponse;
+
+typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*error);
+
 @interface KCSRequest2 : NSObject
-- (void) start;
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion options:(NSDictionary*)options;
+- (NSOperation*) start;
 @end

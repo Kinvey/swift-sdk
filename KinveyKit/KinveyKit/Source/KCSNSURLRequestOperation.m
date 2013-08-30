@@ -19,6 +19,7 @@
 
 
 #import "KCSNSURLRequestOperation.h"
+#import "KCSMockRequestOperation.h"
 
 #import "KCS_SBJson.h"
 
@@ -27,6 +28,8 @@
 @property (nonatomic, strong) NSMutableData* downloadedData;
 @property (nonatomic, strong) NSURLConnection* connection;
 @property (nonatomic) BOOL done;
+@property (nonatomic, strong) KCSNetworkResponse* response;
+@property (nonatomic, strong) NSError* error;
 @end
 
 @implementation KCSNSURLRequestOperation
@@ -44,7 +47,7 @@
     @autoreleasepool {
         [super start];
         
-        [[NSThread currentThread] setName:@"KinveyKit"];
+        //        [[NSThread currentThread] setName:@"KinveyKit"];
         
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         

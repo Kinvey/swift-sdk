@@ -89,6 +89,8 @@ id kcsPredToQueryExprVal(NSExpression* expr)
         } else {
             //TODO: ERROR
         }
+    } else {
+        //TODO: error
     }
     return query;
 }

@@ -5,10 +5,23 @@
 //  Created by Michael Katz on 8/15/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import <SenTestingKit/SenTestingKit.h>
 
 #import "KCSMockServer.h"
+#import "KinveyCoreInternal.h"
 #import "TestUtils2.h"
 
 @interface KCSMockServerTest : SenTestCase
@@ -22,7 +35,7 @@
     [super setUp];
     // Put setup code here; it will be run once, before the first test case.
     _server = [[KCSMockServer alloc] init];
-
+    _server.appKey = @"kid_test";
 }
 
 - (void)tearDown
@@ -34,7 +47,7 @@
 
 - (void) testNoURL
 {
-    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n.kinvey.com/foo/kid1000/a/b/c"];
+    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n.kinvey.com/foo/kid_test/a/b/c"];
     KTAssertNotNil(x);
     KTAssertEqualsInt(x.code, 404);
 }
@@ -43,12 +56,27 @@
 {
     NSDictionary* data = @{@"_id":@1, @"key":@"value"};
     KCSNetworkResponse* response = [KCSNetworkResponse MockResponseWith:200 data:data];
-    [_server setResponse:response forRoute:@"/appdata/kid1000/collection/1"];
-    KCSNetworkResponse* r1 = [_server responseForURL:@"http://foo.bar.com/appdata/kid1000/collection/1"];
+    [_server setResponse:response forRoute:@"/appdata/kid_test/collection/1"];
+    KCSNetworkResponse* r1 = [_server responseForURL:@"http://foo.bar.com/appdata/kid_test/collection/1"];
     KTAssertNotNil(r1);
     KTAssertEqualsInt(r1.code, 200);
     STAssertEqualObjects(r1.jsonData, data, @"data should match previous");
+}
+
+- (void) testPing
+{
+    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n.kinvey.com/appdata/kid_test"];
+    KTAssertNotNil(x);
+    KTAssertEqualsInt(x.code, 200);
+}
+
+- (void) testBadCreds
+{
     
+    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n.kinvey.com/appdata/kid_fail"];
+    KTAssertNotNil(x);
+    KTAssertEqualsInt(x.code, 401);
+    STAssertEqualObjects(x.jsonData[@"error"], @"InvalidCredentials", @"should be an invalid creds error");
 }
 
 @end

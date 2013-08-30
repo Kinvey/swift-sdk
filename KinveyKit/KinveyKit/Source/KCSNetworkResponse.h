@@ -1,9 +1,8 @@
 //
-//  KCSStore.m
+//  KCSNetworkResponse.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 5/11/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -18,17 +17,12 @@
 //
 
 
-#import "KCSStore.h"
+#import <Foundation/Foundation.h>
 
-@implementation KCSAllObjects
+@interface KCSNetworkResponse : NSObject
+@property (nonatomic) NSInteger code;
+@property (nonatomic, copy) id jsonData;
 
-- (BOOL) isEqual:(id)object
-{
-    return [object isKindOfClass:[self class]];
-}
++ (instancetype) MockResponseWith:(NSInteger)code data:(id)data;
 
-- (NSUInteger)hash
-{
-    return [NSStringFromClass([self class]) hash];
-}
 @end

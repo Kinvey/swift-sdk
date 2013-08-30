@@ -22,13 +22,23 @@
 
 #import "KinveyCore.h"
 
-#import "KinveyVersion.h"
+#pragma mark - Network
+
+#import "KCSRequest2.h"
+#import "KCSNetworkOperation.h"
+#import "KCSNetworkResponse.h"
+
+#pragma mark - Utils
 
 #import "KCSPlatformUtils.h"
 #import "KCSLog.h"
-
 #import "NSError+KinveyKit.h"
 
+#pragma mark - helpers
+
+#import "EXTScope.h"
+
+#define KCS_CONST_IMPL NSString* const
 #define KCS_BREAK NSAssert(YES, @"BROKEN");
 
 #endif

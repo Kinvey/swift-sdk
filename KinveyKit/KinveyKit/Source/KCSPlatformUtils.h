@@ -23,6 +23,7 @@
 
 
 + (BOOL) supportsNSURLSession;
++ (BOOL) supportsVendorID;
 + (NSString*) platformString;
 
 @end
