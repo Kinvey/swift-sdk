@@ -1,4 +1,4 @@
-KinveyKit (TAG-ME, CHANGE-DATE)
+KinveyKit (1.20.0, August 30, 2013)
 ==========
 
 ## Welcome
