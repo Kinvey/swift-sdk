@@ -5,6 +5,12 @@
 ** Release Date:** TBD
 
 ## 1.20
+### 1.20.1
+** Release Date:** September 3, 2013
+
+* Bug fix(es): 
+    * Fix issue with Facebook login falsely returning error.
+
 ### 1.20.0
 ** Release Date:** August 30, 2013
 
