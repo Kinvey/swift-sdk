@@ -487,10 +487,11 @@ static KCSRESTRequest* lastBGUpdate = nil;
     [self clearSavedCredentials];
     NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
     KCSUser* createdUser = [[KCSUser alloc] init];
+    NSString* authToken = [dictionary valueForKeyPath:@"_kmd.authtoken"];
     
     NSError* error = nil;
     int status = 0;
-    if (createdUser.sessionAuth != nil) {
+    if (authToken != nil) {
         status = KCSUserFound;
     } else {
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
