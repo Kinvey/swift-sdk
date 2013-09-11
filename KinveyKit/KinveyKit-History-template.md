@@ -4,6 +4,8 @@
 ### 1.21.0
 ** Release Date:** TBD
 
+* Added `NSCoding` to `KCSFile`.
+
 ## 1.20
 ### 1.20.1
 ** Release Date:** September 3, 2013

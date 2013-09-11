@@ -1,8 +1,7 @@
 //
-//  KCSNetworkResponse.m
+//  KCSPing2.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/23/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -18,32 +17,22 @@
 //
 
 
-#import "KCSNetworkResponse.h"
-#import "KinveyCoreInternal.h"
+#import <Foundation/Foundation.h>
 
-@interface KCSNetworkResponse ()
-@end
+/* Callback upon ping request finishing
+ 
+ This block is used as a callback by the Ping service and is called on both success and failure.  The block is responsible for checking
+ the KCSPingResult pingWasSuccessful property to determine success or failure.
+ */
+typedef void(^KCSPingBlock2)(NSDictionary* appInfo, NSError* error);
 
-@implementation KCSNetworkResponse
 
-+ (instancetype) MockResponseWith:(NSInteger)code data:(id)data
-{
-    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
-    response.code = code;
-    response.jsonData = data;
-    return response;
-}
+@interface KCSPing2 : NSObject
 
-- (BOOL)isKCSError
-{
-    return self.code >= 400;
-}
-
-- (NSError*) errorObject
-{
-    NSDictionary* kcsErrorDict = [self jsonData];
-    NSError* error = [NSError createKCSError:kcsErrorDict[@"description"] code:self.code userInfo:kcsErrorDict];
-    return error;
-}
+/* Ping Kinvey and perform a callback when complete.
+ 
+ @param completionAction The callback to perform on completion.
+ */
++ (void)pingKinveyWithBlock:(KCSPingBlock2)completion;
 
 @end

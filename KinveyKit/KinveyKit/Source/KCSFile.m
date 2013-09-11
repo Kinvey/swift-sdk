@@ -24,6 +24,7 @@
 
 #import "KCSImageUtils.h"
 #import "NSString+KinveyAdditions.h"
+#import "KCSLogManager.h"
 
 #define kTypeResourceValue @"resource"
 #define kImageMimeType @"image/png"
@@ -66,6 +67,65 @@
         _fileId = fileId;
         _filename = filename;
         _mimeType = mimeType;
+    }
+    return self;
+}
+
+- (instancetype) copyWithZone:(NSZone *)zone
+{
+    KCSFile* f = [[[self class] allocWithZone:zone] init];
+    f.data = self.data;
+    f.length = self.length;
+    f.fileId = self.fileId;
+    f.filename = self.filename;
+    f.mimeType = self.mimeType;
+    f.localURL = self.localURL;
+    f.refType = self.refType;
+    f.resolvedObject = self.resolvedObject;
+    f.gcsULID = self.gcsULID;
+    f.remoteURL = self.remoteURL;
+    f.expirationDate = self.expirationDate;
+    f.valClass = self.valClass;
+    f.publicFile = self.publicFile;
+    f.metadata = [self.metadata copy];
+    f.bytesWritten = self.bytesWritten;
+    return f;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    if ([aCoder isKindOfClass:[NSKeyedArchiver class]]) {
+        [aCoder encodeObject:self.fileId forKey:KCSEntityKeyId];
+        [aCoder encodeObject:self.mimeType forKey:KCSFileMimeType];
+        [aCoder encodeObject:self.filename forKey:KCSFileFileName];
+        [aCoder encodeObject:self.remoteURL forKey:@"remoteurl"];
+        [aCoder encodeObject:self.localURL forKey:@"localurl"];
+        [aCoder encodeInteger:self.length forKey:@"size"];
+        [aCoder encodeObject:self.metadata forKey:KCSEntityKeyMetadata];
+        [aCoder encodeObject:self.expirationDate forKey:@"_expiresAt"];
+        [aCoder encodeObject:self.refType forKey:@"_type"];
+        [aCoder encodeObject:self.publicFile forKey:@"_public"];
+    } else {
+        KCSLogError(@"Tried to encode %@, but encoder %@ is not a NSKeyedArchiver", self, aCoder);
+    }
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if ([aDecoder isKindOfClass:[NSKeyedUnarchiver class]]) {
+        self = [super init];
+        self.fileId = [aDecoder decodeObjectForKey:KCSEntityKeyId];
+        self.mimeType = [aDecoder decodeObjectForKey:KCSFileMimeType];
+        self.filename = [aDecoder decodeObjectForKey:KCSFileFileName];
+        self.remoteURL = [aDecoder decodeObjectForKey:@"remoteurl"];
+        self.localURL = [aDecoder decodeObjectForKey:@"localurl"];
+        self.length = [aDecoder decodeIntegerForKey:@"size"];
+        self.metadata = [aDecoder decodeObjectForKey:KCSEntityKeyMetadata];
+        self.expirationDate = [aDecoder decodeObjectForKey:@"_expiresAt"];
+        self.refType = [aDecoder decodeObjectForKey:@"_type"];
+        self.publicFile = [aDecoder decodeObjectForKey:@"_public"];
+    } else {
+        KCSLogError(@"Tried to decode %@, but decoder %@ is not a NSKeyedUnArchiver", self, aDecoder);
     }
     return self;
 }

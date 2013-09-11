@@ -1,8 +1,8 @@
 //
-//  KCSNetworkResponse.m
+//  KCSPing2.m
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/23/13.
+//  Created by Michael Katz on 9/11/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -18,32 +18,25 @@
 //
 
 
-#import "KCSNetworkResponse.h"
+#import "KCSPing2.h"
 #import "KinveyCoreInternal.h"
 
-@interface KCSNetworkResponse ()
-@end
+@implementation KCSPing2
 
-@implementation KCSNetworkResponse
-
-+ (instancetype) MockResponseWith:(NSInteger)code data:(id)data
++ (void)pingKinveyWithBlock:(KCSPingBlock2)completion
 {
-    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
-    response.code = code;
-    response.jsonData = data;
-    return response;
-}
-
-- (BOOL)isKCSError
-{
-    return self.code >= 400;
-}
-
-- (NSError*) errorObject
-{
-    NSDictionary* kcsErrorDict = [self jsonData];
-    NSError* error = [NSError createKCSError:kcsErrorDict[@"description"] code:self.code userInfo:kcsErrorDict];
-    return error;
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        NSDictionary* appInfo = nil;
+        if (!error) {
+            if ([response isKCSError]) {
+                error = [response errorObject];
+            } else {
+                appInfo = [response jsonData];
+            }
+        }
+        completion(appInfo, error);
+    } options:nil];
+    [request start];
 }
 
 @end

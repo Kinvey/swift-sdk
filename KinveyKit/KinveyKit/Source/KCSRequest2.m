@@ -23,6 +23,7 @@
 
 #import "KCSNSURLRequestOperation.h"
 #import "KCSMockRequestOperation.h"
+#import "KCSNSURLSessionOperation.h"
 
 KCS_CONST_IMPL KCSRequestOptionUseMock = @"UseMock";
 KCS_CONST_IMPL KCSRESTRouteAppdata = @"appdata";
@@ -38,6 +39,7 @@ KCS_CONST_IMPL KCSRESTRouteAppdata = @"appdata";
 @property (nonatomic) BOOL useMock;
 @property (nonatomic, copy) KCSRequestCompletionBlock completionBlock;
 @property (nonatomic, copy) NSString* contentType;
+@property (nonatomic) dispatch_queue_t dispatch_queue;
 @end
 
 @implementation KCSRequest2
@@ -47,6 +49,7 @@ static NSOperationQueue* queue;
 + (void)initialize
 {
     queue = [[NSOperationQueue alloc] init];
+    queue.maxConcurrentOperationCount = 4;
     [queue setName:@"com.kinvey.KinveyKit.RequestQueue"];
 }
 
@@ -76,6 +79,8 @@ static NSOperationQueue* queue;
     NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
     NSURL* pingURL = [NSURL URLWithString:pingStr];
     
+    _dispatch_queue = dispatch_get_current_queue();
+    
     NSOperation<KCSNetworkOperation>* op = nil;
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
@@ -89,13 +94,20 @@ static NSOperationQueue* queue;
     if (_useMock == YES) {
         op = [[KCSMockRequestOperation alloc] initWithRequest:request];
     } else {
-        op = [[KCSNSURLRequestOperation alloc] initWithRequest:request];
+        if ([KCSPlatformUtils supportsNSURLSession]) {
+            op = [[KCSNSURLSessionOperation alloc] initWithRequest:request];
+        } else {
+            op = [[KCSNSURLRequestOperation alloc] initWithRequest:request];
+        }
     }
+    
     @weakify(op);
     op.completionBlock = ^() {
         //TODO: error/response
-        @strongify(op);
-        self.completionBlock(op.response, op.error);
+        dispatch_async(_dispatch_queue, ^{
+            @strongify(op);
+            self.completionBlock(op.response, op.error);
+        });
     };
     
     [queue addOperation:op];
