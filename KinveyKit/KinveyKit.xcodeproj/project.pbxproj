@@ -95,6 +95,15 @@
 		27223E1C157E7A3200656BCC /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
 		2726F98B15E6CE370087099D /* KCSBuilders.h in Headers */ = {isa = PBXBuildFile; fileRef = 2726F98915E6CE370087099D /* KCSBuilders.h */; };
 		2726F98C15E6CE370087099D /* KCSBuilders.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F98A15E6CE370087099D /* KCSBuilders.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		27295D6B17E08DF800D34E2F /* KCSNSURLSessionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27295D6917E08DF800D34E2F /* KCSNSURLSessionOperation.h */; };
+		27295D6C17E08DF800D34E2F /* KCSNSURLSessionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27295D6917E08DF800D34E2F /* KCSNSURLSessionOperation.h */; };
+		27295D6D17E08DF800D34E2F /* KCSNSURLSessionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 27295D6A17E08DF800D34E2F /* KCSNSURLSessionOperation.m */; };
+		27295D6E17E08DF800D34E2F /* KCSNSURLSessionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 27295D6A17E08DF800D34E2F /* KCSNSURLSessionOperation.m */; };
+		27295D7217E0AC8E00D34E2F /* KCSPing2.h in Headers */ = {isa = PBXBuildFile; fileRef = 27295D7017E0AC8E00D34E2F /* KCSPing2.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27295D7317E0AC8E00D34E2F /* KCSPing2.h in Headers */ = {isa = PBXBuildFile; fileRef = 27295D7017E0AC8E00D34E2F /* KCSPing2.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27295D7417E0AC8E00D34E2F /* KCSPing2.m in Sources */ = {isa = PBXBuildFile; fileRef = 27295D7117E0AC8E00D34E2F /* KCSPing2.m */; };
+		27295D7517E0AC8E00D34E2F /* KCSPing2.m in Sources */ = {isa = PBXBuildFile; fileRef = 27295D7117E0AC8E00D34E2F /* KCSPing2.m */; };
+		27295D7717E0B3EB00D34E2F /* KCSPingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27295D7617E0B3EB00D34E2F /* KCSPingTests.m */; };
 		272D73FB16FCB82E004F26FC /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		272D73FC16FCB82E004F26FC /* KCSFacebookHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 272D73FA16FCB82E004F26FC /* KCSFacebookHelper.m */; };
 		272EF18815E2BA4E008E3F68 /* CLLocation+Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -614,6 +623,11 @@
 		27223E1B157E7A3200656BCC /* TestUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtils.m; sourceTree = "<group>"; };
 		2726F98915E6CE370087099D /* KCSBuilders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBuilders.h; sourceTree = "<group>"; };
 		2726F98A15E6CE370087099D /* KCSBuilders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBuilders.m; sourceTree = "<group>"; };
+		27295D6917E08DF800D34E2F /* KCSNSURLSessionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNSURLSessionOperation.h; sourceTree = "<group>"; };
+		27295D6A17E08DF800D34E2F /* KCSNSURLSessionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSNSURLSessionOperation.m; sourceTree = "<group>"; };
+		27295D7017E0AC8E00D34E2F /* KCSPing2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPing2.h; sourceTree = "<group>"; };
+		27295D7117E0AC8E00D34E2F /* KCSPing2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPing2.m; sourceTree = "<group>"; };
+		27295D7617E0B3EB00D34E2F /* KCSPingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPingTests.m; sourceTree = "<group>"; };
 		272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFacebookHelper.h; sourceTree = "<group>"; };
 		272D73FA16FCB82E004F26FC /* KCSFacebookHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFacebookHelper.m; sourceTree = "<group>"; };
 		272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Kinvey.h"; sourceTree = "<group>"; };
@@ -1075,12 +1089,22 @@
 			name = Mac;
 			sourceTree = "<group>";
 		};
+		27295D6F17E0AC7600D34E2F /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				27295D7017E0AC8E00D34E2F /* KCSPing2.h */,
+				27295D7117E0AC8E00D34E2F /* KCSPing2.m */,
+			);
+			name = Configuration;
+			sourceTree = "<group>";
+		};
 		272AEB4817A838AC002AA12A /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				274D396117A800F500587886 /* PlatformUtilsTest.m */,
 				2737D3B817BD54E900FE7ACC /* KCSMockServerTest.m */,
 				27B5EFFD17C7DED70050DFD0 /* KCSRequest2Tests.m */,
+				27295D7617E0B3EB00D34E2F /* KCSPingTests.m */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -1189,6 +1213,7 @@
 				274D395317A7FDFE00587886 /* KinveyCoreInternal.h */,
 				27B3B08316B8756900E1B540 /* KinveyVersion.h */,
 				275B429F16A97DB00064B941 /* KinveyHeaderInfo.h */,
+				27295D6F17E0AC7600D34E2F /* Configuration */,
 				27B5EFFB17C7D3D60050DFD0 /* Utilities */,
 				27B5EFFC17C7D3E00050DFD0 /* Network */,
 			);
@@ -1376,6 +1401,8 @@
 				2737D3B017BD517300FE7ACC /* KCSMockServer.m */,
 				27DA141817C3E7D000EAB3B7 /* KCSNSURLRequestOperation.h */,
 				27DA141917C3E7D000EAB3B7 /* KCSNSURLRequestOperation.m */,
+				27295D6917E08DF800D34E2F /* KCSNSURLSessionOperation.h */,
+				27295D6A17E08DF800D34E2F /* KCSNSURLSessionOperation.m */,
 				27B5EFFF17C7E17B0050DFD0 /* KCSMockRequestOperation.h */,
 				27B5F00017C7E17B0050DFD0 /* KCSMockRequestOperation.m */,
 			);
@@ -2005,8 +2032,10 @@
 				2737D3CA17BE9C3D00FE7ACC /* KCS_KSReachability.h in Headers */,
 				278BADAC17B28EC70035B3D6 /* DDASLLogger.h in Headers */,
 				27B425EF16C3DA6700C59E1A /* KCSWebView.h in Headers */,
+				27295D6C17E08DF800D34E2F /* KCSNSURLSessionOperation.h in Headers */,
 				27F5D7EA16F141F5001828F3 /* KCSLogSink.h in Headers */,
 				27F5D7F416F20EC5001828F3 /* NSDictionary+KinveyAdditions.h in Headers */,
+				27295D7317E0AC8E00D34E2F /* KCSPing2.h in Headers */,
 				2743317117AAFCB9001BC17B /* NSDate+KinveyAdditions.h in Headers */,
 				27FB2A8116FCEDDB00CD7D5C /* KCSOfflineSaveStore.h in Headers */,
 				27FB2A8316FCEE8A00CD7D5C /* KCSLinkedAppdataStore.h in Headers */,
@@ -2085,6 +2114,7 @@
 				D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */,
 				D33E6873147DBA7200EE885E /* KCSAsyncConnection.h in Headers */,
 				D33E6878147DC1A400EE885E /* KCSConnectionResponse.h in Headers */,
+				27295D6B17E08DF800D34E2F /* KCSNSURLSessionOperation.h in Headers */,
 				274D395D17A8009100587886 /* KCSPlatformUtils.h in Headers */,
 				D3F3412914BD686100DB6C37 /* KCSLogManager.h in Headers */,
 				D33E686E147DBA5700EE885E /* KCSConnection.h in Headers */,
@@ -2128,6 +2158,7 @@
 				272EF18815E2BA4E008E3F68 /* CLLocation+Kinvey.h in Headers */,
 				27E0B35F15E51F3700B83E72 /* KCSGenericRESTRequest.h in Headers */,
 				2726F98B15E6CE370087099D /* KCSBuilders.h in Headers */,
+				27295D7217E0AC8E00D34E2F /* KCSPing2.h in Headers */,
 				272FBE5315F90FB600EC7031 /* KCSSaveGraph.h in Headers */,
 				27CD8EE7176FA8AB009463E3 /* KCSFileStore.h in Headers */,
 				273A3E9A160A255900F3742C /* KCSUser+SocialExtras.h in Headers */,
@@ -2592,11 +2623,13 @@
 				274D396017A8009100587886 /* KCSPlatformUtils.m in Sources */,
 				271827F916C17B0300825D50 /* KCSAppdataStore.m in Sources */,
 				271827FB16C17B6900825D50 /* KCSBlobService.m in Sources */,
+				27295D6E17E08DF800D34E2F /* KCSNSURLSessionOperation.m in Sources */,
 				271827FD16C17B8100825D50 /* KCSSaveQueue.m in Sources */,
 				278BADAA17B28EC70035B3D6 /* DDAbstractDatabaseLogger.m in Sources */,
 				271827FF16C17B8700825D50 /* KCSSaveGraph.m in Sources */,
 				27B425E516C2C03D00C59E1A /* KCSLinkedInHelper.m in Sources */,
 				27B425E616C2C04100C59E1A /* KCSUser+SocialExtras.m in Sources */,
+				27295D7517E0AC8E00D34E2F /* KCSPing2.m in Sources */,
 				27B7724516E7C71300610D11 /* KCSWebView.m in Sources */,
 				27F5D7F616F20EC5001828F3 /* NSDictionary+KinveyAdditions.m in Sources */,
 				27FB2A7A16FCEC9E00CD7D5C /* KCS_TWSignedRequest.m in Sources */,
@@ -2735,6 +2768,7 @@
 				278BADB917B28EC70035B3D6 /* DDTTYLogger.m in Sources */,
 				27C2227D161DE9B200D827AE /* KCS_SBJsonStreamParser.m in Sources */,
 				27C2227F161DE9B200D827AE /* KCS_SBJsonStreamParserAccumulator.m in Sources */,
+				27295D7417E0AC8E00D34E2F /* KCSPing2.m in Sources */,
 				2743317217AAFCB9001BC17B /* NSDate+KinveyAdditions.m in Sources */,
 				27C22281161DE9B200D827AE /* KCS_SBJsonStreamParserAdapter.m in Sources */,
 				27C22283161DE9B200D827AE /* KCS_SBJsonStreamParserState.m in Sources */,
@@ -2750,6 +2784,7 @@
 				27041AFF163B0ADB00538656 /* MD5Helpers.m in Sources */,
 				27D1559116713C7300171230 /* KCSLinkedInHelper.m in Sources */,
 				2718279F16B8A78700825D50 /* KCSImageUtils.m in Sources */,
+				27295D6D17E08DF800D34E2F /* KCSNSURLSessionOperation.m in Sources */,
 				27F5D7F516F20EC5001828F3 /* NSDictionary+KinveyAdditions.m in Sources */,
 				27FB2A7E16FCECBD00CD7D5C /* KCSFacebookHelper.m in Sources */,
 				278554C41742CCD9005052D6 /* KCSEntityCache2.m in Sources */,
@@ -2795,6 +2830,7 @@
 				D3715ACB14B695820030F5E9 /* KinveyKitPingTests.m in Sources */,
 				D3715AD414B696D80030F5E9 /* KinveyKitConnectionPoolTests.m in Sources */,
 				D3715AD714B696F30030F5E9 /* KinveyKitConnectionResponseTests.m in Sources */,
+				27295D7717E0B3EB00D34E2F /* KCSPingTests.m in Sources */,
 				D3715ADD14B697EA0030F5E9 /* KinveyKitNSStringTests.m in Sources */,
 				27DA142217C654A100EAB3B7 /* KCSClientConfigurationTests.m in Sources */,
 				D3715AE014B697F80030F5E9 /* KinveyKitNSURLTests.m in Sources */,
@@ -3610,7 +3646,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
-				LLVM_LTO = YES;
+				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;

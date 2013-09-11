@@ -1,8 +1,8 @@
 //
-//  KCSNetworkResponse.m
+//  KCSPingTests.m
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/23/13.
+//  Created by Michael Katz on 9/11/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -18,32 +18,36 @@
 //
 
 
-#import "KCSNetworkResponse.h"
-#import "KinveyCoreInternal.h"
+#import <SenTestingKit/SenTestingKit.h>
 
-@interface KCSNetworkResponse ()
+#import "KinveyCoreInternal.h"
+#import "TestUtils2.h"
+
+@interface KCSPingTests : SenTestCase
+
 @end
 
-@implementation KCSNetworkResponse
+@implementation KCSPingTests
 
-+ (instancetype) MockResponseWith:(NSInteger)code data:(id)data
+- (void)setUp
 {
-    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
-    response.code = code;
-    response.jsonData = data;
-    return response;
+    [super setUp];
+    // Put setup code here; it will be run once, before the first test case.
 }
 
-- (BOOL)isKCSError
+- (void)tearDown
 {
-    return self.code >= 400;
+    // Put teardown code here; it will be run once, after the last test case.
+    [super tearDown];
 }
 
-- (NSError*) errorObject
+- (void)testExample
 {
-    NSDictionary* kcsErrorDict = [self jsonData];
-    NSError* error = [NSError createKCSError:kcsErrorDict[@"description"] code:self.code userInfo:kcsErrorDict];
-    return error;
+    [KCSPing2 pingKinveyWithBlock:^(NSDictionary *appInfo, NSError *error) {
+        KTNIY
+        KTPollDone
+    }];
+    KTPollStart
 }
 
 @end

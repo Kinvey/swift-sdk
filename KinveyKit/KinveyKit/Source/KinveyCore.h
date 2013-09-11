@@ -22,4 +22,9 @@
 #import "KinveyHeaderInfo.h"
 #import "KinveyVersion.h"
 
+/// Configuration
+#pragma mark - Configuration
+
+#import "KCSPing2.h"
+
 #endif

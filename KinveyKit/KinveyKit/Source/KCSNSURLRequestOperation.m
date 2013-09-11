@@ -83,10 +83,18 @@
 //
 //}
 
+- (void)setFinished:(BOOL)isFinished
+{
+    [self willChangeValueForKey:@"isFinished"];
+    _done = isFinished;
+    [self didChangeValueForKey:@"isFinished"];
+}
+
 - (BOOL)isFinished
 {
-    return _done;
+    return ([self isCancelled] ? YES : _done);
 }
+
 
 -(BOOL)isExecuting
 {
@@ -101,8 +109,12 @@
 - (void) complete:(NSError*) error
 {
     NSLog(@"-----");
-    _done = YES;
+    self.error = error;
+    self.finished = YES;
 }
+
+
+
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {

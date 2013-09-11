@@ -25,4 +25,7 @@
 
 + (instancetype) MockResponseWith:(NSInteger)code data:(id)data;
 
+- (BOOL) isKCSError;
+- (NSError*) errorObject;
+
 @end
