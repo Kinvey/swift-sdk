@@ -25,21 +25,27 @@
 #import "KCSMockRequestOperation.h"
 #import "KCSNSURLSessionOperation.h"
 
-KCS_CONST_IMPL KCSRequestOptionUseMock = @"UseMock";
-KCS_CONST_IMPL KCSRESTRouteAppdata = @"appdata";
+#define kHeaderAuthorization   @"Authorization"
+#define kHeaderContentType     @"Content-Type"
+#define kHeaderApiVersion      @"X-Kinvey-Api-Version"
+#define kHeaderClientMethod    @"X-Kinvey-Client-Method"
+#define kHeaderResponseWrapper @"X-Kinvey-ResponseWrapper"
 
-#define kHeaderContentType @"Content-Type"
-#define kHeaderAuthorization @"Authorization"
+KCS_CONST_IMPL KCSRequestOptionClientMethod = kHeaderClientMethod;
+KCS_CONST_IMPL KCSRequestOptionUseMock      = @"UseMock";
+KCS_CONST_IMPL KCSRESTRouteAppdata          = @"appdata";
+KCS_CONST_IMPL KCSRestRouteTestReflection   = @"!reflection";
 
 #define KCS_VERSION @"3"
-
-
 
 @interface KCSRequest2 ()
 @property (nonatomic) BOOL useMock;
 @property (nonatomic, copy) KCSRequestCompletionBlock completionBlock;
 @property (nonatomic, copy) NSString* contentType;
 @property (nonatomic) dispatch_queue_t dispatch_queue;
+@property (nonatomic, weak) id<KCSCredentials> credentials;
+@property (nonatomic, retain) NSString* route;
+@property (nonatomic, copy) NSDictionary* options;
 @end
 
 @implementation KCSRequest2
@@ -53,11 +59,14 @@ static NSOperationQueue* queue;
     [queue setName:@"com.kinvey.KinveyKit.RequestQueue"];
 }
 
-+ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion options:(NSDictionary*)options;
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
 {
     KCSRequest2* request = [[KCSRequest2 alloc] init];
     request.useMock = [options[KCSRequestOptionUseMock] boolValue];
     request.completionBlock = completion;
+    request.credentials = credentials;
+    request.route = route;
+    request.options = options;
     return request;
 }
 
@@ -75,25 +84,50 @@ static NSOperationQueue* queue;
 
 - (NSOperation*) start
 {
-    //TODO: mock server
-    NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
-    NSURL* pingURL = [NSURL URLWithString:pingStr];
+    NSAssert(_route, @"should have route");
+    NSAssert(self.credentials, @"should have credentials");
+    DBAssert(self.options[KCSRequestOptionClientMethod], @"DB should set client method");
+    
+    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
+    NSString* baseURL = [config baseURL];
+    NSString* kid = config.appKey;
+    
+    //NSArray* _pathComponents = @[];
+    
+    NSArray* path = @[self.route, kid];// arrayByAddingObjectsFromArray:[_pathComponents arrayByPercentEncoding]];
+    NSString* urlStr = [path componentsJoinedByString:@"/"];
+    NSString* endpoint = [baseURL stringByAppendingString:urlStr];
+
+    NSURL* url = [NSURL URLWithString:endpoint];
     
     _dispatch_queue = dispatch_get_current_queue();
     
     NSOperation<KCSNetworkOperation>* op = nil;
     
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
+                                                           cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
+                                                       timeoutInterval:[config.options[KCS_CONNECTION_TIMEOUT] doubleValue]];
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     headers[kHeaderContentType] = _contentType;
-    headers[kHeaderAuthorization] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
-    headers[@"X-Kinvey-Api-Version"] = KCS_VERSION;
+    headers[kHeaderAuthorization] = [self.credentials authString];
+    headers[kHeaderApiVersion] = KCS_VERSION;
+    headers[kHeaderResponseWrapper] = @"true";
+    setIfValNotNil(headers[kHeaderClientMethod], self.options[KCSRequestOptionClientMethod]);
+
+    KK2(enable these headers)
+    //headers[@"User-Agent"] = [client userAgent];
+    //headers[@"X-Kinvey-Device-Information"] = [client.analytics headerString];
+
     [request setAllHTTPHeaderFields:headers];
+    //[request setHTTPShouldUsePipelining:_httpMethod != kKCSRESTMethodPOST];
+    
+    KCSLogInfo(@"%@ %@", request.HTTPMethod, request.URL);
     
     if (_useMock == YES) {
         op = [[KCSMockRequestOperation alloc] initWithRequest:request];
     } else {
+       
         if ([KCSPlatformUtils supportsNSURLSession]) {
             op = [[KCSNSURLSessionOperation alloc] initWithRequest:request];
         } else {
@@ -104,16 +138,20 @@ static NSOperationQueue* queue;
     @weakify(op);
     op.completionBlock = ^() {
         //TODO: error/response
+        
         dispatch_async(_dispatch_queue, ^{
             @strongify(op);
+            if (op.error) {
+                KCSLogInfo(@"Network Client Error %@", op.error);
+            }
+            if ([op.response isKCSError]) {
+                KCSLogInfo(@"Kinvey Server Error (%d) %@", op.response.code, op.response.jsonData);
+            }
             self.completionBlock(op.response, op.error);
         });
     };
     
     [queue addOperation:op];
-    //Client - init from plist
-    //client init from options
-    //client init from params
     return op;
 }
 

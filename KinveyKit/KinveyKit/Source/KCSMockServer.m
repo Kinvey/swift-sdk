@@ -82,10 +82,20 @@
     return response;
 }
 
-
-
-- (KCSNetworkResponse*) responseForURL:(NSString*)url
+- (KCSNetworkResponse*) makeReflectionResponse:(NSURLRequest*)request
 {
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 200;
+    if (request.HTTPBody) {
+        response.jsonData = [[[KCS_SBJsonParser alloc] init] objectWithData:request.HTTPBody];
+    }
+    response.headers = request.allHTTPHeaderFields;
+    return response;
+}
+
+- (KCSNetworkResponse*) responseForRequest:(NSURLRequest*)request
+{
+    NSString* url = [request.URL absoluteString];
     KCSNetworkResponse* response = [self make404];
     
     url = [url stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
@@ -97,6 +107,10 @@
         NSString* kid = components[3];
         if (self.appKey != nil && [kid isEqualToString:self.appKey] == NO) {
             return [self make401];
+        }
+        
+        if ([route isEqualToString:KCSRestRouteTestReflection]) {
+            return [self makeReflectionResponse:request];
         }
   
         if (components.count > 4) {

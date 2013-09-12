@@ -20,8 +20,18 @@
 
 #import "KCSClientConfiguration.h"
 
+KK2(remove import)
 #import "KCSClient.h"
-#import "KCSLogManager.h"
+
+#pragma mark - Constants
+
+NSString* const KCS_APP_KEY = @"KCS_APP_KEY";
+NSString* const KCS_APP_SECRET = @"KCS_APP_SECRET";
+NSString* const KCS_CONNECTION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
+NSString* const KCS_SERVICE_HOST = @"KCS_SERVICE_HOST";
+NSString* const KCS_URL_CACHE_POLICY = @"KCS_URL_CACHE_POLICY";
+NSString* const KCS_DATE_FORMAT = @"KCS_DATE_FORMAT";
+NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
 
 #define KCS_HOST_PORT @"KCS_HOST_PORT"
 #define KCS_HOST_PROTOCOL @"KCS_HOST_PROTOCOL"
@@ -140,29 +150,12 @@
     return configuration;
 }
 
-- (void) setAppKey:(NSString *)appKey
-{
-    if (appKey == nil || [appKey hasPrefix:@"<"]) {
-        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"Nil or invalid appKey, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
-    }
-    _appKey = [appKey copy];
-}
-
-- (void) setAppSecret:(NSString *)appSecret
-{
-    if (appSecret == nil || [appSecret hasPrefix:@"<"]) {
-        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"Nil or invalid appSecret, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
-    }
-    _appSecret = [appSecret copy];
-}
-
 - (void)setServiceHostname:(NSString *)serviceHostname
 {
-    // Note that we need to update the Kinvey Reachability host here...
     if (serviceHostname == nil) {
         serviceHostname = KCS_DEFAULT_HOSTNAME;
     }
-    _serviceHostname = [serviceHostname copy]; // Implicit retain here
+    _serviceHostname = [serviceHostname copy];
     if ([KCSClient sharedClient].configuration == self) {
         [[KCSClient sharedClient] setConfiguration:self];
     }

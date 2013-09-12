@@ -30,22 +30,7 @@
 @class KCSAuthHandler;
 
 
-// Keys for options hash
-/** App Key plist key: "KCS_APP_KEY" */
-KCS_CONSTANT KCS_APP_KEY;
-/** App Secret plist key: "KCS_APP_SECRET" */
-KCS_CONSTANT KCS_APP_SECRET;
 
-/** Timeout plist key: "KCS_CONNECTION_TIMEOUT" */
-KCS_CONSTANT KCS_CONNECTION_TIMEOUT;
-/** NSNumber representation of NSURLCachePolicy */
-KCS_CONSTANT KCS_URL_CACHE_POLICY;
-/** Parsing format for dates handled by the system. ISO6801 format */
-KCS_CONSTANT KCS_DATE_FORMAT;
-/** This object shoul implement the `KCSLogSink` protocol. Use this along with +[KinveyKit configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:] to send log messages to a custom sink.*/
-KCS_CONSTANT KCS_LOG_SINK;
-
-KCS_CONSTANT KCS_SERVICE_HOST;
 
 #define KCS_USE_OLD_PING_STYLE_KEY @"kcsPingStyle"
 

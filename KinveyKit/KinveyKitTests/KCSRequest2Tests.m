@@ -31,7 +31,7 @@
 - (void)setUp
 {
     [super setUp];
-    // Put setup code here; it will be run once, before the first test case.
+    [self setupKCS];
 }
 
 - (void)tearDown
@@ -40,12 +40,32 @@
     [super tearDown];
 }
 
-- (void)testExample
+- (void)testQueuesAreSame
+{
+    dispatch_queue_t startQ = dispatch_get_current_queue();
+    
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        
+        dispatch_queue_t endQ = dispatch_get_current_queue();
+        STAssertEquals(startQ, endQ, @"queues should match");
+        
+        KTPollDone
+    } route:KCSRESTRouteAppdata options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
+    [request start];
+    KTPollStart
+}
+
+- (void) testMethodAnayltics
 {
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-        STFail(@"fail");
+        STAssertNotNil(response, @"need response");
+        NSDictionary* headers = response.headers;
+        NSString* method = headers[@"X-Kinvey-Client-Method"];
+        STAssertNotNil(method, @"should have the method");
+        STAssertEqualObjects(method, NSStringFromSelector(_cmd), @"should be this method");
+        
         KTPollDone
-    } options:@{KCSRequestOptionUseMock: @(YES)}];
+    } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
     [request start];
     KTPollStart
 }

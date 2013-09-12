@@ -20,9 +20,27 @@
 
 #import "TestUtils2.h"
 #import <objc/runtime.h>
+#import "KinveyCoreInternal.h"
 
 #define POLL_INTERVAL 0.05
 #define MAX_POLL_COUNT 30 / POLL_INTERVAL
+
+@interface MockCredentials : NSObject <KCSCredentials>
+
+@end
+@implementation MockCredentials
+
+- (NSString *)authString
+{
+    return @"";
+}
+
+@end
+
+id<KCSCredentials> mockCredentails()
+{
+    return [[MockCredentials alloc] init];
+}
 
 @implementation SenTestCase (TestUtils2)
 @dynamic done;
@@ -47,6 +65,17 @@
 - (void)setDone:(BOOL)newDone {
     objc_setAssociatedObject(self, @"doneval", [NSNumber numberWithBool:newDone], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
+
+#pragma mark - Kinvey
+
+- (void)setupKCS
+{
+    KCSClientConfiguration* testConfig = [KCSClientConfiguration configurationWithAppKey:@"kid10005" secret:@"8cce9613ecb7431ab580d20863a91e20"];
+    testConfig.serviceHostname = @"v3yk1n";
+    
+    [KCSClient2 sharedClient].configuration = testConfig;
+}
+
 @end
 
 @implementation TestUtils2

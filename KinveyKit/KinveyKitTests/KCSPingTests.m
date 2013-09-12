@@ -32,7 +32,7 @@
 - (void)setUp
 {
     [super setUp];
-    // Put setup code here; it will be run once, before the first test case.
+    [self setupKCS];
 }
 
 - (void)tearDown
@@ -41,10 +41,17 @@
     [super tearDown];
 }
 
-- (void)testExample
-{
+- (void) testPing
+{    
     [KCSPing2 pingKinveyWithBlock:^(NSDictionary *appInfo, NSError *error) {
-        KTNIY
+        KTAssertNoError
+        STAssertNotNil(appInfo, @"should be a valid value");
+        NSString* version = appInfo[KCS_PING_KINVEY_VERSION];
+        NSString* appname = appInfo[KCS_PING_APP_NAME];
+        
+        STAssertEqualObjects(appname, @"0 iOS Tests", @"Should be test app name");
+        KTAssertLengthAtLeast(version, 1); //don't hardcode backend version
+        
         KTPollDone
     }];
     KTPollStart

@@ -24,6 +24,19 @@
 #import "KinveyCoreInternal.h"
 #import "TestUtils2.h"
 
+@interface KCSMockServer (TEST)
+- (KCSNetworkResponse*) responseForURL:(NSString*)urlStr;
+@end
+@implementation KCSMockServer (TEST)
+
+- (KCSNetworkResponse *)responseForURL:(NSString *)urlStr
+{
+    NSURLRequest* req = [NSURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
+    return [self responseForRequest:req];
+}
+
+@end
+
 @interface KCSMockServerTest : SenTestCase
 @property (nonatomic, strong) KCSMockServer* server;
 @end
@@ -77,6 +90,21 @@
     KTAssertNotNil(x);
     KTAssertEqualsInt(x.code, 401);
     STAssertEqualObjects(x.jsonData[@"error"], @"InvalidCredentials", @"should be an invalid creds error");
+}
+
+- (void) testReflection
+{
+    NSMutableURLRequest* req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://v3yk1n.kinvey.com/!reflection/kid_test"]];
+    NSDictionary* headers = @{@"A":@"B"};
+    req.allHTTPHeaderFields = headers;
+    id body = @[@"A",@{@"K":@1}];
+    req.HTTPBody = [[[KCS_SBJsonWriter alloc] init] dataWithObject:body];
+    
+    KCSNetworkResponse* x = [_server responseForRequest:req];
+    KTAssertNotNil(x);
+    KTAssertEqualsInt(x.code, 200);
+    STAssertEqualObjects(x.jsonData, body, @"body must match");
+    STAssertEqualObjects(x.headers, headers, @"headers must match");
 }
 
 @end

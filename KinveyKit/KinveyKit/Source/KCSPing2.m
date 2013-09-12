@@ -21,6 +21,13 @@
 #import "KCSPing2.h"
 #import "KinveyCoreInternal.h"
 
+KCS_CONST_IMPL KCS_PING_KINVEY_VERSION = @"kinveyVersion";
+KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
+
+#define kVersionKey @"version"
+#define kKinveyKey @"kinvey"
+#define kHello @"hello "
+
 @implementation KCSPing2
 
 + (void)pingKinveyWithBlock:(KCSPingBlock2)completion
@@ -31,11 +38,24 @@
             if ([response isKCSError]) {
                 error = [response errorObject];
             } else {
-                appInfo = [response jsonData];
+                NSDictionary* responseVal = [response jsonData];
+                if (responseVal) {
+                    NSString* version = responseVal[kVersionKey] ? responseVal[kVersionKey] : @"";
+                    NSString* appname = responseVal[kKinveyKey] ? responseVal[kKinveyKey] : @"";
+                    if ([appname hasPrefix:kHello] == YES) {
+                        appname = [appname substringFromIndex:kHello.length];
+                    }
+                    appInfo = @{KCS_PING_KINVEY_VERSION : version,
+                                KCS_PING_APP_NAME : appname};
+                }
             }
         }
         completion(appInfo, error);
-    } options:nil];
+    }
+                            
+                                                        route:KCSRESTRouteAppdata
+                                                      options:@{KCSRequestOptionClientMethod : NSStringFromSelector(_cmd)}
+                                                  credentials:[KCSClient2 sharedClient]];
     [request start];
 }
 

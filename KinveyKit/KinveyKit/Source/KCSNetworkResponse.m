@@ -21,6 +21,14 @@
 #import "KCSNetworkResponse.h"
 #import "KinveyCoreInternal.h"
 
+#define kKinveyErrorDomain @"KinveyErrorDomain"
+
+#define KCS_ERROR_DEBUG_KEY @"debug"
+#define KCS_ERROR_DESCRIPTION_KEY @"description"
+#define KCS_ERROR_KINVEY_ERROR_CODE_KEY @"error"
+
+#define kKCSErrorCode @"kinveyErrorCode"
+
 @interface KCSNetworkResponse ()
 @end
 
@@ -42,7 +50,12 @@
 - (NSError*) errorObject
 {
     NSDictionary* kcsErrorDict = [self jsonData];
-    NSError* error = [NSError createKCSError:kcsErrorDict[@"description"] code:self.code userInfo:kcsErrorDict];
+    NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
+    setIfValNotNil(userInfo[NSLocalizedDescriptionKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
+    setIfValNotNil(userInfo[NSLocalizedFailureReasonErrorKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
+    setIfValNotNil(userInfo[kKCSErrorCode], kcsErrorDict[KCS_ERROR_KINVEY_ERROR_CODE_KEY]);
+
+    NSError* error = [NSError createKCSError:kKinveyErrorDomain code:self.code userInfo:userInfo];
     return error;
 }
 
