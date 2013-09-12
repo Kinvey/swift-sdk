@@ -20,7 +20,7 @@
 
 #import "KCSNSURLSessionOperation.h"
 
-#import "KCS_SBJson.h"
+#import "KinveyCoreInternal.h"
 
 @interface KCSNSURLSessionOperation () <NSURLSessionDelegate, NSURLSessionDataDelegate>
 @property (nonatomic, strong) NSMutableURLRequest* request;
@@ -35,9 +35,9 @@
 
 - (NSURLSession*) session
 {
-//    static NSURLSession* session;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
+    //    static NSURLSession* session;
+    //    static dispatch_once_t onceToken;
+    //    dispatch_once(&onceToken, ^{
     NSURLSession* session;
     
     NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -60,25 +60,23 @@
     @autoreleasepool {
         [super start];
         
-        //        [[NSThread currentThread] setName:@"KinveyKit"];
-        
-        //        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-        
-        NSLog(@"started");
         self.downloadedData = [NSMutableData data];
+        self.response = [[KCSNetworkResponse alloc] init];
         self.dataTask = [[self session] dataTaskWithRequest:self.request];
         [self.dataTask resume];
-//        _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
-//        // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
-//        [_connection scheduleInRunLoop:runLoop forMode:NSRunLoopCommonModes];
-//        [_connection start];
-//        [runLoop run];
     }
+}
+
+- (void)setFinished:(BOOL)isFinished
+{
+    [self willChangeValueForKey:@"isFinished"];
+    _done = isFinished;
+    [self didChangeValueForKey:@"isFinished"];
 }
 
 - (BOOL)isFinished
 {
-    return _done;
+    return ([self isCancelled] ? YES : _done);
 }
 
 -(BOOL)isExecuting
@@ -93,7 +91,9 @@
 
 - (void) complete:(NSError*) error
 {
-    _done = YES;
+    self.error = error;
+    self.finished = YES;
+
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask
@@ -108,40 +108,45 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
+    NSHTTPURLResponse* hresponse = (NSHTTPURLResponse*) response;
+    //TODO strip headers?
+    KCSLogInfo(@"received response: %d %@", hresponse.statusCode, hresponse.allHeaderFields);
     
+    self.response.code = hresponse.statusCode;
+    self.response.headers = hresponse.allHeaderFields;
+    
+    completionHandler(NSURLSessionResponseAllow);
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask willCacheResponse:(NSCachedURLResponse *)proposedResponse completionHandler:(void (^)(NSCachedURLResponse *))completionHandler
 {
-    
+    completionHandler(NULL);
 }
 
 - (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error
 {
     self.error = error;
-    //TODO?
+    [self complete:error];
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    
+    if (error != nil) {
+        [self complete:error];
+    } else {
+        id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
+        if (obj != nil) {
+            self.response.jsonData = obj;
+            
+            [self complete:nil];
+        } else {
+            [self complete:error];
+        }
+    }
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
 {
-    id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
-    if (obj != nil && [obj isKindOfClass:[NSDictionary class]]) {
-        NSString* appHello = obj[@"kinvey"];
-        NSString* kcsVersion = obj[@"version"];
-        NSLog(@"%@-%@", appHello, kcsVersion);
-        
-        
-        [self complete:nil];
-    } else {
-        //TODO: is an error
-        NSError* error = nil;
-        [self complete:error];
-    }
 }
 
 #pragma mark - completion

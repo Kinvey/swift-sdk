@@ -5,6 +5,7 @@
 ** Release Date:** TBD
 
 * Added `NSCoding` to `KCSFile`.
+* Removed `kKCSWhere` query option. 
 
 ## 1.20
 ### 1.20.1

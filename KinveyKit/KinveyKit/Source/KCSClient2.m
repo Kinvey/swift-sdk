@@ -1,9 +1,9 @@
 //
-//  TestThreads.h
+//  KCSClient2.m
 //  KinveyKit
 //
-//  Created by Michael Katz on 7/11/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Created by Michael Katz on 9/11/13.
+//  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -17,8 +17,35 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
 
-@interface TestThreads : SenTestCase
+#import "KCSClient2.h"
+
+#import "KinveyCoreInternal.h"
+
+@implementation KCSClient2
+
++ (instancetype)sharedClient
+{
+    static KCSClient2 *sKCSClient;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sKCSClient = [[self alloc] init];
+        NSAssert(sKCSClient != nil, @"Unable to instantiate KCSClient");
+    });
+    
+    return sKCSClient;
+}
+
+
+- (instancetype) init
+{
+    self = [super init];
+    if (self) {
+        [DDLog addLogger:[DDASLLogger sharedInstance]];
+        [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    }
+    return self;
+}
 
 @end

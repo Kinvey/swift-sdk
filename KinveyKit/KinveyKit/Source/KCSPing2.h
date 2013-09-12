@@ -18,6 +18,10 @@
 
 
 #import <Foundation/Foundation.h>
+#import "KinveyCore.h"
+
+KCS_CONSTANT KCS_PING_KINVEY_VERSION;
+KCS_CONSTANT KCS_PING_APP_NAME;
 
 /* Callback upon ping request finishing
  

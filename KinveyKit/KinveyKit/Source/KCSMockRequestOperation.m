@@ -40,18 +40,8 @@
 
 - (void)main {
     @autoreleasepool {
-        
-        //        [[NSThread currentThread] setName:@"KinveyKit"];
-        
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         
-        NSLog(@"started");
-//        self.downloadedData = [NSMutableData data];
-//        
-//        _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
-//        // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
-//        [_connection scheduleInRunLoop:runLoop forMode:NSRunLoopCommonModes];
-//        [_connection start];
         dispatch_async(dispatch_get_current_queue(), ^{
             [self resolveRequest];
         });
@@ -61,14 +51,22 @@
 
 - (void) resolveRequest
 {
-    self.response = [[KCSMockServer sharedServer] responseForURL:[self.request.URL absoluteString]];
-    self.done = YES;
+    self.response = [[KCSMockServer sharedServer] responseForRequest:self.request];
+    self.finished = YES;
+}
+
+- (void)setFinished:(BOOL)isFinished
+{
+    [self willChangeValueForKey:@"isFinished"];
+    _done = isFinished;
+    [self didChangeValueForKey:@"isFinished"];
 }
 
 - (BOOL)isFinished
 {
-    return _done;
+    return ([self isCancelled] ? YES : _done);
 }
+
 
 -(BOOL)isExecuting
 {

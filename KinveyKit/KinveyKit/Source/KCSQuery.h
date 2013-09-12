@@ -51,10 +51,7 @@ typedef enum : NSInteger
     // Array Operators
     kKCSAll = 8192,
     kKCSSize = 8193,
-
-    // Arbitrary Operators
-    kKCSWhere = 16384,
-    
+   
     // Internal Operators
     kKCSWithin = 17000,
     kKCSMulti = 17001,
@@ -521,6 +518,7 @@ typedef enum {
 ///---------------------------------------------------------------------------------------
 /// @name Modifying Queries
 ///---------------------------------------------------------------------------------------
+
 /*! The current limit modifier, defaults to nil.  Set to nil to clear the limit modifier. */
 @property (nonatomic, strong) KCSQueryLimitModifier *limitModifer;
 /*! The current skip modifier, defaults to nil.  Set to nil to clear the skip modifier. */

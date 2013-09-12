@@ -22,14 +22,19 @@
 #import "KinveyHeaderInfo.h"
 
 KCS_CONSTANT KCSRequestOptionUseMock;
+KCS_CONSTANT KCSRequestOptionClientMethod;
 
 KCS_CONSTANT KCSRESTRouteAppdata;
+KCS_CONSTANT KCSRestRouteTestReflection;
+
+#define KCSRequestLogMethod KCSRequestOptionClientMethod : NSStringFromSelector(_cmd)
 
 @class KCSNetworkResponse;
+@protocol KCSCredentials;
 
 typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*error);
 
 @interface KCSRequest2 : NSObject
-+ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion options:(NSDictionary*)options;
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
 - (NSOperation*) start;
 @end
