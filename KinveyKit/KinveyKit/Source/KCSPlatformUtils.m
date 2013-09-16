@@ -20,7 +20,9 @@
 
 #import "KCSPlatformUtils.h"
 
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#endif
 
 // For hardware platform information
 #include <sys/types.h>
@@ -41,7 +43,11 @@
 
 + (BOOL) supportsVendorID
 {
+#if TARGET_OS_IPHONE
     return [[UIDevice currentDevice] respondsToSelector:@selector(identifierForVendor)];
+#else
+    return NO;
+#endif
 }
 
 // From: http://www.cocos2d-iphone.org/forum/topic/21923

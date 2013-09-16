@@ -38,7 +38,7 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
             if ([response isKCSError]) {
                 error = [response errorObject];
             } else {
-                NSDictionary* responseVal = [response jsonData];
+                NSDictionary* responseVal = [response jsonObject];
                 if (responseVal) {
                     NSString* version = responseVal[kVersionKey] ? responseVal[kVersionKey] : @"";
                     NSString* appname = responseVal[kKinveyKey] ? responseVal[kKinveyKey] : @"";

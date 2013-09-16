@@ -29,6 +29,8 @@
 
 #define kKCSErrorCode @"kinveyErrorCode"
 
+#define kResultsKey @"result"
+
 @interface KCSNetworkResponse ()
 @end
 
@@ -49,7 +51,7 @@
 
 - (NSError*) errorObject
 {
-    NSDictionary* kcsErrorDict = [self jsonData];
+    NSDictionary* kcsErrorDict = [self jsonObject];
     NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
     setIfValNotNil(userInfo[NSLocalizedDescriptionKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
     setIfValNotNil(userInfo[NSLocalizedFailureReasonErrorKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
@@ -57,6 +59,16 @@
 
     NSError* error = [NSError createKCSError:kKinveyErrorDomain code:self.code userInfo:userInfo];
     return error;
+}
+
+- (id)jsonObject
+{
+    id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.jsonData];
+    if ([obj isKindOfClass:[NSDictionary class]] && obj[kResultsKey]) {
+        //because of the response wrapper
+        obj = obj[kResultsKey];
+    }
+    return obj;
 }
 
 @end

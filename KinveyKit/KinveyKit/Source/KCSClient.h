@@ -30,10 +30,6 @@
 @class KCSAuthHandler;
 
 
-
-
-#define KCS_USE_OLD_PING_STYLE_KEY @"kcsPingStyle"
-
 #define KCS_FACEBOOK_APP_KEY @"facebookKey"
 #define KCS_TWITTER_CLIENT_KEY @"twitterKey"
 #define KCS_TWITTER_CLIENT_SECRET @"twitterSecret"

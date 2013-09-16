@@ -21,9 +21,16 @@
 #import "TestUtils2.h"
 #import <objc/runtime.h>
 #import "KinveyCoreInternal.h"
+#import "KCSClient.h"
 
 #define POLL_INTERVAL 0.05
 #define MAX_POLL_COUNT 30 / POLL_INTERVAL
+
+#define STAGING_ALPHA @"alpha"
+#define STAGING_V3YK1N @"v3yk1n"
+
+#define STAGING_API STAGING_V3YK1N
+
 
 @interface MockCredentials : NSObject <KCSCredentials>
 
@@ -70,10 +77,8 @@ id<KCSCredentials> mockCredentails()
 
 - (void)setupKCS
 {
-    KCSClientConfiguration* testConfig = [KCSClientConfiguration configurationWithAppKey:@"kid10005" secret:@"8cce9613ecb7431ab580d20863a91e20"];
-    testConfig.serviceHostname = @"v3yk1n";
-    
-    [KCSClient2 sharedClient].configuration = testConfig;
+    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid10005" withAppSecret:@"8cce9613ecb7431ab580d20863a91e20" usingOptions:@{}];
+    [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
 }
 
 @end

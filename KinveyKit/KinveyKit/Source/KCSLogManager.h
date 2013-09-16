@@ -103,7 +103,7 @@ withFormat:(format),##__VA_ARGS__]
                             warningEnabled: (BOOL)warningIsEnabled
                               errorEnabled: (BOOL)errorIsEnabled;
 
-
+- (BOOL) networkLogging;
 
 @property (nonatomic) BOOL suppressErrorToExceptionOnTest;
 

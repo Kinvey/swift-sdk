@@ -4,6 +4,18 @@
 //
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KinveyKitEntityTests.h"
 #import "TestUtils.h"
@@ -19,6 +31,7 @@
 #import "KCSLogManager.h"
 #import "KCSFile.h"
 #import "KCSFileStore.h"
+#import "KCS_SBJson.h"
 
 @interface HS1789 : NSObject <KCSPersistable>
 @property (nonatomic, copy) NSMutableSet* users;
@@ -64,6 +77,7 @@
 @property (nonatomic, retain) NSMutableAttributedString* asParam;
 @property (nonatomic, retain) CLLocation* locParam;
 @property (nonatomic, retain) UIImage* image;
+@property (nonatomic, retain) KCSFile* fileRef;
 @end
 
 @implementation TestObject
@@ -78,12 +92,13 @@
              @"oSetParam" : @"oSetParam",
              @"asParam" : @"asParam",
              @"locParam" : @"locParam",
-             @"image" : @"image"};
+             @"image" : @"image",
+             @"fileRef" : @"fileRef"};
 }
 
 + (NSDictionary *)kinveyPropertyToCollectionMapping
 {
-    return @{@"image" : KCSFileStoreCollectionName};
+    return @{@"image" : KCSFileStoreCollectionName, @"fileRef" : KCSFileStoreCollectionName};
 }
 @end
 
@@ -235,6 +250,42 @@
     STAssertNotNil(imgRef, @"should have an image value");
     STAssertEqualObjects(imgRef.fileId, @"special-image-id", @"ids should match");
     STAssertEqualObjects(imgRef.remoteURL, [NSURL URLWithString:@"http://images.com/OfflineSave-linked1-photo.png"], @"urls should match");
+}
+
+- (void) testLinkedFileOrMetdata
+{
+    TestObject* obj = [[TestObject alloc] init];
+    obj.image = [UIImage new];
+    obj.fileRef = [[KCSFile alloc] init];
+    obj.fileRef.length = 1001;
+    obj.fileRef.mimeType = @"foo/bar";
+    obj.testId = @"ABC";
+    
+
+    NSError* error = nil;
+    KCSSerializedObject* metaObj = [KCSObjectMapper makeResourceEntityDictionaryFromObject:obj forCollection:@"TestObjects" error:&error];
+    STAssertNoError_
+
+    NSDictionary* jsonData = metaObj.dataToSerialize;
+    id ifile = jsonData[@"image"];
+    id ffile = jsonData[@"fileRef"];
+    
+    STAssertNotNil(ifile, @"");
+    STAssertTrue([ifile isKindOfClass:[KCSFile class]], @"");
+    STAssertNotNil(ffile, @"");
+    STAssertTrue([ffile isKindOfClass:[KCSFile class]], @"");
+    KTAssertCount(2, metaObj.resourcesToSave);
+    
+    NSData* serialized = [[[KCS_SBJsonWriter alloc] init] dataWithObject:jsonData];
+    id deserialized = [[[KCS_SBJsonParser alloc] init] objectWithData:serialized];
+    
+    NSMutableDictionary* resources = [NSMutableDictionary dictionary];
+    TestObject* made = [KCSObjectMapper makeObjectWithResourcesOfType:[TestObject class] withData:deserialized withResourceDictionary:resources];
+    
+    KTAssertCount(1, resources);
+    
+    KCSFile* madeFile = made.fileRef;
+    STAssertNotNil(madeFile, @"should be valid");
 }
 
 - (void) testBrokenPropMap

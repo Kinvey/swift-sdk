@@ -22,6 +22,12 @@
 
 #import "KinveyCoreInternal.h"
 
+KK2(remove import)
+@interface KCSLogManager : NSObject
++ (KCSLogManager *)sharedLogManager;
+- (BOOL) networkLogging;
+@end
+
 @implementation KCSClient2
 
 + (instancetype)sharedClient
@@ -42,10 +48,19 @@
 {
     self = [super init];
     if (self) {
-        [DDLog addLogger:[DDASLLogger sharedInstance]];
-        [DDLog addLogger:[DDTTYLogger sharedInstance]];
+        if ([[KCSLogManager sharedLogManager] networkLogging] == YES) {
+            KK2(Use log sink)
+            [DDLog addLogger:[DDASLLogger sharedInstance]];
+            [DDLog addLogger:[DDTTYLogger sharedInstance]];
+        }
     }
     return self;
+}
+
+- (KCSClientConfiguration *)configuration
+{
+    KK2(make our own);
+    return [[KCSClient sharedClient] configuration];
 }
 
 @end

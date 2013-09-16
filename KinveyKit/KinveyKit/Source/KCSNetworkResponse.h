@@ -21,12 +21,13 @@
 
 @interface KCSNetworkResponse : NSObject
 @property (nonatomic) NSInteger code;
-@property (nonatomic, copy) id jsonData;
+@property (nonatomic, copy) NSData* jsonData;
 @property (nonatomic, copy) NSDictionary* headers;
 
 + (instancetype) MockResponseWith:(NSInteger)code data:(id)data;
 
 - (BOOL) isKCSError;
 - (NSError*) errorObject;
+- (id) jsonObject;
 
 @end
