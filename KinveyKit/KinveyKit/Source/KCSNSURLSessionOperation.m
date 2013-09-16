@@ -91,9 +91,9 @@
 
 - (void) complete:(NSError*) error
 {
+    self.response.jsonData = self.downloadedData;
     self.error = error;
     self.finished = YES;
-
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask
@@ -131,18 +131,7 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    if (error != nil) {
-        [self complete:error];
-    } else {
-        id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
-        if (obj != nil) {
-            self.response.jsonData = obj;
-            
-            [self complete:nil];
-        } else {
-            [self complete:error];
-        }
-    }
+    [self complete:error];
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session

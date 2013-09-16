@@ -313,7 +313,13 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
                 } else {
                     //this is a new object & need to download resources
                     KCSFile* file = [KCSFile fileRefFromKinvey:value class:valClass];
-                    resourcesToLoad[hostKey] = file;
+                    if ([[properties valueForKey:hostKey] isEqualToString:NSStringFromClass([KCSFile class])]) {
+                        // just a KCSFile
+                        [object setValue:file forKey:hostKey];
+                    } else {
+                        //otherwise need to load the binary
+                        resourcesToLoad[hostKey] = file;
+                    }
                 }
             } else if (maybeType == AppdataRef) {
                 //this is a reference

@@ -5,7 +5,11 @@
 ** Release Date:** TBD
 
 * Added `NSCoding` to `KCSFile`.
+* With `KCSLinkedAppdataStore`, you can use have a reference property to either an `UIImage` or a `KCSFile` file metadata object. If the property is declared as a `KCSFile`, the binary data will not be loaded. You can later download the file using the `KCSFile` object's `remoteURL` with `KCSFileStore downloadDataWithResolvedURL:completionBlock:progressBlock:`.
 * Removed `kKCSWhere` query option. 
+* Built with XCode 5.
+* Code cleanup:
+    * Internal `KCSPing` changes: remove `KCS_USE_OLD_PING_STYLE_KEY` key, and deprecated `checkKinveyServiceStatusWithAction:`.
 
 ## 1.20
 ### 1.20.1

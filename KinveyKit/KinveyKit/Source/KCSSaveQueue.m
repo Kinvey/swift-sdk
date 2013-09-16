@@ -22,6 +22,10 @@
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#else
+#define UIApplicationDidBecomeActiveNotification NSApplicationDidBecomeActiveNotification
+#define UIApplicationWillResignActiveNotification NSApplicationWillResignActiveNotification
+#define UIApplication NSApplication
 #endif
 
 #import <objc/runtime.h>

@@ -85,6 +85,7 @@
 
 - (void) complete:(NSError*) error
 {
+    self.response.jsonData = self.downloadedData;
     self.error = error;
     self.finished = YES;
 }
@@ -165,16 +166,9 @@
 
 - (void) connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
-    if (obj != nil) {
-        self.response.jsonData = obj;
- 
-        [self complete:nil];
-    } else {
-        //TODO: is an error
-        NSError* error = nil;
-        [self complete:error];
-    }
+    //TODO: is an error
+    NSError* error = nil;
+    [self complete:error];
 }
 
 @end

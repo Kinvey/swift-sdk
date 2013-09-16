@@ -89,7 +89,7 @@
     KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n.kinvey.com/appdata/kid_fail"];
     KTAssertNotNil(x);
     KTAssertEqualsInt(x.code, 401);
-    STAssertEqualObjects(x.jsonData[@"error"], @"InvalidCredentials", @"should be an invalid creds error");
+    STAssertEqualObjects(x.jsonObject[@"error"], @"InvalidCredentials", @"should be an invalid creds error");
 }
 
 - (void) testReflection

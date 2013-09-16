@@ -49,11 +49,11 @@
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 404;
-    response.jsonData = @{
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{
                           @"error": @"EntityNotFound",
                           @"description": @"This entity not found in the collection",
                           @"debug": @""
-                          };
+                          } options:0 error:NULL];
 
     return response;
 }
@@ -62,11 +62,11 @@
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 401;
-    response.jsonData = @{
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{
                           @"error": @"InvalidCredentials",
                           @"description": @"Invalid credentials. Please retry your request with correct credentials",
                           @"debug": @""
-                          };
+                          } options:0 error:NULL];
     
     return response;
 }
@@ -75,10 +75,10 @@
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 200;
-    response.jsonData = @{
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{
                           @"version": @"3.1.6-snapshot", //TODO: match from header
                           @"kinvey": @"Hello mock server", //TODO: pull from somewhere else
-                          };
+                          } options:0 error:NULL];
     return response;
 }
 

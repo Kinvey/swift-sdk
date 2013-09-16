@@ -116,6 +116,7 @@
 		27295D8B17E1137200D34E2F /* KCSClientConfiguration+KCSInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 27295D8817E1137200D34E2F /* KCSClientConfiguration+KCSInternal.h */; };
 		27295D8C17E1137200D34E2F /* KCSClientConfiguration+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 27295D8917E1137200D34E2F /* KCSClientConfiguration+KCSInternal.m */; };
 		27295D8D17E1137200D34E2F /* KCSClientConfiguration+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 27295D8917E1137200D34E2F /* KCSClientConfiguration+KCSInternal.m */; };
+		27295D9217E22CE500D34E2F /* KCSClientShimTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27295D9117E22CE500D34E2F /* KCSClientShimTests.m */; };
 		272D73FB16FCB82E004F26FC /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		272D73FC16FCB82E004F26FC /* KCSFacebookHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 272D73FA16FCB82E004F26FC /* KCSFacebookHelper.m */; };
 		272EF18815E2BA4E008E3F68 /* CLLocation+Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -246,7 +247,7 @@
 		276A6F6316372FD500285884 /* KCSEntityCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 276A6F6116372FD500285884 /* KCSEntityCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		276A6F6416372FD500285884 /* KCSEntityCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6216372FD500285884 /* KCSEntityCache.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		276A6F6F1637834700285884 /* KCSEntityCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A6F6E1637834700285884 /* KCSEntityCacheTests.m */; };
-		278519BB17BAD5660044D877 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 278519B917BAD5660044D877 /* KCSPush.h */; };
+		278519BB17BAD5660044D877 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 278519B917BAD5660044D877 /* KCSPush.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		278519BC17BAD5660044D877 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 278519BA17BAD5660044D877 /* KCSPush.m */; };
 		278554C31742CCD9005052D6 /* KCSEntityCache2.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C11742CCD9005052D6 /* KCSEntityCache2.h */; };
 		278554C41742CCD9005052D6 /* KCSEntityCache2.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C21742CCD9005052D6 /* KCSEntityCache2.m */; };
@@ -646,6 +647,7 @@
 		27295D8317E0FA0700D34E2F /* KCSClient2+KCSInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSClient2+KCSInternal.m"; sourceTree = "<group>"; };
 		27295D8817E1137200D34E2F /* KCSClientConfiguration+KCSInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSClientConfiguration+KCSInternal.h"; sourceTree = "<group>"; };
 		27295D8917E1137200D34E2F /* KCSClientConfiguration+KCSInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSClientConfiguration+KCSInternal.m"; sourceTree = "<group>"; };
+		27295D9117E22CE500D34E2F /* KCSClientShimTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSClientShimTests.m; sourceTree = "<group>"; };
 		272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFacebookHelper.h; sourceTree = "<group>"; };
 		272D73FA16FCB82E004F26FC /* KCSFacebookHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFacebookHelper.m; sourceTree = "<group>"; };
 		272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Kinvey.h"; sourceTree = "<group>"; };
@@ -1156,9 +1158,8 @@
 		273B64551757E3BA00E1B1B9 /* KinveyKit2 Tests */ = {
 			isa = PBXGroup;
 			children = (
-				273B64521757E3B500E1B1B9 /* KCSRequestTests.h */,
-				273B64531757E3B500E1B1B9 /* KCSRequestTests.m */,
 				274D395917A7FF1800587886 /* KinveyKit2Tests.m */,
+				27295D9117E22CE500D34E2F /* KCSClientShimTests.m */,
 				2737D3BA17BD559600FE7ACC /* TestUtils2.h */,
 				2737D3BB17BD559600FE7ACC /* TestUtils2.m */,
 				27C95BF517C26A7E0003498D /* Data Stores */,
@@ -1720,6 +1721,8 @@
 				D32A60EC14716EE300F77A3F /* KinveyKitTests.m */,
 				273B645A1757FAAA00E1B1B9 /* KCSCustomEndpointTests.h */,
 				273B645B1757FAAA00E1B1B9 /* KCSCustomEndpointTests.m */,
+				273B64521757E3B500E1B1B9 /* KCSRequestTests.h */,
+				273B64531757E3B500E1B1B9 /* KCSRequestTests.m */,
 				273B64551757E3BA00E1B1B9 /* KinveyKit2 Tests */,
 				D32A60E614716EE300F77A3F /* Supporting Files */,
 				27AFD4CE15C8866D00A44F4F /* Metatests.h */,
@@ -2846,6 +2849,7 @@
 				D3650FEE1496856800945F7D /* KCSMockURLConnection.m in Sources */,
 				D3650FF11496916800945F7D /* KinveyKitAsyncConnectionTests.m in Sources */,
 				D3FC21FE149A833E00979F09 /* KinveyKitClientTests.m in Sources */,
+				27295D9217E22CE500D34E2F /* KCSClientShimTests.m in Sources */,
 				D34E85BC149F72DC007D5E98 /* KinveyKitAnalyticsTests.m in Sources */,
 				D34E85C0149F75ED007D5E98 /* KinveyKitCollectionTests.m in Sources */,
 				D3715AB014B652350030F5E9 /* KinveyKitKeyChainTests.m in Sources */,
