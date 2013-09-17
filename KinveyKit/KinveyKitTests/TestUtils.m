@@ -43,12 +43,12 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 #define POLL_INTERVAL 0.05
 #define MAX_POLL_SECONDS 30
 
-- (void) poll
+- (BOOL) poll
 {
-    [self poll:MAX_POLL_SECONDS];
+    return [self poll:MAX_POLL_SECONDS];
 }
 
-- (void) poll:(NSTimeInterval)timeout
+- (BOOL) poll:(NSTimeInterval)timeout
 {
     int pollCount = 0;
     int maxPollCount = timeout / POLL_INTERVAL;
@@ -62,7 +62,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     if (pollCount == maxPollCount) {
         STFail(@"polling timed out");
     }
-    
+    return YES;
 }
 
 - (BOOL)done {
