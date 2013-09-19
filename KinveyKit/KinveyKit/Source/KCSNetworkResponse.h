@@ -23,6 +23,7 @@
 @property (nonatomic) NSInteger code;
 @property (nonatomic, copy) NSData* jsonData;
 @property (nonatomic, copy) NSDictionary* headers;
+@property (nonatomic, copy) NSURL* originalURL;
 
 + (instancetype) MockResponseWith:(NSInteger)code data:(id)data;
 

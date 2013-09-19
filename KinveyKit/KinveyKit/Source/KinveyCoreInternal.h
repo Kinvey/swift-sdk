@@ -38,7 +38,10 @@
 
 #import "KCSPlatformUtils.h"
 #import "KCSLog.h"
+#import "KCSLogFormatter.h"
+#import "NSArray+KinveyAdditions.h"
 #import "NSError+KinveyKit.h"
+#import "NSString+KinveyAdditions.h"
 #import "KCSBase64.h"
 
 #pragma mark - helpers

@@ -21,6 +21,8 @@
 #import <Foundation/Foundation.h>
 #import <SenTestingKit/SenTestingKit.h>
 
+#import "LogTester.h"
+
 #define KTAssertNoError STAssertNil(error, @"Should not get an error: %@", error);
 
 #define KTAssertNotNil(x) STAssertNotNil(x, @#x" should not be nil.");

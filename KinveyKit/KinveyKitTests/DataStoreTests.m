@@ -1,7 +1,8 @@
 //
-//  KCSQuery2.h
+//  DataStoreTests.m
 //  KinveyKit
 //
+//  Created by Michael Katz on 9/17/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -16,11 +17,39 @@
 // contents is a violation of applicable laws.
 //
 
-@class KCSQuery2;
 
-@interface KCSQuery2 : NSObject
+#import <SenTestingKit/SenTestingKit.h>
+#import "KinveyDataStoreInternal.h"
+#import "TestUtils2.h"
 
-+ (instancetype) queryWithPredicate:(NSPredicate*)predicate error:(NSError**)error;
+@interface DataStoreTests : SenTestCase
 
+@end
+
+@implementation DataStoreTests
+
+- (void)setUp
+{
+    [super setUp];
+    [self setupKCS];
+    
+    //TODO: msg [INFO (datastore, network)] msg 
+}
+
+- (void)tearDown
+{
+    // Put teardown code here; it will be run once, after the last test case.
+    [super tearDown];
+}
+
+- (void) testBasic
+{
+    KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:@"GetAll"];
+    [store getAll:^(NSArray *objects, NSError *error) {
+        KTNIY
+        KTPollDone
+    }];
+    KTPollStart
+}
 
 @end

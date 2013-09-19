@@ -19,6 +19,7 @@
 
 
 #import "KCSClientConfiguration+KCSInternal.h"
+#import "KinveyCoreInternal.h"
 
 @implementation KCSClientConfiguration (KCSInternal)
 
@@ -29,6 +30,36 @@
     NSString* hostdomain = self.options[@"KCS_HOST_DOMAIN"];
     NSString* port = self.options[@"KCS_HOST_PORT"];
     return [NSString stringWithFormat:@"%@://%@.%@%@/", protocol, hostname, hostdomain, port];
+}
+
+- (int)loglevel
+{
+    int baselevel = [self.options[KCS_LOG_LEVEL] intValue];
+    int level = LOG_LEVEL_FATAL;
+    switch (baselevel) {
+        case 0:
+            level = LOG_LEVEL_FATAL;
+            break;
+        case 1:
+            level = LOG_LEVEL_ERROR;
+            break;
+        case 2:
+            level = LOG_LEVEL_WARN;
+            break;
+        case 3:
+            level = LOG_LEVEL_NOTICE;
+            break;
+        case 4:
+            level = LOG_LEVEL_INFO;
+            break;
+        case 5:
+            level = LOG_LEVEL_DEBUG;
+            break;
+        default:
+            level = LOG_LEVEL_DEBUG;
+            break;
+    }
+    return level;
 }
 
 @end

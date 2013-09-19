@@ -19,8 +19,15 @@
 
 #import <KinveyKit/KinveyKit.h>
 
+KK2(expose & document levels)
+KCS_CONSTANT KCS_LOG_LEVEL;
+KCS_CONSTANT KCS_LOG_ADDITIONAL_LOGGERS;
+
+
 @interface KCSClientConfiguration (KCSInternal)
 
 - (NSString*) baseURL;
+
+- (int) loglevel;
 
 @end

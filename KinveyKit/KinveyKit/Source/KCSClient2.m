@@ -48,11 +48,6 @@ KK2(remove import)
 {
     self = [super init];
     if (self) {
-        if ([[KCSLogManager sharedLogManager] networkLogging] == YES) {
-            KK2(Use log sink)
-            [DDLog addLogger:[DDASLLogger sharedInstance]];
-            [DDLog addLogger:[DDTTYLogger sharedInstance]];
-        }
     }
     return self;
 }

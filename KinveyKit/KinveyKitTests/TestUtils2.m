@@ -21,6 +21,7 @@
 #import "TestUtils2.h"
 #import <objc/runtime.h>
 #import "KinveyCoreInternal.h"
+
 #import "KCSClient.h"
 
 #define POLL_INTERVAL 0.05
@@ -77,7 +78,10 @@ id<KCSCredentials> mockCredentails()
 
 - (void)setupKCS
 {
-    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid10005" withAppSecret:@"8cce9613ecb7431ab580d20863a91e20" usingOptions:@{}];
+    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid10005"
+                                                       withAppSecret:@"8cce9613ecb7431ab580d20863a91e20"
+                                                        usingOptions:@{KCS_LOG_LEVEL              : @255,
+                                                                       KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}];
     [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
 }
 

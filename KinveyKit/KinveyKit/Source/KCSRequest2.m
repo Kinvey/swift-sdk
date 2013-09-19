@@ -31,10 +31,21 @@
 #define kHeaderClientMethod    @"X-Kinvey-Client-Method"
 #define kHeaderResponseWrapper @"X-Kinvey-ResponseWrapper"
 
+#define kHeaderValueJson @"application/json"
+
 KCS_CONST_IMPL KCSRequestOptionClientMethod = kHeaderClientMethod;
 KCS_CONST_IMPL KCSRequestOptionUseMock      = @"UseMock";
 KCS_CONST_IMPL KCSRESTRouteAppdata          = @"appdata";
+KCS_CONST_IMPL KCSRESTRouteUser             = @"user";
+KCS_CONST_IMPL KCSRESTRouteRPC              = @"rpc";
 KCS_CONST_IMPL KCSRestRouteTestReflection   = @"!reflection";
+
+KCS_CONST_IMPL KCSRESTMethodDELETE = @"DELETE";
+KCS_CONST_IMPL KCSRESTMethodGET    = @"GET";
+KCS_CONST_IMPL KCSRESTMethodPATCH  = @"PATCH";
+KCS_CONST_IMPL KCSRESTMethodPOST   = @"POST";
+KCS_CONST_IMPL KCSRESTMethodPUT    = @"PUT";
+
 
 #define KCS_VERSION @"3"
 
@@ -74,7 +85,8 @@ static NSOperationQueue* queue;
 {
     self = [super init];
     if (self) {
-        _contentType = @"application/json";
+        _contentType = kHeaderValueJson;
+        _method = KCSRESTMethodGET;
     }
     return self;
 }
@@ -92,9 +104,7 @@ static NSOperationQueue* queue;
     NSString* baseURL = [config baseURL];
     NSString* kid = config.appKey;
     
-    //NSArray* _pathComponents = @[];
-    
-    NSArray* path = @[self.route, kid];// arrayByAddingObjectsFromArray:[_pathComponents arrayByPercentEncoding]];
+    NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
     NSString* urlStr = [path componentsJoinedByString:@"/"];
     NSString* endpoint = [baseURL stringByAppendingString:urlStr];
 
@@ -107,6 +117,7 @@ static NSOperationQueue* queue;
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
                                                        timeoutInterval:[config.options[KCS_CONNECTION_TIMEOUT] doubleValue]];
+    request.HTTPMethod = self.method;
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
     headers[kHeaderContentType] = _contentType;
@@ -122,7 +133,7 @@ static NSOperationQueue* queue;
     [request setAllHTTPHeaderFields:headers];
     //[request setHTTPShouldUsePipelining:_httpMethod != kKCSRESTMethodPOST];
     
-    KCSLogInfo(@"%@ %@", request.HTTPMethod, request.URL);
+    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@", request.HTTPMethod, request.URL);
     
     if (_useMock == YES) {
         op = [[KCSMockRequestOperation alloc] initWithRequest:request];
@@ -137,17 +148,20 @@ static NSOperationQueue* queue;
     
     @weakify(op);
     op.completionBlock = ^() {
-        //TODO: error/response
-        
         dispatch_async(_dispatch_queue, ^{
             @strongify(op);
-            if (op.error) {
-                KCSLogInfo(@"Network Client Error %@", op.error);
+            op.response.originalURL = url;
+            NSError* error = nil;
+            if (op.error) {                
+                error = [op.error errorByAddingCommonInfo];
+                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@", error);
+            } else if ([op.response isKCSError]) {
+                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%d) %@", op.response.code, op.response.jsonData);
+                error = [op.response errorObject];
+            } else {
+                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%d)", op.response.code);
             }
-            if ([op.response isKCSError]) {
-                KCSLogInfo(@"Kinvey Server Error (%d) %@", op.response.code, op.response.jsonData);
-            }
-            self.completionBlock(op.response, op.error);
+            self.completionBlock(op.response, error);
         });
     };
     

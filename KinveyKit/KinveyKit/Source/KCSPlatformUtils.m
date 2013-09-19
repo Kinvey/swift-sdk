@@ -69,4 +69,5 @@
     return [NSString stringWithFormat:@"%@/%@ %@ %@", device.model, [self platform], device.systemName, device.systemVersion];
 }
 
+
 @end
