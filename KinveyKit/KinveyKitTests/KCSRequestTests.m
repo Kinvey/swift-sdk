@@ -55,8 +55,5 @@
     STAssertEqualObjects(expBody, undidBody, @"bodies should match");
 }
 
-- (void) testPing
-{
-    
-}
+
 @end

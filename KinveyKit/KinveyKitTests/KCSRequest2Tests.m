@@ -90,5 +90,30 @@
     KTPollStart
 }
 
+- (void) testRetryKCS
+{
+    KCSNetworkResponse* retryResponse = createMockErrorResponse(@"KinveyInternalErrorRetry", nil, nil, 500);
+    [[KCSMockServer sharedServer] setResponse:retryResponse forRoute:@"appdata/:kid/foo"];
+    
+    NSArray* path =  @[@"foo"];
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        LogTester* tester = [LogTester sharedInstance];
+        NSArray* logs = tester.logs;
+        NSArray* retries = [logs filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            return [evaluatedObject hasPrefix:@"Retrying"];
+        }]];
+        KTAssertCount(5, retries);
+        KTPollDone
+    } route:KCSRESTRouteAppdata options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
+    request.path = path;
+    [request start];
+    KTPollNoAssert
+}
+
+- (void) testRetryCFNetwork
+{
+    KTNIY
+}
+
 
 @end
