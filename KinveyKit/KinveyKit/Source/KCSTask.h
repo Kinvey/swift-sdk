@@ -1,5 +1,5 @@
 //
-//  KCSQuery2.h
+//  KCSTask.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -16,11 +16,11 @@
 // contents is a violation of applicable laws.
 //
 
-@class KCSQuery2;
 
-@interface KCSQuery2 : NSObject
+#import <Foundation/Foundation.h>
 
-+ (instancetype) queryWithPredicate:(NSPredicate*)predicate error:(NSError**)error;
+KK(Fill out)
 
+@protocol KCSTask <NSObject>
 
 @end

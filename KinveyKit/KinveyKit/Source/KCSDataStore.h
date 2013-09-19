@@ -2,7 +2,6 @@
 //  KCSDataStore.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 5/23/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -17,10 +16,14 @@
 // contents is a violation of applicable laws.
 //
 
-#import "KinveyHeaderInfo.h"
+#import "KinveyDataStore.h"
 
-//KCS_CONSTANT KCSUserCollectionName;
+typedef void(^KCSDataStoreCompletion)(NSArray* objects, NSError* error);
 
 @interface KCSDataStore : NSObject
+
+- (instancetype)initWithCollection:(NSString*)collection;
+
+- (void) getAll:(KCSDataStoreCompletion)completion;
 
 @end

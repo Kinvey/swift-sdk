@@ -1,7 +1,8 @@
 //
-//  KCSQuery2.h
+//  LogTester.h
 //  KinveyKit
 //
+//  Created by Michael Katz on 9/18/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -16,11 +17,11 @@
 // contents is a violation of applicable laws.
 //
 
-@class KCSQuery2;
 
-@interface KCSQuery2 : NSObject
+#import "DDLog.h"
 
-+ (instancetype) queryWithPredicate:(NSPredicate*)predicate error:(NSError**)error;
-
+@interface LogTester : DDAbstractLogger <DDLogger>
++ (instancetype) sharedInstance;
+@property (nonatomic, readonly) NSArray* logs;
 
 @end

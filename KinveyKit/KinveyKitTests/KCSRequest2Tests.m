@@ -70,4 +70,25 @@
     KTPollStart
 }
 
+- (void) testPath
+{
+    NSArray* path =  @[@"1",@"2"];
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        STAssertNotNil(response, @"need response");
+        NSURL* url = response.originalURL;
+        STAssertNotNil(url, @"needed url");
+
+        NSArray* components = [url pathComponents];
+        NSArray* lastComponents = [components subarrayWithRange:NSMakeRange(components.count - 2, 2)];
+        KTAssertCount(2, lastComponents);
+        STAssertEqualObjects(lastComponents, path, @"should match");
+        
+        KTPollDone
+    } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
+    request.path = path;
+    [request start];
+    KTPollStart
+}
+
+
 @end

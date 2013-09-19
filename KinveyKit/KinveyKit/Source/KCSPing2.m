@@ -54,7 +54,7 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
     }
                             
                                                         route:KCSRESTRouteAppdata
-                                                      options:@{KCSRequestOptionClientMethod : NSStringFromSelector(_cmd)}
+                                                      options:@{KCSRequestLogMethod}
                                                   credentials:[KCSClient2 sharedClient]];
     [request start];
 }

@@ -1,7 +1,8 @@
 //
-//  KCSQuery2.h
+//  LogTester.m
 //  KinveyKit
 //
+//  Created by Michael Katz on 9/18/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -16,11 +17,44 @@
 // contents is a violation of applicable laws.
 //
 
-@class KCSQuery2;
 
-@interface KCSQuery2 : NSObject
 
-+ (instancetype) queryWithPredicate:(NSPredicate*)predicate error:(NSError**)error;
+#import "LogTester.h"
+
+@implementation LogTester
+
+static LogTester* sharedInstance;
+
++ (instancetype)sharedInstance
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[LogTester alloc] init];
+    });
+    return sharedInstance;
+}
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _logs = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (void)logMessage:(DDLogMessage *)logMessage
+{
+    NSString *logMsg = logMessage->logMsg;
+    
+    if (formatter)
+        logMsg = [formatter formatLogMessage:logMessage];
+    
+    if (logMsg)
+    {
+        [(NSMutableArray*)_logs addObject:logMsg];
+    }
+}
 
 
 @end

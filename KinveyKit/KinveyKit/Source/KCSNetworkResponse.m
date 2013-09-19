@@ -56,6 +56,7 @@
     setIfValNotNil(userInfo[NSLocalizedDescriptionKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
     setIfValNotNil(userInfo[NSLocalizedFailureReasonErrorKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
     setIfValNotNil(userInfo[kKCSErrorCode], kcsErrorDict[KCS_ERROR_KINVEY_ERROR_CODE_KEY]);
+    setIfValNotNil(userInfo[NSURLErrorFailingURLErrorKey], self.originalURL);
 
     NSError* error = [NSError createKCSError:kKinveyErrorDomain code:self.code userInfo:userInfo];
     return error;

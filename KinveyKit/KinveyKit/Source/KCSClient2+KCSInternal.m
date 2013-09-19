@@ -26,7 +26,7 @@
 
 - (NSString *)authString
 {
-    KCSLogDebug(@"Using app key/app secret for auth: (%@, <APP_SECRET>) => XXXXXXXXX", self.configuration.appKey);
+    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"Using app key/app secret for auth: (%@, <APP_SECRET>) => XXXXXXXXX", self.configuration.appKey);
     return KCSbasicAuthString(self.configuration.appKey, self.configuration.appSecret);
 
 }

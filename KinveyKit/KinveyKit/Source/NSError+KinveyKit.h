@@ -22,5 +22,6 @@
 @interface NSError (KinveyKit)
 
 + (instancetype) createKCSError:(NSString*)domain code:(NSInteger)code userInfo:(NSDictionary*)userInfo;
+- (instancetype) errorByAddingCommonInfo;
 
 @end
