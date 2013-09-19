@@ -40,6 +40,9 @@
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = code;
+    if ([data isKindOfClass:[NSData class]] == NO) {
+        data = [[[KCS_SBJsonWriter alloc] init] dataWithObject:data];
+    }
     response.jsonData = data;
     return response;
 }

@@ -23,6 +23,7 @@
 #import "KCSNetworkOperation.h"
 
 @interface KCSNSURLRequestOperation : NSOperation <KCSNetworkOperation>
+@property (nonatomic) NSUInteger retryCount;
 - (instancetype) initWithRequest:(NSMutableURLRequest*) request;
 
 @end

@@ -21,6 +21,17 @@
 #import "KCSMockServer.h"
 #import "KinveyCoreInternal.h"
 
+
+KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NSString* message, NSInteger code)
+{
+    NSDictionary* data = @{@"error" : error ? error : @"",
+                           @"debug" : debug ? debug : @"",
+                           @"message" : message ? message : @""};
+    KCSNetworkResponse* response = [KCSNetworkResponse MockResponseWith:code data:data];
+    return response;
+}
+
+
 @interface KCSMockServer ()
 @property (nonatomic, strong) NSMutableDictionary* routes;
 @end
@@ -119,7 +130,10 @@
                 for (int i = 4; i < components.count - 1; i++) {
                     d = d[components[i]];
                 }
-                response = d[components[components.count-1]];
+                KCSNetworkResponse* aresponse = d[components[components.count-1]];
+                if (aresponse) {
+                    response = aresponse;
+                }
             }
         } else {
             if ([route isEqualToString:KCSRESTRouteAppdata]) {

@@ -22,6 +22,8 @@
 @class KCSNetworkResponse;
 
 @protocol KCSNetworkOperation <NSObject>
+- (instancetype) initWithRequest:(NSURLRequest*)request;
 - (KCSNetworkResponse*)response;
 - (NSError*)error;
+@property (nonatomic) NSUInteger retryCount;
 @end

@@ -22,6 +22,7 @@
 #import <SenTestingKit/SenTestingKit.h>
 
 #import "LogTester.h"
+#import "KCSMockServer.h"
 
 #define KTAssertNoError STAssertNil(error, @"Should not get an error: %@", error);
 
@@ -37,6 +38,7 @@
 
 #define KTPollDone self.done = YES;
 #define KTPollStart self.done = NO; STAssertTrue([self poll], @"polling timed out");
+#define KTPollNoAssert self.done = NO; [self poll];
 
 @protocol KCSCredentials;
 id<KCSCredentials> mockCredentails();

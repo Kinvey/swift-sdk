@@ -21,6 +21,8 @@
 
 @class KCSNetworkResponse;
 
+KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NSString* message, NSInteger code);
+
 @interface KCSMockServer : NSObject
 + (instancetype)sharedServer;
 

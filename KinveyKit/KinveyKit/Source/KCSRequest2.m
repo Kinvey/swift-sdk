@@ -33,6 +33,8 @@
 
 #define kHeaderValueJson @"application/json"
 
+#define kMaxTries 5
+
 KCS_CONST_IMPL KCSRequestOptionClientMethod = kHeaderClientMethod;
 KCS_CONST_IMPL KCSRequestOptionUseMock      = @"UseMock";
 KCS_CONST_IMPL KCSRESTRouteAppdata          = @"appdata";
@@ -107,7 +109,7 @@ static NSOperationQueue* queue;
     NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
     NSString* urlStr = [path componentsJoinedByString:@"/"];
     NSString* endpoint = [baseURL stringByAppendingString:urlStr];
-
+    
     NSURL* url = [NSURL URLWithString:endpoint];
     
     _dispatch_queue = dispatch_get_current_queue();
@@ -125,11 +127,11 @@ static NSOperationQueue* queue;
     headers[kHeaderApiVersion] = KCS_VERSION;
     headers[kHeaderResponseWrapper] = @"true";
     setIfValNotNil(headers[kHeaderClientMethod], self.options[KCSRequestOptionClientMethod]);
-
+    
     KK2(enable these headers)
     //headers[@"User-Agent"] = [client userAgent];
     //headers[@"X-Kinvey-Device-Information"] = [client.analytics headerString];
-
+    
     [request setAllHTTPHeaderFields:headers];
     //[request setHTTPShouldUsePipelining:_httpMethod != kKCSRESTMethodPOST];
     
@@ -138,7 +140,7 @@ static NSOperationQueue* queue;
     if (_useMock == YES) {
         op = [[KCSMockRequestOperation alloc] initWithRequest:request];
     } else {
-       
+        
         if ([KCSPlatformUtils supportsNSURLSession]) {
             op = [[KCSNSURLSessionOperation alloc] initWithRequest:request];
         } else {
@@ -148,27 +150,110 @@ static NSOperationQueue* queue;
     
     @weakify(op);
     op.completionBlock = ^() {
-        dispatch_async(_dispatch_queue, ^{
-            @strongify(op);
-            op.response.originalURL = url;
-            NSError* error = nil;
-            if (op.error) {                
-                error = [op.error errorByAddingCommonInfo];
-                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@", error);
-            } else if ([op.response isKCSError]) {
-                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%d) %@", op.response.code, op.response.jsonData);
-                error = [op.response errorObject];
+        @strongify(op);
+        
+        if ([[KCSClient sharedClient].options[KCS_CONFIG_RETRY_DISABLED] boolValue] == YES) {
+            [self callCallback:op url:url];
+        } else {
+            if (opIsRetryableNetworkError(op)) {
+                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %d.", op.error.code);
+                [self retryOp:op request:request];
+            } else if (opIsRetryableKCSError(op)) {
+                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Kinvey server error: %@", [op.response jsonObject]);
+                [self retryOp:op request:request];
             } else {
-                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%d)", op.response.code);
+                //status OK or is a non-retryable error
+                [self callCallback:op url:url];
             }
-            self.completionBlock(op.response, error);
-        });
+        }
     };
     
     [queue addOperation:op];
     return op;
 }
 
+BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op)
+{
+    BOOL isError = NO;
+    if (op.error) {
+        if ([[op.error domain] isEqualToString:NSURLErrorDomain]) {
+            switch (op.error.code) {
+                case kCFURLErrorUnknown:
+                case kCFURLErrorTimedOut:
+                case kCFURLErrorCannotFindHost:
+                case kCFURLErrorCannotConnectToHost:
+                case kCFURLErrorNetworkConnectionLost:
+                case kCFURLErrorDNSLookupFailed:
+                case kCFURLErrorResourceUnavailable:
+                case kCFURLErrorRequestBodyStreamExhausted:
+                    isError = YES;
+                    break;
+            }
+        }
+    }
+    
+    return isError;
+}
+
+BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
+{
+    //kcs error KinveyInternalErrorRetry:
+    //        statusCode: 500
+    //        description: "The Kinvey server encountered an unexpected error. Please retry your request"
+    
+    return [op.response isKCSError] == YES &&
+    op.response.code == 500 &&
+    [[op.response jsonObject][@"error"] isEqualToString:@"KinveyInternalErrorRetry"];
+}
+
+- (void) retryOp:(NSOperation<KCSNetworkOperation>*)oldOp request:(NSURLRequest*)request
+{
+    NSUInteger newcount = oldOp.retryCount + 1;
+    if (newcount == kMaxTries) {
+        [self callCallback:oldOp url:request.URL];
+    } else {
+        NSOperation<KCSNetworkOperation>* op = [[[oldOp class] alloc] initWithRequest:request];
+        op.retryCount = newcount;
+        @weakify(op);
+        op.completionBlock = ^() {
+            @strongify(op);
+            if (opIsRetryableNetworkError(op)) {
+                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %d.", op.error.code);
+                [self retryOp:op request:request];
+            } else if (opIsRetryableKCSError(op)) {
+                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Kinvey server error: %@", [op.response jsonObject]);
+                [self retryOp:op request:request];
+            } else {
+                //status OK or is a non-retryable error
+                [self callCallback:op url:request.URL];
+            }
+        };
+        
+        double delayInSeconds = 0.1 * pow(2, op.retryCount - 1); //exponential backoff
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [queue addOperation:op];
+        });
+    }
+}
+
+- (void) callCallback:(NSOperation<KCSNetworkOperation>*)op url:(NSURL*)url
+{
+    dispatch_async(_dispatch_queue, ^{
+        op.response.originalURL = url;
+        NSError* error = nil;
+        if (op.error) {
+            error = [op.error errorByAddingCommonInfo];
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@", error);
+        } else if ([op.response isKCSError]) {
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%d) %@", op.response.code, op.response.jsonData);
+            error = [op.response errorObject];
+        } else {
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%d)", op.response.code);
+        }
+        self.completionBlock(op.response, error);
+    });
+}
 
 
 @end
