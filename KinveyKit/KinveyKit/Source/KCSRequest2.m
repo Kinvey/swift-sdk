@@ -156,7 +156,7 @@ static NSOperationQueue* queue;
             [self callCallback:op url:url];
         } else {
             if (opIsRetryableNetworkError(op)) {
-                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %d.", op.error.code);
+                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %ld.", (long)op.error.code);
                 [self retryOp:op request:request];
             } else if (opIsRetryableKCSError(op)) {
                 KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Kinvey server error: %@", [op.response jsonObject]);
@@ -218,7 +218,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         op.completionBlock = ^() {
             @strongify(op);
             if (opIsRetryableNetworkError(op)) {
-                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %d.", op.error.code);
+                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %ld.", (long)op.error.code);
                 [self retryOp:op request:request];
             } else if (opIsRetryableKCSError(op)) {
                 KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Kinvey server error: %@", [op.response jsonObject]);
@@ -246,10 +246,10 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
             error = [op.error errorByAddingCommonInfo];
             KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@", error);
         } else if ([op.response isKCSError]) {
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%d) %@", op.response.code, op.response.jsonData);
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@", (long)op.response.code, op.response.jsonData);
             error = [op.response errorObject];
         } else {
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%d)", op.response.code);
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%ld)", (long)op.response.code);
         }
         self.completionBlock(op.response, error);
     });

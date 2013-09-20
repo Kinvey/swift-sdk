@@ -89,7 +89,7 @@ typedef enum KCSQueryType : NSUInteger {
 
 - (NSString *)parameterStringRepresentation
 {
-    KCSLogDebug(@"Limit String: %@", [NSString stringWithFormat:@"limit=%d", self.limit]);
+    KCSLogDebug(@"Limit String: %@", [NSString stringWithFormat:@"limit=%ld", (long)self.limit]);
     return [NSString stringWithFormat:@"limit=%d", (int) self.limit];
 }
 @end
@@ -114,7 +114,7 @@ typedef enum KCSQueryType : NSUInteger {
 
 - (NSString *)parameterStringRepresentation
 {
-    KCSLogDebug(@"Count String: %@", [NSString stringWithFormat:@"skip=%d", self.count]);
+    KCSLogDebug(@"Count String: %@", [NSString stringWithFormat:@"skip=%ld", (long)self.count]);
     return [NSString stringWithFormat:@"skip=%d", (int) self.count];
 }
 

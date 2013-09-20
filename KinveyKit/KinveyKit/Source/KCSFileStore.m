@@ -161,7 +161,7 @@ static id lastRequest = nil;
     if (offset > 0) {
         NSUInteger remaining = length - offset;
         headers[@"Content-Length"] = [@(remaining) stringValue];
-        headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes %llu-%d/%d",offset+1,length,length];
+        headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes %llu-%lu/%lu",offset+1,(unsigned long)length,(unsigned long)length];
         [stream setProperty:@(offset) forKey:NSStreamFileCurrentOffsetKey];
     }
 

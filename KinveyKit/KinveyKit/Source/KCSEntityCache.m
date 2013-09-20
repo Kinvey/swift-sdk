@@ -189,19 +189,19 @@ static uint counter;
 void md5(NSString* s, unsigned char* result)
 {
     const char *cStr = [s UTF8String];
-    CC_MD5( cStr, strlen(cStr), result ); // This is the md5 call
+    CC_MD5( cStr, (CC_LONG)strlen(cStr), result ); // This is the md5 call
 }
 
 NSString* KCSMongoObjectId()
 {
-    int timestamp = (time_t) [[NSDate date] timeIntervalSince1970];
+    time_t timestamp = (time_t) [[NSDate date] timeIntervalSince1970];
     NSString *hostName = [[NSProcessInfo processInfo] hostName];
     unsigned char hostbytes[16];
     md5(hostName, hostbytes);
     int pid = getpid();
     counter = (counter + 1) % 16777216;
     NSString* s = [NSString stringWithFormat:
-            @"%08x%02x%02x%02x%04x%06x",
+            @"%08lxx%02x%02x%02x%04x%06x",
             timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
             pid, counter];
     return s;
