@@ -116,7 +116,7 @@
 #pragma mark - debug
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"%@ code: %d", [super debugDescription], _responseCode];
+    return [NSString stringWithFormat:@"%@ code: %ld", [super debugDescription], (long)_responseCode];
 }
 
 @end

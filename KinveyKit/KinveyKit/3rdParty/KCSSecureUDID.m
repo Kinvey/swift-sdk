@@ -47,7 +47,7 @@ NSString *const SUUIDIdentifierKey       = @"SUUIDIdentifierKey";
 NSString *const SUUIDOptOutKey           = @"SUUIDOptOutKey";
 NSString *const SUUIDModelHashKey        = @"SUUIDModelHashKey";
 NSString *const SUUIDSchemaVersionKey    = @"SUUIDSchemaVersionKey";
-NSString *const SUUIDPastboardFileFormat = @"org.secureudid-%d";
+NSString *const SUUIDPastboardFileFormat = @"org.secureudid-%ld";
 
 NSData       *SUUIDCryptorToData(CCOperation operation, NSData *value, NSData *key);
 NSString     *SUUIDCryptorToString(CCOperation operation, NSData *value, NSData *key);
@@ -248,7 +248,7 @@ NSString *SUUIDCryptorToString(CCOperation operation, NSData *value, NSData *key
 NSData *SUUIDHash(NSData *data) {
     uint8_t digest[CC_SHA1_DIGEST_LENGTH] = {0};
     
-    CC_SHA1(data.bytes, data.length, digest);
+    CC_SHA1(data.bytes, (CC_LONG) data.length, digest);
     
     return [NSData dataWithBytes:digest length:CC_SHA1_DIGEST_LENGTH];
 }
@@ -368,7 +368,7 @@ void SUUIDRemoveAllSecureUDIDData(void) {
  Returns an NSString formatted with the supplied number.
  */
 NSString *SUUIDPasteboardNameForNumber(NSInteger number) {
-    return [NSString stringWithFormat:SUUIDPastboardFileFormat, number];
+    return [NSString stringWithFormat:SUUIDPastboardFileFormat, (long)number];
 }
 
 /*

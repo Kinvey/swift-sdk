@@ -270,15 +270,15 @@
 
 - (NSString*) debugDescription
 {
-    NSString* descr = [NSString stringWithFormat:@"%@ [Data from file: '%@' (id: '%@', length: %u)]", [super debugDescription], _filename, _fileId, _length];
+    NSString* descr = [NSString stringWithFormat:@"%@ [Data from file: '%@' (id: '%@', length: %lu)]", [super debugDescription], _filename, _fileId, (unsigned long)_length];
     if (_localURL == nil && _data == nil && _remoteURL == nil) {
-        descr = [NSString stringWithFormat:@"%@ [Uploaded file id: '%@', (filename: '%@', mime-type:'%@', length: %u)]", [super debugDescription], _fileId, _filename, _mimeType, _length];
+        descr = [NSString stringWithFormat:@"%@ [Uploaded file id: '%@', (filename: '%@', mime-type:'%@', length: %lu)]", [super debugDescription], _fileId, _filename, _mimeType, (unsigned long)_length];
     } else if (_localURL == nil && _data == nil) {
-        descr = [NSString stringWithFormat:@"%@ [Remote file (id: '%@', length: %u) url: '%@' / expires: '%@']", [super debugDescription], _fileId, _length, _remoteURL, _expirationDate];
+        descr = [NSString stringWithFormat:@"%@ [Remote file (id: '%@', length: %lu) url: '%@' / expires: '%@']", [super debugDescription], _fileId, (unsigned long)_length, _remoteURL, _expirationDate];
     } else if (_localURL != nil) {
-        descr = [NSString stringWithFormat:@"%@ [Locally cached file '%@' (id: '%@', length: %u)]", [super debugDescription], _localURL, _fileId, _length];
+        descr = [NSString stringWithFormat:@"%@ [Locally cached file '%@' (id: '%@', length: %lu)]", [super debugDescription], _localURL, _fileId, (unsigned long)_length];
     } else if (_data != nil) {
-        descr = [NSString stringWithFormat:@"%@ [Upload data '%@' (id: '%@', data-length: %u)]", [super debugDescription], _localURL, _fileId, _data.length];
+        descr = [NSString stringWithFormat:@"%@ [Upload data '%@' (id: '%@', data-length: %lu)]", [super debugDescription], _localURL, _fileId, (unsigned long)_data.length];
     }
     return descr;
 }
