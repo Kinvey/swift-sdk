@@ -2,7 +2,6 @@
 //  KCSPlatformUtils.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 7/30/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -23,6 +22,7 @@
 
 
 + (BOOL) supportsNSURLSession;
++ (BOOL) supportsVendorID;
 + (NSString*) platformString;
 
 @end

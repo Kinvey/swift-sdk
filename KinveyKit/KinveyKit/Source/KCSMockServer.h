@@ -19,14 +19,16 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KCSNetworkResponse : NSObject
-@property (nonatomic, readonly) NSInteger code;
-@property (nonatomic, readonly, copy) id jsonData;
-+ (instancetype) MockResponseWith:(NSInteger)code data:(id)data;
+@class KCSNetworkResponse;
 
-@end
+KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NSString* message, NSInteger code);
 
 @interface KCSMockServer : NSObject
-- (KCSNetworkResponse*) responseForURL:(NSString*)url;
++ (instancetype)sharedServer;
+
+//default is nil - will match any kid
+@property (nonatomic, retain) NSString* appKey;
+
+- (KCSNetworkResponse*) responseForRequest:(NSURLRequest*)request;
 - (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route;
 @end

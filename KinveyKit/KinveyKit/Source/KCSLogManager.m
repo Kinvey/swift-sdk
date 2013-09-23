@@ -203,4 +203,10 @@ enum {
     };
 }
 
+- (BOOL)networkLogging
+{
+    NSNumber* networkkey = @([[KCSLogManager kNetworkChannel] channelID]);
+    return [self.loggingState[networkkey] boolValue];
+}
+
 @end

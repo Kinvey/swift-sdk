@@ -20,13 +20,15 @@
 
 #import "KCSNSURLRequestOperation.h"
 
-#import "KCS_SBJson.h"
+#import "KinveyCoreInternal.h"
 
-@interface KCSNSURLRequestOperation ()
+@interface KCSNSURLRequestOperation () <NSURLConnectionDataDelegate, NSURLConnectionDataDelegate>
 @property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, strong) NSMutableData* downloadedData;
 @property (nonatomic, strong) NSURLConnection* connection;
 @property (nonatomic) BOOL done;
+@property (nonatomic, strong) KCSNetworkResponse* response;
+@property (nonatomic, strong) NSError* error;
 @end
 
 @implementation KCSNSURLRequestOperation
@@ -44,12 +46,10 @@
     @autoreleasepool {
         [super start];
         
-        [[NSThread currentThread] setName:@"KinveyKit"];
-        
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         
-        NSLog(@"started");
         self.downloadedData = [NSMutableData data];
+        self.response = [[KCSNetworkResponse alloc] init];
         
         _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
         // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
@@ -59,31 +59,19 @@
     }
 }
 
-//- (void)start
-//{
-//    NSLog(@"started");
-//    self.downloadedData = [NSMutableData data];
-//    NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
-//    NSURL* pingURL = [NSURL URLWithString:pingStr];
-//
-//    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
-//
-//    NSMutableDictionary* headers = [NSMutableDictionary dictionary];
-//    headers[@"Content-Type"] = @"application/json";
-//    headers[@"Authorization"] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
-//    headers[@"X-Kinvey-Api-Version"] = @"3";
-//    [request setAllHTTPHeaderFields:headers];
-//
-//    NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
-//    [connection setDelegateQueue:[NSOperationQueue currentQueue]];
-//    [connection start];
-//
-//}
+
+- (void)setFinished:(BOOL)isFinished
+{
+    [self willChangeValueForKey:@"isFinished"];
+    _done = isFinished;
+    [self didChangeValueForKey:@"isFinished"];
+}
 
 - (BOOL)isFinished
 {
-    return _done;
+    return ([self isCancelled] ? YES : _done);
 }
+
 
 -(BOOL)isExecuting
 {
@@ -97,8 +85,20 @@
 
 - (void) complete:(NSError*) error
 {
-    NSLog(@"-----");
-    _done = YES;
+    self.response.jsonData = self.downloadedData;
+    self.error = error;
+    self.finished = YES;
+}
+
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    NSHTTPURLResponse* hresponse = (NSHTTPURLResponse*) response;
+    //TODO strip headers?
+    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"received response: %ld %@", (long)hresponse.statusCode, hresponse.allHeaderFields);
+
+    self.response.code = hresponse.statusCode;
+    self.response.headers = hresponse.allHeaderFields;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
@@ -111,21 +111,64 @@
     [self.downloadedData appendData:data];
 }
 
+///TODO: put in response object
+/*
+ - (id) jsonResponseValue:(NSError**) anError
+ {
+ if (self.responseData == nil) {
+ return nil;
+ }
+ if (self.responseData.length == 0) {
+ return [NSData data];
+ }
+ //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
+ KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+ NSDictionary *jsonResponse = [parser objectWithData:self.responseData];
+ NSObject *jsonData = nil;
+ if (parser.error) {
+ KCSLogError(@"JSON Serialization failed: %@", parser.error);
+ if ([parser.error isEqualToString:@"Broken Unicode encoding"]) {
+ NSObject* reevaluatedObject = [self jsonResponseValue:anError format:NSASCIIStringEncoding];
+ return reevaluatedObject;
+ } else {
+ if (anError != NULL) {
+ *anError = [KCSErrorUtilities createError:@{NSURLErrorFailingURLStringErrorKey : _userData[NSURLErrorFailingURLStringErrorKey]}  description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain requestId:self.requestId];
+ }
+ }
+ } else {
+ jsonData = [jsonResponse valueForKey:@"result"];
+ jsonData = jsonData ? jsonData : jsonResponse;
+ }
+ 
+ if (self.responseCode >= 400 && [jsonData isKindOfClass:[NSDictionary class]] && self.userData != nil && self.userData[NSURLErrorFailingURLStringErrorKey] != nil) {
+ jsonData = [jsonData mutableCopy];
+ ((NSMutableDictionary*)jsonData)[NSURLErrorFailingURLStringErrorKey] = self.userData[NSURLErrorFailingURLStringErrorKey];
+ }
+ 
+ return jsonData;
+ }
+ 
+ - (id) jsonResponseValue
+ {
+ NSString* cytpe = [_responseHeaders valueForKey:@"Content-Type"];
+ 
+ if (cytpe == nil || [cytpe containsStringCaseInsensitive:@"json"]) {
+ return [self jsonResponseValue:nil];
+ } else {
+ if (_responseData.length == 0) {
+ return @{};
+ } else {
+ KCSLogWarning(@"not a json repsonse");
+ return @{@"debug" : [self stringValue]};
+ }
+ }*/
+
+
 - (void) connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
-    if (obj != nil && [obj isKindOfClass:[NSDictionary class]]) {
-        NSString* appHello = obj[@"kinvey"];
-        NSString* kcsVersion = obj[@"version"];
-        NSLog(@"%@-%@", appHello, kcsVersion);
-        
-        
-        [self complete:nil];
-    } else {
-        //TODO: is an error
-        NSError* error = nil;
-        [self complete:error];
-    }
+    //TODO: is an error
+    NSError* error = nil;
+    [self complete:error];
 }
 
 @end

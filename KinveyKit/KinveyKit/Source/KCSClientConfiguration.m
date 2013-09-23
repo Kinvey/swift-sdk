@@ -20,20 +20,34 @@
 
 #import "KCSClientConfiguration.h"
 
+KK2(remove import)
 #import "KCSClient.h"
-#import "KCSLogManager.h"
+#import "KinveyCoreInternal.h"
 
-#define KCS_HOST_PORT @"KCS_HOST_PORT"
+#pragma mark - Constants
+
+KCS_CONST_IMPL KCS_APP_KEY                = @"KCS_APP_KEY";
+KCS_CONST_IMPL KCS_APP_SECRET             = @"KCS_APP_SECRET";
+KCS_CONST_IMPL KCS_CONNECTION_TIMEOUT     = @"KCS_CONNECTION_TIMEOUT";
+KCS_CONST_IMPL KCS_SERVICE_HOST           = @"KCS_SERVICE_HOST";
+KCS_CONST_IMPL KCS_URL_CACHE_POLICY       = @"KCS_URL_CACHE_POLICY";
+KCS_CONST_IMPL KCS_DATE_FORMAT            = @"KCS_DATE_FORMAT";
+KCS_CONST_IMPL KCS_LOG_SINK               = @"KCS_LOG_SINK";
+KCS_CONST_IMPL KCS_LOG_LEVEL              = @"KCS_LOG_LEVEL";
+KCS_CONST_IMPL KCS_LOG_ADDITIONAL_LOGGERS = @"KCS_LOG_ADDITIONAL_LOGGERS";
+KCS_CONST_IMPL KCS_CONFIG_RETRY_DISABLED  = @"KCS_CONFIG_RETRY_DISABLED";
+
+#define KCS_HOST_PORT     @"KCS_HOST_PORT"
 #define KCS_HOST_PROTOCOL @"KCS_HOST_PROTOCOL"
-#define KCS_HOST_DOMAIN @"KCS_HOST_DOMAIN"
+#define KCS_HOST_DOMAIN   @"KCS_HOST_DOMAIN"
 
-#define KCS_DEFAULT_HOSTNAME @"baas"
-#define KCS_DEFAULT_HOST_PORT @""
-#define KCS_DEFAULT_HOST_PROTOCOL @"https"
-#define KCS_DEFAULT_HOST_DOMAIN @"kinvey.com"
+#define KCS_DEFAULT_HOSTNAME          @"baas"
+#define KCS_DEFAULT_HOST_PORT         @""
+#define KCS_DEFAULT_HOST_PROTOCOL     @"https"
+#define KCS_DEFAULT_HOST_DOMAIN       @"kinvey.com"
 #define KCS_DEFAULT_CONNETION_TIMEOUT @10.0 // Default timeout to 10 seconds
-#define KCS_DEFAULT_URL_CACHE_POLICY @(NSURLRequestReloadIgnoringLocalAndRemoteCacheData)
-#define KCS_DEFAULT_DATE_FORMAT @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
+#define KCS_DEFAULT_URL_CACHE_POLICY  @(NSURLRequestReloadIgnoringLocalAndRemoteCacheData)
+#define KCS_DEFAULT_DATE_FORMAT       @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
 
 @interface KCSClientConfiguration ()
 @end
@@ -51,9 +65,19 @@
                      KCS_HOST_PORT          : KCS_DEFAULT_HOST_PORT,
                      KCS_HOST_PROTOCOL      : KCS_DEFAULT_HOST_PROTOCOL,
                      KCS_HOST_DOMAIN        : KCS_DEFAULT_HOST_DOMAIN,
-                     KCS_DATE_FORMAT        : KCS_DEFAULT_DATE_FORMAT
+                     KCS_DATE_FORMAT        : KCS_DEFAULT_DATE_FORMAT,
+                     KCS_LOG_LEVEL          : @(0)
                      };
         _serviceHostname = KCS_DEFAULT_HOSTNAME;
+        
+        
+        KCSLogFormatter* formatter = [[KCSLogFormatter alloc] init];
+        id<DDLogger> logger = [DDASLLogger sharedInstance];
+        [logger setLogFormatter:formatter];
+        [DDLog addLogger:logger];
+        logger = [DDTTYLogger sharedInstance];
+        [logger setLogFormatter:formatter];
+        [DDLog addLogger:logger];
     }
     return self;
 }
@@ -91,6 +115,11 @@
     NSMutableDictionary* newOptions = [config.options mutableCopy];
     [newOptions addEntriesFromDictionary:optionsDictionary];
     config.options = newOptions;
+    
+    NSArray* loggers = config.options[KCS_LOG_ADDITIONAL_LOGGERS];
+    for (id logger in loggers) {
+        [DDLog addLogger:logger];
+    }
     
     return config;
 }
@@ -140,29 +169,12 @@
     return configuration;
 }
 
-- (void) setAppKey:(NSString *)appKey
-{
-    if (appKey == nil || [appKey hasPrefix:@"<"]) {
-        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"Nil or invalid appKey, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
-    }
-    _appKey = [appKey copy];
-}
-
-- (void) setAppSecret:(NSString *)appSecret
-{
-    if (appSecret == nil || [appSecret hasPrefix:@"<"]) {
-        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"Nil or invalid appSecret, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
-    }
-    _appSecret = [appSecret copy];
-}
-
 - (void)setServiceHostname:(NSString *)serviceHostname
 {
-    // Note that we need to update the Kinvey Reachability host here...
     if (serviceHostname == nil) {
         serviceHostname = KCS_DEFAULT_HOSTNAME;
     }
-    _serviceHostname = [serviceHostname copy]; // Implicit retain here
+    _serviceHostname = [serviceHostname copy];
     if ([KCSClient sharedClient].configuration == self) {
         [[KCSClient sharedClient] setConfiguration:self];
     }

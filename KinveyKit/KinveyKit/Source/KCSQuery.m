@@ -5,6 +5,18 @@
 //  Created by Brian Wilson on 1/26/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSQuery.h"
 #import "KCSLogManager.h"
@@ -77,7 +89,7 @@ typedef enum KCSQueryType : NSUInteger {
 
 - (NSString *)parameterStringRepresentation
 {
-    KCSLogDebug(@"Limit String: %@", [NSString stringWithFormat:@"limit=%d", self.limit]);
+    KCSLogDebug(@"Limit String: %@", [NSString stringWithFormat:@"limit=%ld", (long)self.limit]);
     return [NSString stringWithFormat:@"limit=%d", (int) self.limit];
 }
 @end
@@ -102,7 +114,7 @@ typedef enum KCSQueryType : NSUInteger {
 
 - (NSString *)parameterStringRepresentation
 {
-    KCSLogDebug(@"Count String: %@", [NSString stringWithFormat:@"skip=%d", self.count]);
+    KCSLogDebug(@"Count String: %@", [NSString stringWithFormat:@"skip=%ld", (long)self.count]);
     return [NSString stringWithFormat:@"skip=%d", (int) self.count];
 }
 
@@ -187,9 +199,6 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
         // Array Operators
         @(kKCSAll)  : @"$all",
         @(kKCSSize) : @"$size",
-        
-        // Arbitrary Operators
-        @(kKCSWhere) : @"$where",
         
         // Internal Operators
         @(kKCSWithin)  : @"$within",
@@ -353,7 +362,6 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
             // These are not yet implemented...
         case kKCSAll:
         case kKCSSize:
-        case kKCSWhere:
             return nil;
             break;
             

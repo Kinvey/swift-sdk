@@ -5,6 +5,18 @@
 //  Created by Brian Wilson on 12/1/11.
 //  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KinveyUser.h"
 #import "KCSClient.h"
@@ -26,6 +38,7 @@
 
 #import "KCSObjectMapper.h"
 #import "KCSRESTRequest.h"
+#import "KCSPush.h"
 
 #pragma mark - Constants
 
@@ -242,20 +255,10 @@ static KCSRESTRequest* lastBGUpdate = nil;
     KCSUser *createdUser = [[KCSUser alloc] init];
     createdUser.username = [KCSKeyChain getStringForKey:kKeychainUsernameKey];
     
-    KCSClient *client = [KCSClient sharedClient];
-    
     if (createdUser.username == nil){
         // No user, generate it, note, use the APP KEY/APP SECRET!
-        KCSAnalytics *analytics = [client analytics];
         NSMutableDictionary *userJSONPaylod = [NSMutableDictionary dictionary];
         // Build the dictionary that will be JSON-ified here
-        if ([analytics supportsUDID] == YES) {
-            // We have three optional, internal fields and 2 manditory fields
-            [userJSONPaylod setObject:[analytics UDID] forKey:@"UDID"];
-            [userJSONPaylod setObject:[analytics UUID] forKey:@"UUID"];
-        }
-        
-
         
         // Next we check for the username and password
         if (uname && password){
@@ -497,10 +500,11 @@ static KCSRESTRequest* lastBGUpdate = nil;
     [self clearSavedCredentials];
     NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
     KCSUser* createdUser = [[KCSUser alloc] init];
+    NSString* authToken = [dictionary valueForKeyPath:@"_kmd.authtoken"];
     
     NSError* error = nil;
     int status = 0;
-    if (createdUser.sessionAuth != nil) {
+    if (authToken != nil) {
         status = KCSUserFound;
     } else {
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"

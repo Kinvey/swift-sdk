@@ -19,23 +19,18 @@
 
 
 #import "KCSMockServer.h"
+#import "KinveyCoreInternal.h"
 
-@interface KCSNetworkResponse ()
-@property (nonatomic) NSInteger code;
-@property (nonatomic, copy) id jsonData;
-@end
 
-@implementation KCSNetworkResponse
-
-+ (instancetype) MockResponseWith:(NSInteger)code data:(id)data
+KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NSString* message, NSInteger code)
 {
-    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
-    response.code = code;
-    response.jsonData = data;
+    NSDictionary* data = @{@"error" : error ? error : @"",
+                           @"debug" : debug ? debug : @"",
+                           @"message" : message ? message : @""};
+    KCSNetworkResponse* response = [KCSNetworkResponse MockResponseWith:code data:data];
     return response;
 }
 
-@end
 
 @interface KCSMockServer ()
 @property (nonatomic, strong) NSMutableDictionary* routes;
@@ -51,17 +46,68 @@
     return self;
 }
 
++ (instancetype)sharedServer
+{
+    static KCSMockServer* server;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        server = [[KCSMockServer alloc] init];
+    });
+    return server;
+}
 
-- (KCSNetworkResponse*) responseForURL:(NSString*)url
+- (KCSNetworkResponse*) make404
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 404;
-    response.jsonData = @{
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{
                           @"error": @"EntityNotFound",
                           @"description": @"This entity not found in the collection",
                           @"debug": @""
-                          };
+                          } options:0 error:NULL];
 
+    return response;
+}
+
+- (KCSNetworkResponse*) make401
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 401;
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{
+                          @"error": @"InvalidCredentials",
+                          @"description": @"Invalid credentials. Please retry your request with correct credentials",
+                          @"debug": @""
+                          } options:0 error:NULL];
+    
+    return response;
+}
+
+- (KCSNetworkResponse*) makePingResponse
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 200;
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{
+                          @"version": @"3.1.6-snapshot", //TODO: match from header
+                          @"kinvey": @"Hello mock server", //TODO: pull from somewhere else
+                          } options:0 error:NULL];
+    return response;
+}
+
+- (KCSNetworkResponse*) makeReflectionResponse:(NSURLRequest*)request
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 200;
+    if (request.HTTPBody) {
+        response.jsonData = [[[KCS_SBJsonParser alloc] init] objectWithData:request.HTTPBody];
+    }
+    response.headers = request.allHTTPHeaderFields;
+    return response;
+}
+
+- (KCSNetworkResponse*) responseForRequest:(NSURLRequest*)request
+{
+    NSString* url = [request.URL absoluteString];
+    KCSNetworkResponse* response = [self make404];
     
     url = [url stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
     NSArray* components = [url pathComponents];
@@ -69,14 +115,30 @@
 //        NSString* protocol = components[0];
 //        NSString* host = components[1];
         NSString* route = components[2];
-//        NSString* kid = components[3];
+        NSString* kid = components[3];
+        if (self.appKey != nil && [kid isEqualToString:self.appKey] == NO) {
+            return [self make401];
+        }
+        
+        if ([route isEqualToString:KCSRestRouteTestReflection]) {
+            return [self makeReflectionResponse:request];
+        }
   
-        NSDictionary* d = _routes[route];
-        if (d) {
-            for (int i = 4; i < components.count - 1; i++) {
-                d = d[components[i]];
+        if (components.count > 4) {
+            NSDictionary* d = _routes[route];
+            if (d) {
+                for (int i = 4; i < components.count - 1; i++) {
+                    d = d[components[i]];
+                }
+                KCSNetworkResponse* aresponse = d[components[components.count-1]];
+                if (aresponse) {
+                    response = aresponse;
+                }
             }
-            response = d[components[components.count-1]];
+        } else {
+            if ([route isEqualToString:KCSRESTRouteAppdata]) {
+                return [self makePingResponse];
+            }
         }
         
     }
@@ -109,6 +171,13 @@
         }
         ld[components[components.count - 1]] = response;
     }
+}
+
+#pragma mark - debug
+
+- (NSString *)debugDescription
+{
+    return [NSString stringWithFormat:@"%@ (%@)", [super debugDescription], self.appKey];
 }
 
 @end

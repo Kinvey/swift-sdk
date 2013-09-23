@@ -49,4 +49,6 @@
     STAssertEqualObjects([query queryString], @"query={\"foo\":\"X\"}", @"basic");
 }
 
+
+
 @end

@@ -5,6 +5,18 @@
 //  Created by Michael Katz on 6/25/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSMetadataTests.h"
 #import <KinveyKit/KinveyKit.h>
@@ -149,6 +161,56 @@
     STAssertEquals((int)1, (int) [writers count], @"should have one reader");
     STAssertEqualObjects(@"Tom", writers[0], @"expecting set object");
     STAssertEqualObjects(@"Bill", obj.meta.readers[0], @"expecting set object");
+}
+
+- (void) testArchiving
+{
+    KCSCollection* collection = [KCSCollection collectionFromString:@"testmetadata" ofClass:[ASTTestClass class]];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
+    __block ASTTestClass* obj = [[ASTTestClass alloc] init];
+    obj.objDescription = @"testGloballyReadable";
+    obj.objCount = __LINE__;
+    obj.meta = [[KCSMetadata alloc] init];
+    [obj.meta setGloballyReadable:NO];
+    
+    self.done = NO;
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"Should not have gotten error: %@", errorOrNil);
+        obj = [objectsOrNil objectAtIndex:0];
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+
+    NSData* metadata = [NSKeyedArchiver archivedDataWithRootObject:obj.meta];
+    KCSMetadata* restored = [NSKeyedUnarchiver unarchiveObjectWithData:metadata];
+    STAssertEqualObjects(obj.meta, restored, @"Should be archived correctly");
+}
+
+- (void) testCopy
+{
+    
+    KCSCollection* collection = [KCSCollection collectionFromString:@"testmetadata" ofClass:[ASTTestClass class]];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
+    __block ASTTestClass* obj = [[ASTTestClass alloc] init];
+    obj.objDescription = @"testGloballyReadable";
+    obj.objCount = __LINE__;
+    obj.meta = [[KCSMetadata alloc] init];
+    [obj.meta setGloballyReadable:NO];
+    
+    self.done = NO;
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNil(errorOrNil, @"Should not have gotten error: %@", errorOrNil);
+        obj = [objectsOrNil objectAtIndex:0];
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    KCSMetadata* o1 = obj.meta;
+    KCSMetadata* o2 = [o1 copy];
+    
+    STAssertEqualObjects(o1, o2, @"equals should equal");
+    STAssertFalse(o1 == o2, @"should be different pointers");
+    
 }
 
 @end

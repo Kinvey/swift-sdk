@@ -5,6 +5,18 @@
 //  Created by Michael Katz on 5/14/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSEntityCache2.h"
 #import "KCSEntityCache.h"
@@ -18,9 +30,9 @@
 #import "KCSLogManager.h"
 #import "KCS_SBJson.h"
 
-#import "FMDatabase.h"
+#import "KCS_FMDatabase.h"
 #import "FMDatabaseAdditions.h"
-#import "FMResultSet.h"
+#import "KCS_FMResultSet.h"
 
 #define KCS_CACHE_VERSION @"0.1"
 
@@ -38,7 +50,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 }
 
 @interface KCSEntityCache2 ()
-@property (nonatomic, strong) FMDatabase* db;
+@property (nonatomic, strong) KCS_FMDatabase* db;
 @end
 
 @interface KCSCacheValueDB : NSObject
@@ -101,7 +113,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 - (void) initDB
 {
     NSString* path = [self dbPath];
-    _db = [FMDatabase databaseWithPath:path];
+    _db = [KCS_FMDatabase databaseWithPath:path];
     if (![_db open]) return;
     
     BOOL e = NO;
@@ -112,7 +124,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
         e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
         if (!e || [_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
     } else {
-        FMResultSet *rs = [_db executeQuery:@"SELECT version FROM metadata"];
+        KCS_FMResultSet *rs = [_db executeQuery:@"SELECT version FROM metadata"];
         if (!e || [_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
         NSString* version = nil;
         if ([rs next]) {
@@ -156,7 +168,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 {
     NSString* q = [NSString stringWithFormat:@"SELECT * FROM objs WHERE id='%@'", objId];
     KCSLogCache(@"fetching %@", objId);
-    FMResultSet* rs = [_db executeQuery:q];
+    KCS_FMResultSet* rs = [_db executeQuery:q];
     if ([_db hadError]) {
         KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
@@ -193,7 +205,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     
     NSString* q = [NSString stringWithFormat:@"SELECT * FROM objs WHERE id IN ('%@')", [objIds componentsJoinedByString:@"','"]];
     KCSLogCache(@"Retreiving from cache: %@", objIds);
-    FMResultSet* rs = [_db executeQuery:q];
+    KCS_FMResultSet* rs = [_db executeQuery:q];
     if ([_db hadError]) {
         KCSLogError(@"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }

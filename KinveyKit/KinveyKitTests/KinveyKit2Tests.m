@@ -5,11 +5,26 @@
 //  Created by Michael Katz on 7/30/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import <SenTestingKit/SenTestingKit.h>
 
 #import "KinveyCoreInternal.h"
 #import "KCSRequest2.h"
+
+//TODO: remove
+#import "ASTTestClass.h"
 
 @interface KinveyKit2Tests : SenTestCase
 //TODO: remove
@@ -18,14 +33,12 @@
 @end
 
 
-#define KTPollDone self.done = YES;
-#define KTPollStart self.done = NO; [self poll];
-#define KTAssertNoError STAssertNil(error, @"Should not get an error: %@", error);
+
 
 #import <objc/runtime.h>
 @interface KinveyKit2Tests (KinveyKit2Tests)
 @property (nonatomic) BOOL done;
-- (void) poll;
+- (BOOL) poll;
 @end
 
 @implementation KinveyKit2Tests (KinveyKit2Tests)
@@ -33,7 +46,7 @@
 #define POLL_INTERVAL 0.05
 #define MAX_POLL_COUNT 30 / POLL_INTERVAL
 
-- (void) poll
+- (BOOL) poll
 {
     int pollCount = 0;
     while (self.done == NO && pollCount < MAX_POLL_COUNT) {
@@ -46,6 +59,7 @@
     if (pollCount == MAX_POLL_COUNT) {
         STFail(@"polling timed out");
     }
+    return YES;
 }
 
 - (BOOL)done {
@@ -75,6 +89,17 @@
 {
     // Put teardown code here; it will be run once, after the last test case.
     [super tearDown];
+}
+
+- (void) testX
+{
+    
+    ASTTestClass* t = [[ASTTestClass alloc] init];
+    t.objId = @"A";
+    t.objCount = 123;
+    
+    NSLog(@"bc");
+    
 }
 
 - (void) testExample

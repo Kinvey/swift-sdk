@@ -41,4 +41,9 @@
     return [NSError errorWithDomain:domain code:code userInfo:userInfo];
 }
 
+- (instancetype) errorByAddingCommonInfo
+{
+    return [NSError createKCSError:self.domain code:self.code userInfo:self.userInfo];
+}
+
 @end
