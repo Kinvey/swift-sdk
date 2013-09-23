@@ -6,28 +6,28 @@
 //  Copyright 2011 Flying Meat Inc. All rights reserved.
 //
 
-#import "FMDatabasePool.h"
-#import "FMDatabase.h"
+#import "KCS_FMDatabasePool.h"
+#import "KCS_FMDatabase.h"
 
-@interface FMDatabasePool()
+@interface KCS_FMDatabasePool()
 
-- (void)pushDatabaseBackInPool:(FMDatabase*)db;
-- (FMDatabase*)db;
+- (void)pushDatabaseBackInPool:(KCS_FMDatabase*)db;
+- (KCS_FMDatabase*)db;
 
 @end
 
 
-@implementation FMDatabasePool
+@implementation KCS_FMDatabasePool
 @synthesize path=_path;
 @synthesize delegate=_delegate;
 @synthesize maximumNumberOfDatabasesToCreate=_maximumNumberOfDatabasesToCreate;
 
 
-+ (id)databasePoolWithPath:(NSString*)aPath {
++ (instancetype)databasePoolWithPath:(NSString*)aPath {
     return FMDBReturnAutoreleased([[self alloc] initWithPath:aPath]);
 }
 
-- (id)initWithPath:(NSString*)aPath {
+- (instancetype)initWithPath:(NSString*)aPath {
     
     self = [super init];
     
@@ -62,7 +62,7 @@
     dispatch_sync(_lockQueue, aBlock);
 }
 
-- (void)pushDatabaseBackInPool:(FMDatabase*)db {
+- (void)pushDatabaseBackInPool:(KCS_FMDatabase*)db {
     
     if (!db) { // db can be null if we set an upper bound on the # of databases to create.
         return;
@@ -80,9 +80,9 @@
     }];
 }
 
-- (FMDatabase*)db {
+- (KCS_FMDatabase*)db {
     
-    __block FMDatabase *db;
+    __block KCS_FMDatabase *db;
     
     [self executeLocked:^() {
         db = [_databaseInPool lastObject];
@@ -102,7 +102,7 @@
                 }
             }
             
-            db = [FMDatabase databaseWithPath:_path];
+            db = [KCS_FMDatabase databaseWithPath:_path];
         }
         
         //This ensures that the db is opened before returning
@@ -166,20 +166,20 @@
     }];
 }
 
-- (void)inDatabase:(void (^)(FMDatabase *db))block {
+- (void)inDatabase:(void (^)(KCS_FMDatabase *db))block {
     
-    FMDatabase *db = [self db];
+    KCS_FMDatabase *db = [self db];
     
     block(db);
     
     [self pushDatabaseBackInPool:db];
 }
 
-- (void)beginTransaction:(BOOL)useDeferred withBlock:(void (^)(FMDatabase *db, BOOL *rollback))block {
+- (void)beginTransaction:(BOOL)useDeferred withBlock:(void (^)(KCS_FMDatabase *db, BOOL *rollback))block {
     
     BOOL shouldRollback = NO;
     
-    FMDatabase *db = [self db];
+    KCS_FMDatabase *db = [self db];
     
     if (useDeferred) {
         [db beginDeferredTransaction];
@@ -201,15 +201,15 @@
     [self pushDatabaseBackInPool:db];
 }
 
-- (void)inDeferredTransaction:(void (^)(FMDatabase *db, BOOL *rollback))block {
+- (void)inDeferredTransaction:(void (^)(KCS_FMDatabase *db, BOOL *rollback))block {
     [self beginTransaction:YES withBlock:block];
 }
 
-- (void)inTransaction:(void (^)(FMDatabase *db, BOOL *rollback))block {
+- (void)inTransaction:(void (^)(KCS_FMDatabase *db, BOOL *rollback))block {
     [self beginTransaction:NO withBlock:block];
 }
 #if SQLITE_VERSION_NUMBER >= 3007000
-- (NSError*)inSavePoint:(void (^)(FMDatabase *db, BOOL *rollback))block {
+- (NSError*)inSavePoint:(void (^)(KCS_FMDatabase *db, BOOL *rollback))block {
     
     static unsigned long savePointIdx = 0;
     
@@ -217,7 +217,7 @@
     
     BOOL shouldRollback = NO;
     
-    FMDatabase *db = [self db];
+    KCS_FMDatabase *db = [self db];
     
     NSError *err = 0x00;
     

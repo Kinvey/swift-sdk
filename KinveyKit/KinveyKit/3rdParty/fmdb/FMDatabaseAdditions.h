@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-@interface FMDatabase (FMDatabaseAdditions)
+@interface KCS_FMDatabase (KCS_FMDatabaseAdditions)
 
 
 - (int)intForQuery:(NSString*)objs, ...;
@@ -24,8 +24,8 @@
 
 
 - (BOOL)tableExists:(NSString*)tableName;
-- (FMResultSet*)getSchema;
-- (FMResultSet*)getTableSchema:(NSString*)tableName;
+- (KCS_FMResultSet*)getSchema;
+- (KCS_FMResultSet*)getTableSchema:(NSString*)tableName;
 
 - (BOOL)columnExists:(NSString*)columnName inTableWithName:(NSString*)tableName;
 
