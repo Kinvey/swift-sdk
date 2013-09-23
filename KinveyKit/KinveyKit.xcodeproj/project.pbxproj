@@ -207,11 +207,11 @@
 		274D396217A800F500587886 /* PlatformUtilsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 274D396117A800F500587886 /* PlatformUtilsTest.m */; };
 		274D396317A802E000587886 /* KinveyKit2.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465348174E6CFE0013546E /* KinveyKit2.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27525A3917668E630054C17F /* KCSEntityCache2.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C21742CCD9005052D6 /* KCSEntityCache2.m */; };
-		27525A3A17668E910054C17F /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C71742CFDC005052D6 /* FMDatabase.m */; };
+		27525A3A17668E910054C17F /* KCS_FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C71742CFDC005052D6 /* KCS_FMDatabase.m */; };
 		27525A3B17668E950054C17F /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C91742CFDC005052D6 /* FMDatabaseAdditions.m */; };
-		27525A3C17668E9A0054C17F /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554CB1742CFDC005052D6 /* FMResultSet.m */; };
-		27525A3D17668E9E0054C17F /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D31742D42E005052D6 /* FMDatabasePool.m */; };
-		27525A3E17668EA40054C17F /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D51742D42E005052D6 /* FMDatabaseQueue.m */; };
+		27525A3C17668E9A0054C17F /* KCS_FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554CB1742CFDC005052D6 /* KCS_FMResultSet.m */; };
+		27525A3D17668E9E0054C17F /* KCS_FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D31742D42E005052D6 /* KCS_FMDatabasePool.m */; };
+		27525A3E17668EA40054C17F /* KCS_FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D51742D42E005052D6 /* KCS_FMDatabaseQueue.m */; };
 		275512001707CCD7007E8320 /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275512011707CCDB007E8320 /* KCSFacebookHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 272D73F916FCB82D004F26FC /* KCSFacebookHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2759E6ED15D01BA10050F40A /* KCSOfflineSaveStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2759E6EB15D01A120050F40A /* KCSOfflineSaveStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -257,16 +257,16 @@
 		278519BC17BAD5660044D877 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 278519BA17BAD5660044D877 /* KCSPush.m */; };
 		278554C31742CCD9005052D6 /* KCSEntityCache2.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C11742CCD9005052D6 /* KCSEntityCache2.h */; };
 		278554C41742CCD9005052D6 /* KCSEntityCache2.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C21742CCD9005052D6 /* KCSEntityCache2.m */; };
-		278554CC1742CFDC005052D6 /* FMDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C61742CFDC005052D6 /* FMDatabase.h */; };
-		278554CD1742CFDC005052D6 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C71742CFDC005052D6 /* FMDatabase.m */; };
+		278554CC1742CFDC005052D6 /* KCS_FMDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C61742CFDC005052D6 /* KCS_FMDatabase.h */; };
+		278554CD1742CFDC005052D6 /* KCS_FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C71742CFDC005052D6 /* KCS_FMDatabase.m */; };
 		278554CE1742CFDC005052D6 /* FMDatabaseAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554C81742CFDC005052D6 /* FMDatabaseAdditions.h */; };
 		278554CF1742CFDC005052D6 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554C91742CFDC005052D6 /* FMDatabaseAdditions.m */; };
-		278554D01742CFDC005052D6 /* FMResultSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554CA1742CFDC005052D6 /* FMResultSet.h */; };
-		278554D11742CFDC005052D6 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554CB1742CFDC005052D6 /* FMResultSet.m */; };
-		278554D61742D42E005052D6 /* FMDatabasePool.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554D21742D42E005052D6 /* FMDatabasePool.h */; };
-		278554D71742D42E005052D6 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D31742D42E005052D6 /* FMDatabasePool.m */; };
-		278554D81742D42E005052D6 /* FMDatabaseQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554D41742D42E005052D6 /* FMDatabaseQueue.h */; };
-		278554D91742D42E005052D6 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D51742D42E005052D6 /* FMDatabaseQueue.m */; };
+		278554D01742CFDC005052D6 /* KCS_FMResultSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554CA1742CFDC005052D6 /* KCS_FMResultSet.h */; };
+		278554D11742CFDC005052D6 /* KCS_FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554CB1742CFDC005052D6 /* KCS_FMResultSet.m */; };
+		278554D61742D42E005052D6 /* KCS_FMDatabasePool.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554D21742D42E005052D6 /* KCS_FMDatabasePool.h */; };
+		278554D71742D42E005052D6 /* KCS_FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D31742D42E005052D6 /* KCS_FMDatabasePool.m */; };
+		278554D81742D42E005052D6 /* KCS_FMDatabaseQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 278554D41742D42E005052D6 /* KCS_FMDatabaseQueue.h */; };
+		278554D91742D42E005052D6 /* KCS_FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D51742D42E005052D6 /* KCS_FMDatabaseQueue.m */; };
 		2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
 		2785F5351609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5331609179E004AA410 /* InfoPlist.strings */; };
 		2785F53D1609179E004AA410 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
@@ -758,16 +758,16 @@
 		278519BA17BAD5660044D877 /* KCSPush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPush.m; sourceTree = "<group>"; };
 		278554C11742CCD9005052D6 /* KCSEntityCache2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityCache2.h; sourceTree = "<group>"; };
 		278554C21742CCD9005052D6 /* KCSEntityCache2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityCache2.m; sourceTree = "<group>"; };
-		278554C61742CFDC005052D6 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
-		278554C71742CFDC005052D6 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		278554C61742CFDC005052D6 /* KCS_FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_FMDatabase.h; sourceTree = "<group>"; };
+		278554C71742CFDC005052D6 /* KCS_FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_FMDatabase.m; sourceTree = "<group>"; };
 		278554C81742CFDC005052D6 /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
 		278554C91742CFDC005052D6 /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
-		278554CA1742CFDC005052D6 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
-		278554CB1742CFDC005052D6 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
-		278554D21742D42E005052D6 /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
-		278554D31742D42E005052D6 /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
-		278554D41742D42E005052D6 /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
-		278554D51742D42E005052D6 /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
+		278554CA1742CFDC005052D6 /* KCS_FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_FMResultSet.h; sourceTree = "<group>"; };
+		278554CB1742CFDC005052D6 /* KCS_FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_FMResultSet.m; sourceTree = "<group>"; };
+		278554D21742D42E005052D6 /* KCS_FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_FMDatabasePool.h; sourceTree = "<group>"; };
+		278554D31742D42E005052D6 /* KCS_FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_FMDatabasePool.m; sourceTree = "<group>"; };
+		278554D41742D42E005052D6 /* KCS_FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_FMDatabaseQueue.h; sourceTree = "<group>"; };
+		278554D51742D42E005052D6 /* KCS_FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_FMDatabaseQueue.m; sourceTree = "<group>"; };
 		2785F52E1609179E004AA410 /* KinveyKitExtras.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; includeInIndex = 0; path = KinveyKitExtras.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2785F5321609179E004AA410 /* KinveyKitExtras-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KinveyKitExtras-Info.plist"; sourceTree = "<group>"; };
 		2785F5341609179E004AA410 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1361,16 +1361,16 @@
 		278554C51742CFDC005052D6 /* fmdb */ = {
 			isa = PBXGroup;
 			children = (
-				278554C61742CFDC005052D6 /* FMDatabase.h */,
-				278554C71742CFDC005052D6 /* FMDatabase.m */,
+				278554C61742CFDC005052D6 /* KCS_FMDatabase.h */,
+				278554C71742CFDC005052D6 /* KCS_FMDatabase.m */,
 				278554C81742CFDC005052D6 /* FMDatabaseAdditions.h */,
 				278554C91742CFDC005052D6 /* FMDatabaseAdditions.m */,
-				278554CA1742CFDC005052D6 /* FMResultSet.h */,
-				278554CB1742CFDC005052D6 /* FMResultSet.m */,
-				278554D21742D42E005052D6 /* FMDatabasePool.h */,
-				278554D31742D42E005052D6 /* FMDatabasePool.m */,
-				278554D41742D42E005052D6 /* FMDatabaseQueue.h */,
-				278554D51742D42E005052D6 /* FMDatabaseQueue.m */,
+				278554CA1742CFDC005052D6 /* KCS_FMResultSet.h */,
+				278554CB1742CFDC005052D6 /* KCS_FMResultSet.m */,
+				278554D21742D42E005052D6 /* KCS_FMDatabasePool.h */,
+				278554D31742D42E005052D6 /* KCS_FMDatabasePool.m */,
+				278554D41742D42E005052D6 /* KCS_FMDatabaseQueue.h */,
+				278554D51742D42E005052D6 /* KCS_FMDatabaseQueue.m */,
 			);
 			path = fmdb;
 			sourceTree = "<group>";
@@ -2279,11 +2279,11 @@
 				27F5D7F316F20EC5001828F3 /* NSDictionary+KinveyAdditions.h in Headers */,
 				275512011707CCDB007E8320 /* KCSFacebookHelper.h in Headers */,
 				278554C31742CCD9005052D6 /* KCSEntityCache2.h in Headers */,
-				278554CC1742CFDC005052D6 /* FMDatabase.h in Headers */,
+				278554CC1742CFDC005052D6 /* KCS_FMDatabase.h in Headers */,
 				278554CE1742CFDC005052D6 /* FMDatabaseAdditions.h in Headers */,
-				278554D01742CFDC005052D6 /* FMResultSet.h in Headers */,
-				278554D61742D42E005052D6 /* FMDatabasePool.h in Headers */,
-				278554D81742D42E005052D6 /* FMDatabaseQueue.h in Headers */,
+				278554D01742CFDC005052D6 /* KCS_FMResultSet.h in Headers */,
+				278554D61742D42E005052D6 /* KCS_FMDatabasePool.h in Headers */,
+				278554D81742D42E005052D6 /* KCS_FMDatabaseQueue.h in Headers */,
 				278BADB317B28EC70035B3D6 /* DDLog.h in Headers */,
 				2737D3B117BD517300FE7ACC /* KCSMockServer.h in Headers */,
 				2746534B174E6CFE0013546E /* KinveyKit2.h in Headers */,
@@ -2672,7 +2672,7 @@
 				278BADBA17B28EC70035B3D6 /* DDTTYLogger.m in Sources */,
 				275B426F16A82B7C0064B941 /* KCSConnection.m in Sources */,
 				27B5F00A17C7E7530050DFD0 /* KCSNetworkResponse.m in Sources */,
-				27525A3E17668EA40054C17F /* FMDatabaseQueue.m in Sources */,
+				27525A3E17668EA40054C17F /* KCS_FMDatabaseQueue.m in Sources */,
 				275B427016A82BAC0064B941 /* KCSLogManager.m in Sources */,
 				27C5CA3216ADDB5700E44CC0 /* NSString+KinveyAdditions.m in Sources */,
 				27C5CA3316ADDB6100E44CC0 /* NSArray+KinveyAdditions.m in Sources */,
@@ -2702,10 +2702,10 @@
 				271827C516C0356000825D50 /* KCSKeyChain.m in Sources */,
 				271827C916C0910700825D50 /* KCSQuery.m in Sources */,
 				271827EF16C17A8100825D50 /* KCSReduceFunction.m in Sources */,
-				27525A3D17668E9E0054C17F /* FMDatabasePool.m in Sources */,
+				27525A3D17668E9E0054C17F /* KCS_FMDatabasePool.m in Sources */,
 				271827F116C17A8B00825D50 /* KCSGroup.m in Sources */,
 				271827F316C17AE100825D50 /* KCSUserDiscovery.m in Sources */,
-				27525A3C17668E9A0054C17F /* FMResultSet.m in Sources */,
+				27525A3C17668E9A0054C17F /* KCS_FMResultSet.m in Sources */,
 				271827F516C17AEF00825D50 /* KCSStore.m in Sources */,
 				271827F716C17AF700825D50 /* KCSResourceStore.m in Sources */,
 				274D396017A8009100587886 /* KCSPlatformUtils.m in Sources */,
@@ -2722,7 +2722,7 @@
 				27B7724516E7C71300610D11 /* KCSWebView.m in Sources */,
 				27F5D7F616F20EC5001828F3 /* NSDictionary+KinveyAdditions.m in Sources */,
 				27FB2A7A16FCEC9E00CD7D5C /* KCS_TWSignedRequest.m in Sources */,
-				27525A3A17668E910054C17F /* FMDatabase.m in Sources */,
+				27525A3A17668E910054C17F /* KCS_FMDatabase.m in Sources */,
 				27525A3B17668E950054C17F /* FMDatabaseAdditions.m in Sources */,
 				2737D3C217BE5A4800FE7ACC /* KCSClientConfiguration.m in Sources */,
 				27FB2A7B16FCECA200CD7D5C /* KCS_OAuthCore.m in Sources */,
@@ -2881,11 +2881,11 @@
 				27F5D7F516F20EC5001828F3 /* NSDictionary+KinveyAdditions.m in Sources */,
 				27FB2A7E16FCECBD00CD7D5C /* KCSFacebookHelper.m in Sources */,
 				278554C41742CCD9005052D6 /* KCSEntityCache2.m in Sources */,
-				278554CD1742CFDC005052D6 /* FMDatabase.m in Sources */,
+				278554CD1742CFDC005052D6 /* KCS_FMDatabase.m in Sources */,
 				278554CF1742CFDC005052D6 /* FMDatabaseAdditions.m in Sources */,
-				278554D11742CFDC005052D6 /* FMResultSet.m in Sources */,
-				278554D71742D42E005052D6 /* FMDatabasePool.m in Sources */,
-				278554D91742D42E005052D6 /* FMDatabaseQueue.m in Sources */,
+				278554D11742CFDC005052D6 /* KCS_FMResultSet.m in Sources */,
+				278554D71742D42E005052D6 /* KCS_FMDatabasePool.m in Sources */,
+				278554D91742D42E005052D6 /* KCS_FMDatabaseQueue.m in Sources */,
 				2746534D174E6CFE0013546E /* KCSDataStore.m in Sources */,
 				27465351174E6D0F0013546E /* KCSQuery2.m in Sources */,
 				27465355174E6DE40013546E /* KCSRequest.m in Sources */,

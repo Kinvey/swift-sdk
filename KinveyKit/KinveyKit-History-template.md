@@ -10,6 +10,8 @@
 * Built with XCode 5.
 * Code cleanup:
     * Internal `KCSPing` changes: remove `KCS_USE_OLD_PING_STYLE_KEY` key, and deprecated `checkKinveyServiceStatusWithAction:`.
+* Bug fix(es):
+    * Renamed `fmdb` classes to avoid collisions with other libraries.
 
 ## 1.20
 ### 1.20.1

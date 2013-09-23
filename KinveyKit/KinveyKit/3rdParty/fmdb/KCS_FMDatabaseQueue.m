@@ -1,13 +1,13 @@
 //
-//  FMDatabasePool.m
+//  FMDatabaseQueue.m
 //  fmdb
 //
 //  Created by August Mueller on 6/22/11.
 //  Copyright 2011 Flying Meat Inc. All rights reserved.
 //
 
-#import "FMDatabaseQueue.h"
-#import "FMDatabase.h"
+#import "KCS_FMDatabaseQueue.h"
+#import "KCS_FMDatabase.h"
 
 /*
  
@@ -17,26 +17,26 @@
  
  */
  
-@implementation FMDatabaseQueue
+@implementation KCS_FMDatabaseQueue
 
 @synthesize path = _path;
 
-+ (id)databaseQueueWithPath:(NSString*)aPath {
++ (instancetype)databaseQueueWithPath:(NSString*)aPath {
     
-    FMDatabaseQueue *q = [[self alloc] initWithPath:aPath];
+    KCS_FMDatabaseQueue *q = [[self alloc] initWithPath:aPath];
     
     FMDBAutorelease(q);
     
     return q;
 }
 
-- (id)initWithPath:(NSString*)aPath {
+- (instancetype)initWithPath:(NSString*)aPath {
     
     self = [super init];
     
     if (self != nil) {
         
-        _db = [FMDatabase databaseWithPath:aPath];
+        _db = [KCS_FMDatabase databaseWithPath:aPath];
         FMDBRetain(_db);
         
         if (![_db open]) {
@@ -77,9 +77,9 @@
     FMDBRelease(self);
 }
 
-- (FMDatabase*)database {
+- (KCS_FMDatabase*)database {
     if (!_db) {
-        _db = FMDBReturnRetained([FMDatabase databaseWithPath:_path]);
+        _db = FMDBReturnRetained([KCS_FMDatabase databaseWithPath:_path]);
         
         if (![_db open]) {
             NSLog(@"FMDatabaseQueue could not reopen database for path %@", _path);
@@ -92,12 +92,12 @@
     return _db;
 }
 
-- (void)inDatabase:(void (^)(FMDatabase *db))block {
+- (void)inDatabase:(void (^)(KCS_FMDatabase *db))block {
     FMDBRetain(self);
     
     dispatch_sync(_queue, ^() {
         
-        FMDatabase *db = [self database];
+        KCS_FMDatabase *db = [self database];
         block(db);
         
         if ([db hasOpenResultSets]) {
@@ -109,7 +109,7 @@
 }
 
 
-- (void)beginTransaction:(BOOL)useDeferred withBlock:(void (^)(FMDatabase *db, BOOL *rollback))block {
+- (void)beginTransaction:(BOOL)useDeferred withBlock:(void (^)(KCS_FMDatabase *db, BOOL *rollback))block {
     FMDBRetain(self);
     dispatch_sync(_queue, ^() { 
         
@@ -135,16 +135,16 @@
     FMDBRelease(self);
 }
 
-- (void)inDeferredTransaction:(void (^)(FMDatabase *db, BOOL *rollback))block {
+- (void)inDeferredTransaction:(void (^)(KCS_FMDatabase *db, BOOL *rollback))block {
     [self beginTransaction:YES withBlock:block];
 }
 
-- (void)inTransaction:(void (^)(FMDatabase *db, BOOL *rollback))block {
+- (void)inTransaction:(void (^)(KCS_FMDatabase *db, BOOL *rollback))block {
     [self beginTransaction:NO withBlock:block];
 }
 
 #if SQLITE_VERSION_NUMBER >= 3007000
-- (NSError*)inSavePoint:(void (^)(FMDatabase *db, BOOL *rollback))block {
+- (NSError*)inSavePoint:(void (^)(KCS_FMDatabase *db, BOOL *rollback))block {
     
     static unsigned long savePointIdx = 0;
     __block NSError *err = 0x00;
