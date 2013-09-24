@@ -25,5 +25,5 @@
 - (instancetype) initWithRequest:(NSURLRequest*)request;
 - (KCSNetworkResponse*)response;
 - (NSError*)error;
-@property (nonatomic) NSUInteger retryCount;
+@property (atomic) NSUInteger retryCount;
 @end

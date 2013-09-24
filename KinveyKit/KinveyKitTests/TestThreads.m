@@ -97,45 +97,45 @@
 
 @implementation TestThreads
 
-- (void) XtestDispatch
-{
-    bool status = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(status, @"backend needs to be set up");
-    
-    self.done = NO;
-    __block NSRunLoop* loop;
-//    [NSThread detachNewThreadSelector:@selector(runthis) toTarget:self withObject:nil];
-    dispatch_queue_t myq = dispatch_queue_create("com.kinvey.testq", NULL);
-    dispatch_retain(myq);
-    dispatch_block_t block = ^(){
-        @autoreleasepool {
-        loop = [NSRunLoop currentRunLoop];
-        // Do this call to force getting a Kinvey generated username for the current user.
-//        [NSOperationQueue
-            [KCSPing pingKinveyWithBlock:^(KCSPingResult *result){
-            NSLog(@"Kinvey ping performed. Success? %d. Result: %@", result.pingWasSuccessful, result.description);
-            NSString *username = [[KCSUser activeUser] username];
-            
-            // The local user is associated with the default context, which is associated with the main thread, so
-            // we will dispatch to that before accessing and setting values on the local user object.
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //            UWUser *localUser = self.dataStore.localUser;
-                //            localUser.kinveyUsername = username;
-                NSLog(@"kinveyUsername on local user is now: %@", username);
-                self.done = YES;
-            });
-            while (1) {
-            [[NSRunLoop currentRunLoop] run];
-            }
-        }];
-        //[self poll];
-        }
-    };
-
-    dispatch_async(myq, block);
-    dispatch_retain(myq);
-    [self poll];
-}
+//- (void) XtestDispatch
+//{
+//    bool status = [TestUtils setUpKinveyUnittestBackend];
+//    STAssertTrue(status, @"backend needs to be set up");
+//    
+//    self.done = NO;
+//    __block NSRunLoop* loop;
+////    [NSThread detachNewThreadSelector:@selector(runthis) toTarget:self withObject:nil];
+//    dispatch_queue_t myq = dispatch_queue_create("com.kinvey.testq", NULL);
+//    dispatch_retain(myq);
+//    dispatch_block_t block = ^(){
+//        @autoreleasepool {
+//        loop = [NSRunLoop currentRunLoop];
+//        // Do this call to force getting a Kinvey generated username for the current user.
+////        [NSOperationQueue
+//            [KCSPing pingKinveyWithBlock:^(KCSPingResult *result){
+//            NSLog(@"Kinvey ping performed. Success? %d. Result: %@", result.pingWasSuccessful, result.description);
+//            NSString *username = [[KCSUser activeUser] username];
+//            
+//            // The local user is associated with the default context, which is associated with the main thread, so
+//            // we will dispatch to that before accessing and setting values on the local user object.
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                //            UWUser *localUser = self.dataStore.localUser;
+//                //            localUser.kinveyUsername = username;
+//                NSLog(@"kinveyUsername on local user is now: %@", username);
+//                self.done = YES;
+//            });
+//            while (1) {
+//            [[NSRunLoop currentRunLoop] run];
+//            }
+//        }];
+//        //[self poll];
+//        }
+//    };
+//
+//    dispatch_async(myq, block);
+//    dispatch_retain(myq);
+//    [self poll];
+//}
 
 - (void) runthis
 {

@@ -1,5 +1,5 @@
 //
-//  KinveyKit2.h
+//  KCSFileOperation.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -16,22 +16,20 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
 
-#import "KinveyKit.h" //
+#import <Foundation/Foundation.h>
 
-#import "KinveyVersion.h"
+/* A progress block.
+ @param objects if there are any valid objects available. Could be `nil` or empty.
+ @param percentComplete the percentage of the total progress made so far. Suitable for a progress indicator.
+ */
+KK2(cleanup and merge)
+typedef void(^KCSProgressBlock2)(NSArray *objects, double percentComplete, NSDictionary* additionalContext);
 
-#import "KinveyCore.h"
 
-#pragma mark - Data & Storage
+typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSError* error);
 
-#import "KinveyDataStore.h"
-#import "KinveyFileStore.h"
 
-#pragma mark - Service
+@protocol KCSFileOperation <NSObject>
 
-#import "KCSRequest.h" //
-
-#endif
+@end

@@ -42,11 +42,13 @@
 
 - (void)testQueuesAreSame
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     dispatch_queue_t startQ = dispatch_get_current_queue();
-    
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         
         dispatch_queue_t endQ = dispatch_get_current_queue();
+#pragma clang diagnostic pop
         STAssertEquals(startQ, endQ, @"queues should match");
         
         KTPollDone
@@ -62,7 +64,7 @@
         NSDictionary* headers = response.headers;
         NSString* method = headers[@"X-Kinvey-Client-Method"];
         STAssertNotNil(method, @"should have the method");
-        STAssertEqualObjects(method, NSStringFromSelector(_cmd), @"should be this method");
+        STAssertEqualObjects(method, @"KCSRequest2Tests testMethodAnayltics", @"should be this method");
         
         KTPollDone
     } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
@@ -94,10 +96,12 @@
 {
     KCSNetworkResponse* retryResponse = createMockErrorResponse(@"KinveyInternalErrorRetry", nil, nil, 500);
     [[KCSMockServer sharedServer] setResponse:retryResponse forRoute:@"appdata/:kid/foo"];
+
+    LogTester* tester = [LogTester sharedInstance];
+    [tester clearLogs];
     
     NSArray* path =  @[@"foo"];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-        LogTester* tester = [LogTester sharedInstance];
         NSArray* logs = tester.logs;
         NSArray* retries = [logs filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
             return [evaluatedObject hasPrefix:@"Retrying"];

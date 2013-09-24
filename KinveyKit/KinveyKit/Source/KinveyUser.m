@@ -676,7 +676,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
         if ([response responseCode] != KCS_HTTP_STATUS_OK) {
             //This is new user, log in
-            dispatch_async(dispatch_get_current_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [KCSUser registerUserWithSocialIdentity:provider accessDictionary:accessDictionary withCompletionBlock:completionBlock];
             });
         } else { //successful

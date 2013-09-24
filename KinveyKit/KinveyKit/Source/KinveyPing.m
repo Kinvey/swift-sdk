@@ -60,7 +60,7 @@
 + (void)pingKinveyWithBlock: (KCSPingBlock)completionAction
 {
     [KCSPing2 pingKinveyWithBlock:^(NSDictionary *appInfo, NSError *error) {
-        BOOL didSucceed = (error != nil && appInfo != nil);
+        BOOL didSucceed = (error == nil || appInfo != nil);
         NSString* description;
         if (didSucceed){
             description = [NSString stringWithFormat:@"Kinvey Service is alive, version: %@, response: %@",

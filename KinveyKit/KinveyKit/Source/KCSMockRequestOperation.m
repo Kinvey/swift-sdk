@@ -38,16 +38,14 @@
     return self;
 }
 
-- (void)main {
+
+-(void)start {
     @autoreleasepool {
-        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-        
-        dispatch_async(dispatch_get_current_queue(), ^{
-            [self resolveRequest];
-        });
-        [runLoop run];
+        [super start];
+        [self resolveRequest];
     }
 }
+
 
 - (void) resolveRequest
 {
