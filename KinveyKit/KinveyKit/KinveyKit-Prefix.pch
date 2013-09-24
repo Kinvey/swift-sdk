@@ -1,7 +1,7 @@
 //
 // Prefix header for all source files of the 'KinveyKit' target in the 'KinveyKit' project
 //
-// Copyright (c) Kinvey, Inc.
+// Copyright (c) 2011-2013 Kinvey, Inc.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -28,6 +28,7 @@
 
 #define fieldExistsAndIsNO(dict, field) dict != nil && dict[field] != nil && [dict[field] boolValue] == NO
 
+#define doLater(blk)
 
 #define constantsEqual(str, const) str == const || [str isEqualToString:const]
 #define setIfEmpty(dict,key,val) if (dict[key] == nil) dict[key] = val
@@ -44,3 +45,4 @@
 #else
 #define KK2(x)
 #endif
+

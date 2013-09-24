@@ -33,6 +33,8 @@
 
 #define kHeaderValueJson @"application/json"
 
+#define kErrorKeyMethod @"KinveyKit.HTTPMethod"
+
 #define kMaxTries 5
 
 KCS_CONST_IMPL KCSRequestOptionClientMethod = kHeaderClientMethod;
@@ -55,7 +57,7 @@ KCS_CONST_IMPL KCSRESTMethodPUT    = @"PUT";
 @property (nonatomic) BOOL useMock;
 @property (nonatomic, copy) KCSRequestCompletionBlock completionBlock;
 @property (nonatomic, copy) NSString* contentType;
-@property (nonatomic) dispatch_queue_t dispatch_queue;
+@property (nonatomic, retain) NSOperationQueue* currentQueue;
 @property (nonatomic, weak) id<KCSCredentials> credentials;
 @property (nonatomic, retain) NSString* route;
 @property (nonatomic, copy) NSDictionary* options;
@@ -112,7 +114,7 @@ static NSOperationQueue* queue;
     
     NSURL* url = [NSURL URLWithString:endpoint];
     
-    _dispatch_queue = dispatch_get_current_queue();
+    _currentQueue = [NSOperationQueue currentQueue];
     
     NSOperation<KCSNetworkOperation>* op = nil;
     
@@ -151,25 +153,29 @@ static NSOperationQueue* queue;
     @weakify(op);
     op.completionBlock = ^() {
         @strongify(op);
-        
-        if ([[KCSClient sharedClient].options[KCS_CONFIG_RETRY_DISABLED] boolValue] == YES) {
-            [self callCallback:op url:url];
-        } else {
-            if (opIsRetryableNetworkError(op)) {
-                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %ld.", (long)op.error.code);
-                [self retryOp:op request:request];
-            } else if (opIsRetryableKCSError(op)) {
-                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Kinvey server error: %@", [op.response jsonObject]);
-                [self retryOp:op request:request];
-            } else {
-                //status OK or is a non-retryable error
-                [self callCallback:op url:url];
-            }
-        }
+        [self requestCallback:op request:request];
     };
     
     [queue addOperation:op];
     return op;
+}
+
+- (void) requestCallback:(NSOperation<KCSNetworkOperation>*)op request:(NSURLRequest*)request
+{
+    if ([[KCSClient sharedClient].options[KCS_CONFIG_RETRY_DISABLED] boolValue] == YES) {
+        [self callCallback:op request:request];
+    } else {
+        if (opIsRetryableNetworkError(op)) {
+            KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %ld.", (long)op.error.code);
+            [self retryOp:op request:request];
+        } else if (opIsRetryableKCSError(op)) {
+            KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Kinvey server error: %@", [op.response jsonObject]);
+            [self retryOp:op request:request];
+        } else {
+            //status OK or is a non-retryable error
+            [self callCallback:op request:request];
+        }
+    }
 }
 
 BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op)
@@ -210,26 +216,17 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
 {
     NSUInteger newcount = oldOp.retryCount + 1;
     if (newcount == kMaxTries) {
-        [self callCallback:oldOp url:request.URL];
+        [self callCallback:oldOp request:request];
     } else {
         NSOperation<KCSNetworkOperation>* op = [[[oldOp class] alloc] initWithRequest:request];
         op.retryCount = newcount;
         @weakify(op);
         op.completionBlock = ^() {
             @strongify(op);
-            if (opIsRetryableNetworkError(op)) {
-                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %ld.", (long)op.error.code);
-                [self retryOp:op request:request];
-            } else if (opIsRetryableKCSError(op)) {
-                KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Kinvey server error: %@", [op.response jsonObject]);
-                [self retryOp:op request:request];
-            } else {
-                //status OK or is a non-retryable error
-                [self callCallback:op url:request.URL];
-            }
+            [self requestCallback:op request:request];
         };
         
-        double delayInSeconds = 0.1 * pow(2, op.retryCount - 1); //exponential backoff
+        double delayInSeconds = 0.1 * pow(2, newcount - 1); //exponential backoff
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             [queue addOperation:op];
@@ -237,10 +234,10 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
     }
 }
 
-- (void) callCallback:(NSOperation<KCSNetworkOperation>*)op url:(NSURL*)url
+- (void) callCallback:(NSOperation<KCSNetworkOperation>*)op request:(NSURLRequest*)request
 {
-    dispatch_async(_dispatch_queue, ^{
-        op.response.originalURL = url;
+    [_currentQueue addOperationWithBlock:^{
+        op.response.originalURL = request.URL;
         NSError* error = nil;
         if (op.error) {
             error = [op.error errorByAddingCommonInfo];
@@ -251,8 +248,9 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         } else {
             KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%ld)", (long)op.response.code);
         }
+        error = [error updateWithInfo:@{kErrorKeyMethod : request.HTTPMethod}];
         self.completionBlock(op.response, error);
-    });
+    }];
 }
 
 

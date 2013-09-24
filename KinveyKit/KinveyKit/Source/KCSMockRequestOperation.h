@@ -21,6 +21,6 @@
 #import "KCSNetworkOperation.h"
 
 @interface KCSMockRequestOperation : NSOperation <KCSNetworkOperation>
-@property (nonatomic) NSUInteger retryCount;
+@property (atomic) NSUInteger retryCount;
 - (instancetype) initWithRequest:(NSMutableURLRequest*) request;
 @end

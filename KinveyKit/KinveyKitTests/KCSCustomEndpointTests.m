@@ -79,4 +79,15 @@
     }];
     [self poll];
 }
+
+- (void) testChecksBadInputs
+{
+    dispatch_block_t block = ^{
+        [KCSCustomEndpoints callEndpoint:@"foo" params:@{@"A":[NSObject new]} completionBlock:^(id results, NSError *error) {
+            STFail(@"should not get here");
+        }];
+    };
+    
+    STAssertThrowsSpecificNamed(block(), NSException, NSInvalidArgumentException, @"should be an exception");
+}
 @end

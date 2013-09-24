@@ -57,4 +57,9 @@ static LogTester* sharedInstance;
 }
 
 
+- (void)clearLogs
+{
+    [(NSMutableArray*)_logs removeAllObjects];
+}
+
 @end

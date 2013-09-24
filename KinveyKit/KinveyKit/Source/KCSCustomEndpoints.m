@@ -25,6 +25,7 @@
 #import "KCSRequest.h"
 #import "KCSUser+KinveyKit2.h"
 #import "KinveyErrorCodes.h"
+#import "KCS_SBJson.h"
 
 
 @implementation KCSCustomEndpoints
@@ -45,6 +46,12 @@
     request.errorDomain = KCSBusinessLogicErrorDomain;
     
     ifNil(params, @{});
+    
+    KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
+    NSData* data = [writer dataWithObject:params];
+    if (!data) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:writer.error userInfo:nil] raise];
+    }
     
     request.body = params;
     request.authorization = [KCSUser activeUser];

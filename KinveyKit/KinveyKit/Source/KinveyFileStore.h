@@ -1,5 +1,5 @@
 //
-//  KinveyKit2.h
+//  KinveyFileStore.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -16,22 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
+#ifndef KinveyKit_KinveyFileStore_h
+#define KinveyKit_KinveyFileStore_h
 
-#import "KinveyKit.h" //
 
-#import "KinveyVersion.h"
-
-#import "KinveyCore.h"
-
-#pragma mark - Data & Storage
-
-#import "KinveyDataStore.h"
-#import "KinveyFileStore.h"
-
-#pragma mark - Service
-
-#import "KCSRequest.h" //
 
 #endif

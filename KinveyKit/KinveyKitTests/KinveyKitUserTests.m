@@ -5,6 +5,18 @@
 //  Created by Brian Wilson on 1/5/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KinveyKitUserTests.h"
 #import "KinveyUser.h"
@@ -598,8 +610,8 @@ static NSString* access_token = @"CAAGI68NkOC4BAB6yYrWF4tlvky3Sxfir4kQcyAobt9WpW
     [TestUtils justInitServer];
     // Ensure user is logged out
     [[KCSUser activeUser] logout];
+
     self.done = NO;
-    
     [KCSUser loginWithSocialIdentity:KCSSocialIDTwitter accessDictionary:@{@"access_token" : @"823982046-Z0OrwAWQO3Ys2jtGM1k7hDnD6Ty9f54T1JRaDHHi",         @"access_token_secret" : @"3yIDGXVZV67m3G480stFgYk5eHZ7UCOSlOVHxh5RQ3g"}
      withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
          STAssertNotNil(user, @"user should not be nil");
