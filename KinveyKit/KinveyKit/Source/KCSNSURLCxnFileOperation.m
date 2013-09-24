@@ -23,6 +23,8 @@
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 
+#define kBytesWritten @"bytesWritten"
+
 @interface KCSNSURLCxnFileOperation ()
 @property (nonatomic, copy) StreamCompletionBlock completionBlock;
 @property (nonatomic, copy) KCSProgressBlock2 progressBlock;
@@ -85,6 +87,83 @@
 //#if BUILD_FOR_UNIT_TEST
 //    lastRequest = self;
 //#endif
+}
+
+//- (void) cancel
+//{
+//    [_connection cancel];
+//    [_outputHandle closeFile];
+//    NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
+//    
+//    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
+//    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
+//    _completionBlock(NO, returnVals, error);
+//}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    [_outputHandle closeFile];
+    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
+    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
+    _completionBlock(NO, returnVals, error);
+}
+
+
+- (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"GCS download response code: %d",[(NSHTTPURLResponse*)response statusCode]);
+    
+    _response = (NSHTTPURLResponse*)response;
+    NSDictionary* headers =  [_response allHeaderFields];
+    NSString* length = headers[@"Content-Length"];
+    _maxLength = [length longLongValue];
+    _serverContentType = headers[@"Content-Type"];
+    
+    if (_response.statusCode >= 400) {
+        _responseData = [NSMutableData data];
+    }
+}
+
+- (void) connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    [_outputHandle closeFile];
+    
+    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
+    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
+    setIfValNotNil(returnVals[kBytesWritten], @(_bytesWritten));
+    
+    NSInteger responseCode = self.response.statusCode;
+    NSError* error = nil;
+    if (responseCode >= 400) {
+        NSString* errorStr = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
+        ifNil(errorStr, @"");
+        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download from GCS Failed", NSLocalizedFailureReasonErrorKey : errorStr};
+        error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:responseCode userInfo:userInfo];
+    }
+    
+    _completionBlock(YES, returnVals, error);
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"downloaded %u bytes from file service", [data length]);
+    
+    if (_response && _response.statusCode >= 400) {
+        //is an error just get the data locally
+        [_responseData appendData:data];
+    } else {
+        //response is good, collect data
+        [_outputHandle writeData:data];
+        _bytesWritten += data.length;
+        if (_progressBlock) {
+            NSUInteger downloadedAmount = [_outputHandle offsetInFile];
+            _intermediateFile.length = downloadedAmount;
+            
+            double progress = (double)downloadedAmount / (double) _maxLength;
+#warning fix this, please
+            _progressBlock(@[_intermediateFile], progress, @{});
+        }
+    }
 }
 
 @end
