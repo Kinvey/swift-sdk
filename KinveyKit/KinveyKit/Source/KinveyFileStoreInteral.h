@@ -1,7 +1,8 @@
 //
-//  KinveyKit2.h
+//  KinveyFileStoreInteral.h
 //  KinveyKit
 //
+//  Created by Michael Katz on 9/24/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -16,22 +17,12 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
 
-#import "KinveyKit.h" //
+#ifndef KinveyKit_KinveyFileStoreInteral_h
+#define KinveyKit_KinveyFileStoreInteral_h
 
-#import "KinveyVersion.h"
-
-#import "KinveyCore.h"
-
-#pragma mark - Data & Storage
-
-#import "KinveyDataStore.h"
 #import "KinveyFileStore.h"
 
-#pragma mark - Service
-
-#import "KCSRequest.h" //
+#import "KCSFileRequest.h"
 
 #endif

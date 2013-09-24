@@ -1,8 +1,7 @@
 //
-//  KCSDataStoreCaches.h
+//  KCSFileRequest.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 5/23/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -17,9 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
-#import "KCSEntityCache2.h"
 
-@interface KCSDataStoreCaches : NSObject
-+ (KCSEntityCache2*)cacheForCollection:(NSString*)collection;
+#import <Foundation/Foundation.h>
+
+@interface KCSFileRequest : NSObject
+
 @end

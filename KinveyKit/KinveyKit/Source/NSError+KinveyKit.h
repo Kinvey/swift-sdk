@@ -23,5 +23,7 @@
 
 + (instancetype) createKCSError:(NSString*)domain code:(NSInteger)code userInfo:(NSDictionary*)userInfo;
 - (instancetype) errorByAddingCommonInfo;
+- (instancetype) updateWithMessage:(NSString*)string domain:(NSString*) domain;
+- (instancetype) updateWithInfo:(NSDictionary*)extraInfo;
 
 @end

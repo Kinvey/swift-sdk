@@ -1,5 +1,5 @@
 //
-//  KinveyKit2.h
+//  KCSMockFileOperation.m
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -16,22 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
 
-#import "KinveyKit.h" //
+#import "KCSMockFileOperation.h"
 
-#import "KinveyVersion.h"
+@implementation KCSMockFileOperation
 
-#import "KinveyCore.h"
-
-#pragma mark - Data & Storage
-
-#import "KinveyDataStore.h"
-#import "KinveyFileStore.h"
-
-#pragma mark - Service
-
-#import "KCSRequest.h" //
-
-#endif
+@end

@@ -22,6 +22,7 @@
 
 @interface LogTester : DDAbstractLogger <DDLogger>
 + (instancetype) sharedInstance;
+- (void) clearLogs;
 @property (nonatomic, readonly) NSArray* logs;
 
 @end
