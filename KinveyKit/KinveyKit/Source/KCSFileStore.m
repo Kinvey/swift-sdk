@@ -40,6 +40,8 @@
 #import "NSDate+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
 
+#import "KinveyFileStoreInteral.h"
+
 NSString* const KCSFileId = KCSEntityKeyId;
 NSString* const KCSFileACL = KCSEntityKeyMetadata;
 NSString* const KCSFileMimeType = @"mimeType";
@@ -87,7 +89,7 @@ NSString* mimeTypeForFileURL(NSURL* fileURL)
     return mimeType;
 }
 
-typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSError* error);
+//typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSError* error);
 
 #if BUILD_FOR_UNIT_TEST
 static id lastRequest = nil;
@@ -247,7 +249,7 @@ static id lastRequest = nil;
 
 @end
 
-
+/*
 @interface KCSDownloadStreamRequest : NSObject <NSURLConnectionDataDelegate, NSURLConnectionDelegate>
 @property (nonatomic, retain) NSFileHandle* outputHandle;
 @property (nonatomic) NSUInteger maxLength;
@@ -383,7 +385,7 @@ static id lastRequest = nil;
 }
 
 @end
-
+*/
 @implementation KCSFileStore
 static NSMutableSet* _ongoingDownloads;
 
@@ -771,19 +773,38 @@ KCSFile* fileFromResults(NSDictionary* results)
 
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
     
-    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
-    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:bytes completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
-        [_ongoingDownloads removeObject:fileId];
-        if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
-            intermediateFile.mimeType = returnInfo[KCSFileMimeType];
-        } else if (intermediateFile.mimeType == nil) {
-            intermediateFile.mimeType = mimeTypeForFilename(intermediateFile.filename);
-        }
-        intermediateFile.bytesWritten = [returnInfo[kBytesWritten] unsignedLongLongValue];
-        intermediateFile.length = [[[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:NULL] fileSize];
-
-        completionBlock(@[intermediateFile], error);
-    } progressBlock:progressBlock];
+    KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
+    [fileRequest downloadStream:intermediateFile
+                        fromURL:url
+            alreadyWrittenBytes:bytes
+                completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
+                    [_ongoingDownloads removeObject:fileId];
+                    if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
+                        intermediateFile.mimeType = returnInfo[KCSFileMimeType];
+                    } else if (intermediateFile.mimeType == nil) {
+                        intermediateFile.mimeType = mimeTypeForFilename(intermediateFile.filename);
+                    }
+                    intermediateFile.bytesWritten = [returnInfo[kBytesWritten] unsignedLongLongValue];
+                    intermediateFile.length = [[[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:NULL] fileSize];
+                    
+                    completionBlock(@[intermediateFile], error);
+                } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
+                    progressBlock(objects, percentComplete);
+                }];
+    
+//    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
+//    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:bytes completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+//        [_ongoingDownloads removeObject:fileId];
+//        if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
+//            intermediateFile.mimeType = returnInfo[KCSFileMimeType];
+//        } else if (intermediateFile.mimeType == nil) {
+//            intermediateFile.mimeType = mimeTypeForFilename(intermediateFile.filename);
+//        }
+//        intermediateFile.bytesWritten = [returnInfo[kBytesWritten] unsignedLongLongValue];
+//        intermediateFile.length = [[[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:NULL] fileSize];
+//
+//        completionBlock(@[intermediateFile], error);
+//    } progressBlock:progressBlock];
 }
 
 
@@ -816,9 +837,8 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
-    
-    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
-    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+    KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
+    [fileRequest downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
         [_ongoingDownloads removeObject:fileId];
         
         if (error) {
@@ -842,7 +862,37 @@ KCSFile* fileFromResults(NSDictionary* results)
             KCSLogNSError(@"error removing temp download cache", error);
             completionBlock(@[file], nil);
         }
-    } progressBlock:progressBlock];
+    } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
+        progressBlock(objects, percentComplete);
+    }];
+    
+    
+//    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
+//    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+//        [_ongoingDownloads removeObject:fileId];
+//
+//        if (error) {
+//            completionBlock(nil, error);
+//        } else {
+//            NSData* data = [NSData dataWithContentsOfURL:localFile];
+//            if (data == nil) {
+//                KCSLogError(@"Error reading temp file for data download: %@", localFile);
+//                NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Error reading temp file for data download.", NSLocalizedRecoverySuggestionErrorKey : @"Retry download."};
+//                NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
+//                completionBlock(nil, error);
+//                return;
+//            }
+//            
+//            KCSFile* file = [[KCSFile alloc] initWithData:data
+//                                                   fileId:fileId
+//                                                 filename:filename
+//                                                 mimeType:mimeType];
+//            NSError* error = nil;
+//            [[NSFileManager defaultManager] removeItemAtURL:localFile error:&error];
+//            KCSLogNSError(@"error removing temp download cache", error);
+//            completionBlock(@[file], nil);
+//        }
+//    } progressBlock:progressBlock];
 }
 
 + (void) _getDownloadObject:(NSString*)fileId options:(NSDictionary*)options intermediateCompletionBlock:(KCSCompletionBlock)completionBlock
