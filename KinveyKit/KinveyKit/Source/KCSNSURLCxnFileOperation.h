@@ -21,6 +21,6 @@
 
 #import "KCSFileOperation.h"
 
-@interface KCSNSURLCxnFileOperation : NSObject <KCSFileOperation>
+@interface KCSNSURLCxnFileOperation : NSOperation <KCSFileOperation>
 
 @end

@@ -23,6 +23,9 @@
 
 #import "KinveyFileStore.h"
 
+#import "KCSFile+KCSInternal.h"
+
 #import "KCSFileRequest.h"
+#import "KCSFileOperation.h"
 
 #endif

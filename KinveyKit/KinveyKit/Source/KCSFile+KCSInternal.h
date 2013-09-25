@@ -1,5 +1,5 @@
 //
-//  KCSMockFileOperation.m
+//  KCSFile+KCSInternal.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -16,9 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
+#import <KinveyKit/KinveyKit.h>
 
-#import "KCSMockFileOperation.h"
-
-@implementation KCSMockFileOperation 
+@interface KCSFile (KCSInternal)
+@property (nonatomic, retain) NSURL* localURL;
 
 @end

@@ -1,6 +1,11 @@
 # KinveyKit Release History
 
 ## 1.21
+### 1.21.1
+** Release Date:** September 24, 2014
+
+* Update missed `fmdb` function prefix. 
+
 ### 1.21.0
 ** Release Date:** September 23, 2013
 

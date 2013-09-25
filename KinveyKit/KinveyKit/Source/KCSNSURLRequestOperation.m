@@ -111,59 +111,6 @@
     [self.downloadedData appendData:data];
 }
 
-///TODO: put in response object
-/*
- - (id) jsonResponseValue:(NSError**) anError
- {
- if (self.responseData == nil) {
- return nil;
- }
- if (self.responseData.length == 0) {
- return [NSData data];
- }
- //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
- KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
- NSDictionary *jsonResponse = [parser objectWithData:self.responseData];
- NSObject *jsonData = nil;
- if (parser.error) {
- KCSLogError(@"JSON Serialization failed: %@", parser.error);
- if ([parser.error isEqualToString:@"Broken Unicode encoding"]) {
- NSObject* reevaluatedObject = [self jsonResponseValue:anError format:NSASCIIStringEncoding];
- return reevaluatedObject;
- } else {
- if (anError != NULL) {
- *anError = [KCSErrorUtilities createError:@{NSURLErrorFailingURLStringErrorKey : _userData[NSURLErrorFailingURLStringErrorKey]}  description:parser.error errorCode:KCSInvalidJSONFormatError domain:KCSNetworkErrorDomain requestId:self.requestId];
- }
- }
- } else {
- jsonData = [jsonResponse valueForKey:@"result"];
- jsonData = jsonData ? jsonData : jsonResponse;
- }
- 
- if (self.responseCode >= 400 && [jsonData isKindOfClass:[NSDictionary class]] && self.userData != nil && self.userData[NSURLErrorFailingURLStringErrorKey] != nil) {
- jsonData = [jsonData mutableCopy];
- ((NSMutableDictionary*)jsonData)[NSURLErrorFailingURLStringErrorKey] = self.userData[NSURLErrorFailingURLStringErrorKey];
- }
- 
- return jsonData;
- }
- 
- - (id) jsonResponseValue
- {
- NSString* cytpe = [_responseHeaders valueForKey:@"Content-Type"];
- 
- if (cytpe == nil || [cytpe containsStringCaseInsensitive:@"json"]) {
- return [self jsonResponseValue:nil];
- } else {
- if (_responseData.length == 0) {
- return @{};
- } else {
- KCSLogWarning(@"not a json repsonse");
- return @{@"debug" : [self stringValue]};
- }
- }*/
-
-
 - (void) connectionDidFinishLoading:(NSURLConnection *)connection
 {
     //TODO: is an error

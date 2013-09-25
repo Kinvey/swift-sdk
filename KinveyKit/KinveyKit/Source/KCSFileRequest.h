@@ -19,6 +19,16 @@
 
 #import <Foundation/Foundation.h>
 
+#import "KCSFileOperation.h"
+
+@class KCSFile;
+
 @interface KCSFileRequest : NSObject
+
+- (id<KCSFileOperation>) downloadStream:(KCSFile*)intermediate
+                                fromURL:(NSURL*)url
+                    alreadyWrittenBytes:(NSNumber*)alreadyWritten
+                        completionBlock:(StreamCompletionBlock)completionBlock
+                          progressBlock:(KCSProgressBlock2)progressBlock;
 
 @end

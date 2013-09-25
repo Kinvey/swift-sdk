@@ -26,9 +26,13 @@
 #import "KCSNSURLCxnFileOperation.h"
 #import "KCSNSURLSessionFileOperation.h"
 #import "KCSMockFileOperation.h"
-#import "KCSFileOperation.h"
 
 @interface KCSFileRequest ()
+@property (nonatomic, copy) StreamCompletionBlock completionBlock;
+@property (nonatomic, copy) KCSProgressBlock2 progressBlock;
+
+@property (nonatomic, retain) NSFileHandle* outputHandle;
+
 @property (nonatomic) BOOL useMock;
 
 @end
@@ -44,76 +48,87 @@ static NSOperationQueue* queue;
     [queue setName:@"com.kinvey.KinveyKit.FileRequestQueue"];
 }
 
+- (NSFileHandle*) prepFile:(KCSFile*)intermediateFile error:(NSError **)error
+{
+    NSURL* file = [intermediateFile localURL];
 
-- (NSOperation*) downloadStream:(KCSFile*)intermediate
+    NSFileHandle* handle = nil;
+
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[file path]] == NO) {
+        [[NSFileManager defaultManager] createFileAtPath:[file path] contents:nil attributes:nil];
+    }
+    
+    NSError* tempError = nil;
+    handle = [NSFileHandle fileHandleForWritingToURL:file error:&tempError];
+    if (tempError != nil) {
+        handle = nil;
+        if (error != NULL) {
+            *error = [tempError updateWithMessage:@"Unable to write to intermediate file." domain:KCSFileStoreErrorDomain];
+        }
+    }
+    return handle;
+}
+
+
+- (id<KCSFileOperation>) downloadStream:(KCSFile*)intermediate
                         fromURL:(NSURL*)url
             alreadyWrittenBytes:(NSNumber*)alreadyWritten
                 completionBlock:(StreamCompletionBlock)completionBlock
-                  progressBlock:(KCSProgressBlock)progressBlock
-
+                  progressBlock:(KCSProgressBlock2)progressBlock
 {
 //    NSAssert(_route, @"should have route");
 //    NSAssert(self.credentials, @"should have credentials");
 //    DBAssert(self.options[KCSRequestOptionClientMethod], @"DB should set client method");
     
-    
-    
-    
-    
-//    
-//    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-//    NSString* baseURL = [config baseURL];
-//    NSString* kid = config.appKey;
-//    
-//    NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
-//    NSString* urlStr = [path componentsJoinedByString:@"/"];
-//    NSString* endpoint = [baseURL stringByAppendingString:urlStr];
-//    
-//    NSURL* url = [NSURL URLWithString:endpoint];
-//    
-//    _currentQueue = [NSOperationQueue currentQueue];
-//    
-    NSOperation<KCSFileOperation>* op = nil;
-//    
-//    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
-//                                                           cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
-//                                                       timeoutInterval:[config.options[KCS_CONNECTION_TIMEOUT] doubleValue]];
-//    request.HTTPMethod = self.method;
-//    
-//    NSMutableDictionary* headers = [NSMutableDictionary dictionary];
-//    headers[kHeaderContentType] = _contentType;
-//    headers[kHeaderAuthorization] = [self.credentials authString];
-//    headers[kHeaderApiVersion] = KCS_VERSION;
-//    headers[kHeaderResponseWrapper] = @"true";
-//    setIfValNotNil(headers[kHeaderClientMethod], self.options[KCSRequestOptionClientMethod]);
-//    
-//    KK2(enable these headers)
-//    //headers[@"User-Agent"] = [client userAgent];
-//    //headers[@"X-Kinvey-Device-Information"] = [client.analytics headerString];
-//    
-//    [request setAllHTTPHeaderFields:headers];
-    //[request setHTTPShouldUsePipelining:_httpMethod != kKCSRESTMethodPOST];
-    
-    //    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@", request.HTTPMethod, request.URL);
+    self.completionBlock = completionBlock;
+    self.progressBlock = progressBlock;
 
-/*
-    if (_useMock == YES) {
-        op = [[KCSMockFileOperation alloc] initWithRequest:request];
-    } else {
-        
-        if ([KCSPlatformUtils supportsNSURLSession]) {
-            op = [[KCSNSURLSessionFileOperation alloc] initWithRequest:request];
+    NSError* error = nil;
+    _outputHandle = [self prepFile:intermediate error:&error];
+    if (_outputHandle == nil || error != nil) {
+        completionBlock(NO, @{}, error);
+        return nil;
+    }
+    
+    
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+    [request setHTTPMethod:KCSRESTMethodGET];
+    
+    if (alreadyWritten != nil) {
+        unsigned long long written = [_outputHandle seekToEndOfFile];
+        if ([alreadyWritten unsignedLongLongValue] == written) {
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %llu.", written);
+            [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
         } else {
-            op = [[KCSNSURLCxnFileOperation alloc] initWithRequest:request];
+            //if they don't match start from begining
+            [_outputHandle seekToFileOffset:0];
         }
     }
- */
+    
+    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@", request.HTTPMethod, request.URL);
+
+    NSOperation<KCSFileOperation>* op = nil;
+
+
+//    if (_useMock == YES) {
+//        op = [[KCSMockFileOperation alloc] initWithRequest:request];
+//    } else {
+//        
+//        if ([KCSPlatformUtils supportsNSURLSession]) {
+//            op = [[KCSNSURLSessionFileOperation alloc] initWithRequest:request];
+//        } else {
+            op = [[KCSNSURLCxnFileOperation alloc] initWithRequest:request output:_outputHandle];
+//        }
+//    }
+
 //    
-//    @weakify(op);
-//    op.completionBlock = ^() {
-//        @strongify(op);
-//        [self requestCallback:op request:request];
-//    };
+    @weakify(op);
+    op.completionBlock = ^() {
+        @strongify(op);
+        //TODO: remove ivar?
+        [_outputHandle closeFile];
+        completionBlock(YES, op.returnVals, op.error);
+    };
     
     [queue addOperation:op];
     return op;
