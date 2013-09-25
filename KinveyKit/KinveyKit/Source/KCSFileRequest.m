@@ -31,7 +31,7 @@
 @property (nonatomic, copy) StreamCompletionBlock completionBlock;
 @property (nonatomic, copy) KCSProgressBlock2 progressBlock;
 
-@property (nonatomic, retain) NSFileHandle* outputHandle;
+//@property (nonatomic, retain) NSFileHandle* outputHandle;
 
 @property (nonatomic) BOOL useMock;
 
@@ -48,28 +48,6 @@ static NSOperationQueue* queue;
     [queue setName:@"com.kinvey.KinveyKit.FileRequestQueue"];
 }
 
-- (NSFileHandle*) prepFile:(KCSFile*)intermediateFile error:(NSError **)error
-{
-    NSURL* file = [intermediateFile localURL];
-
-    NSFileHandle* handle = nil;
-
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[file path]] == NO) {
-        [[NSFileManager defaultManager] createFileAtPath:[file path] contents:nil attributes:nil];
-    }
-    
-    NSError* tempError = nil;
-    handle = [NSFileHandle fileHandleForWritingToURL:file error:&tempError];
-    if (tempError != nil) {
-        handle = nil;
-        if (error != NULL) {
-            *error = [tempError updateWithMessage:@"Unable to write to intermediate file." domain:KCSFileStoreErrorDomain];
-        }
-    }
-    return handle;
-}
-
-
 - (id<KCSFileOperation>) downloadStream:(KCSFile*)intermediate
                         fromURL:(NSURL*)url
             alreadyWrittenBytes:(NSNumber*)alreadyWritten
@@ -83,25 +61,29 @@ static NSOperationQueue* queue;
     self.completionBlock = completionBlock;
     self.progressBlock = progressBlock;
 
-    NSError* error = nil;
-    _outputHandle = [self prepFile:intermediate error:&error];
-    if (_outputHandle == nil || error != nil) {
-        completionBlock(NO, @{}, error);
-        return nil;
-    }
+//    NSError* error = nil;
+//    _outputHandle = [self prepFile:intermediate error:&error];
+//    if (_outputHandle == nil || error != nil) {
+//        completionBlock(NO, @{}, error);
+//        return nil;
+//    }
+    
+    
     
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
     [request setHTTPMethod:KCSRESTMethodGET];
     
     if (alreadyWritten != nil) {
-        unsigned long long written = [_outputHandle seekToEndOfFile];
+        //TODO: figure this one out
+        //        unsigned long long written = [_outputHandle seekToEndOfFile];
+        unsigned long long written = [alreadyWritten unsignedLongLongValue];
         if ([alreadyWritten unsignedLongLongValue] == written) {
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %llu.", written);
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
             [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
-        } else {
-            //if they don't match start from begining
-            [_outputHandle seekToFileOffset:0];
+//        } else {
+//            //if they don't match start from begining
+//            [_outputHandle seekToFileOffset:0];
         }
     }
     
@@ -114,21 +96,20 @@ static NSOperationQueue* queue;
 //        op = [[KCSMockFileOperation alloc] initWithRequest:request];
 //    } else {
 //        
-//        if ([KCSPlatformUtils supportsNSURLSession]) {
-//            op = [[KCSNSURLSessionFileOperation alloc] initWithRequest:request];
-//        } else {
-            op = [[KCSNSURLCxnFileOperation alloc] initWithRequest:request output:_outputHandle];
-//        }
-//    }
+        if ([KCSPlatformUtils supportsNSURLSession]) {
+            op = [[KCSNSURLSessionFileOperation alloc] initWithRequest:request output:intermediate.localURL];
+        } else {
+            op = [[KCSNSURLCxnFileOperation alloc] initWithRequest:request output:intermediate.localURL];
+        }
+    //    }
 
 //    
     @weakify(op);
     op.completionBlock = ^() {
         @strongify(op);
-        //TODO: remove ivar?
-        [_outputHandle closeFile];
         completionBlock(YES, op.returnVals, op.error);
     };
+    op.progressBlock = progressBlock;
     
     [queue addOperation:op];
     return op;

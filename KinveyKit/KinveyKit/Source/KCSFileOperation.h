@@ -19,6 +19,9 @@
 
 #import <Foundation/Foundation.h>
 
+#define kBytesWritten @"bytesWritten"
+
+
 /* A progress block.
  @param objects if there are any valid objects available. Could be `nil` or empty.
  @param percentComplete the percentage of the total progress made so far. Suitable for a progress indicator.
@@ -31,8 +34,9 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
 
 
 @protocol KCSFileOperation <NSObject>
-- (instancetype) initWithRequest:(NSURLRequest*)request output:(NSFileHandle*)fileHandle;
+- (instancetype) initWithRequest:(NSURLRequest*)request output:(NSURL*)outputFile;
 
 @property (nonatomic, strong, readonly) NSError* error;
 @property (nonatomic, strong, readonly) NSDictionary* returnVals;
+@property (nonatomic, copy) KCSProgressBlock2 progressBlock;
 @end

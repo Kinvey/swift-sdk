@@ -1,5 +1,8 @@
 # KinveyKit Release History
 
+## 1.22
+** Release Date:** TBD
+
 ## 1.21
 ### 1.21.1
 ** Release Date:** September 24, 2014

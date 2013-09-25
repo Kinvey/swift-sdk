@@ -51,6 +51,8 @@
     KCSFile* file = [[KCSFile alloc] init];
     NSString* fileStr = @"/tmp/123.jpg";
     file.localURL = [NSURL URLWithString:fileStr];
+    [[NSFileManager defaultManager] removeItemAtURL:file.localURL error:NULL];
+    
     [f downloadStream:file
               fromURL:[NSURL URLWithString:publicFileURL]
   alreadyWrittenBytes:@0 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {

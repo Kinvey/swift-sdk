@@ -27,6 +27,7 @@
 
 @interface KCSNSURLCxnFileOperation ()
 @property (nonatomic, retain) NSFileHandle* outputHandle;
+@property (nonatomic, retain) NSURL* localURL;
 @property (nonatomic) long long maxLength;
 @property (nonatomic, retain) NSURLConnection* connection;
 @property (nonatomic, strong) NSURLRequest* request;
@@ -40,12 +41,32 @@
 
 @implementation KCSNSURLCxnFileOperation
 
-- (instancetype) initWithRequest:(NSURLRequest*)request output:(NSFileHandle*)fileHandle
+- (NSFileHandle*) prepFile:(NSURL*)file error:(NSError **)error
+{
+    NSFileHandle* handle = nil;
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[file path]] == NO) {
+        [[NSFileManager defaultManager] createFileAtPath:[file path] contents:nil attributes:nil];
+    }
+    
+    NSError* tempError = nil;
+    handle = [NSFileHandle fileHandleForWritingToURL:file error:&tempError];
+    if (tempError != nil) {
+        handle = nil;
+        if (error != NULL) {
+            *error = [tempError updateWithMessage:@"Unable to write to intermediate file." domain:KCSFileStoreErrorDomain];
+        }
+    }
+    return handle;
+}
+
+
+- (instancetype) initWithRequest:(NSURLRequest*)request output:(NSURL*)fileURL
 {
     self = [super init];
     if (self) {
         _request = request;
-        _outputHandle = fileHandle;
+        _localURL = fileURL;
         _bytesWritten = 0;
         
         //#if BUILD_FOR_UNIT_TEST
@@ -61,6 +82,16 @@
         [super start];
         
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+        
+        NSError* error = nil;
+        _outputHandle = [self prepFile:self.localURL error:&error];
+        if (_outputHandle == nil || error != nil) {
+            [self complete:error];
+            return;
+        }
+
+
+
 
         _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
         // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
@@ -100,6 +131,9 @@
     setIfValNotNil(results[KCSFileMimeType], [self contentType]);
     setIfValNotNil(results[kBytesWritten], @(_bytesWritten));
     self.returnVals = [results copy];
+
+    [_outputHandle closeFile];
+
     //SET finished _completionBlock(NO, returnVals, error);
     
     self.finished = YES;
