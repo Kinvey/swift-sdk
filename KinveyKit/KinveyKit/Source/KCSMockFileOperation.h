@@ -19,6 +19,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KCSMockFileOperation : NSObject
+#import "KCSFileOperation.h"
+
+@interface KCSMockFileOperation : NSOperation <KCSFileOperation>
 
 @end

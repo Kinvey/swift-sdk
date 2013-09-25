@@ -95,7 +95,7 @@ typedef enum : NSInteger {
 #define LOG_DEBUG   (ddLogLevel & LOG_FLAG_DEBUG )
 
 #define KCSLogFatal(context, frmt, ...)      SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_FATAL,  context, frmt, ##__VA_ARGS__)
-#define KCSLogError(frmt, ...)               SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_ERROR,  context, frmt, ##__VA_ARGS__)
+#define KCSLogError(context, frmt, ...)      SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_ERROR,  context, frmt, ##__VA_ARGS__)
 #define KCSLogWarn(context, frmt, ...)       SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_WARN,   context, frmt, ##__VA_ARGS__)
 #define KCSLogNotice(context, frmt, ...)     SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_NOTICE, context, frmt, ##__VA_ARGS__)
 #define KCSLogInfo(context, frmt, ...)       SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_INFO,   context, frmt, ##__VA_ARGS__)

@@ -37,8 +37,12 @@ KCS_CONSTANT KCSRESTMethodPUT;
 
 #define KCSRequestLogMethod KCSRequestOptionClientMethod : [NSStringFromClass([self class]) stringByAppendingFormat:@" %@", NSStringFromSelector(_cmd)]
 
+#define kHeaderContentType   @"Content-Type"
+#define kHeaderContentLength @"Content-Length"
+
 @class KCSNetworkResponse;
 @protocol KCSCredentials;
+@protocol KCSNetworkOperation;
 
 typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*error);
 
@@ -47,5 +51,5 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
 @property (nonatomic, weak) NSString* method;
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
-- (NSOperation*) start;
+- (id<KCSNetworkOperation>) start;
 @end

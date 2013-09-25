@@ -26,7 +26,6 @@
 #import "KCSNSURLSessionOperation.h"
 
 #define kHeaderAuthorization   @"Authorization"
-#define kHeaderContentType     @"Content-Type"
 #define kHeaderApiVersion      @"X-Kinvey-Api-Version"
 #define kHeaderClientMethod    @"X-Kinvey-Client-Method"
 #define kHeaderResponseWrapper @"X-Kinvey-ResponseWrapper"
@@ -98,7 +97,7 @@ static NSOperationQueue* queue;
 
 # pragma mark -
 
-- (NSOperation*) start
+- (id<KCSNetworkOperation>) start
 {
     NSAssert(_route, @"should have route");
     NSAssert(self.credentials, @"should have credentials");

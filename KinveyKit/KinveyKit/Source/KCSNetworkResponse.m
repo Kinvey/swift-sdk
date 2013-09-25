@@ -23,11 +23,14 @@
 
 #define kKinveyErrorDomain @"KinveyErrorDomain"
 
+#define kHeaderRequestId @"X-Kinvey-Request-Id"
+
 #define KCS_ERROR_DEBUG_KEY @"debug"
 #define KCS_ERROR_DESCRIPTION_KEY @"description"
 #define KCS_ERROR_KINVEY_ERROR_CODE_KEY @"error"
 
-#define kKCSErrorCode @"kinveyErrorCode"
+#define kKCSErrorCode @"Kinvey.kinveyErrorCode"
+#define kKCSRequestId @"Kinvey.RequestId"
 
 #define kResultsKey @"result"
 
@@ -52,27 +55,98 @@
     return self.code >= 400;
 }
 
+- (NSString*) requestId
+{
+    return self.headers[kHeaderRequestId];
+}
+
 - (NSError*) errorObject
 {
     NSDictionary* kcsErrorDict = [self jsonObject];
-    NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
+    NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithCapacity:5];
     setIfValNotNil(userInfo[NSLocalizedDescriptionKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
     setIfValNotNil(userInfo[NSLocalizedFailureReasonErrorKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
     setIfValNotNil(userInfo[kKCSErrorCode], kcsErrorDict[KCS_ERROR_KINVEY_ERROR_CODE_KEY]);
     setIfValNotNil(userInfo[NSURLErrorFailingURLErrorKey], self.originalURL);
+    setIfValNotNil(userInfo[kKCSRequestId], [self requestId]);
 
     NSError* error = [NSError createKCSError:kKinveyErrorDomain code:self.code userInfo:userInfo];
     return error;
 }
 
+- (NSError*) errorForParser:(KCS_SBJsonParser*)parser
+{
+    NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
+    setIfValNotNil(userInfo[NSURLErrorFailingURLErrorKey], self.originalURL);
+    setIfValNotNil(userInfo[kKCSRequestId], [self requestId]);
+    setIfValNotNil(userInfo[NSLocalizedDescriptionKey], parser.error);
+    
+    return [NSError createKCSError:kKinveyErrorDomain code:KCSInvalidJSONFormatError userInfo:userInfo];
+}
+
+- (NSString*) stringValue
+{
+    return [[NSString alloc] initWithData:self.jsonData encoding:NSUTF8StringEncoding];
+}
+
+- (id) jsonResponseValue:(NSError**) anError format:(NSStringEncoding)format
+{
+    KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+    NSString* string = [[NSString alloc] initWithData:self.jsonData encoding:format];
+    NSDictionary *jsonResponse = [parser objectWithData:[string dataUsingEncoding:NSUTF8StringEncoding]];
+    if (parser.error) {
+        KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"JSON Serialization retry failed: %@", parser.error);
+        if (anError != NULL) {
+            *anError = [self errorForParser:parser];
+        }
+    }
+    return jsonResponse[kResultsKey];
+}
+
+- (id) jsonResponseValue:(NSError**) anError
+{
+    if (self.jsonData == nil) {
+        return nil;
+    }
+    if (self.jsonData.length == 0) {
+        return [NSData data];
+    }
+    //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
+    KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
+    NSDictionary *jsonResponse = [parser objectWithData:self.jsonData];
+    NSObject* jsonObj = nil;
+    if (parser.error) {
+        KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"JSON Serialization failed: %@", parser.error);
+        if ([parser.error isEqualToString:@"Broken Unicode encoding"]) {
+            NSObject* reevaluatedObject = [self jsonResponseValue:anError format:NSASCIIStringEncoding];
+            return reevaluatedObject;
+        } else {
+            if (anError != NULL) {
+                *anError = [self errorForParser:parser];
+            }
+        }
+    } else {
+        jsonObj = jsonResponse[kResultsKey];
+        jsonObj = jsonObj ? jsonObj : jsonResponse;
+    }
+    
+    return jsonObj;
+}
+
 - (id)jsonObject
 {
-    id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.jsonData];
-    if ([obj isKindOfClass:[NSDictionary class]] && obj[kResultsKey]) {
-        //because of the response wrapper
-        obj = obj[kResultsKey];
+    NSString* cytpe = self.headers[kHeaderContentType];
+    
+    if (cytpe == nil || [cytpe containsStringCaseInsensitive:@"json"]) {
+        return [self jsonResponseValue:nil];
+    } else {
+        if (self.jsonData.length == 0) {
+            return @{};
+        } else {
+            KCSLogWarn(KCS_LOG_CONTEXT_NETWORK, @"not a json repsonse");
+            return @{@"debug" : [self stringValue]};
+        }
     }
-    return obj;
 }
 
 @end

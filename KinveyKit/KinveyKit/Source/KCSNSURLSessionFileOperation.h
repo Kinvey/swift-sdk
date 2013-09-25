@@ -19,6 +19,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KCSNSURLSessionFileOperation : NSObject
+#import "KCSFileOperation.h"
+
+@interface KCSNSURLSessionFileOperation : NSOperation <KCSFileOperation>
 
 @end
