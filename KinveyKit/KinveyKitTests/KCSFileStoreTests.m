@@ -446,6 +446,11 @@ NSData* testData2()
 
 - (void) testDownloadToFileOnlyIfNewerAndIsNewer
 {
+    //0. clear the old file
+    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* destinationURL = [NSURL URLWithString:kTestFilename relativeToURL:downloadsDir];
+    [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];
+    
     //1. download a file
     //2. update the file
     //3. try to redownload that file and see the short-circuit
@@ -1161,7 +1166,7 @@ NSData* testData2()
         STAssertEqualObjects(dlFile.filename, filename, @"should match filenames");
         STAssertEqualObjects(dlFile.fileId, kTestId, @"should match ids");
         STAssertEquals(dlFile.length, testData().length, @"lengths should match");
-        STAssertEqualObjects(dlFile.mimeType, kTestMimeType, @"mime types should match");
+        STAssertEqualObjects(dlFile.mimeType, @"text/rtf", @"mime types should match");
         STAssertNotNil(dlFile.localURL, @"should be a local URL");
         STAssertEqualObjects([dlFile.localURL lastPathComponent], filename, @"local file should have the specified filename");
         STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[dlFile.localURL path]], @"should exist");

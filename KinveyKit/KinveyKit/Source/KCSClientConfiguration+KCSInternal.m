@@ -62,4 +62,11 @@
     return level;
 }
 
+- (void) setLoglevel:(int)level
+{
+    NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:self.options];
+    d[KCS_LOG_LEVEL] = @(level);
+    self.options = d;
+}
+
 @end

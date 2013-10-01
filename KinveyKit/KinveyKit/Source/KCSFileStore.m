@@ -89,8 +89,6 @@ NSString* mimeTypeForFileURL(NSURL* fileURL)
     return mimeType;
 }
 
-//typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSError* error);
-
 #if BUILD_FOR_UNIT_TEST
 static id lastRequest = nil;
 #endif
@@ -725,8 +723,6 @@ KCSFile* fileFromResults(NSDictionary* results)
         NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
         completionBlock(nil, error);
         return;
-    } else {
-        [_ongoingDownloads addObject:fileId];
     }
     
     KCSFile* intermediateFile = [[KCSFile alloc] initWithLocalFile:localFile
@@ -771,10 +767,11 @@ KCSFile* fileFromResults(NSDictionary* results)
 
     }
 
+    [_ongoingDownloads addObject:fileId];
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
     
     KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
-    [fileRequest downloadStream:intermediateFile
+    id fileop = [fileRequest downloadStream:intermediateFile
                         fromURL:url
             alreadyWrittenBytes:bytes
                 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
@@ -789,7 +786,9 @@ KCSFile* fileFromResults(NSDictionary* results)
                     
                     completionBlock(@[intermediateFile], error);
                 } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
-                    progressBlock(objects, percentComplete);
+                    if (progressBlock != nil) {
+                        progressBlock(objects, percentComplete);
+                    }
                 }];
     
 //    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
@@ -805,6 +804,9 @@ KCSFile* fileFromResults(NSDictionary* results)
 //
 //        completionBlock(@[intermediateFile], error);
 //    } progressBlock:progressBlock];
+#if BUILD_FOR_UNIT_TEST
+    lastRequest = fileop;
+#endif
 }
 
 
@@ -863,7 +865,9 @@ KCSFile* fileFromResults(NSDictionary* results)
             completionBlock(@[file], nil);
         }
     } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
-        progressBlock(objects, percentComplete);
+        if (progressBlock) {
+            progressBlock(objects, percentComplete);
+        }
     }];
     
     

@@ -23,5 +23,6 @@
 
 @interface KCSNSURLSessionFileOperation : NSOperation <KCSFileOperation>
 @property (nonatomic, copy) KCSProgressBlock2 progressBlock;
+@property (nonatomic, strong) NSData* resumeData;
 
 @end

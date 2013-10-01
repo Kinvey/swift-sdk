@@ -60,4 +60,21 @@
 }
 #pragma clang diagnostic pop
 
+
+- (void) testX
+{
+    KCSUser* user = [[KCSUser alloc] init];
+    user.username = @"bobjoe";
+    [user addObserver:self forKeyPath:@"username" options:(NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld) context:nil];
+    user.username = @"bobjoe";
+    [self poll];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
+    NSLog(@"foo");
+    self.done=YES;
+}
 @end

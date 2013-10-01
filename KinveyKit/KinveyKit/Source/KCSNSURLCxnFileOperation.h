@@ -22,5 +22,6 @@
 #import "KCSFileOperation.h"
 
 @interface KCSNSURLCxnFileOperation : NSOperation <KCSFileOperation>
+@property (nonatomic, copy) KCSProgressBlock2 progressBlock;
 
 @end

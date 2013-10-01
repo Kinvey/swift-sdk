@@ -309,20 +309,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
             // I really don't know what to do here, we can't continue... Something died...
             KCSLogError(@"Internal Error: %@", error);
-            
-            NSDictionary *errorDict = [NSDictionary dictionaryWithObjectsAndKeys:error, @"error",
-                                       @"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo", @"reason", nil];
-            
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
-                                                                               withFailureReason:[errorDict description]
-                                                                          withRecoverySuggestion:@"Contact support."
-                                                                             withRecoveryOptions:nil];
-            
-            // No user, it's during creation
-            NSError* newError = [NSError errorWithDomain:KCSUserErrorDomain
-                                                    code:KCSUnexpectedError
-                                                userInfo:userInfo];
-            completionBlock(nil, newError, 0);
+            completionBlock(nil, error, 0);
             return;
         };
         
@@ -636,16 +623,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
     [loginRequest setContentType:KCS_JSON_TYPE];
     [loginRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
     [loginRequest start];
-}
-
-+ (void)registerUserWithFacebookAcccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock
-{
-    [self registerUserWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : accessToken} withCompletionBlock:completionBlock];
-}
-
-+ (void)loginWithFacebookAccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock
-{
-    [self loginWithWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : accessToken} withCompletionBlock:completionBlock];
 }
 
 + (void)loginWithWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock

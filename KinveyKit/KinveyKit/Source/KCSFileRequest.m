@@ -29,7 +29,7 @@
 
 @interface KCSFileRequest ()
 @property (nonatomic, copy) StreamCompletionBlock completionBlock;
-@property (nonatomic, copy) KCSProgressBlock2 progressBlock;
+//@property (nonatomic, copy) KCSProgressBlock2 progressBlock;
 
 //@property (nonatomic, retain) NSFileHandle* outputHandle;
 
@@ -44,7 +44,7 @@ static NSOperationQueue* queue;
 + (void)initialize
 {
     queue = [[NSOperationQueue alloc] init];
-    queue.maxConcurrentOperationCount = 2;
+    queue.maxConcurrentOperationCount = 4;
     [queue setName:@"com.kinvey.KinveyKit.FileRequestQueue"];
 }
 
@@ -59,7 +59,7 @@ static NSOperationQueue* queue;
 //    DBAssert(self.options[KCSRequestOptionClientMethod], @"DB should set client method");
     
     self.completionBlock = completionBlock;
-    self.progressBlock = progressBlock;
+    //    self.progressBlock = progressBlock;
 
 //    NSError* error = nil;
 //    _outputHandle = [self prepFile:intermediate error:&error];
@@ -109,7 +109,11 @@ static NSOperationQueue* queue;
         @strongify(op);
         completionBlock(YES, op.returnVals, op.error);
     };
-    op.progressBlock = progressBlock;
+    op.progressBlock = ^(NSArray *objects, double percentComplete, NSDictionary* additionalContext) {
+        if (progressBlock) {
+            progressBlock(@[intermediate], percentComplete, additionalContext);
+        }
+    };
     
     [queue addOperation:op];
     return op;

@@ -44,12 +44,14 @@
 
 + (instancetype)store
 {
-    return [self storeWithAuthHandler:nil withOptions:nil];
+    return [self storeWithOptions:nil];
 }
 
 + (instancetype)storeWithOptions: (NSDictionary *)options
 {
-    return [self storeWithAuthHandler:nil withOptions:options];
+    KCSResourceStore *store = [[self alloc] init];
+    [store configureWithOptions:options];
+    return store;
 }
 
 + (instancetype)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
