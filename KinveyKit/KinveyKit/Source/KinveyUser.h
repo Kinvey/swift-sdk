@@ -264,18 +264,6 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
                  password: (NSString *)password 
       withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
-/*! Login a user with a Facebook Access Token.
- 
- This creates a new Kinvey user or logs in with an existing one associated with the supplied Facebook access token. Kinvey will verify the token with Facebook on the server and return an authorized Kinvey user if the process is sucessful.
- 
- To obtain the access token, download the Facebook SDK (https://developers.facebook.com/ios/) and follow the instructions for session log-in.
- @since 1.7
- @deprecated 1.9 use loginWithWithSocialIdentity:accessDictionary:withCompletionBlock instead
- @param accessToken the `access_token` provided by Facebook.
- @param completionBlock the callback when the login completes or errors out.
- */
-+ (void)loginWithFacebookAccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock DEPRECATED_ATTRIBUTE; 
-
 /** Login a user with social network access information.
  
  This creates a new Kinvey user or logs in with an existing one associated with the supplied access token. Kinvey will verify the token with the social provider on the server and return an authorized Kinvey user if the process is sucessful.

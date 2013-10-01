@@ -536,16 +536,13 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 static NSString* lastUser;
 static NSString* access_token = @"CAAGI68NkOC4BAB6yYrWF4tlvky3Sxfir4kQcyAobt9WpWt4oNAcFYYaVa8vLdGprVKOyVXKyeb9g5zg7Ldw520JsszFnLER7DlASz30qzZBQ0A0Kpbk0LtPWl6vzyDzwfZCLG05hZC6IHIjqPOp2ZBPmCAL45ZAYZD";
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
 - (void) testLoginWithFacebookOld
 {
     [TestUtils justInitServer];
     // Ensure user is logged out
     [[KCSUser activeUser] logout];
     self.done = NO;
-    [KCSUser loginWithFacebookAccessToken:access_token withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+    [KCSUser loginWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : access_token} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError;
         STAssertNotNil(user, @"user should not be nil");
         self.done = YES;
@@ -561,8 +558,6 @@ static NSString* access_token = @"CAAGI68NkOC4BAB6yYrWF4tlvky3Sxfir4kQcyAobt9WpW
     
     lastUser = [KCSClient sharedClient].currentUser.username;
 }
-
-#pragma clang diagnostic pop
 
 - (void) testLoginWithFacebookNew
 {

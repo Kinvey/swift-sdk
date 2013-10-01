@@ -203,8 +203,8 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
         // Internal Operators
         @(kKCSWithin)  : @"$within",
         @(kKCSOptions) : @"$options",
-        @(kKCSExists) : @"$exists",
-        @(kKCSType) : @"$type",
+        @(kKCSExists)  : @"$exists",
+        @(kKCSType)    : @"$type",
         };
     });
 
@@ -831,8 +831,7 @@ BOOL kcsIsOperator(NSString* queryField)
     return [self JSONStringRepresentation];
 }
 
-#pragma mark -
-#pragma mark Getting our sort keys
+#pragma mark - Getting our sort keys
 - (NSString *)parameterStringForSortKeys
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:self.sortModifiers.count];

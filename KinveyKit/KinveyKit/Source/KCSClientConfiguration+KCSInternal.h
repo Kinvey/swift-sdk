@@ -31,5 +31,6 @@ KCS_CONSTANT KCS_CONFIG_RETRY_DISABLED;
 - (NSString*) baseURL;
 
 - (int) loglevel;
+- (void) setLoglevel:(int)level;
 
 @end

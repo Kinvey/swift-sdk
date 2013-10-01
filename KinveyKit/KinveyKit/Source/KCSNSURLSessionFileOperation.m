@@ -46,11 +46,7 @@
     if (self) {
         _request = request;
         _localFile = fileHandle;
-        _bytesWritten = 0;
-        
-        //#if BUILD_FOR_UNIT_TEST
-        //    lastRequest = self;
-        //#endif
+        _bytesWritten = 0;        
     }
     return self;
 }
@@ -95,6 +91,14 @@
 //    _completionBlock(NO, returnVals, error);
 //}
 
+- (void)cancel
+{
+    [self.task cancelByProducingResumeData:^(NSData *resumeData) {
+        self.resumeData = resumeData;
+    }];
+    [super cancel];
+}
+
 - (void) complete:(NSError*)error
 {
     //TODO: figure this out vvv
@@ -128,7 +132,10 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    [self complete:error];
+    if (error) {
+        self.error = error;
+    }
+    [self complete:self.error];
 }
 
 //- (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
@@ -143,7 +150,7 @@
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
-    NSInteger responseCode = 200;//self.response.statusCode; TODO?
+    NSInteger responseCode = [(NSHTTPURLResponse*)downloadTask.response statusCode];
     NSError* error = nil;
     
     if (responseCode >= 400) {
@@ -158,12 +165,27 @@
         error = [NSError createKCSError:KCSFileStoreErrorDomain
                                    code:responseCode
                                userInfo:userInfo];
+        self.error = error;
     } else {
-        [[NSFileManager defaultManager] moveItemAtURL:location toURL:self.localFile error:&error];
-        //TODO: handle error
+        NSFileManager* fm = [[NSFileManager alloc] init];
+        fm.delegate = self;
+        
+        [fm moveItemAtURL:location toURL:self.localFile error:&error];
+
+        if (error) {
+            self.error = error;
+        }
+        
+        fm.delegate = nil;
     }
-    
-    [self complete:error];
+}
+
+- (BOOL)fileManager:(NSFileManager *)fileManager shouldProceedAfterError:(NSError *)error movingItemAtURL:(NSURL *)srcURL toURL:(NSURL *)dstURL
+{
+    if ([error.domain isEqualToString:NSCocoaErrorDomain] && error.code == NSFileWriteFileExistsError) {
+        return YES;
+    }
+    return NO;
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite

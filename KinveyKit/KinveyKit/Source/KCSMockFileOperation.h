@@ -22,5 +22,7 @@
 #import "KCSFileOperation.h"
 
 @interface KCSMockFileOperation : NSOperation <KCSFileOperation>
+@property (nonatomic, copy) KCSProgressBlock2 progressBlock;
+
 
 @end

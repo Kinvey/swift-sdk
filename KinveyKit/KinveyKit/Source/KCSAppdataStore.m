@@ -145,27 +145,21 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 + (instancetype)store
 {
-    return [self storeWithAuthHandler:nil withOptions:nil];
+    return [self storeWithOptions:nil];
 }
 
 + (instancetype) storeWithOptions: (NSDictionary *)options
 {
-    return [self storeWithAuthHandler:nil withOptions:options];
+    return  [self storeWithCollection:nil options:options];
 }
 
 + (instancetype) storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
 {
-    KCSAppdataStore *store = [[self alloc] initWithAuth:authHandler];
-    [store configureWithOptions:options];
-    return store;
+    return [self storeWithCollection:nil options:options];
 }
 
 + (instancetype) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options
 {
-    return [self storeWithCollection:collection authHandler:nil withOptions:options];
-}
-
-+ (instancetype) storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options {
     
     if (options == nil) {
         options = @{ KCSStoreKeyResource : collection };
@@ -173,7 +167,12 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         options = [NSMutableDictionary dictionaryWithDictionary:options];
         [options setValue:collection forKey:KCSStoreKeyResource];
     }
-    return [self storeWithAuthHandler:authHandler withOptions:options];
+    return [self storeWithOptions:options];
+}
+
++ (instancetype) storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
+{
+    return [self storeWithCollection:collection options:options];
 }
 
 - (BOOL)configureWithOptions: (NSDictionary *)options

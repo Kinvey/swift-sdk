@@ -3,6 +3,12 @@
 ## 1.22
 ** Release Date:** TBD
 
+* Code cleanup:
+    * Removed deprecated methods/classes:
+         * `[KCSUser loginWithFacebookAccessToken:withCompletionBlock:]`
+         * Class `KCSEntityDict`. Clients should be using a `NSMutableDictionary` instead.
+    * Deprecated data store constructors that use `authHandler`.
+
 ## 1.21
 ### 1.21.1
 ** Release Date:** September 24, 2014
