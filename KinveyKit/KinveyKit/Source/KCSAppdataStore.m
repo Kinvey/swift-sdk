@@ -123,8 +123,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 @implementation KCSAppdataStore
 
-#pragma mark -
-#pragma mark Initialization
+#pragma mark - Initialization
 
 - (instancetype)init
 {
@@ -165,9 +164,13 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         options = @{ KCSStoreKeyResource : collection };
     } else {
         options = [NSMutableDictionary dictionaryWithDictionary:options];
-        [options setValue:collection forKey:KCSStoreKeyResource];
+        if (collection) {
+            [options setValue:collection forKey:KCSStoreKeyResource];
+        }
     }
-    return [self storeWithOptions:options];
+    KCSAppdataStore* store = [[self alloc] init];
+    [store configureWithOptions:options];
+    return store;
 }
 
 + (instancetype) storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
@@ -202,6 +205,10 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         
         _previousProgress = [options objectForKey:KCSStoreKeyOngoingProgress];
         _title = [options objectForKey:KCSStoreKeyTitle];
+    }
+    
+    if (self.backingCollection == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Collection cannot be nil" userInfo:options] raise];
     }
     
     // Even if nothing happened we return YES (as it's not a failure)
