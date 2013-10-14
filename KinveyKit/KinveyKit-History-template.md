@@ -1,13 +1,17 @@
 # KinveyKit Release History
 
 ## 1.22
+### 1.22.0
 ** Release Date:** TBD
 
+* TODO: KCSNetworkObserver
 * Code cleanup:
     * Removed deprecated methods/classes:
          * `[KCSUser loginWithFacebookAccessToken:withCompletionBlock:]`
          * Class `KCSEntityDict`. Clients should be using a `NSMutableDictionary` instead.
     * Deprecated data store constructors that use `authHandler`.
+* Bug fix(es):
+    * File references will no longer be auto-resolved on load if not mapped in the `kinveyPropertyToCollectionMapping` method.
 
 ## 1.21
 ### 1.21.1

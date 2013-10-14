@@ -468,6 +468,8 @@
 		27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F360981598BF5C006B699E /* KCSMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609C1598C1CB006B699E /* KCSMetadata.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27F360A01598C250006B699E /* KCSMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609F1598C250006B699E /* KCSMetadataTests.m */; };
+		27F5340A17FD93CA0080332D /* KCSNetworkObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F5340817FD93CA0080332D /* KCSNetworkObserver.h */; };
+		27F5340B17FD93CA0080332D /* KCSNetworkObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F5340917FD93CA0080332D /* KCSNetworkObserver.m */; };
 		27F5D7E916F141F5001828F3 /* KCSLogSink.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F5D7E816F141F4001828F3 /* KCSLogSink.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27F5D7EA16F141F5001828F3 /* KCSLogSink.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F5D7E816F141F4001828F3 /* KCSLogSink.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27F5D7F316F20EC5001828F3 /* NSDictionary+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F5D7F116F20EC3001828F3 /* NSDictionary+KinveyAdditions.h */; };
@@ -923,6 +925,8 @@
 		27F3609C1598C1CB006B699E /* KCSMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMetadata.m; sourceTree = "<group>"; };
 		27F3609E1598C250006B699E /* KCSMetadataTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMetadataTests.h; sourceTree = "<group>"; };
 		27F3609F1598C250006B699E /* KCSMetadataTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMetadataTests.m; sourceTree = "<group>"; };
+		27F5340817FD93CA0080332D /* KCSNetworkObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNetworkObserver.h; sourceTree = "<group>"; };
+		27F5340917FD93CA0080332D /* KCSNetworkObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSNetworkObserver.m; sourceTree = "<group>"; };
 		27F5D7E816F141F4001828F3 /* KCSLogSink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLogSink.h; sourceTree = "<group>"; };
 		27F5D7F116F20EC3001828F3 /* NSDictionary+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+KinveyAdditions.h"; sourceTree = "<group>"; };
 		27F5D7F216F20EC4001828F3 /* NSDictionary+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+KinveyAdditions.m"; sourceTree = "<group>"; };
@@ -1345,6 +1349,8 @@
 				27B5F00017C7E17B0050DFD0 /* KCSMockRequestOperation.m */,
 				2737D3AF17BD517300FE7ACC /* KCSMockServer.h */,
 				2737D3B017BD517300FE7ACC /* KCSMockServer.m */,
+				27F5340817FD93CA0080332D /* KCSNetworkObserver.h */,
+				27F5340917FD93CA0080332D /* KCSNetworkObserver.m */,
 			);
 			name = internal;
 			sourceTree = "<group>";
@@ -2313,6 +2319,7 @@
 				27CD8EE7176FA8AB009463E3 /* KCSFileStore.h in Headers */,
 				273A3E9A160A255900F3742C /* KCSUser+SocialExtras.h in Headers */,
 				27CA5A7C17F217AF007E0E10 /* KCSFile+KCSInternal.h in Headers */,
+				27F5340A17FD93CA0080332D /* KCSNetworkObserver.h in Headers */,
 				273A3E9B160A256100F3742C /* KinveyKitExtras.h in Headers */,
 				27AC2F25161CA258008A05E1 /* KCSClient+ConfigurationTest.h in Headers */,
 				27C22279161DE9B200D827AE /* KCS_SBJson.h in Headers */,
@@ -2972,6 +2979,7 @@
 				2746536A174E92FC0013546E /* KCSAsyncConnection2.m in Sources */,
 				273B64501757DE0F00E1B1B9 /* KCSCustomEndpoints.m in Sources */,
 				273B64591757E5FA00E1B1B9 /* KCSClient+KinveyKit2.m in Sources */,
+				27F5340B17FD93CA0080332D /* KCSNetworkObserver.m in Sources */,
 				273B64601758022B00E1B1B9 /* KCSUser+KinveyKit2.m in Sources */,
 				2798E32F17C7B69D00284F2A /* NSError+KinveyKit.m in Sources */,
 			);

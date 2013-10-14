@@ -43,6 +43,9 @@
 
 #define KCS_CACHES_USE_V2 @"kinvey.usev2caching"
 
+KCS_CONSTANT KCSNetworkConnectionDidStart;
+KCS_CONSTANT KCSNetworkConnectionDidEnd;
+
 @class KCSClientConfiguration;
 
 /*! A Singleton Class that provides access to all Kinvey Services.
