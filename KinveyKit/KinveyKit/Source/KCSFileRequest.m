@@ -54,12 +54,7 @@ static NSOperationQueue* queue;
                 completionBlock:(StreamCompletionBlock)completionBlock
                   progressBlock:(KCSProgressBlock2)progressBlock
 {
-//    NSAssert(_route, @"should have route");
-//    NSAssert(self.credentials, @"should have credentials");
-//    DBAssert(self.options[KCSRequestOptionClientMethod], @"DB should set client method");
-    
     self.completionBlock = completionBlock;
-    //    self.progressBlock = progressBlock;
 
 //    NSError* error = nil;
 //    _outputHandle = [self prepFile:intermediate error:&error];
@@ -69,23 +64,21 @@ static NSOperationQueue* queue;
 //    }
     
     
-    
-    
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
     [request setHTTPMethod:KCSRESTMethodGET];
     
-    if (alreadyWritten != nil) {
-        //TODO: figure this one out
-        //        unsigned long long written = [_outputHandle seekToEndOfFile];
-        unsigned long long written = [alreadyWritten unsignedLongLongValue];
-        if ([alreadyWritten unsignedLongLongValue] == written) {
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
-            [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
-//        } else {
-//            //if they don't match start from begining
-//            [_outputHandle seekToFileOffset:0];
-        }
-    }
+//    if (alreadyWritten != nil) {
+//        //TODO: figure this one out
+//        //        unsigned long long written = [_outputHandle seekToEndOfFile];
+//        unsigned long long written = [alreadyWritten unsignedLongLongValue];
+//        if ([alreadyWritten unsignedLongLongValue] == written) {
+//            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
+//            [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
+////        } else {
+////            //if they don't match start from begining
+////            [_outputHandle seekToFileOffset:0];
+//        }
+//    }
     
     KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@", request.HTTPMethod, request.URL);
 
@@ -97,9 +90,9 @@ static NSOperationQueue* queue;
 //    } else {
 //        
         if ([KCSPlatformUtils supportsNSURLSession]) {
-            op = [[KCSNSURLSessionFileOperation alloc] initWithRequest:request output:intermediate.localURL];
+            op = [[KCSNSURLSessionFileOperation alloc] initWithRequest:request output:intermediate.localURL context:alreadyWritten];
         } else {
-            op = [[KCSNSURLCxnFileOperation alloc] initWithRequest:request output:intermediate.localURL];
+            op = [[KCSNSURLCxnFileOperation alloc] initWithRequest:request output:intermediate.localURL context:alreadyWritten];
         }
     //    }
 

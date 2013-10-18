@@ -29,38 +29,68 @@
 @property (nonatomic, retain) NSURL* localFile;
 @property (nonatomic, retain) NSURLSession* session;
 @property (nonatomic, retain) NSURLSessionDownloadTask* task;
-@property (nonatomic, strong) NSURLRequest* request;
+@property (nonatomic, strong) NSMutableURLRequest* request;
 //@property (nonatomic, retain) NSHTTPURLResponse* response;
 //@property (nonatomic, retain) NSMutableData* responseData;
 @property (nonatomic) unsigned long long bytesWritten;
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSDictionary* returnVals;
 @property (nonatomic) BOOL done;
+@property (nonatomic, strong) id context;
 @end
 
 @implementation KCSNSURLSessionFileOperation
 
-- (instancetype) initWithRequest:(NSURLRequest*)request output:(NSURL*)fileHandle
+- (instancetype) initWithRequest:(NSMutableURLRequest*)request output:(NSURL*)fileHandle  context:(id)context
 {
     self = [super init];
     if (self) {
         _request = request;
         _localFile = fileHandle;
-        _bytesWritten = 0;        
+        _bytesWritten = 0;
+        _context = context;
+        
     }
     return self;
 }
 
 
 -(void)start {
+    if (self.isCancelled == YES) {
+        return;
+    }
+    
     @autoreleasepool {
         [super start];
         
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         
+        NSData* resumeData = nil;
+        NSNumber* alreadyWritten = (NSNumber*)self.context;
+        if (alreadyWritten != nil) {
+            resumeData = [NSData dataWithContentsOfURL:self.localFile];
+            //TODO: figure this one out
+            //        unsigned long long written = [_outputHandle seekToEndOfFile];
+            unsigned long long written = [alreadyWritten unsignedLongLongValue];
+            if ([alreadyWritten unsignedLongLongValue] == written) {
+                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
+                //                [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
+                //        } else {
+                //            //if they don't match start from begining
+                //            [_outputHandle seekToFileOffset:0];
+            }
+        }
+
+        
+        
         NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
         _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:[NSOperationQueue currentQueue]];
-        _task = [_session downloadTaskWithRequest:_request];
+        if (resumeData == nil) {
+            _task = [_session downloadTaskWithRequest:_request];
+        } else {
+            _task = [_session downloadTaskWithResumeData:resumeData];
+        }
+
         [_task resume];
         
         [runLoop run];
@@ -79,6 +109,11 @@
     return ([self isCancelled] ? YES : _done);
 }
 
+- (BOOL)isExecuting
+{
+    return ![self isFinished];
+}
+
 
 //- (void) cancel
 //{
@@ -93,10 +128,13 @@
 
 - (void)cancel
 {
+    NSLog(@"1");
     [self.task cancelByProducingResumeData:^(NSData *resumeData) {
+        NSLog(@"3");
         self.resumeData = resumeData;
+        [super cancel];
     }];
-    [super cancel];
+    NSLog(@"2");
 }
 
 - (void) complete:(NSError*)error
@@ -106,6 +144,16 @@
 //        //is an error just get the data locally
 //        //TODO: handle this!!  [_responseData appendData:data];
 //    }
+// resume data
+    if (error) {
+        NSData* resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData];
+        NSError* fileError = nil;
+        [resumeData writeToURL:self.localFile options:0 error:&fileError];
+        if (fileError) {
+            KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"Error writing resume data: %@", fileError);
+        }
+    }
+    
     
     NSMutableDictionary* results = [NSMutableDictionary dictionary];
     setIfValNotNil(results[KCSFileMimeType], [self contentType]);
@@ -190,17 +238,20 @@
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
 {
-    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"downloaded %lld bytes from file service", bytesWritten);
-    
-    _bytesWritten = totalBytesWritten;
-                if (self.progressBlock) {
-                    //            NSUInteger downloadedAmount = [_outputHandle offsetInFile];
-//                    _intermediateFile.length = downloadedAmount;
-        //
-                    double progress = (double)totalBytesWritten / (double) totalBytesExpectedToWrite;
-        //#warning fix this, please
-                    self.progressBlock(@[], progress, @{});
-                }
+    NSInteger responseCode = [(NSHTTPURLResponse*)downloadTask.response statusCode];    
+    if (responseCode < 400) {
+        KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"downloaded %lld bytes from file service", bytesWritten);
+        
+        _bytesWritten += bytesWritten;
+        if (self.progressBlock) {
+            //            NSUInteger downloadedAmount = [_outputHandle offsetInFile];
+            //                    _intermediateFile.length = downloadedAmount;
+            //
+            double progress = (double)totalBytesWritten / (double) totalBytesExpectedToWrite;
+            //#warning fix this, please
+            self.progressBlock(@[], progress, @{});
+        }
+    }
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes
