@@ -22,6 +22,7 @@
 
 
 + (BOOL) supportsNSURLSession;
++ (BOOL) supportsResumeData;
 + (BOOL) supportsVendorID;
 + (NSString*) platformString;
 

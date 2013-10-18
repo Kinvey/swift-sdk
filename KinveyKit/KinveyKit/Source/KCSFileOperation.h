@@ -34,7 +34,7 @@ typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSErr
 
 
 @protocol KCSFileOperation <NSObject>
-- (instancetype) initWithRequest:(NSURLRequest*)request output:(NSURL*)outputFile;
+- (instancetype) initWithRequest:(NSMutableURLRequest*)request output:(NSURL*)outputFile context:(id)context;
 
 @property (nonatomic, strong, readonly) NSError* error;
 @property (nonatomic, strong, readonly) NSDictionary* returnVals;

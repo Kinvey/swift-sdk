@@ -41,6 +41,11 @@
     return supports;
 }
 
++ (BOOL) supportsResumeData
+{
+    return [self supportsNSURLSession];
+}
+
 + (BOOL) supportsVendorID
 {
 #if TARGET_OS_IPHONE

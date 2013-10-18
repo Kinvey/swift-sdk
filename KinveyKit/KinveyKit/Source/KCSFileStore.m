@@ -1,4 +1,3 @@
-
 //
 //  KCSFileStore.m
 //  KinveyKit
@@ -41,6 +40,7 @@
 #import "NSString+KinveyAdditions.h"
 
 #import "KinveyFileStoreInteral.h"
+#import "KCSPlatformUtils.h"
 
 NSString* const KCSFileId = KCSEntityKeyId;
 NSString* const KCSFileACL = KCSEntityKeyMetadata;
@@ -1244,10 +1244,16 @@ KCSFile* fileFromResults(NSDictionary* results)
     NSNumber* bytes = nil;
     if (fieldExistsAndIsYES(options, KCSFileResume)) {
         if ([[NSFileManager defaultManager] fileExistsAtPath:[destinationFile path]] == YES) {
-            NSError* error = nil;
-            NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[destinationFile path] error:&error];
-            if (error == nil) {
-                bytes = attributes[NSFileSize];
+            if ([KCSPlatformUtils supportsResumeData] == NO) {
+                //iOS 6 --
+                NSError* error = nil;
+                NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[destinationFile path] error:&error];
+                if (error == nil) {
+                    bytes = attributes[NSFileSize];
+                }
+            } else {
+                //iOS 7
+                bytes = @(-1001);
             }
         }
     }

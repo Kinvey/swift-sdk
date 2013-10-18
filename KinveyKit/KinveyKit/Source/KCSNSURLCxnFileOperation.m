@@ -30,13 +30,14 @@
 @property (nonatomic, retain) NSURL* localURL;
 @property (nonatomic) long long maxLength;
 @property (nonatomic, retain) NSURLConnection* connection;
-@property (nonatomic, strong) NSURLRequest* request;
+@property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, retain) NSHTTPURLResponse* response;
 @property (nonatomic, retain) NSMutableData* responseData;
 @property (nonatomic) unsigned long long bytesWritten;
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSDictionary* returnVals;
 @property (nonatomic) BOOL done;
+@property (nonatomic, strong) id context;
 @end
 
 @implementation KCSNSURLCxnFileOperation
@@ -61,17 +62,19 @@
 }
 
 
-- (instancetype) initWithRequest:(NSURLRequest*)request output:(NSURL*)fileURL
+- (instancetype) initWithRequest:(NSMutableURLRequest*)request output:(NSURL*)fileURL context:(id)context
 {
     self = [super init];
     if (self) {
         _request = request;
         _localURL = fileURL;
         _bytesWritten = 0;
+        _context = context;
         
         //#if BUILD_FOR_UNIT_TEST
         //    lastRequest = self;
         //#endif
+
     }
     return self;
 }
@@ -90,6 +93,20 @@
             return;
         }
 
+        
+        NSNumber* alreadyWritten = (NSNumber*)self.context;
+        if (alreadyWritten != nil) {
+            //TODO: figure this one out
+            //        unsigned long long written = [_outputHandle seekToEndOfFile];
+            unsigned long long written = [alreadyWritten unsignedLongLongValue];
+            if ([alreadyWritten unsignedLongLongValue] == written) {
+                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
+                [self.request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
+                //        } else {
+                //            //if they don't match start from begining
+                //            [_outputHandle seekToFileOffset:0];
+            }
+        }
 
 
 
