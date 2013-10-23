@@ -1688,9 +1688,20 @@ NSData* testData2()
 
 - (void) testTTLExpires
 {
+    self.done = NO;
+    __block NSString* fileId = nil;
+    [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_
+        fileId = uploadInfo.fileId;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    STAssertNotNil(fileId, @"should have valid file");
+    
     SETUP_PROGRESS;
     self.done = NO;
-    [KCSFileStore downloadFile:kTestId options:@{KCSFileStoreTestExpries : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    [KCSFileStore downloadFile:fileId options:@{KCSFileStoreTestExpries : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNotNil(error, @"Should have an error");
         STAssertEquals(error.code, 400, @"Should be a 400");
         STAssertEqualObjects(error.domain, KCSFileStoreErrorDomain, @"should be a file error");

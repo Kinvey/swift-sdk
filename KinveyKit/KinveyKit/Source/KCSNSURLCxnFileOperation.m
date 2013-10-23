@@ -97,14 +97,14 @@
         NSNumber* alreadyWritten = (NSNumber*)self.context;
         if (alreadyWritten != nil) {
             //TODO: figure this one out
-            //        unsigned long long written = [_outputHandle seekToEndOfFile];
-            unsigned long long written = [alreadyWritten unsignedLongLongValue];
+            unsigned long long written = [_outputHandle seekToEndOfFile];
+            //unsigned long long written = [alreadyWritten unsignedLongLongValue];
             if ([alreadyWritten unsignedLongLongValue] == written) {
                 KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
                 [self.request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
-                //        } else {
-                //            //if they don't match start from begining
-                //            [_outputHandle seekToFileOffset:0];
+            } else {
+                //if they don't match start from begining
+                [_outputHandle seekToFileOffset:0];
             }
         }
 
@@ -131,16 +131,20 @@
 }
 
 
-//- (void) cancel
-//{
-//    [_connection cancel];
-//    [_outputHandle closeFile];
-//    NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
-//    
-//    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
-//    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
-//    _completionBlock(NO, returnVals, error);
-//}
+- (void) cancel
+{
+    [_connection cancel];
+    [_outputHandle closeFile];
+    NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
+    
+    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
+    //    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
+    self.error = error;
+    //    _completionBlock(NO, returnVals, error);
+
+    [super cancel];
+    self.finished = YES;
+}
 
 - (void) complete:(NSError*)error
 {
@@ -150,6 +154,8 @@
     self.returnVals = [results copy];
 
     [_outputHandle closeFile];
+    self.error = error;
+
 
     //SET finished _completionBlock(NO, returnVals, error);
     
@@ -213,14 +219,13 @@
         //response is good, collect data
         [_outputHandle writeData:data];
         _bytesWritten += data.length;
-//        if (_progressBlock) {
-//            NSUInteger downloadedAmount = [_outputHandle offsetInFile];
-//            _intermediateFile.length = downloadedAmount;
-//            
-//            double progress = (double)downloadedAmount / (double) _maxLength;
-//#warning fix this, please
-//            _progressBlock(@[_intermediateFile], progress, @{});
-//        }
+        if (self.progressBlock) {
+            NSUInteger downloadedAmount = [_outputHandle offsetInFile];
+            //TODO: fix  or not?          _intermediateFile.length = downloadedAmount;
+            
+            double progress = (double)downloadedAmount / (double) _maxLength;
+            _progressBlock(@[], progress, @{});
+        }
     }
 }
 

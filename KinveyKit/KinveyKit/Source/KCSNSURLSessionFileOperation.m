@@ -114,27 +114,12 @@
     return ![self isFinished];
 }
 
-
-//- (void) cancel
-//{
-//    [_connection cancel];
-//    [_outputHandle closeFile];
-//    NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
-//
-//    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
-//    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
-//    _completionBlock(NO, returnVals, error);
-//}
-
 - (void)cancel
 {
-    NSLog(@"1");
     [self.task cancelByProducingResumeData:^(NSData *resumeData) {
-        NSLog(@"3");
         self.resumeData = resumeData;
         [super cancel];
     }];
-    NSLog(@"2");
 }
 
 - (void) complete:(NSError*)error

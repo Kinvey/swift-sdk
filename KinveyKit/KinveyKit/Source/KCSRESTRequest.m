@@ -134,7 +134,7 @@ NSString * getLogDate(void)
 - (void)start
 {
     KCSClient *kinveyClient = [KCSClient sharedClient];
-      
+
     if (self.isMockRequest) {
         self.connection = [KCSConnectionPool connectionWithConnectionType:self.mockConnection];
     } else {
