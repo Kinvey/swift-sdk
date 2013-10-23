@@ -12,6 +12,7 @@
     * Deprecated data store constructors that use `authHandler`.
 * Bug fix(es):
     * File references will no longer be auto-resolved on load if not mapped in the `kinveyPropertyToCollectionMapping` method.
+    * Library now treats `@""` object id's the same as if they are `nil`, that is the object _id has not yet been set and it should be set by the server. 
 
 ## 1.21
 ### 1.21.1

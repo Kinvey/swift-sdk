@@ -345,6 +345,24 @@
     [self poll];
 }
 
+- (void) testNoEmptyIds_HS2676
+{
+    TestObject* to = [[TestObject alloc] init];
+    to.testParam1 = @"A";
+    to.testId = @"";
+    
+    KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:to error:NULL];
+    STAssertNotNil(so, @"should not have a nil object");
+    
+    NSDictionary* d = [so dataToSerialize];
+    STAssertNotNil(d, @"should not have a nil dictionary");
+
+    STAssertNil(d[@"_id"], @"should not have an id");
+    STAssertNotNil(d[@"testParam1i"], @"should have the param");
+    
+    STAssertNil(so.objectId, @"should have no obj id");
+}
+
 @end
 
 
