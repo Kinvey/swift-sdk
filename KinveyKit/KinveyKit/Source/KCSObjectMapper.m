@@ -638,6 +638,11 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
             //don't map nils
             continue;
         }
+        if ([jsonName isEqualToString:KCSEntityKeyId] && [value isEqualToString:@""]) {
+            //treat @"" as nil for the _id case; assembla #2676
+            objectId = nil;
+            continue;
+        }
         
         //serialize the fields to a dictionary
         if ([jsonName isEqualToString:KCSEntityKeyMetadata]) {
