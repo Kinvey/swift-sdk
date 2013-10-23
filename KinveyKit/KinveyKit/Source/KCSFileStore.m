@@ -818,7 +818,7 @@ KCSFile* fileFromResults(NSDictionary* results)
            progressBlock:(KCSProgressBlock)progressBlock
 {
     if ([_ongoingDownloads containsObject:fileId]) {
-        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download already in progress."};
+        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download already in progress.", KCSFileId : fileId};
         NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
         completionBlock(nil, error);
         return;
@@ -869,34 +869,6 @@ KCSFile* fileFromResults(NSDictionary* results)
             progressBlock(objects, percentComplete);
         }
     }];
-    
-    
-//    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
-//    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
-//        [_ongoingDownloads removeObject:fileId];
-//
-//        if (error) {
-//            completionBlock(nil, error);
-//        } else {
-//            NSData* data = [NSData dataWithContentsOfURL:localFile];
-//            if (data == nil) {
-//                KCSLogError(@"Error reading temp file for data download: %@", localFile);
-//                NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Error reading temp file for data download.", NSLocalizedRecoverySuggestionErrorKey : @"Retry download."};
-//                NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
-//                completionBlock(nil, error);
-//                return;
-//            }
-//            
-//            KCSFile* file = [[KCSFile alloc] initWithData:data
-//                                                   fileId:fileId
-//                                                 filename:filename
-//                                                 mimeType:mimeType];
-//            NSError* error = nil;
-//            [[NSFileManager defaultManager] removeItemAtURL:localFile error:&error];
-//            KCSLogNSError(@"error removing temp download cache", error);
-//            completionBlock(@[file], nil);
-//        }
-//    } progressBlock:progressBlock];
 }
 
 + (void) _getDownloadObject:(NSString*)fileId options:(NSDictionary*)options intermediateCompletionBlock:(KCSCompletionBlock)completionBlock
