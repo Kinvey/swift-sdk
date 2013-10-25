@@ -38,6 +38,8 @@
 #import "KCSClientConfiguration.h"
 #import "KCSHiddenMethods.h"
 
+#define kAppKeyKechainKey @"com.kinvey.kinveykit.appkey"
+
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
@@ -106,17 +108,13 @@
         [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"`nil` or invalid appSecret, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
     }
 
-    NSString* oldAppKey = [KCSKeyChain getStringForKey:@"kinveykit.appkey"];
+    NSString* oldAppKey = [KCSKeyChain getStringForKey:kAppKeyKechainKey];
     if (oldAppKey != nil && [configuration.appKey isEqualToString:oldAppKey] == NO) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-        [self setCurrentUser:nil];
-#pragma clang diagnostic pop
         //clear the saved user if the kid changes
-        [KCSUser clearSavedCredentials];
+        [[KCSUser activeUser] logout];
     }
     //TODO: use defaults
-    [KCSKeyChain setString:configuration.appKey forKey:@"kinveykit.appkey"];
+    [KCSKeyChain setString:configuration.appKey forKey:kAppKeyKechainKey];
 
     _networkReachability = [KCSReachability reachabilityForInternetConnection];
     // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)

@@ -704,6 +704,8 @@ static KCSRESTRequest* lastBGUpdate = nil;
         
         [KCSUser clearSavedCredentials];
         
+#warning TODO clear caches
+        
         // Set the currentUser to nil
         setActive(nil);
     }
