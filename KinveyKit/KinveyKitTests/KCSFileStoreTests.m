@@ -2722,4 +2722,34 @@ NSData* testData2()
     STAssertEqualObjects(one, two, @"should be equal data");
 }
 
+//g2704
+- (void) testFilenameWithSpaces
+{
+    NSString* filename = @"Porto rotondo.jpg";
+    __block NSString* fileid = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:@{KCSFileFileName : filename} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        fileid = uploadInfo.fileId;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    STAssertNotNil(fileid, @"file id should be set");
+    
+    self.done = NO;
+    [KCSFileStore downloadFile:fileid options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [KCSFileStore deleteFile:fileid completionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError
+        self.done = YES;
+    }];
+    [self poll];
+}
+
 @end

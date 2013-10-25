@@ -5,6 +5,7 @@
 ** Release Date:** TBD
 
 * TODO: KCSNetworkObserver
+* Internal Updates
 * Code cleanup:
     * Removed deprecated methods/classes:
          * `[KCSUser loginWithFacebookAccessToken:withCompletionBlock:]`
@@ -13,6 +14,7 @@
 * Bug fix(es):
     * File references will no longer be auto-resolved on load if not mapped in the `kinveyPropertyToCollectionMapping` method.
     * Library now treats `@""` object id's the same as if they are `nil`, that is the object _id has not yet been set and it should be set by the server. 
+    * File store can now save files with spaces in the filename.
 
 ## 1.21
 ### 1.21.1
