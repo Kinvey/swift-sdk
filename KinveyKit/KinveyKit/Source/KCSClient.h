@@ -43,7 +43,9 @@
 
 #define KCS_CACHES_USE_V2 @"kinvey.usev2caching"
 
+/** Notification for when a network operation starts */
 KCS_CONSTANT KCSNetworkConnectionDidStart;
+/** Notification for when a network operation ends */
 KCS_CONSTANT KCSNetworkConnectionDidEnd;
 
 @class KCSClientConfiguration;

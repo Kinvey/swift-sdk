@@ -137,10 +137,7 @@
     [_outputHandle closeFile];
     NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
     
-    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
-    //    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
     self.error = error;
-    //    _completionBlock(NO, returnVals, error);
 
     [super cancel];
     self.finished = YES;
