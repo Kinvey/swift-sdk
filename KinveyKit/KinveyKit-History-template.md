@@ -2,7 +2,7 @@
 
 ## 1.22
 ### 1.22.0
-** Release Date:** TBD
+** Release Date:** October 28, 2013
 
 * Internal Updates
 * Code cleanup:
@@ -17,7 +17,7 @@
 
 ## 1.21
 ### 1.21.1
-** Release Date:** September 24, 2014
+** Release Date:** September 24, 2013
 
 * Update missed `fmdb` function prefix. 
 

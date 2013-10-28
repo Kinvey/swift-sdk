@@ -67,4 +67,10 @@
     STAssertNil(d, @"should get back no value");
 }
 
+- (void) testQueryRW
+{
+    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
+    
+}
+
 @end
