@@ -24,6 +24,6 @@
 
 #import "KCSQuery2+KCSInternal.h"
 
-#import "KCSEntityCache2.h"
+#import "KCSEntityPersistence.h"
 
 #endif

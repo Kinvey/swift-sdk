@@ -38,7 +38,7 @@
 #import "KCSObjectMapper.h"
 #import "KinveyUser.h"
 
-#import "KCSEntityCache2.h"
+#import "KCSEntityPersistence.h"
 
 
 @interface KCSEntityCache () <NSCacheDelegate>

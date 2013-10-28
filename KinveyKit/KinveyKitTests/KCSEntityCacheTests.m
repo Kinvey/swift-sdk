@@ -9,7 +9,7 @@
 #import "KCSEntityCacheTests.h"
 
 #import "KCSEntityCache.h"
-#import "KCSEntityCache2.h"
+#import "KCSEntityPersistence.h"
 
 #import "KCSQuery.h"
 #import "ASTTestClass.h"
@@ -26,10 +26,10 @@
 {
     id<KCSEntityCache> c;
     if (pid) {
-        c =  [[KCSEntityCache2 alloc] initWithPersistenceId:pid];
+        c =  [[KCSEntityPersistence alloc] initWithPersistenceId:pid];
         [c setPersistenceId:pid];
     } else {
-        c =  [[KCSEntityCache2 alloc] init];
+        c =  [[KCSEntityPersistence alloc] init];
     }
     return c;
 }

@@ -18,7 +18,7 @@
 //
 
 
-#import "KCSEntityCache2.h"
+#import "KCSEntityPersistence.h"
 //#import "KCSEntityCache.h"
 //
 //#import "KinveyEntity.h"
@@ -51,7 +51,7 @@
 //    return representation;
 //}
 
-@interface KCSEntityCache2 ()
+@interface KCSEntityPersistence ()
 @property (nonatomic, strong) KCS_FMDatabase* db;
 @property (nonatomic, strong) KCS_SBJsonWriter* jsonWriter;
 @property (nonatomic, strong) KCS_SBJsonParser* jsonParser;
@@ -89,7 +89,7 @@
 
 @end
 
-@implementation KCSEntityCache2
+@implementation KCSEntityPersistence
 
 
 - (NSString*) dbPath
@@ -150,7 +150,7 @@
 //        }
 //    }
     if (![_db tableExists:@"queries"]) {
-        e = [_db executeUpdate:@"CREATE TABLE queries (id VARCHAR(255) PRIMARY KEY, ids TEXT)"];
+        e = [_db executeUpdate:@"CREATE TABLE queries (id VARCHAR(255) PRIMARY KEY, ids TEXT, routeKey TEXT)"];
         if (e == NO) {
             KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
         }
@@ -518,16 +518,33 @@
     return obj;
 }
 
-#pragma mark - queries
-- (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)queryKey
+- (BOOL) removeEntity:(NSString*)_id route:(NSString*)route collection:(NSString*)collection
 {
-    KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"update query: '%@'", queryKey);
+//    KCSCacheValueDB* val = [self dbObjectForId:objId];
+//    val.count--;
+//    if (val.count == 0) {
+    KCSLogInfo(KCS_LOG_CONTEXT_FILESYSTEM, @"Deleting obj %@ from cache", _id);
+    NSString* table = [self tableForRoute:route collection:collection];
+    NSString* update = [NSString stringWithFormat:@"DELETE FROM %@ WHERE id='%@'", table, _id];
+    BOOL updated = [_db executeUpdate:update];
+    if (updated == NO) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    return updated;
+    //    }
+
+}
+
+#pragma mark - queries
+- (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection
+{
+    KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"update query: '%@'", query);
     
-    NSArray* oldIds = [self idsForQuery:queryKey];
+    NSArray* oldIds = [self idsForQuery:query route:route collection:collection];
     if (oldIds) {
         NSMutableArray* removedIds = [theseIds mutableCopy];
         [removedIds removeObjectsInArray:oldIds];
-        [self removeIds:removedIds];
+        [self removeIds:removedIds route:route collection:collection];
     }
     
     NSError* error = nil;
@@ -535,16 +552,22 @@
     if (error) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", theseIds);
     }
+    
+    NSString* routeKey = [self tableForRoute:route collection:collection];
+    NSString* queryKey = [NSString stringWithFormat:@"%@_%@", routeKey, collection];
 
-    BOOL updated = [_db executeUpdate:@"REPLACE INTO queries VALUES (:id, :ids)" withArgumentsInArray:@[queryKey, jsonStr]];
+    BOOL updated = [_db executeUpdate:@"REPLACE INTO queries VALUES (:id, :ids, :routeKey)" withArgumentsInArray:@[queryKey, jsonStr, routeKey]];
     if (updated == NO) {
         KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
     return updated;
 }
 
-- (NSArray*)idsForQuery:(NSString*)queryKey
+- (NSArray*)idsForQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection
 {
+    NSString* routeKey = [self tableForRoute:route collection:collection];
+    NSString* queryKey = [NSString stringWithFormat:@"%@_%@", routeKey, collection];
+
     NSString* q = [NSString stringWithFormat:@"SELECT ids FROM queries WHERE id='%@'", queryKey];
     NSString* result = [_db stringForQuery:q];
     if ([_db hadError]) {
@@ -558,9 +581,14 @@
     }
 }
 
-- (NSArray*)removeIds:(NSArray*)ids
+- (NSUInteger) removeIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection
 {
-    
+    NSUInteger count = 0;
+    for (NSString* _id in ids) {
+        BOOL u = [self removeEntity:_id route:route collection:collection];
+        if (u) count++;
+    }
+    return count;
 }
 
 #pragma mark - Management
