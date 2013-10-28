@@ -4,7 +4,6 @@
 ### 1.22.0
 ** Release Date:** TBD
 
-* TODO: KCSNetworkObserver
 * Internal Updates
 * Code cleanup:
     * Removed deprecated methods/classes:

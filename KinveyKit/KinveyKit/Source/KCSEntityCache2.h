@@ -2,7 +2,6 @@
 //  KCSEntityCache2.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 5/14/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -20,12 +19,17 @@
 #import <Foundation/Foundation.h>
 #import "KCSEntityCache.h"
 
-@interface KCSEntityCache2 : NSObject <KCSEntityCache>
+@interface KCSEntityCache2 : NSObject // <KCSEntityCache>
 @property (nonatomic, strong) NSDictionary* saveContext;
 @property (nonatomic, retain) NSString* persistenceId;
 
 - (instancetype) initWithPersistenceId:(NSString*)key;
 
+- (NSArray*)idsForQuery:(NSString*)queryKey;
+- (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)queryKey;
+
+- (BOOL) updateWithEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection;
+- (NSDictionary*) entityForId:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;
 
 @end
 

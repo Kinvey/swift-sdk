@@ -7,7 +7,7 @@
 //
 
 #import "KCS_FMDatabase.h"
-#import "FMDatabaseAdditions.h"
+#import "KCS_FMDatabaseAdditions.h"
 
 @interface KCS_FMDatabase (PrivateStuff)
 - (KCS_FMResultSet *)executeQuery:(NSString *)sql withArgumentsInArray:(NSArray*)arrayArgs orDictionary:(NSDictionary *)dictionaryArgs orVAList:(va_list)args;

@@ -37,6 +37,7 @@
 #pragma mark - Utils
 
 #import "KCSPlatformUtils.h"
+#import "KCSFileUtils.h"
 #import "KCSLog.h"
 #import "KCSLogFormatter.h"
 #import "NSArray+KinveyAdditions.h"
