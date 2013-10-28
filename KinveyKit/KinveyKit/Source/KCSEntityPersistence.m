@@ -94,7 +94,7 @@
 
 - (NSString*) dbPath
 {
-    return [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.sqllite", _persistenceId]];
+    return [KCSFileUtils localPathForDB:[NSString stringWithFormat:@"com.kinvey.%@_cache.sqlite3", _persistenceId]];
 }
 
 - (instancetype) initWithPersistenceId:(NSString*)key
@@ -124,7 +124,7 @@
     
     BOOL e = NO;
     if (![_db tableExists:@"metadata"]) {
-        KCSLogInfo(KCS_LOG_CONTEXT_FILESYSTEM, @"Creating New Cache %@", path);
+        KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Creating New Cache %@", path);
         e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT, data)"];
         if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
         e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
@@ -463,7 +463,7 @@
         DBAssert(YES, @"No object");
     }
     
-    KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"Insert/update %@/%@", _persistenceId, _id);
+    KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"Insert/update %@/%@", _persistenceId, _id);
     NSDictionary* valDictionary = @{@"id":_id,
                                     @"obj":objStr,
                                     @"time":[NSDate date],
@@ -496,7 +496,7 @@
     NSString* table = [self tableForRoute:route collection:collection];
     NSString* q = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE id='%@'", table, _id];
     
-    KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"DB fetching %@ from %@/%@", _id, route, collection);
+    KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"DB fetching %@ from %@/%@", _id, route, collection);
     
     KCS_FMResultSet* rs = [_db executeQuery:q];
     if ([_db hadError]) {
@@ -523,7 +523,7 @@
 //    KCSCacheValueDB* val = [self dbObjectForId:objId];
 //    val.count--;
 //    if (val.count == 0) {
-    KCSLogInfo(KCS_LOG_CONTEXT_FILESYSTEM, @"Deleting obj %@ from cache", _id);
+    KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Deleting obj %@ from cache", _id);
     NSString* table = [self tableForRoute:route collection:collection];
     NSString* update = [NSString stringWithFormat:@"DELETE FROM %@ WHERE id='%@'", table, _id];
     BOOL updated = [_db executeUpdate:update];
@@ -536,14 +536,19 @@
 }
 
 #pragma mark - queries
+- (NSString*)queryKey:(NSString*)query routeKey:(NSString*)routeKey
+{
+    return [@([[NSString stringWithFormat:@"%@_%@", routeKey, query] hash]) stringValue];
+}
+
 - (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection
 {
-    KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"update query: '%@'", query);
+    KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"update query: '%@'", query);
     
     NSArray* oldIds = [self idsForQuery:query route:route collection:collection];
-    if (oldIds) {
-        NSMutableArray* removedIds = [theseIds mutableCopy];
-        [removedIds removeObjectsInArray:oldIds];
+    if (oldIds && oldIds.count > 0) {
+        NSMutableArray* removedIds = [oldIds mutableCopy];
+        [removedIds removeObjectsInArray:theseIds];
         [self removeIds:removedIds route:route collection:collection];
     }
     
@@ -554,7 +559,7 @@
     }
     
     NSString* routeKey = [self tableForRoute:route collection:collection];
-    NSString* queryKey = [NSString stringWithFormat:@"%@_%@", routeKey, collection];
+    NSString* queryKey = [self queryKey:query routeKey:routeKey];
 
     BOOL updated = [_db executeUpdate:@"REPLACE INTO queries VALUES (:id, :ids, :routeKey)" withArgumentsInArray:@[queryKey, jsonStr, routeKey]];
     if (updated == NO) {
@@ -566,7 +571,7 @@
 - (NSArray*)idsForQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection
 {
     NSString* routeKey = [self tableForRoute:route collection:collection];
-    NSString* queryKey = [NSString stringWithFormat:@"%@_%@", routeKey, collection];
+    NSString* queryKey = [self queryKey:query routeKey:routeKey];
 
     NSString* q = [NSString stringWithFormat:@"SELECT ids FROM queries WHERE id='%@'", queryKey];
     NSString* result = [_db stringForQuery:q];
@@ -589,6 +594,20 @@
         if (u) count++;
     }
     return count;
+}
+
+#pragma mark
+- (BOOL) import:(NSArray *)entities route:(NSString *)route collection:(NSString *)collection
+{
+    if (entities == nil) return NO;
+    //TODO set the all?
+    for (NSDictionary* entity in entities) {
+        BOOL updated = [self updateWithEntity:entity route:route collection:collection];
+        if (updated == NO) {
+            return NO;
+        }
+    }
+    return YES;
 }
 
 #pragma mark - Management

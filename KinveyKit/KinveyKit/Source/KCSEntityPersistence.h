@@ -32,5 +32,10 @@
 - (NSDictionary*) entityForId:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;
 - (BOOL) removeEntity:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;
 
+/* 
+ This is not transactional, returns on first failure, but will still hold any previouslly passed objects.
+ */
+- (BOOL) import:(NSArray*)entities route:(NSString*)route collection:(NSString*)collection;
+
 @end
 
