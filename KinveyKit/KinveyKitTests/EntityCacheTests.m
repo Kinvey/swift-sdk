@@ -42,13 +42,29 @@
 
 - (void)testRW
 {
-    KCSEntityCache2* cache = [[KCSEntityCache2 alloc] initWithPersistenceId:@"x"];
+    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
+    NSDictionary* o = @{@"_id":@"1",@"foo":@"bar"};
+    BOOL u = [cache updateWithEntity:o route:@"r" collection:@"c"];
+    STAssertTrue(u, @"should pass");
+    NSDictionary* d = [cache entityForId:@"1" route:@"r" collection:@"c"];
+    STAssertNotNil(d, @"should get back value");
+    
+    STAssertEqualObjects(o, d, @"should be restored");
+}
+
+- (void) testRemove
+{
+    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
     NSDictionary* o = @{@"_id":@"1",@"foo":@"bar"};
     [cache updateWithEntity:o route:@"r" collection:@"c"];
     NSDictionary* d = [cache entityForId:@"1" route:@"r" collection:@"c"];
     STAssertNotNil(d, @"should get back value");
     
-    STAssertEqualObjects(o, d, @"should be restored");
+    BOOL u = [cache removeEntity:@"1" route:@"r" collection:@"c"];
+    STAssertTrue(u, @"should pass");
+
+    d = [cache entityForId:@"1" route:@"r" collection:@"c"];
+    STAssertNil(d, @"should get back no value");
 }
 
 @end

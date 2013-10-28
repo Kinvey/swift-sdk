@@ -19,7 +19,7 @@
 #import <Foundation/Foundation.h>
 #import "KCSEntityCache.h"
 
-@interface KCSEntityCache2 : NSObject // <KCSEntityCache>
+@interface KCSEntityPersistence : NSObject // <KCSEntityCache>
 @property (nonatomic, strong) NSDictionary* saveContext;
 @property (nonatomic, retain) NSString* persistenceId;
 
@@ -30,6 +30,7 @@
 
 - (BOOL) updateWithEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection;
 - (NSDictionary*) entityForId:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;
+- (BOOL) removeEntity:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;
 
 @end
 
