@@ -101,7 +101,7 @@ static KCSCachedStoreCaching* sCaching;
         if (!cache) {
             BOOL useV2 = [[[KCSClient sharedClient].options valueForKey:KCS_CACHES_USE_V2] boolValue];
             if (useV2) {
-                cache = [[KCSEntityCache2 alloc] initWithPersistenceId:collection];
+                //TODO:     cache = [[KCSEntityCache2 alloc] initWithPersistenceId:collection];
             } else {
                 cache = [[KCSEntityCache alloc] init];
             }

@@ -19,38 +19,42 @@
 
 
 #import "KCSEntityCache2.h"
-#import "KCSEntityCache.h"
-
-#import "KinveyEntity.h"
-#import "KCSObjectMapper.h"
-#import "KCSReduceFunction.h"
-#import "KCSHiddenMethods.h"
-#import "KCSGroup.h"
-
-#import "KCSLogManager.h"
-#import "KCS_SBJson.h"
+//#import "KCSEntityCache.h"
+//
+//#import "KinveyEntity.h"
+//#import "KCSObjectMapper.h"
+//#import "KCSReduceFunction.h"
+//#import "KCSHiddenMethods.h"
+//#import "KCSGroup.h"
+//
+//#import "KCSLogManager.h"
+//#import "KCS_SBJson.h"
+//
+#import "KinveyCoreInternal.h"
 
 #import "KCS_FMDatabase.h"
-#import "FMDatabaseAdditions.h"
-#import "KCS_FMResultSet.h"
+#import "KCS_FMDatabaseAdditions.h"
+//#import "KCS_FMResultSet.h"
 
 #define KCS_CACHE_VERSION @"0.1"
 
-NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQuery* condition)
-{
-    NSMutableString* representation = [NSMutableString string];
-    for (NSString* field in fields) {
-        [representation appendString:field];
-    }
-    [representation appendString:[function JSONStringRepresentationForFunction:fields]];
-    if (condition != nil) {
-        [representation appendString:[condition JSONStringRepresentation]];
-    }
-    return representation;
-}
+//NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQuery* condition)
+//{
+//    NSMutableString* representation = [NSMutableString string];
+//    for (NSString* field in fields) {
+//        [representation appendString:field];
+//    }
+//    [representation appendString:[function JSONStringRepresentationForFunction:fields]];
+//    if (condition != nil) {
+//        [representation appendString:[condition JSONStringRepresentation]];
+//    }
+//    return representation;
+//}
 
 @interface KCSEntityCache2 ()
 @property (nonatomic, strong) KCS_FMDatabase* db;
+@property (nonatomic, strong) KCS_SBJsonWriter* jsonWriter;
+@property (nonatomic, strong) KCS_SBJsonParser* jsonParser;
 @end
 
 @interface KCSCacheValueDB : NSObject
@@ -73,14 +77,14 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     return self;
 }
 
-- (NSDictionary*) parameterDict
-{
-    KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
-    NSError* error = nil;
-    NSString* object = [writer stringWithObject:_object error:&error];
-    KCSLogNSError(@"Error serialializing dictionary object", error);
-    return @{@"id": _objId, @"obj" : object, @"time" : _lastReadTime, @"dirty" : @(_unsaved), @"count" : @(_count), @"classname" : _classname};
-}
+//- (NSDictionary*) parameterDict
+//{
+//    KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
+//    NSError* error = nil;
+//    NSString* object = [writer stringWithObject:_object error:&error];
+//    KCSLogNSError(@"Error serialializing dictionary object", error);
+//    return @{@"id": _objId, @"obj" : object, @"time" : _lastReadTime, @"dirty" : @(_unsaved), @"count" : @(_count), @"classname" : _classname};
+//}
 //TODO: #27 lmt,
 
 @end
@@ -98,6 +102,8 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     self = [super init];
     if (self) {
         _persistenceId = key;
+        _jsonWriter = [[KCS_SBJsonWriter alloc] init];
+        _jsonParser = [[KCS_SBJsonParser alloc] init];
         
         [self initDB];
     }
@@ -118,14 +124,14 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     
     BOOL e = NO;
     if (![_db tableExists:@"metadata"]) {
-        KCSLogCache(@"Creating New Cache %@", path);
+        KCSLogInfo(KCS_LOG_CONTEXT_FILESYSTEM, @"Creating New Cache %@", path);
         e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT, data)"];
-        if (!e || [_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+        if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
         e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
-        if (!e || [_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+        if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
     } else {
         KCS_FMResultSet *rs = [_db executeQuery:@"SELECT version FROM metadata"];
-        if (!e || [_db hadError]) { KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+        if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
         NSString* version = nil;
         if ([rs next]) {
             NSDictionary* d = [rs resultDictionary];
@@ -137,22 +143,22 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
         }
     }
 
-    if (![_db tableExists:@"objs"]) {
-        e = [_db executeUpdate:@"CREATE TABLE objs (id VARCHAR(255) PRIMARY KEY, obj TEXT, time VARCHAR(255), saved BOOL, count INT, classname TEXT)"];
-        if (e == NO) {
-            KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
-        }
-    }
+//    if (![_db tableExists:@"objs"]) {
+//        e = [_db executeUpdate:@"CREATE TABLE objs (id VARCHAR(255) PRIMARY KEY, obj TEXT, time VARCHAR(255), saved BOOL, count INT, classname TEXT)"];
+//        if (e == NO) {
+//            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+//        }
+//    }
     if (![_db tableExists:@"queries"]) {
         e = [_db executeUpdate:@"CREATE TABLE queries (id VARCHAR(255) PRIMARY KEY, ids TEXT)"];
         if (e == NO) {
-            KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
         }
     }
     if (![_db tableExists:@"groups"]) {
         e = [_db executeUpdate:@"CREATE TABLE groups (key TEXT PRIMARY KEY, results TEXT)"];
         if (e == NO) {
-            KCSLogError(@"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
         }
     }
 }
@@ -163,7 +169,7 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
 }
 
 #pragma mark - objects
-
+/*
 - (KCSCacheValueDB*) dbObjectForId:(NSString*) objId
 {
     NSString* q = [NSString stringWithFormat:@"SELECT * FROM objs WHERE id='%@'", objId];
@@ -436,11 +442,131 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     
 }
 
+*/
+
+- (NSString*) tableForRoute:(NSString*)route collection:(NSString*)collection
+{
+    return [NSString stringWithFormat:@"%@_%@",route,collection];
+}
+
+- (BOOL) updateWithEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection
+{
+    NSString* _id = entity[KCSEntityKeyId];
+    if (_id == nil) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"nil `_id` in %@", entity);
+        DBAssert(YES, @"No id!");
+    }
+    NSError* error = nil;
+    NSString* objStr = [self.jsonWriter stringWithObject:entity error:&error];
+    if (error != nil) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", entity);
+        DBAssert(YES, @"No object");
+    }
+    
+    KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"Insert/update %@/%@", _persistenceId, _id);
+    NSDictionary* valDictionary = @{@"id":_id,
+                                    @"obj":objStr,
+                                    @"time":[NSDate date],
+                                    @"dirty":@NO, //TODO
+                                    @"count":@1, //TODO
+                                    @"classname":@"" //TODO
+                                    };
+    
+    NSString* table = [self tableForRoute:route collection:collection];
+
+    if (![_db tableExists:table]) {
+        NSString* update = [NSString stringWithFormat:@"CREATE TABLE %@ (id VARCHAR(255) PRIMARY KEY, obj TEXT, time VARCHAR(255), saved BOOL, count INT, classname TEXT)", table];
+        BOOL created = [_db executeUpdate:update];
+        if (created == NO) {
+            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+        }
+    }
+
+    
+    NSString* update = [NSString stringWithFormat:@"REPLACE INTO %@ VALUES (:id, :obj, :time, :dirty, :count, :classname)", table];
+    BOOL upated = [_db executeUpdate:update withParameterDictionary:valDictionary];
+    if (upated == NO) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error insert/updating %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    return upated;
+}
+
+- (NSDictionary*) entityForId:(NSString*)_id route:(NSString*)route collection:(NSString*)collection
+{
+    NSString* table = [self tableForRoute:route collection:collection];
+    NSString* q = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE id='%@'", table, _id];
+    
+    KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"DB fetching %@ from %@/%@", _id, route, collection);
+    
+    KCS_FMResultSet* rs = [_db executeQuery:q];
+    if ([_db hadError]) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"DB error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    
+    NSDictionary* obj = nil;
+    if ([rs next]) {
+        NSDictionary* d = [rs resultDictionary];
+        if (d) {
+            NSString* objStr = d[@"obj"];
+            NSError* error = nil;
+            obj = [self.jsonParser objectWithString:objStr error:&error];
+            if (error) {
+                KCSLogError(KCS_LOG_CONTEXT_DATA, @"DB deserialization error %@", error);
+            }
+        }
+    }
+    return obj;
+}
+
+#pragma mark - queries
+- (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)queryKey
+{
+    KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"update query: '%@'", queryKey);
+    
+    NSArray* oldIds = [self idsForQuery:queryKey];
+    if (oldIds) {
+        NSMutableArray* removedIds = [theseIds mutableCopy];
+        [removedIds removeObjectsInArray:oldIds];
+        [self removeIds:removedIds];
+    }
+    
+    NSError* error = nil;
+    NSString* jsonStr = [self.jsonWriter stringWithObject:theseIds error:&error];
+    if (error) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", theseIds);
+    }
+
+    BOOL updated = [_db executeUpdate:@"REPLACE INTO queries VALUES (:id, :ids)" withArgumentsInArray:@[queryKey, jsonStr]];
+    if (updated == NO) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    return updated;
+}
+
+- (NSArray*)idsForQuery:(NSString*)queryKey
+{
+    NSString* q = [NSString stringWithFormat:@"SELECT ids FROM queries WHERE id='%@'", queryKey];
+    NSString* result = [_db stringForQuery:q];
+    if ([_db hadError]) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+        return @[];
+    } else {
+        NSError* error = nil;
+        NSArray* ids = [self.jsonParser objectWithString:result error:&error];
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error converting id array string into array: %@", error);
+        return ids;
+    }
+}
+
+- (NSArray*)removeIds:(NSArray*)ids
+{
+    
+}
 
 #pragma mark - Management
 - (void) clearCaches
 {
-    KCSLogCache(@"Clearing Caches");
+    KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Clearing Caches");
     [_db close];
     
     NSError* error = nil;
@@ -453,4 +579,5 @@ NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQue
     
     [self initDB];
 }
+ 
 @end
