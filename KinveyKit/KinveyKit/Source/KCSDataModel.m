@@ -1,0 +1,59 @@
+//
+//  KCSDataModel.m
+//  KinveyKit
+//
+//  Created by Michael Katz on 10/28/13.
+//  Copyright (c) 2013 Kinvey. All rights reserved.
+//
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
+#import "KCSDataModel.h"
+
+//TODO: cleanup
+#import "KCSObjectMapper.h"
+
+@interface KCSDataModel ()
+@property (nonatomic, strong) NSMutableDictionary* collectionMap;
+@end
+
+@implementation KCSDataModel
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _collectionMap = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
+- (void) setClass:(Class)class forCollection:(NSString*)collection
+{
+    if (_collectionMap[collection] != nil) {
+        //TODO: make this robust - either ignore, overwrite, or make configurable
+        NSAssert(NO, @"More than one class defined for a collection");
+    }
+    _collectionMap[collection] = class;
+}
+
+- (id<KCSPersistable>) objectFromCollection:(NSString*)collection data:(NSDictionary*)entity
+{
+    Class class = _collectionMap[collection];
+    if (!class) {
+        class = [NSMutableDictionary class];
+    }
+    return [KCSObjectMapper makeObjectOfType:class withData:entity];
+}
+
+
+@end

@@ -40,6 +40,7 @@ KCS_CONST_IMPL KCSRequestOptionClientMethod = kHeaderClientMethod;
 KCS_CONST_IMPL KCSRequestOptionUseMock      = @"UseMock";
 KCS_CONST_IMPL KCSRESTRouteAppdata          = @"appdata";
 KCS_CONST_IMPL KCSRESTRouteUser             = @"user";
+KCS_CONST_IMPL KCSRESTRouteBlob             = @"blob";
 KCS_CONST_IMPL KCSRESTRouteRPC              = @"rpc";
 KCS_CONST_IMPL KCSRestRouteTestReflection   = @"!reflection";
 

@@ -1,5 +1,5 @@
 //
-//  KinveyDataStoreInternal.h
+//  KCSObjectCache.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -17,15 +17,11 @@
 //
 
 
-#ifndef KinveyKit_KinveyDataStoreInternal_h
-#define KinveyKit_KinveyDataStoreInternal_h
+#import <Foundation/Foundation.h>
 
-#import "KinveyDataStore.h"
+@class KCSQuery;
 
-#import "KCSQuery2+KCSInternal.h"
+@interface KCSObjectCache : NSObject
+- (NSArray*) pullQuery:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection;
 
-#import "KCSDataModel.h"
-#import "KCSObjectCache.h"
-#import "KCSEntityPersistence.h"
-
-#endif
+@end

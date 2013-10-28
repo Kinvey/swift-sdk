@@ -102,5 +102,6 @@ typedef enum : NSInteger {
 #define KCSLogInfo(context, frmt, ...)       SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_INFO,   context, frmt, ##__VA_ARGS__)
 #define KCSLogDebug(context, frmt, ...)      SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_DEBUG,  context, frmt, ##__VA_ARGS__)
 #define KCSLogForcedWarn(context, frmt, ...) SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_FATAL,  context, frmt, ##__VA_ARGS__)
+#define KCSLogNSError(context, error)        if (error) KCSLogError(context, @"Error: %@", error);
 
 #endif
