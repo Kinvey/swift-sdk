@@ -24,7 +24,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 @dynamic done;
 #define MAX_POLL_COUNT 20
 
-- (void) poll
+- (BOOL) poll
 {
     int pollCount = 0;
     while (self.done == NO && pollCount < MAX_POLL_COUNT) {
@@ -37,6 +37,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     if (pollCount == MAX_POLL_COUNT) {
         STFail(@"polling timed out");
     }
+    return YES;
 }
 
 

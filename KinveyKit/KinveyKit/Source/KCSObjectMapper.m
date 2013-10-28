@@ -231,7 +231,7 @@ bool isAUserObject(id object)
 {
     BOOL isDictionary = [object isKindOfClass:[NSDictionary class]];
     BOOL isKCSObject = [NSStringFromClass([object class]) hasPrefix:@"KCS"];
-    return isDictionary == NO && isKCSObject == NO;
+    return isDictionary == NO && isKCSObject == YES;
 }
 
 void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NSMutableDictionary* resourcesToLoad, KCSSerializedObject* serializedObject)
@@ -265,6 +265,10 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
             hostToJsonMap = d;
         }
     }
+    NSDictionary* kinveyRefMapping = nil;
+    if (resourcesToLoad != nil && [[object class] respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
+        kinveyRefMapping = [[object class] kinveyPropertyToCollectionMapping];
+    }
     
     BOOL isUserObject = isAUserObject(object);
     
@@ -282,7 +286,7 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
         }
         
         if (value == nil) {
-            if (isUserObject == YES)  {
+            if (isUserObject == NO)  {
                 //dictionaries don't have set properties, so no need to warn, just continue
                 KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
             }
@@ -313,7 +317,14 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
                 } else {
                     //this is a new object & need to download resources
                     KCSFile* file = [KCSFile fileRefFromKinvey:value class:valClass];
-                    resourcesToLoad[hostKey] = file;
+                    if (kinveyRefMapping[hostKey] == nil ||
+                        [[properties valueForKey:hostKey] isEqualToString:NSStringFromClass([KCSFile class])]) {
+                        // just a KCSFile if the type is KCSFile or if the reference is not mapped
+                        [object setValue:file forKey:hostKey];
+                    } else {
+                        //otherwise need to load the binary
+                        resourcesToLoad[hostKey] = file;
+                    }
                 }
             } else if (maybeType == AppdataRef) {
                 //this is a reference
@@ -625,6 +636,11 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
         
         if (value == nil) {
             //don't map nils
+            continue;
+        }
+        if ([jsonName isEqualToString:KCSEntityKeyId] && [value isEqualToString:@""]) {
+            //treat @"" as nil for the _id case; assembla #2676
+            objectId = nil;
             continue;
         }
         

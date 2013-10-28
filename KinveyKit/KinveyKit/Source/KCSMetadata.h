@@ -23,21 +23,21 @@
 /** Fieldname to access an object's creator, using KCSQuery.
  @since 1.10.2
  */
-FOUNDATION_EXPORT NSString* KCSMetadataFieldCreator;
+KCS_CONSTANT KCSMetadataFieldCreator;
 /** Fieldname to access an object's last modified time, using KCSQuery.
  @since 1.10.2
  */
-FOUNDATION_EXPORT NSString* KCSMetadataFieldLastModifiedTime;
+KCS_CONSTANT KCSMetadataFieldLastModifiedTime;
 /** Fieldname to access an object's entity creation time, using KCSQuery.
  @since 1.14.2
  */
-FOUNDATION_EXPORT NSString* KCSMetadataFieldCreationTime;
+KCS_CONSTANT KCSMetadataFieldCreationTime;
 
 /** This object represents backend information about the entity, such a timestamp and read/write permissions.
  
  To take advantage of KCSMetadata, map an entity property of this type to field `KCSEntityKeyMetadata`. The object that maps a particular instance is the "associated object." 
  */
-@interface KCSMetadata : NSObject
+@interface KCSMetadata : NSObject <NSCopying, NSCoding>
 
 /** The array of users with explicit read access.
  

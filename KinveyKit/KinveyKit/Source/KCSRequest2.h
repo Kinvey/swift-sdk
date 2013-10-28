@@ -19,6 +19,37 @@
 
 #import <Foundation/Foundation.h>
 
+#import "KinveyHeaderInfo.h"
+
+KCS_CONSTANT KCSRequestOptionUseMock;
+KCS_CONSTANT KCSRequestOptionClientMethod;
+
+KCS_CONSTANT KCSRESTRouteAppdata;
+KCS_CONSTANT KCSRESTRouteUser;
+KCS_CONSTANT KCSRESTRouteRPC;
+KCS_CONSTANT KCSRestRouteTestReflection;
+
+KCS_CONSTANT KCSRESTMethodDELETE;
+KCS_CONSTANT KCSRESTMethodGET;
+KCS_CONSTANT KCSRESTMethodPATCH;
+KCS_CONSTANT KCSRESTMethodPOST;
+KCS_CONSTANT KCSRESTMethodPUT;
+
+#define KCSRequestLogMethod KCSRequestOptionClientMethod : [NSStringFromClass([self class]) stringByAppendingFormat:@" %@", NSStringFromSelector(_cmd)]
+
+#define kHeaderContentType   @"Content-Type"
+#define kHeaderContentLength @"Content-Length"
+
+@class KCSNetworkResponse;
+@protocol KCSCredentials;
+@protocol KCSNetworkOperation;
+
+typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*error);
+
 @interface KCSRequest2 : NSObject
-- (void) start;
+@property (nonatomic, copy) NSArray* path;
+@property (nonatomic, weak) NSString* method;
+
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
+- (id<KCSNetworkOperation>) start;
 @end

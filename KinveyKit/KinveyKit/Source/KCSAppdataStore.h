@@ -15,6 +15,7 @@
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.
 //
+ 
 #import <Foundation/Foundation.h>
 #import "KCSStore.h"
 #import "KCSOfflineSaveStore.h"
@@ -53,7 +54,7 @@
  */
 @interface KCSAppdataStore : NSObject <KCSStore> 
 
-@property (nonatomic, strong) KCSAuthHandler *authHandler;
+@property (nonatomic, strong) KCSAuthHandler *authHandler KCS_DEPRECATED(Auth handler not used, 1.22.0);
 
 
 /** Initialize an empty store with the given collections, options and the default authentication
@@ -80,10 +81,11 @@
  @param options A dictionary of options to configure the store. (Can be nil if there are no options)
  @param authHandler The Kinvey Authentication Handler used to authenticate backend requests.
  
- @see [KCSStore storeWithAuthHandler:withOptions:]
  @return An autoreleased empty store with configured options and given authentication.
+ @depcratedIn 1.22.0
+ @deprecated Use use storeWithCollection:options: instead
  */
-+ (instancetype)storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options;
++ (instancetype)storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options KCS_DEPRECATED(Auth handler not used--use storeWithCollection:options: instead, 1.22.0);
 
 ///---------------------------------------------------------------------------------------
 /// @name Querying/Fetching

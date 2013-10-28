@@ -89,9 +89,11 @@
  @param authHandler The Kinvey Authentication Handler used to authenticate backend requests. Reserved for future use.
  
  @return An autoreleased empty store with configured options and given authentication.
- 
+ @deprecatedIn 1.22.0
+ @deprecated Use storeWithOptions: instead
  */
-+ (instancetype)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options;
++ (instancetype)storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options KCS_DEPRECATED(Auth handler not used--use storeWitOptions: instead, 1.22.0);
+
 
 #pragma mark -
 #pragma mark Adding/Updating
@@ -182,18 +184,19 @@
  This method is used to control how the store authenticates with the backend.
  
  @param handler The Kinvey Auth Handler to be used during requests.
- 
+ @deprecatedIn 1.22.0
  */
-- (void)setAuthHandler: (KCSAuthHandler *)handler;
+- (void)setAuthHandler: (KCSAuthHandler *)handler KCS_DEPRECATED(Auth handler not used, 1.22.0);
+;
 
 /*! Get the currently set Kinvey Auth Handler for this Store
  
  This method is used to find the currently set Kinvey Auth Handler for this Store.
  
  @return The currently set Kinvey Auth Handler.
- 
+ @deprecatedIn 1.22.0
  */
-- (KCSAuthHandler *)authHandler;
+- (KCSAuthHandler *)authHandler KCS_DEPRECATED(Auth handler not used, 1.22.0);
 
 
 @end

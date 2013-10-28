@@ -5,6 +5,18 @@
 //  Created by Michael Katz on 6/18/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSFileStoreTests.h"
 #import "TestUtils.h"
@@ -434,6 +446,11 @@ NSData* testData2()
 
 - (void) testDownloadToFileOnlyIfNewerAndIsNewer
 {
+    //0. clear the old file
+    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* destinationURL = [NSURL URLWithString:kTestFilename relativeToURL:downloadsDir];
+    [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];
+    
     //1. download a file
     //2. update the file
     //3. try to redownload that file and see the short-circuit
@@ -1149,7 +1166,7 @@ NSData* testData2()
         STAssertEqualObjects(dlFile.filename, filename, @"should match filenames");
         STAssertEqualObjects(dlFile.fileId, kTestId, @"should match ids");
         STAssertEquals(dlFile.length, testData().length, @"lengths should match");
-        STAssertEqualObjects(dlFile.mimeType, kTestMimeType, @"mime types should match");
+        STAssertEqualObjects(dlFile.mimeType, @"text/rtf", @"mime types should match");
         STAssertNotNil(dlFile.localURL, @"should be a local URL");
         STAssertEqualObjects([dlFile.localURL lastPathComponent], filename, @"local file should have the specified filename");
         STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[dlFile.localURL path]], @"should exist");
@@ -1671,9 +1688,20 @@ NSData* testData2()
 
 - (void) testTTLExpires
 {
+    self.done = NO;
+    __block NSString* fileId = nil;
+    [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_
+        fileId = uploadInfo.fileId;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    STAssertNotNil(fileId, @"should have valid file");
+    
     SETUP_PROGRESS;
     self.done = NO;
-    [KCSFileStore downloadFile:kTestId options:@{KCSFileStoreTestExpries : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    [KCSFileStore downloadFile:fileId options:@{KCSFileStoreTestExpries : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNotNil(error, @"Should have an error");
         STAssertEquals(error.code, 400, @"Should be a 400");
         STAssertEqualObjects(error.domain, KCSFileStoreErrorDomain, @"should be a file error");
@@ -2682,6 +2710,46 @@ NSData* testData2()
         }];
         [self poll];
     }
+}
+
+- (void) testKCSFileEncodeDecode
+{
+    KCSFile* one = [self getMetadataForId:kTestId];
+    NSData* filedata = [NSKeyedArchiver archivedDataWithRootObject:one];
+    KCSFile* two = [NSKeyedUnarchiver unarchiveObjectWithData:filedata];
+    
+    STAssertFalse(one == two, @"should be different objects");
+    STAssertEqualObjects(one, two, @"should be equal data");
+}
+
+//g2704
+- (void) testFilenameWithSpaces
+{
+    NSString* filename = @"Porto rotondo.jpg";
+    __block NSString* fileid = nil;
+    self.done = NO;
+    [KCSFileStore uploadData:testData() options:@{KCSFileFileName : filename} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
+        STAssertNoError_;
+        fileid = uploadInfo.fileId;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    STAssertNotNil(fileid, @"file id should be set");
+    
+    self.done = NO;
+    [KCSFileStore downloadFile:fileid options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+        STAssertNoError_;
+        self.done = YES;
+    } progressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [KCSFileStore deleteFile:fileid completionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError
+        self.done = YES;
+    }];
+    [self poll];
 }
 
 @end

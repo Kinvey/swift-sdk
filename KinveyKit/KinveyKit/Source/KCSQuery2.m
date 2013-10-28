@@ -18,9 +18,8 @@
 //
 
 #import "KCSQuery2.h"
-#import "NSString+KinveyAdditions.h"
-
-#import "KCS_SBJson.h"
+#import "KinveyCoreInternal.h"
+#import "KinveyDataStoreInternal.h"
 
 @interface KCSQuery2 ()
 @property (nonatomic, retain) NSMutableDictionary* internalRepresentation;
@@ -89,6 +88,8 @@ id kcsPredToQueryExprVal(NSExpression* expr)
         } else {
             //TODO: ERROR
         }
+    } else {
+        //TODO: error
     }
     return query;
 }

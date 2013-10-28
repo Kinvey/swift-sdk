@@ -38,15 +38,7 @@
 #import "KCSClientConfiguration.h"
 #import "KCSHiddenMethods.h"
 
-#pragma mark - Constants
-
-NSString* const KCS_APP_KEY = @"KCS_APP_KEY";
-NSString* const KCS_APP_SECRET = @"KCS_APP_SECRET";
-NSString* const KCS_CONNECTION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
-NSString* const KCS_SERVICE_HOST = @"KCS_SERVICE_HOST";
-NSString* const KCS_URL_CACHE_POLICY = @"KCS_URL_CACHE_POLICY";
-NSString* const KCS_DATE_FORMAT = @"KCS_DATE_FORMAT";
-NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
+#define kAppKeyKechainKey @"com.kinvey.kinveykit.appkey"
 
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
@@ -109,21 +101,20 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
 {
     _configuration = configuration;
     
-    if (configuration.appKey==nil || configuration.appSecret == nil) {
-        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"App Key or Secret is `nil`." userInfo:nil] raise];
+    if (configuration.appKey == nil || [configuration.appKey hasPrefix:@"<"]) {
+        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"`nil` or invalid appKey, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
+    }
+    if (configuration.appSecret == nil || [configuration.appSecret hasPrefix:@"<"]) {
+        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"`nil` or invalid appSecret, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
     }
 
-    NSString* oldAppKey = [KCSKeyChain getStringForKey:@"kinveykit.appkey"];
+    NSString* oldAppKey = [KCSKeyChain getStringForKey:kAppKeyKechainKey];
     if (oldAppKey != nil && [configuration.appKey isEqualToString:oldAppKey] == NO) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-        [self setCurrentUser:nil];
-#pragma clang diagnostic pop
         //clear the saved user if the kid changes
-        [KCSUser clearSavedCredentials];
+        [[KCSUser activeUser] logout];
     }
     //TODO: use defaults
-    [KCSKeyChain setString:configuration.appKey forKey:@"kinveykit.appkey"];
+    [KCSKeyChain setString:configuration.appKey forKey:kAppKeyKechainKey];
 
     _networkReachability = [KCSReachability reachabilityForInternetConnection];
     // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)

@@ -1,4 +1,3 @@
-
 //
 //  KCSFileStore.m
 //  KinveyKit
@@ -6,6 +5,18 @@
 //  Created by Michael Katz on 6/17/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSFileStore.h"
 
@@ -27,6 +38,9 @@
 #import "KCSErrorUtilities.h"
 #import "NSDate+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
+
+#import "KinveyFileStoreInteral.h"
+#import "KCSPlatformUtils.h"
 
 NSString* const KCSFileId = KCSEntityKeyId;
 NSString* const KCSFileACL = KCSEntityKeyMetadata;
@@ -74,8 +88,6 @@ NSString* mimeTypeForFileURL(NSURL* fileURL)
 
     return mimeType;
 }
-
-typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSError* error);
 
 #if BUILD_FOR_UNIT_TEST
 static id lastRequest = nil;
@@ -161,7 +173,7 @@ static id lastRequest = nil;
     if (offset > 0) {
         NSUInteger remaining = length - offset;
         headers[@"Content-Length"] = [@(remaining) stringValue];
-        headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes %llu-%d/%d",offset+1,length,length];
+        headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes %llu-%lu/%lu",offset+1,(unsigned long)length,(unsigned long)length];
         [stream setProperty:@(offset) forKey:NSStreamFileCurrentOffsetKey];
     }
 
@@ -235,142 +247,6 @@ static id lastRequest = nil;
 
 @end
 
-
-@interface KCSDownloadStreamRequest : NSObject <NSURLConnectionDataDelegate, NSURLConnectionDelegate>
-@property (nonatomic, retain) NSFileHandle* outputHandle;
-@property (nonatomic) NSUInteger maxLength;
-@property (nonatomic, copy) StreamCompletionBlock completionBlock;
-@property (nonatomic, copy) KCSProgressBlock progressBlock;
-@property (nonatomic, retain) KCSFile* intermediateFile;
-@property (nonatomic, retain) NSString* serverContentType;
-@property (nonatomic, retain) NSURLConnection* connection;
-@property (nonatomic, retain) NSHTTPURLResponse* response;
-@property (nonatomic, retain) NSMutableData* responseData;
-@property (nonatomic) unsigned long long bytesWritten;
-@end
-
-@implementation KCSDownloadStreamRequest
-- (void) downloadStream:(KCSFile*)intermediate fromURL:(NSURL*)url alreadyWrittenBytes:(NSNumber*)alreadyWritten completionBlock:(StreamCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    self.completionBlock = completionBlock;
-    self.progressBlock = progressBlock;
-    
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
-    [request setHTTPMethod:@"GET"];
-
-    NSURL* file = [intermediate localURL];
-    NSError* error = nil;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[file path]] == NO) {
-        [[NSFileManager defaultManager] createFileAtPath:[file path] contents:nil attributes:nil];
-    }
-    if (error != nil) {
-        error = [KCSErrorUtilities createError:nil description:@"Unable to write to intermediate file" errorCode:error.code domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
-        completionBlock(NO, @{}, error);
-        return;
-    }
-    _outputHandle = [NSFileHandle fileHandleForWritingToURL:file error:&error];
-    if (error != nil) {
-        error = [KCSErrorUtilities createError:nil description:@"Unable to write to intermediate file" errorCode:error.code domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
-        completionBlock(NO, @{}, error);
-        return;
-    }
-    if (alreadyWritten != nil) {
-        unsigned long long written = [_outputHandle seekToEndOfFile];
-        if ([alreadyWritten unsignedLongLongValue] == written) {
-            KCSLogTrace(@"Download was already in progress. Resuming from byte %llu.", written);
-            [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
-        }
-    }
-    
-    _intermediateFile = intermediate;
-    _bytesWritten = 0;
-    
-    _connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    [_connection start];
-
-    
-#if BUILD_FOR_UNIT_TEST
-    lastRequest = self;
-#endif
-}
-
-- (void) cancel
-{
-    [_connection cancel];
-    [_outputHandle closeFile];
-    NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
-
-    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
-    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
-    _completionBlock(NO, returnVals, error);
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    [_outputHandle closeFile];
-    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
-    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
-    _completionBlock(NO, returnVals, error);
-}
-
-
-- (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    KCSLogNetwork(@"GCS download response code: %d",[(NSHTTPURLResponse*)response statusCode]);
-    
-    _response = (NSHTTPURLResponse*)response;
-    NSDictionary* headers =  [_response allHeaderFields];
-    NSString* length = headers[@"Content-Length"];
-    _maxLength = [length longLongValue];
-    _serverContentType = headers[@"Content-Type"];
-    
-    if (_response.statusCode >= 400) {
-        _responseData = [NSMutableData data];
-    }
-}
-
-- (void) connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    [_outputHandle closeFile];
-    
-    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
-    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
-    setIfValNotNil(returnVals[kBytesWritten], @(_bytesWritten));
-    
-    NSInteger responseCode = self.response.statusCode;
-    NSError* error = nil;
-    if (responseCode >= 400) {
-        NSString* errorStr = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
-        ifNil(errorStr, @"");
-        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download from GCS Failed", NSLocalizedFailureReasonErrorKey : errorStr};
-        error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:responseCode userInfo:userInfo];
-    }
-    
-    _completionBlock(YES, returnVals, error);
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    KCSLogTrace(@"downloaded %u bytes from file service", [data length]);
-    
-    if (_response && _response.statusCode >= 400) {
-        //is an error just get the data locally
-        [_responseData appendData:data];
-    } else {
-        //response is good, collect data
-        [_outputHandle writeData:data];
-        _bytesWritten += data.length;
-        if (_progressBlock) {
-            NSUInteger downloadedAmount = [_outputHandle offsetInFile];
-            _intermediateFile.length = downloadedAmount;
-            
-            double progress = (double)downloadedAmount / (double) _maxLength;
-            _progressBlock(@[_intermediateFile], progress);
-        }
-    }
-}
-
-@end
 
 @implementation KCSFileStore
 static NSMutableSet* _ongoingDownloads;
@@ -711,8 +587,6 @@ KCSFile* fileFromResults(NSDictionary* results)
         NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
         completionBlock(nil, error);
         return;
-    } else {
-        [_ongoingDownloads addObject:fileId];
     }
     
     KCSFile* intermediateFile = [[KCSFile alloc] initWithLocalFile:localFile
@@ -757,21 +631,33 @@ KCSFile* fileFromResults(NSDictionary* results)
 
     }
 
+    [_ongoingDownloads addObject:fileId];
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
     
-    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
-    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:bytes completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
-        [_ongoingDownloads removeObject:fileId];
-        if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
-            intermediateFile.mimeType = returnInfo[KCSFileMimeType];
-        } else if (intermediateFile.mimeType == nil) {
-            intermediateFile.mimeType = mimeTypeForFilename(intermediateFile.filename);
-        }
-        intermediateFile.bytesWritten = [returnInfo[kBytesWritten] unsignedLongLongValue];
-        intermediateFile.length = [[[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:NULL] fileSize];
-
-        completionBlock(@[intermediateFile], error);
-    } progressBlock:progressBlock];
+    KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
+    id fileop = [fileRequest downloadStream:intermediateFile
+                        fromURL:url
+            alreadyWrittenBytes:bytes
+                completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
+                    [_ongoingDownloads removeObject:fileId];
+                    if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
+                        intermediateFile.mimeType = returnInfo[KCSFileMimeType];
+                    } else if (intermediateFile.mimeType == nil) {
+                        intermediateFile.mimeType = mimeTypeForFilename(intermediateFile.filename);
+                    }
+                    intermediateFile.bytesWritten = [returnInfo[kBytesWritten] unsignedLongLongValue];
+                    intermediateFile.length = [[[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:NULL] fileSize];
+                    
+                    completionBlock(@[intermediateFile], error);
+                } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
+                    if (progressBlock != nil) {
+                        progressBlock(objects, percentComplete);
+                    }
+                }];
+    
+#if BUILD_FOR_UNIT_TEST
+    lastRequest = fileop;
+#endif
 }
 
 
@@ -783,7 +669,7 @@ KCSFile* fileFromResults(NSDictionary* results)
            progressBlock:(KCSProgressBlock)progressBlock
 {
     if ([_ongoingDownloads containsObject:fileId]) {
-        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download already in progress."};
+        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download already in progress.", KCSFileId : fileId};
         NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
         completionBlock(nil, error);
         return;
@@ -804,9 +690,8 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
-    
-    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
-    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+    KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
+    [fileRequest downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
         [_ongoingDownloads removeObject:fileId];
         
         if (error) {
@@ -830,7 +715,11 @@ KCSFile* fileFromResults(NSDictionary* results)
             KCSLogNSError(@"error removing temp download cache", error);
             completionBlock(@[file], nil);
         }
-    } progressBlock:progressBlock];
+    } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
+        if (progressBlock) {
+            progressBlock(objects, percentComplete);
+        }
+    }];
 }
 
 + (void) _getDownloadObject:(NSString*)fileId options:(NSDictionary*)options intermediateCompletionBlock:(KCSCompletionBlock)completionBlock
@@ -889,7 +778,8 @@ KCSFile* fileFromResults(NSDictionary* results)
                 
                 NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
                 ifNil(destinationName, file.filename);
-                NSURL*  destinationFile = [NSURL URLWithString:destinationName relativeToURL:downloadsDir];
+                NSURL*  destinationFile = [NSURL fileURLWithPathComponents:@[downloadsDir.path, destinationName]]; //concat weird paths, such as with spaces (#2704)
+                DBAssert(destinationFile != nil, @"Should have a valid destination file: '%@'", destinationName);
                 
                 
                 if (fieldExistsAndIsYES(options, KCSFileOnlyIfNewer)) {
@@ -1178,10 +1068,16 @@ KCSFile* fileFromResults(NSDictionary* results)
     NSNumber* bytes = nil;
     if (fieldExistsAndIsYES(options, KCSFileResume)) {
         if ([[NSFileManager defaultManager] fileExistsAtPath:[destinationFile path]] == YES) {
-            NSError* error = nil;
-            NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[destinationFile path] error:&error];
-            if (error == nil) {
-                bytes = attributes[NSFileSize];
+            if ([KCSPlatformUtils supportsResumeData] == NO) {
+                //iOS 6 --
+                NSError* error = nil;
+                NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[destinationFile path] error:&error];
+                if (error == nil) {
+                    bytes = attributes[NSFileSize];
+                }
+            } else {
+                //iOS 7
+                bytes = @(-1001);
             }
         }
     }

@@ -1,7 +1,7 @@
 //
 // Prefix header for all source files of the 'KinveyKit' target in the 'KinveyKit' project
 //
-// Copyright (c) Kinvey, Inc.
+// Copyright (c) 2011-2013 Kinvey, Inc.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -28,6 +28,7 @@
 
 #define fieldExistsAndIsNO(dict, field) dict != nil && dict[field] != nil && [dict[field] boolValue] == NO
 
+#define doLater(blk)
 
 #define constantsEqual(str, const) str == const || [str isEqualToString:const]
 #define setIfEmpty(dict,key,val) if (dict[key] == nil) dict[key] = val
@@ -36,5 +37,12 @@
 #define DBAssert(condition,description, ...) NSAssert(condition, description, ##__VA_ARGS__)
 #else
 #define DBAssert(condition,description, ...)
+#endif
+
+#if KINVEYKIT2_UPGRADE_WARNINGS
+#define DO_PRAGMA(x) _Pragma (#x)
+#define KK2(x) DO_PRAGMA(message ("KK2 - " #x))
+#else
+#define KK2(x)
 #endif
 

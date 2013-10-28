@@ -5,6 +5,18 @@
 //  Created by Brian Wilson on 5/1/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 //TODO: check headers
 
@@ -111,8 +123,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 @implementation KCSAppdataStore
 
-#pragma mark -
-#pragma mark Initialization
+#pragma mark - Initialization
 
 - (instancetype)init
 {
@@ -133,35 +144,38 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 + (instancetype)store
 {
-    return [self storeWithAuthHandler:nil withOptions:nil];
+    return [self storeWithOptions:nil];
 }
 
 + (instancetype) storeWithOptions: (NSDictionary *)options
 {
-    return [self storeWithAuthHandler:nil withOptions:options];
+    return  [self storeWithCollection:nil options:options];
 }
 
 + (instancetype) storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
 {
-    KCSAppdataStore *store = [[self alloc] initWithAuth:authHandler];
-    [store configureWithOptions:options];
-    return store;
+    return [self storeWithCollection:nil options:options];
 }
 
 + (instancetype) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options
 {
-    return [self storeWithCollection:collection authHandler:nil withOptions:options];
-}
-
-+ (instancetype) storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options {
     
     if (options == nil) {
         options = @{ KCSStoreKeyResource : collection };
     } else {
         options = [NSMutableDictionary dictionaryWithDictionary:options];
-        [options setValue:collection forKey:KCSStoreKeyResource];
+        if (collection) {
+            [options setValue:collection forKey:KCSStoreKeyResource];
+        }
     }
-    return [self storeWithAuthHandler:authHandler withOptions:options];
+    KCSAppdataStore* store = [[self alloc] init];
+    [store configureWithOptions:options];
+    return store;
+}
+
++ (instancetype) storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
+{
+    return [self storeWithCollection:collection options:options];
 }
 
 - (BOOL)configureWithOptions: (NSDictionary *)options
@@ -191,6 +205,10 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         
         _previousProgress = [options objectForKey:KCSStoreKeyOngoingProgress];
         _title = [options objectForKey:KCSStoreKeyTitle];
+    }
+    
+    if (self.backingCollection == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Collection cannot be nil" userInfo:options] raise];
     }
     
     // Even if nothing happened we return YES (as it's not a failure)
@@ -660,7 +678,13 @@ int reachable = -1;
         NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
         
         if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:nil errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+            NSString* description = nil;
+            if (response.responseCode == KCSDeniedError) {
+                NSString* format401 = @"Active user (username:'%@') does not have permission to write object (%@) to collection '%@'";
+                NSString* objectTitle = serializedObject.objectId ? [NSString stringWithFormat:@"_id:'%@'", serializedObject.objectId] : @"New Object";
+                description = [NSString stringWithFormat:format401, [[KCSUser activeUser] username], objectTitle, self.backingCollection.collectionName];
+            }
+            NSError* error = [KCSErrorUtilities createError:jsonResponse description:description errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
             completionBlock(nil, error);
         } else {
             if (jsonResponse != nil && serializedObject != nil) {
