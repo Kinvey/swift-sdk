@@ -21,6 +21,6 @@
 @interface KCSFileUtils : NSObject
 
 + (NSString*) localPathForDB:(NSString*)dbname;
-
++ (NSURL*) filesFolder;
 
 @end

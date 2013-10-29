@@ -41,6 +41,7 @@
 
 #import "KinveyFileStoreInteral.h"
 #import "KCSPlatformUtils.h"
+#import "KCSFileUtils.h"
 
 NSString* const KCSFileId = KCSEntityKeyId;
 NSString* const KCSFileACL = KCSEntityKeyMetadata;
@@ -677,7 +678,7 @@ KCSFile* fileFromResults(NSDictionary* results)
         [_ongoingDownloads addObject:fileId];
     }
     
-    NSURL* cachesDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* cachesDir = [KCSFileUtils filesFolder];
     NSString* tempName = [NSString stringByPercentEncodingString:[fileId stringByReplacingOccurrencesOfString:@"/" withString:@""]];
     NSURL* localFile = [NSURL URLWithString:tempName relativeToURL:cachesDir];
     
@@ -776,7 +777,7 @@ KCSFile* fileFromResults(NSDictionary* results)
             KCSFile* file = objectsOrNil[0];
             if (file && file.remoteURL) {
                 
-                NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+                NSURL* downloadsDir = [KCSFileUtils filesFolder];
                 ifNil(destinationName, file.filename);
                 NSURL*  destinationFile = [NSURL fileURLWithPathComponents:@[downloadsDir.path, destinationName]]; //concat weird paths, such as with spaces (#2704)
                 DBAssert(destinationFile != nil, @"Should have a valid destination file: '%@'", destinationName);
@@ -888,7 +889,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                 if (thisFile && thisFile.remoteURL) {
                     
                     NSURL* destinationFile = nil;
-                    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+                    NSURL* downloadsDir = [KCSFileUtils filesFolder];
                     NSString* destinationFilename = thisFile.filename;
                     
                     if (destinationIds != nil && filenames != nil) {
@@ -1053,7 +1054,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     ifNil(options, @{});
     
-    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* downloadsDir = [KCSFileUtils filesFolder];
     
     //NOTE: this logic is heavily based on GCS url structure
     NSArray* pathComponents = [url pathComponents];
