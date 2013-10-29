@@ -38,6 +38,7 @@
 #import "KCSLogManager.h"
 #import "NSDate+ISO8601.h"
 #import "KCSReachability.h"
+#import "KCSFileUtils.h"
 
 @interface KCSClient (KCSSaveQueue)
 - (id) kinveyDomain;
@@ -104,10 +105,8 @@ static BOOL sFirstReached;
 }
 - (NSString*) savefile
 {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString* filename = [NSString stringWithFormat:@"com.kinvey.%@.abc", [KCSClient sharedClient].appKey];
-    NSString *cacheFile = [documentsDirectory stringByAppendingPathComponent:filename];
+    NSString *cacheFile = [KCSFileUtils localPathForDB:filename];
     return cacheFile;
 }
 

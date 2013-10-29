@@ -28,6 +28,7 @@
 @property (nonatomic, strong) NSMutableDictionary* caches;
 @property (nonatomic, strong) NSCache* queryCache;
 @property (nonatomic, strong) KCSDataModel* dataModel;
+@property (nonatomic) BOOL preCalculatesResults;
 @end
 
 @implementation KCSObjectCache
@@ -47,6 +48,7 @@
         _queryCache.name = @"General Query Cache";
         
         _dataModel = [[KCSDataModel alloc] init];
+        _preCalculatesResults = YES;
     }
     return self;
 }
@@ -67,6 +69,8 @@
     }
     return cache;
 }
+
+#pragma mark - Fetch Query
 
 - (NSArray*) objectForId:(NSString*)_id cache:(NSCache*)cache route:(NSString*)route collection:(NSString*)collection
 {
@@ -99,11 +103,17 @@
     return objs;
 }
 
+- (NSString*) queryKey:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection
+{
+    NSString* queryKey = [query parameterStringRepresentation];
+    return [NSString stringWithFormat:@"%@_%@_%@", route, collection, queryKey];
+}
+
 
 - (NSArray*) pullQuery:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection
 {
     NSString* queryKey = [query parameterStringRepresentation];
-    NSString* key = [NSString stringWithFormat:@"%@_%@_%@", route, collection, queryKey];
+    NSString* key = [self queryKey:query route:route collection:collection];
     NSArray* ids = [_queryCache objectForKey:key];
     if (!ids) {
        ids = [_persistenceLayer idsForQuery:queryKey route:route collection:collection];
@@ -111,6 +121,48 @@
     
     return [self objectsForIds:ids route:route collection:collection];
 }
+
+
+#pragma mark - Set Query
+//TODO: setEntities? 
+- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection
+{
+    NSString* queryKey = [query parameterStringRepresentation];
+    NSString* key = [self queryKey:query route:route collection:collection];
+    
+    NSArray* ids = [jsonArray valueForKeyPath:KCSEntityKeyId];
+    if (ids == nil || ids.count != jsonArray.count) {
+        //something went sideways
+        DBAssert(NO, @"Could not get an _id for all entities");
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Could not get an _id for all entities");
+        return nil;
+    }
+
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+    NSMutableArray* objs = [NSMutableArray arrayWithCapacity:ids.count];
+    for (NSDictionary* entity in jsonArray) {
+        id<KCSPersistable> obj = [_dataModel objectFromCollection:collection data:entity];
+        [clnCache setObject:obj forKey:entity[KCSEntityKeyId]];
+        [objs addObject:obj];
+        [_persistenceLayer updateWithEntity:entity route:route collection:collection];
+    }
+    
+    [_queryCache setObject:ids forKey:key];
+    [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
+    
+    if (_preCalculatesResults == YES) {
+        [self preCalculateQueries:jsonArray route:route collection:collection];
+    }
+    
+    return objs;
+}
+
+- (void) preCalculateQueries:(NSArray*)entities route:(NSString*)route collection:(NSString*)collection
+{
+    //TODO:
+    //TODO also: check pre-calc on on local query or pull
+}
+
 
 #pragma mark - Cache Delegate
 - (void)cache:(NSCache *)cache willEvictObject:(id)obj

@@ -24,7 +24,7 @@
 @implementation KCSFileUtils
 
 
-+ (NSString*) kinveyURL
++ (NSString*) kinveyDir
 {
     NSString* kinveyDir =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"kinvey"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:kinveyDir] == NO) {
@@ -38,7 +38,19 @@
 
 + (NSString*) localPathForDB:(NSString*)dbname
 {
-    return [[self kinveyURL] stringByAppendingPathComponent:dbname];
+    return [[self kinveyDir] stringByAppendingPathComponent:dbname];
+}
+
++ (NSURL*) filesFolder
+{
+    NSURL* folder = [[NSURL URLWithString:[self kinveyDir]] URLByAppendingPathComponent:@"files/"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[folder path]] == NO) {
+        //TODO: security?
+        NSError* error = nil;
+        [[NSFileManager defaultManager] createDirectoryAtPath:[folder path] withIntermediateDirectories:YES attributes:nil error:&error];
+        KCSLogNSError(KCS_LOG_CONTEXT_FILESYSTEM, error);
+    }
+    return folder;
 }
 
 @end

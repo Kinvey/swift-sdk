@@ -23,5 +23,5 @@
 
 @interface KCSObjectCache : NSObject
 - (NSArray*) pullQuery:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection;
-
+- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection;
 @end
