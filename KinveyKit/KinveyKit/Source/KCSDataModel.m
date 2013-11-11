@@ -19,6 +19,8 @@
 
 #import "KCSDataModel.h"
 
+#import "KinveyCoreInternal.h"
+
 //TODO: cleanup
 #import "KCSObjectMapper.h"
 
@@ -55,5 +57,16 @@
     return [KCSObjectMapper makeObjectOfType:class withData:entity];
 }
 
+- (NSDictionary*) jsonEntityForObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
+{
+    if (!_collectionMap[collection]) {
+        _collectionMap[collection] = [object class];
+    }
+    
+    NSError* error = nil;
+    KCSSerializedObject* obj = [KCSObjectMapper makeKinveyDictionaryFromObject:object error:&error];
+    KCSLogNSError(KCS_LOG_CONTEXT_DATA, error);
+    return obj.dataToSerialize;
+}
 
 @end

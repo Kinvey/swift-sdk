@@ -19,9 +19,13 @@
 
 #import <Foundation/Foundation.h>
 
-@class KCSQuery;
+@class KCSQuery2;
 
 @interface KCSObjectCache : NSObject
-- (NSArray*) pullQuery:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection;
-- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection;
+
+@property (nonatomic) BOOL preCalculatesResults;
+@property (nonatomic) BOOL updatesLocalWithUnconfirmedSaves;
+
+- (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
+- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 @end

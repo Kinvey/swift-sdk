@@ -23,6 +23,7 @@
 
 @interface KCSQuery2 ()
 @property (nonatomic, retain) NSMutableDictionary* internalRepresentation;
+@property (nonatomic, retain) NSMutableArray* mySortDescriptors;
 @end
 
 @implementation KCSQuery2
@@ -38,7 +39,7 @@
 
 - (NSString *)description
 {
-    return [self queryString];
+    return [self queryString:NO];
 }
 
 #pragma mark - directQuery
@@ -95,17 +96,76 @@ id kcsPredToQueryExprVal(NSExpression* expr)
 }
 
 
+#pragma mark - sorting
+- (NSArray *)sortDescriptors
+{
+    return [_mySortDescriptors copy];
+}
+
+- (void)setSortDescriptors:(NSArray *)sortDescriptors
+{
+    _mySortDescriptors = [NSMutableArray arrayWithCapacity:sortDescriptors.count];
+    for (NSSortDescriptor* sort in sortDescriptors) {
+        if (sort.comparator != nil) {
+            [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Cannot use a comparator with Kinvey backend" userInfo:@{@"invalidSort":sort}] raise];
+        }
+        if (sort.selector != @selector(compare:)) {
+            [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Cannot use a selector with Kinvey backend" userInfo:@{@"invalidSort":sort}] raise];
+        }
+        [_mySortDescriptors addObject:sort];
+    }
+}
+
+//TODO handle backend vs client property name
+- (NSString*) sortString:(BOOL)escape
+{
+    NSString* sortString = @"";
+    if ([_mySortDescriptors count] > 0) {
+        NSMutableDictionary* sortDictionary = [NSMutableDictionary dictionary];
+        for (NSSortDescriptor* sort in _mySortDescriptors) {
+            NSNumber* direction = sort.ascending ? @(1) : @(-1);
+            NSString* key = sort.key;
+            sortDictionary[key] = direction;
+        }
+        sortString = [NSString stringWithFormat:@"&sort=%@", escape ? [sortDictionary escapedJSON] : [sortDictionary JSONRepresentation]];
+    }
+    
+    return sortString;
+}
+
 #pragma mark - stringification
 
-- (NSString*) queryString
+- (NSString*) queryString:(BOOL)escape
 {
-    return [NSString stringWithFormat:@"query=%@", [_internalRepresentation JSONRepresentation]];
+    NSString* query =  [NSString stringWithFormat:@"query=%@", escape ? [_internalRepresentation escapedJSON] : [_internalRepresentation JSONRepresentation]];
+    query = [query stringByAppendingString:[self sortString:escape]];
+    return query;
 }
 
 - (NSString *)escapedQueryString
 {
-    return [NSString stringByPercentEncodingString:[self queryString]];
+    return [self queryString:YES];
 }
 
+- (NSString*) keyString
+{
+    NSString* ir = [_internalRepresentation JSONRepresentation];
+    return [@([ir hash]) stringValue];
+}
+
+#pragma mark - Compatability
+
++ (instancetype) queryWithQuery1:(KCSQuery *)query
+{
+    KCSQuery2* q = [[self alloc] init];
+    q.internalRepresentation = [query.query mutableCopy];
+    
+    NSMutableArray* sorts = [NSMutableArray arrayWithCapacity:query.sortModifiers.count];
+    for (KCSQuerySortModifier* mod in query.sortModifiers) {
+        NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:mod.field ascending:sort.ascending == kKCSAscending];
+        [sorts addObject:sort];
+    }
+    return q;
+}
 
 @end

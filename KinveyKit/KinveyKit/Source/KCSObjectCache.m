@@ -28,7 +28,6 @@
 @property (nonatomic, strong) NSMutableDictionary* caches;
 @property (nonatomic, strong) NSCache* queryCache;
 @property (nonatomic, strong) KCSDataModel* dataModel;
-@property (nonatomic) BOOL preCalculatesResults;
 @end
 
 @implementation KCSObjectCache
@@ -48,7 +47,9 @@
         _queryCache.name = @"General Query Cache";
         
         _dataModel = [[KCSDataModel alloc] init];
+
         _preCalculatesResults = YES;
+        _updatesLocalWithUnconfirmedSaves = YES;
     }
     return self;
 }
@@ -103,16 +104,16 @@
     return objs;
 }
 
-- (NSString*) queryKey:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection
+- (NSString*) queryKey:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
-    NSString* queryKey = [query parameterStringRepresentation];
+    NSString* queryKey = [query keyString];
     return [NSString stringWithFormat:@"%@_%@_%@", route, collection, queryKey];
 }
 
 
-- (NSArray*) pullQuery:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection
+- (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
-    NSString* queryKey = [query parameterStringRepresentation];
+    NSString* queryKey = [query keyString];
     NSString* key = [self queryKey:query route:route collection:collection];
     NSArray* ids = [_queryCache objectForKey:key];
     if (!ids) {
@@ -125,9 +126,9 @@
 
 #pragma mark - Set Query
 //TODO: setEntities? 
-- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery*)query route:(NSString*)route collection:(NSString*)collection
+- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
-    NSString* queryKey = [query parameterStringRepresentation];
+    NSString* queryKey = [query keyString];
     NSString* key = [self queryKey:query route:route collection:collection];
     
     NSArray* ids = [jsonArray valueForKeyPath:KCSEntityKeyId];
@@ -142,26 +143,50 @@
     NSMutableArray* objs = [NSMutableArray arrayWithCapacity:ids.count];
     for (NSDictionary* entity in jsonArray) {
         id<KCSPersistable> obj = [_dataModel objectFromCollection:collection data:entity];
-        [clnCache setObject:obj forKey:entity[KCSEntityKeyId]];
+        [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache];
         [objs addObject:obj];
-        [_persistenceLayer updateWithEntity:entity route:route collection:collection];
     }
     
     [_queryCache setObject:ids forKey:key];
     [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
     
-    if (_preCalculatesResults == YES) {
-        [self preCalculateQueries:jsonArray route:route collection:collection];
-    }
+    
     
     return objs;
 }
 
-- (void) preCalculateQueries:(NSArray*)entities route:(NSString*)route collection:(NSString*)collection
+- (void) preCalculateQueries:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection
 {
     //TODO:
     //TODO also: check pre-calc on on local query or pull
 }
+
+#pragma mark - Saving
+- (void) updateObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection collectionCache:(NSCache*)clnCache
+{
+    [clnCache setObject:object forKey:entity[KCSEntityKeyId]];
+    [_persistenceLayer updateWithEntity:entity route:route collection:collection];
+    
+    if (_preCalculatesResults == YES) {
+        [self preCalculateQueries:entity route:route collection:collection];
+    }
+
+}
+
+
+- (void) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
+{
+    NSDictionary* entity = [self.dataModel jsonEntityForObject:object route:route collection:collection];
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+
+    [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
+}
+
+- (void) addUnsavedObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
+{
+    
+}
+
 
 
 #pragma mark - Cache Delegate

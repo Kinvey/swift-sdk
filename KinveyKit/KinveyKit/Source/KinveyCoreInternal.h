@@ -45,6 +45,7 @@
 #import "NSError+KinveyKit.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSBase64.h"
+#import "KCSTimedQueue.h"
 
 #pragma mark - helpers
 
@@ -52,6 +53,6 @@
 #import "KCS_SBJson.h"
 
 #define KCS_CONST_IMPL NSString* const
-#define KCS_BREAK NSAssert(YES, @"BROKEN");
+#define KCS_BREAK NSAssert(NO, @"BROKEN");
 
 #endif

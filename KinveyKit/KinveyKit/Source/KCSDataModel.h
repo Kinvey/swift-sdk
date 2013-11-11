@@ -23,6 +23,9 @@
 
 @interface KCSDataModel : NSObject
 
+//internal
 - (id<KCSPersistable>) objectFromCollection:(NSString*)collection data:(NSDictionary*)entity;
+- (NSDictionary*) jsonEntityForObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection;
+
 
 @end
