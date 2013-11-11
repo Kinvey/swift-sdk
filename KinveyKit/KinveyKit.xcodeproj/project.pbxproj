@@ -478,6 +478,8 @@
 		27E4E752181EDF480071061B /* KCSDataModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4E74F181EDF480071061B /* KCSDataModel.h */; };
 		27E4E753181EDF480071061B /* KCSDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4E750181EDF480071061B /* KCSDataModel.m */; };
 		27E4E754181EDF480071061B /* KCSDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4E750181EDF480071061B /* KCSDataModel.m */; };
+		27E4E757181FDC400071061B /* KCSTimedQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4E755181FDC400071061B /* KCSTimedQueue.h */; };
+		27E4E758181FDC400071061B /* KCSTimedQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4E756181FDC400071061B /* KCSTimedQueue.m */; };
 		27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F360981598BF5C006B699E /* KCSMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609C1598C1CB006B699E /* KCSMetadata.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27F360A01598C250006B699E /* KCSMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609F1598C250006B699E /* KCSMetadataTests.m */; };
@@ -940,6 +942,8 @@
 		27E4E74A181ECA9A0071061B /* KCSObjectCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSObjectCache.m; sourceTree = "<group>"; };
 		27E4E74F181EDF480071061B /* KCSDataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDataModel.h; sourceTree = "<group>"; };
 		27E4E750181EDF480071061B /* KCSDataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSDataModel.m; sourceTree = "<group>"; };
+		27E4E755181FDC400071061B /* KCSTimedQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSTimedQueue.h; sourceTree = "<group>"; };
+		27E4E756181FDC400071061B /* KCSTimedQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSTimedQueue.m; sourceTree = "<group>"; };
 		27EAB7361770A610008E6B32 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		27F360981598BF5C006B699E /* KCSMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMetadata.h; sourceTree = "<group>"; };
 		27F3609C1598C1CB006B699E /* KCSMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMetadata.m; sourceTree = "<group>"; };
@@ -1395,6 +1399,8 @@
 				2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */,
 				D32A610414716F2D00F77A3F /* NSString+KinveyAdditions.h */,
 				D32A610514716F2D00F77A3F /* NSString+KinveyAdditions.m */,
+				27E4E755181FDC400071061B /* KCSTimedQueue.h */,
+				27E4E756181FDC400071061B /* KCSTimedQueue.m */,
 			);
 			name = Internal;
 			sourceTree = "<group>";
@@ -2379,6 +2385,7 @@
 				27BAB3EB166FED0500C5D156 /* KCS_OAuthCore.h in Headers */,
 				27295D8417E0FA0700D34E2F /* KCSClient2+KCSInternal.h in Headers */,
 				27D1559216713DD000171230 /* KCSLinkedInHelper.h in Headers */,
+				27E4E757181FDC400071061B /* KCSTimedQueue.h in Headers */,
 				275B42A016A97DB00064B941 /* KinveyHeaderInfo.h in Headers */,
 				27B3B08516B8757C00E1B540 /* KinveyVersion.h in Headers */,
 				277A4D7917F1B01F00E545EC /* KCSNSURLSessionFileOperation.h in Headers */,
@@ -2915,6 +2922,7 @@
 				D32A611C14716F2D00F77A3F /* NSString+KinveyAdditions.m in Sources */,
 				D32A611F14716F2D00F77A3F /* NSURL+KinveyAdditions.m in Sources */,
 				278BADAD17B28EC70035B3D6 /* DDASLLogger.m in Sources */,
+				27E4E758181FDC400071061B /* KCSTimedQueue.m in Sources */,
 				D33E686F147DBA5700EE885E /* KCSConnection.m in Sources */,
 				D33E6874147DBA7200EE885E /* KCSAsyncConnection.m in Sources */,
 				277A4D6917F1568000E545EC /* KCSFileRequest.m in Sources */,

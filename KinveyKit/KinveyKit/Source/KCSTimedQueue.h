@@ -1,5 +1,5 @@
 //
-//  KCSQuery2+KCSInternal.h
+//  KCSTimedQueue.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -17,13 +17,11 @@
 //
 
 
-#import <KinveyKit/KinveyKit.h>
-#import "KCSQuery2.h"
+#import <Foundation/Foundation.h>
 
-@interface KCSQuery2 (KCSInternal)
-- (NSString*) escapedQueryString;
-- (NSString*) queryString:(BOOL)escape;
-- (NSString*) keyString;
+@interface KCSTimedQueue : NSObject
 
-
+- (id) pop;
+- (void) push:(id)obj;
+- (NSUInteger) count;
 @end

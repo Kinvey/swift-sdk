@@ -16,11 +16,13 @@
 // contents is a violation of applicable laws.
 //
 
-@class KCSQuery2;
+@class KCSQuery;
 
 @interface KCSQuery2 : NSObject
 
 + (instancetype) queryWithPredicate:(NSPredicate*)predicate error:(NSError**)error;
++ (instancetype) queryWithQuery1:(KCSQuery*)query;
 
+@property (nonatomic, copy) NSArray* sortDescriptors;
 
 @end

@@ -19,6 +19,7 @@
 
 
 #import "NSDictionary+KinveyAdditions.h"
+#import "KinveyCoreInternal.h"
 
 @implementation NSDictionary (KinveyAdditions)
 
@@ -38,5 +39,11 @@
     NSMutableDictionary* md = [self mutableCopy];
     [md addEntriesFromDictionary:dictionary];
     return md;
+}
+
+- (NSString*) escapedJSON
+{
+    NSString* jsonStr = [self JSONRepresentation];
+    return [NSString stringByPercentEncodingString:jsonStr];
 }
 @end

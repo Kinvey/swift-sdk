@@ -20,7 +20,7 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 #import "KinveyDataStoreInternal.h"
-#import "TestUtils.h"
+#import "TestUtils2.h"
 
 @interface Query2Tests : SenTestCase
 
@@ -46,9 +46,22 @@
     KCSQuery2* query = [KCSQuery2 queryWithPredicate:basicPredicate error:NULL];
     
     STAssertNotNil(query, @"should be valid");
-    STAssertEqualObjects([query queryString], @"query={\"foo\":\"X\"}", @"basic");
+    STAssertEqualObjects([query queryString:NO], @"query={\"foo\":\"X\"}", @"basic");
 }
 
+- (void)testSorts
+{
+    NSPredicate* basicPredicate = [NSPredicate predicateWithFormat:@"foo=X"];
+    KCSQuery2* query = [KCSQuery2 queryWithPredicate:basicPredicate error:NULL];
+    query.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"foo" ascending:YES]];
+    STAssertEqualObjects([query queryString:NO], @"query={\"foo\":\"X\"}&sort={\"foo\":1}", @"basic");
+    query.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"foo" ascending:NO]];
+    STAssertEqualObjects([query queryString:NO], @"query={\"foo\":\"X\"}&sort={\"foo\":-1}", @"basic");
+}
 
+- (void) testConversion
+{
+    KTNIY
+}
 
 @end

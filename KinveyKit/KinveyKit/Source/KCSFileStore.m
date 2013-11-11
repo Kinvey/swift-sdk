@@ -636,7 +636,10 @@ KCSFile* fileFromResults(NSDictionary* results)
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
     
     KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
-    id fileop = [fileRequest downloadStream:intermediateFile
+#if BUILD_FOR_UNIT_TEST
+    id fileop =
+#endif
+    [fileRequest downloadStream:intermediateFile
                         fromURL:url
             alreadyWrittenBytes:bytes
                 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
