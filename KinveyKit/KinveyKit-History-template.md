@@ -4,6 +4,13 @@
 ### 1.23.0
 ** Release Date:** TBA
 
+* Major Caching Update & Bug Fix:
+    * 
+* Minor Changes:
+    * Saving an empty array now returns an empty array for `objectsOrNil` instead of of `nil`.
+* __TODO__ examine some more deprecations
+
+
 ## 1.22
 ### 1.22.0
 ** Release Date:** October 28, 2013

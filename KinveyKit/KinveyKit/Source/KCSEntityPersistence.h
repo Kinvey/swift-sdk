@@ -32,10 +32,19 @@
 - (NSDictionary*) entityForId:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;
 - (BOOL) removeEntity:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;
 
+- (NSString*) addUnsavedEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers;
+- (BOOL) removeUnsavedEntity:(NSString*)unsavedId route:(NSString*)route collection:(NSString*)collection;
+- (NSArray*) unsavedEntities;
+- (int) unsavedCount;
+
+
 /* 
  This is not transactional, returns on first failure, but will still hold any previouslly passed objects.
  */
 - (BOOL) import:(NSArray*)entities route:(NSString*)route collection:(NSString*)collection;
+
+#pragma mark - Management
+- (void) clearCaches;
 
 @end
 

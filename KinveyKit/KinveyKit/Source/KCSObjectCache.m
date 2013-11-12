@@ -23,12 +23,46 @@
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 
+//TODO: util this?
+NSString* kinveyObjectIdHostProperty(id<KCSPersistable>obj)
+{
+    NSDictionary *kinveyMapping = [obj hostToKinveyPropertyMapping];
+    for (NSString *key in kinveyMapping){
+        NSString *jsonName = [kinveyMapping valueForKey:key];
+        if ([jsonName isEqualToString:KCSEntityKeyId]){
+            return key;
+        }
+    }
+    return nil;
+}
+
+NSString* kinveyObjectId(NSObject<KCSPersistable>* obj)
+{
+    NSString* objKey = kinveyObjectIdHostProperty(obj);
+    return ifNotNil(objKey, [obj valueForKey:objKey]);
+}
+
+void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
+{
+    NSString* objKey = kinveyObjectIdHostProperty(obj);
+    if (objKey == nil) {
+        NSString* exp = [NSString stringWithFormat:@"Cannot set the 'id', the entity of class '%@' does not map KCSEntityKeyId in -hostToKinveyPropertyMapping.", [obj class]];
+        @throw [NSException exceptionWithName:@"KCSEntityNoId" reason:exp userInfo:@{@"object" : obj}];
+    } else {
+        [obj setValue:objId forKey:objKey];
+    }
+}
+
+
 @interface KCSObjectCache () <NSCacheDelegate>
 @property (nonatomic, strong) KCSEntityPersistence* persistenceLayer;
+@property (nonatomic, strong) KCSOfflineUpdate* offline;
 @property (nonatomic, strong) NSMutableDictionary* caches;
 @property (nonatomic, strong) NSCache* queryCache;
 @property (nonatomic, strong) KCSDataModel* dataModel;
 @end
+
+#warning SYNCHRONIZATION
 
 @implementation KCSObjectCache
 
@@ -36,8 +70,8 @@
 {
     self = [super init];
     if (self) {
-        //TODO: fix this!
-        _persistenceLayer = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
+        _persistenceLayer = [[KCSEntityPersistence alloc] initWithPersistenceId:@"offline"];
+        _offline = [[KCSOfflineUpdate alloc] initWithCache:_persistenceLayer];
         _caches = [NSMutableDictionary dictionaryWithCapacity:3];
         _caches[KCSRESTRouteAppdata] = [NSMutableDictionary dictionaryWithCapacity:5];
         _caches[KCSRESTRouteUser] = [NSMutableDictionary dictionaryWithCapacity:1];
@@ -173,7 +207,6 @@
 
 }
 
-
 - (void) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
 {
     NSDictionary* entity = [self.dataModel jsonEntityForObject:object route:route collection:collection];
@@ -182,9 +215,29 @@
     [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
 }
 
-- (void) addUnsavedObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
+- (NSString*) addUnsavedObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error
 {
+    DBAssert(object, @"should have object");
+    DBAssert(entity, @"should have entity");
     
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+
+    NSString* newid = [_offline addObject:entity route:route collection:collection headers:headers method:method error:error];
+    if (newid != nil) {
+        KK2(clean this up)
+        NSString* oldid = kinveyObjectId(object);
+        if ([newid isEqualToString:oldid] == NO) {
+            KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"Offline cache save updating object id: %@", newid);
+            entity = [entity dictionaryByAddingDictionary:@{KCSEntityKeyId : newid}];
+            setKinveyObjectId(object, newid);
+        }
+    }
+    
+    if (_updatesLocalWithUnconfirmedSaves == YES) {
+        [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
+    }
+    
+    return newid;
 }
 
 

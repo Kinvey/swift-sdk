@@ -44,7 +44,6 @@
 @interface KCSCachedStore () {
     id<KCSEntityCache> _cache;
 }
-
 @end
 
 @implementation KCSCachedStore
@@ -60,6 +59,7 @@
     
     KCSCollection* backingCollection = [self backingCollection];
     _cache = [KCSCachedStoreCaching cacheForCollection:backingCollection.collectionName];
+
     if (cachePolicy == KCSCachePolicyReadOnceAndSaveLocal_Xperimental) {
         [_cache setPersistenceId:[options objectForKey:KCSStoreKeyLocalCachePersistanceKey_Xperimental]];
     }

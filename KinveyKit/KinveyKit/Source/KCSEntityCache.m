@@ -201,7 +201,7 @@ NSString* KCSMongoObjectId()
     int pid = getpid();
     counter = (counter + 1) % 16777216;
     NSString* s = [NSString stringWithFormat:
-            @"%08lxx%02x%02x%02x%04x%06x",
+            @"%08lx%02x%02x%02x%04x%06x",
             timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
             pid, counter];
     return s;

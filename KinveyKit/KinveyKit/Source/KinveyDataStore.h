@@ -22,5 +22,6 @@
 
 #import "KCSDataStore.h"
 #import "KCSQuery2.h"
+#import "KCSOfflineUpdateDelegate.h"
 
 #endif

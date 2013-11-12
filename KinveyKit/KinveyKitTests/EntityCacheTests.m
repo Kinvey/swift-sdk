@@ -139,6 +139,31 @@
     STAssertNotNil(entity, @"should get back an entity");
 }
 
+#pragma mark - Peristance Unsaveds
+- (void) testUnsavedPersistence
+{
+    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
+    
+    BOOL u = [cache addUnsavedEntity:@{@"a":@1,@"_id":@"1"} route:@"R" collection:@"C1" method:@"M1" headers:@{@"h1":@"v1"}];
+    KTAssertU
+    id d2 = @{@"a":@"b",@"_id":@"1"};
+    u = [cache addUnsavedEntity:d2 route:@"R" collection:@"C2" method:@"M2" headers:@{@"h1":@"v1",@"h2":@"v2"}];
+    KTAssertU
+    id d3 = @{@"a":@2,@"_id":@"1"};
+    u = [cache addUnsavedEntity:d3 route:@"R" collection:@"C1" method:@"M1" headers:@{@"h1":@"v1"}];
+    KTAssertU
+
+    int count = [cache unsavedCount];
+    STAssertEquals(count, (int)2, @"should have 2 objects");
+    
+    
+    NSArray* unsaveds = [cache unsavedEntities];
+    KTAssertCount(2, unsaveds);
+    STAssertEqualObjects(unsaveds[0][@"obj"], d2, @"");
+    STAssertEqualObjects(unsaveds[1][@"obj"], d3, @"should be the updated 2");
+    
+}
+
 
 #pragma mark - Cache
 - (void) testPullQuery
