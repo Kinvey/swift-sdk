@@ -29,6 +29,7 @@
 #define kHeaderApiVersion      @"X-Kinvey-Api-Version"
 #define kHeaderClientMethod    @"X-Kinvey-Client-Method"
 #define kHeaderResponseWrapper @"X-Kinvey-ResponseWrapper"
+#define kHeaderDate            @"Date"
 
 #define kHeaderValueJson @"application/json"
 
@@ -50,8 +51,24 @@ KCS_CONST_IMPL KCSRESTMethodPATCH  = @"PATCH";
 KCS_CONST_IMPL KCSRESTMethodPOST   = @"POST";
 KCS_CONST_IMPL KCSRESTMethodPUT    = @"PUT";
 
-
 #define KCS_VERSION @"3"
+
+
+#define MAX_DATE_STRING_LENGTH_K 40
+KK2(make just 1)
+NSString * getLogDate3()
+{
+    time_t now = time(NULL);
+    struct tm *t = gmtime(&now);
+    
+    char timestring[MAX_DATE_STRING_LENGTH_K];
+    
+    NSInteger len = strftime(timestring, MAX_DATE_STRING_LENGTH_K - 1, "%a, %d %b %Y %T %Z", t);
+    assert(len < MAX_DATE_STRING_LENGTH_K);
+    
+    return [NSString stringWithCString:timestring encoding:NSASCIIStringEncoding];
+}
+
 
 @interface KCSRequest2 ()
 @property (nonatomic) BOOL useMock;
@@ -108,11 +125,17 @@ static NSOperationQueue* queue;
     NSString* baseURL = [config baseURL];
     NSString* kid = config.appKey;
     
+    if (_useMock && kid == nil) {
+        kid = @"mock";
+        baseURL = baseURL ? baseURL : @"http://localhost:2110/";
+    }    
+    
     NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
     NSString* urlStr = [path componentsJoinedByString:@"/"];
     NSString* endpoint = [baseURL stringByAppendingString:urlStr];
     
     NSURL* url = [NSURL URLWithString:endpoint];
+    DBAssert(url, @"Should have a valid url");
     
     _currentQueue = [NSOperationQueue currentQueue];
     
@@ -134,8 +157,23 @@ static NSOperationQueue* queue;
     //headers[@"User-Agent"] = [client userAgent];
     //headers[@"X-Kinvey-Device-Information"] = [client.analytics headerString];
     
+    [headers addEntriesFromDictionary:self.headers];
+    
+    headers[kHeaderDate] = getLogDate3(); //always update date
     [request setAllHTTPHeaderFields:headers];
-    //[request setHTTPShouldUsePipelining:_httpMethod != kKCSRESTMethodPOST];
+    
+    if (self.method == KCSRESTMethodPOST || self.method == KCSRESTMethodPUT) {
+        [request setHTTPShouldUsePipelining:YES];
+    }
+    
+    KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
+    
+    if (_body) {
+        NSData* bodyData = [writer dataWithObject:_body];
+        DBAssert(bodyData != nil, @"should be able to parse body");
+        [request setHTTPBody:bodyData];
+    }
+
     
     KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@", request.HTTPMethod, request.URL);
     
@@ -155,7 +193,6 @@ static NSOperationQueue* queue;
         @strongify(op);
         [self requestCallback:op request:request];
     };
-    
     [queue addOperation:op];
     return op;
 }

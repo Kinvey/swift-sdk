@@ -134,6 +134,24 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
                 if (aresponse) {
                     response = aresponse;
                 }
+            } else {
+                NSString* method = request.HTTPMethod;
+                if ([method isEqualToString:KCSRESTMethodPOST] || [method isEqualToString:KCSRESTMethodPUT]) {
+                    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+                    _routes[route] = dictionary;
+                    DBAssert(components.count == 5, @"just handle the 5 case for now");
+                    
+                    KCSNetworkResponse* getresponse =  [[KCSNetworkResponse alloc] init];
+                    getresponse.code = 200;
+                    if (request.HTTPBody) {
+                        //TODO: add _id if none
+                        getresponse.jsonData = [[[KCS_SBJsonParser alloc] init] objectWithData:request.HTTPBody];
+                    }
+                    dictionary[components[components.count-1]] = getresponse;
+
+                    response = [self makeReflectionResponse:request];
+                    response.code = [method isEqualToString:KCSRESTMethodPOST] ? 201 : 200;
+                }
             }
         } else {
             if ([route isEqualToString:KCSRESTRouteAppdata]) {

@@ -27,5 +27,6 @@
 #import "KCSDataModel.h"
 #import "KCSObjectCache.h"
 #import "KCSEntityPersistence.h"
+#import "KCSOfflineUpdate.h"
 
 #endif

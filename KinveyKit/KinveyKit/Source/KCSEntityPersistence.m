@@ -19,37 +19,13 @@
 
 
 #import "KCSEntityPersistence.h"
-//#import "KCSEntityCache.h"
-//
-//#import "KinveyEntity.h"
-//#import "KCSObjectMapper.h"
-//#import "KCSReduceFunction.h"
-//#import "KCSHiddenMethods.h"
-//#import "KCSGroup.h"
-//
-//#import "KCSLogManager.h"
-//#import "KCS_SBJson.h"
-//
+
 #import "KinveyCoreInternal.h"
 
 #import "KCS_FMDatabase.h"
 #import "KCS_FMDatabaseAdditions.h"
-//#import "KCS_FMResultSet.h"
 
-#define KCS_CACHE_VERSION @"0.1"
-
-//NSString* cacheKeyForGroup2(NSArray* fields, KCSReduceFunction* function, KCSQuery* condition)
-//{
-//    NSMutableString* representation = [NSMutableString string];
-//    for (NSString* field in fields) {
-//        [representation appendString:field];
-//    }
-//    [representation appendString:[function JSONStringRepresentationForFunction:fields]];
-//    if (condition != nil) {
-//        [representation appendString:[condition JSONStringRepresentation]];
-//    }
-//    return representation;
-//}
+#define KCS_CACHE_VERSION @"0.002"
 
 @interface KCSEntityPersistence ()
 @property (nonatomic, strong) KCS_FMDatabase* db;
@@ -76,16 +52,6 @@
     }
     return self;
 }
-
-//- (NSDictionary*) parameterDict
-//{
-//    KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
-//    NSError* error = nil;
-//    NSString* object = [writer stringWithObject:_object error:&error];
-//    KCSLogNSError(@"Error serialializing dictionary object", error);
-//    return @{@"id": _objId, @"obj" : object, @"time" : _lastReadTime, @"dirty" : @(_unsaved), @"count" : @(_count), @"classname" : _classname};
-//}
-//TODO: #27 lmt,
 
 @end
 
@@ -116,6 +82,14 @@
     return [self initWithPersistenceId:@"null"];
 }
 
+- (void) createMetadata
+{
+    BOOL e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT)"];
+    if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+    e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
+    if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+}
+
 - (void) initDB
 {
     NSString* path = [self dbPath];
@@ -125,10 +99,7 @@
     BOOL e = NO;
     if (![_db tableExists:@"metadata"]) {
         KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Creating New Cache %@", path);
-        e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT, data)"];
-        if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
-        e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
-        if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+        [self createMetadata];
     } else {
         KCS_FMResultSet *rs = [_db executeQuery:@"SELECT version FROM metadata"];
         if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
@@ -139,18 +110,19 @@
         }
         
         if ([version isEqualToString:KCS_CACHE_VERSION] == NO) {
-            //TODO: #20 deal with old db        }
+            [self clearCaches];
+            return;
         }
     }
 
-//    if (![_db tableExists:@"objs"]) {
-//        e = [_db executeUpdate:@"CREATE TABLE objs (id VARCHAR(255) PRIMARY KEY, obj TEXT, time VARCHAR(255), saved BOOL, count INT, classname TEXT)"];
-//        if (e == NO) {
-//            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
-//        }
-//    }
     if (![_db tableExists:@"queries"]) {
         e = [_db executeUpdate:@"CREATE TABLE queries (id VARCHAR(255) PRIMARY KEY, ids TEXT, routeKey TEXT)"];
+        if (e == NO) {
+            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+        }
+    }
+    if (![_db tableExists:@"savequeue"]) {
+        e = [_db executeUpdate:@"CREATE TABLE savequeue (key VARCHAR(255) PRIMARY KEY, id VARCHAR(255), routeKey TEXT, method TEXT, headers TEXT, time VARCHAR(255), obj TEXT)"];
         if (e == NO) {
             KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
         }
@@ -168,7 +140,7 @@
     [_db close];
 }
 
-#pragma mark - objects
+#pragma mark - Objects
 /*
 - (KCSCacheValueDB*) dbObjectForId:(NSString*) objId
 {
@@ -444,6 +416,117 @@
 
 */
 
+#pragma mark - Save Queue
+
+- (NSString*) addUnsavedEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers
+{
+    NSString* _id = entity[KCSEntityKeyId];
+    if (_id == nil) {
+        KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"nil `_id` in %@. Adding local id.", entity);
+        _id = KCSMongoObjectId();
+        entity = [entity dictionaryByAddingDictionary:@{KCSEntityKeyId : _id}];
+    }
+    
+    NSError* error = nil;
+    NSString* entityStr = [self.jsonWriter stringWithObject:entity error:&error];
+    if (error != nil) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", entity);
+        DBAssert(YES, @"No object");
+    }
+
+    NSString* headerStr = [self.jsonWriter stringWithObject:headers error:&error];
+    if (error != nil) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", entity);
+        DBAssert(YES, @"No object");
+    }
+    
+    NSString* routeKey = [self tableForRoute:route collection:collection];
+
+    NSString* update = @"REPLACE INTO savequeue VALUES (:key, :id, :routeKey, :method, :headers, :time, :obj)";
+    NSDictionary* valDictionary = @{@"key":[routeKey stringByAppendingString:_id],
+                                    @"id":_id,
+                                    @"obj":entityStr,
+                                    @"time":[NSDate date],
+                                    @"routeKey": routeKey,
+                                    @"headers": headerStr,
+                                    @"method":method};
+    BOOL upated = [_db executeUpdate:update withParameterDictionary:valDictionary];
+    if (upated == NO) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error insert/updating %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    return upated ? _id : nil;
+}
+
+- (NSDictionary*) dictObjForJson:(NSString*)s
+{
+    NSError* error = nil;
+    NSDictionary* obj = [self.jsonParser objectWithString:s error:&error];
+    if (error) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"DB deserialization error %@", error);
+    }
+    return obj;
+}
+
+- (NSArray*) unsavedEntities
+{
+    NSString* query = @"SELECT * from savequeue ORDER BY time";
+    KCS_FMResultSet* results = [_db executeQuery:query];
+    if ([_db hadError]) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"DB error (looking up unsaved entities) %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    
+    //    NSDictionary* obj = nil;
+    NSMutableArray* entities = [NSMutableArray array];
+    while ([results next]) {
+        NSDictionary* d = [results resultDictionary];
+        if (d) {
+            NSDictionary* obj = [self dictObjForJson:d[@"obj"]];
+            NSDictionary* headers = [self dictObjForJson:d[@"headers"]];
+            NSString* routeKey = d[@"routeKey"];
+            NSArray* routes = [routeKey componentsSeparatedByString:@"_"];
+            NSString* route = routes[0];
+            NSString* collection = routes[1];
+            NSDictionary* entity = @{@"obj":obj,
+                                     @"headers":headers,
+                                     @"time":d[@"time"],
+                                     @"method":d[@"method"],
+                                     @"_id":d[@"id"],
+                                     @"route":route,
+                                     @"collection":collection};
+            if (entity) {
+                [entities addObject:entity];
+            }
+        }
+    }
+    return entities;
+}
+
+- (int) unsavedCount
+{
+    int result = [_db intForQuery:@"SELECT COUNT(*) FROM savequeue"];
+    if ([_db hadError]) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"DB error in unsaved count %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    return result;
+}
+
+- (BOOL) removeUnsavedEntity:(NSString*)unsavedId route:(NSString*)route collection:(NSString*)collection
+{
+    KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Deleting obj %@ from unsaved queue", unsavedId);
+    
+    NSString* routeKey = [self tableForRoute:route collection:collection];
+    NSString* entityKey = [routeKey stringByAppendingString:unsavedId];
+    
+    NSString* update = [NSString stringWithFormat:@"DELETE FROM savequeue WHERE key='%@'", entityKey];
+    BOOL updated = [_db executeUpdate:update];
+    if (updated == NO) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    return updated;
+
+}
+
+#pragma mark - Updates
 - (NSString*) tableForRoute:(NSString*)route collection:(NSString*)collection
 {
     return [NSString stringWithFormat:@"%@_%@",route,collection];
@@ -507,12 +590,7 @@
     if ([rs next]) {
         NSDictionary* d = [rs resultDictionary];
         if (d) {
-            NSString* objStr = d[@"obj"];
-            NSError* error = nil;
-            obj = [self.jsonParser objectWithString:objStr error:&error];
-            if (error) {
-                KCSLogError(KCS_LOG_CONTEXT_DATA, @"DB deserialization error %@", error);
-            }
+            obj = [self dictObjForJson:d[@"obj"]];
         }
     }
     return obj;
@@ -596,7 +674,7 @@
     return count;
 }
 
-#pragma mark
+#pragma mark - Import
 - (BOOL) import:(NSArray *)entities route:(NSString *)route collection:(NSString *)collection
 {
     if (entities == nil) return NO;

@@ -40,6 +40,7 @@
 #define KTPollStart self.done = NO; STAssertTrue([self poll], @"polling timed out");
 #define KTPollNoAssert self.done = NO; [self poll];
 
+
 @protocol KCSCredentials;
 id<KCSCredentials> mockCredentails();
 

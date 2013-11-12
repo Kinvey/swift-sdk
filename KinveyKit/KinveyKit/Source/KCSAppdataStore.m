@@ -45,6 +45,11 @@
 #import "KCSBlobService.h"
 #import "KCSFile.h"
 
+//TODO: special headers
+#import "KCSObjectCache.h"
+#import "KCSRequest2.h"
+#import "NSError+KinveyKit.h"
+
 #define KCSSTORE_VALIDATE_PRECONDITION BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock]; \
 if (okayToProceed == NO) { \
 return; \
@@ -58,13 +63,14 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 @interface KCSAppdataStore () {
     KCSSaveGraph* _previousProgress;
-    KCSSaveQueue* _saveQueue;
+    //    KCSSaveQueue* _saveQueue;
     BOOL _offlineSaveEnabled;
     NSString* _title;
 }
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
 @property (nonatomic, strong) KCSCollection *backingCollection;
+@property (nonatomic, strong) KCSObjectCache *cache2;
 
 - (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources;
 
@@ -136,7 +142,7 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
     if (self) {
         _authHandler = auth;
         _treatSingleFailureAsGroupFailure = YES;
-        _saveQueue = nil;
+        //        _saveQueue = nil;
         _title = nil;
     }
     return self;
@@ -198,10 +204,14 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
         NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
         if (queueId == nil)
             queueId = [self description];
-        _saveQueue = [KCSSaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId];
+        //        _saveQueue = [KCSSaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId];
+        self.cache2 = [[KCSObjectCache alloc] init]; //TODO: use persistence key
+        
         _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
+        
+        //TODO: use delegate in c2
         id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
-        _saveQueue.delegate = del;
+#warning        _saveQueue.delegate = del;
         
         _previousProgress = [options objectForKey:KCSStoreKeyOngoingProgress];
         _title = [options objectForKey:KCSStoreKeyTitle];
@@ -641,25 +651,25 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
-#pragma mark - Reachability
-#if BUILD_FOR_UNIT_TEST
-int reachable = -1;
-- (void) setReachable:(BOOL)reachOverwrite
-{
-    reachable = reachOverwrite;
-    KCSReachability* testReachability = reachable ? [KCSReachability reachabilityWithHostName:@"localhost"] : [KCSReachability unreachableReachability];
-    [[NSNotificationCenter defaultCenter] postNotificationName: KCSReachabilityChangedNotification object:testReachability];
-}
-- (BOOL) isKinveyReachable
-{
-    return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
-}
-#else
-- (BOOL) isKinveyReachable
-{
-    return [[KCSClient sharedClient] kinveyReachability].isReachable;
-}
-#endif
+//#pragma mark - Reachability
+//#if BUILD_FOR_UNIT_TEST
+//int reachable = -1;
+//- (void) setReachable:(BOOL)reachOverwrite
+//{
+//    reachable = reachOverwrite;
+//    KCSReachability* testReachability = reachable ? [KCSReachability reachabilityWithHostName:@"localhost"] : [KCSReachability unreachableReachability];
+//    [[NSNotificationCenter defaultCenter] postNotificationName: KCSReachabilityChangedNotification object:testReachability];
+//}
+//- (BOOL) isKinveyReachable
+//{
+//    return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
+//}
+//#else
+//- (BOOL) isKinveyReachable
+//{
+//    return [[KCSClient sharedClient] kinveyReachability].isReachable;
+//}
+//#endif
 
 #pragma mark - Adding/Updating
 - (BOOL) offlineSaveEnabled
@@ -669,7 +679,8 @@ int reachable = -1;
 
 - (NSUInteger) numberOfPendingSaves
 {
-    return [_saveQueue count];
+#warning do pending saves
+    return -1;//[_saveQueue count];
 }
 
 - (ProcessDataBlock_t) makeProcessDictBlock:(KCSSerializedObject*)serializedObject
@@ -698,11 +709,45 @@ int reachable = -1;
     return [processBlock copy];
 }
 
+- (BOOL) isNoNetworkError:(NSError*)error
+{
+    BOOL isNetworkError = NO;
+    if ([[error domain] isEqualToString:KCSNetworkErrorDomain]) { //KCSNetworkErrorDomain
+        NSError* underlying = [error userInfo][NSUnderlyingErrorKey];
+        if (underlying) {
+            //not sure what kind this is, so try again later
+            //error objects should have an underlying eror when coming from KCSAsyncRequest
+            return [self isNoNetworkError:underlying];
+        }
+    } else if ([[error domain] isEqualToString:NSURLErrorDomain]) {
+        switch (error.code) {
+            case kCFURLErrorUnknown:
+            case kCFURLErrorTimedOut:
+            case kCFURLErrorNotConnectedToInternet:
+            case kCFURLErrorDNSLookupFailed:
+                KCSLogNetwork(@"Got a network error (%d) on save, adding to queue.");
+                isNetworkError = YES;
+                break;
+            default:
+                KCSLogNetwork(@"Got a network error (%d) on save, but NOT queueing.", error.code);
+        }
+        //TODO: ios7 background update on timer if can't resend
+    }
+    return isNetworkError;
+}
+
+- (BOOL) shouldEnqueue:(NSError*)error
+{
+    return _offlineSaveEnabled == YES && [self isNoNetworkError:error] == YES;
+}
+
 - (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    BOOL isPostRequest = serializedObj.isPostRequest;
+    
     //Step 3: save entity
     RestRequestForObjBlock_t requestBlock = ^KCSRESTRequest *(id obj) {
-        BOOL isPostRequest = serializedObj.isPostRequest;
+        
         NSString *objectId = serializedObj.objectId;
         NSDictionary *dictionaryToMap = serializedObj.dataToSerialize;
         
@@ -729,7 +774,6 @@ int reachable = -1;
         return request;
     };
     
-    
     ProcessDataBlock_t processBlock = [self makeProcessDictBlock:serializedObj];
     
     KCSConnectionCompletionBlock completionAction = ^(KCSConnectionResponse* response) {
@@ -738,7 +782,20 @@ int reachable = -1;
     };
     
     KCSConnectionFailureBlock failureAction = ^(NSError* error) {
-        completionBlock(nil, error);
+#warning TODO here is where the thing should be requeued?
+        if ([self shouldEnqueue:error] == YES) {
+            //enqueue save
+            //TODO: NSString* _id =
+            [self.cache2 addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{}];
+            
+            NSString* _id = serializedObj.objectId ? serializedObj.objectId : (NSString*)[NSNull null];
+            error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : _id}];
+            
+            completionBlock(nil, error);
+            KK2(Use Headers);
+        } else {
+            completionBlock(nil, error);
+        }
     };
     
     KCSRESTRequest* request = requestBlock(nil);
@@ -801,31 +858,31 @@ int reachable = -1;
     }];
 }
 
-- (void) enqueSave:(id<KCSPersistable>)obj
-{
-    [_saveQueue addObject:obj];
-}
+//- (void) enqueSave:(id<KCSPersistable>)obj
+//{
+//    [_saveQueue addObject:obj];
+//}
 
-- (void) drainQueueWithProgressGraph:(KCSSaveGraph*)progress doSaveBlock:(KCSCompletionBlock)doSaveblock alreadySavedBlock:(KCSCompletionBlock)alreadySavedBlock withProgressBlock:(KCSProgressBlock)progressBlock
-{
-    if ([self offlineSaveEnabled] && /*[self isKinveyReachable]*/ YES == NO) {
-        NSDictionary* info = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Could not reach Kinvey" withFailureReason:@"Application is offline" withRecoverySuggestion:@"Try again when app is online" withRecoveryOptions:nil];
-        NSMutableDictionary* offlineErrorInfo = [NSMutableDictionary dictionaryWithDictionary:info];
-        [offlineErrorInfo setObject:[_saveQueue ids] forKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
-        NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSKinveyUnreachableError userInfo:offlineErrorInfo];
-        doSaveblock(nil,error);
-    } else {
-        for (KCSSaveQueueItem* item in [_saveQueue array]) {
-            id<KCSPersistable> obj = item.object;
-            [_saveQueue removeItem:item];
-            //Step 0: Serialize Object
-            [self saveEntity:obj progressGraph:progress doSaveBlock:doSaveblock
-           alreadySavedBlock:^{
-               alreadySavedBlock(@[obj], nil);
-           } withProgressBlock:progressBlock];
-        }
-    }
-}
+//- (void) drainQueueWithProgressGraph:(KCSSaveGraph*)progress doSaveBlock:(KCSCompletionBlock)doSaveblock alreadySavedBlock:(KCSCompletionBlock)alreadySavedBlock withProgressBlock:(KCSProgressBlock)progressBlock
+//{
+//    if ([self offlineSaveEnabled] && /*[self isKinveyReachable]*/ YES == NO) {
+//        NSDictionary* info = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Could not reach Kinvey" withFailureReason:@"Application is offline" withRecoverySuggestion:@"Try again when app is online" withRecoveryOptions:nil];
+//        NSMutableDictionary* offlineErrorInfo = [NSMutableDictionary dictionaryWithDictionary:info];
+//        [offlineErrorInfo setObject:[_saveQueue ids] forKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
+//        NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSKinveyUnreachableError userInfo:offlineErrorInfo];
+//        doSaveblock(nil,error);
+//    } else {
+//        for (KCSSaveQueueItem* item in [_saveQueue array]) {
+//            id<KCSPersistable> obj = item.object;
+//            [_saveQueue removeItem:item];
+//            //Step 0: Serialize Object
+//            [self saveEntity:obj progressGraph:progress doSaveBlock:doSaveblock
+//           alreadySavedBlock:^{
+//               alreadySavedBlock(@[obj], nil);
+//           } withProgressBlock:progressBlock];
+//        }
+//    }
+//}
 
 - (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
@@ -836,7 +893,7 @@ int reachable = -1;
     
     if (totalItemCount == 0) {
         //TODO: does this need an error?
-        completionBlock(nil, nil);
+        completionBlock(@[], nil);
     }
     
     __block int completedItemCount = 0;
@@ -846,9 +903,53 @@ int reachable = -1;
     
     __block NSError* topError = nil;
     __block BOOL done = NO;
+    [objectsToSave enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//        id<KCSPersistable> obj = item.object;
+//        [_saveQueue removeItem:item];
+  
+        //Step 0: Serialize Object
+        [self saveEntity:obj
+           progressGraph:progress
+             doSaveBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                 if (done) {
+                     //don't do the completion blocks for all the objects if its previously finished
+                     return;
+                 }
+                 if (errorOrNil != nil) {
+                     topError = errorOrNil;
+                 }
+                 if (objectsOrNil != nil) {
+                     [completedObjects addObjectsFromArray:objectsOrNil];
+                 }
+                 completedItemCount++;
+                 BOOL shouldStop = errorOrNil != nil && self.treatSingleFailureAsGroupFailure;
+                 if (completedItemCount == totalItemCount || shouldStop) {
+                     done = YES;
+                     completionBlock(completedObjects, topError);
+                 }
+                 
+             }
+       alreadySavedBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+           if (done) {
+               //don't do the completion blocks for all the objects if its previously finished
+               return;
+           }
+           [completedObjects addObjectsFromArray:objectsOrNil];
+           completedItemCount++;
+           if (completedItemCount == totalItemCount) {
+               done = YES;
+               completionBlock(completedObjects, topError);
+           }
+       }
+       withProgressBlock:progressBlock];
+    }];
+
+    /*
     for (id <KCSPersistable> singleEntity in objectsToSave) {
         [self enqueSave:singleEntity];
     }
+     */
+    /*
     //TODO: compress queue=
     [self drainQueueWithProgressGraph:progress doSaveBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (done) {
@@ -880,6 +981,7 @@ int reachable = -1;
             completionBlock(completedObjects, topError);
         }
     } withProgressBlock:progressBlock];
+     */
 }
 
 #pragma mark - Removing

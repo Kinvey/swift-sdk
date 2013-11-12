@@ -799,6 +799,9 @@ KCSFile* fileFromResults(NSDictionary* results)
                             //return existing file
                             KCSLogTrace(@"File %@ is older or same as file on disk. Using local file cache", fileId);
                             file.localURL = destinationFile;
+                            if (progressBlock) {
+                                progressBlock(@[file],1.0);
+                            }
                             completionBlock(@[file], nil);
                             return;
                         } // else re-download the file (NOTE: requires fall through to below)

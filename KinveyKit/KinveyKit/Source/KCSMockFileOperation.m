@@ -41,7 +41,7 @@
 @implementation KCSMockFileOperation
 
 
-- (instancetype) initWithRequest:(NSURLRequest*)request output:(NSFileHandle*)fileHandle
+- (instancetype) initWithRequest:(NSURLRequest*)request output:(NSFileHandle*)fileHandle context:(id)context
 {
     self = [super init];
     if (self) {

@@ -1,5 +1,5 @@
 //
-//  KCSObjectCache.h
+//  KCSOfflineUpdateDelegate.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -19,17 +19,20 @@
 
 #import <Foundation/Foundation.h>
 
-@class KCSQuery2;
-@protocol KCSPersistable;
+//TODO: document
+//TODO: document!!
+//TODO: remove old keys and values
+//TODO: update guide
+//DOC: can be called on any queue
 
-@interface KCSObjectCache : NSObject
+@protocol KCSOfflineUpdateDelegate <NSObject>
 
-@property (nonatomic) BOOL preCalculatesResults;
-@property (nonatomic) BOOL updatesLocalWithUnconfirmedSaves;
+@optional
+- (BOOL) shouldSaveObject:(NSString*)objectId inCollection:(NSString*)collectionName lastAttemptedSaveTime:(NSDate*)saveTime;
+- (void) willSaveObject:(NSString*)objectId inCollection:(NSString*)collectionName;
+- (void) didSaveObject:(NSString*)objectId inCollection:(NSString*)collectionName;
 
+- (void) didEnqueueObject:(NSString*)objectId inCollection:(NSString*)collectionName;
+- (BOOL) shouldEnqueueObject:(NSString*)objectId inCollection:(NSString*)collectionName onError:(NSError*)error;
 
-- (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
-- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
-
-- (NSString*) addUnsavedObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error;
 @end

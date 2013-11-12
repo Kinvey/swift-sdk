@@ -1055,7 +1055,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
     [properties setValue:_email forKey:KCSUserAttributeEmail];
     [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
 }
-
+KK2(get rid of password auth)
 + (KCSUser *)activeUser
 {
 #pragma clang diagnostic push

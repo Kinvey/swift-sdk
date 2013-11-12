@@ -1,5 +1,5 @@
 //
-//  KCSObjectCache.h
+//  KCSOfflineUpdate.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -16,20 +16,22 @@
 // contents is a violation of applicable laws.
 //
 
-
 #import <Foundation/Foundation.h>
 
-@class KCSQuery2;
-@protocol KCSPersistable;
 
-@interface KCSObjectCache : NSObject
+@class KCSEntityPersistence;
 
-@property (nonatomic) BOOL preCalculatesResults;
-@property (nonatomic) BOOL updatesLocalWithUnconfirmedSaves;
+@interface KCSOfflineUpdate : NSObject
+
+@property (nonatomic, weak) id<KCSOfflineUpdateDelegate> delegate;
+@property (nonatomic) BOOL useMock;
+
+- (id) initWithCache:(KCSEntityPersistence*)cache;
+
+- (void) start;
+- (void) stop;
+
+- (NSString*) addObject:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method error:(NSError*)error;
 
 
-- (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
-- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
-
-- (NSString*) addUnsavedObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error;
 @end
