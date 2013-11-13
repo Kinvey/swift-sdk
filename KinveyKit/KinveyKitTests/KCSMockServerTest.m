@@ -35,6 +35,12 @@
     return [self responseForRequest:req];
 }
 
+- (NSError*)errorForURL:(NSString*)urlStr
+{
+    NSURLRequest* req = [NSURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
+    return [self errorForRequest:req];
+}
+
 @end
 
 @interface KCSMockServerTest : SenTestCase
@@ -73,7 +79,7 @@
     KCSNetworkResponse* r1 = [_server responseForURL:@"http://foo.bar.com/appdata/kid_test/collection/1"];
     KTAssertNotNil(r1);
     KTAssertEqualsInt(r1.code, 200);
-    STAssertEqualObjects(r1.jsonData, data, @"data should match previous");
+    STAssertEqualObjects([r1 jsonObject], data, @"data should match previous");
 }
 
 - (void) testPing
@@ -105,6 +111,16 @@
     KTAssertEqualsInt(x.code, 200);
     STAssertEqualObjects(x.jsonData, body, @"body must match");
     STAssertEqualObjects(x.headers, headers, @"headers must match");
+}
+
+- (void) testError
+{
+    NSError* error = [NSError errorWithDomain:NSURLErrorDomain code:kCFURLErrorNotConnectedToInternet userInfo:nil];
+    [_server setError:error forRoute:@"/appdata/kid_test/collection/1"];
+    NSError* r1 = [_server errorForURL:@"http://foo.bar.com/appdata/kid_test/collection/1"];
+    KTAssertNotNil(r1);
+    STAssertEqualObjects(r1.domain, NSURLErrorDomain, @"domains should match");
+
 }
 
 @end

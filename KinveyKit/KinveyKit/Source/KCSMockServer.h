@@ -31,4 +31,7 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
 
 - (KCSNetworkResponse*) responseForRequest:(NSURLRequest*)request;
 - (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route;
+
+- (NSError*) errorForRequest:(NSURLRequest*)request;
+- (void) setError:(NSError*)error forRoute:(NSString*)route;
 @end

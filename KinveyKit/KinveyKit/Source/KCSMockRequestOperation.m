@@ -49,7 +49,10 @@
 
 - (void) resolveRequest
 {
-    self.response = [[KCSMockServer sharedServer] responseForRequest:self.request];
+    self.error = [[KCSMockServer sharedServer] errorForRequest:self.request];
+    if (!self.error) {
+        self.response = [[KCSMockServer sharedServer] responseForRequest:self.request];
+    }
     self.finished = YES;
 }
 

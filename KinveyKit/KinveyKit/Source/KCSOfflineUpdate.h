@@ -20,6 +20,7 @@
 
 
 @class KCSEntityPersistence;
+@protocol KCSOfflineUpdateDelegate;
 
 @interface KCSOfflineUpdate : NSObject
 

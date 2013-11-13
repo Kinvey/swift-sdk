@@ -25,6 +25,9 @@
 //TODO: update guide
 //DOC: can be called on any queue
 
+/*
+ @since 1.23.0
+ */
 @protocol KCSOfflineUpdateDelegate <NSObject>
 
 @optional

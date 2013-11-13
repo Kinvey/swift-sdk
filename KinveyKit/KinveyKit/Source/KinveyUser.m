@@ -876,11 +876,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
 
 #pragma mark - Kinvey Entity
 
-- (KCSCollection *)userCollection
-{
-    return [KCSCollection userCollection];
-}
-
 + (NSDictionary *)kinveyObjectBuilderOptions
 {
     static NSDictionary *options = nil;

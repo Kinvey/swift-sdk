@@ -164,9 +164,10 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
     return response;
 }
 
-- (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route
+- (NSMutableDictionary*)containerForRoute:(NSString*)route
 {
     route = [route stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
+    NSMutableDictionary* container = nil;
     NSArray* components = [route pathComponents];
     if (components != nil && components.count >= 3) {
         NSString* route = components[0];
@@ -187,8 +188,31 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
             }
             ld = d;
         }
-        ld[components[components.count - 1]] = response;
+//        ld[components[components.count - 1]] = response;
+        container = ld;
     }
+    return container;
+}
+
+- (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route
+{
+    NSMutableDictionary* container = [self containerForRoute:route];
+    container[[route lastPathComponent]] = response;
+}
+
+- (NSError *)errorForRequest:(NSURLRequest *)request
+{
+    NSString* url = [request.URL path];
+    
+    url = [url stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
+    NSDictionary* d = [self containerForRoute:url];
+    return d[[url lastPathComponent]];
+}
+
+- (void) setError:(NSError *)error forRoute:(NSString *)route
+{
+    NSMutableDictionary* container = [self containerForRoute:route];
+    container[[route lastPathComponent]] = error;
 }
 
 #pragma mark - debug

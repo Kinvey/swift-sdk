@@ -393,9 +393,6 @@
     
     KCSQuery* q3 = [KCSQuery queryForEmptyValueInField:@"field"];
     STAssertEqualObjects(q3.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
-    
-    KCSQuery* q4 = [KCSQuery queryForNilValueInField:@"field"];
-    STAssertEqualObjects(q4.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
 }
 #pragma clang diagnostic pop
 
