@@ -368,14 +368,6 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 
 - (void) removeValueForAttribute:(NSString*)attribute;
 
-/*! Called when a User Request completes successfully.
- 
- @return The KCSCollection to access users.
- @deprecatedIn 1.10.2
- */
-- (KCSCollection *)userCollection KCS_DEPRECATED(Use [KCSCollection userCollection] instead., 1.10.2);
-
-
 /** Update a user's password and save the user object to the backend. 
  @param newPassword the new password for the user
  @param completionBlock block to be notified when operation is completed or fails. The `objectsOrNil` return array will have the updated user as its only value if successful. 

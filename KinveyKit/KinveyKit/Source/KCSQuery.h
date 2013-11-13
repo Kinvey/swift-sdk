@@ -289,25 +289,6 @@ typedef enum {
  */
 + (KCSQuery *)queryNegatingQuery:(KCSQuery *)query;
 
-/*! Create a new query looking for an unset value in a field.
- 
- This filters all entries that do not have a value set for the field. I.e. loaded classes will have 'nil' set for that property.
- 
- @param field The field in Kinvey to query on.
-
- @return The new KCSQuery object (autoreleased).
- @deprecated This method is ambiguous and is superceeded by the following:
- 
-    * To find values that have been set to `null` : [KCSQuery queryOnField:field withExactMatchForValue:[NSNull null]];
-    * To find values that empty or unset: [KCSQuery queryForEmptyValueInField:];
-    * To find either `null` or empty or unset: [KCSQuery queryForEmptyOrNullValueInField:];
- 
- @deprecatedIn 1.11.0
- @see queryForEmptyOrNullValueInField:
- @see queryForEmptyValueInField:
- */
-+ (KCSQuery *)queryForNilValueInField: (NSString *)field KCS_DEPRECATED(queryForNilValueInField is ambiguous; use exact match on NSNull; queryForEmptyValueInField; or queryForEmptyOrNullValueInField, 1.11.0);
-
 /** Create a query that matches entities where the field is empty or unset.
  
  @param field the backend field to query.

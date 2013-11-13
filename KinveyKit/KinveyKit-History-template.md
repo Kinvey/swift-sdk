@@ -8,6 +8,10 @@
     * 
 * Minor Changes:
     * Saving an empty array now returns an empty array for `objectsOrNil` instead of of `nil`.
+* Code Cleanup:
+    * Removed deprecated methods/classes:
+         * `[KCSUser userCollection]`; use `[KCSCollection userCollection]` instead.
+         * `[KCSQuery queryForNilValueInField:]`; use exact match on `NSNull`; `queryForEmptyValueInField`; or `queryForEmptyOrNullValueInField` instead.
 * __TODO__ examine some more deprecations
 
 

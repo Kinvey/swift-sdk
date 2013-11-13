@@ -72,7 +72,9 @@
 @end
 
 @interface OfflineTests : SenTestCase
-
+@property (nonatomic, strong) KCSOfflineUpdate* update;
+@property (nonatomic, strong) KCSEntityPersistence* cache;
+@property (nonatomic, strong) OfflineDelegate* delegate;
 @end
 
 @implementation OfflineTests
@@ -80,7 +82,20 @@
 - (void)setUp
 {
     [super setUp];
-    // Put setup code here; it will be run once, before the first test case.
+    [KCSUser mockUser];
+    
+    self.cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"offlinetests"];
+    [self.cache clearCaches];
+    self.delegate = [[OfflineDelegate alloc] init];
+    @weakify(self);
+    self.delegate.callback = ^{
+        @strongify(self);
+        self.done = YES;
+    };
+    
+    self.update = [[KCSOfflineUpdate alloc] initWithCache:self.cache];
+    self.update.delegate = self.delegate;
+    self.update.useMock = YES;
 }
 
 - (void)tearDown
@@ -91,25 +106,30 @@
 
 - (void) testBasic
 {
-    [KCSUser mockUser];
-    
-    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"offlinetests"];
-    [cache clearCaches];
-    OfflineDelegate* delegate = [[OfflineDelegate alloc] init];
-    delegate.callback = ^{self.done = YES;};
-    
-    KCSOfflineUpdate* update = [[KCSOfflineUpdate alloc] initWithCache:cache];
-    update.delegate = delegate;
-    update.useMock = YES;
     
     NSDictionary* entity = @{@"a":@"x"};
-    [update addObject:entity route:@"R" collection:@"C" headers:@{KCSRequestLogMethod} method:@"POST" error:nil];
+    [self.update addObject:entity route:@"R" collection:@"C" headers:@{KCSRequestLogMethod} method:@"POST" error:nil];
     
-    [update start];
+    [self.update start];
     self.done = NO;
     [self poll];
     
-    STAssertEquals([cache unsavedCount], (int)0, @"should be zero");
+    STAssertEquals([self.cache unsavedCount], (int)0, @"should be zero");
 }
+
+- (void) testRestartNotConnected
+{
+    NSDictionary* entity = @{@"a":@"x"};
+    [self.update addObject:entity route:@"R" collection:@"C" headers:@{KCSRequestLogMethod} method:@"POST" error:nil];
+    
+    [self.update start];
+    self.done = NO;
+    [self poll];
+    
+    STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
+    
+    STAssertEquals([self.cache unsavedCount], (int)1, @"should be zero");
+}
+
 
 @end

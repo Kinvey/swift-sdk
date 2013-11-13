@@ -566,10 +566,6 @@ BOOL kcsIsOperator(NSString* queryField)
     return q;
 }
 
-+ (KCSQuery *)queryForNilValueInField: (NSString *)field
-{
-    return [self queryForEmptyValueInField:field];
-}
 
 + (KCSQuery*) queryForEmptyValueInField:(NSString*)field
 {

@@ -18,9 +18,6 @@
 //
 
 
-//TODO: check headers
-
-
 #import "KCSAppdataStore.h"
 
 #import "KCSGroup.h"
@@ -45,7 +42,6 @@
 #import "KCSBlobService.h"
 #import "KCSFile.h"
 
-//TODO: special headers
 #import "KCSObjectCache.h"
 #import "KCSRequest2.h"
 #import "NSError+KinveyKit.h"
@@ -651,25 +647,6 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
-//#pragma mark - Reachability
-//#if BUILD_FOR_UNIT_TEST
-//int reachable = -1;
-//- (void) setReachable:(BOOL)reachOverwrite
-//{
-//    reachable = reachOverwrite;
-//    KCSReachability* testReachability = reachable ? [KCSReachability reachabilityWithHostName:@"localhost"] : [KCSReachability unreachableReachability];
-//    [[NSNotificationCenter defaultCenter] postNotificationName: KCSReachabilityChangedNotification object:testReachability];
-//}
-//- (BOOL) isKinveyReachable
-//{
-//    return reachable == -1 ? [[KCSClient sharedClient] kinveyReachability].isReachable : reachable;
-//}
-//#else
-//- (BOOL) isKinveyReachable
-//{
-//    return [[KCSClient sharedClient] kinveyReachability].isReachable;
-//}
-//#endif
 
 #pragma mark - Adding/Updating
 - (BOOL) offlineSaveEnabled
@@ -738,7 +715,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 
 - (BOOL) shouldEnqueue:(NSError*)error
 {
-    return _offlineSaveEnabled == YES && [self isNoNetworkError:error] == YES;
+    return [self offlineSaveEnabled] == YES && [self isNoNetworkError:error] == YES;
 }
 
 - (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
@@ -786,7 +763,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
         if ([self shouldEnqueue:error] == YES) {
             //enqueue save
             //TODO: NSString* _id =
-            [self.cache2 addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{}];
+            [self.cache2 addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{} error:error];
             
             NSString* _id = serializedObj.objectId ? serializedObj.objectId : (NSString*)[NSNull null];
             error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : _id}];
