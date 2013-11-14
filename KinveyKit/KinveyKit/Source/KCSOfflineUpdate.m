@@ -50,6 +50,9 @@
 - (void) start
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reach:) name:KCSReachabilityChangedNotification object:nil];
+#if TARGET_OS_IPHONE
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(foreground:) name:UIApplicationDidBecomeActiveNotification object:nil];
+#endif
     [self drainQueue];
 }
 
@@ -61,7 +64,15 @@
 - (void)reach:(NSNotification*)note
 {
     KCSReachability* reachability = note.object;
-    if (reachability.isReachable == YES) {
+    if (reachability.isReachable) {
+        [self drainQueue];
+    }
+}
+
+- (void)foreground:(NSNotification*)note
+{
+    KCSReachability* reachability = [KCSClient sharedClient].kinveyReachability;
+    if (reachability.isReachable) {
         [self drainQueue];
     }
 }
@@ -71,8 +82,6 @@
     [self drainQueue];
 }
 
-//TODO test at persistence
-//TODO test at cache
 //TODO start when credentials are added : clear on logout - so we can have data before login
 
 - (NSUInteger) count
@@ -93,7 +102,7 @@
 - (void)setDelegate:(id<KCSOfflineUpdateDelegate>)delegate
 {
     _delegate = delegate;
-    [self drainQueue];
+    [self start];
 }
 
 #pragma mark - saveProcess

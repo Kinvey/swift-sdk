@@ -79,9 +79,8 @@ NSDictionary* defaultBuilders();
 - (NSDictionary*) dictionaryValue;
 @end
 
-static KCSObjectCache* sDataCaches;
-
 @interface KCSAppdataStore (KCSHiddenMethods)
++ (KCSObjectCache*) caches;
 @end
 
 @interface KCSUser (KCSHiddenMethods)

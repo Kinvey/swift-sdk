@@ -174,8 +174,8 @@ static NSOperationQueue* queue;
         [request setHTTPBody:bodyData];
     }
 
-    
-    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@", request.HTTPMethod, request.URL);
+    op.clientRequestId = [[NSUUID UUID] UUIDString];
+    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@ [KinveyKit id: '%@']", request.HTTPMethod, request.URL, op.clientRequestId);
     
     if (_useMock == YES) {
         op = [[KCSMockRequestOperation alloc] initWithRequest:request];
@@ -278,12 +278,12 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         NSError* error = nil;
         if (op.error) {
             error = [op.error errorByAddingCommonInfo];
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@", error);
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@ [KinveyKit id: '%@']", error, op.clientRequestId);
         } else if ([op.response isKCSError]) {
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@", (long)op.response.code, op.response.jsonData);
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@ [KinveyKit id: '%@']", (long)op.response.code, op.response.jsonData, op.clientRequestId);
             error = [op.response errorObject];
         } else {
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%ld)", (long)op.response.code);
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%ld) [KinveyKit id: '%@']", (long)op.response.code, op.clientRequestId);
         }
         error = [error updateWithInfo:@{kErrorKeyMethod : request.HTTPMethod}];
         self.completionBlock(op.response, error);

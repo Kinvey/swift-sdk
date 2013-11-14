@@ -20,6 +20,7 @@
 
 #import "KCSClient+KinveyDataStore.h"
 
+KK2(removes)
 #import "KCSHiddenMethods.h"
 #import "KinveyCoreInternal.h"
 
@@ -29,7 +30,7 @@ KCS_CONST_IMPL KCS_ERROR_UNSAVED_OBJECT_IDS_KEY = @"KCSStore.OfflineSave.Unsaved
 
 - (void)setOfflineDelegate:(id<KCSOfflineUpdateDelegate>)delegate
 {
-    [sDataCaches setOfflineUpdateDelegate:delegate];
+    [[KCSAppdataStore caches] setOfflineUpdateDelegate:delegate];
 }
 
 @end
