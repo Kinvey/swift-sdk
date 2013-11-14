@@ -48,6 +48,9 @@
 @property (atomic) BOOL shouldSaveCalled;
 @property (atomic) BOOL willSaveCalled;
 @property (atomic) BOOL didSaveCalled;
+@property (atomic) BOOL shouldEnqueueCalled;
+@property (atomic) NSUInteger didEnqueCalledCount;
+@property (atomic, retain) NSError* error;
 @property (nonatomic, copy) void (^callback)(void);
 @end
 @implementation OfflineDelegate
@@ -66,6 +69,20 @@
 - (void)didSaveObject:(NSString *)objectId inCollection:(NSString *)collectionName
 {
     self.didSaveCalled = YES;
+    _callback();
+}
+
+- (BOOL)shouldEnqueueObject:(NSString *)objectId inCollection:(NSString *)collectionName onError:(NSError *)error
+{
+    self.shouldEnqueueCalled = YES;
+    self.error = error;
+    
+    return YES;
+}
+
+- (void)didEnqueueObject:(NSString *)objectId inCollection:(NSString *)collectionName
+{
+    self.didEnqueCalledCount++;
     _callback();
 }
 
@@ -106,7 +123,6 @@
 
 - (void) testBasic
 {
-    
     NSDictionary* entity = @{@"a":@"x"};
     [self.update addObject:entity route:@"R" collection:@"C" headers:@{KCSRequestLogMethod} method:@"POST" error:nil];
     
@@ -119,6 +135,8 @@
 
 - (void) testRestartNotConnected
 {
+    [KCSMockServer sharedServer].offline = YES;
+       
     NSDictionary* entity = @{@"a":@"x"};
     [self.update addObject:entity route:@"R" collection:@"C" headers:@{KCSRequestLogMethod} method:@"POST" error:nil];
     
@@ -127,9 +145,33 @@
     [self poll];
     
     STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
+    KTAssertEqualsInt(self.delegate.didEnqueCalledCount, 2);
     
-    STAssertEquals([self.cache unsavedCount], (int)1, @"should be zero");
+    STAssertEquals([self.cache unsavedCount], (int)1, @"should be one");
 }
 
+
+- (void) testSaveKickedOff
+{
+    [KCSMockServer sharedServer].offline = YES;
+    
+    NSDictionary* entity = @{@"a":@"x"};
+    [self.update addObject:entity route:@"R" collection:@"C" headers:@{KCSRequestLogMethod} method:@"POST" error:nil];
+    
+    self.done = NO;
+    [self.update start];
+    [self poll];
+    STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
+    STAssertEquals([self.cache unsavedCount], (int)1, @"should be one");
+
+
+    self.done = NO;
+    [KCSMockServer sharedServer].offline = NO;
+    [KCSMockReachability changeReachability:YES];
+    [self poll];
+    
+    STAssertEquals([self.cache unsavedCount], (int)0, @"should be zero");
+    STAssertTrue(self.delegate.didSaveCalled, @"should not have been saved");
+}
 
 @end

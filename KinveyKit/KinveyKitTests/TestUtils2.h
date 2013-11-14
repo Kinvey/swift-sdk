@@ -23,6 +23,7 @@
 
 #import "LogTester.h"
 #import "KCSMockServer.h"
+#import "KCSMockReachability.h"
 
 #define KTAssertNoError STAssertNil(error, @"Should not get an error: %@", error);
 

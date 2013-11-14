@@ -120,7 +120,9 @@
     NSError* r1 = [_server errorForURL:@"http://foo.bar.com/appdata/kid_test/collection/1"];
     KTAssertNotNil(r1);
     STAssertEqualObjects(r1.domain, NSURLErrorDomain, @"domains should match");
-
 }
+
+
+
 
 @end
