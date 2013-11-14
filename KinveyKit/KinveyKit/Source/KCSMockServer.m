@@ -56,6 +56,16 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
     return server;
 }
 
+#pragma mark - Reachability
+
+- (void) setReachable:(BOOL)reachable
+{
+    self.offline = reachable;
+}
+
+
+#pragma mark - Responses
+
 - (KCSNetworkResponse*) make404
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
@@ -125,14 +135,36 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
         }
   
         if (components.count > 4) {
-            NSDictionary* d = _routes[route];
+            NSMutableDictionary* d = _routes[route];
             if (d) {
+                NSMutableDictionary* lastd = d;
                 for (int i = 4; i < components.count - 1; i++) {
+                    lastd = d;
                     d = d[components[i]];
                 }
                 KCSNetworkResponse* aresponse = d[components[components.count-1]];
                 if (aresponse) {
                     response = aresponse;
+                } else {
+                    NSString* method = request.HTTPMethod;
+                    if ([method isEqualToString:KCSRESTMethodPOST] || [method isEqualToString:KCSRESTMethodPUT]) {
+                        //TODO: add _id on POSTS to a collection
+                        if (!d) {
+                            NSMutableDictionary* d = [NSMutableDictionary dictionary];
+                            lastd[components[components.count - 2]] = d;
+                        }
+                        KCSNetworkResponse* getresponse =  [[KCSNetworkResponse alloc] init];
+                        getresponse.code = 200;
+                        if (request.HTTPBody) {
+                            //TODO: add _id if none
+                            getresponse.jsonData = [[[KCS_SBJsonParser alloc] init] objectWithData:request.HTTPBody];
+                        }
+                        //TODO this will add to the collection, but should be added to the _id under the collection
+                        d[components[components.count-1]] = getresponse;
+                        
+                        response = [self makeReflectionResponse:request];
+                        response.code = [method isEqualToString:KCSRESTMethodPOST] ? 201 : 200;
+                    }
                 }
             } else {
                 NSString* method = request.HTTPMethod;
@@ -202,6 +234,11 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
 
 - (NSError *)errorForRequest:(NSURLRequest *)request
 {
+    if (self.offline) {
+        NSError* error = [NSError errorWithDomain:NSURLErrorDomain code:kCFURLErrorNotConnectedToInternet userInfo:nil];
+        return error;
+    }
+    
     NSString* url = [request.URL path];
     
     url = [url stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];

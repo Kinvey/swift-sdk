@@ -1,8 +1,7 @@
 //
-//  KCSMockServer.h
+//  MockReacability.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/15/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -17,22 +16,13 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+#import <KinveyKit/KinveyKit.h>
 
-@class KCSNetworkResponse;
+#import "KCSReachability.h"
 
-KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NSString* message, NSInteger code);
+@interface KCSMockReachability : KCSReachability
 
-@interface KCSMockServer : NSObject
-+ (instancetype)sharedServer;
+- (void) setReachable:(BOOL)reachable;
++ (void) changeReachability:(BOOL)reachable;
 
-//default is nil - will match any kid
-@property (nonatomic, retain) NSString* appKey;
-@property (nonatomic) BOOL offline;
-
-- (KCSNetworkResponse*) responseForRequest:(NSURLRequest*)request;
-- (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route;
-
-- (NSError*) errorForRequest:(NSURLRequest*)request;
-- (void) setError:(NSError*)error forRoute:(NSString*)route;
 @end

@@ -25,26 +25,6 @@ NSString* const KCSReachabilityChangedNotification = @"KinveyKit.Notification.Re
 @property (strong) KCS_KSReachability* reachability;
 @end
 
-@interface KCSUnreachable : KCSReachability
-@end
-@implementation KCSUnreachable
-
-- (BOOL)isReachable
-{
-    return NO;
-}
-
-- (BOOL)isReachableViaWiFi
-{
-    return NO;
-}
-
-- (BOOL)isReachableViaWWAN
-{
-    return NO;
-}
-@end
-
 @implementation KCSReachability
 
 + (instancetype) reachabilityForInternetConnection
@@ -61,11 +41,6 @@ NSString* const KCSReachabilityChangedNotification = @"KinveyKit.Notification.Re
         [nCenter postNotificationName:KCSReachabilityChangedNotification object:reachy];
     };
     return reachy;
-}
-
-+ (instancetype) unreachableReachability
-{
-    return [[KCSUnreachable alloc] init];
 }
 
 - (instancetype) initWithReachability:(KCS_KSReachability*)reachability
