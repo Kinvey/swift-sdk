@@ -26,4 +26,5 @@
 - (KCSNetworkResponse*)response;
 - (NSError*)error;
 @property (atomic) NSUInteger retryCount;
+@property (nonatomic, copy) NSString* clientRequestId;
 @end

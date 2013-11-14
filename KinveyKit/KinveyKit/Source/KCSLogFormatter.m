@@ -92,6 +92,7 @@
         case KCS_LOG_CONTEXT_NETWORK : context = @"NETWORK"; break;
         case KCS_LOG_CONTEXT_DATA    : context = @"DATA"; break;
         case KCS_LOG_CONTEXT_TEST    : context = @"TEST"; break;
+        case KCS_LOG_CONTEXT_FILESYSTEM : context = @"FILESYSTEM"; break;
     }
     
     NSString *dateAndTime = [self stringFromDate:(logMessage->timestamp)];

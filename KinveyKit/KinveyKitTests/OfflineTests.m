@@ -174,4 +174,9 @@
     STAssertTrue(self.delegate.didSaveCalled, @"should not have been saved");
 }
 
+- (void) testKickoffEventSavesObjRemovesThatObjFromQueue
+{
+    KTNIY
+}
+
 @end

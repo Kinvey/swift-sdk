@@ -56,9 +56,6 @@ return; \
 typedef KCSRESTRequest* (^RestRequestForObjBlock_t)(id obj);
 typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletionBlock completion);
 
-
-static KCSObjectCache* sDataCaches;
-
 @interface KCSAppdataStore () {
     KCSSaveGraph* _previousProgress;
     NSString* _title;
@@ -127,12 +124,14 @@ static KCSObjectCache* sDataCaches;
 
 #pragma mark - Initialization
 
-+ (void)initialize
++ (KCSObjectCache*)caches
 {
+    static KCSObjectCache* sDataCaches;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sDataCaches = [[KCSObjectCache alloc] init];
     });
+    return sDataCaches;
 }
 
 - (instancetype)init
@@ -723,7 +722,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 
 - (BOOL) shouldEnqueue:(NSError*)error
 {
-    return sDataCaches.offlineUpdateEnabled && [self isNoNetworkError:error] == YES;
+    return [KCSAppdataStore caches].offlineUpdateEnabled && [self isNoNetworkError:error] == YES;
 }
 
 - (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
@@ -771,10 +770,10 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
         if ([self shouldEnqueue:error] == YES) {
             //enqueue save
             //TODO: NSString* _id =
-            [sDataCaches addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{} error:error];
+            [[KCSAppdataStore caches] addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{} error:error];
             
             NSString* _id = serializedObj.objectId ? serializedObj.objectId : (NSString*)[NSNull null];
-            error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : _id}];
+            error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[_id]}];
             
             completionBlock(nil, error);
             KK2(Use Headers);
