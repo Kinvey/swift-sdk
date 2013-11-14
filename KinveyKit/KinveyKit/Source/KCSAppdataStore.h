@@ -18,7 +18,6 @@
  
 #import <Foundation/Foundation.h>
 #import "KCSStore.h"
-#import "KCSOfflineSaveStore.h"
 
 @class KCSCollection;
 

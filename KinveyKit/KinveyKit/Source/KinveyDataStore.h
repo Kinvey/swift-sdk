@@ -22,6 +22,8 @@
 
 #import "KCSDataStore.h"
 #import "KCSQuery2.h"
+
 #import "KCSOfflineUpdateDelegate.h"
+#import "KCSClient+KinveyDataStore.h"
 
 #endif

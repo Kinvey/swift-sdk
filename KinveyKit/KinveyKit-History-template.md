@@ -6,6 +6,8 @@
 
 * Major Caching Update & Bug Fix:
     * 
+    * __TODO__ removed offline save store, things are now global - need to set offlineupdatedelegate
+    * __TODO__ doc offlineupdate delegate, kcslcient addition
 * Minor Changes:
     * Saving an empty array now returns an empty array for `objectsOrNil` instead of of `nil`.
 * Code Cleanup:

@@ -30,6 +30,7 @@
 #import "KCSFileStore.h"
 #import "KCSFile.h"
 #import "KCSClientConfiguration.h"
+#import "KCSObjectCache.h"
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
@@ -78,6 +79,10 @@ NSDictionary* defaultBuilders();
 - (NSDictionary*) dictionaryValue;
 @end
 
+static KCSObjectCache* sDataCaches;
+
+@interface KCSAppdataStore (KCSHiddenMethods)
+@end
 
 @interface KCSUser (KCSHiddenMethods)
 @end

@@ -41,8 +41,6 @@
 #define KCS_SALESFORCE_REFRESH_TOKEN @"refresh_token"
 #define KCS_SALESFORCE_CLIENT_ID @"client_id"
 
-#define KCS_CACHES_USE_V2 @"kinvey.usev2caching"
-
 /** Notification for when a network operation starts */
 KCS_CONSTANT KCSNetworkConnectionDidStart;
 /** Notification for when a network operation ends */

@@ -19,7 +19,6 @@
 #import <Foundation/Foundation.h>
 #import "KCSStore.h"
 #import "KCSAppdataStore.h"
-#import "KCSOfflineSaveStore.h"
 
 /** Cache Policies. These constants determine the caching behavior when used with KCSChacedStore query. */
 typedef enum KCSCachePolicy {
@@ -57,7 +56,7 @@ typedef enum KCSCachePolicy {
  
  For more information about offline saving, see KCSOfflineSaveStore and our iOS developer's user guide at docs.kinvey.com. 
  */
-@interface KCSCachedStore : KCSAppdataStore <KCSOfflineSaveStore> 
+@interface KCSCachedStore : KCSAppdataStore
 /** @name Cache Policy */
 
 /** The cache policy used, by default, for this store */
