@@ -18,7 +18,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "KCSOfflineSaveStore.h"
 
 NSString* KCSMongoObjectId();
 
@@ -60,7 +59,7 @@ NSString* KCSMongoObjectId();
 
 @interface KCSEntityCache : NSObject <KCSEntityCache>
 
-@property (nonatomic, unsafe_unretained) id<KCSOfflineSaveDelegate> delegate;
+//@property (nonatomic, unsafe_unretained) id<KCSOfflineSaveDelegate> delegate;
 //TODO remove?
 - (void) startSaving;
 

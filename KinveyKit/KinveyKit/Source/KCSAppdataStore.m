@@ -37,7 +37,6 @@
 #import "KCSObjectMapper.h"
 #import "KCSHiddenMethods.h"
 #import "KCSReachability.h"
-#import "KCSSaveQueue.h"
 #import "KCSSaveGraph.h"
 #import "KCSBlobService.h"
 #import "KCSFile.h"
@@ -45,6 +44,7 @@
 #import "KCSObjectCache.h"
 #import "KCSRequest2.h"
 #import "NSError+KinveyKit.h"
+#import "KCSClient+KinveyDataStore.h"
 
 #define KCSSTORE_VALIDATE_PRECONDITION BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock]; \
 if (okayToProceed == NO) { \
@@ -57,16 +57,15 @@ typedef KCSRESTRequest* (^RestRequestForObjBlock_t)(id obj);
 typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletionBlock completion);
 
 
+static KCSObjectCache* sDataCaches;
+
 @interface KCSAppdataStore () {
     KCSSaveGraph* _previousProgress;
-    //    KCSSaveQueue* _saveQueue;
-    BOOL _offlineSaveEnabled;
     NSString* _title;
 }
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
 @property (nonatomic, strong) KCSCollection *backingCollection;
-@property (nonatomic, strong) KCSObjectCache *cache2;
 
 - (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources;
 
@@ -125,7 +124,16 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 
 @implementation KCSAppdataStore
 
+
 #pragma mark - Initialization
+
++ (void)initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sDataCaches = [[KCSObjectCache alloc] init];
+    });
+}
 
 - (instancetype)init
 {
@@ -197,17 +205,17 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
             }
         }
         self.backingCollection = collection;
-        NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
-        if (queueId == nil)
-            queueId = [self description];
-        //        _saveQueue = [KCSSaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId];
-        self.cache2 = [[KCSObjectCache alloc] init]; //TODO: use persistence key
-        
-        _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
-        
-        //TODO: use delegate in c2
-        id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
-#warning        _saveQueue.delegate = del;
+//        NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
+//        if (queueId == nil)
+//            queueId = [self description];
+//        //        _saveQueue = [KCSSaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId];
+//        self.cache2 = [[KCSObjectCache alloc] init]; //TODO: use persistence key
+//        
+//        _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
+//        
+//        //TODO: use delegate in c2
+//        id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
+//#warning        _saveQueue.delegate = del;
         
         _previousProgress = [options objectForKey:KCSStoreKeyOngoingProgress];
         _title = [options objectForKey:KCSStoreKeyTitle];
@@ -649,16 +657,16 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 
 
 #pragma mark - Adding/Updating
-- (BOOL) offlineSaveEnabled
-{
-    return _offlineSaveEnabled;
-}
-
-- (NSUInteger) numberOfPendingSaves
-{
-#warning do pending saves
-    return -1;//[_saveQueue count];
-}
+//- (BOOL) offlineSaveEnabled
+//{
+//    return _offlineSaveEnabled;
+//}
+//
+//- (NSUInteger) numberOfPendingSaves
+//{
+//#warning do pending saves
+//    return -1;//[_saveQueue count];
+//}
 
 - (ProcessDataBlock_t) makeProcessDictBlock:(KCSSerializedObject*)serializedObject
 {
@@ -715,7 +723,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 
 - (BOOL) shouldEnqueue:(NSError*)error
 {
-    return [self offlineSaveEnabled] == YES && [self isNoNetworkError:error] == YES;
+    return sDataCaches.offlineUpdateEnabled && [self isNoNetworkError:error] == YES;
 }
 
 - (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
@@ -763,7 +771,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
         if ([self shouldEnqueue:error] == YES) {
             //enqueue save
             //TODO: NSString* _id =
-            [self.cache2 addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{} error:error];
+            [sDataCaches addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{} error:error];
             
             NSString* _id = serializedObj.objectId ? serializedObj.objectId : (NSString*)[NSNull null];
             error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : _id}];
@@ -1012,7 +1020,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     
     
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        
+                
         KCSLogTrace(@"In collection callback with response: %@", response);
         NSObject* jsonData = [response jsonResponseValue];
         

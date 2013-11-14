@@ -88,6 +88,12 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     return self;
 }
 
+- (void) setOfflineUpdateDelegate:(id<KCSOfflineUpdateDelegate>)offlineUpdateDelegate
+{
+    self.offlineUpdateEnabled = offlineUpdateDelegate != nil;
+    self.offline.delegate = offlineUpdateDelegate;
+}
+
 - (NSCache*) cacheForRoute:(NSString*)route collection:(NSString*)collection
 {
     NSMutableDictionary* routeCaches = _caches[route];
@@ -184,7 +190,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     [_queryCache setObject:ids forKey:key];
     [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
     
-    
+    if (self.offlineUpdateEnabled) {
+        [_offline hadASucessfulConnection];
+    }
     
     return objs;
 }
@@ -213,6 +221,11 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     NSCache* clnCache = [self cacheForRoute:route collection:collection];
 
     [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
+    
+    if (self.offlineUpdateEnabled) {
+        //had a good save
+        [_offline hadASucessfulConnection];
+    }
 }
 
 - (NSString*) addUnsavedObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error
@@ -221,15 +234,18 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     DBAssert(entity, @"should have entity");
     
     NSCache* clnCache = [self cacheForRoute:route collection:collection];
-
-    NSString* newid = [_offline addObject:entity route:route collection:collection headers:headers method:method error:error];
-    if (newid != nil) {
-        KK2(clean this up)
-        NSString* oldid = kinveyObjectId(object);
-        if ([newid isEqualToString:oldid] == NO) {
-            KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"Offline cache save updating object id: %@", newid);
-            entity = [entity dictionaryByAddingDictionary:@{KCSEntityKeyId : newid}];
-            setKinveyObjectId(object, newid);
+    NSString* newid = nil;
+    
+    if (self.offlineUpdateEnabled == YES) {
+        newid = [_offline addObject:entity route:route collection:collection headers:headers method:method error:error];
+        if (newid != nil) {
+            KK2(clean this up)
+            NSString* oldid = kinveyObjectId(object);
+            if ([newid isEqualToString:oldid] == NO) {
+                KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"Offline cache save updating object id: %@", newid);
+                entity = [entity dictionaryByAddingDictionary:@{KCSEntityKeyId : newid}];
+                setKinveyObjectId(object, newid);
+            }
         }
     }
     
@@ -240,7 +256,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     return newid;
 }
 
+#pragma mark - deleting
 
+//TODO: add to offline on deletes as well
 
 #pragma mark - Cache Delegate
 - (void)cache:(NSCache *)cache willEvictObject:(id)obj

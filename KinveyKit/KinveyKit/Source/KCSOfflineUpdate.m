@@ -60,12 +60,17 @@
 
 - (void)reach:(NSNotification*)note
 {
-    //TODO:
     KCSReachability* reachability = note.object;
     if (reachability.isReachable == YES) {
         [self drainQueue];
     }
 }
+
+- (void)hadASucessfulConnection
+{
+    [self drainQueue];
+}
+
 //TODO test at persistence
 //TODO test at cache
 //TODO start when credentials are added : clear on logout - so we can have data before login
@@ -77,10 +82,18 @@
 
 - (void) drainQueue
 {
-    NSArray* unsavedEntities = [self.cache unsavedEntities];
-    for (NSDictionary* d in unsavedEntities) {
-        [self process:d];
+    if (_delegate) {
+        NSArray* unsavedEntities = [self.cache unsavedEntities];
+        for (NSDictionary* d in unsavedEntities) {
+            [self process:d];
+        }
     }
+}
+
+- (void)setDelegate:(id<KCSOfflineUpdateDelegate>)delegate
+{
+    _delegate = delegate;
+    [self drainQueue];
 }
 
 #pragma mark - saveProcess

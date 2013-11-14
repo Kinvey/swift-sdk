@@ -99,12 +99,7 @@ static KCSCachedStoreCaching* sCaching;
     @synchronized(self) {
         cache = [_caches objectForKey:collection];
         if (!cache) {
-            BOOL useV2 = [[[KCSClient sharedClient].options valueForKey:KCS_CACHES_USE_V2] boolValue];
-            if (useV2) {
-                //TODO:     cache = [[KCSEntityCache2 alloc] initWithPersistenceId:collection];
-            } else {
-                cache = [[KCSEntityCache alloc] init];
-            }
+            cache = [[KCSEntityCache alloc] init];
             [_caches setObject:cache forKey:collection];
             [cache setSaveContext:@{@"collection" : collection}];
         }
@@ -499,9 +494,9 @@ NSString* KCSMongoObjectId()
     id<KCSPersistable> obj = v.object;
     
     
-    if (_delegate && [_delegate respondsToSelector:@selector(willSave:lastSaveTime:)]) {
-        [_delegate willSave:obj lastSaveTime:v.lastSavedTime];
-    }
+//    if (_delegate && [_delegate respondsToSelector:@selector(willSave:lastSaveTime:)]) {
+//        [_delegate willSave:obj lastSaveTime:v.lastSavedTime];
+//    }
     
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:[_saveContext objectForKey:@"collection"] ofClass:[obj class]] options:nil];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -512,9 +507,9 @@ NSString* KCSMongoObjectId()
                 v.unsaved = NO;
                 [_unsavedObjs removeObject:objId];
                 
-                if (_delegate && [_delegate respondsToSelector:@selector(errorSaving:error:)]) {
-                    [_delegate errorSaving:obj error:errorOrNil];
-                }
+//                if (_delegate && [_delegate respondsToSelector:@selector(errorSaving:error:)]) {
+//                    [_delegate errorSaving:obj error:errorOrNil];
+//                }
                 [self startSaving];
             } else {
                 //Other error, like networking
@@ -525,9 +520,9 @@ NSString* KCSMongoObjectId()
             //save complete
             v.unsaved = NO;
             [_unsavedObjs removeObject:objId];
-            if (_delegate && [_delegate respondsToSelector:@selector(didSave:)]) {
-                [_delegate didSave:obj];
-            }
+//            if (_delegate && [_delegate respondsToSelector:@selector(didSave:)]) {
+//                [_delegate didSave:obj];
+//            }
             [self startSaving];
         }
     } withProgressBlock:nil];
@@ -538,21 +533,21 @@ NSString* KCSMongoObjectId()
 {
     if (_unsavedObjs.count > 0) {
         NSString* objId = [_unsavedObjs firstObject];
-        CacheValue* v = [_cache objectForKey:objId];
-        id<KCSPersistable> obj = v.object;
+//        CacheValue* v = [_cache objectForKey:objId];
+//        id<KCSPersistable> obj = v.object;
        
-        if (_delegate && [_delegate respondsToSelector:@selector(shouldSave:lastSaveTime:)]) {
-            //test the delegate, if available
-            if ([_delegate shouldSave:obj lastSaveTime:v.lastSavedTime]) {
-                [self saveObject:objId];
-            } else {
-                v.unsaved = NO;
-                [_unsavedObjs removeObject:objId];
-            }
-        } else {
+//        if (_delegate && [_delegate respondsToSelector:@selector(shouldSave:lastSaveTime:)]) {
+//            //test the delegate, if available
+//            if ([_delegate shouldSave:obj lastSaveTime:v.lastSavedTime]) {
+//                [self saveObject:objId];
+//            } else {
+//                v.unsaved = NO;
+//                [_unsavedObjs removeObject:objId];
+//            }
+//        } else {
            //otherwise client doesn't care about shouldSave: and then we should default the save
             [self saveObject:objId];
-        }
+//        }
     }
 }
 

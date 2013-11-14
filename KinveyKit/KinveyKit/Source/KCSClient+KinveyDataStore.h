@@ -1,8 +1,8 @@
 //
-//  SaveQueue.h
+//  KCSClient+KinveyDataStore.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -17,24 +17,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "KCSBlockDefs.h"
-#import "KCSOfflineSaveStore.h"
+#import "KCSClient.h"
+#import "KinveyHeaderInfo.h"
 
-@class KCSCollection;
+/** If an error is returned from [KCSStore saveObject:withCompletionBlock:withProgressBlock], the error's `userInfo` will contain an array of the ids for the objects not saved. `NSNull`s will be used for objects that have not had their ids set yet. */
+KCS_CONSTANT KCS_ERROR_UNSAVED_OBJECT_IDS_KEY;
 
-@interface KCSSaveQueueItem : NSObject
-@property (nonatomic, strong) NSDate* mostRecentSaveDate;
-@property (nonatomic, strong) id<KCSPersistable> object;
-@end
+@protocol KCSOfflineUpdateDelegate;
 
-@interface KCSSaveQueue : NSObject <NSCoding>
-@property (nonatomic, unsafe_unretained) id<KCSOfflineSaveDelegate> delegate;
+@interface KCSClient (KinveyDataStore)
 
-+ (KCSSaveQueue*) saveQueueForCollection:(KCSCollection*)collection uniqueIdentifier:(NSString*)identifier;
+- (void) setOfflineDelegate:(id<KCSOfflineUpdateDelegate>)delegate;
 
-- (void) addObject:(id<KCSPersistable>)obj;
-- (void) removeItem:(KCSSaveQueueItem*)item;
-- (NSArray*) ids;
-- (NSArray*) array;
-- (NSUInteger) count;
 @end

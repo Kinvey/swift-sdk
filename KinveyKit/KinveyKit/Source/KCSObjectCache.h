@@ -21,15 +21,19 @@
 
 @class KCSQuery2;
 @protocol KCSPersistable;
+@protocol KCSOfflineUpdateDelegate;
 
 @interface KCSObjectCache : NSObject
 
 @property (nonatomic) BOOL preCalculatesResults;
 @property (nonatomic) BOOL updatesLocalWithUnconfirmedSaves;
+@property (nonatomic) BOOL offlineUpdateEnabled;
 
+- (void) setOfflineUpdateDelegate:(id<KCSOfflineUpdateDelegate>)offlineUpdateDelegate;
 
 - (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 - (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 
+- (void) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection;
 - (NSString*) addUnsavedObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error;
 @end

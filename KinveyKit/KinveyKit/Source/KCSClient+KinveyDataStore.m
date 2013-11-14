@@ -1,7 +1,8 @@
 //
-//  KCSOfflineUpdate.h
+//  KCSClient+KinveyDataStore.m
 //  KinveyKit
 //
+//  Created by Michael Katz on 11/14/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -16,25 +17,19 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
 
+#import "KCSClient+KinveyDataStore.h"
 
-@class KCSEntityPersistence;
-@protocol KCSOfflineUpdateDelegate;
+#import "KCSHiddenMethods.h"
+#import "KinveyCoreInternal.h"
 
-@interface KCSOfflineUpdate : NSObject
+KCS_CONST_IMPL KCS_ERROR_UNSAVED_OBJECT_IDS_KEY = @"KCSStore.OfflineSave.UnsavedObjectIds";
 
-@property (nonatomic, weak) id<KCSOfflineUpdateDelegate> delegate;
-@property (nonatomic) BOOL useMock;
+@implementation KCSClient (KinveyDataStore)
 
-- (id) initWithCache:(KCSEntityPersistence*)cache;
-
-- (void) start;
-- (void) stop;
-
-- (void) hadASucessfulConnection;
-
-- (NSString*) addObject:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method error:(NSError*)error;
-
+- (void)setOfflineDelegate:(id<KCSOfflineUpdateDelegate>)delegate
+{
+    [sDataCaches setOfflineUpdateDelegate:delegate];
+}
 
 @end
