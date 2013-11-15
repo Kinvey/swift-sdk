@@ -25,9 +25,9 @@
 
 @interface KCSObjectCache : NSObject
 
-@property (nonatomic) BOOL preCalculatesResults;
-@property (nonatomic) BOOL updatesLocalWithUnconfirmedSaves;
-@property (nonatomic) BOOL offlineUpdateEnabled;
+@property (atomic) BOOL preCalculatesResults;
+@property (atomic) BOOL updatesLocalWithUnconfirmedSaves;
+@property (atomic) BOOL offlineUpdateEnabled;
 
 - (void) setOfflineUpdateDelegate:(id<KCSOfflineUpdateDelegate>)offlineUpdateDelegate;
 

@@ -23,6 +23,8 @@
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 
+#import "KCSEntityPersistence.h"
+
 #define DELEGATEMETHOD(m) if (_delegate != nil && [_delegate respondsToSelector:@selector(m)])
 
 @interface KCSOfflineUpdate ()
