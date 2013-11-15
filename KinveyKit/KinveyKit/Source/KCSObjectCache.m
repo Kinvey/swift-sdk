@@ -71,7 +71,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     self = [super init];
     if (self) {
         _persistenceLayer = [[KCSEntityPersistence alloc] initWithPersistenceId:@"offline"];
-        _offline = [[KCSOfflineUpdate alloc] initWithCache:_persistenceLayer];
+        _offline = [[KCSOfflineUpdate alloc] initWithCache:self peristenceLayer:_persistenceLayer]; //normally sending self is a bad idea, this constructor doesn't use these values -- but there is high coupling
         _caches = [NSMutableDictionary dictionaryWithCapacity:3];
         _caches[KCSRESTRouteAppdata] = [NSMutableDictionary dictionaryWithCapacity:5];
         _caches[KCSRESTRouteUser] = [NSMutableDictionary dictionaryWithCapacity:1];
@@ -203,6 +203,11 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     //TODO also: check pre-calc on on local query or pull
 }
 
+- (void) preCalculateQueriesByRemoving:(NSString*)objId route:(NSString*)route collection:(NSString*)collection
+{
+    //TODO:
+}
+
 #pragma mark - Saving
 - (void) updateObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection collectionCache:(NSCache*)clnCache
 {
@@ -226,6 +231,20 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
         //had a good save
         [_offline hadASucessfulConnection];
     }
+}
+
+- (void) updateCacheForObject:(NSString*)objId withEntity:(NSDictionary*)entity atRoute:(NSString*)route collection:(NSString*)collection
+{
+    //TODO: global update notification? for objects not in the cache but still in memory
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+    id<KCSPersistable> object = [clnCache objectForKey:objId];
+    if (!object) {
+        object = [self.dataModel objectFromCollection:collection data:entity];
+    } else {
+        [self.dataModel updateObject:object withEntity:entity atRoute:route collection:collection];
+    }
+    
+    [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
 }
 
 - (NSString*) addUnsavedObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error
@@ -258,12 +277,38 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 #pragma mark - deleting
 
-//TODO: add to offline on deletes as well
+- (void) deleteObject:(NSString*)objId route:(NSString*)route collection:(NSString*)collection
+{
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+    [clnCache removeObjectForKey:objId];
+    [self.persistenceLayer removeEntity:objId route:route collection:collection];
+    
+    if (_preCalculatesResults == YES) {
+        [self preCalculateQueriesByRemoving:objId route:route collection:collection];
+    }
+    
+    if (self.offlineUpdateEnabled) {
+        //had a good save
+        [_offline hadASucessfulConnection];
+    }
+
+}
 
 #pragma mark - Cache Delegate
 - (void)cache:(NSCache *)cache willEvictObject:(id)obj
 {
     KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"Cache evicting: %@", cache.name);
+}
+
+#pragma mark - management
+- (void)clear
+{ //TODO: worry about synchronization
+    [_persistenceLayer clearCaches];
+    [_caches[KCSRESTRouteAppdata] removeAllObjects];
+    [_caches[KCSRESTRouteUser] removeAllObjects];
+    [_caches[KCSRESTRouteBlob] removeAllObjects];
+    [_caches removeAllObjects];
+    [_queryCache removeAllObjects];
 }
 
 @end

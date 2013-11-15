@@ -26,17 +26,18 @@
 #define DELEGATEMETHOD(m) if (_delegate != nil && [_delegate respondsToSelector:@selector(m)])
 
 @interface KCSOfflineUpdate ()
-@property (nonatomic, weak) KCSEntityPersistence* cache;
+@property (nonatomic, weak) KCSEntityPersistence* persitence;
+@property (nonatomic, weak) KCSObjectCache* cache;
 
 @end
 
 @implementation KCSOfflineUpdate
 
-
-- (id) initWithCache:(KCSEntityPersistence*)cache
+- (id) initWithCache:(KCSObjectCache*)cache peristenceLayer:(KCSEntityPersistence*)persitence
 {
     self = [super init];
     if (self) {
+        _persitence = persitence;
         _cache = cache;
     }
     return self;
@@ -50,6 +51,7 @@
 - (void) start
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reach:) name:KCSReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userUpdated:) name:KCSActiveUserChangedNotification object:nil];
 #if TARGET_OS_IPHONE
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(foreground:) name:UIApplicationDidBecomeActiveNotification object:nil];
 #endif
@@ -77,24 +79,34 @@
     }
 }
 
+- (void) userUpdated:(NSNotification*)note
+{
+    if ([KCSUser activeUser] != nil) {
+        [self drainQueue];
+    }
+}
+
 - (void)hadASucessfulConnection
 {
     [self drainQueue];
 }
 
-//TODO start when credentials are added : clear on logout - so we can have data before login
-
 - (NSUInteger) count
 {
-    return [self.cache unsavedCount];
+    return [self.persitence unsavedCount];
 }
 
 - (void) drainQueue
 {
-    if (_delegate) {
-        NSArray* unsavedEntities = [self.cache unsavedEntities];
+    if (_delegate && [KCSUser activeUser] != nil) {
+        NSArray* unsavedEntities = [self.persitence unsavedEntities];
         for (NSDictionary* d in unsavedEntities) {
-            [self process:d];
+             NSString* method = d[@"method"];
+            if ([method isEqualToString:KCSRESTMethodDELETE]) {
+                [self processDelete:d];
+            } else {
+                [self processSave:d];
+            }
         }
     }
 }
@@ -105,29 +117,42 @@
     [self start];
 }
 
-#pragma mark - saveProcess
+#pragma mark - Saves
 #warning make sure cannot restart in the middle
-#warning TODO separate deletes and saves
-- (void) process:(NSDictionary*)saveInfo
+- (void) processSave:(NSDictionary*)saveInfo
 {
     NSString* objId = saveInfo[KCSEntityKeyId];
     NSString* route = saveInfo[@"route"];
     NSString* collection = saveInfo[@"collection"];
     NSDate* lastSaveTime = saveInfo[@"time"];
-
+    NSString* method = saveInfo[@"method"];
+    
+    
     BOOL shouldSave = YES;
     DELEGATEMETHOD(shouldSaveObject:inCollection:lastAttemptedSaveTime:) {
         shouldSave = [_delegate shouldSaveObject:objId inCollection:collection lastAttemptedSaveTime:lastSaveTime];
     }
     if (shouldSave == YES) {
         NSDictionary* entity = saveInfo[@"obj"];
-        NSString* method = saveInfo[@"method"];
         NSDictionary* headers = saveInfo[@"headers"];
         [self save:objId entity:entity route:route collection:collection headers:headers method:method];
     } else {
-        [self.cache removeUnsavedEntity:objId route:route collection:collection];
+        [self.persitence removeUnsavedEntity:objId route:route collection:collection];
     }
 }
+
+- (NSDictionary*) optionsFromHeaders:(NSDictionary*)headers
+{
+    NSMutableDictionary* options = [NSMutableDictionary dictionary];
+    if (self.useMock) {
+        options[KCSRequestOptionUseMock] = @YES;
+    }
+    if (headers[KCSRequestOptionClientMethod]) {
+        options[KCSRequestOptionClientMethod] = headers[KCSRequestOptionClientMethod];
+    }
+    return options;
+}
+
 
 - (void) save:(NSString*)objId entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method
 {
@@ -141,19 +166,13 @@
         [self addObject:entity route:route collection:collection headers:headers method:method error:error];
     }
     
-    NSMutableDictionary* options = [NSMutableDictionary dictionary];
-    if (self.useMock) {
-        options[KCSRequestOptionUseMock] = @YES;
-    }
-    if (headers[KCSRequestOptionClientMethod]) {
-        options[KCSRequestOptionClientMethod] = headers[KCSRequestOptionClientMethod];
-    }
-    
+    NSDictionary* options = [self optionsFromHeaders:headers];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (!error) {
-            [self.cache removeUnsavedEntity:objId route:route collection:collection];
+            [self.persitence removeUnsavedEntity:objId route:route collection:collection];
+            NSDictionary* updatedEntity = [response jsonObject];
+            [self.cache updateCacheForObject:objId withEntity:updatedEntity atRoute:route collection:collection];
             DELEGATEMETHOD(didSaveObject:inCollection:) {
-#warning update object
                 [_delegate didSaveObject:objId inCollection:collection];
             }
             
@@ -175,6 +194,67 @@
     [request start];
 }
 
+#pragma mark - deletes
+- (void) processDelete:(NSDictionary*)saveInfo
+{
+    NSString* objId = saveInfo[KCSEntityKeyId];
+    NSString* route = saveInfo[@"route"];
+    NSString* collection = saveInfo[@"collection"];
+    NSDate* lastSaveTime = saveInfo[@"time"];
+    NSString* method = saveInfo[@"method"];
+    
+    
+    BOOL shouldDelete = YES;
+    DELEGATEMETHOD(shouldDeleteObject:inCollection:lastAttemptedSaveTime:) {
+        shouldDelete = [_delegate shouldDeleteObject:objId inCollection:collection lastAttemptedSaveTime:lastSaveTime];
+    }
+    if (shouldDelete == YES) {
+        NSDictionary* entity = saveInfo[@"obj"];
+        NSDictionary* headers = saveInfo[@"headers"];
+        [self delete:objId entity:entity route:route collection:collection headers:headers method:method];
+    } else {
+        [self.persitence removeUnsavedEntity:objId route:route collection:collection];
+    }
+}
+
+//TODO: support delete by query
+- (void) delete:(NSString*)objId entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method
+{
+    DELEGATEMETHOD(willDeleteObject:inCollection:) {
+        [_delegate willDeleteObject:entity[KCSEntityKeyId] inCollection:collection];
+    }
+    
+    id credentials = [KCSUser activeUser];
+    if (!credentials) {
+        NSError* error = [NSError createKCSError:KCSAppDataErrorDomain code:KCSDeniedError userInfo:@{KCSEntityKeyId : objId, NSLocalizedDescriptionKey : NSLocalizedString(@"Could not delete object because there is no active user.",nil)}];
+        [self addObject:entity route:route collection:collection headers:headers method:method error:error];
+    }
+    
+    NSDictionary* options = [self optionsFromHeaders:headers];
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        if (!error) {
+            [self.persitence removeUnsavedEntity:objId route:route collection:collection];
+            [self.cache deleteObject:objId route:route collection:collection];
+            DELEGATEMETHOD(didDeleteObject:inCollection:) {
+                //TODO: test this delete functionality
+                [_delegate didDeleteObject:objId inCollection:collection];
+            }
+        } else {
+            [self addObject:entity route:route collection:collection headers:headers method:method error:error];
+        }
+    }
+                                                        route:route
+                                                      options:options
+                                                  credentials:credentials];
+    request.path = @[collection, objId];
+
+    request.method = method;
+    request.headers = headers;
+    request.body = entity;
+    [request start];
+}
+#warning TODO: bring back offlineupdateneabled on cachedstore and check - allow for cln/cln settings
+
 #pragma mark - objects
 - (NSString*) addObject:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method error:(NSError*)error
 {
@@ -186,7 +266,7 @@
     NSString* newid = nil;
     if (shouldEnqueue) {
         //TODO need to give id?
-        newid = [self.cache addUnsavedEntity:entity route:route collection:collection method:method headers:headers];
+        newid = [self.persitence addUnsavedEntity:entity route:route collection:collection method:method headers:headers];
         if (newid != nil) {
             DELEGATEMETHOD(didEnqueueObject:inCollection:) {
                 [_delegate didEnqueueObject:newid inCollection:collection];

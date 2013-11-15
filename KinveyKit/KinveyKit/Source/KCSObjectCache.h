@@ -35,5 +35,13 @@
 - (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 
 - (void) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection;
+- (void) updateCacheForObject:(NSString*)objId withEntity:(NSDictionary*)entity atRoute:(NSString*)route collection:(NSString*)collection;
+
+- (void) deleteObject:(NSString*)objId route:(NSString*)route collection:(NSString*)collection;
+
 - (NSString*) addUnsavedObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error;
+ 
+
+//destructive
+- (void) clear;
 @end

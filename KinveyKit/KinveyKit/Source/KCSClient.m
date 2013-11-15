@@ -22,7 +22,6 @@
 #import "KCSClient.h"
 #import "KinveyUser.h"
 
-#import "KinveyAnalytics.h"
 #import "NSURL+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSReachability.h"
@@ -86,7 +85,6 @@
     if (self){
         _libraryVersion = __KINVEYKIT_VERSION__;
         _userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
-        _analytics = [[KCSAnalytics alloc] init];
         
         if (![self respondsToSelector:@selector(testCanUseCategories)]) {
             NSException* myException = [NSException exceptionWithName:@"CategoriesNotLoaded" reason:@"KinveyKit setup: Categories could not be loaded. Be sure to set '-ObjC' in the 'Other Linker Flags'." userInfo:nil];
@@ -205,10 +203,11 @@
 
 - (void) setCurrentUser:(KCSUser *)currentUser
 {
-    if (currentUser != _currentUser) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:nil];
-    }
+    KCSUser* oldUser = _currentUser;
     _currentUser = currentUser;
+    if (currentUser != oldUser) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:oldUser];
+    }
 }
 
 #pragma mark - Store Interface

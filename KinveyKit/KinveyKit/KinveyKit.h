@@ -58,7 +58,6 @@
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
-#import "KinveyAnalytics.h"
 
 #endif
 

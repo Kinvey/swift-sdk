@@ -37,7 +37,6 @@
 - (NSArray*) unsavedEntities;
 - (int) unsavedCount;
 
-
 /* 
  This is not transactional, returns on first failure, but will still hold any previouslly passed objects.
  */

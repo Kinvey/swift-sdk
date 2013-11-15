@@ -35,6 +35,10 @@
 - (void) willSaveObject:(NSString*)objectId inCollection:(NSString*)collectionName;
 - (void) didSaveObject:(NSString*)objectId inCollection:(NSString*)collectionName;
 
+- (BOOL) shouldDeleteObject:(NSString*)objectId inCollection:(NSString*)collectionName lastAttemptedSaveTime:(NSDate*)saveTime;
+- (void) willDeleteObject:(NSString*)objectId inCollection:(NSString*)collectionName;
+- (void) didDeleteObject:(NSString*)objectId inCollection:(NSString*)collectionName;
+
 - (void) didEnqueueObject:(NSString*)objectId inCollection:(NSString*)collectionName;
 - (BOOL) shouldEnqueueObject:(NSString*)objectId inCollection:(NSString*)collectionName onError:(NSError*)error;
 

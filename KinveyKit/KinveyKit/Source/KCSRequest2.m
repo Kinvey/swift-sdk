@@ -26,10 +26,12 @@
 #import "KCSNSURLSessionOperation.h"
 
 #define kHeaderAuthorization   @"Authorization"
+#define kHeaderDate            @"Date"
+#define kHeaderUserAgent       @"User-Agent"
 #define kHeaderApiVersion      @"X-Kinvey-Api-Version"
 #define kHeaderClientMethod    @"X-Kinvey-Client-Method"
+#define kHeaderDeviceInfo      @"X-Kinvey-Device-Information"
 #define kHeaderResponseWrapper @"X-Kinvey-ResponseWrapper"
-#define kHeaderDate            @"Date"
 
 #define kHeaderValueJson @"application/json"
 
@@ -150,12 +152,10 @@ static NSOperationQueue* queue;
     headers[kHeaderContentType] = _contentType;
     headers[kHeaderAuthorization] = [self.credentials authString];
     headers[kHeaderApiVersion] = KCS_VERSION;
+    headers[kHeaderUserAgent] = [NSString stringWithFormat:@"ios-kinvey-http/%@ kcs/%@", __KINVEYKIT_VERSION__, MINIMUM_KCS_VERSION_SUPPORTED];
+    headers[kHeaderDeviceInfo] = [KCSPlatformUtils platformString];
     headers[kHeaderResponseWrapper] = @"true";
     setIfValNotNil(headers[kHeaderClientMethod], self.options[KCSRequestOptionClientMethod]);
-    
-    KK2(enable these headers)
-    //headers[@"User-Agent"] = [client userAgent];
-    //headers[@"X-Kinvey-Device-Information"] = [client.analytics headerString];
     
     [headers addEntriesFromDictionary:self.headers];
     

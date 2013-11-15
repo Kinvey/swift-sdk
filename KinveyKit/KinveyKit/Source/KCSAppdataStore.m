@@ -17,7 +17,6 @@
 // contents is a violation of applicable laws.
 //
 
-
 #import "KCSAppdataStore.h"
 
 #import "KCSGroup.h"

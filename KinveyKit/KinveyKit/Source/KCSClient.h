@@ -21,7 +21,6 @@
 
 #define MINIMUM_KCS_VERSION_SUPPORTED @"3.0"
 
-@class KCSAnalytics;
 @class UIApplication;
 @class KCSCollection;
 @class KCSUser;
@@ -125,14 +124,6 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
  @deprecatedIn 1.19.0
  */
 @property (nonatomic, strong) KCSUser *currentUser KCS_DEPRECATED(Use [KCSuser activeUser] instead, 1.19.0);
-
-
-///---------------------------------------------------------------------------------------
-/// @name Analytics
-///---------------------------------------------------------------------------------------
-
-/*! The suite of Kinvey Analytics Services */
-@property (nonatomic, readonly) KCSAnalytics *analytics;
 
 ///---------------------------------------------------------------------------------------
 /// @name Data Type Support
