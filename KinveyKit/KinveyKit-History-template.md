@@ -5,16 +5,18 @@
 ** Release Date:** TBA
 
 * Major Caching Update & Bug Fix:
-    * 
+    * Offline Save is now Offline Update - supports both saving and deleting
     * __TODO__ removed offline save store, things are now global - need to set offlineupdatedelegate
-    * __TODO__ doc offlineupdate delegate, kcslcient addition
+    * __TODO__ doc offlineupdate delegate, kcslcient addition - will not enqueue unless there is a delegeate; will not send w/o user but will enqueue for user creation
     * __TODO__ q drains when: success operation, app foreground, reachabiliby, user cahnge
+    * __TODO__ cached store KCSStoreKeyOfflineUpdateEnabled
+    * __TODO__ returned ids is is id or query in delete case
 * Minor Changes:
     * Saving an empty array now returns an empty array for `objectsOrNil` instead of of `nil`.
 * Code Cleanup:
     * Removed deprecated methods/classes:
          * `[KCSUser userCollection]`; use `[KCSCollection userCollection]` instead.
-         * `[KCSQuery queryForNilValueInField:]`; use exact match on `NSNull`; `queryForEmptyValueInField`; or `queryForEmptyOrNullValueInField` instead.
+         * `[KCSQuery queryForNilValueInField:]`; use exact match on `NSNull`, `queryForEmptyValueInField`, or `queryForEmptyOrNullValueInField` instead.
 * __TODO__ examine some more deprecations
 
 

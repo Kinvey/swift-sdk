@@ -33,9 +33,15 @@ typedef enum KCSCachePolicy {
 
 #define KCSStoreKeyCachePolicy @"cachePolicy"
 
+/** Enable retrying saves/deletes when app comes back online with `@(YES)`.
+ */
+KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
+
 //internal use
 #define KCSStoreKeyLocalCacheTimeout @"localcache.timeout"
 #define KCSStoreKeyLocalCachePersistanceKey_Xperimental @"localcache.persistenceid"
+
+
 
 /**
  This application data store caches queries, depending on the policy.

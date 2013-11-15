@@ -22,10 +22,9 @@
 
 #import "KinveyUser.h"
 
-#import "KCSRequest.h"
-#import "KCSUser+KinveyKit2.h"
-#import "KinveyErrorCodes.h"
+#import "KCSRequest2.h"
 #import "KCS_SBJson.h"
+#import "KCSNetworkResponse.h"
 
 
 @implementation KCSCustomEndpoints
@@ -38,12 +37,14 @@
         [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Active User is `nil`. Login before calling custom endpoints" userInfo:nil] raise];
     }
     
-    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-    request.httpMethod = kKCSRESTMethodPOST;
-    request.contextRoot = kKCSContextRPC;
-    request.pathComponents = @[@"custom",endpoint];
-    request.headers[@"Content-Type"] = @"application/json";
-    request.errorDomain = KCSBusinessLogicErrorDomain;
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        completionBlock([response jsonObject], error);
+    }
+                                                        route:KCSRESTRouteRPC
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSUser activeUser]];
+    request.method = KCSRESTMethodPOST;
+    request.path = @[@"custom",endpoint];
     
     ifNil(params, @{});
     
@@ -54,11 +55,7 @@
     }
     
     request.body = params;
-    request.authorization = [KCSUser activeUser];
-    
-    [request run:^(id results, NSError *error) {
-        completionBlock(results, error);
-    }];
+    [request start];
 }
 
 

@@ -1,5 +1,5 @@
 //
-//  KCSChaedStore.m
+//  KCSCachedStore.m
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/10/12.
@@ -34,11 +34,14 @@
 #import "KCSHiddenMethods.h"
 #import "KCSReachability.h"
 
+NSString* const KCSStoreKeyOfflineUpdateEnabled = @"offline.enabled";
+
 
 @interface KCSAppdataStore (KCSCachedStore) 
 - (instancetype)initWithAuth: (KCSAuthHandler *)auth;
 - (KCSCollection*) backingCollection;
 - (NSUInteger)numberOfPendingSaves;
+@property (nonatomic) BOOL offlineUpdateEnabled;
 @end
 
 @interface KCSCachedStore () {
@@ -63,6 +66,8 @@
     if (cachePolicy == KCSCachePolicyReadOnceAndSaveLocal_Xperimental) {
         [_cache setPersistenceId:[options objectForKey:KCSStoreKeyLocalCachePersistanceKey_Xperimental]];
     }
+    
+    self.offlineUpdateEnabled = [options[KCSStoreKeyOfflineUpdateEnabled] boolValue];
     
     return retVal;
 }

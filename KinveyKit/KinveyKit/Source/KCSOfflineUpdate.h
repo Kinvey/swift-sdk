@@ -36,6 +36,7 @@
 - (void) hadASucessfulConnection;
 
 - (NSString*) addObject:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method error:(NSError*)error;
+- (BOOL) removeObject:(id)object objKey:(NSString*)key route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method error:(NSError*)error;
 
 
 @end

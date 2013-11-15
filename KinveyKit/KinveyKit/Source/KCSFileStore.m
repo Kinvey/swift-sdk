@@ -31,7 +31,6 @@
 #import "NSArray+KinveyAdditions.h"
 
 #import "KCSHiddenMethods.h"
-#import "KCSUser+KinveyKit2.h"
 #import "KCSMetadata.h"
 
 #import "KCSAppdataStore.h"
@@ -42,6 +41,9 @@
 #import "KinveyFileStoreInteral.h"
 #import "KCSPlatformUtils.h"
 #import "KCSFileUtils.h"
+
+#import "KCSRequest2.h"
+#import "KCSNetworkResponse.h"
 
 NSString* const KCSFileId = KCSEntityKeyId;
 NSString* const KCSFileACL = KCSEntityKeyMetadata;
@@ -430,7 +432,7 @@ static NSMutableSet* _ongoingDownloads;
     [self _uploadStream:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
 }
 
-+ (KCSNetworkRequest*) _getUploadLoc:(NSMutableDictionary *)options
++ (KCSRequest2*) _getUploadLoc:(NSMutableDictionary *)options completion:(KCSRequestCompletionBlock)completion apiMethod:(NSString*)apiMethod
 {
     //remove unwanted keys
     NSMutableDictionary* body = [NSMutableDictionary dictionaryWithDictionary:options];
@@ -439,12 +441,17 @@ static NSMutableSet* _ongoingDownloads;
     
     NSString* fileId = body[KCSFileId];
     
-    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-    request.httpMethod = kKCSRESTMethodPOST;
-    request.contextRoot = kKCSContextBLOB;
+    //KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:completion
+                                                        route:KCSRESTRouteBlob
+                                                      options:@{KCSRequestOptionClientMethod : apiMethod}
+                                                  credentials:[KCSUser activeUser]];
+    request.method = KCSRESTMethodPOST;
     if (fileId) {
-        request.pathComponents = @[fileId];
-        request.httpMethod = kKCSRESTMethodPUT;
+        request.path = @[fileId];
+        request.method = KCSRESTMethodPUT;
+    } else {
+        request.method = KCSRESTMethodPOST;
     }
     
     KCSMetadata* metadata = [body popObjectForKey:KCSEntityKeyMetadata];
@@ -452,11 +459,9 @@ static NSMutableSet* _ongoingDownloads;
         body[@"_acl"] = [metadata aclValue];
     }
     
-    request.authorization = [KCSUser activeUser];
     request.body = body;
-    
-    request.headers[@"x-Kinvey-content-type"] = body[@"mimeType"];
-    
+    request.headers = @{@"x-Kinvey-content-type" : body[@"mimeType"]};
+
     return request;
 }
 
@@ -491,12 +496,12 @@ KCSFile* fileFromResults(NSDictionary* results)
     ifNil(mimeType, mimeTypeForFilename(opts[KCSFileFileName]));
     setIfEmpty(opts, KCSFileMimeType, mimeType);
     
-    KCSNetworkRequest* request = [self _getUploadLoc:opts];    
-    [request run:^(id results, NSError *error) {
+    KCSRequest2* request = [self _getUploadLoc:opts completion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
             error = [error updateDomain:KCSFileStoreErrorDomain];
             completionBlock(nil, error);
         } else {
+            NSDictionary* results = [response jsonObject];
             NSString* url = results[@"_uploadURL"];
             if (url) {
                 KCSFile* uploadFile = fileFromResults(results);
@@ -507,7 +512,8 @@ KCSFile* fileFromResults(NSDictionary* results)
                 completionBlock(nil, error);
             }
         }
-    }];
+    } apiMethod:KCSRequestMethodString];
+    [request start];
 }
 
 + (void) uploadFile:(NSURL*)fileURL options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
@@ -543,12 +549,12 @@ KCSFile* fileFromResults(NSDictionary* results)
 
     NSNumber* resume = opts[KCSFileResume];
     
-    KCSNetworkRequest* request = [self _getUploadLoc:opts];
-    [request run:^(id results, NSError *error) {
+    KCSRequest2 * request = [self _getUploadLoc:opts completion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
             error = [error updateDomain:KCSFileStoreErrorDomain];
             completionBlock(nil, error);
         } else {
+            NSDictionary* results = [response jsonObject];
             NSString* url = results[@"_uploadURL"];
             if (url) {
                 KCSFile* uploadFile = fileFromResults(results);
@@ -558,14 +564,15 @@ KCSFile* fileFromResults(NSDictionary* results)
                     opts[KCSFileResume] = resume;
                     uploadFile.gcsULID = uploadOptions[kGCSULID];
                 }
-
+                
                 [self _uploadFile:fileURL toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
             } else {
                 NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:nil];
                 completionBlock(nil, error);
             }
         }
-    }];
+    } apiMethod:KCSRequestMethodString];
+    [request start];
 }
 
 #pragma mark - Downloads
@@ -1186,15 +1193,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     NSParameterAssert(fileId != nil);
     NSParameterAssert(completionBlock != nil);
     
-    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-    request.httpMethod = kKCSRESTMethodDELETE;
-    request.contextRoot = kKCSContextBLOB;
-    request.pathComponents = @[fileId];
-    
-    request.authorization = [KCSUser activeUser];
-    request.body = @{};
-    
-    [request run:^(id results, NSError *error) {
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
             error = [KCSErrorUtilities createError:nil
                                        description:[NSString stringWithFormat:@"Error Deleting file, id='%@'", fileId]
@@ -1204,9 +1203,17 @@ KCSFile* fileFromResults(NSDictionary* results)
                                        sourceError:error];
             completionBlock(0, error);
         } else {
+            NSDictionary* results = [response jsonObject];
             completionBlock([results[@"count"] unsignedLongValue], nil);
         }
-    }];
+    }
+                                                        route:KCSRESTRouteBlob
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSUser activeUser]];
+    request.method = KCSRESTMethodDELETE;
+    request.path = @[fileId];
+    request.body = @{};
+    [request start];
 }
 
 #pragma mark - for Linked Data

@@ -436,7 +436,7 @@
 
     NSString* headerStr = [self.jsonWriter stringWithObject:headers error:&error];
     if (error != nil) {
-        KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", entity);
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", headers);
         DBAssert(YES, @"No object");
     }
     
@@ -450,12 +450,43 @@
                                     @"routeKey": routeKey,
                                     @"headers": headerStr,
                                     @"method":method};
-    BOOL upated = [_db executeUpdate:update withParameterDictionary:valDictionary];
-    if (upated == NO) {
+    BOOL updated = [_db executeUpdate:update withParameterDictionary:valDictionary];
+    if (!updated) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error insert/updating %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
-    return upated ? _id : nil;
+    return updated ? _id : nil;
 }
+
+- (BOOL) addUnsavedDelete:(NSString*)key route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers
+{
+    DBAssert(key, @"should save with a key")
+    
+    NSString* entityStr = @"";
+    
+    NSError* error = nil;
+    NSString* headerStr = [self.jsonWriter stringWithObject:headers error:&error];
+    if (error != nil) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", headers);
+        DBAssert(YES, @"No object");
+    }
+    
+    NSString* routeKey = [self tableForRoute:route collection:collection];
+    
+    NSString* update = @"REPLACE INTO savequeue VALUES (:key, :id, :routeKey, :method, :headers, :time, :obj)";
+    NSDictionary* valDictionary = @{@"key":[routeKey stringByAppendingString:key],
+                                    @"id":key,
+                                    @"obj":entityStr,
+                                    @"time":[NSDate date],
+                                    @"routeKey": routeKey,
+                                    @"headers": headerStr,
+                                    @"method":method};
+    BOOL updated = [_db executeUpdate:update withParameterDictionary:valDictionary];
+    if (!updated) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error insert/updating %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    return updated;
+}
+
 
 - (NSDictionary*) dictObjForJson:(NSString*)s
 {
