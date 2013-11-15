@@ -57,6 +57,12 @@
     return [KCSObjectMapper makeObjectOfType:class withData:entity];
 }
 
+- (void) updateObject:(id<KCSPersistable>)object withEntity:(NSDictionary*)entity atRoute:(NSString*)route collection:(NSString*)collection
+{
+    [KCSObjectMapper populateObject:object withData:entity];
+}
+
+
 - (NSDictionary*) jsonEntityForObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
 {
     if (!_collectionMap[collection]) {

@@ -90,7 +90,7 @@
 
 @interface OfflineTests : SenTestCase
 @property (nonatomic, strong) KCSOfflineUpdate* update;
-@property (nonatomic, strong) KCSEntityPersistence* cache;
+@property (nonatomic, strong) KCSEntityPersistence* persistence;
 @property (nonatomic, strong) OfflineDelegate* delegate;
 @end
 
@@ -101,8 +101,8 @@
     [super setUp];
     [KCSUser mockUser];
     
-    self.cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"offlinetests"];
-    [self.cache clearCaches];
+    self.persistence = [[KCSEntityPersistence alloc] initWithPersistenceId:@"offlinetests"];
+    [self.persistence clearCaches];
     self.delegate = [[OfflineDelegate alloc] init];
     @weakify(self);
     self.delegate.callback = ^{
@@ -110,7 +110,7 @@
         self.done = YES;
     };
     
-    self.update = [[KCSOfflineUpdate alloc] initWithCache:self.cache];
+    self.update = [[KCSOfflineUpdate alloc] initWithCache:nil peristenceLayer:self.persistence];
     self.update.delegate = self.delegate;
     self.update.useMock = YES;
 }
@@ -130,7 +130,7 @@
     self.done = NO;
     [self poll];
     
-    STAssertEquals([self.cache unsavedCount], (int)0, @"should be zero");
+    STAssertEquals([self.persistence unsavedCount], (int)0, @"should be zero");
 }
 
 - (void) testRestartNotConnected
@@ -147,7 +147,7 @@
     STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
     KTAssertEqualsInt(self.delegate.didEnqueCalledCount, 2);
     
-    STAssertEquals([self.cache unsavedCount], (int)1, @"should be one");
+    STAssertEquals([self.persistence unsavedCount], (int)1, @"should be one");
 }
 
 
@@ -162,7 +162,7 @@
     [self.update start];
     [self poll];
     STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
-    STAssertEquals([self.cache unsavedCount], (int)1, @"should be one");
+    STAssertEquals([self.persistence unsavedCount], (int)1, @"should be one");
 
 
     self.done = NO;
@@ -170,7 +170,7 @@
     [KCSMockReachability changeReachability:YES];
     [self poll];
     
-    STAssertEquals([self.cache unsavedCount], (int)0, @"should be zero");
+    STAssertEquals([self.persistence unsavedCount], (int)0, @"should be zero");
     STAssertTrue(self.delegate.didSaveCalled, @"should not have been saved");
 }
 
@@ -179,4 +179,9 @@
     KTNIY
 }
 
+
+- (void) testDelete
+{
+    KTNIY
+}
 @end

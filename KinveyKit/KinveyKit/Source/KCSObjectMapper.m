@@ -152,7 +152,8 @@ NSDictionary* builderOptions(id object)
 @end
 
 @implementation KCSObjectMapper
-+ (id)populateObject:(id)object withData: (NSDictionary *)data {
++ (id)populateObject:(id)object withData: (NSDictionary *)data
+{
     return [self populateObjectWithLinkedResources:object withData:data resourceDictionary:nil];
 }
 

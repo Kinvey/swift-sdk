@@ -22,7 +22,6 @@
 #import "KCSClient.h"
 #import "KCSKeyChain.h"
 #import "KCSRESTRequest.h"
-#import "KinveyAnalytics.h"
 #import "KCS_SBJson.h"
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
@@ -703,8 +702,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
         [[KCSPush sharedPush] setDeviceToken:nil];
         
         [KCSUser clearSavedCredentials];
-        
-#warning TODO clear caches
+        [[KCSAppdataStore caches] clear];
         
         // Set the currentUser to nil
         setActive(nil);

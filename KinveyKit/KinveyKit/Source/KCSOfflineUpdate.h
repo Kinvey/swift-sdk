@@ -20,6 +20,7 @@
 
 
 @class KCSEntityPersistence;
+@class KCSObjectCache;
 @protocol KCSOfflineUpdateDelegate;
 
 @interface KCSOfflineUpdate : NSObject
@@ -27,7 +28,7 @@
 @property (nonatomic, weak) id<KCSOfflineUpdateDelegate> delegate;
 @property (nonatomic) BOOL useMock;
 
-- (id) initWithCache:(KCSEntityPersistence*)cache;
+- (id) initWithCache:(KCSObjectCache*)cache peristenceLayer:(KCSEntityPersistence*)persitence;
 
 - (void) start;
 - (void) stop;

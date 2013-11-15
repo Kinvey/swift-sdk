@@ -202,5 +202,11 @@
     NSString* cln = @"c";
     NSArray* results = [ocache setObjects:entities forQuery:q route:route collection:cln];
     
+    KTNIY
+}
+
+- (void) testDelete
+{
+    KTNIY
 }
 @end
