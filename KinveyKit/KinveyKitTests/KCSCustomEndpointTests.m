@@ -57,14 +57,14 @@
 {
     [[KCSUser activeUser] logout];
     STAssertNil([KCSUser activeUser], @"user should be nil'd");
-    self.done = NO;
-    [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
-        STAssertNotNil(errorOrNil, @"should have an error");
-        KTAssertEqualsInt(errorOrNil.code, 401, @"no auth error");
-        self.done = YES;
-    }];
-    [self poll];
-
+    dispatch_block_t call = ^{
+        [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
+            STAssertNotNil(errorOrNil, @"should have an error");
+            KTAssertEqualsInt(errorOrNil.code, 401, @"no auth error");
+            self.done = YES;
+        }];
+    };
+    STAssertThrowsSpecificNamed(call(), NSException, NSInternalInconsistencyException, @"should be an exception");
 }
 
 - (void) testCustomEndpointError

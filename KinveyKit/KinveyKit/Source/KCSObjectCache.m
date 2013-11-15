@@ -291,7 +291,45 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
         //had a good save
         [_offline hadASucessfulConnection];
     }
+}
 
+- (void) deleteByQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
+{
+    if (self.preCalculatesResults) {
+        //TODO: this
+    }
+}
+
+- (NSString*) addUnsavedDelete:(NSString*)objId route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error
+{
+    DBAssert(objId, @"should have object id");
+    
+    BOOL added = NO;
+    if (self.offlineUpdateEnabled == YES) {
+        added = [self.offline removeObject:objId objKey:objId route:route collection:collection headers:headers method:method error:error];
+    }
+    
+    if (_updatesLocalWithUnconfirmedSaves == YES) {
+        [self deleteObject:objId route:route collection:collection];
+    }
+    
+    return added ? objId : nil;
+}
+
+- (id) addUnsavedDeleteQuery:(KCSQuery2*)deleteQuery route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error
+{
+    DBAssert(deleteQuery, @"should have query");
+    
+    BOOL added = NO;
+    if (self.offlineUpdateEnabled == YES) {
+        added = [self.offline removeObject:deleteQuery objKey:[deleteQuery keyString] route:route collection:collection headers:headers method:method error:error];
+    }
+    
+    if (_updatesLocalWithUnconfirmedSaves == YES) {
+        [self deleteByQuery:deleteQuery route:route collection:collection];
+    }
+    
+    return added ? deleteQuery : nil;
 }
 
 #pragma mark - Cache Delegate

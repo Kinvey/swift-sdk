@@ -253,19 +253,17 @@
     request.body = entity;
     [request start];
 }
-#warning TODO: bring back offlineupdateneabled on cachedstore and check - allow for cln/cln settings
 
 #pragma mark - objects
 - (NSString*) addObject:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method error:(NSError*)error
 {
     BOOL shouldEnqueue = YES;
-    DELEGATEMETHOD(shouldEnqueueObject:inCollection:onError:) {
-        shouldEnqueue = [_delegate shouldEnqueueObject:KCSEntityKeyId inCollection:collection onError:error];
+    DELEGATEMETHOD(shouldEnqueueObject:inCollection:onError:) { //TODO: test
+        shouldEnqueue = [_delegate shouldEnqueueObject:entity[KCSEntityKeyId] inCollection:collection onError:error];
     }
     
     NSString* newid = nil;
     if (shouldEnqueue) {
-        //TODO need to give id?
         newid = [self.persitence addUnsavedEntity:entity route:route collection:collection method:method headers:headers];
         if (newid != nil) {
             DELEGATEMETHOD(didEnqueueObject:inCollection:) {
@@ -274,6 +272,25 @@
         }
     }
     return newid;
+}
+
+- (BOOL) removeObject:(id)object objKey:(NSString*)key route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method error:(NSError*)error
+{
+    BOOL shouldEnqueue = YES;
+    DELEGATEMETHOD(shouldEnqueueObject:inCollection:onError:) {
+        shouldEnqueue = [_delegate shouldEnqueueObject:object inCollection:collection onError:error];
+    }
+    
+    BOOL added = NO;
+    if (shouldEnqueue) {
+        added = [self.persitence addUnsavedDelete:key route:route collection:collection method:method headers:headers];
+        if (added) {
+            DELEGATEMETHOD(didEnqueueObject:inCollection:) {
+                [_delegate didEnqueueObject:object inCollection:collection];
+            }
+        }
+    }
+    return added;
 }
 
 @end

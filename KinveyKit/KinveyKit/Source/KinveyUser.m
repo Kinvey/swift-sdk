@@ -22,6 +22,7 @@
 #import "KCSClient.h"
 #import "KCSKeyChain.h"
 #import "KCSRESTRequest.h"
+#import "KCSBase64.h"
 #import "KCS_SBJson.h"
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
@@ -1149,4 +1150,18 @@ KK2(get rid of password auth)
         [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
     }
 }
+
+- (NSString *)authString
+{
+    NSString *authString = nil;
+    if (self.sessionAuth) {
+        authString = [@"Kinvey " stringByAppendingString: self.sessionAuth];
+        KCSLogDebug(@"Current user found, using sessionauth (%@) => XXXXXXXXX", self.username);
+    } else {
+        authString = KCSbasicAuthString(self.username, self.password);
+        KCSLogDebug(@"Current user found (%@, XXXXXXXXX) => XXXXXXXXX", self.username);
+    }
+    return authString;
+}
+
 @end

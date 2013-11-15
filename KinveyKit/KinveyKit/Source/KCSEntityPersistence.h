@@ -33,6 +33,7 @@
 - (BOOL) removeEntity:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;
 
 - (NSString*) addUnsavedEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers;
+- (BOOL) addUnsavedDelete:(NSString*)key route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers;
 - (BOOL) removeUnsavedEntity:(NSString*)unsavedId route:(NSString*)route collection:(NSString*)collection;
 - (NSArray*) unsavedEntities;
 - (int) unsavedCount;

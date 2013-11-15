@@ -26,8 +26,7 @@
 #import "KinveyErrorCodes.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
 
-#import "KCSRequest.h"
-#import "KCSUser+KinveyKit2.h"
+#import "KCSRequest2.h"
 
 #define UAPushBadgeSettingsKey @"UAPushBadge"
 
@@ -211,17 +210,7 @@
 {
     if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == NO) {
         
-        KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-        request.httpMethod = kKCSRESTMethodPOST;
-        request.contextRoot = kKCSContextPUSH;
-        request.pathComponents = @[@"register-device"];
-        request.body = @{@"userId"   : [KCSUser activeUser].userId,
-                         @"deviceId" : [self deviceTokenString],
-                         @"platform" : @"ios"};
-        request.errorDomain = KCSUserErrorDomain;
-        request.authorization = [KCSUser activeUser];
-        
-        [request run:^(id results, NSError *error) {
+        KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             if (error) {
                 KCSLogError(@"Device token did not register");
             } else {
@@ -231,7 +220,18 @@
             if (completionBlock) {
                 completionBlock(error == nil, error);
             }
-        }];
+
+        }
+                                                            route:KCSRESTRoutePush
+                                                          options:@{KCSRequestLogMethod}
+                                                      credentials:[KCSUser activeUser]];
+        request.method = KCSRESTMethodPOST;
+        request.path = @[@"register-device"];
+        request.body = @{@"userId"   : [KCSUser activeUser].userId,
+                         @"deviceId" : [self deviceTokenString],
+                         @"platform" : @"ios"};
+//        TODO: request.errorDomain = KCSUserErrorDomain;
+        [request start];
     } else {
         if (completionBlock) {
             completionBlock(NO, nil);
@@ -243,17 +243,7 @@
 {
     if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == YES) {
         
-        KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-        request.httpMethod = kKCSRESTMethodPOST;
-        request.contextRoot = kKCSContextPUSH;
-        request.pathComponents = @[@"unregister-device"];
-        request.body = @{@"userId"   : [KCSUser activeUser].userId,
-                         @"deviceId" : [self deviceTokenString],
-                         @"platform" : @"ios"};
-        request.errorDomain = KCSUserErrorDomain;
-        request.authorization = [KCSUser activeUser];
-        
-        [request run:^(id results, NSError *error) {
+        KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             if (error) {
                 KCSLogError(@"Device token did not un-register");
             } else {
@@ -264,7 +254,19 @@
             if (completionBlock) {
                 completionBlock(error == nil, error);
             }
-        }];
+
+        }
+                                                            route:KCSRESTRoutePush
+                                                          options:@{KCSRequestLogMethod}
+                                                      credentials:[KCSUser activeUser]];
+        request.method = KCSRESTMethodPOST;
+        request.path = @[@"unregister-device"];
+        request.body = @{@"userId"   : [KCSUser activeUser].userId,
+                         @"deviceId" : [self deviceTokenString],
+                         @"platform" : @"ios"};
+        //TODO:        request.errorDomain = KCSUserErrorDomain;
+        [request start];
+        
     } else {
         self.deviceToken = nil;
         completionBlock(NO, nil);

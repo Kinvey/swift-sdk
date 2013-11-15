@@ -28,6 +28,7 @@ KCS_CONSTANT KCSRESTRouteAppdata;
 KCS_CONSTANT KCSRESTRouteUser;
 KCS_CONSTANT KCSRESTRouteRPC;
 KCS_CONSTANT KCSRESTRouteBlob;
+KCS_CONSTANT KCSRESTRoutePush;
 KCS_CONSTANT KCSRestRouteTestReflection;
 
 KCS_CONSTANT KCSRESTMethodDELETE;
@@ -36,7 +37,8 @@ KCS_CONSTANT KCSRESTMethodPATCH;
 KCS_CONSTANT KCSRESTMethodPOST;
 KCS_CONSTANT KCSRESTMethodPUT;
 
-#define KCSRequestLogMethod KCSRequestOptionClientMethod : [NSStringFromClass([self class]) stringByAppendingFormat:@" %@", NSStringFromSelector(_cmd)]
+#define KCSRequestMethodString [NSStringFromClass([self class]) stringByAppendingFormat:@" %@", NSStringFromSelector(_cmd)]
+#define KCSRequestLogMethod KCSRequestOptionClientMethod : KCSRequestMethodString
 
 #define kHeaderContentType   @"Content-Type"
 #define kHeaderContentLength @"Content-Length"

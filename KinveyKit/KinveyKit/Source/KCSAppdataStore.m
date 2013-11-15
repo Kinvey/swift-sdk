@@ -42,6 +42,7 @@
 
 #import "KCSObjectCache.h"
 #import "KCSRequest2.h"
+#import "KCSQuery2+KCSInternal.h"
 #import "NSError+KinveyKit.h"
 #import "KCSClient+KinveyDataStore.h"
 
@@ -61,6 +62,8 @@ typedef void (^ProcessDataBlock_t)(KCSConnectionResponse* response, KCSCompletio
 }
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
+@property (nonatomic) BOOL offlineUpdateEnabled;
+
 @property (nonatomic, strong) KCSCollection *backingCollection;
 
 - (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources;
@@ -721,7 +724,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 
 - (BOOL) shouldEnqueue:(NSError*)error
 {
-    return [KCSAppdataStore caches].offlineUpdateEnabled && [self isNoNetworkError:error] == YES;
+    return self.offlineUpdateEnabled && [KCSAppdataStore caches].offlineUpdateEnabled && [self isNoNetworkError:error] == YES;
 }
 
 - (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
@@ -765,17 +768,15 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     };
     
     KCSConnectionFailureBlock failureAction = ^(NSError* error) {
-#warning TODO here is where the thing should be requeued?
         if ([self shouldEnqueue:error] == YES) {
             //enqueue save
-            //TODO: NSString* _id =
-            [[KCSAppdataStore caches] addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{} error:error];
+            NSString* _id = [[KCSAppdataStore caches] addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{KCSRequestLogMethod} error:error];
             
-            NSString* _id = serializedObj.objectId ? serializedObj.objectId : (NSString*)[NSNull null];
-            error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[_id]}];
+            if (_id != nil) {
+                error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[_id]}];
+            }
             
             completionBlock(nil, error);
-            KK2(Use Headers);
         } else {
             completionBlock(nil, error);
         }
@@ -841,32 +842,6 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     }];
 }
 
-//- (void) enqueSave:(id<KCSPersistable>)obj
-//{
-//    [_saveQueue addObject:obj];
-//}
-
-//- (void) drainQueueWithProgressGraph:(KCSSaveGraph*)progress doSaveBlock:(KCSCompletionBlock)doSaveblock alreadySavedBlock:(KCSCompletionBlock)alreadySavedBlock withProgressBlock:(KCSProgressBlock)progressBlock
-//{
-//    if ([self offlineSaveEnabled] && /*[self isKinveyReachable]*/ YES == NO) {
-//        NSDictionary* info = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Could not reach Kinvey" withFailureReason:@"Application is offline" withRecoverySuggestion:@"Try again when app is online" withRecoveryOptions:nil];
-//        NSMutableDictionary* offlineErrorInfo = [NSMutableDictionary dictionaryWithDictionary:info];
-//        [offlineErrorInfo setObject:[_saveQueue ids] forKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
-//        NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSKinveyUnreachableError userInfo:offlineErrorInfo];
-//        doSaveblock(nil,error);
-//    } else {
-//        for (KCSSaveQueueItem* item in [_saveQueue array]) {
-//            id<KCSPersistable> obj = item.object;
-//            [_saveQueue removeItem:item];
-//            //Step 0: Serialize Object
-//            [self saveEntity:obj progressGraph:progress doSaveBlock:doSaveblock
-//           alreadySavedBlock:^{
-//               alreadySavedBlock(@[obj], nil);
-//           } withProgressBlock:progressBlock];
-//        }
-//    }
-//}
-
 - (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
     KCSSTORE_VALIDATE_PRECONDITION
@@ -887,9 +862,6 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     __block NSError* topError = nil;
     __block BOOL done = NO;
     [objectsToSave enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//        id<KCSPersistable> obj = item.object;
-//        [_saveQueue removeItem:item];
-  
         //Step 0: Serialize Object
         [self saveEntity:obj
            progressGraph:progress
@@ -926,45 +898,6 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
        }
        withProgressBlock:progressBlock];
     }];
-
-    /*
-    for (id <KCSPersistable> singleEntity in objectsToSave) {
-        [self enqueSave:singleEntity];
-    }
-     */
-    /*
-    //TODO: compress queue=
-    [self drainQueueWithProgressGraph:progress doSaveBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        if (done) {
-            //don't do the completion blocks for all the objects if its previously finished
-            return;
-        }
-        if (errorOrNil != nil) {
-            topError = errorOrNil;
-        }
-        if (objectsOrNil != nil) {
-            [completedObjects addObjectsFromArray:objectsOrNil];
-        }
-        completedItemCount++;
-        BOOL shouldStop = errorOrNil != nil && self.treatSingleFailureAsGroupFailure;
-        if (completedItemCount == totalItemCount || shouldStop) {
-            done = YES;
-            completionBlock(completedObjects, topError);
-        }
-        
-    } alreadySavedBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        if (done) {
-            //don't do the completion blocks for all the objects if its previously finished
-            return;
-        }
-        [completedObjects addObjectsFromArray:objectsOrNil];
-        completedItemCount++;
-        if (completedItemCount == totalItemCount) {
-            done = YES;
-            completionBlock(completedObjects, topError);
-        }
-    } withProgressBlock:progressBlock];
-     */
 }
 
 #pragma mark - Removing
@@ -976,10 +909,10 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     }
     
     KCSQuery* deleteQuery = nil;
+    NSString* deleteId = [object isKindOfClass:[NSString class]] ? object : nil;
     if ([object isKindOfClass:[KCSQuery class]]) {
         deleteQuery = object;
     } else {
-        
         NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
         if (objectsToProcess.count == 0) {
             completionBlock(nil, nil);
@@ -1041,7 +974,23 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
         completionBlock(jsonArray, nil);
     };
     KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        completionBlock(nil, error);
+        if ([self shouldEnqueue:error]) {
+            //enqueue save
+            id errorValue = nil;
+            if (deleteId) {
+                 errorValue = [[KCSAppdataStore caches] addUnsavedDelete:deleteId route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+            } else {
+                errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:[KCSQuery2 queryWithQuery1:deleteQuery] route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+            }
+           
+            if (errorValue != nil) {
+                error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
+            }
+            
+            completionBlock(nil, error);
+        } else {
+            completionBlock(nil, error);
+        }
     };
     KCSConnectionProgressBlock pBlock = makeProgressBlock(progressBlock);
     
