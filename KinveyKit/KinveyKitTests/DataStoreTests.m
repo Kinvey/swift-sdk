@@ -32,6 +32,7 @@
 {
     [super setUp];
     [self setupKCS];
+    [self useMockUser];
     
     //TODO: msg [INFO (datastore, network)] msg 
 }

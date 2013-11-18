@@ -50,7 +50,7 @@
     KCSFileRequest* f = [[KCSFileRequest alloc] init];
     KCSFile* file = [[KCSFile alloc] init];
     NSString* fileStr = @"/tmp/123.jpg";
-    file.localURL = [NSURL URLWithString:fileStr];
+    file.localURL = [KCSFileUtils fileURLForName:fileStr];
     [[NSFileManager defaultManager] removeItemAtURL:file.localURL error:NULL];
     
     [f downloadStream:file
@@ -58,7 +58,7 @@
   alreadyWrittenBytes:@0 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
       KTAssertNoError
       long bytes = [returnInfo[@"bytesWritten"] longValue];
-      NSDictionary* d = [[NSFileManager defaultManager] attributesOfItemAtPath:fileStr error:NULL];
+      NSDictionary* d = [[NSFileManager defaultManager] attributesOfItemAtPath:[file.localURL path] error:NULL];
       NSNumber* fileOnDiskSize = d[NSFileSize];
       STAssertEquals(bytes, (long)kImageSize, @"bytes downloaded should match");
       STAssertEquals(bytes, [fileOnDiskSize longValue], @"bytes should also match");

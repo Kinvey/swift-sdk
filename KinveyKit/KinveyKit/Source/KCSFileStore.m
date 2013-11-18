@@ -688,9 +688,7 @@ KCSFile* fileFromResults(NSDictionary* results)
         [_ongoingDownloads addObject:fileId];
     }
     
-    NSURL* cachesDir = [KCSFileUtils filesFolder];
-    NSString* tempName = [NSString stringByPercentEncodingString:[fileId stringByReplacingOccurrencesOfString:@"/" withString:@""]];
-    NSURL* localFile = [NSURL URLWithString:tempName relativeToURL:cachesDir];
+    NSURL* localFile = [KCSFileUtils fileURLForName:fileId];
     
     NSAssert(localFile != nil, @"%@ is not a valid file name for temp storage", fileId);
 
@@ -787,9 +785,8 @@ KCSFile* fileFromResults(NSDictionary* results)
             KCSFile* file = objectsOrNil[0];
             if (file && file.remoteURL) {
                 
-                NSURL* downloadsDir = [KCSFileUtils filesFolder];
                 ifNil(destinationName, file.filename);
-                NSURL*  destinationFile = [NSURL fileURLWithPathComponents:@[downloadsDir.path, destinationName]]; //concat weird paths, such as with spaces (#2704)
+                NSURL*  destinationFile = [KCSFileUtils fileURLForName:destinationName];
                 DBAssert(destinationFile != nil, @"Should have a valid destination file: '%@'", destinationName);
                 
                 
@@ -902,7 +899,6 @@ KCSFile* fileFromResults(NSDictionary* results)
                 if (thisFile && thisFile.remoteURL) {
                     
                     NSURL* destinationFile = nil;
-                    NSURL* downloadsDir = [KCSFileUtils filesFolder];
                     NSString* destinationFilename = thisFile.filename;
                     
                     if (destinationIds != nil && filenames != nil) {
@@ -912,7 +908,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                         }
                     }
                     
-                    destinationFile = [NSURL URLWithString:destinationFilename relativeToURL:downloadsDir];
+                    destinationFile = [KCSFileUtils fileURLForName:destinationFilename];
 
                     //TODO: onlyIfNewer check download object
                     [self _downloadToFile:destinationFile fromURL:thisFile.remoteURL fileId:thisFile.fileId filename:destinationFilename mimeType:thisFile.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
