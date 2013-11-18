@@ -49,6 +49,7 @@ id<KCSCredentials> mockCredentails();
 @property (nonatomic) BOOL done;
 - (BOOL) poll;
 - (void) setupKCS;
+- (void) useMockUser;
 @end
 
 @interface TestUtils2 : NSObject

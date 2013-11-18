@@ -117,33 +117,32 @@ static NSOperationQueue* queue;
 
 
 # pragma mark -
-
-- (id<KCSNetworkOperation>) start
+- (NSString*)finalURL
 {
-    NSAssert(_route, @"should have route");
-    NSAssert(self.credentials, @"should have credentials");
-    DBAssert(self.options[KCSRequestOptionClientMethod], @"DB should set client method");
-    
     KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
     NSString* baseURL = [config baseURL];
     NSString* kid = config.appKey;
-    
+
     if (_useMock && kid == nil) {
         kid = @"mock";
         baseURL = baseURL ? baseURL : @"http://localhost:2110/";
-    }    
+    }
     
     NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
     NSString* urlStr = [path componentsJoinedByString:@"/"];
     NSString* endpoint = [baseURL stringByAppendingString:urlStr];
+
+    return endpoint;
+}
+
+- (NSMutableURLRequest*)urlRequest
+{
+    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
+    NSString* endpoint = [self finalURL];
     
     NSURL* url = [NSURL URLWithString:endpoint];
     DBAssert(url, @"Should have a valid url");
-    
-    _currentQueue = [NSOperationQueue currentQueue];
-    
-    NSOperation<KCSNetworkOperation>* op = nil;
-    
+
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
                                                        timeoutInterval:[config.options[KCS_CONNECTION_TIMEOUT] doubleValue]];
@@ -175,6 +174,19 @@ static NSOperationQueue* queue;
         [request setHTTPBody:bodyData];
     }
 
+    return request;
+}
+
+- (id<KCSNetworkOperation>) start
+{
+    NSAssert(_route, @"should have route");
+    NSAssert(self.credentials, @"should have credentials");
+    DBAssert(self.options[KCSRequestOptionClientMethod], @"DB should set client method");
+    
+    _currentQueue = [NSOperationQueue currentQueue];
+    NSMutableURLRequest* request = [self urlRequest];
+    
+    NSOperation<KCSNetworkOperation>* op = nil;
     op.clientRequestId = [[NSUUID UUID] UUIDString];
     KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@ [KinveyKit id: '%@']", request.HTTPMethod, request.URL, op.clientRequestId);
     

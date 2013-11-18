@@ -381,7 +381,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
         }];
     }
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-Wdeprecated" 
     return [KCSClient sharedClient].currentUser;
 #pragma clang diagnostic pop
 }

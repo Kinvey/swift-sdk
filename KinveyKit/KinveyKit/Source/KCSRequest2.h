@@ -58,4 +58,7 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
 - (id<KCSNetworkOperation>) start;
+
+//for testing
+- (NSMutableURLRequest*)urlRequest;
 @end

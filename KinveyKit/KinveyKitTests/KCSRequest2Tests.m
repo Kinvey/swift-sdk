@@ -119,5 +119,41 @@
     KTNIY
 }
 
+- (void) testCreateCustomURLRquest
+{
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {}
+                                                        route:KCSRESTRouteRPC
+                                                      options:@{}
+                                                  credentials:mockCredentails()];
+    request.method = KCSRESTMethodPOST;
+    request.path = @[@"custom",@"endpoint"];
+    request.body = @{@"foo":@"bar",@"baz":@[@1,@2,@3]};
+    
+    NSURLRequest* urlRequest = [request urlRequest];
+    NSURL* url = urlRequest.URL;
+    
+    KCSClient* client = [KCSClient sharedClient];
+    NSString* expectedURL = [NSString stringWithFormat:@"https://%@.kinvey.com/rpc/%@/custom/endpoint", client.configuration.serviceHostname, client.appKey];
+    
+    STAssertEqualObjects(expectedURL, url.absoluteString, @"should have a url match");
+    
+    NSData* bodyData = urlRequest.HTTPBody;
+    NSDictionary* undidBody = [NSJSONSerialization JSONObjectWithData:bodyData options:0 error:NULL];
+    NSDictionary* expBody = @{@"foo":@"bar",@"baz":@[@1,@2,@3]};
+    STAssertEqualObjects(expBody, undidBody, @"bodies should match");
+}
+
+- (void) testDate
+{
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {}
+                                                        route:KCSRESTRouteRPC
+                                                      options:@{}
+                                                  credentials:mockCredentails()];
+    NSURLRequest* urlRequest = [request urlRequest];
+    NSDictionary* headers = [urlRequest allHTTPHeaderFields];
+    NSString* d = headers[@"Date"];
+    STAssertNotNil(d, @"should have a header");
+
+}
 
 @end

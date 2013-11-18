@@ -22,5 +22,7 @@
 
 + (NSString*) localPathForDB:(NSString*)dbname;
 + (NSURL*) filesFolder;
++ (NSURL*) fileURLForName:(NSString*)name;
+
 
 @end

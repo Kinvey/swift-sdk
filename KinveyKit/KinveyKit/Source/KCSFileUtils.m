@@ -43,7 +43,8 @@
 
 + (NSURL*) filesFolder
 {
-    NSURL* folder = [[NSURL URLWithString:[self kinveyDir]] URLByAppendingPathComponent:@"files/"];
+    NSURL* kinveyFolder = [NSURL fileURLWithPath:[self kinveyDir]];
+    NSURL* folder = [kinveyFolder URLByAppendingPathComponent:@"files/"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:[folder path]] == NO) {
         //TODO: security?
         NSError* error = nil;
@@ -51,6 +52,14 @@
         KCSLogNSError(KCS_LOG_CONTEXT_FILESYSTEM, error);
     }
     return folder;
+}
+
++ (NSURL*) fileURLForName:(NSString*)name
+{
+    NSURL* cachesDir = [KCSFileUtils filesFolder];
+    NSString* tempName = [NSString stringByPercentEncodingString:[name stringByReplacingOccurrencesOfString:@"/" withString:@""]];
+    NSURL*  destinationFile = [NSURL fileURLWithPathComponents:@[cachesDir.path, tempName]]; //concat weird paths, such as with spaces (#2704)
+    return destinationFile;
 }
 
 @end

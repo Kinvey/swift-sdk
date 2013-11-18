@@ -25,6 +25,9 @@
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 
+#import "KCSEntityPersistence.h"
+#import "KCSObjectCache.h"
+
 #undef ddLogLevel
 #define ddLogLevel LOG_FLAG_DEBUG
 
@@ -144,14 +147,14 @@
 {
     KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
     
-    BOOL u = [cache addUnsavedEntity:@{@"a":@1,@"_id":@"1"} route:@"R" collection:@"C1" method:@"M1" headers:@{@"h1":@"v1"}];
-    KTAssertU
+    NSString* newid = [cache addUnsavedEntity:@{@"a":@1,@"_id":@"1"} route:@"R" collection:@"C1" method:@"M1" headers:@{@"h1":@"v1"}];
+    STAssertNotNil(newid, @"should have an id");
     id d2 = @{@"a":@"b",@"_id":@"1"};
-    u = [cache addUnsavedEntity:d2 route:@"R" collection:@"C2" method:@"M2" headers:@{@"h1":@"v1",@"h2":@"v2"}];
-    KTAssertU
+    newid = [cache addUnsavedEntity:d2 route:@"R" collection:@"C2" method:@"M2" headers:@{@"h1":@"v1",@"h2":@"v2"}];
+    STAssertNotNil(newid, @"should have an id");
     id d3 = @{@"a":@2,@"_id":@"1"};
-    u = [cache addUnsavedEntity:d3 route:@"R" collection:@"C1" method:@"M1" headers:@{@"h1":@"v1"}];
-    KTAssertU
+    newid = [cache addUnsavedEntity:d3 route:@"R" collection:@"C1" method:@"M1" headers:@{@"h1":@"v1"}];
+    STAssertNotNil(newid, @"should have an id");
 
     int count = [cache unsavedCount];
     STAssertEquals(count, (int)2, @"should have 2 objects");
@@ -184,7 +187,7 @@
     
     
     KCSObjectCache* ocache = [[KCSObjectCache alloc] init];
-    NSArray* results = [ocache pullQuery:q route:route collection:cln];
+    NSArray* results = [ocache pullQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
     STAssertNotNil(results, @"should have results");
     KTAssertCount(1, results);
     
@@ -200,9 +203,11 @@
     KCSQuery* q = [KCSQuery query];
     NSString* route = @"r";
     NSString* cln = @"c";
-    NSArray* results = [ocache setObjects:entities forQuery:q route:route collection:cln];
+    NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
     
     KTNIY
+    
+    [ocache clear];
 }
 
 - (void) testDelete

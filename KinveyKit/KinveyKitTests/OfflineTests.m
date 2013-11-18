@@ -24,6 +24,9 @@
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 
+#import "KCSEntityPersistence.h"
+#import "KCSOfflineUpdate.h"
+
 @interface KCSUser (TestUtils)
 + (void) mockUser;
 @end

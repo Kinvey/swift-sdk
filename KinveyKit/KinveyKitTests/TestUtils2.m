@@ -76,13 +76,36 @@ id<KCSCredentials> mockCredentails()
 
 #pragma mark - Kinvey
 
-- (void)setupKCS
+- (void) setupStaging
 {
     (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid10005"
                                                        withAppSecret:@"8cce9613ecb7431ab580d20863a91e20"
                                                         usingOptions:@{KCS_LOG_LEVEL              : @255,
                                                                        KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}];
     [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
+    
+}
+- (void) setupProduction
+{
+    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1880"
+                                                       withAppSecret:@"6414992408f04132bd467746f7ecbdcf"
+                                                        usingOptions:@{KCS_LOG_LEVEL              : @255,
+                                                                       KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}];
+    
+}
+
+- (void)setupKCS
+{
+    [self setupProduction];
+}
+
+- (void) useMockUser
+{
+    KCSUser* mockUser = [[KCSUser alloc] init];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    [KCSClient sharedClient].currentUser = mockUser;
+#pragma clang diagnostic pop
 }
 
 @end

@@ -459,9 +459,7 @@
 
 - (BOOL) addUnsavedDelete:(NSString*)key route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers
 {
-    DBAssert(key, @"should save with a key")
-    
-    NSString* entityStr = @"";
+    DBAssert(key, @"should save with a key");
     
     NSError* error = nil;
     NSString* headerStr = [self.jsonWriter stringWithObject:headers error:&error];
@@ -475,7 +473,7 @@
     NSString* update = @"REPLACE INTO savequeue VALUES (:key, :id, :routeKey, :method, :headers, :time, :obj)";
     NSDictionary* valDictionary = @{@"key":[routeKey stringByAppendingString:key],
                                     @"id":key,
-                                    @"obj":entityStr,
+                                    @"obj":key,
                                     @"time":[NSDate date],
                                     @"routeKey": routeKey,
                                     @"headers": headerStr,
