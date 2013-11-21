@@ -27,6 +27,7 @@
 #import "NSString+KinveyAdditions.h"
 #import "KCSHiddenMethods.h"
 #import "NSDate+KinveyAdditions.h"
+#import "KCSFileUtils.h"
 
 #define KTAssertIncresing(var) \
 { \
@@ -441,7 +442,7 @@ NSData* testData2()
         self.done = YES;
     } progressBlock:PROGRESS_BLOCK];
     [self poll];
-    KTAssertCount(0, progresses);
+    KTAssertCount(1, progresses); //progress called once when using local - to deal with progress bars
 }
 
 - (void) testDownloadToFileOnlyIfNewerAndIsNewer
@@ -622,8 +623,8 @@ NSData* testData2()
 - (void) testDownloadFileSpecifyFilename
 {
     NSString* filename = [NSString stringWithFormat:@"TEST-%@",[NSString UUID]];
-    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
-    NSURL* destinationURL = [NSURL URLWithString:filename relativeToURL:downloadsDir];
+    NSURL* destinationURL = [KCSFileUtils fileURLForName:filename];
+    //[NSURL URLWithString:filename relativeToURL:downloadsDir];
     STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL path]], @"Should start with a fresh file");
     
     self.done = NO;

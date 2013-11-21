@@ -40,12 +40,11 @@ NSString* const KCSStoreKeyOfflineUpdateEnabled = @"offline.enabled";
 @interface KCSAppdataStore (KCSCachedStore) 
 - (instancetype)initWithAuth: (KCSAuthHandler *)auth;
 - (KCSCollection*) backingCollection;
-- (NSUInteger)numberOfPendingSaves;
 @property (nonatomic) BOOL offlineUpdateEnabled;
 @end
 
 @interface KCSCachedStore () {
-    id<KCSEntityCache> _cache;
+    id<KCSEntityCache> _cache; //TODO: clear
 }
 @end
 
@@ -55,9 +54,10 @@ NSString* const KCSStoreKeyOfflineUpdateEnabled = @"offline.enabled";
 
 - (BOOL)configureWithOptions: (NSDictionary *)options
 {
+    ifNil(options, @{});
     BOOL retVal = [super configureWithOptions:options];
 
-    KCSCachePolicy cachePolicy = (options == nil || [options objectForKey:KCSStoreKeyCachePolicy] == nil) ? [KCSCachedStore defaultCachePolicy] : [[options objectForKey:KCSStoreKeyCachePolicy] intValue];
+    KCSCachePolicy cachePolicy = (options[KCSStoreKeyCachePolicy] == nil) ? [KCSCachedStore defaultCachePolicy] : [options[KCSStoreKeyCachePolicy] intValue];
     self.cachePolicy = cachePolicy;
     
     KCSCollection* backingCollection = [self backingCollection];

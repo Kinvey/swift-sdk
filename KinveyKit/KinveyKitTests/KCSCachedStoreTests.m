@@ -106,6 +106,12 @@ id<KCSStore> createStore(KCSCachePolicy cachePolicy)
     pollTime = 0.1;
     _callbackCount = 0;
     [TestUtils justInitServer];
+    KCSUser* mockUser = [[KCSUser alloc] init];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    [KCSClient sharedClient].currentUser = mockUser;
+#pragma clang diagnostic pop
+
 }
 
 - (void) tearDown

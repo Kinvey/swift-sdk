@@ -169,11 +169,11 @@
 
 
 #pragma mark - Cache
-- (void) testPullQuery
+- (void) testPullQueryGetsFromPersistence
 {
     NSArray* entities = [self jsonArray];
     
-    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
+    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"offline"];
     NSString* route = @"r";
     NSString* cln = @"c";
     
@@ -182,7 +182,7 @@
 
     NSString* _id = @"51c44c5982cd0ade36000013";
     KCSQuery* q = [KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:_id];
-    u = [cache setIds:@[_id] forQuery:[q parameterStringRepresentation] route:route collection:cln];
+    u = [cache setIds:@[_id] forQuery:[[KCSQuery2 queryWithQuery1:q] keyString] route:route collection:cln];
     KTAssertU
     
     

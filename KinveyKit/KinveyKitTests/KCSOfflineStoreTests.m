@@ -23,17 +23,18 @@
 #import <KinveyKit/KinveyKit.h>
 #import "ASTTestClass.h"
 #import "KCSHiddenMethods.h"
+#import "KCSMockServer.h"
 
 //@interface KCSSaveQueues;
 //+ (KCSSaveQueues*)sharedQueues;
 //- (void)persistQueues;
 //- (NSDictionary*)cachedQueues;
 //@end
-@interface KCSAppdataStore ()
-- (void) setReachable:(BOOL)r;
-@end
+//@interface KCSAppdataStore ()
+//- (void) setReachable:(BOOL)r;
+//@end
 
-@interface KCSOfflineStoreTests ()
+@interface KCSOfflineStoreTests () <KCSOfflineUpdateDelegate>
 {
     BOOL _shouldSaveCalled;
     BOOL _testShouldSave;
@@ -74,8 +75,9 @@
     
     KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{}];
-    
-    [store setReachable:NO];
+    [KCSMockServer sharedServer].offline = YES;
+
+//    [store setReachable:NO];
     
     self.done = NO;
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -100,7 +102,7 @@
     KCSOfflineStoreTests* o = self;
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{}];
     
-    [store setReachable:NO];
+//    [store setReachable:NO];
     
     self.done = NO;
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -116,7 +118,7 @@
     
     self.done = NO;
     _testShouldSave = YES;
-    [store setReachable:YES];
+//    [store setReachable:YES];
     
     [self poll];
     
@@ -144,7 +146,7 @@
     KCSOfflineStoreTests* o = self;
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{}];
     
-    [store setReachable:NO];
+//    [store setReachable:NO];
     
     self.done = NO;
     [store saveObject:@[obj1,obj2,obj3] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -159,7 +161,7 @@
     
     self.done = NO;
     _expSaveCount = 3;
-    [store setReachable:YES];
+//    [store setReachable:YES];
     
     [self poll];
     STAssertEquals((int)3, (int)_didSaveCount, @"Should have been called for each item");

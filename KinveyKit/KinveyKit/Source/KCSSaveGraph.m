@@ -108,7 +108,7 @@
     }
 }
 
-- (void) finished
+- (void) finished:(NSArray*)objectsOrNil error:(NSError*)errorOrNil
 {
     @synchronized(self) {
         self.done = YES;
@@ -116,7 +116,7 @@
     }
     dispatch_async(dispatch_get_current_queue(), ^{
         for (KCSCompletionWrapperBlock_t block in _waitingBlocks) {
-            block();
+            block(objectsOrNil, errorOrNil);
         }
     });
 }

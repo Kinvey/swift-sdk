@@ -70,11 +70,12 @@
 - (void) testCustomEndpointError
 {
     self.done = NO;
-    [KCSCustomEndpoints callEndpoint:@"bltest-error" params:nil completionBlock:^(id results, NSError *errorOrNil) {
+    [KCSCustomEndpoints callEndpoint:@"bltest-notexist" params:nil completionBlock:^(id results, NSError *errorOrNil) {
         STAssertNotNil(errorOrNil, @"should have an error");
-        STAssertEqualObjects(errorOrNil.domain, KCSBusinessLogicErrorDomain, @"Should be a bl error");
-        STAssertNotNil(errorOrNil.userInfo[NSURLErrorFailingURLStringErrorKey], @"should list the URL");
-        KTAssertEqualsInt(errorOrNil.code, 400, @"should be a 400");
+        //        STAssertEqualObjects(errorOrNil.domain, KCSBusinessLogicErrorDomain, @"Should be a bl error");
+        NSString* url = errorOrNil.userInfo[NSURLErrorFailingURLErrorKey];
+        STAssertNotNil(url, @"should list the URL");
+        KTAssertEqualsInt(errorOrNil.code, 404, @"should be a 400 Not Found");
         self.done = YES;
     }];
     [self poll];

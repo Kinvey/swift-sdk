@@ -96,7 +96,7 @@ id<KCSCredentials> mockCredentails()
 
 - (void)setupKCS
 {
-    [self setupProduction];
+    [self setupStaging];
 }
 
 - (void) useMockUser

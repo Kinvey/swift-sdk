@@ -36,6 +36,7 @@
 #import "KCSEntityCache.h"
 #import "KCSClientConfiguration.h"
 #import "KCSHiddenMethods.h"
+#import "KCSBase64.h"
 
 #define kAppKeyKechainKey @"com.kinvey.kinveykit.appkey"
 
@@ -287,7 +288,17 @@
 #pragma mark - Utilites
 - (void)clearCache
 {
+    [[KCSAppdataStore caches] clear];
     [KCSEntityCache clearAllCaches];
+}
+
+#pragma mark - KinveyKit 1.5
+//TODO cleanup
+- (NSString *)authString
+{
+    KCSLogDebug(@"Using app key/app secret for auth: (%@, <APP_SECRET>) => XXXXXXXXX", self.configuration.appKey);
+    return KCSbasicAuthString(self.configuration.appKey, self.configuration.appSecret);
+    
 }
 
 #pragma mark - KinveyKit2

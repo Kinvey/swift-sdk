@@ -1,5 +1,5 @@
 //
-//  KCSEntityCache2.h
+//  KCSEntityPersistence.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -17,9 +17,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "KCSEntityCache.h"
 
-@interface KCSEntityPersistence : NSObject // <KCSEntityCache>
+@interface KCSEntityPersistence : NSObject 
 @property (nonatomic, strong) NSDictionary* saveContext;
 @property (nonatomic, retain) NSString* persistenceId;
 

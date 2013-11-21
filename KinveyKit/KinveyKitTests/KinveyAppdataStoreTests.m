@@ -346,7 +346,7 @@ NSArray* largeArray()
     [baseObjs addObject:[self makeObject:@"one" count:10]];
     [baseObjs addObject:[self makeObject:@"two" count:10]];
     [baseObjs addObject:[self makeObject:@"two" count:30]];
-    [baseObjs addObject:[self makeObject:@"two" count:70]];
+    //    [baseObjs addObject:[self makeObject:@"two" count:70]];
     [baseObjs addObject:[self makeObject:@"one" count:5]];
     [baseObjs addObject:[self makeObject:@"two" count:70]];    
     [_store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
@@ -368,7 +368,7 @@ NSArray* largeArray()
     [self poll];
     
     self.done = NO;
-    KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThanOrEqual forValue:[NSNumber numberWithInt:10]];
+    KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThanOrEqual forValue:@10];
     [_store group:@[@"objDescription", @"objCount"] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         

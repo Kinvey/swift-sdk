@@ -157,7 +157,6 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 + (void) justInitServer
 {
-    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     NSDictionary* opts = @{KCS_TWITTER_CLIENT_SECRET : @"rLUxyvve0neLqO8P8pWY6S8fOToXtL7qcNzxNMaUSA",
                            KCS_TWITTER_CLIENT_KEY : @"5sCifD1tKCjA6zQD5jE6A",
                            KCS_FACEBOOK_APP_KEY: @"432021153527854"};
@@ -166,13 +165,14 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     } else {
         [self initProduction:opts];
     }
+    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
 //    [self initCustom:opts];
 }
 
 + (BOOL) setUpKinveyUnittestBackend
 {
-    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     [self justInitServer];
+    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     __block BOOL loaded = NO;
     
     SenTestCase* pollObj = [[SenTestCase alloc] init];

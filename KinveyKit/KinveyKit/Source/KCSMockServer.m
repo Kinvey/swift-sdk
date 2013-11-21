@@ -108,7 +108,7 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 200;
     if (request.HTTPBody) {
-        response.jsonData = [[[KCS_SBJsonParser alloc] init] objectWithData:request.HTTPBody];
+        response.jsonData = request.HTTPBody;
     }
     response.headers = request.allHTTPHeaderFields;
     return response;
@@ -157,7 +157,7 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
                         getresponse.code = 200;
                         if (request.HTTPBody) {
                             //TODO: add _id if none
-                            getresponse.jsonData = [[[KCS_SBJsonParser alloc] init] objectWithData:request.HTTPBody];
+                            getresponse.jsonData = request.HTTPBody;
                         }
                         //TODO this will add to the collection, but should be added to the _id under the collection
                         d[components[components.count-1]] = getresponse;
@@ -243,7 +243,8 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
     
     url = [url stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
     NSDictionary* d = [self containerForRoute:url];
-    return d[[url lastPathComponent]];
+    id response = d[[url lastPathComponent]];
+    return [response isKindOfClass:[NSError class]] ? response : nil;
 }
 
 - (void) setError:(NSError *)error forRoute:(NSString *)route
