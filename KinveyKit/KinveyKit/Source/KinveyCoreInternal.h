@@ -46,6 +46,7 @@
 #import "NSString+KinveyAdditions.h"
 #import "KCSBase64.h"
 #import "KCSTimedQueue.h"
+#import "KCSDBTools.h"
 
 #pragma mark - helpers
 

@@ -1,5 +1,5 @@
 //
-//  KCSEntityCache2.m
+//  KCSEntityPersistence.m
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/14/13.
@@ -423,7 +423,7 @@
     NSString* _id = entity[KCSEntityKeyId];
     if (_id == nil) {
         KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"nil `_id` in %@. Adding local id.", entity);
-        _id = KCSMongoObjectId();
+        _id = [KCSDBTools KCSMongoObjectId];
         entity = [entity dictionaryByAddingDictionary:@{KCSEntityKeyId : _id}];
     }
     

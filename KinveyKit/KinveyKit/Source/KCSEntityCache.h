@@ -19,7 +19,6 @@
 #import <Foundation/Foundation.h>
 
 
-NSString* KCSMongoObjectId();
 
 @protocol KCSPersistable;
 @class KCSQuery;

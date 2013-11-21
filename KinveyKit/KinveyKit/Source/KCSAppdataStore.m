@@ -658,17 +658,6 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
 
 
 #pragma mark - Adding/Updating
-//- (BOOL) offlineSaveEnabled
-//{
-//    return _offlineSaveEnabled;
-//}
-//
-//- (NSUInteger) numberOfPendingSaves
-//{
-//#warning do pending saves
-//    return -1;//[_saveQueue count];
-//}
-
 - (ProcessDataBlock_t) makeProcessDictBlock:(KCSSerializedObject*)serializedObject
 {
     ProcessDataBlock_t processBlock = ^(KCSConnectionResponse *response, KCSCompletionBlock completionBlock) {
@@ -823,15 +812,17 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     DBAssert(objKey != nil, @"should have a valid obj key here");
     NSString* cname = self.backingCollection.collectionName;
     [objKey ifNotLoaded:^{
-        [self saveEntityWithResources:so progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            [objKey finished];
+        [self saveEntityWithResources:so progress:progress
+                  withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                      [objKey finished:objectsOrNil error:errorOrNil];
             [objKey doAfterWaitingResaves:^{
                 doSaveblock(objectsOrNil, errorOrNil);
             }];
             
         } withProgressBlock:progressBlock];
-        
-    } otherwiseWhenLoaded:alreadySavedBlock andResaveAfterReferencesSaved:^{
+    }
+    otherwiseWhenLoaded:alreadySavedBlock
+andResaveAfterReferencesSaved:^{
         KCSSerializedObject* soPrime = [KCSObjectMapper makeResourceEntityDictionaryFromObject:objToSave forCollection:cname error:NULL]; //TODO: figure out if this is needed?
         [soPrime restoreReferences:so];
         [self saveMainEntity:soPrime progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {

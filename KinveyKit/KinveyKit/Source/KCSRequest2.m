@@ -180,6 +180,11 @@ static NSOperationQueue* queue;
 - (id<KCSNetworkOperation>) start
 {
     NSAssert(_route, @"should have route");
+    if (self.credentials == nil) {
+        NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSDeniedError userInfo:@{NSLocalizedDescriptionKey : @"No Authorization Found", NSLocalizedFailureReasonErrorKey : @"There is no active user/client and this request requires credentials.", NSURLErrorFailingURLStringErrorKey : [self finalURL]}];
+        self.completionBlock(nil, error);
+        return nil;
+    }
     NSAssert(self.credentials, @"should have credentials");
     DBAssert(self.options[KCSRequestOptionClientMethod], @"DB should set client method");
     

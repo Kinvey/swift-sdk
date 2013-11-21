@@ -23,15 +23,10 @@
 #import "KinveyDataStoreInternal.h"
 
 @interface KCSNSURLSessionFileOperation () <NSURLSessionDelegate, NSURLSessionDownloadDelegate>
-//TODO: cleanup outputhandle from thing - this should probably be the fname!
-//@property (nonatomic, retain) NSFileHandle* outputHandle;
-//@property (nonatomic) long long maxLength;
 @property (nonatomic, retain) NSURL* localFile;
 @property (nonatomic, retain) NSURLSession* session;
 @property (nonatomic, retain) NSURLSessionDownloadTask* task;
 @property (nonatomic, strong) NSMutableURLRequest* request;
-//@property (nonatomic, retain) NSHTTPURLResponse* response;
-//@property (nonatomic, retain) NSMutableData* responseData;
 @property (nonatomic) unsigned long long bytesWritten;
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSDictionary* returnVals;
@@ -170,16 +165,6 @@
     }
     [self complete:self.error];
 }
-
-//- (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-//{
-//    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"GCS download response code: %d",[(NSHTTPURLResponse*)response statusCode]);
-//    
-//    _response = (NSHTTPURLResponse*)response;
-//    NSDictionary* headers =  [_response allHeaderFields];
-//    NSString* length = headers[kHeaderContentLength];
-//    _maxLength = [length longLongValue];
-//}
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {

@@ -29,8 +29,6 @@
 
 #import "KCSReduceFunction.h"
 
-#import <CommonCrypto/CommonDigest.h>
-
 #import "KCSAppdataStore.h"
 #import "KinveyCollection.h"
 #import "KinveyErrorCodes.h"
@@ -39,6 +37,7 @@
 #import "KinveyUser.h"
 
 #import "KCSEntityPersistence.h"
+#import "KCSDBTools.h"
 
 
 @interface KCSEntityCache () <NSCacheDelegate>
@@ -178,58 +177,7 @@ NSString* cacheKeyForGroup(NSArray* fields, KCSReduceFunction* function, KCSQuer
 }
 
 @implementation KCSEntityCache
-static uint counter;
 
-#if TARGET_OS_IPHONE
-void md5(NSString* s, unsigned char* result)
-{
-    const char *cStr = [s UTF8String];
-    CC_MD5( cStr, (CC_LONG)strlen(cStr), result ); // This is the md5 call
-}
-
-NSString* KCSMongoObjectId()
-{
-    time_t timestamp = (time_t) [[NSDate date] timeIntervalSince1970];
-    NSString *hostName = [[NSProcessInfo processInfo] hostName];
-    unsigned char hostbytes[16];
-    md5(hostName, hostbytes);
-    int pid = getpid();
-    counter = (counter + 1) % 16777216;
-    NSString* s = [NSString stringWithFormat:
-            @"%08lx%02x%02x%02x%04x%06x",
-            timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
-            pid, counter];
-    return s;
-}
-#else
-
-void md5(NSString* s, unsigned char* result)
-{
-    const char *cStr = [s UTF8String];
-    CC_MD5( cStr, (CC_LONG) strlen(cStr), result ); // This is the md5 call
-}
-
-NSString* KCSMongoObjectId()
-{
-    int timestamp = (int) [[NSDate date] timeIntervalSince1970];
-    NSString *hostName = [[NSProcessInfo processInfo] hostName];
-    unsigned char hostbytes[16];
-    md5(hostName, hostbytes);
-    int pid = getpid();
-    counter = (counter + 1) % 16777216;
-    NSString* s = [NSString stringWithFormat:
-                   @"%08x%02x%02x%02x%04x%06x",
-                   timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
-                   pid, counter];
-    return s;
-}
-#endif
-
-+ (void)initialize
-{
-    [super initialize];
-    counter = arc4random();
-}
 
 - (instancetype) init
 {
@@ -357,13 +305,13 @@ NSString* KCSMongoObjectId()
 {
     NSString* objId = [obj kinveyObjectId];
     if (objId == nil) {
-        objId = KCSMongoObjectId();
+        objId = [KCSDBTools KCSMongoObjectId];
         KCSLogDebug(@"attempting to save a new object to the backend - assigning '%@' as id", objId);
         [obj setKinveyObjectId:objId];
     }
     if (objId != nil) {
         CacheValue* val = [_cache objectForKey:objId];
-        if (val == nil) {
+        if (val != nil) {
             val.count++;
         } else {
             val = [[CacheValue alloc] init];
