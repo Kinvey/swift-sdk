@@ -175,7 +175,7 @@
 
 - (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"GCS download response code: %d",[(NSHTTPURLResponse*)response statusCode]);
+    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"GCS download response code: %ld",(long)[(NSHTTPURLResponse*)response statusCode]);
     
     _response = (NSHTTPURLResponse*)response;
     NSDictionary* headers =  [_response allHeaderFields];
@@ -207,7 +207,7 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"downloaded %u bytes from file service", [data length]);
+    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"downloaded %lu bytes from file service", (long)[data length]);
     
     if (_response && _response.statusCode >= 400) {
         //is an error just get the data locally

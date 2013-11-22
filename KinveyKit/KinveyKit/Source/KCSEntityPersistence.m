@@ -703,6 +703,21 @@
     return count;
 }
 
+- (BOOL) removeQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection
+{
+    KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"remove query: '%@'", query);
+    //TODO: deal with cleaning up unneeded entities - this just removes the query - not the associated objects
+    
+    NSString* routeKey = [self tableForRoute:route collection:collection];
+    NSString* queryKey = [self queryKey:query routeKey:routeKey];
+    
+    BOOL updated = [_db executeUpdateWithFormat:@"DELETE FROM queries WHERE id=%@", queryKey];
+    if (updated == NO) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    return updated;
+}
+
 #pragma mark - Import
 - (BOOL) import:(NSArray *)entities route:(NSString *)route collection:(NSString *)collection
 {

@@ -39,7 +39,6 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
 
 //internal use
 #define KCSStoreKeyLocalCacheTimeout @"localcache.timeout"
-#define KCSStoreKeyLocalCachePersistanceKey_Xperimental @"localcache.persistenceid"
 
 
 

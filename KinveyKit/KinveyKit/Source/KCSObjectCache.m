@@ -88,7 +88,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
         _queryCache.name = @"General Query Cache";
         
         _dataModel = [[KCSDataModel alloc] init];
-
+        
         _preCalculatesResults = YES;
         _updatesLocalWithUnconfirmedSaves = YES;
     }
@@ -97,6 +97,14 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 - (void)dealloc
 {
+    _queryCache.delegate = nil;
+    [_caches enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        NSDictionary* d = obj;
+        [d enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            NSCache* c = obj;
+            c.delegate = nil;
+        }];
+    }];
     [self clear];
     dispatch_release(_cacheQueue);
 }
@@ -109,8 +117,6 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 - (NSCache*) cacheForRoute:(NSString*)route collection:(NSString*)collection
 {
-    Q_ASSERT
-    
     NSMutableDictionary* routeCaches = _caches[route];
     if (!routeCaches) {
         routeCaches = [NSMutableDictionary dictionary];
@@ -130,12 +136,12 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 - (NSArray*) objectForId:(NSString*)_id cache:(NSCache*)cache route:(NSString*)route collection:(NSString*)collection
 {
-    Q_ASSERT
-    
-    id obj = [cache objectForKey:_id];
+    __block id obj = [cache objectForKey:_id];
     if (!obj) {
-        NSDictionary* entity = [_persistenceLayer entityForId:_id route:route collection:collection];
-        obj = [_dataModel objectFromCollection:collection data:entity];
+        dispatch_sync(_cacheQueue, ^{
+            NSDictionary* entity = [_persistenceLayer entityForId:_id route:route collection:collection];
+            obj = [_dataModel objectFromCollection:collection data:entity];
+        });
     }
     return obj;
 }
@@ -143,8 +149,6 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 #warning wwdc - 712
 - (NSArray*) objectsForIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection
 {
-    Q_ASSERT
-    
     if (ids == nil) {
         return nil;
     }
@@ -174,55 +178,89 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 - (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
-    __block NSArray* retVal;
-    dispatch_sync(_cacheQueue, ^{
-        NSString* queryKey = [query keyString];
-        NSString* key = [self queryKey:query route:route collection:collection];
-        NSArray* ids = [_queryCache objectForKey:key];
-        if (!ids) {
+    NSArray* retVal;
+    NSString* queryKey = [query keyString];
+    NSString* key = [self queryKey:query route:route collection:collection];
+    __block NSArray* ids = [_queryCache objectForKey:key];
+    if (!ids) {
+        dispatch_sync(_cacheQueue, ^{
             ids = [_persistenceLayer idsForQuery:queryKey route:route collection:collection];
-        }
-        retVal = [self objectsForIds:ids route:route collection:collection];
-    });
+        });
+    }
+    retVal = [self objectsForIds:ids route:route collection:collection];
     
     return retVal;
+}
+
+- (NSArray*) pullIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection
+{
+    return [self objectsForIds:ids route:route collection:collection];
 }
 
 
 #pragma mark - Set Query
 
+- (void) addObjects:(NSArray*)objects route:(NSString*)route  collection:(NSString*)collection
+{
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+
+    [objects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSDictionary* entity = [self.dataModel jsonEntityForObject:obj route:route collection:collection];
+        DBAssert(entity != nil, @"should have an entity");
+        [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache];
+    }];
+}
+
 - (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
-    __block NSArray* retVal = nil;
+    NSArray* retVal = nil;
+    NSString* queryKey = [query keyString];
+    NSString* key = [self queryKey:query route:route collection:collection];
+    
+    __block NSArray* ids = [jsonArray valueForKeyPath:KCSEntityKeyId];
+    if (ids == nil || ids.count != jsonArray.count) {
+        //something went sideways
+        DBAssert(NO, @"Could not get an _id for all entities");
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Could not get an _id for all entities");
+        return nil;
+    }
+    
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+    NSMutableArray* objs = [NSMutableArray arrayWithCapacity:ids.count];
+    for (NSDictionary* entity in jsonArray) {
+        id<KCSPersistable> obj = [_dataModel objectFromCollection:collection data:entity];
+        [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache];
+        [objs addObject:obj];
+    }
+    
+    [_queryCache setObject:ids forKey:key];
     dispatch_sync(_cacheQueue, ^{
-        NSString* queryKey = [query keyString];
-        NSString* key = [self queryKey:query route:route collection:collection];
-        
-        NSArray* ids = [jsonArray valueForKeyPath:KCSEntityKeyId];
-        if (ids == nil || ids.count != jsonArray.count) {
-            //something went sideways
-            DBAssert(NO, @"Could not get an _id for all entities");
-            KCSLogError(KCS_LOG_CONTEXT_DATA, @"Could not get an _id for all entities");
-            return;
-        }
-        
-        NSCache* clnCache = [self cacheForRoute:route collection:collection];
-        NSMutableArray* objs = [NSMutableArray arrayWithCapacity:ids.count];
-        for (NSDictionary* entity in jsonArray) {
-            id<KCSPersistable> obj = [_dataModel objectFromCollection:collection data:entity];
-            [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache];
-            [objs addObject:obj];
-        }
-        
-        [_queryCache setObject:ids forKey:key];
         [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
-        
-        if (self.offlineUpdateEnabled) {
-            [_offline hadASucessfulConnection];
-        }
-        retVal = objs;
     });
+    
+    if (self.offlineUpdateEnabled) {
+        [_offline hadASucessfulConnection];
+    }
+    retVal = objs;
     return retVal;
+}
+
+- (BOOL) removeQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
+{
+    NSString* queryKey = [query keyString];
+    NSString* key = [self queryKey:query route:route collection:collection];
+    
+    [_queryCache removeObjectForKey:key];
+    
+    if (self.preCalculatesResults) {
+        //TODO: remove this query from the results calculations
+    }
+
+    __block BOOL removeSuccessful = NO;
+    dispatch_sync(_cacheQueue, ^{
+        removeSuccessful = [_persistenceLayer removeQuery:queryKey route:route collection:collection];
+    });
+    return removeSuccessful;
 }
 
 - (void) preCalculateQueries:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection
@@ -239,14 +277,15 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 #pragma mark - Saving
 - (void) updateObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection collectionCache:(NSCache*)clnCache
 {
-    Q_ASSERT
     [clnCache setObject:object forKey:entity[KCSEntityKeyId]];
-    [_persistenceLayer updateWithEntity:entity route:route collection:collection];
+    dispatch_sync(_cacheQueue, ^{
+        [_persistenceLayer updateWithEntity:entity route:route collection:collection];
+    });
     
     if (_preCalculatesResults == YES) {
         [self preCalculateQueries:entity route:route collection:collection];
     }
-
+    
 }
 
 - (void) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
@@ -315,25 +354,30 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 - (void) deleteObject:(NSString*)objId route:(NSString*)route collection:(NSString*)collection
 {
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+    [clnCache removeObjectForKey:objId];
     dispatch_sync(_cacheQueue, ^{
-        NSCache* clnCache = [self cacheForRoute:route collection:collection];
-        [clnCache removeObjectForKey:objId];
         [self.persistenceLayer removeEntity:objId route:route collection:collection];
-        
-        if (_preCalculatesResults == YES) {
-            [self preCalculateQueriesByRemoving:objId route:route collection:collection];
-        }
-        
-        if (self.offlineUpdateEnabled) {
-            //had a good save
-            [_offline hadASucessfulConnection];
-        }
     });
+    if (_preCalculatesResults == YES) {
+        [self preCalculateQueriesByRemoving:objId route:route collection:collection];
+    }
+    
+    if (self.offlineUpdateEnabled) {
+        //had a good save
+        [_offline hadASucessfulConnection];
+    }
+}
+
+- (void) deleteObjects:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection
+{
+    [ids enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [self deleteObject:obj route:route collection:collection];
+    }];
 }
 
 - (void) deleteByQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
-    Q_ASSERT
     if (self.preCalculatesResults) {
         //TODO: this
     }
@@ -386,12 +430,12 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 {
     dispatch_sync(_cacheQueue, ^{
         [_persistenceLayer clearCaches];
-        [_caches[KCSRESTRouteAppdata] removeAllObjects];
-        [_caches[KCSRESTRouteUser] removeAllObjects];
-        [_caches[KCSRESTRouteBlob] removeAllObjects];
-        [_caches removeAllObjects];
-        [_queryCache removeAllObjects];
     });
+    [_caches[KCSRESTRouteAppdata] removeAllObjects];
+    [_caches[KCSRESTRouteUser] removeAllObjects];
+    [_caches[KCSRESTRouteBlob] removeAllObjects];
+    [_caches removeAllObjects];
+    [_queryCache removeAllObjects];
 }
 
 @end

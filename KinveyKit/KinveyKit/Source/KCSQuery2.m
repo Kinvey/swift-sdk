@@ -162,7 +162,7 @@ id kcsPredToQueryExprVal(NSExpression* expr)
     
     NSMutableArray* sorts = [NSMutableArray arrayWithCapacity:query.sortModifiers.count];
     for (KCSQuerySortModifier* mod in query.sortModifiers) {
-        NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:mod.field ascending:sort.ascending == kKCSAscending];
+        NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:mod.field ascending:mod.direction == kKCSAscending];
         [sorts addObject:sort];
     }
     return q;

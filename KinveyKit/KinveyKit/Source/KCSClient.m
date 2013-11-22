@@ -33,7 +33,6 @@
 
 #import "KinveyVersion.h"
 
-#import "KCSEntityCache.h"
 #import "KCSClientConfiguration.h"
 #import "KCSHiddenMethods.h"
 #import "KCSBase64.h"
@@ -289,7 +288,6 @@
 - (void)clearCache
 {
     [[KCSAppdataStore caches] clear];
-    [KCSEntityCache clearAllCaches];
 }
 
 #pragma mark - KinveyKit 1.5
