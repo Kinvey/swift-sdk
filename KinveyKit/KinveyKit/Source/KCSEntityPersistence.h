@@ -26,6 +26,7 @@
 
 - (NSArray*)idsForQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection;
 - (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection;
+- (BOOL) removeQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection;
 
 - (BOOL) updateWithEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection;
 - (NSDictionary*) entityForId:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;

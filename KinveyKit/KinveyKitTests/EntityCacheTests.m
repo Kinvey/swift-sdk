@@ -86,7 +86,7 @@
 {
     KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
     NSArray* ids = @[@"1",@"2",@"3"];
-    NSString* query = @"abcdefg";
+    NSString* query = [NSString UUID];
     NSString* route = @"r";
     NSString* cln = @"c";
     BOOL u = [cache setIds:ids forQuery:query route:route collection:cln];
@@ -101,7 +101,7 @@
 {
     KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
     NSArray* ids = @[@"1",@"2",@"3"];
-    NSString* query = @"abcdefg";
+    NSString* query = [NSString UUID];
     NSString* route = @"r";
     NSString* cln = @"c";
     BOOL u = [cache setIds:ids forQuery:query route:route collection:cln];
@@ -114,6 +114,26 @@
     NSArray* loadedIds = [cache idsForQuery:query route:route collection:cln];
     STAssertNotNil(loadedIds, @"should have ids");
     STAssertEqualObjects(loadedIds, secondSet, @"should match");
+}
+
+- (void) testRemoveQueryFromPersistence
+{
+    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
+    NSArray* ids = @[@"1",@"2",@"3"];
+    NSString* query = [NSString UUID];
+    NSString* route = @"r";
+    NSString* cln = @"c";
+    BOOL u = [cache setIds:ids forQuery:query route:route collection:cln];
+    KTAssertU
+
+    NSArray* objs = [cache idsForQuery:query route:route collection:cln];
+    KTAssertCount(3, objs);
+    
+    u = [cache removeQuery:query route:route collection:cln];
+    KTAssertU
+    
+    objs = [cache idsForQuery:query route:route collection:cln];
+    STAssertNil(objs, @"should have no result");
 }
 
 - (NSArray*) jsonArray
@@ -167,7 +187,6 @@
     
 }
 
-
 #pragma mark - Cache
 - (void) testPullQueryGetsFromPersistence
 {
@@ -210,8 +229,240 @@
     [ocache clear];
 }
 
+- (void) testRemoveQueryFromCache
+{
+    NSArray* entities = [self jsonArray];
+    KCSObjectCache* ocache = [[KCSObjectCache alloc] init];
+    
+    KCSQuery* q = [KCSQuery query];
+    NSString* route = @"r";
+    NSString* cln = @"c";
+    NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
+    KTAssertCount(8, results);
+    
+    NSArray* preResults = [ocache pullQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
+    KTAssertCount(8, preResults);
+
+    BOOL u = [ocache removeQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
+    KTAssertU
+    
+    NSArray* postResults = [ocache pullQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
+    STAssertNil(postResults, @"should have no result");
+}
+
 - (void) testDelete
 {
     KTNIY
 }
+
+#pragma mark - Old Tests
+
+#warning REINSTATE TESTS
+#if NEVER
+
+- (KCSObjectCache*) cache
+{
+    return [[KCSObjectCache alloc] init];
+}
+
+- (void) testRoundTripQuery
+{
+    KCSObjectCache* cache = [self cache:nil];
+    
+    KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"sortOrder" inDirection:kKCSAscending]];
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.objId = @"1";
+    ASTTestClass* obj2 = [[ASTTestClass alloc] init];
+    obj2.objId = @"2";
+    [cache setResults:@[obj1, obj2] forQuery:query];
+    
+    KCSQuery* query2 = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    [query2 addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"sortOrder" inDirection:kKCSAscending]];
+    NSArray* results = [cache resultsForQuery:query2];
+    
+    STAssertTrue(results.count == 2, @"should have both objects");
+    STAssertTrue([results containsObject:obj1], @"should have item 1");
+    STAssertTrue([results containsObject:obj2], @"should have item 2");
+    
+}
+
+- (void) testRoundTripSingleId
+{
+    KCSObjectCache*cache = [self cache:nil];
+    
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.objId = @"1";
+    [cache addResult:obj1];
+    
+    id result = [cache objectForId:@"1"];
+    STAssertEqualObjects(result, obj1, @"should match");
+}
+
+- (void) testRoundTripArray
+{
+    KCSObjectCache* cache = [self cache:nil];
+    
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.objId = @"1";
+    ASTTestClass* obj2 = [[ASTTestClass alloc] init];
+    obj2.objId = @"2";
+    [cache addResults:@[obj1, obj2]];
+    
+    NSArray* results = [cache resultsForIds:@[@"1",@"2",@"3"]];
+    STAssertTrue(results.count == 2, @"should have both objects");
+    STAssertTrue([results containsObject:obj1], @"should have item 1");
+    STAssertTrue([results containsObject:obj2], @"should have item 2");
+}
+
+- (void) testUpdate
+{
+    KCSObjectCache* cache = [self cache:nil];
+    
+    KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.objId = @"1";
+    obj1.objCount = 10;
+    ASTTestClass* obj2 = [[ASTTestClass alloc] init];
+    obj2.objId = @"2";
+    
+    [cache setResults:@[obj1, obj2] forQuery:query];
+    
+    ASTTestClass* result = [cache objectForId:@"1"];
+    STAssertEquals(result.objCount, 10, @"should get back obj1");
+    
+    ASTTestClass* obj1Prime = [[ASTTestClass alloc] init];
+    obj1Prime.objId = @"1";
+    obj1Prime.objCount = 100;
+    [cache addResult:obj1Prime];
+    
+    NSArray* primeResults = [cache resultsForQuery:query];
+    STAssertTrue(primeResults.count == 2, @"should have both objects");
+    __block BOOL found = NO;
+    [primeResults enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        ASTTestClass* o = obj;
+        if ([o.objId isEqualToString:@"1"]) {
+            found = YES;
+            STAssertEquals(o.objCount, 100, @"should have been updated");
+        }
+    }];
+    STAssertTrue(found, @"Expecting obj1 to be in the results");
+}
+
+- (void) testById
+{
+    KCSObjectCache* cache = [self cache:nil];
+    
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.objId = @"1";
+    ASTTestClass* obj2 = [[ASTTestClass alloc] init];
+    obj2.objId = @"2";
+    [cache addResults:@[obj1,obj2]];
+    
+    NSArray* results = [cache resultsForIds:@[@"1",@"2"]];
+    STAssertTrue(results.count == 2, @"should have both objects");
+    STAssertTrue([results containsObject:obj1], @"should have item 1");
+    STAssertTrue([results containsObject:obj2], @"should have item 2");
+}
+
+
+- (void) testAddBySave
+{
+    NSLog(@"---------- starting");
+    
+    ASTTestClass* obj = [[ASTTestClass alloc] init];
+    obj.date = [NSDate date];
+    obj.objCount = 79000;
+    
+    //    KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
+    //    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{KCSStoreKeyUniqueOfflineSaveIdentifier : @"x0"}];
+    //
+    //    [store setReachable:NO];
+    
+    KCSObjectCache* cache = [self cache:nil];
+    [cache addUnsavedObject:obj];
+    
+    NSString* objId = obj.objId;
+    STAssertNotNil(objId, @"Should have objid assigned");
+    
+    id ret = [cache objectForId:objId];
+    STAssertEqualObjects(obj, ret, @"should get our object back");
+}
+
+//    self.done = NO;
+//    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertError(errorOrNil, KCSKinveyUnreachableError);
+//        NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
+//        STAssertEquals((NSUInteger)1, (NSUInteger) objs.count, @"should have one unsaved obj, from above");
+//        self.done = YES;
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        NSLog(@"%f", percentComplete);
+//    }];
+//
+//    [self poll];
+//}
+
+- (NSURL*) urlForDB:(NSString*)pid
+{
+    NSURL* url = nil;
+    url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.plist", pid]]];
+    //    url = [NSURL fileURLWithPath: [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:[NSString stringWithFormat:@"com.kinvey.%@_cache.sqllite", pid]]];
+    return url;
+}
+
+- (void) testClearCaches
+{
+    //setup peristence
+    id<KCSEntityCache> cache = [self cache:@"persistenceId"];
+    
+    KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.objId = @"1";
+    ASTTestClass* obj2 = [[ASTTestClass alloc] init];
+    obj2.objId = @"2";
+    [cache setResults:@[obj1, obj2] forQuery:query];
+    
+    NSURL* url = [self urlForDB:@"persistenceId"];
+    STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should have cache at %@", [url path]);
+    
+    [cache clearCaches];
+    
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should not have cache at %@", [url path]);
+    
+    KCSQuery* query2 = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    NSArray* results = [cache resultsForQuery:query2];
+    
+    STAssertEquals((int)results.count, (int)0, @"should not have any results after clearing cache");
+}
+
+- (void) testCacheClearasOnUserChange
+{
+    
+    id<KCSEntityCache> cache = [self cache:@"persistenceId"];
+    
+    KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.objId = @"1";
+    ASTTestClass* obj2 = [[ASTTestClass alloc] init];
+    obj2.objId = @"2";
+    [cache setResults:@[obj1, obj2] forQuery:query];
+    
+    NSURL* url = [self urlForDB:@"persistenceId"];
+    STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should have cache at %@", [url path]);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    [KCSClient sharedClient].currentUser = [[KCSUser alloc] init];
+#pragma clang diagnostic pop
+    
+    STAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[url path]], @"should not have cache at %@", [url path]);
+}
+
+#endif
+
+//test save updates query
+//test save new updates existing query
+//save by id, load by query
+//test persist
+//test removal
+
 @end

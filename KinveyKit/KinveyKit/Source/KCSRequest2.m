@@ -192,7 +192,7 @@ static NSOperationQueue* queue;
     NSMutableURLRequest* request = [self urlRequest];
     
     NSOperation<KCSNetworkOperation>* op = nil;
-    op.clientRequestId = [[NSUUID UUID] UUIDString];
+    op.clientRequestId = [NSString UUID];
     KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@ [KinveyKit id: '%@']", request.HTTPMethod, request.URL, op.clientRequestId);
     
     if (_useMock == YES) {

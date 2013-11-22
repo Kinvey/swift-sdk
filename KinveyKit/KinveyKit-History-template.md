@@ -11,6 +11,7 @@
     * __TODO__ q drains when: success operation, app foreground, reachabiliby, user cahnge
     * __TODO__ cached store KCSStoreKeyOfflineUpdateEnabled
     * __TODO__ returned ids is is id or query in delete case
+    * Removed caching of GROUP results. 
 * Minor Changes:
     * Saving an empty array now returns an empty array for `objectsOrNil` instead of of `nil`.
 * Code Cleanup:
