@@ -54,6 +54,7 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
 @property (nonatomic, weak) NSString* method;
 @property (nonatomic, copy) NSDictionary* headers;
 @property (nonatomic, copy) NSDictionary* body;
+@property (nonatomic, copy) NSString* queryString;
 
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;

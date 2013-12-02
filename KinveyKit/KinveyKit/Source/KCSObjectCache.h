@@ -20,10 +20,13 @@
 #import <Foundation/Foundation.h>
 
 @class KCSQuery2;
+@class KCSDataModel;
 @protocol KCSPersistable;
 @protocol KCSOfflineUpdateDelegate;
 
 @interface KCSObjectCache : NSObject
+
+@property (nonatomic, strong) KCSDataModel* dataModel;
 
 @property (atomic) BOOL preCalculatesResults;
 @property (atomic) BOOL updatesLocalWithUnconfirmedSaves;
@@ -33,7 +36,7 @@
 
 - (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 - (NSArray*) pullIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection;
-- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
+- (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 - (BOOL) removeQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 
 - (void) addObjects:(NSArray*)objects route:(NSString*)route  collection:(NSString*)collection;

@@ -31,6 +31,7 @@
 
 #import "KCSQuery2.h"
 #import "KCSRequest2.h"
+#import "KCSDataModel.h"
 
 #import "KCSHiddenMethods.h"
 #import "KCSReachability.h"
@@ -59,6 +60,7 @@ NSString* const KCSStoreKeyOfflineUpdateEnabled = @"offline.enabled";
 
     KCSCachePolicy cachePolicy = (options[KCSStoreKeyCachePolicy] == nil) ? [KCSCachedStore defaultCachePolicy] : [options[KCSStoreKeyCachePolicy] intValue];
     self.cachePolicy = cachePolicy;
+    [[[KCSAppdataStore caches] dataModel] setClass:self.backingCollection.objectTemplate forCollection:self.backingCollection.collectionName];
     
     self.offlineUpdateEnabled = [options[KCSStoreKeyOfflineUpdateEnabled] boolValue];
     
@@ -146,11 +148,11 @@ NSError* createCacheError(NSString* message)
     } withProgressBlock:progressBlock];
 }
 
-- (void) completeQuery:(id)obj withCompletionBlock:(KCSCompletionBlock)completionBlock
+- (void) completeQuery:(id)objs withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
-    dispatch_async(dispatch_get_current_queue(), ^{
-        NSError* error = (obj == nil) ? createCacheError(@"Query not in cache") : nil;
-        completionBlock(obj, error); 
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSError* error = (objs == nil) ? createCacheError(@"Query not in cache") : nil;
+        completionBlock(objs, error);
     });
 }
 

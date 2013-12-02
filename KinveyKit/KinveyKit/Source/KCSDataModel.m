@@ -41,7 +41,7 @@
 
 - (void) setClass:(Class)class forCollection:(NSString*)collection
 {
-    if (_collectionMap[collection] != nil) {
+    if (_collectionMap[collection] != nil && [_collectionMap[collection]  isEqual:class] == NO) {
         //TODO: make this robust - either ignore, overwrite, or make configurable
         NSAssert(NO, @"More than one class defined for a collection");
     }
@@ -50,6 +50,7 @@
 
 - (id<KCSPersistable>) objectFromCollection:(NSString*)collection data:(NSDictionary*)entity
 {
+    if (!entity) return nil;
     Class class = _collectionMap[collection];
     if (!class) {
         class = [NSMutableDictionary class];

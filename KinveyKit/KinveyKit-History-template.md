@@ -19,6 +19,7 @@
          * `[KCSUser userCollection]`; use `[KCSCollection userCollection]` instead.
          * `[KCSQuery queryForNilValueInField:]`; use exact match on `NSNull`, `queryForEmptyValueInField`, or `queryForEmptyOrNullValueInField` instead.
 * __TODO__ examine some more deprecations
+* Built with latest XCode, so should support arm64 architecture
 
 
 ## 1.22

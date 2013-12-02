@@ -25,4 +25,7 @@
 
 @property (nonatomic, copy) NSArray* sortDescriptors;
 
+- (NSString *)escapedQueryString;
+
+
 @end
