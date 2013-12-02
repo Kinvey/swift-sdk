@@ -11,7 +11,12 @@
     * __TODO__ q drains when: success operation, app foreground, reachabiliby, user cahnge
     * __TODO__ cached store KCSStoreKeyOfflineUpdateEnabled
     * __TODO__ returned ids is is id or query in delete case
+    * __TODO__ updates local with unconfirmed change
+    
     * Removed caching of GROUP results. 
+* Remove support for `NSRegularExpression` with queries, as well as disable regular expression options. Also any query that does not start with a "`^`" will throw an exception. 
+    * Removed `+ [KCSQuery  queryOnField:withRegex:options:]`.
+    * Removed `KCSRegexpQueryOptions`.
 * Minor Changes:
     * Saving an empty array now returns an empty array for `objectsOrNil` instead of of `nil`.
 * Code Cleanup:
@@ -19,7 +24,7 @@
          * `[KCSUser userCollection]`; use `[KCSCollection userCollection]` instead.
          * `[KCSQuery queryForNilValueInField:]`; use exact match on `NSNull`, `queryForEmptyValueInField`, or `queryForEmptyOrNullValueInField` instead.
 * __TODO__ examine some more deprecations
-* Built with latest XCode, so should support arm64 architecture
+* Built with latest XCode to support arm64 architecture
 
 
 ## 1.22

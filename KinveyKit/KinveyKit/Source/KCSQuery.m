@@ -427,41 +427,13 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 }
 
 #pragma mark - Creating Queries
-+ (KCSQuery *) queryOnField:(NSString*)field withRegex:(id)expression options:(KCSRegexpQueryOptions)options
++ (KCSQuery *)queryOnField:(NSString*)field withRegex:(NSString*)pattern
 {
-    if ([expression isKindOfClass:[NSRegularExpression class]]) {
-        expression = [expression pattern];
+    if ([pattern isKindOfClass:[NSString class]] == NO || [pattern hasPrefix:@"^"] == NO) {
+        [NSException exceptionWithName:NSInvalidArgumentException reason:@"Regex pattern must be a string starting with `^`." userInfo:nil];
     }
     
-    if (options == 0) {
-        return [self queryOnField:field usingConditional:kKCSRegex forValue:expression];
-    } else {
-        NSMutableString* optionsString = [NSMutableString string];
-        if (options & kKCSRegexpCaseInsensitive) {
-            [optionsString appendString:@"i"];
-        }
-        if (options & kKCSRegexpAllowCommentsAndWhitespace) {
-            [optionsString appendString:@"x"];
-        }
-        if (options & kKCSRegexpDotMatchesAll) {
-            [optionsString appendString:@"s"];
-        }
-        if (options & kKCSRegexpAnchorsMatchLines) {
-            [optionsString appendString:@"m"];
-        }
-        return [self queryOnField:field usingConditionalsForValues:kKCSRegex, expression, kKCSOptions, optionsString, nil];
-    }
-}
-
-+ (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression
-{
-    KCSRegexpQueryOptions options = kKCSRegexepDefault;
-    if ([expression isKindOfClass:[NSRegularExpression class]]) {
-        options = (KCSRegexpQueryOptions) [(NSRegularExpression*)expression options];
-        expression = [(NSRegularExpression*)expression pattern];
-    }
-    return [self queryOnField:field withRegex:expression options:options];
-    
+    return [self queryOnField:field usingConditional:kKCSRegex forValue:pattern];
 }
 
 + (KCSQuery *)queryOnField:(NSString *)field usingConditional:(KCSQueryConditional)conditional forValue: (NSObject *)value

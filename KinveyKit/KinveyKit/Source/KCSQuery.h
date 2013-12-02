@@ -61,16 +61,6 @@ typedef enum : NSInteger
     
 } KCSQueryConditional;
 
-/** Options for regular expression matching in queries */
-typedef enum  {
-    kKCSRegexepDefault = 0, /** Default Options */
-    kKCSRegexpCaseInsensitive = 1 << 0, /** Match letters in the pattern independent of case. */
-    kKCSRegexpAllowCommentsAndWhitespace  = 1 << 1, /** Ignore whitespace and #-prefixed comments in the pattern. */
-    kKCSRegexpDotMatchesAll = 1 << 3, /** Allow . to match all characters, including newlines */
-    kKCSRegexpAnchorsMatchLines = 1 << 4, /** Allow ^ and $ to match the start and end of lines. */
-} KCSRegexpQueryOptions;
-
-
 // DO NOT CHANGE THE VALUES IN THIS ENUM.  They're meaningful to the implementation of this class
 typedef enum {
     kKCSAscending = 1,
@@ -313,38 +303,18 @@ typedef enum {
  */
 + (instancetype)query;
 
-/*! Creates a regular expression query on a field, with options.
- 
-  This query will return entities where the field values match the regular expression. By default, the match is case-sensitive and new-lines do not match anchors.
- 
- Available options are (and can be or'ed together):
- 
- * `kKCSRegexepDefault` - Default Options
- * `kKCSRegexpCaseInsensitive` - Match letters in the pattern independent of case.
- * `kKCSRegexpAllowCommentsAndWhitespace` - Ignore whitespace and #-prefixed comments in the pattern.
- * `kKCSRegexpDotMatchesAll` - Allow . to match all characters, including newlines.
- * `kKCSRegexpAnchorsMatchLines` - Allow ^ and $ to match the start and end of lines.
- 
- @param field The field in Kinvey to query on.
- @param expression the regular expression string or `NSRegularExpression` object. 
- @param options regular expression options. This will override any options in a provided `NSRegularExpression` expression.
- @see queryOnField:withRegex:
- @return The new KCSQuery object (autoreleased).
- @since 1.8
- */
-+ (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression options:(KCSRegexpQueryOptions)options;
 
 /*! Creates a regular expression query on a field.
  
  This query will return entities where the field values match the regular expression. By default, the match is case-sensitive and new-lines do not match anchors. 
  
  @param field The field in Kinvey to query on.
- @param expression the regular expression string or `NSRegularExpression` object. If using a NSRegularExpression, this will its options, where available. 
- @see queryOnField:withRegex:options:
+ @param expression the regular expression string starting with `^`.
  @return The new KCSQuery object (autoreleased).
  @since 1.8
+ @updated 1.23.0
  */
-+ (KCSQuery *)queryOnField:(NSString*)field withRegex:(id)expression;
++ (KCSQuery *)queryOnField:(NSString*)field withRegex:(NSString*)pattern;
 
 /*! Copy factory
  
@@ -451,8 +421,6 @@ typedef enum {
  
  */
 - (KCSQuery *)queryByJoiningQuery: (KCSQuery *)query usingOperator: (KCSQueryConditional)joiningOperator;
-
-
 
 
 ///---------------------------------------------------------------------------------------
