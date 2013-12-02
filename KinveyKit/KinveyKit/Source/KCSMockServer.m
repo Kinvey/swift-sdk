@@ -66,7 +66,7 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
 
 #pragma mark - Responses
 
-- (KCSNetworkResponse*) make404
++ (KCSNetworkResponse*) make404
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 404;
@@ -79,7 +79,7 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
     return response;
 }
 
-- (KCSNetworkResponse*) make401
++ (KCSNetworkResponse*) make401
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 401;
@@ -92,7 +92,7 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
     return response;
 }
 
-- (KCSNetworkResponse*) makePingResponse
++ (KCSNetworkResponse*) makePingResponse
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 200;
@@ -103,7 +103,7 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
     return response;
 }
 
-- (KCSNetworkResponse*) makeReflectionResponse:(NSURLRequest*)request
++ (KCSNetworkResponse*) makeReflectionResponse:(NSURLRequest*)request
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 200;
@@ -114,10 +114,18 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
     return response;
 }
 
++ (KCSNetworkResponse*) makeDeleteResponse:(NSInteger)count
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 200;
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{@"count":@(count)} options:0 error:NULL];
+    return response;
+}
+
 - (KCSNetworkResponse*) responseForRequest:(NSURLRequest*)request
 {
     NSString* url = [request.URL absoluteString];
-    KCSNetworkResponse* response = [self make404];
+    KCSNetworkResponse* response = [KCSMockServer make404];
     
     url = [url stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
     NSArray* components = [url pathComponents];
@@ -127,11 +135,11 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
         NSString* route = components[2];
         NSString* kid = components[3];
         if (self.appKey != nil && [kid isEqualToString:self.appKey] == NO) {
-            return [self make401];
+            return [KCSMockServer make401];
         }
         
         if ([route isEqualToString:KCSRestRouteTestReflection]) {
-            return [self makeReflectionResponse:request];
+            return [KCSMockServer makeReflectionResponse:request];
         }
   
         if (components.count > 4) {
@@ -162,7 +170,7 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
                         //TODO this will add to the collection, but should be added to the _id under the collection
                         d[components[components.count-1]] = getresponse;
                         
-                        response = [self makeReflectionResponse:request];
+                        response = [KCSMockServer makeReflectionResponse:request];
                         response.code = [method isEqualToString:KCSRESTMethodPOST] ? 201 : 200;
                     }
                 }
@@ -181,13 +189,13 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
                     }
                     dictionary[components[components.count-1]] = getresponse;
 
-                    response = [self makeReflectionResponse:request];
+                    response = [KCSMockServer makeReflectionResponse:request];
                     response.code = [method isEqualToString:KCSRESTMethodPOST] ? 201 : 200;
                 }
             }
         } else {
             if ([route isEqualToString:KCSRESTRouteAppdata]) {
-                return [self makePingResponse];
+                return [KCSMockServer makePingResponse];
             }
         }
         

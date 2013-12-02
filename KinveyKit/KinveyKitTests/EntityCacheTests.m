@@ -252,8 +252,45 @@
 
 - (void) testDelete
 {
-    KTNIY
+    KCSObjectCache* ocache = [[KCSObjectCache alloc] init];
+    NSArray* entities = @[@{@"_id":@"X",@"a":@1}];
+    KCSQuery* q = [KCSQuery query];
+    KCSQuery2* q2 = [KCSQuery2 queryWithQuery1:q];
+    NSString* route = @"R";
+    NSString* collection = @"zfasdf";
+    NSArray* a = [ocache setObjects:entities forQuery:q2 route:route collection:collection];
+    KTAssertCount(1, a);
+    
+    NSArray* preResults = [ocache pullQuery:q2 route:route collection:collection];
+    KTAssertCount(1, preResults);
+
+    [ocache deleteObject:@"X" route:route collection:collection];
+    
+    NSArray* idResults = [ocache pullIds:@[@"X"] route:route collection:collection];
+    KTAssertCount(0, idResults);
+    
+    NSArray* postResults = [ocache pullQuery:q2 route:route collection:collection];
+    KTAssertCount(0, postResults);
+    
+    [ocache clear];
 }
+
+- (void) testDeleteQuery
+{
+    KCSObjectCache* ocache = [[KCSObjectCache alloc] init];
+    ocache.offlineUpdateEnabled = YES;
+    
+    KCSQuery* q = [KCSQuery query];
+    KCSQuery2* q2 = [KCSQuery2 queryWithQuery1:q];
+    NSString* route = @"R";
+    NSString* collection = @"zfasdf";
+    
+    KCSQuery2* qAfter = [ocache addUnsavedDeleteQuery:q2 route:route collection:collection method:@"DELETE" headers:@{} error:nil];
+    STAssertNotNil(qAfter, @"");
+
+    [ocache clear];
+}
+
 
 #pragma mark - Old Tests
 

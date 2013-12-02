@@ -26,9 +26,6 @@
 #import "KCSEntityPersistence.h"
 #import "KCSOfflineUpdate.h"
 
-#define Q_ASSERT DBAssert(dispatch_get_current_queue() == _cacheQueue, @"should be on cache queue");
-
-
 //TODO: util this?
 NSString* kinveyObjectIdHostProperty(id<KCSPersistable>obj)
 {
@@ -65,7 +62,6 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 @property (nonatomic, strong) KCSOfflineUpdate* offline;
 @property (nonatomic, strong) NSMutableDictionary* caches;
 @property (nonatomic, strong) NSCache* queryCache;
-@property (nonatomic, strong) KCSDataModel* dataModel;
 @property (atomic) dispatch_queue_t cacheQueue;
 @end
 
@@ -160,10 +156,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     NSCache* cache = [self cacheForRoute:route collection:collection];
     for (NSString* _id in ids) {
         id obj = [self objectForId:_id cache:cache route:route collection:collection];
-        if (!obj) {
-            obj = [NSNull null];
+        if (obj) {
+            [objs addObject:obj];
         }
-        [objs addObject:obj];
     }
     return objs;
 }
@@ -210,38 +205,43 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
         [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache];
     }];
 }
+#warning TODO 2013-11-22 16:46:55.036 KitchenSink[952:60b] KCSAppdataStore.m:102 [ERROR] Error parsing partial progress reults: Illegal start of token [A]
 
-- (NSArray*) setObjects:(NSArray*)jsonArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
+
+- (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
     NSArray* retVal = nil;
     NSString* queryKey = [query keyString];
     NSString* key = [self queryKey:query route:route collection:collection];
     
-    __block NSArray* ids = [jsonArray valueForKeyPath:KCSEntityKeyId];
-    if (ids == nil || ids.count != jsonArray.count) {
-        //something went sideways
-        DBAssert(NO, @"Could not get an _id for all entities");
-        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Could not get an _id for all entities");
-        return nil;
+    if ([objArray count] > 0) {
+        NSString* keyPath = [objArray[0] kinveyObjectIdHostProperty];
+        __block NSArray* ids = [objArray valueForKeyPath:keyPath];
+        if (ids == nil || ids.count != objArray.count) {
+            //something went sideways
+            DBAssert(NO, @"Could not get an _id for all entities");
+            KCSLogError(KCS_LOG_CONTEXT_DATA, @"Could not get an _id for all entities");
+            return nil;
+        }
+        
+        NSCache* clnCache = [self cacheForRoute:route collection:collection];
+        NSMutableArray* objs = [NSMutableArray arrayWithCapacity:ids.count];
+        for (id<KCSPersistable> obj in objArray) {
+            NSDictionary* entity = [_dataModel jsonEntityForObject:obj route:route collection:collection];
+            [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache];
+            [objs addObject:obj];
+        }
+        
+        [_queryCache setObject:ids forKey:key];
+        dispatch_sync(_cacheQueue, ^{
+            [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
+        });
+        retVal = objs;
     }
-    
-    NSCache* clnCache = [self cacheForRoute:route collection:collection];
-    NSMutableArray* objs = [NSMutableArray arrayWithCapacity:ids.count];
-    for (NSDictionary* entity in jsonArray) {
-        id<KCSPersistable> obj = [_dataModel objectFromCollection:collection data:entity];
-        [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache];
-        [objs addObject:obj];
-    }
-    
-    [_queryCache setObject:ids forKey:key];
-    dispatch_sync(_cacheQueue, ^{
-        [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
-    });
     
     if (self.offlineUpdateEnabled) {
         [_offline hadASucessfulConnection];
     }
-    retVal = objs;
     return retVal;
 }
 
@@ -408,7 +408,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     __block BOOL added = NO;
     dispatch_sync(_cacheQueue, ^{
         if (self.offlineUpdateEnabled == YES) {
-            added = [self.offline removeObject:deleteQuery objKey:[deleteQuery keyString] route:route collection:collection headers:headers method:method error:error];
+            added = [self.offline removeObject:deleteQuery objKey:[deleteQuery escapedQueryString] route:route collection:collection headers:headers method:method error:error];
         }
         
         if (_updatesLocalWithUnconfirmedSaves == YES) {

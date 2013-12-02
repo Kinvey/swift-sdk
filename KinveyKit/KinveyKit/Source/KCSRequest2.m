@@ -130,6 +130,9 @@ static NSOperationQueue* queue;
     
     NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
     NSString* urlStr = [path componentsJoinedByString:@"/"];
+    if (self.queryString) {
+        urlStr = [urlStr stringByAppendingString:self.queryString];
+    }
     NSString* endpoint = [baseURL stringByAppendingString:urlStr];
 
     return endpoint;
@@ -308,5 +311,12 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
     }];
 }
 
+
+#pragma mark - Debug
+
+- (NSString *)debugDescription
+{
+    return [NSString stringWithFormat:@"%@ [%@]", [super debugDescription], [self finalURL]];
+}
 
 @end

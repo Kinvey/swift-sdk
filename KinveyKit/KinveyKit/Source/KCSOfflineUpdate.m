@@ -1,4 +1,4 @@
-//
+  //
 //  KCSOfflineUpdate.m
 //  KinveyKit
 //
@@ -30,7 +30,7 @@
 @interface KCSOfflineUpdate ()
 @property (nonatomic, weak) KCSEntityPersistence* persitence;
 @property (nonatomic, weak) KCSObjectCache* cache;
-
+@property (atomic) BOOL drainInProgress;
 @end
 
 @implementation KCSOfflineUpdate
@@ -100,16 +100,18 @@
 
 - (void) drainQueue
 {
-    if (_delegate && [KCSUser activeUser] != nil) {
+    if (_delegate && [KCSUser activeUser] != nil && self.drainInProgress == NO) {
+        self.drainInProgress = YES;
         NSArray* unsavedEntities = [self.persitence unsavedEntities];
         for (NSDictionary* d in unsavedEntities) {
-             NSString* method = d[@"method"];
+            NSString* method = d[@"method"];
             if ([method isEqualToString:KCSRESTMethodDELETE]) {
                 [self processDelete:d];
             } else {
                 [self processSave:d];
             }
         }
+        self.drainInProgress = NO;
     }
 }
 
@@ -223,7 +225,7 @@
 - (void) delete:(NSString*)objId entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method
 {
     DELEGATEMETHOD(willDeleteObject:inCollection:) {
-        [_delegate willDeleteObject:entity[KCSEntityKeyId] inCollection:collection];
+        [_delegate willDeleteObject:objId inCollection:collection];
     }
     
     id credentials = [KCSUser activeUser];
@@ -248,11 +250,17 @@
                                                         route:route
                                                       options:options
                                                   credentials:credentials];
-    request.path = @[collection, objId];
+    if ([objId hasPrefix:@"?"]) {
+        //is a query delete
+        request.path = @[collection];
+        request.queryString = objId;
+    } else {
+        request.path = @[collection, objId];
+    }
 
     request.method = method;
     request.headers = headers;
-    request.body = entity;
+    request.body = @{};
     [request start];
 }
 
@@ -260,18 +268,29 @@
 - (NSString*) addObject:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection headers:(NSDictionary*)headers method:(NSString*)method error:(NSError*)error
 {
     BOOL shouldEnqueue = YES;
+    NSString* _id = [entity isKindOfClass:[NSString class]] ? entity : entity[KCSEntityKeyId];
     DELEGATEMETHOD(shouldEnqueueObject:inCollection:onError:) { //TODO: test
-        shouldEnqueue = [_delegate shouldEnqueueObject:entity[KCSEntityKeyId] inCollection:collection onError:error];
+        shouldEnqueue = [_delegate shouldEnqueueObject:_id inCollection:collection onError:error];
     }
     
     NSString* newid = nil;
     if (shouldEnqueue) {
-        newid = [self.persitence addUnsavedEntity:entity route:route collection:collection method:method headers:headers];
-        if (newid != nil) {
-            DELEGATEMETHOD(didEnqueueObject:inCollection:) {
-                [_delegate didEnqueueObject:newid inCollection:collection];
+        if ([method isEqualToString:KCSRESTMethodDELETE]) {
+            BOOL added = [self.persitence addUnsavedDelete:_id route:route collection:collection method:method headers:headers];
+            if (added) {
+                DELEGATEMETHOD(didEnqueueObject:inCollection:) {
+                    [_delegate didEnqueueObject:_id inCollection:collection];
+                }
+            }
+        } else {
+            newid = [self.persitence addUnsavedEntity:entity route:route collection:collection method:method headers:headers];
+            if (newid != nil) {
+                DELEGATEMETHOD(didEnqueueObject:inCollection:) {
+                    [_delegate didEnqueueObject:newid inCollection:collection];
+                }
             }
         }
+       
     }
     return newid;
 }
@@ -288,7 +307,7 @@
         added = [self.persitence addUnsavedDelete:key route:route collection:collection method:method headers:headers];
         if (added) {
             DELEGATEMETHOD(didEnqueueObject:inCollection:) {
-                [_delegate didEnqueueObject:object inCollection:collection];
+                [_delegate didEnqueueObject:key inCollection:collection];
             }
         }
     }

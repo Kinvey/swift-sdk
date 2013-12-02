@@ -137,7 +137,7 @@ id kcsPredToQueryExprVal(NSExpression* expr)
 
 - (NSString*) queryString:(BOOL)escape
 {
-    NSString* query =  [NSString stringWithFormat:@"query=%@", escape ? [_internalRepresentation escapedJSON] : [_internalRepresentation JSONRepresentation]];
+    NSString* query =  [NSString stringWithFormat:@"?query=%@", escape ? [_internalRepresentation escapedJSON] : [_internalRepresentation JSONRepresentation]];
     query = [query stringByAppendingString:[self sortString:escape]];
     return query;
 }

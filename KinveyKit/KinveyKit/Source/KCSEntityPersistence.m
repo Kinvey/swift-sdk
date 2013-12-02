@@ -420,7 +420,7 @@
 
 - (NSString*) addUnsavedEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers
 {
-    NSString* _id = entity[KCSEntityKeyId];
+    NSString* _id = [entity isKindOfClass:[NSString class]] ? entity : entity[KCSEntityKeyId];
     if (_id == nil) {
         KCSLogInfo(KCS_LOG_CONTEXT_DATA, @"nil `_id` in %@. Adding local id.", entity);
         _id = [KCSDBTools KCSMongoObjectId];
@@ -431,13 +431,13 @@
     NSString* entityStr = [self.jsonWriter stringWithObject:entity error:&error];
     if (error != nil) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", entity);
-        DBAssert(YES, @"No object");
+        DBAssert(NO, @"No object");
     }
 
     NSString* headerStr = [self.jsonWriter stringWithObject:headers error:&error];
     if (error != nil) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", headers);
-        DBAssert(YES, @"No object");
+        DBAssert(NO, @"No object");
     }
     
     NSString* routeKey = [self tableForRoute:route collection:collection];
@@ -465,7 +465,7 @@
     NSString* headerStr = [self.jsonWriter stringWithObject:headers error:&error];
     if (error != nil) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", headers);
-        DBAssert(YES, @"No object");
+        DBAssert(NO, @"No object");
     }
     
     NSString* routeKey = [self tableForRoute:route collection:collection];
@@ -510,6 +510,7 @@
         NSDictionary* d = [results resultDictionary];
         if (d) {
             NSDictionary* obj = [self dictObjForJson:d[@"obj"]];
+            if (!obj) obj = d[@"obj"];
             NSDictionary* headers = [self dictObjForJson:d[@"headers"]];
             NSString* routeKey = d[@"routeKey"];
             NSArray* routes = [routeKey componentsSeparatedByString:@"_"];

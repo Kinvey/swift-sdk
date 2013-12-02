@@ -30,6 +30,9 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
 @property (nonatomic, retain) NSString* appKey;
 @property (nonatomic) BOOL offline;
 
++ (KCSNetworkResponse*) makeDeleteResponse:(NSInteger)count;
+
+
 - (KCSNetworkResponse*) responseForRequest:(NSURLRequest*)request;
 - (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route;
 

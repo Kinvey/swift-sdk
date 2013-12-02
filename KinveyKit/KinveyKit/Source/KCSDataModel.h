@@ -23,6 +23,8 @@
 
 @interface KCSDataModel : NSObject
 
+- (void) setClass:(Class)class forCollection:(NSString*)collection;
+
 //internal
 - (id<KCSPersistable>) objectFromCollection:(NSString*)collection data:(NSDictionary*)entity;
 - (void) updateObject:(id<KCSPersistable>)object withEntity:(NSDictionary*)entity atRoute:(NSString*)route collection:(NSString*)collection;
