@@ -30,6 +30,7 @@
 #import "KCS_SBJson.h"
 #import "KCSBase64.h"
 #import "KCSRESTRequest.h"
+#import "KCSClientConfiguration.h"
 
 // This is in Seconds!
 #define KCS_RETRY_DELAY 0.05

@@ -207,7 +207,6 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 }
 #warning TODO 2013-11-22 16:46:55.036 KitchenSink[952:60b] KCSAppdataStore.m:102 [ERROR] Error parsing partial progress reults: Illegal start of token [A]
 
-
 - (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
     NSArray* retVal = nil;

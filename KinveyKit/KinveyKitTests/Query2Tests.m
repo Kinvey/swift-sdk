@@ -43,10 +43,26 @@
 - (void)testPredicateBasic
 {
     NSPredicate* basicPredicate = [NSPredicate predicateWithFormat:@"foo=X"];
-    KCSQuery2* query = [KCSQuery2 queryWithPredicate:basicPredicate error:NULL];
+    NSError* error = nil;
+    KCSQuery2* query = [KCSQuery2 queryWithPredicate:basicPredicate error:&error];
     
+    KTAssertNoError
     STAssertNotNil(query, @"should be valid");
-    STAssertEqualObjects([query queryString:NO], @"query={\"foo\":\"X\"}", @"basic");
+    STAssertEqualObjects([query queryString:NO], @"?query={\"foo\":\"X\"}", @"basic");
+    
+    basicPredicate = [NSPredicate predicateWithFormat:@"foo < X"];
+    query = [KCSQuery2 queryWithPredicate:basicPredicate error:&error];
+    
+    KTAssertNoError
+    STAssertNotNil(query, @"should be valid");
+    STAssertEqualObjects([query queryString:NO], @"?query={\"foo\":{\"$lt\":\"X\"}}", @"basic");
+    
+    basicPredicate = [NSPredicate predicateWithFormat:@"foo <= X"];
+    query = [KCSQuery2 queryWithPredicate:basicPredicate error:&error];
+    
+    KTAssertNoError
+    STAssertNotNil(query, @"should be valid");
+    STAssertEqualObjects([query queryString:NO], @"?query={\"foo\":{\"$lte\":\"X\"}}", @"basic");
 }
 
 - (void)testSorts

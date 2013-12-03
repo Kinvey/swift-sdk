@@ -32,6 +32,7 @@
 #define kHeaderClientMethod    @"X-Kinvey-Client-Method"
 #define kHeaderDeviceInfo      @"X-Kinvey-Device-Information"
 #define kHeaderResponseWrapper @"X-Kinvey-ResponseWrapper"
+#define kHeaderBypassBL        @"x-kinvey-skip-business-logic"
 
 #define kHeaderValueJson @"application/json"
 
@@ -159,7 +160,7 @@ static NSOperationQueue* queue;
     headers[kHeaderDeviceInfo] = [KCSPlatformUtils platformString];
     headers[kHeaderResponseWrapper] = @"true";
     setIfValNotNil(headers[kHeaderClientMethod], self.options[KCSRequestOptionClientMethod]);
-    
+
     [headers addEntriesFromDictionary:self.headers];
     
     headers[kHeaderDate] = getLogDate3(); //always update date

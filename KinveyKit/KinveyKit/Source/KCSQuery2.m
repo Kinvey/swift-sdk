@@ -21,6 +21,39 @@
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 
+#define BadPredicate()  if (error != NULL) { \
+                             *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSqueryPredicateNotSupportedError userInfo:nil]; \
+                        }
+
+typedef enum KCSQueryOperation : NSInteger {
+    KCSQueryLessThan = 16,
+    KCSQueryLessThanOrEqual = 17,
+    KCSQueryGreaterThan = 18,
+    KCSQueryGreaterThanOrEqual = 19,
+} KCSQueryOperation;
+
+NSString* kcsQueryOperatorString(KCSQueryOperation op)
+{
+    NSString* operator = nil;
+    switch (op) {
+        case KCSQueryLessThan:
+            operator = @"$lt";
+            break;
+        case KCSQueryLessThanOrEqual:
+            operator = @"lte";
+            break;
+        case KCSQueryGreaterThan:
+            operator = @"gt";
+            break;
+        case KCSQueryGreaterThanOrEqual:
+            operator = @"gte";
+            break;
+        default:
+            break;
+    }
+    return operator;
+}
+
 @interface KCSQuery2 ()
 @property (nonatomic, retain) NSMutableDictionary* internalRepresentation;
 @property (nonatomic, retain) NSMutableArray* mySortDescriptors;
@@ -50,6 +83,14 @@
     return query;
 }
 
++ (instancetype) queryOnField:(NSString*)field operator:(KCSQueryOperation)operation toValue:(id)value
+{
+    KCSQuery2* query = [[KCSQuery2 alloc] init];
+    NSString* operator = kcsQueryOperatorString(operation);
+    query.internalRepresentation = [@{field:@{operator : value}} mutableCopy];
+    return query;
+}
+
 #pragma mark - predicates
 NSString* kcsPredToQueryStrForKeyPath(NSExpression* expr)
 {
@@ -75,23 +116,39 @@ id kcsPredToQueryExprVal(NSExpression* expr)
             NSExpression* lhs = [cpredicate leftExpression];
             NSExpression* rhs = [cpredicate rightExpression];
             NSPredicateOperatorType type = [cpredicate predicateOperatorType];
-            if (type == NSEqualToPredicateOperatorType) {
-                id field = kcsPredToQueryExprVal(lhs);
-                id val = kcsPredToQueryExprVal(rhs);
-                if (field != nil && val != nil) {
-                    query = [self queryMatchField:field toValue:val];
-                } else {
-                    //TODO: error
+            
+            id field = kcsPredToQueryExprVal(lhs);
+            id val = kcsPredToQueryExprVal(rhs);
+            if (field != nil && val != nil) {
+                switch (type) {
+                    case NSLessThanPredicateOperatorType:
+                        query = [self queryOnField:field operator:KCSQueryLessThan toValue:val];
+                        break;
+                    case NSLessThanOrEqualToPredicateOperatorType:
+                        query = [self queryOnField:field operator:KCSQueryLessThanOrEqual toValue:val];
+                        break;
+                    case NSGreaterThanPredicateOperatorType:
+                        query = [self queryOnField:field operator:KCSQueryGreaterThan toValue:val];
+                        break;
+                    case NSGreaterThanOrEqualToPredicateOperatorType:
+                        query = [self queryOnField:field operator:KCSQueryGreaterThanOrEqual toValue:val];
+                        break;
+                    case NSEqualToPredicateOperatorType:
+                        query = [self queryMatchField:field toValue:val];
+                        break;
+                    default:
+                        break;
                 }
-            } else {
-                //TODO: error
             }
         } else {
-            //TODO: ERROR
+            //other kinds of preditcate modifiers
+            BadPredicate()
         }
     } else {
-        //TODO: error
+        //other kinds of predicate classes
+        BadPredicate()
     }
+    if (query == nil) BadPredicate()
     return query;
 }
 
