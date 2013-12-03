@@ -4,17 +4,24 @@
 ### 1.23.0
 ** Release Date:** TBA
 
-* Major Caching Update & Bug Fix:
-    * Offline Save is now Offline Update - supports both saving and deleting
-    * __TODO__ removed offline save store, things are now global - need to set offlineupdatedelegate
-    * __TODO__ doc offlineupdate delegate, kcslcient addition - will not enqueue unless there is a delegeate; will not send w/o user but will enqueue for user creation
-    * __TODO__ q drains when: success operation, app foreground, reachabiliby, user cahnge
-    * __TODO__ cached store KCSStoreKeyOfflineUpdateEnabled
-    * __TODO__ returned ids is is id or query in delete case
-    * __TODO__ updates local with unconfirmed change
-    
+* [Major Caching Update & Bug Fix](http://devcenter.kinvey.com/ios/guides/caching-offline):
+    * Offline Save is now Offline Update - supports both saving and deleting.
+    * To enable offline updates, `KCSClient` needs a global implementation of `KCSOfflineUpdateDelegate` as well as each participating `KCSCachedStore` needs to enable the `KCSStoreKeyOfflineUpdateEnabled` option. <br/> E.g.:
+
+            id<KCSOfflineUpdateDelegate> myDelegate = [[ImplementingClass alloc] init];
+            [[KCSClient sharedClient] setOfflineDelegate:myDelegate];
+
+
+            KCSCachedStore* store = [KCSCachedStore storeWithOptions:@{
+                                         KCSStoreKeyCollectionName : @"Events",
+                                         KCSStoreKeyCollectionTemplateClass : [Event class],
+                                         KCSStoreKeyCachePolicy : @(KCSCachePolicyNone),
+                                         KCSStoreKeyOfflineUpdateEnabled : @YES}];    
+
+    * Removed `KCSOfflineSaveStore` protocol from `KCSCachedStore`. Now just enable with the above option.
+    * When using a cache policy that reads locally, the cache is updated if an object is saved or deleted locally, even if the app is offline. 
     * Removed caching of GROUP results. 
-* Remove support for `NSRegularExpression` with queries, as well as disable regular expression options. Also any query that does not start with a "`^`" will throw an exception. 
+* Remove support for `NSRegularExpression` with queries, as well as disable regular expression options. Also any query that does _not_ start with a "`^`" will throw an exception. 
     * Removed `+ [KCSQuery  queryOnField:withRegex:options:]`.
     * Removed `KCSRegexpQueryOptions`.
 * Minor Changes:
@@ -23,7 +30,6 @@
     * Removed deprecated methods/classes:
          * `[KCSUser userCollection]`; use `[KCSCollection userCollection]` instead.
          * `[KCSQuery queryForNilValueInField:]`; use exact match on `NSNull`, `queryForEmptyValueInField`, or `queryForEmptyOrNullValueInField` instead.
-* __TODO__ examine some more deprecations
 * Built with latest XCode to support arm64 architecture
 
 

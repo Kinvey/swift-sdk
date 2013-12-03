@@ -209,8 +209,8 @@
     
     
     BOOL shouldDelete = YES;
-    DELEGATEMETHOD(shouldDeleteObject:inCollection:lastAttemptedSaveTime:) {
-        shouldDelete = [_delegate shouldDeleteObject:objId inCollection:collection lastAttemptedSaveTime:lastSaveTime];
+    DELEGATEMETHOD(shouldDeleteObject:inCollection:lastAttemptedDeleteTime:) {
+        shouldDelete = [_delegate shouldDeleteObject:objId inCollection:collection lastAttemptedDeleteTime:lastSaveTime];
     }
     if (shouldDelete == YES) {
         NSDictionary* entity = saveInfo[@"obj"];
