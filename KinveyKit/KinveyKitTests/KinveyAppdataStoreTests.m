@@ -93,15 +93,6 @@
     [self poll];
 }
 
-- (void)testQuery
-{
-    
-}
-
-- (void)testQueryAll
-{
-    
-}
 
 NSString* largeStringOfSize(int size) 
 {
@@ -228,17 +219,17 @@ NSArray* largeArray()
     [self poll];
 }
 
-
-- (void)testConfigure
+- (void) testBlErrors
 {
-    
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"bl-errors" ofClass:[NSMutableDictionary class]] options:@{}];
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNotNil(errorOrNil, @"should have an error");
+        KTAssertEqualsInt(errorOrNil.code, 550, @"should be a 550");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
-
-- (void)testAuth
-{
-    
-}
-
 
 - (ASTTestClass*)makeObject:(NSString*)desc count:(int)count
 {

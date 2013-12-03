@@ -18,6 +18,10 @@
 
 @class KCSQuery;
 
+typedef enum KCSQueryErrors : NSInteger {
+    KCSqueryPredicateNotSupportedError = -3000
+    } KCSQueryErrors;
+
 @interface KCSQuery2 : NSObject
 
 + (instancetype) queryWithPredicate:(NSPredicate*)predicate error:(NSError**)error;

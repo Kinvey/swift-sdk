@@ -24,7 +24,7 @@ KCS_CONSTANT KCS_LOG_LEVEL;
 KCS_CONSTANT KCS_LOG_ADDITIONAL_LOGGERS;
 KCS_CONSTANT KCS_CONFIG_RETRY_DISABLED;
 
-
+#define KCSConfigValueBOOL(key) [KCSClient2 sharedClient].configuration.options[key] != nil && [[KCSClient2 sharedClient].configuration.options[key] boolValue]
 
 @interface KCSClientConfiguration (KCSInternal)
 

@@ -160,7 +160,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     NSDictionary* opts = @{KCS_TWITTER_CLIENT_SECRET : @"rLUxyvve0neLqO8P8pWY6S8fOToXtL7qcNzxNMaUSA",
                            KCS_TWITTER_CLIENT_KEY : @"5sCifD1tKCjA6zQD5jE6A",
                            KCS_FACEBOOK_APP_KEY: @"432021153527854"};
-    if (YES) {
+    if (NO) {
         [self initStaging:opts];
     } else {
         [self initProduction:opts];
