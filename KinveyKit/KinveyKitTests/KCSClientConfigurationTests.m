@@ -23,6 +23,8 @@
 
 #import "KCSClientConfiguration.h"
 #import "KCSClient.h"
+#import "KCSKeyChain.h"
+#import "KinveyUser.h"
 
 @interface KCSClientConfigurationTests : SenTestCase
 
@@ -79,6 +81,31 @@
 {
     KCSClientConfiguration* badConfig = [KCSClientConfiguration new];
     STAssertThrows([[KCSClient sharedClient] initializeWithConfiguration:badConfig], @"throws");
+}
+
+- (void) testKeyChangesClearsUser
+{
+    KCSClientConfiguration* c1 = [KCSClientConfiguration configurationWithAppKey:@"1" secret:@"1"];
+    [[KCSClient sharedClient] initializeWithConfiguration:c1];
+    
+    NSString* ak1 = [KCSKeyChain getStringForKey:@"com.kinvey.kinveykit.appkey"];
+    STAssertNotNil(ak1, @"should have a key");
+    
+    KCSUser* u = [[KCSUser alloc] init];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    [KCSClient sharedClient].currentUser = u;
+#pragma clang diagnostic pop
+    STAssertNotNil([KCSUser  activeUser], @"should have a user");
+    
+    KCSClientConfiguration* c2 = [KCSClientConfiguration configurationWithAppKey:@"2" secret:@"2"];
+    [[KCSClient sharedClient] initializeWithConfiguration:c2];
+    
+    NSString* ak2 = [KCSKeyChain getStringForKey:@"com.kinvey.kinveykit.appkey"];
+    STAssertNotNil(ak2, @"should have a key");
+    STAssertFalse([ak1 isEqualToString:ak2], @"should change");
+    
+    STAssertNil([KCSUser  activeUser], @"user should be cleared");
 }
 
 @end

@@ -5,11 +5,26 @@
 //  Created by Michael Katz on 6/25/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSMetadata.h"
 #import "NSDate+ISO8601.h"
 #import "KCSClient.h"
 #import "KinveyUser.h"
+#import "KCSLogManager.h"
+
+#define KCS_CONST_IMPL NSString* const
 
 #define kKMDLMTKey @"lmt"
 #define kKMDECTKey @"ect"
@@ -19,9 +34,9 @@
 #define kACLGlobalReadKey @"gr"
 #define kACLGlobalWriteKey @"gw"
 
-NSString* KCSMetadataFieldCreator = @"_acl.creator";
-NSString* KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
-NSString* KCSMetadataFieldCreationTime = @"_kmd.ect";
+KCS_CONST_IMPL KCSMetadataFieldCreator = @"_acl.creator";
+KCS_CONST_IMPL KCSMetadataFieldLastModifiedTime = @"_kmd.lmt";
+KCS_CONST_IMPL KCSMetadataFieldCreationTime = @"_kmd.ect";
 
 @interface KCSUser ()
 - (NSString*) userId;
@@ -46,7 +61,7 @@ NSString* KCSMetadataFieldCreationTime = @"_kmd.ect";
 
 - (instancetype) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)pACL
 {
-    self = [super init];
+    self = [self init];
     if (self) {
         NSString* lmt = [kmd objectForKey:kKMDLMTKey];
         _lastModifiedTime = [NSDate dateFromISO8601EncodedString:lmt];
@@ -65,6 +80,67 @@ NSString* KCSMetadataFieldCreationTime = @"_kmd.ect";
     }
     return self;
 }
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    KCSMetadata* metadata = [[KCSMetadata allocWithZone:zone] init];
+    if (metadata) {
+        [metadata.acl addEntriesFromDictionary:_acl];
+        metadata->_creationTime = [_creationTime copyWithZone:zone];
+        metadata->_lastModifiedTime = [_lastModifiedTime copyWithZone:zone];
+        [metadata.writers addObjectsFromArray:self.writers];
+        [metadata.readers addObjectsFromArray:self.readers];
+    }
+    return metadata;
+}
+
+- (NSDictionary*) kmdDict
+{
+    NSDictionary* kmd;
+    if (_creationTime) {
+        kmd = @{kKMDECTKey : [_creationTime stringWithISO8601Encoding], kKMDLMTKey : [_lastModifiedTime stringWithISO8601Encoding]};
+    } else {
+        kmd =  @{kKMDLMTKey : [_lastModifiedTime stringWithISO8601Encoding]};
+    }
+    return kmd;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    if ([aCoder isKindOfClass:[NSKeyedArchiver class]]) {
+        [aCoder encodeObject:_acl forKey:@"acl"];
+        NSDictionary* kmd = [self kmdDict];
+        [aCoder encodeObject:kmd forKey:@"kmd"];
+    } else {
+        KCSLogError(@"Tried to encode %@, but encoder %@ is not a NSKeyedArchiver", self, aCoder);
+    }
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if ([aDecoder isKindOfClass:[NSKeyedUnarchiver class]]) {
+        NSDictionary* kmd = [aDecoder decodeObjectForKey:@"kmd"];
+        NSDictionary* acl = [aDecoder decodeObjectForKey:@"acl"];
+        self = [self initWithKMD:kmd acl:acl];
+    } else {
+        KCSLogError(@"Tried to decode %@, but decoder %@ is not a NSKeyedUnArchiver", self, aDecoder);
+    }
+    return self;
+}
+
+- (BOOL)isEqual:(id)object
+{
+    return [object isKindOfClass:[KCSMetadata class]] &&
+    [_acl isEqualToDictionary:[(KCSMetadata*)object acl]] &&
+    [[self kmdDict] isEqualToDictionary:[(KCSMetadata*)object kmdDict]];
+}
+
+- (NSUInteger)hash
+{
+    return [_acl hash] +  [[self kmdDict] hash];
+}
+
+#pragma mark -
 
 - (NSString*) creatorId 
 {

@@ -21,5 +21,8 @@
 
 @interface NSDictionary (KinveyAdditions)
 - (NSDictionary*) stripKeys:(NSArray*)keys;
+- (instancetype) dictionaryByAddingDictionary:(NSDictionary*)dictionary;
+
+- (NSString*) escapedJSON;
 
 @end

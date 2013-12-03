@@ -19,15 +19,38 @@
 
 
 #import <Foundation/Foundation.h>
+#import <SenTestingKit/SenTestingKit.h>
+
+#import "LogTester.h"
+#import "KCSMockServer.h"
+#import "KCSMockReachability.h"
+
+#define KTAssertNoError STAssertNil(error, @"Should not get an error: %@", error);
 
 #define KTAssertNotNil(x) STAssertNotNil(x, @#x" should not be nil.");
 #define KTAssertEqualsInt(x,y) STAssertEquals((int)x,(int)y, @#x" != "#y);
 #define KTAssertCount(c, obj) STAssertNotNil(obj, @#obj" should be non-nil"); STAssertEquals((int)[obj count], (int)c, @"count did not match expectation");
 #define KTAssertCountAtLeast(c, obj) STAssertTrue( [obj count] >= c, @"count (%i) should be at least (%i)", [obj count], c);
+#define KTAssertLengthAtLeast(obj, c) STAssertTrue( [obj length] >= c, @"count (%i) should be at least (%i)", [obj length], c);
 #define KTAssertEqualsDates(date1,date2) STAssertTrue([date1 isEqualToDate:date2], @"Dates should match.");
 
-#define KTNIY STFail(@"Not Implemented Yet.");
+#define KTNIY STFail(@"'%s' Not Implemented Yet.", __PRETTY_FUNCTION__);
 
+
+#define KTPollDone self.done = YES;
+#define KTPollStart self.done = NO; STAssertTrue([self poll], @"polling timed out");
+#define KTPollNoAssert self.done = NO; [self poll];
+
+
+@protocol KCSCredentials;
+id<KCSCredentials> mockCredentails();
+
+@interface SenTestCase (TestUtils2)
+@property (nonatomic) BOOL done;
+- (BOOL) poll;
+- (void) setupKCS;
+- (void) useMockUser;
+@end
 
 @interface TestUtils2 : NSObject
 

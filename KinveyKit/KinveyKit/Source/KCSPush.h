@@ -187,7 +187,7 @@ typedef enum KCS_PUSH_MODE : NSInteger {
  
  @param application The application sending this message.
  @param deviceToken The device token of the device this instance of the application is running on.
- @param completionBlock called after the token is registered on the server. `success` will be no if there is active user or the registration fails. If there is a user and the registration fails, then there will be an error object. In the error case, the request should be tried again later if it was a network error.
+ @param completionBlock called after the token is registered on the server. `success` will be no if there is no active user at the time, or if the registration fails. If there is a user and the registration fails, then there will be an error object. In the error case, the request should be tried again later if it was a network error.
  
  @since 1.19.0
  */

@@ -1,11 +1,85 @@
 # KinveyKit Release History
 
+## 1.23
+### 1.23.0
+** Release Date:** TBA
+
+* [Major Caching Update & Bug Fix](http://devcenter.kinvey.com/ios/guides/caching-offline):
+    * Offline Save is now Offline Update - supports both saving and deleting.
+    * To enable offline updates, `KCSClient` needs a global implementation of `KCSOfflineUpdateDelegate` as well as each participating `KCSCachedStore` needs to enable the `KCSStoreKeyOfflineUpdateEnabled` option. <br/> E.g.:
+
+            id<KCSOfflineUpdateDelegate> myDelegate = [[ImplementingClass alloc] init];
+            [[KCSClient sharedClient] setOfflineDelegate:myDelegate];
+
+
+            KCSCachedStore* store = [KCSCachedStore storeWithOptions:@{
+                                         KCSStoreKeyCollectionName : @"Events",
+                                         KCSStoreKeyCollectionTemplateClass : [Event class],
+                                         KCSStoreKeyCachePolicy : @(KCSCachePolicyNone),
+                                         KCSStoreKeyOfflineUpdateEnabled : @YES}];    
+
+    * Removed `KCSOfflineSaveStore` protocol from `KCSCachedStore`. Now just enable with the above option.
+    * When using a cache policy that reads locally, the cache is updated if an object is saved or deleted locally, even if the app is offline. 
+    * Removed caching of GROUP results. 
+* Remove support for `NSRegularExpression` with queries, as well as disable regular expression options. Also any query that does _not_ start with a "`^`" will throw an exception. 
+    * Removed `+ [KCSQuery  queryOnField:withRegex:options:]`.
+    * Removed `KCSRegexpQueryOptions`.
+* Minor Changes:
+    * Saving an empty array now returns an empty array for `objectsOrNil` instead of of `nil`.
+* Code Cleanup:
+    * Removed deprecated methods/classes:
+         * `[KCSUser userCollection]`; use `[KCSCollection userCollection]` instead.
+         * `[KCSQuery queryForNilValueInField:]`; use exact match on `NSNull`, `queryForEmptyValueInField`, or `queryForEmptyOrNullValueInField` instead.
+* Built with latest XCode to support arm64 architecture
+
+
+## 1.22
+### 1.22.0
+** Release Date:** October 28, 2013
+
+* Internal Updates
+* Code cleanup:
+    * Removed deprecated methods/classes:
+         * `[KCSUser loginWithFacebookAccessToken:withCompletionBlock:]`
+         * Class `KCSEntityDict`. Clients should be using a `NSMutableDictionary` instead.
+    * Deprecated data store constructors that use `authHandler`.
+* Bug fix(es):
+    * File references will no longer be auto-resolved on load if not mapped in the `kinveyPropertyToCollectionMapping` method.
+    * Library now treats `@""` object id's the same as if they are `nil`, that is the object _id has not yet been set and it should be set by the server. 
+    * File store can now save files with spaces in the filename.
+
+## 1.21
+### 1.21.1
+** Release Date:** September 24, 2013
+
+* Update missed `fmdb` function prefix. 
+
+### 1.21.0
+** Release Date:** September 23, 2013
+
+* Added `NSCoding` to `KCSFile`.
+* With `KCSLinkedAppdataStore`, you can use have a reference property to either an `UIImage` or a `KCSFile` file metadata object. If the property is declared as a `KCSFile`, the binary data will not be loaded. You can later download the file using the `KCSFile` object's `remoteURL` with `KCSFileStore downloadDataWithResolvedURL:completionBlock:progressBlock:`.
+* Removed `kKCSWhere` query option. 
+* Built with XCode 5.
+* Code cleanup:
+    * Internal `KCSPing` changes: remove `KCS_USE_OLD_PING_STYLE_KEY` key, and deprecated `checkKinveyServiceStatusWithAction:`.
+* Bug fix(es):
+    * Renamed `fmdb` classes to avoid collisions with other libraries.
+
 ## 1.20
+### 1.20.1
+** Release Date:** September 3, 2013
+
+* Bug fix(es): 
+    * Fix issue with Facebook login falsely returning error.
+
 ### 1.20.0
-** Release Date:** TBD
+** Release Date:** August 30, 2013
 
 * Added `KCSClientConfiguration` to make managing multiple `KCSClient` configurations easier. See the [using environments tutorial](http://devcenter.kinvey.com/ios/tutorials/using-environments) for more details. 
 * Deprecated `KCSFile`'s `public` property. This is replaced with the new `publicFile` property. This was done for compatability with C++ libraries. The usage semantics are the same. If you have build errors due to the `public` property, just comment out the header line. 
+* Replaced SecureUDID with `identifierForVendor` on iOS 6+. 
+* Made `KCSMetadata` `NSCoding`-compliant.
 * Code Cleanup:
     * Removed old KCS_PUSH_XXX client setup constants since they no longer do anything.
 * Bug fix(es):
@@ -13,6 +87,12 @@
 
 
 ## 1.19
+### 1.19.3
+** Release Date:** Auguest 26, 2013
+
+* Bug fix(es):
+    * Try again fixing the build errors for XCode 4.6.
+    
 ### 1.19.2 
 ** Release Date:** August 22, 2013
 

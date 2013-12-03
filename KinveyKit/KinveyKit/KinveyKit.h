@@ -45,7 +45,8 @@
 #import "KCSGroup.h"
 #import "KCSReduceFunction.h"
 #import "KCSLinkedAppdataStore.h"
-#import "KCSOfflineSaveStore.h"
+#import "KCSOfflineUpdateDelegate.h"
+#import "KCSClient+KinveyDataStore.h"
 
 #import "KCSFile.h"
 #import "KCSBlobService.h"
@@ -57,7 +58,6 @@
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
-#import "KinveyAnalytics.h"
 
 #endif
 

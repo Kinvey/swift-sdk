@@ -20,7 +20,11 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KCSNSURLRequestOperation : NSOperation
+#import "KCSNetworkOperation.h"
+
+@interface KCSNSURLRequestOperation : NSOperation <KCSNetworkOperation>
+@property (atomic) NSUInteger retryCount;
+@property (nonatomic, copy) NSString* clientRequestId;
 - (instancetype) initWithRequest:(NSMutableURLRequest*) request;
 
 @end

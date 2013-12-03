@@ -22,13 +22,38 @@
 
 #import "KinveyCore.h"
 
-#import "KinveyVersion.h"
+#pragma mark - Network
+
+#import "KCSRequest2.h"
+#import "KCSNetworkOperation.h"
+#import "KCSNetworkResponse.h"
+#import "KCSCredentials.h"
+
+#pragma mark - Configuration
+
+#import "KCSClient2+KCSInternal.h"
+#import "KCSClientConfiguration+KCSInternal.h"
+
+#pragma mark - Utils
 
 #import "KCSPlatformUtils.h"
+#import "KCSFileUtils.h"
 #import "KCSLog.h"
-
+#import "KCSLogFormatter.h"
+#import "NSArray+KinveyAdditions.h"
+#import "NSDictionary+KinveyAdditions.h"
 #import "NSError+KinveyKit.h"
+#import "NSString+KinveyAdditions.h"
+#import "KCSBase64.h"
+#import "KCSTimedQueue.h"
+#import "KCSDBTools.h"
 
-#define KCS_BREAK NSAssert(YES, @"BROKEN");
+#pragma mark - helpers
+
+#import "EXTScope.h"
+#import "KCS_SBJson.h"
+
+#define KCS_CONST_IMPL NSString* const
+#define KCS_BREAK NSAssert(NO, @"BROKEN");
 
 #endif
