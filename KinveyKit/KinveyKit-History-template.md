@@ -2,7 +2,7 @@
 
 ## 1.23
 ### 1.23.0
-** Release Date:** TBA
+** Release Date:** December 3, 2013
 
 * [Major Caching Update & Bug Fix](http://devcenter.kinvey.com/ios/guides/caching-offline):
     * Offline Save is now Offline Update - supports both saving and deleting.
