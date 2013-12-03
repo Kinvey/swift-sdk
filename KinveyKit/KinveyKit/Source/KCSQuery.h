@@ -309,7 +309,7 @@ typedef enum {
  This query will return entities where the field values match the regular expression. By default, the match is case-sensitive and new-lines do not match anchors. 
  
  @param field The field in Kinvey to query on.
- @param expression the regular expression string starting with `^`.
+ @param pattern the regular expression string starting with `^`.
  @return The new KCSQuery object (autoreleased).
  @since 1.8
  @updated 1.23.0
