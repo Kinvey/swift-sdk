@@ -1268,6 +1268,12 @@ KCSFile* fileFromResults(NSDictionary* results)
 }
 #endif
 
+#pragma mark - Cache Management
++ (void) clearCachedFiles
+{
+    [KCSFileUtils clearFiles];
+}
+
 @end
 
 #pragma mark - Helpers

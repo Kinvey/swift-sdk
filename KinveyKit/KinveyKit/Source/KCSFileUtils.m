@@ -23,6 +23,16 @@
 
 @implementation KCSFileUtils
 
++ (NSFileManager*) filemanager
+{
+    static NSFileManager* manager;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        manager = [[NSFileManager alloc] init];
+        manager.delegate = self;
+    });
+    return manager;
+}
 
 + (NSString*) fileProtectionKey
 {
@@ -82,4 +92,26 @@
     return destinationFile;
 }
 
++ (BOOL) clearFiles
+{
+    NSError* error = nil;
+    BOOL removed = [[self filemanager] removeItemAtPath:[[self filesFolder] path] error:&error];
+    KCSLogNSError(KCS_LOG_CONTEXT_FILESYSTEM, error);
+    
+    [self filesFolder];
+    
+    return removed;
+}
+
+#pragma mark - File manager
+
++ (BOOL)fileManager:(NSFileManager *)fileManager shouldRemoveItemAtPath:(NSString *)path
+{
+    return YES;
+}
+
++ (BOOL)fileManager:(NSFileManager *)fileManager shouldProceedAfterError:(NSError *)error removingItemAtPath:(NSString *)path
+{
+    return YES;
+}
 @end

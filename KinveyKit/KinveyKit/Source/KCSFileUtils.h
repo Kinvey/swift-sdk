@@ -24,5 +24,6 @@
 + (NSURL*) filesFolder;
 + (NSURL*) fileURLForName:(NSString*)name;
 
++ (BOOL) clearFiles;
 
 @end
