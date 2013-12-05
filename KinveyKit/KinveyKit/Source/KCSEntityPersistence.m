@@ -96,13 +96,12 @@
     _db = [KCS_FMDatabase databaseWithPath:path];
     if (![_db open]) return;
     
-    BOOL e = NO;
     if (![_db tableExists:@"metadata"]) {
         KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Creating New Cache %@", path);
         [self createMetadata];
     } else {
         KCS_FMResultSet *rs = [_db executeQuery:@"SELECT version FROM metadata"];
-        if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+        if ([_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
         NSString* version = nil;
         if ([rs next]) {
             NSDictionary* d = [rs resultDictionary];
@@ -116,20 +115,20 @@
     }
 
     if (![_db tableExists:@"queries"]) {
-        e = [_db executeUpdate:@"CREATE TABLE queries (id VARCHAR(255) PRIMARY KEY, ids TEXT, routeKey TEXT)"];
-        if (e == NO) {
+        BOOL e = [_db executeUpdate:@"CREATE TABLE queries (id VARCHAR(255) PRIMARY KEY, ids TEXT, routeKey TEXT)"];
+        if (!e) {
             KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
         }
     }
     if (![_db tableExists:@"savequeue"]) {
-        e = [_db executeUpdate:@"CREATE TABLE savequeue (key VARCHAR(255) PRIMARY KEY, id VARCHAR(255), routeKey TEXT, method TEXT, headers TEXT, time VARCHAR(255), obj TEXT)"];
-        if (e == NO) {
+        BOOL e = [_db executeUpdate:@"CREATE TABLE savequeue (key VARCHAR(255) PRIMARY KEY, id VARCHAR(255), routeKey TEXT, method TEXT, headers TEXT, time VARCHAR(255), obj TEXT)"];
+        if (!e) {
             KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
         }
     }
     if (![_db tableExists:@"groups"]) {
-        e = [_db executeUpdate:@"CREATE TABLE groups (key TEXT PRIMARY KEY, results TEXT)"];
-        if (e == NO) {
+        BOOL e = [_db executeUpdate:@"CREATE TABLE groups (key TEXT PRIMARY KEY, results TEXT)"];
+        if (!e) {
             KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
         }
     }

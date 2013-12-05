@@ -196,6 +196,12 @@ id kcsPredToQueryExprVal(NSExpression* expr)
 {
     NSString* query =  [NSString stringWithFormat:@"?query=%@", escape ? [_internalRepresentation escapedJSON] : [_internalRepresentation JSONRepresentation]];
     query = [query stringByAppendingString:[self sortString:escape]];
+    if (self.limit > 0 ) {
+        query = [query stringByAppendingFormat:@"&limit=%lu", (unsigned long)self.limit];
+    }
+    if (self.offset > 0) {
+        query = [query stringByAppendingFormat:@"&skip=%lu", (unsigned long)self.offset];
+    }
     return query;
 }
 
@@ -206,7 +212,7 @@ id kcsPredToQueryExprVal(NSExpression* expr)
 
 - (NSString*) keyString
 {
-    NSString* ir = [_internalRepresentation JSONRepresentation];
+    NSString* ir = [self queryString:NO];
     return [@([ir hash]) stringValue];
 }
 
@@ -217,11 +223,23 @@ id kcsPredToQueryExprVal(NSExpression* expr)
     KCSQuery2* q = [[self alloc] init];
     q.internalRepresentation = [query.query mutableCopy];
     
-    NSMutableArray* sorts = [NSMutableArray arrayWithCapacity:query.sortModifiers.count];
-    for (KCSQuerySortModifier* mod in query.sortModifiers) {
-        NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:mod.field ascending:mod.direction == kKCSAscending];
-        [sorts addObject:sort];
+    if ([[query sortModifiers] count] > 0) {
+        NSMutableArray* sorts = [NSMutableArray arrayWithCapacity:query.sortModifiers.count];
+        for (KCSQuerySortModifier* mod in query.sortModifiers) {
+            NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:mod.field ascending:mod.direction == kKCSAscending];
+            [sorts addObject:sort];
+        }
+        q.sortDescriptors = sorts;
     }
+    
+    if (query.limitModifer) {
+        q.limit = query.limitModifer.limit;
+    }
+    
+    if (query.skipModifier) {
+        q.offset = query.skipModifier.count;
+    }
+    
     return q;
 }
 

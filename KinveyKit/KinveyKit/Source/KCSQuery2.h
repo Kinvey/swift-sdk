@@ -27,7 +27,9 @@ typedef enum KCSQueryErrors : NSInteger {
 + (instancetype) queryWithPredicate:(NSPredicate*)predicate error:(NSError**)error;
 + (instancetype) queryWithQuery1:(KCSQuery*)query;
 
-@property (nonatomic, copy) NSArray* sortDescriptors;
+@property (nonatomic, copy) NSArray* sortDescriptors; //of NSSortDescriptors
+@property (nonatomic) NSUInteger limit;
+@property (nonatomic) NSUInteger offset;
 
 - (NSString *)escapedQueryString;
 

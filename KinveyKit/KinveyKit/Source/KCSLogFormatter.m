@@ -98,7 +98,7 @@
     NSString *dateAndTime = [self stringFromDate:(logMessage->timestamp)];
     
     NSString* logMsg = logMessage->logMsg;
-    return [NSString stringWithFormat:@"%@ %s:%d [%@ (%@)] %@=", dateAndTime, logMessage->file, logMessage->lineNumber, logLevel, context, logMsg];
+    return [NSString stringWithFormat:@"%@ %s:%d [%@ (%@)] %@", dateAndTime, logMessage->file, logMessage->lineNumber, logLevel, context, logMsg];
 }
 
 - (void)didAddToLogger:(id <DDLogger>)logger

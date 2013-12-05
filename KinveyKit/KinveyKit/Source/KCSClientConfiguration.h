@@ -36,6 +36,26 @@ KCS_CONSTANT KCS_DATE_FORMAT;
 /** This object shoul implement the `KCSLogSink` protocol. Use this along with +[KinveyKit configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:] to send log messages to a custom sink.*/
 KCS_CONSTANT KCS_LOG_SINK;
 
+// Data Protection
+// See the Apple Data Protection guide in the iOS Programming Guide : Advanced App Tricks for more information
+
+/** 
+ @since TAG-ME
+*/
+typedef enum KCSDataProtectionLevel : NSInteger {
+    KCSDataNoProtection, //no encryption
+    KCSDataComplete, //data is inaccessible when device locket
+    KCSDataCompleteUnlessOpen, //data is locked at first, but remains accessible while the file is open
+    KCSDataCompleteUntilFirstLogin, //data is locked until the device has been unlocked once after boot
+} KCSDataProtectionLevel;
+
+/** Set this to a KCSDataProtectionLevel combined with data protection entitlements and the appropriate app delegate methods allows your app to lock files managed by the file store, offline caches, and keychain. 
+ 
+    Default is KCSDataCompleteUntilFirstLogin.
+ @since TAG-ME
+ */
+KCS_CONSTANT KCS_DATA_PROTECTION_LEVEL;
+
 KCS_CONSTANT KCS_SERVICE_HOST;
 
 
