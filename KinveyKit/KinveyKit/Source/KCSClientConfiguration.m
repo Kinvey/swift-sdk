@@ -36,6 +36,7 @@ KCS_CONST_IMPL KCS_LOG_SINK               = @"KCS_LOG_SINK";
 KCS_CONST_IMPL KCS_LOG_LEVEL              = @"KCS_LOG_LEVEL";
 KCS_CONST_IMPL KCS_LOG_ADDITIONAL_LOGGERS = @"KCS_LOG_ADDITIONAL_LOGGERS";
 KCS_CONST_IMPL KCS_CONFIG_RETRY_DISABLED  = @"KCS_CONFIG_RETRY_DISABLED";
+KCS_CONST_IMPL KCS_DATA_PROTECTION_LEVEL  = @"KCS_DATA_PROTECTION_LEVEL";
 
 #define KCS_HOST_PORT     @"KCS_HOST_PORT"
 #define KCS_HOST_PROTOCOL @"KCS_HOST_PROTOCOL"
@@ -60,13 +61,14 @@ KCS_CONST_IMPL KCS_CONFIG_RETRY_DISABLED  = @"KCS_CONFIG_RETRY_DISABLED";
     if (self) {
         _appKey = nil;
         _appSecret = nil;
-        _options = @{KCS_CONNECTION_TIMEOUT : KCS_DEFAULT_CONNETION_TIMEOUT,
-                     KCS_URL_CACHE_POLICY   : KCS_DEFAULT_URL_CACHE_POLICY,
-                     KCS_HOST_PORT          : KCS_DEFAULT_HOST_PORT,
-                     KCS_HOST_PROTOCOL      : KCS_DEFAULT_HOST_PROTOCOL,
-                     KCS_HOST_DOMAIN        : KCS_DEFAULT_HOST_DOMAIN,
-                     KCS_DATE_FORMAT        : KCS_DEFAULT_DATE_FORMAT,
-                     KCS_LOG_LEVEL          : @(0)
+        _options = @{KCS_CONNECTION_TIMEOUT    : KCS_DEFAULT_CONNETION_TIMEOUT,
+                     KCS_URL_CACHE_POLICY      : KCS_DEFAULT_URL_CACHE_POLICY,
+                     KCS_HOST_PORT             : KCS_DEFAULT_HOST_PORT,
+                     KCS_HOST_PROTOCOL         : KCS_DEFAULT_HOST_PROTOCOL,
+                     KCS_HOST_DOMAIN           : KCS_DEFAULT_HOST_DOMAIN,
+                     KCS_DATE_FORMAT           : KCS_DEFAULT_DATE_FORMAT,
+                     KCS_LOG_LEVEL             : @(0),
+                     KCS_DATA_PROTECTION_LEVEL : @(KCSDataCompleteUntilFirstLogin)
                      };
         _serviceHostname = KCS_DEFAULT_HOSTNAME;
         

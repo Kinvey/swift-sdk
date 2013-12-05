@@ -24,13 +24,33 @@
 @implementation KCSFileUtils
 
 
++ (NSString*) fileProtectionKey
+{
+    KCSDataProtectionLevel level = [[KCSClient2 sharedClient].configuration.options[KCS_DATA_PROTECTION_LEVEL] integerValue];
+    NSString* key = NSFileProtectionNone;
+    switch (level) {
+        case KCSDataComplete:
+            key = NSFileProtectionComplete;
+            break;
+        case KCSDataCompleteUnlessOpen:
+            key = NSFileProtectionCompleteUnlessOpen;
+            break;
+        case KCSDataCompleteUntilFirstLogin:
+            key = NSFileProtectionCompleteUntilFirstUserAuthentication;
+            break;
+        default:
+            break;
+    }
+    return key;
+}
+
 + (NSString*) kinveyDir
 {
     NSString* kinveyDir =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"kinvey"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:kinveyDir] == NO) {
         //TODO: security?
         NSError* error = nil;
-        [[NSFileManager defaultManager] createDirectoryAtPath:kinveyDir withIntermediateDirectories:YES attributes:nil error:&error];
+        [[NSFileManager defaultManager] createDirectoryAtPath:kinveyDir withIntermediateDirectories:YES attributes:@{NSFileProtectionKey : [self fileProtectionKey]} error:&error];
         KCSLogNSError(KCS_LOG_CONTEXT_FILESYSTEM, error);
     }
     return kinveyDir;

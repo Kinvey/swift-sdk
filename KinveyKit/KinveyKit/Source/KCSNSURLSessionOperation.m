@@ -63,6 +63,7 @@
         self.downloadedData = [NSMutableData data];
         self.response = [[KCSNetworkResponse alloc] init];
         self.dataTask = [[self session] dataTaskWithRequest:self.request];
+        [self.dataTask setTaskDescription:self.clientRequestId];
         [self.dataTask resume];
     }
 }

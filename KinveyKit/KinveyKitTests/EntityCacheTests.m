@@ -229,6 +229,40 @@
     [ocache clear];
 }
 
+- (void) testSkipLimit
+{
+    NSArray* entities = [self jsonArray];
+    KCSObjectCache* ocache = [[KCSObjectCache alloc] init];
+
+    NSString* route = @"R";
+    NSString* collection = [NSString UUID];
+    
+    KCSQuery* q1 = [KCSQuery query];
+    q1.skipModifier = [[KCSQuerySkipModifier alloc] initWithcount:0];
+    q1.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:4];
+    
+    NSArray* results1 = [ocache setObjects:[entities subarrayWithRange:NSMakeRange(0, 4)] forQuery:[KCSQuery2 queryWithQuery1:q1] route:route collection:collection];
+    KTAssertCount(4, results1);
+
+
+    KCSQuery* q2 = [KCSQuery query];
+    q2.skipModifier = [[KCSQuerySkipModifier alloc] initWithcount:4];
+    q2.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:4];
+    
+    NSArray* results2 = [ocache setObjects:[entities subarrayWithRange:NSMakeRange(4, 4)] forQuery:[KCSQuery2 queryWithQuery1:q2] route:route collection:collection];
+    KTAssertCount(4, results2);
+    
+    NSArray* pull1 = [ocache pullQuery:[KCSQuery2 queryWithQuery1:q1] route:route collection:collection];
+    NSArray* pull2 = [ocache pullQuery:[KCSQuery2 queryWithQuery1:q2] route:route collection:collection];
+    
+    KTAssertCount(4, pull1);
+    KTAssertCount(4, pull2);
+    
+    for (id o in pull1) {
+        STAssertFalse([pull2 containsObject:o], @"should be different arrays");
+    }
+}
+
 - (void) testRemoveQueryFromCache
 {
     NSArray* entities = [self jsonArray];
