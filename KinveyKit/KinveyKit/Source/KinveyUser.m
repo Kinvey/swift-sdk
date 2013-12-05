@@ -40,6 +40,8 @@
 #import "KCSRESTRequest.h"
 #import "KCSPush.h"
 
+#import "KCSFileStore.h"
+
 #pragma mark - Constants
 
 NSString* const KCSUserAccessTokenKey = @"access_token";
@@ -704,6 +706,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
         
         [KCSUser clearSavedCredentials];
         [[KCSAppdataStore caches] clear];
+        [KCSFileStore clearCachedFiles];
         
         // Set the currentUser to nil
         setActive(nil);

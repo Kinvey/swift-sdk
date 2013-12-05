@@ -292,4 +292,11 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) deleteFile:(NSString*)fileId completionBlock:(KCSCountBlock)completionBlock;
 
+
+/** Removes all downloaded files managed by KinveyKit.
+ 
+ @since TAG-ME
+ */
++ (void) clearCachedFiles;
+
 @end

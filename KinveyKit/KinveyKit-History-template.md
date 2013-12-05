@@ -1,9 +1,10 @@
 # KinveyKit Release History
 
 ## 1.23
-### 1.23.1
+### TAG-ME
 ** Release Date:** TBA
 
+* Added `+[KCSFileStore clearCachedFiles]` to remove all downloaded files managed by KinveyKit.
 * Bug fix(es): 
     * Caching now supports skip and limit modifiers.  
 
