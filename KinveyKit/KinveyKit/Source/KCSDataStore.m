@@ -28,6 +28,7 @@
 
 @interface KCSDataStore ()
 @property (nonatomic, copy) NSString* collectionName;
+@property (nonatomic, retain) NSString* route;
 @property (nonatomic) BOOL cacheEnabled;
 @end
 
@@ -39,7 +40,15 @@
     
     self = [super init];
     if (self) {
+        KK2(Have collection object supply these and get rid of cln names?)
         _collectionName = collection;
+        if ([_collectionName isEqualToString:KCSUserCollectionName]) {
+            _route = KCSRESTRouteUser;
+        } else if ([_collectionName isEqualToString:KCSFileStoreCollectionName]) {
+            _route = KCSRESTRouteBlob;
+        } else {
+            _route = KCSRESTRouteAppdata;
+        }
     }
     return self;
 }
@@ -70,5 +79,44 @@
     request.path = @[_collectionName];
     [request start];
 }
+
+#pragma mark - Count
+
+- (void) countAll:(KCSDataStoreCountCompletion)completion
+{
+    KCS_BREAK
+}
+
+- (void) countQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
+{
+    KCS_BREAK
+}
+
+#pragma mark - Deletion
+- (void) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
+{
+    if (!_id) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"_id is nil" userInfo:nil] raise];
+    
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        NSUInteger count = 0;
+        if (!error) {
+            NSDictionary* responseDict = [response jsonObject];
+            count = [responseDict[@"count"] unsignedIntegerValue];
+        }
+        completion(count, error);
+    }
+                                                        route:self.route
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSUser activeUser]];
+    request.path = @[self.collectionName, _id];
+    request.method = KCSRESTMethodDELETE;
+    [request start];
+}
+
+- (void) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
+{
+    KCS_BREAK
+}
+
 
 @end

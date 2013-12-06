@@ -91,12 +91,13 @@ id<KCSCredentials> mockCredentails()
                                                        withAppSecret:@"6414992408f04132bd467746f7ecbdcf"
                                                         usingOptions:@{KCS_LOG_LEVEL              : @255,
                                                                        KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}];
-    
+    [self useProductionUser];
 }
 
 - (void)setupKCS
 {
-    [self setupStaging];
+    //    [self setupStaging];
+    [self setupProduction];
 }
 
 - (void) useMockUser
@@ -106,6 +107,20 @@ id<KCSCredentials> mockCredentails()
 #pragma clang diagnostic ignored "-Wdeprecated"
     [KCSClient sharedClient].currentUser = mockUser;
 #pragma clang diagnostic pop
+}
+
+- (void) useProductionUser
+{
+    static NSString* username = @"Big Bob";
+    static NSString* password = @"BrianWilson'sBeard";
+    if ([KCSUser activeUser] == nil || [[KCSUser activeUser].username isEqualToString:username] == NO) {
+        self.done = NO;
+        [KCSUser loginWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *error, KCSUserActionResult result) {
+            KTAssertNoError
+            self.done = YES;
+        }];
+        [self poll];
+    }
 }
 
 @end
