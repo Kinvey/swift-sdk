@@ -168,6 +168,7 @@ typedef struct {
 
 - (void) ex2
 {
+
     //create a new user with username and password and verify the email
     [KCSUser userWithUsername:@"<#username#>" password:@"<#password#>" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         if (result == KCSUserCreated && errorOrNil == nil) {

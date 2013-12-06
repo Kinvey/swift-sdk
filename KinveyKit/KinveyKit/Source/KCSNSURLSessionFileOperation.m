@@ -127,11 +127,7 @@
 // resume data
     if (error) {
         NSData* resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData];
-        NSError* fileError = nil;
-        [resumeData writeToURL:self.localFile options:0 error:&fileError];
-        if (fileError) {
-            KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"Error writing resume data: %@", fileError);
-        }
+        [KCSFileUtils writeData:resumeData toURL:self.localFile];
     }
     
     
@@ -185,33 +181,11 @@
                                userInfo:userInfo];
         self.error = error;
     } else {
-        NSFileManager* fm = [[NSFileManager alloc] init];
-        fm.delegate = self;
-        
-        [fm moveItemAtURL:location toURL:self.localFile error:&error];
-
+        error = [KCSFileUtils moveFile:location to:self.localFile];
         if (error) {
             self.error = error;
         }
-        
-        fm.delegate = nil;
     }
-}
-
-- (BOOL)fileManager:(NSFileManager *)fileManager shouldProceedAfterError:(NSError *)error movingItemAtURL:(NSURL *)srcURL toURL:(NSURL *)dstURL
-{
-    if ([error.domain isEqualToString:NSCocoaErrorDomain] && error.code == NSFileWriteFileExistsError) {
-        return YES;
-    }
-    return NO;
-}
-
-- (BOOL)fileManager:(NSFileManager *)fileManager shouldProceedAfterError:(NSError *)error movingItemAtPath:(NSString *)srcPath toPath:(NSString *)dstPath
-{
-    if ([error.domain isEqualToString:NSCocoaErrorDomain] && error.code == NSFileWriteFileExistsError) {
-        return YES;
-    }
-    return NO;
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite

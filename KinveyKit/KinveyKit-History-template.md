@@ -4,6 +4,9 @@
 ### TAG-ME
 ** Release Date:** TBA
 
+* Support for [Data Protection](http://devcenter.kinvey.com/ios/guides/encryption)
+    * __TODO__ setup: entittlements, client keys, forward app methods
+    * __TODO__ describe levels and consequences
 * Added `+[KCSFileStore clearCachedFiles]` to remove all downloaded files managed by KinveyKit.
 * Bug fix(es): 
     * Caching now supports skip and limit modifiers.  

@@ -659,6 +659,14 @@ KCSFile* fileFromResults(NSDictionary* results)
                     intermediateFile.bytesWritten = [returnInfo[kBytesWritten] unsignedLongLongValue];
                     intermediateFile.length = [[[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:NULL] fileSize];
                     
+                    if (intermediateFile.localURL) {
+                        NSError* error = nil;
+                        [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey : [KCSFileUtils fileProtectionKey]} ofItemAtPath:[intermediateFile.localURL path] error:&error];
+                        if (error) {
+                            KCSLogError(@"Error setting file permissions: %@", error);
+                        }
+                    }
+                    
                     completionBlock(@[intermediateFile], error);
                 } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
                     if (progressBlock != nil) {
