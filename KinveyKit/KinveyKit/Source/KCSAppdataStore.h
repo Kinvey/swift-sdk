@@ -34,7 +34,7 @@
 #define KCSStoreKeyCollectionName @"collectionName"
 
 /**
- KCSStore options dictionary key for the backing collection object class. This can be used instead of suppling a KCSStoreKeyResource. Use with KCSStoreKeyCollectionName. If a KCSStoreKeyCollectionName is supplied, but no KCSStoreKeyCollectionTemplateClass, NSMutableDictionary will be used by default.
+ KCSStore options dictionary key for the backing collection object class.  This can be used instead of suppling a KCSStoreKeyResource. Use with KCSStoreKeyCollectionName. If a KCSStoreKeyCollectionName is supplied, but no KCSStoreKeyCollectionTemplateClass, NSMutableDictionary will be used by default.
  
  @since 1.11.0
  */

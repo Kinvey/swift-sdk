@@ -81,7 +81,7 @@
     [[NSException exceptionWithName:@"KCSFunctionalityRemoved" reason:@"Use +[KCSFileStore downloadFileByQuery:completionBlock:progressBlock:] or +[KCSFileStore downloadDataByQuery:completionBlock:progressBlock:] instead." userInfo:nil] raise];
 }
 
-- (void)removeObject:(id)object withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+- (void)removeObject:(id)object withCompletionBlock: (KCSCountBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     [[NSException exceptionWithName:@"KCSFunctionalityRemoved" reason:@"Use +[KCSFileStore deleteFile:completionBlock:] instead." userInfo:nil] raise];
 }

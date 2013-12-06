@@ -117,4 +117,24 @@
     STAssertNil(obj, @"object should be gone");
 }
 
+- (void) testDeleteByQuery
+{
+    NSString* _id = [self createEntity];
+    
+    KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
+    KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:_id];
+    
+    
+    self.done = NO;
+    [store deleteByQuery:[KCSQuery2 queryWithQuery1:query] completion:^(NSUInteger count, NSError *error) {
+        KTAssertNoError;
+        KTAssertEqualsInt(count, 1);
+        self.done = YES;
+    }];
+    [self poll];
+    
+    id obj = [self getEntity:_id shouldExist:NO];
+    STAssertNil(obj, @"object should be gone");
+}
+
 @end

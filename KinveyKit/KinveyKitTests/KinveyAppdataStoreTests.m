@@ -171,8 +171,9 @@ NSArray* largeArray()
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:4]];
     
     self.done = NO;
-    [_store removeObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [_store removeObject:obj withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
+        KTAssertEqualsInt(count, 1, @"should delete one object");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -205,8 +206,10 @@ NSArray* largeArray()
     
     
     self.done = NO;
-    [_store removeObject:vals withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [_store removeObject:vals withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
+        KTAssertEqualsInt(count, 10, @"should delete one object");
+
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];

@@ -45,6 +45,7 @@
 #import "KCSQuery2+KCSInternal.h"
 #import "NSError+KinveyKit.h"
 #import "KCSClient+KinveyDataStore.h"
+#import "KinveyDataStore.h"
 
 #define KCSSTORE_VALIDATE_PRECONDITION BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock]; \
 if (okayToProceed == NO) { \
@@ -892,101 +893,164 @@ andResaveAfterReferencesSaved:^{
 }
 
 #pragma mark - Removing
-- (void) removeObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void) removeObject:(id)object withCompletionBlock:(KCSCountBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
+    BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:^(id objs, NSError *error) {
+        completionBlock(0, error);
+    }];
     if (okayToProceed == NO) {
         return;
     }
     
-    KCSQuery* deleteQuery = nil;
-    NSString* deleteId = [object isKindOfClass:[NSString class]] ? object : nil;
-    if ([object isKindOfClass:[KCSQuery class]]) {
-        deleteQuery = object;
-    } else {
-        NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
-        if (objectsToProcess.count == 0) {
-            completionBlock(nil, nil);
-            return;
+    if ([object isKindOfClass:[NSArray class]]) {
+        //input is an array
+        NSArray* objects = object;
+        if (objects.count == 0) {
+            completionBlock(0, nil);
         }
-        
-        NSMutableArray* ids = [NSMutableArray arrayWithCapacity:objectsToProcess.count];
-        [objectsToProcess enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NSString* _id = [obj kinveyObjectId];
-            if (_id != nil) {
-                [ids addObject:_id];
+        if ([object[0] isKindOfClass:[NSString class]]) {
+            //input is _id array
+            object = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objects];
+        } else if ([object[0] conformsToProtocol:@protocol(KCSPersistable)] == YES) {
+            //input is object array?
+            NSMutableArray* ids = [NSMutableArray arrayWithCapacity:objects.count];
+            for (NSObject<KCSPersistable>* obj in objects) {
+                [ids addObject:[obj kinveyObjectId]];
+            }
+            object = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:ids];
+        } else {
+            [[NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil] raise];
+        }
+    } else if ([object conformsToProtocol:@protocol(KCSPersistable)]) {
+        //if its just a single object get the _id
+        object = [object kinveyObjectId];
+    }
+    
+    KCSDataStore* store2 = [[KCSDataStore alloc] initWithCollection:self.backingCollection.collectionName];
+    
+    if ([object isKindOfClass:[KCSQuery class]]) {
+        [store2 deleteByQuery:[KCSQuery2 queryWithQuery1:object] completion:^(NSUInteger count, NSError *error) {
+            if (error) {
+                if ([self shouldEnqueue:error]) {
+                    //enqueue save
+                    id errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:[KCSQuery2 queryWithQuery1:object] route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+                    
+                    if (errorValue != nil) {
+                        error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
+                    }
+                }
+                completionBlock(0, error);
+            } else {
+                completionBlock(count, nil);
             }
         }];
-        
-        deleteQuery = [KCSQuery queryOnField:@"_id" usingConditional:kKCSIn forValue:ids];
-    }
-    NSString *resource = nil;
-    NSString *format = nil;
-    
-    KCSCollection* collection = self.backingCollection;
-    if ([collection.collectionName isEqualToString:@""]){
-        format = @"%@";
     } else {
-        format = @"%@/";
-    }
-    
-    resource = [collection.baseURL stringByAppendingFormat:format, collection.collectionName];
-    
-    // Add the Query portion of the request
-    if (deleteQuery.query != nil && deleteQuery.query.count > 0){
-        resource = [resource stringByAppendingQueryString:[deleteQuery parameterStringRepresentation]];
-    }
-    
-    
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kDeleteRESTMethod];
-    
-    
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-                
-        KCSLogTrace(@"In collection callback with response: %@", response);
-        NSObject* jsonData = [response jsonResponseValue];
-        
-        if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT && response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Deletion was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
-            completionBlock(nil, error);
-            return;
-        }
-        NSArray* jsonArray = nil;
-        if ([jsonData isKindOfClass:[NSArray class]]){
-            jsonArray = (NSArray *)jsonData;
-        } else {
-            if ([(NSDictionary *)jsonData count] == 0){
-                jsonArray = @[];
+        [store2 deleteEntity:object completion:^(NSUInteger count, NSError *error) {
+            if (error) {
+                if ([self shouldEnqueue:error]) {
+                    //enqueue save
+                    id errorValue = [[KCSAppdataStore caches] addUnsavedDelete:object route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+                    if (errorValue != nil) {
+                        error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
+                    }
+                }
+                completionBlock(0, error);
             } else {
-                jsonArray = @[jsonData];
+                completionBlock(count, nil);
             }
-        }
-        
-        completionBlock(jsonArray, nil);
-    };
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        if ([self shouldEnqueue:error]) {
-            //enqueue save
-            id errorValue = nil;
-            if (deleteId) {
-                 errorValue = [[KCSAppdataStore caches] addUnsavedDelete:deleteId route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
-            } else {
-                errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:[KCSQuery2 queryWithQuery1:deleteQuery] route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
-            }
-           
-            if (errorValue != nil) {
-                error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
-            }
-            
-            completionBlock(nil, error);
-        } else {
-            completionBlock(nil, error);
-        }
-    };
-    KCSConnectionProgressBlock pBlock = makeProgressBlock(progressBlock);
+
+        }];
+    }
+#warning put back Progress block
     
-    // Make the request happen
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+//    KCSQuery* deleteQuery = nil;
+//    NSString* deleteId = [object isKindOfClass:[NSString class]] ? object : nil;
+//    if ([object isKindOfClass:[KCSQuery class]]) {
+//        deleteQuery = object;
+//    } else {
+//        NSArray *objectsToProcess = [NSArray wrapIfNotArray:object];
+//        if (objectsToProcess.count == 0) {
+//            completionBlock(nil, nil);
+//            return;
+//        }
+//        
+//        NSMutableArray* ids = [NSMutableArray arrayWithCapacity:objectsToProcess.count];
+//        [objectsToProcess enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//            NSString* _id = [obj kinveyObjectId];
+//            if (_id != nil) {
+//                [ids addObject:_id];
+//            }
+//        }];
+//        
+//        deleteQuery = [KCSQuery queryOnField:@"_id" usingConditional:kKCSIn forValue:ids];
+//    }
+//    NSString *resource = nil;
+//    NSString *format = nil;
+//    
+//    KCSCollection* collection = self.backingCollection;
+//    if ([collection.collectionName isEqualToString:@""]){
+//        format = @"%@";
+//    } else {
+//        format = @"%@/";
+//    }
+//    
+//    resource = [collection.baseURL stringByAppendingFormat:format, collection.collectionName];
+//    
+//    // Add the Query portion of the request
+//    if (deleteQuery.query != nil && deleteQuery.query.count > 0){
+//        resource = [resource stringByAppendingQueryString:[deleteQuery parameterStringRepresentation]];
+//    }
+//    
+//    
+//    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kDeleteRESTMethod];
+    
+    
+//    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+//                
+//        KCSLogTrace(@"In collection callback with response: %@", response);
+//        NSObject* jsonData = [response jsonResponseValue];
+//        
+//        if (response.responseCode != KCS_HTTP_STATUS_NO_CONTENT && response.responseCode != KCS_HTTP_STATUS_OK){
+//            NSError* error = [KCSErrorUtilities createError:(NSDictionary*)jsonData description:@"Deletion was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
+//            completionBlock(nil, error);
+//            return;
+//        }
+//        NSArray* jsonArray = nil;
+//        if ([jsonData isKindOfClass:[NSArray class]]){
+//            jsonArray = (NSArray *)jsonData;
+//        } else {
+//            if ([(NSDictionary *)jsonData count] == 0){
+//                jsonArray = @[];
+//            } else {
+//                jsonArray = @[jsonData];
+//            }
+//        }
+//        
+//        completionBlock(jsonArray, nil);
+//    };
+//    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+//        if ([self shouldEnqueue:error]) {
+//            //enqueue save
+//            id errorValue = nil;
+//            if (deleteId) {
+//                 errorValue = [[KCSAppdataStore caches] addUnsavedDelete:deleteId route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+//            } else {
+//                errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:[KCSQuery2 queryWithQuery1:deleteQuery] route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+//            }
+//           
+//            if (errorValue != nil) {
+//                error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
+//            }
+//            
+//            completionBlock(nil, error);
+//        } else {
+//            completionBlock(nil, error);
+//        }
+//    };
+//    KCSConnectionProgressBlock pBlock = makeProgressBlock(progressBlock);
+//    
+//    // Make the request happen
+//    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
 }
 
 #pragma mark - Information

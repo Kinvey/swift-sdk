@@ -3153,13 +3153,9 @@
 					"$(inherited)",
 					"KINVEYKIT2_UPGRADE_WARNINGS=1",
 				);
-				HEADER_SEARCH_PATHS = "Airship/**";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
-					"\"$(SRCROOT)/Airship\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_VERSION = "1.5-SANDBOX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3681,13 +3677,9 @@
 					"BUILD_FOR_UNIT_TEST=1",
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = "Airship/**";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
-					"\"$(SRCROOT)/Airship\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_VERSION = "1.5-SANDBOX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3818,13 +3810,9 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = "Airship/**";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
-					"\"$(SRCROOT)/Airship\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_VERSION = "1.5-SANDBOX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -3841,13 +3829,9 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
-				HEADER_SEARCH_PATHS = "Airship/**";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "KinveyKit/KinveyKit-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/KinveyKit/3rdParty/Airship\"",
-					"\"$(SRCROOT)/Airship\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_VERSION = "1.5-SANDBOX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

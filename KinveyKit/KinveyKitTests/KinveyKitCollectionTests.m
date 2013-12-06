@@ -236,7 +236,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     self.onSuccess = ^(NSArray *results){
         
-        self.message = [NSString stringWithFormat:@"Expected array with 0 count, got array with %d count (%@)", results.count, results];
+        self.message = [NSString stringWithFormat:@"Expected array with 0 count, got array with %lu count (%@)", (unsigned long)results.count, results];
         if (results.count == 0){
             return YES;
         } else {
