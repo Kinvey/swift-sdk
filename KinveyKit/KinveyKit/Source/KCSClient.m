@@ -36,6 +36,7 @@
 #import "KCSClientConfiguration.h"
 #import "KCSHiddenMethods.h"
 #import "KCSBase64.h"
+#import "KCSFileUtils.h"
 
 #define kAppKeyKechainKey @"com.kinvey.kinveykit.appkey"
 
@@ -313,4 +314,18 @@
     NSString* port = self.configuration.options[@"KCS_HOST_PORT"];
     return [NSString stringWithFormat:@"%@://%@.%@%@/", protocol, hostname, hostdomain, port];
 }
+
+#pragma mark - Data Protection
+- (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application
+{
+    KCSLogTrace(@"Did became avaialble");
+    [KCSFileUtils dataDidBecomeAvailable];
+}
+
+- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
+{
+    KCSLogTrace(@"Did became unavailable");
+    [KCSFileUtils dataDidBecomeUnavailable];
+}
+
 @end

@@ -291,9 +291,33 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
 ///---------------------------------------------------------------------------------------
 /// @name Utilities
 ///---------------------------------------------------------------------------------------
-/** Clears out all the caches maintained by the library. 
+
+/** Clears out all the caches maintained by the library.
  
  Right now the only caches used are those created by `KCSCachedStore` to cache app data. 
  */
 - (void) clearCache;
+
+///---------------------------------------------------------------------------------------
+/// @name Data Protection
+///---------------------------------------------------------------------------------------
+
+/** Helper method to preform data protection activities when the device is unlocked. 
+ 
+ This __MUST__ be forwarded from your application delegate.
+ 
+ @see applicationProtectedDataWillBecomeUnavailable:
+ @since TAG-ME
+ */
+- (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application;
+
+/** Helper method to preform data protection activities when the device is locked.
+ 
+ This __MUST__ be forwarded from your application delegate.
+ 
+ @see applicationProtectedDataDidBecomeAvailable:
+ @since TAG-ME
+ */
+- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application;
+
 @end

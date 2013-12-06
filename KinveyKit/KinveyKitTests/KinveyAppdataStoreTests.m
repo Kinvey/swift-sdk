@@ -217,6 +217,7 @@ NSArray* largeArray()
         self.done = YES;
     }];
     [self poll];
+
 }
 
 - (void) testBlErrors

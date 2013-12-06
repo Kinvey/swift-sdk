@@ -44,14 +44,10 @@
 
 - (NSFileHandle*) prepFile:(NSURL*)file error:(NSError **)error
 {
-    NSFileHandle* handle = nil;
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[file path]] == NO) {
-        [[NSFileManager defaultManager] createFileAtPath:[file path] contents:nil attributes:nil];
-    }
+    [KCSFileUtils touchFile:file];
     
     NSError* tempError = nil;
-    handle = [NSFileHandle fileHandleForWritingToURL:file error:&tempError];
+    NSFileHandle* handle = [NSFileHandle fileHandleForWritingToURL:file error:&tempError];
     if (tempError != nil) {
         handle = nil;
         if (error != NULL) {

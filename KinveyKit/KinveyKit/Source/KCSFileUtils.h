@@ -20,9 +20,16 @@
 
 @interface KCSFileUtils : NSObject
 
++ (NSString*) fileProtectionKey;
 + (NSString*) localPathForDB:(NSString*)dbname;
 + (NSURL*) filesFolder;
 + (NSURL*) fileURLForName:(NSString*)name;
++ (NSError*) writeData:(NSData*)data toURL:(NSURL*)url;
++ (void) touchFile:(NSURL*)url;
++ (NSError*) moveFile:(NSURL*)source to:(NSURL*)destination;
+
++ (void) dataDidBecomeAvailable;
++ (void) dataDidBecomeUnavailable;
 
 + (BOOL) clearFiles;
 
