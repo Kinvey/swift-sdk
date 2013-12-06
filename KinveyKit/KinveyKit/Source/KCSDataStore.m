@@ -115,7 +115,24 @@
 
 - (void) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
 {
-    KCS_BREAK
+    if (!query) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"query is nil" userInfo:nil] raise];
+    
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        NSUInteger count = 0;
+        if (!error) {
+            NSDictionary* responseDict = [response jsonObject];
+            count = [responseDict[@"count"] unsignedIntegerValue];
+        }
+        completion(count, error);
+    }
+                                                        route:self.route
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSUser activeUser]];
+    request.path = @[self.collectionName];
+    request.queryString = [query escapedQueryString];
+    request.method = KCSRESTMethodDELETE;
+    [request start];
+
 }
 
 

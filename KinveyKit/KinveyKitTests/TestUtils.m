@@ -84,7 +84,16 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     } copy];
 }
 
-
+- (KCSCountBlock) pollBlockCount
+{
+    self.done = NO;
+    return [^(NSUInteger count, NSError *errorOrNil) {
+        if (errorOrNil != nil) {
+            STFail(@"%@", errorOrNil);
+        }
+        self.done = YES;
+    } copy];
+}
 
 @end
 

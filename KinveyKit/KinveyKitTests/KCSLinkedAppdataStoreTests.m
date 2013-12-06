@@ -1243,7 +1243,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     done = -1;
     
     KCSAppdataStore* otherStore = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"OtherCollection" ofClass:[LinkedTestClass class]] options:nil];
-    [otherStore removeObject:ref withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [otherStore removeObject:ref withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         self.done = YES;
     } withProgressBlock:nil];

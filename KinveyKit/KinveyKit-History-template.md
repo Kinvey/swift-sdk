@@ -7,6 +7,7 @@
 * Support for [Data Protection](http://devcenter.kinvey.com/ios/guides/encryption)
     * __TODO__ setup: entittlements, client keys, forward app methods
     * __TODO__ describe levels and consequences
+* `[KCSAppdataStore removeObject:withCompletionBlock:withProgressBlock:` now uses a completion block that returns a count of items deleted, rather than a meaningless array.
 * Added `+[KCSFileStore clearCachedFiles]` to remove all downloaded files managed by KinveyKit.
 * Bug fix(es): 
     * Caching now supports skip and limit modifiers.  
