@@ -172,11 +172,14 @@ static NSOperationQueue* queue;
     
     KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
     
-    if (_body) {
-        NSData* bodyData = [writer dataWithObject:_body];
-        DBAssert(bodyData != nil, @"should be able to parse body");
-        [request setHTTPBody:bodyData];
+    if (!_body) {
+        _body = @{};
     }
+    
+    NSData* bodyData = [writer dataWithObject:_body];
+    DBAssert(bodyData != nil, @"should be able to parse body");
+    [request setHTTPBody:bodyData];
+    
 
     return request;
 }
