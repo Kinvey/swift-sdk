@@ -42,6 +42,7 @@
  This is not transactional, returns on first failure, but will still hold any previouslly passed objects.
  */
 - (BOOL) import:(NSArray*)entities route:(NSString*)route collection:(NSString*)collection;
+- (NSArray*) export:(NSString*)route collection:(NSString*)collection;
 
 #pragma mark - Management
 - (void) clearCaches;

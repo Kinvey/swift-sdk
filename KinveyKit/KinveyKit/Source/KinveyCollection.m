@@ -35,6 +35,7 @@
 #import "KCSConnectionProgress.h"
 #import "KinveyUser.h"
 
+#import "KCSRequest2.h"
 
 NSString* const KCSUserCollectionName = @"user";
 
@@ -425,4 +426,16 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     return [self collectionFromString:KCSUserCollectionName ofClass:[KCSUser class]];
 }
 
+
+#pragma mark - KinveyKit2
+- (NSString*) route
+{
+    NSString* route = KCSRESTRouteAppdata;
+    if ([_collectionName isEqualToString:KCSUserCollectionName]) {
+        route = KCSRESTRouteUser;
+    } else if ([_collectionName isEqualToString:@"_blob"]) {
+        route = KCSRESTRouteBlob;
+    }
+    return route;
+}
 @end

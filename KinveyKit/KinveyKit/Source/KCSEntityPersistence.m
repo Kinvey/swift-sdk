@@ -596,11 +596,11 @@
 
     
     NSString* update = [NSString stringWithFormat:@"REPLACE INTO %@ VALUES (:id, :obj, :time, :dirty, :count, :classname)", table];
-    BOOL upated = [_db executeUpdate:update withParameterDictionary:valDictionary];
-    if (upated == NO) {
+    BOOL updated = [_db executeUpdate:update withParameterDictionary:valDictionary];
+    if (updated == NO) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error insert/updating %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
-    return upated;
+    return updated;
 }
 
 - (NSDictionary*) entityForId:(NSString*)_id route:(NSString*)route collection:(NSString*)collection
@@ -730,6 +730,35 @@
         }
     }
     return YES;
+}
+
+- (NSArray*) export:(NSString*)route collection:(NSString*)collection
+{
+    NSString* table = [self tableForRoute:route collection:collection];
+    
+    if (![_db tableExists:table]) {
+        KCSLogWarn(KCS_LOG_CONTEXT_DATA, @"No persisted table for '%@'", collection);
+        return @[];
+    }
+
+    NSString* query = [NSString stringWithFormat:@"SELECT * FROM %@", table];
+    KCS_FMResultSet* rs = [_db executeQuery:query];
+    if ([_db hadError]) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"DB error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+        return @[];
+    }
+    
+    NSMutableArray* results = [NSMutableArray array];
+    while ([rs next]) {
+        NSDictionary* d = [rs resultDictionary];
+        if (d) {
+            id obj = [self dictObjForJson:d[@"obj"]];
+            if (obj) {
+                [results addObject:obj];
+            }
+        }
+    }
+    return results;
 }
 
 #pragma mark - Management

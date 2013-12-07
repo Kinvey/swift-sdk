@@ -149,6 +149,9 @@
     if (dict == nil || key == nil) {
 		return NO;
 	}
+    if ([dict isKindOfClass:[NSDictionary class]] == NO) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Input object is not a dictionary" userInfo:nil] raise];
+    }
     
     key = [NSString stringWithFormat:@"%@ - %@", [KCSKeyChain appName], key];
     

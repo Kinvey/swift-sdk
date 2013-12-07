@@ -35,6 +35,7 @@
 
 #import "KCSHiddenMethods.h"
 #import "KCSReachability.h"
+#import "KCSObjectCache.h"
 
 NSString* const KCSStoreKeyOfflineUpdateEnabled = @"offline.enabled";
 
@@ -148,7 +149,7 @@ NSError* createCacheError(NSString* message)
     } withProgressBlock:progressBlock];
 }
 
-- (void) completeQuery:(id)objs withCompletionBlock:(KCSCompletionBlock)completionBlock
+- (void) completeQuery:(NSArray*)objs withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSError* error = (objs == nil) ? createCacheError(@"Query not in cache") : nil;
@@ -294,4 +295,15 @@ NSError* createCacheError(NSString* message)
     [super saveObject:object withCompletionBlock:completionBlock withProgressBlock:progressBlock];
 }
 
+#pragma mark - import / export
+
+- (void) import:(NSArray*)jsonObjects
+{
+    [[KCSAppdataStore caches] jsonImport:jsonObjects route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+}
+
+- (NSArray*) exportCache
+{
+    return [[KCSAppdataStore caches] jsonExport:[self.backingCollection route] collection:self.backingCollection.collectionName];
+}
 @end

@@ -45,7 +45,6 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 - (BOOL) poll:(NSTimeInterval)timeout;
 - (KCSCompletionBlock) pollBlock;
 - (KCSCountBlock) pollBlockCount;
-
 @end
 
 //@interface XCTestCase (TestUtils)
