@@ -365,6 +365,9 @@
 		27B5F00817C7E7530050DFD0 /* KCSNetworkResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B5F00517C7E7530050DFD0 /* KCSNetworkResponse.h */; };
 		27B5F00917C7E7530050DFD0 /* KCSNetworkResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B5F00617C7E7530050DFD0 /* KCSNetworkResponse.m */; };
 		27B5F00A17C7E7530050DFD0 /* KCSNetworkResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B5F00617C7E7530050DFD0 /* KCSNetworkResponse.m */; };
+		27B75A3718536C210093144E /* KCSQuery2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C95C0317C26BC60003498D /* KCSQuery2+KCSInternal.m */; };
+		27B75A3818536C250093144E /* KCSQuery2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C95C0317C26BC60003498D /* KCSQuery2+KCSInternal.m */; };
+		27B75A3918536C810093144E /* KCSQuery2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2746534F174E6D0F0013546E /* KCSQuery2.m */; };
 		27B7724216E7C63500610D11 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B7724116E7C63500610D11 /* WebKit.framework */; };
 		27B7724516E7C71300610D11 /* KCSWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B7724316E7C6EC00610D11 /* KCSWebView.m */; };
 		27BAB39A166E957100C5D156 /* OAuthTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BAB399166E957100C5D156 /* OAuthTest.m */; };
@@ -2708,6 +2711,7 @@
 				275B426F16A82B7C0064B941 /* KCSConnection.m in Sources */,
 				27B5F00A17C7E7530050DFD0 /* KCSNetworkResponse.m in Sources */,
 				27525A3E17668EA40054C17F /* KCS_FMDatabaseQueue.m in Sources */,
+				27B75A3918536C810093144E /* KCSQuery2.m in Sources */,
 				275B427016A82BAC0064B941 /* KCSLogManager.m in Sources */,
 				27C5CA3216ADDB5700E44CC0 /* NSString+KinveyAdditions.m in Sources */,
 				27C5CA3316ADDB6100E44CC0 /* NSArray+KinveyAdditions.m in Sources */,
@@ -2728,6 +2732,7 @@
 				277A4D7617F1B00D00E545EC /* KCSNSURLCxnFileOperation.m in Sources */,
 				2718279716B8A55B00825D50 /* KCSAuthCredential.m in Sources */,
 				2718279916B8A58300825D50 /* KCSBase64.m in Sources */,
+				27B75A3818536C250093144E /* KCSQuery2+KCSInternal.m in Sources */,
 				2718279B16B8A5AD00825D50 /* KCSFile.m in Sources */,
 				27295D8717E0FA0700D34E2F /* KCSClient2+KCSInternal.m in Sources */,
 				271827A116B8AA1900825D50 /* KCSBuilders.m in Sources */,
@@ -2836,6 +2841,7 @@
 				D32A611514716F2D00F77A3F /* KinveyCollection.m in Sources */,
 				27E4E745181B1B6F0071061B /* KCSFileUtils.m in Sources */,
 				D32A611814716F2D00F77A3F /* KinveyEntity.m in Sources */,
+				27B75A3718536C210093144E /* KCSQuery2+KCSInternal.m in Sources */,
 				D32A611C14716F2D00F77A3F /* NSString+KinveyAdditions.m in Sources */,
 				D32A611F14716F2D00F77A3F /* NSURL+KinveyAdditions.m in Sources */,
 				278BADAD17B28EC70035B3D6 /* DDASLLogger.m in Sources */,

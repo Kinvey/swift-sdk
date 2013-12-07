@@ -117,4 +117,23 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
  */
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
 
+///---------------------------------------------------------------------------------------
+/// @name Bulk Data Operations
+///---------------------------------------------------------------------------------------
+
+/** Seed the store's cache with entities
+ @param jsonObjects an array of `NSDictionary` objects to place into the store's cache. These must have at least an `_id` field set.
+ @see export
+ @since TAG-ME
+ */
+- (void) import:(NSArray*)jsonObjects;
+
+/** Export the cache as an array of entities ready for serialization.
+ 
+ @return an array of the entity data
+ @see import:
+ @since TAG-ME
+ */
+- (NSArray*) exportCache;
+
 @end

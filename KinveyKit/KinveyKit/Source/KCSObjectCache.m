@@ -94,14 +94,14 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 - (void)dealloc
 {
     _queryCache.delegate = nil;
-    [_caches enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        NSDictionary* d = obj;
-        [d enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-            NSCache* c = obj;
-            c.delegate = nil;
-        }];
-    }];
+
     [self clear];
+
+    [_queryCache removeAllObjects];
+    _queryCache = nil;
+    _caches = nil;
+
+    self.offline = nil;
     dispatch_release(_cacheQueue);
 }
 
@@ -177,12 +177,33 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     NSString* queryKey = [query keyString];
     NSString* key = [self queryKey:query route:route collection:collection];
     __block NSArray* ids = [_queryCache objectForKey:key];
+    BOOL shouldCacheFromPersistence = NO;
     if (!ids) {
+        //not in the local cache, pull from the db
         dispatch_sync(_cacheQueue, ^{
             ids = [_persistenceLayer idsForQuery:queryKey route:route collection:collection];
         });
+        if ([ids count] == 0 ) {
+            //did not persist this query previously, so let's calculate:
+            NSPredicate* queryPredicate = [query predicate];
+            if (queryPredicate) {
+                NSArray* allObjs = [_persistenceLayer export:route collection:collection];
+                NSArray* filteredObj = [allObjs filteredArrayUsingPredicate:queryPredicate];
+                ids = [filteredObj valueForKeyPath:KCSEntityKeyId];
+            } else {
+                KCSLogWarn(KCS_LOG_CONTEXT_DATA, @"Query '%@' filtering has not been built out yet. Contact support@kinvey.com with this query format to help us improve local filtering.", query);
+            }
+        }
+        if ([ids count] > 0) {
+            shouldCacheFromPersistence = YES;
+        }
     }
+    
     retVal = [self objectsForIds:ids route:route collection:collection];
+    
+    if (shouldCacheFromPersistence) {
+        [self setObjects:retVal forQuery:query route:route collection:collection];
+    }
     
     return retVal;
 }
@@ -430,11 +451,33 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     dispatch_sync(_cacheQueue, ^{
         [_persistenceLayer clearCaches];
     });
-    [_caches[KCSRESTRouteAppdata] removeAllObjects];
-    [_caches[KCSRESTRouteUser] removeAllObjects];
-    [_caches[KCSRESTRouteBlob] removeAllObjects];
+    for (NSMutableDictionary* routeCache in [_caches allValues]) {
+        for (NSCache* collectionCache in [routeCache allValues]) {
+            collectionCache.delegate = nil;
+            [collectionCache removeAllObjects];
+        }
+        [routeCache removeAllObjects];
+    }
     [_caches removeAllObjects];
+
     [_queryCache removeAllObjects];
 }
 
+- (void)jsonImport:(NSArray*)entities route:(NSString*)route collection:(NSString*)collection
+{
+    //TODO: populate queries
+    //TODO: populate cache
+    dispatch_sync(_cacheQueue, ^{
+        [_persistenceLayer import:entities route:route collection:collection];
+    });
+}
+
+- (NSArray*)jsonExport:(NSString*)route collection:(NSString*)collection
+{
+    __block NSArray* export = @[];
+    dispatch_sync(_cacheQueue, ^{
+        export = [_persistenceLayer export:route collection:collection];
+    });
+    return export;
+}
 @end

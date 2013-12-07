@@ -24,6 +24,7 @@ typedef enum KCSQueryErrors : NSInteger {
 
 @interface KCSQuery2 : NSObject
 
++ (instancetype) allQuery;
 + (instancetype) queryWithPredicate:(NSPredicate*)predicate error:(NSError**)error;
 + (instancetype) queryWithQuery1:(KCSQuery*)query;
 

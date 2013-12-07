@@ -162,6 +162,27 @@
     STAssertNotNil(entity, @"should get back an entity");
 }
 
+
+- (void) testExport
+{
+    NSArray* entities = [self jsonArray];
+    
+    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
+    NSString* route = @"r";
+    NSString* cln = [[NSString UUID] stringByReplacingOccurrencesOfString:@"-" withString:@""];
+    
+    BOOL u = [cache import:entities route:route collection:cln];
+    KTAssertU
+    
+    NSArray* output = [cache export:route collection:cln];
+    KTAssertCount(8, output);
+    STAssertEqualObjects(output, entities, @"should get back original");
+    
+    [cache clearCaches];
+}
+
+
+
 #pragma mark - Peristance Unsaveds
 - (void) testUnsavedPersistence
 {
@@ -325,7 +346,25 @@
     [ocache clear];
 }
 
-
+- (void) testLocalEvalAll
+{
+    NSArray* entities = [self jsonArray];
+    KCSObjectCache* ocache = [[KCSObjectCache alloc] init];
+    
+    //seed with data
+    KCSQuery* q = [KCSQuery queryOnField:@"A" withExactMatchForValue:@"X"];
+    NSString* route = @"r";
+    NSString* cln = @"c";
+    NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
+    KTAssertCount(8, results);
+    
+    NSArray* allResults = [ocache pullQuery:[KCSQuery2 allQuery] route:route collection:cln];
+    KTAssertCount(8, allResults);
+    STAssertEqualObjects(entities, allResults, @"should match original");
+    
+    
+    [ocache clear];
+}
 #pragma mark - Old Tests
 
 #warning REINSTATE TESTS

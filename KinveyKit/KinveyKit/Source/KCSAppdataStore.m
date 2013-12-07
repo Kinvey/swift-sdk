@@ -760,7 +760,7 @@ KCSConnectionProgressBlock makeProgressBlock(KCSProgressBlock onProgress)
     KCSConnectionFailureBlock failureAction = ^(NSError* error) {
         if ([self shouldEnqueue:error] == YES) {
             //enqueue save
-            NSString* _id = [[KCSAppdataStore caches] addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{KCSRequestLogMethod} error:error];
+            NSString* _id = [[KCSAppdataStore caches] addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:[self.backingCollection route] collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{KCSRequestLogMethod} error:error];
             
             if (_id != nil) {
                 error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[_id]}];
@@ -933,7 +933,7 @@ andResaveAfterReferencesSaved:^{
             if (error) {
                 if ([self shouldEnqueue:error]) {
                     //enqueue save
-                    id errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:[KCSQuery2 queryWithQuery1:object] route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+                    id errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:[KCSQuery2 queryWithQuery1:object] route:[self.backingCollection route] collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
                     
                     if (errorValue != nil) {
                         error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
@@ -949,7 +949,7 @@ andResaveAfterReferencesSaved:^{
             if (error) {
                 if ([self shouldEnqueue:error]) {
                     //enqueue save
-                    id errorValue = [[KCSAppdataStore caches] addUnsavedDelete:object route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+                    id errorValue = [[KCSAppdataStore caches] addUnsavedDelete:object route:[self.backingCollection route] collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
                     if (errorValue != nil) {
                         error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
                     }

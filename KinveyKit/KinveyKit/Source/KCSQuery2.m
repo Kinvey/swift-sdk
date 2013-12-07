@@ -76,6 +76,12 @@ NSString* kcsQueryOperatorString(KCSQueryOperation op)
 }
 
 #pragma mark - directQuery
++ (instancetype) allQuery
+{
+    KCSQuery2* query = [[KCSQuery2 alloc] init];
+    return query;
+}
+
 + (instancetype) queryMatchField:(NSString*)field toValue:(id)value
 {
     KCSQuery2* query = [[KCSQuery2 alloc] init];
@@ -151,7 +157,6 @@ id kcsPredToQueryExprVal(NSExpression* expr)
     if (query == nil) BadPredicate()
     return query;
 }
-
 
 #pragma mark - sorting
 - (NSArray *)sortDescriptors

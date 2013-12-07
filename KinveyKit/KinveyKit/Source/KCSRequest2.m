@@ -229,10 +229,10 @@ static NSOperationQueue* queue;
         [self callCallback:op request:request];
     } else {
         if (opIsRetryableNetworkError(op)) {
-            KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Network error: %ld.", (long)op.error.code);
+            KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request (%@). Network error: %ld.", op.clientRequestId, (long)op.error.code);
             [self retryOp:op request:request];
         } else if (opIsRetryableKCSError(op)) {
-            KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request. Kinvey server error: %@", [op.response jsonObject]);
+            KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request (%@). Kinvey server error: %@", op.clientRequestId, [op.response jsonObject]);
             [self retryOp:op request:request];
         } else {
             //status OK or is a non-retryable error
@@ -282,6 +282,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         [self callCallback:oldOp request:request];
     } else {
         NSOperation<KCSNetworkOperation>* op = [[[oldOp class] alloc] initWithRequest:request];
+        op.clientRequestId = oldOp.clientRequestId;
         op.retryCount = newcount;
         @weakify(op);
         op.completionBlock = ^() {

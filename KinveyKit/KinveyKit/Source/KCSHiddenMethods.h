@@ -58,6 +58,7 @@ NSDictionary* defaultBuilders();
 
 - (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint;
 - (NSString*) urlForEndpoint:(NSString*)endpoint;
+- (NSString*) route;
 
 @end
 

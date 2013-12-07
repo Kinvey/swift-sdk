@@ -25,5 +25,5 @@
 - (NSString*) queryString:(BOOL)escape;
 - (NSString*) keyString;
 
-
+- (NSPredicate*) predicate;
 @end
