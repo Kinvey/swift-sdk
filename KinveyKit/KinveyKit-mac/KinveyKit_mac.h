@@ -2,7 +2,6 @@
 //  KinveyKit_mac.h
 //  KinveyKit-mac
 //
-//  Created by Michael Katz on 12/20/12.
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at

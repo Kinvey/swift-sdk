@@ -36,6 +36,7 @@
 #import "KCSHiddenMethods.h"
 #import "KCSReachability.h"
 #import "KCSObjectCache.h"
+#import "KCSLogManager.h"
 
 NSString* const KCSStoreKeyOfflineUpdateEnabled = @"offline.enabled";
 
@@ -124,10 +125,12 @@ NSError* createCacheError(NSString* message)
     DBAssert([query isKindOfClass:[KCSQuery class]], @"should be a query");
     if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
         //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
-#warning check error condition
-        [[KCSAppdataStore caches] removeQuery:[KCSQuery2 queryWithQuery1:query] route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName];
+        BOOL removed = [[KCSAppdataStore caches] removeQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+        if (!removed) {
+            KCSLogError(@"Error clearing query '%@' from cache:", query);
+        }
     } else if (objectsOrNil != nil) {
-        [[KCSAppdataStore caches] setObjects:objectsOrNil forQuery:[KCSQuery2 queryWithQuery1:query] route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName];
+        [[KCSAppdataStore caches] setObjects:objectsOrNil forQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     }
 }
 
@@ -135,9 +138,9 @@ NSError* createCacheError(NSString* message)
 {
     if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
         //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
-        [[KCSAppdataStore caches] deleteObjects:ids route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName];
+        [[KCSAppdataStore caches] deleteObjects:ids route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     } else if (objectsOrNil != nil) {
-        [[KCSAppdataStore caches] addObjects:objectsOrNil route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName];
+        [[KCSAppdataStore caches] addObjects:objectsOrNil route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     }
 }
 
@@ -160,7 +163,7 @@ NSError* createCacheError(NSString* message)
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
 {
     //Hold on the to the object first, in case the cache is cleared during this process
-    id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName];
+    id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
         [self queryNetwork:query withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
     } else {
@@ -265,7 +268,7 @@ NSError* createCacheError(NSString* message)
 {
     NSArray* keys = [NSArray wrapIfNotArray:objectID];
     //Hold on the to the object first, in case the cache is cleared during this process
-    NSArray* objs = [[KCSAppdataStore caches] pullIds:keys route:KCSRESTRouteAppdata collection:self.backingCollection.collectionName];
+    NSArray* objs = [[KCSAppdataStore caches] pullIds:keys route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     if ([self shouldCallNetworkFirst:objs cachePolicy:cachePolicy] == YES) {
         [self loadEntityFromNetwork:keys withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
     } else {
@@ -305,5 +308,10 @@ NSError* createCacheError(NSString* message)
 - (NSArray*) exportCache
 {
     return [[KCSAppdataStore caches] jsonExport:[self.backingCollection route] collection:self.backingCollection.collectionName];
+}
+
++ (void)clearCaches
+{
+    [[KCSAppdataStore caches] clear];
 }
 @end
