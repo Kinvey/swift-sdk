@@ -368,6 +368,7 @@
 		27B75A3718536C210093144E /* KCSQuery2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C95C0317C26BC60003498D /* KCSQuery2+KCSInternal.m */; };
 		27B75A3818536C250093144E /* KCSQuery2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C95C0317C26BC60003498D /* KCSQuery2+KCSInternal.m */; };
 		27B75A3918536C810093144E /* KCSQuery2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2746534F174E6D0F0013546E /* KCSQuery2.m */; };
+		27B75A3B1855F7200093144E /* DocTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B75A3A1855F7200093144E /* DocTests.m */; };
 		27B7724216E7C63500610D11 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B7724116E7C63500610D11 /* WebKit.framework */; };
 		27B7724516E7C71300610D11 /* KCSWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B7724316E7C6EC00610D11 /* KCSWebView.m */; };
 		27BAB39A166E957100C5D156 /* OAuthTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BAB399166E957100C5D156 /* OAuthTest.m */; };
@@ -843,6 +844,7 @@
 		27B5F00017C7E17B0050DFD0 /* KCSMockRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMockRequestOperation.m; sourceTree = "<group>"; };
 		27B5F00517C7E7530050DFD0 /* KCSNetworkResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNetworkResponse.h; sourceTree = "<group>"; };
 		27B5F00617C7E7530050DFD0 /* KCSNetworkResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSNetworkResponse.m; sourceTree = "<group>"; };
+		27B75A3A1855F7200093144E /* DocTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocTests.m; sourceTree = "<group>"; };
 		27B7724116E7C63500610D11 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		27B7724316E7C6EC00610D11 /* KCSWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSWebView.m; sourceTree = "<group>"; };
 		27BAB398166E957000C5D156 /* OAuthTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAuthTest.h; sourceTree = "<group>"; };
@@ -1397,12 +1399,12 @@
 			isa = PBXGroup;
 			children = (
 				277A4D6C17F156FE00E545EC /* KinveyFileStore.h */,
-				277A4D7017F1577C00E545EC /* interal */,
+				277A4D7017F1577C00E545EC /* internal */,
 			);
 			name = "File Store";
 			sourceTree = "<group>";
 		};
-		277A4D7017F1577C00E545EC /* interal */ = {
+		277A4D7017F1577C00E545EC /* internal */ = {
 			isa = PBXGroup;
 			children = (
 				277A4D6F17F1574200E545EC /* KinveyFileStoreInteral.h */,
@@ -1418,7 +1420,7 @@
 				27CA5A7A17F217AF007E0E10 /* KCSFile+KCSInternal.h */,
 				27CA5A7B17F217AF007E0E10 /* KCSFile+KCSInternal.m */,
 			);
-			name = interal;
+			name = internal;
 			sourceTree = "<group>";
 		};
 		278554C51742CFDC005052D6 /* fmdb */ = {
@@ -1472,6 +1474,7 @@
 				2785F5471609179E004AA410 /* Supporting Files */,
 				27BD0873160A038B009473A3 /* KCSUserSocialExtrasTest.h */,
 				27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */,
+				27B75A3A1855F7200093144E /* DocTests.m */,
 			);
 			path = KinveyKitExtrasTests;
 			sourceTree = "<group>";
@@ -2824,6 +2827,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27B75A3B1855F7200093144E /* DocTests.m in Sources */,
 				27BD0875160A038B009473A3 /* KCSUserSocialExtrasTest.m in Sources */,
 				27BD088D160A0C27009473A3 /* TestUtils.m in Sources */,
 			);

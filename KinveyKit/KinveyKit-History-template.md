@@ -1,22 +1,24 @@
 # KinveyKit Release History
 
-## 1.23
-### TAG-ME
+## 1.24
+### 1.24.0
 ** Release Date:** TBA
 
 * Support for [Data Protection](http://devcenter.kinvey.com/ios/guides/encryption)
     * __TODO__ setup: entittlements, client keys, forward app methods
     * __TODO__ describe levels and consequences
-* Added JSON import functionality.
-    * __TODO__ export
-    * __TOOD__ must have ids
-    * __TODO__ only all query supported, will overrite
-    * __TODO__ restore after logout
-* `[KCSAppdataStore removeObject:withCompletionBlock:withProgressBlock:` now uses a completion block that returns a count of items deleted, rather than a meaningless array.
+* Added [JSON import functionality to the data cache](http://devcenter.kinvey.com/ios/guides/caching-offline#SeedingTheCacheImportExport).
+    * Import JSON objects with `-[KCSCachedStore import:]`.
+    * Export the cache entities of a store with `-[KCSCachedStore exportCache]`.
+    * Limitations: imported objects must match the format used by the Kinvey backend, and only query all (e.g. `[KCSQuery query]`) supported for reading.
+* `-[KCSAppdataStore removeObject:withCompletionBlock:withProgressBlock:]` now uses a completion block that returns a count of items deleted, rather than a meaningless array.
+* Added `+[KCSCachedStore clearCaches]` to clear out the data cache.
 * Added `+[KCSFileStore clearCachedFiles]` to remove all downloaded files managed by KinveyKit.
 * Bug fix(es): 
     * Caching now supports skip and limit modifiers.  
+    * Fix deadlock in caching queue. 
 
+## 1.23
 ### 1.23.0
 ** Release Date:** December 3, 2013
 

@@ -134,10 +134,11 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 {
     __block id obj = [cache objectForKey:_id];
     if (!obj) {
+        __block NSDictionary* entity;
         dispatch_sync(_cacheQueue, ^{
-            NSDictionary* entity = [_persistenceLayer entityForId:_id route:route collection:collection];
-            obj = [_dataModel objectFromCollection:collection data:entity];
+            entity = [_persistenceLayer entityForId:_id route:route collection:collection];
         });
+        obj = [_dataModel objectFromCollection:collection data:entity];
     }
     return obj;
 }
@@ -310,33 +311,31 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 - (void) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
 {
-    dispatch_sync(_cacheQueue, ^{
-        NSDictionary* entity = [self.dataModel jsonEntityForObject:object route:route collection:collection];
-        NSCache* clnCache = [self cacheForRoute:route collection:collection];
-        
-        [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
-        
-        if (self.offlineUpdateEnabled) {
-            //had a good save
+    NSDictionary* entity = [self.dataModel jsonEntityForObject:object route:route collection:collection];
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+    
+    [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
+    
+    if (self.offlineUpdateEnabled) {
+        //had a good save
+        dispatch_sync(_cacheQueue, ^{
             [_offline hadASucessfulConnection];
-        }
-    });
+        });
+    }
 }
 
 - (void) updateCacheForObject:(NSString*)objId withEntity:(NSDictionary*)entity atRoute:(NSString*)route collection:(NSString*)collection
 {
-    dispatch_sync(_cacheQueue, ^{
-        //TODO: global update notification? for objects not in the cache but still in memory
-        NSCache* clnCache = [self cacheForRoute:route collection:collection];
-        id<KCSPersistable> object = [clnCache objectForKey:objId];
-        if (!object) {
-            object = [self.dataModel objectFromCollection:collection data:entity];
-        } else {
-            [self.dataModel updateObject:object withEntity:entity atRoute:route collection:collection];
-        }
-        
-        [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
-    });
+    //TODO: global update notification? for objects not in the cache but still in memory
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+    id<KCSPersistable> object = [clnCache objectForKey:objId];
+    if (!object) {
+        object = [self.dataModel objectFromCollection:collection data:entity];
+    } else {
+        [self.dataModel updateObject:object withEntity:entity atRoute:route collection:collection];
+    }
+    
+    [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
 }
 
 - (NSString*) addUnsavedObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error
@@ -346,26 +345,26 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     
     __block NSString* newid = nil;
     __block NSDictionary* bEntity = entity;
-    dispatch_sync(_cacheQueue, ^{
-        NSCache* clnCache = [self cacheForRoute:route collection:collection];
-        
-        if (self.offlineUpdateEnabled == YES) {
+    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+    
+    if (self.offlineUpdateEnabled == YES) {
+        dispatch_sync(_cacheQueue, ^{
             newid = [_offline addObject:bEntity route:route collection:collection headers:headers method:method error:error];
-            if (newid != nil) {
-                KK2(clean this up)
-                NSString* oldid = kinveyObjectId(object);
-                if ([newid isEqualToString:oldid] == NO) {
-                    KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"Offline cache save updating object id: %@", newid);
-                    bEntity = [entity dictionaryByAddingDictionary:@{KCSEntityKeyId : newid}];
-                    setKinveyObjectId(object, newid);
-                }
+        });
+        if (newid != nil) {
+            KK2(clean this up)
+            NSString* oldid = kinveyObjectId(object);
+            if ([newid isEqualToString:oldid] == NO) {
+                KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"Offline cache save updating object id: %@", newid);
+                bEntity = [entity dictionaryByAddingDictionary:@{KCSEntityKeyId : newid}];
+                setKinveyObjectId(object, newid);
             }
         }
-        
-        if (_updatesLocalWithUnconfirmedSaves == YES) {
-            [self updateObject:object entity:bEntity route:route collection:collection collectionCache:clnCache];
-        }
-    });
+    }
+    
+    if (_updatesLocalWithUnconfirmedSaves == YES) {
+        [self updateObject:object entity:bEntity route:route collection:collection collectionCache:clnCache];
+    }
     
     return newid;
 }
@@ -408,15 +407,15 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     DBAssert(objId, @"should have object id");
     
     __block BOOL added = NO;
-    dispatch_sync(_cacheQueue, ^{
-        if (self.offlineUpdateEnabled == YES) {
+    if (self.offlineUpdateEnabled == YES) {
+        dispatch_sync(_cacheQueue, ^{
             added = [self.offline removeObject:objId objKey:objId route:route collection:collection headers:headers method:method error:error];
-        }
-        
-        if (_updatesLocalWithUnconfirmedSaves == YES) {
-            [self deleteObject:objId route:route collection:collection];
-        }
-    });
+        });
+    }
+    
+    if (_updatesLocalWithUnconfirmedSaves == YES) {
+        [self deleteObject:objId route:route collection:collection];
+    }
     
     return added ? objId : nil;
 }
@@ -426,15 +425,15 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     DBAssert(deleteQuery, @"should have query");
     
     __block BOOL added = NO;
-    dispatch_sync(_cacheQueue, ^{
-        if (self.offlineUpdateEnabled == YES) {
+    if (self.offlineUpdateEnabled == YES) {
+        dispatch_sync(_cacheQueue, ^{
             added = [self.offline removeObject:deleteQuery objKey:[deleteQuery escapedQueryString] route:route collection:collection headers:headers method:method error:error];
-        }
-        
-        if (_updatesLocalWithUnconfirmedSaves == YES) {
-            [self deleteByQuery:deleteQuery route:route collection:collection];
-        }
-    });
+        });
+    }
+    
+    if (_updatesLocalWithUnconfirmedSaves == YES) {
+        [self deleteByQuery:deleteQuery route:route collection:collection];
+    }
     
     return added ? deleteQuery : nil;
 }

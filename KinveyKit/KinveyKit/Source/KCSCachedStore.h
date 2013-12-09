@@ -41,7 +41,6 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
 #define KCSStoreKeyLocalCacheTimeout @"localcache.timeout"
 
 
-
 /**
  This application data store caches queries, depending on the policy.
  
@@ -135,5 +134,11 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
  @since TAG-ME
  */
 - (NSArray*) exportCache;
+
+/** Clears the data caches.
+ 
+ @since TAG-ME
+ */
++ (void) clearCaches;
 
 @end
