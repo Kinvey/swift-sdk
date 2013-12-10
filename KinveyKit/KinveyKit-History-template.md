@@ -7,6 +7,7 @@
 * Support for [Data Protection](http://devcenter.kinvey.com/ios/guides/encryption)
     * __TODO__ setup: entittlements, client keys, forward app methods
     * __TODO__ describe levels and consequences -files, db, keychain
+    * Stored credentials for the active user are now single-device only. They are not shared between other other iOS devices connected to the same iTunes library or backed up locally or through iCloud. 
 * Added [JSON import functionality to the data cache](http://devcenter.kinvey.com/ios/guides/caching-offline#SeedingTheCacheImportExport).
     * Import JSON objects with `-[KCSCachedStore import:]`.
     * Export the cache entities of a store with `-[KCSCachedStore exportCache]`.
