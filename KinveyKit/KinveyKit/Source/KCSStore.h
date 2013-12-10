@@ -140,7 +140,7 @@
  @param object An object (or query) to remove from the store (if the object is a NSArray or query, matching objects will be removed)
  @param completionBlock A block that gets invoked when the remove is "complete" (as defined by the store). Count is the number of items deleted, if any.
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
- @updated TAG-ME completion block is now a count block instead of an object block
+ @updated 1.24.0 completion block is now a count block instead of an object block
  */
 
 - (void)removeObject: (id)object withCompletionBlock:(KCSCountBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock;

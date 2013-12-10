@@ -123,7 +123,7 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
 /** Seed the store's cache with entities
  @param jsonObjects an array of `NSDictionary` objects to place into the store's cache. These must have at least an `_id` field set.
  @see export
- @since TAG-ME
+ @since 1.24.0
  */
 - (void) import:(NSArray*)jsonObjects;
 
@@ -131,13 +131,13 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
  
  @return an array of the entity data
  @see import:
- @since TAG-ME
+ @since 1.24.0
  */
 - (NSArray*) exportCache;
 
 /** Clears the data caches.
  
- @since TAG-ME
+ @since 1.24.0
  */
 + (void) clearCaches;
 

@@ -295,7 +295,7 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
 
 /** Removes all downloaded files managed by KinveyKit.
  
- @since TAG-ME
+ @since 1.24.0
  */
 + (void) clearCachedFiles;
 
