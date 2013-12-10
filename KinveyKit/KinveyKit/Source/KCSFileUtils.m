@@ -20,6 +20,7 @@
 #import "KCSFileUtils.h"
 #import "KinveyCoreInternal.h"
 
+#import "sqlite3.h"
 
 @implementation KCSFileUtils
 
@@ -76,6 +77,27 @@ static BOOL _kcsFileUtilsDataUnavailable = NO;
             break;
     }
     return options;
+}
+
++ (int)dbFlags
+{
+    
+    KCSDataProtectionLevel level = [[KCSClient2 sharedClient].configuration.options[KCS_DATA_PROTECTION_LEVEL] integerValue];
+    int flags = SQLITE_OPEN_FILEPROTECTION_NONE;
+    switch (level) {
+        case KCSDataComplete:
+            flags = SQLITE_OPEN_FILEPROTECTION_COMPLETE;
+            break;
+        case KCSDataCompleteUnlessOpen:
+            flags = SQLITE_OPEN_FILEPROTECTION_COMPLETEUNLESSOPEN;
+            break;
+        case KCSDataCompleteUntilFirstLogin:
+            flags = SQLITE_OPEN_FILEPROTECTION_COMPLETEUNTILFIRSTUSERAUTHENTICATION;
+            break;
+        default:
+            break;
+    }
+    return flags | SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
 }
 
 + (NSString*) kinveyDir

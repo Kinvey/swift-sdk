@@ -21,6 +21,8 @@
 @interface KCSFileUtils : NSObject
 
 + (NSString*) fileProtectionKey;
++ (int) dbFlags;
+
 + (NSString*) localPathForDB:(NSString*)dbname;
 + (NSURL*) filesFolder;
 + (NSURL*) fileURLForName:(NSString*)name;

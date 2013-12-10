@@ -187,9 +187,13 @@
                                                         route:route
                                                       options:options
                                                   credentials:credentials];
-    if ([method isEqualToString:KCSRESTMethodPOST]) {
+    BOOL isPost = [method isEqualToString:KCSRESTMethodPOST];
+    if (isPost && objId == nil) {
         request.path = @[collection];
     } else {
+        if (isPost) {
+            method = KCSRESTMethodPUT;
+        }
         request.path = @[collection, objId];
     }
     request.method = method;
