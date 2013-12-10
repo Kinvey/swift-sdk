@@ -307,7 +307,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
  This __MUST__ be forwarded from your application delegate.
  
  @see applicationProtectedDataWillBecomeUnavailable:
- @since TAG-ME
+ @since 1.24.0
  */
 - (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application;
 
@@ -316,7 +316,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
  This __MUST__ be forwarded from your application delegate.
  
  @see applicationProtectedDataDidBecomeAvailable:
- @since TAG-ME
+ @since 1.24.0
  */
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application;
 

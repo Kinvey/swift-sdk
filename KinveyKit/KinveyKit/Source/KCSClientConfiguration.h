@@ -40,11 +40,11 @@ KCS_CONSTANT KCS_LOG_SINK;
 // See the Apple Data Protection guide in the iOS Programming Guide : Advanced App Tricks for more information
 
 /** 
- @since TAG-ME
+ @since 1.24.0
 */
 typedef enum KCSDataProtectionLevel : NSInteger {
     KCSDataNoProtection, //no encryption
-    KCSDataComplete, //data is inaccessible when device locket
+    KCSDataComplete, //data is inaccessible when device locked
     KCSDataCompleteUnlessOpen, //data is locked at first, but remains accessible while the file is open
     KCSDataCompleteUntilFirstLogin, //data is locked until the device has been unlocked once after boot
 } KCSDataProtectionLevel;
@@ -52,7 +52,7 @@ typedef enum KCSDataProtectionLevel : NSInteger {
 /** Set this to a KCSDataProtectionLevel combined with data protection entitlements and the appropriate app delegate methods allows your app to lock files managed by the file store, offline caches, and keychain. 
  
     Default is KCSDataCompleteUntilFirstLogin.
- @since TAG-ME
+ @since 1.24.0
  */
 KCS_CONSTANT KCS_DATA_PROTECTION_LEVEL;
 
