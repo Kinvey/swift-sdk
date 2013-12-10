@@ -306,6 +306,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
  
  This __MUST__ be forwarded from your application delegate.
  
+ @param application The singleton app object.
  @see applicationProtectedDataWillBecomeUnavailable:
  @since 1.24.0
  */
@@ -315,6 +316,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
  
  This __MUST__ be forwarded from your application delegate.
  
+ @param application The singleton app object.
  @see applicationProtectedDataDidBecomeAvailable:
  @since 1.24.0
  */
