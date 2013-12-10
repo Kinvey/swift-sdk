@@ -5,8 +5,9 @@
 ** Release Date:** TBA
 
 * Support for [Data Protection](http://devcenter.kinvey.com/ios/guides/encryption)
-    * __TODO__ setup: entittlements, client keys, forward app methods
-    * __TODO__ describe levels and consequences -files, db, keychain
+    * If you enable data protection entitlements for your app, you can configure `KCSClient` to respect various levels of data protection.
+        * The data protection applies to the cache, the stored keychain credentials, and files donwloaded through `KCSFileStore`.
+        * The data protection application delegate methods must be forwarded on to KCSClient. See the [guide](http://devcenter.kinvey.com/ios/guides/encryption) for set-up and configuration options. 
     * Stored credentials for the active user are now single-device only. They are not shared between other other iOS devices connected to the same iTunes library or backed up locally or through iCloud. 
 * Added [JSON import functionality to the data cache](http://devcenter.kinvey.com/ios/guides/caching-offline#SeedingTheCacheImportExport).
     * Import JSON objects with `-[KCSCachedStore import:]`.
