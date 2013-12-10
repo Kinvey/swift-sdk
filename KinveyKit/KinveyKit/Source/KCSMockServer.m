@@ -19,23 +19,18 @@
 
 
 #import "KCSMockServer.h"
+#import "KinveyCoreInternal.h"
 
-@interface KCSNetworkResponse ()
-@property (nonatomic) NSInteger code;
-@property (nonatomic, copy) id jsonData;
-@end
 
-@implementation KCSNetworkResponse
-
-+ (instancetype) MockResponseWith:(NSInteger)code data:(id)data
+KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NSString* message, NSInteger code)
 {
-    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
-    response.code = code;
-    response.jsonData = data;
+    NSDictionary* data = @{@"error" : error ? error : @"",
+                           @"debug" : debug ? debug : @"",
+                           @"message" : message ? message : @""};
+    KCSNetworkResponse* response = [KCSNetworkResponse MockResponseWith:code data:data];
     return response;
 }
 
-@end
 
 @interface KCSMockServer ()
 @property (nonatomic, strong) NSMutableDictionary* routes;
@@ -51,17 +46,86 @@
     return self;
 }
 
++ (instancetype)sharedServer
+{
+    static KCSMockServer* server;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        server = [[KCSMockServer alloc] init];
+    });
+    return server;
+}
 
-- (KCSNetworkResponse*) responseForURL:(NSString*)url
+#pragma mark - Reachability
+
+- (void) setReachable:(BOOL)reachable
+{
+    self.offline = reachable;
+}
+
+
+#pragma mark - Responses
+
++ (KCSNetworkResponse*) make404
 {
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = 404;
-    response.jsonData = @{
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{
                           @"error": @"EntityNotFound",
                           @"description": @"This entity not found in the collection",
                           @"debug": @""
-                          };
+                          } options:0 error:NULL];
 
+    return response;
+}
+
++ (KCSNetworkResponse*) make401
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 401;
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{
+                          @"error": @"InvalidCredentials",
+                          @"description": @"Invalid credentials. Please retry your request with correct credentials",
+                          @"debug": @""
+                          } options:0 error:NULL];
+    
+    return response;
+}
+
++ (KCSNetworkResponse*) makePingResponse
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 200;
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{
+                          @"version": @"3.1.6-snapshot", //TODO: match from header
+                          @"kinvey": @"Hello mock server", //TODO: pull from somewhere else
+                          } options:0 error:NULL];
+    return response;
+}
+
++ (KCSNetworkResponse*) makeReflectionResponse:(NSURLRequest*)request
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 200;
+    if (request.HTTPBody) {
+        response.jsonData = request.HTTPBody;
+    }
+    response.headers = request.allHTTPHeaderFields;
+    return response;
+}
+
++ (KCSNetworkResponse*) makeDeleteResponse:(NSInteger)count
+{
+    KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
+    response.code = 200;
+    response.jsonData = [NSJSONSerialization dataWithJSONObject:@{@"count":@(count)} options:0 error:NULL];
+    return response;
+}
+
+- (KCSNetworkResponse*) responseForRequest:(NSURLRequest*)request
+{
+    NSString* url = [request.URL absoluteString];
+    KCSNetworkResponse* response = [KCSMockServer make404];
     
     url = [url stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
     NSArray* components = [url pathComponents];
@@ -69,14 +133,70 @@
 //        NSString* protocol = components[0];
 //        NSString* host = components[1];
         NSString* route = components[2];
-//        NSString* kid = components[3];
+        NSString* kid = components[3];
+        if (self.appKey != nil && [kid isEqualToString:self.appKey] == NO) {
+            return [KCSMockServer make401];
+        }
+        
+        if ([route isEqualToString:KCSRestRouteTestReflection]) {
+            return [KCSMockServer makeReflectionResponse:request];
+        }
   
-        NSDictionary* d = _routes[route];
-        if (d) {
-            for (int i = 4; i < components.count - 1; i++) {
-                d = d[components[i]];
+        if (components.count > 4) {
+            NSMutableDictionary* d = _routes[route];
+            if (d) {
+                NSMutableDictionary* lastd = d;
+                for (int i = 4; i < components.count - 1; i++) {
+                    lastd = d;
+                    d = d[components[i]];
+                }
+                KCSNetworkResponse* aresponse = d[components[components.count-1]];
+                if (aresponse) {
+                    response = aresponse;
+                } else {
+                    NSString* method = request.HTTPMethod;
+                    if ([method isEqualToString:KCSRESTMethodPOST] || [method isEqualToString:KCSRESTMethodPUT]) {
+                        //TODO: add _id on POSTS to a collection
+                        if (!d) {
+                            NSMutableDictionary* d = [NSMutableDictionary dictionary];
+                            lastd[components[components.count - 2]] = d;
+                        }
+                        KCSNetworkResponse* getresponse =  [[KCSNetworkResponse alloc] init];
+                        getresponse.code = 200;
+                        if (request.HTTPBody) {
+                            //TODO: add _id if none
+                            getresponse.jsonData = request.HTTPBody;
+                        }
+                        //TODO this will add to the collection, but should be added to the _id under the collection
+                        d[components[components.count-1]] = getresponse;
+                        
+                        response = [KCSMockServer makeReflectionResponse:request];
+                        response.code = [method isEqualToString:KCSRESTMethodPOST] ? 201 : 200;
+                    }
+                }
+            } else {
+                NSString* method = request.HTTPMethod;
+                if ([method isEqualToString:KCSRESTMethodPOST] || [method isEqualToString:KCSRESTMethodPUT]) {
+                    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+                    _routes[route] = dictionary;
+                    DBAssert(components.count == 5, @"just handle the 5 case for now");
+                    
+                    KCSNetworkResponse* getresponse =  [[KCSNetworkResponse alloc] init];
+                    getresponse.code = 200;
+                    if (request.HTTPBody) {
+                        //TODO: add _id if none
+                        getresponse.jsonData = [[[KCS_SBJsonParser alloc] init] objectWithData:request.HTTPBody];
+                    }
+                    dictionary[components[components.count-1]] = getresponse;
+
+                    response = [KCSMockServer makeReflectionResponse:request];
+                    response.code = [method isEqualToString:KCSRESTMethodPOST] ? 201 : 200;
+                }
             }
-            response = d[components[components.count-1]];
+        } else {
+            if ([route isEqualToString:KCSRESTRouteAppdata]) {
+                return [KCSMockServer makePingResponse];
+            }
         }
         
     }
@@ -84,9 +204,10 @@
     return response;
 }
 
-- (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route
+- (NSMutableDictionary*)containerForRoute:(NSString*)route
 {
     route = [route stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
+    NSMutableDictionary* container = nil;
     NSArray* components = [route pathComponents];
     if (components != nil && components.count >= 3) {
         NSString* route = components[0];
@@ -107,8 +228,44 @@
             }
             ld = d;
         }
-        ld[components[components.count - 1]] = response;
+//        ld[components[components.count - 1]] = response;
+        container = ld;
     }
+    return container;
+}
+
+- (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route
+{
+    NSMutableDictionary* container = [self containerForRoute:route];
+    container[[route lastPathComponent]] = response;
+}
+
+- (NSError *)errorForRequest:(NSURLRequest *)request
+{
+    if (self.offline) {
+        NSError* error = [NSError errorWithDomain:NSURLErrorDomain code:kCFURLErrorNotConnectedToInternet userInfo:nil];
+        return error;
+    }
+    
+    NSString* url = [request.URL path];
+    
+    url = [url stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];
+    NSDictionary* d = [self containerForRoute:url];
+    id response = d[[url lastPathComponent]];
+    return [response isKindOfClass:[NSError class]] ? response : nil;
+}
+
+- (void) setError:(NSError *)error forRoute:(NSString *)route
+{
+    NSMutableDictionary* container = [self containerForRoute:route];
+    container[[route lastPathComponent]] = error;
+}
+
+#pragma mark - debug
+
+- (NSString *)debugDescription
+{
+    return [NSString stringWithFormat:@"%@ (%@)", [super debugDescription], self.appKey];
 }
 
 @end

@@ -102,8 +102,11 @@ typedef void(^KCSPingBlock)(KCSPingResult *result);
  with the results of the status check.
 
  @param completionAction The callback to perform on completion.
+ @see pingKinveyWithBlock:
+ @deprecated use pingKinveyWithBlock: instead
+ @deprecatedIn 1.21.0
  */
-+ (void)checkKinveyServiceStatusWithAction:(KCSPingBlock)completionAction;
++ (void)checkKinveyServiceStatusWithAction:(KCSPingBlock)completionAction KCS_DEPRECATED(Use pingKinveyWithBlock: instead, 1.20.1);
 
 ///---------------------------------------------------------------------------------------
 /// @name Pinging the Kinvey Service
@@ -113,7 +116,6 @@ typedef void(^KCSPingBlock)(KCSPingResult *result);
  This method makes a request on Kinvey and uses the callback to indicate the completion, if you
  wish to check to see if the Kinvey Service is alive and responding, please use checkKinveyServiceStatusWithAction:
  
- @warning This request is authenticated, so indirectly verifies *all* steps that are required to talk to the Kinvey Service.
  @warning The results passed to completionAction have changed, to get the old style, initialzie Kinvey
  with the KCS_USE_OLD_PING_STYLE_KEY (or, if you're using a plist, "kcsPingStyle") key set to YES in your options.
  @param completionAction The callback to perform on completion.

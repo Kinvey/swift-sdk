@@ -21,7 +21,6 @@
 
 #define MINIMUM_KCS_VERSION_SUPPORTED @"3.0"
 
-@class KCSAnalytics;
 @class UIApplication;
 @class KCSCollection;
 @class KCSUser;
@@ -29,25 +28,6 @@
 @protocol KCSStore;
 @class KCSAuthHandler;
 
-
-// Keys for options hash
-/** App Key plist key: "KCS_APP_KEY" */
-KCS_CONSTANT KCS_APP_KEY;
-/** App Secret plist key: "KCS_APP_SECRET" */
-KCS_CONSTANT KCS_APP_SECRET;
-
-/** Timeout plist key: "KCS_CONNECTION_TIMEOUT" */
-KCS_CONSTANT KCS_CONNECTION_TIMEOUT;
-/** NSNumber representation of NSURLCachePolicy */
-KCS_CONSTANT KCS_URL_CACHE_POLICY;
-/** Parsing format for dates handled by the system. ISO6801 format */
-KCS_CONSTANT KCS_DATE_FORMAT;
-/** This object shoul implement the `KCSLogSink` protocol. Use this along with +[KinveyKit configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:] to send log messages to a custom sink.*/
-KCS_CONSTANT KCS_LOG_SINK;
-
-KCS_CONSTANT KCS_SERVICE_HOST;
-
-#define KCS_USE_OLD_PING_STYLE_KEY @"kcsPingStyle"
 
 #define KCS_FACEBOOK_APP_KEY @"facebookKey"
 #define KCS_TWITTER_CLIENT_KEY @"twitterKey"
@@ -60,7 +40,10 @@ KCS_CONSTANT KCS_SERVICE_HOST;
 #define KCS_SALESFORCE_REFRESH_TOKEN @"refresh_token"
 #define KCS_SALESFORCE_CLIENT_ID @"client_id"
 
-#define KCS_CACHES_USE_V2 @"kinvey.usev2caching"
+/** Notification for when a network operation starts */
+KCS_CONSTANT KCSNetworkConnectionDidStart;
+/** Notification for when a network operation ends */
+KCS_CONSTANT KCSNetworkConnectionDidEnd;
 
 @class KCSClientConfiguration;
 
@@ -142,14 +125,6 @@ KCS_CONSTANT KCS_SERVICE_HOST;
  */
 @property (nonatomic, strong) KCSUser *currentUser KCS_DEPRECATED(Use [KCSuser activeUser] instead, 1.19.0);
 
-
-///---------------------------------------------------------------------------------------
-/// @name Analytics
-///---------------------------------------------------------------------------------------
-
-/*! The suite of Kinvey Analytics Services */
-@property (nonatomic, readonly) KCSAnalytics *analytics;
-
 ///---------------------------------------------------------------------------------------
 /// @name Data Type Support
 ///---------------------------------------------------------------------------------------
@@ -228,7 +203,7 @@ KCS_CONSTANT KCS_SERVICE_HOST;
 
 /** Initialize the singleton KCSClient with the supplied conifguration.
  
- @param conifguration the app's configuration, including the app key and app secret
+ @param configuration the app's configuration, including the app key and app secret
  @return The KCSClient singleton (can be used to chain several calls)
  @since 1.20.0
  */
@@ -316,9 +291,35 @@ KCS_CONSTANT KCS_SERVICE_HOST;
 ///---------------------------------------------------------------------------------------
 /// @name Utilities
 ///---------------------------------------------------------------------------------------
-/** Clears out all the caches maintained by the library. 
+
+/** Clears out all the caches maintained by the library.
  
  Right now the only caches used are those created by `KCSCachedStore` to cache app data. 
  */
 - (void) clearCache;
+
+///---------------------------------------------------------------------------------------
+/// @name Data Protection
+///---------------------------------------------------------------------------------------
+
+/** Helper method to preform data protection activities when the device is unlocked. 
+ 
+ This __MUST__ be forwarded from your application delegate.
+ 
+ @param application The singleton app object.
+ @see applicationProtectedDataWillBecomeUnavailable:
+ @since 1.24.0
+ */
+- (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application;
+
+/** Helper method to preform data protection activities when the device is locked.
+ 
+ This __MUST__ be forwarded from your application delegate.
+ 
+ @param application The singleton app object.
+ @see applicationProtectedDataDidBecomeAvailable:
+ @since 1.24.0
+ */
+- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application;
+
 @end

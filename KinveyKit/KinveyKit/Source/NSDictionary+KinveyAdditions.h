@@ -2,7 +2,6 @@
 //  NSDictionary+KinveyAdditions.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 3/14/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -21,5 +20,8 @@
 
 @interface NSDictionary (KinveyAdditions)
 - (NSDictionary*) stripKeys:(NSArray*)keys;
+- (instancetype) dictionaryByAddingDictionary:(NSDictionary*)dictionary;
+
+- (NSString*) escapedJSON;
 
 @end

@@ -8,6 +8,7 @@
 
 #import "KCSAnalytics.h"
 
+#warning remove
 @implementation KCSAnalytics
 
 - (instancetype)init

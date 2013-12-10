@@ -3,26 +3,38 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/7/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSOfflineStoreTests.h"
 #import "TestUtils.h"
 #import <KinveyKit/KinveyKit.h>
 #import "ASTTestClass.h"
 #import "KCSHiddenMethods.h"
-#import "KCSSaveQueue.h"
+#import "KCSMockServer.h"
 
-@interface KCSSaveQueues;
-+ (KCSSaveQueues*)sharedQueues;
-- (void)persistQueues;
-- (NSDictionary*)cachedQueues;
-@end
-@interface KCSAppdataStore ()
-- (void) setReachable:(BOOL)r;
-@end
+//@interface KCSSaveQueues;
+//+ (KCSSaveQueues*)sharedQueues;
+//- (void)persistQueues;
+//- (NSDictionary*)cachedQueues;
+//@end
+//@interface KCSAppdataStore ()
+//- (void) setReachable:(BOOL)r;
+//@end
 
-@interface KCSOfflineStoreTests ()
+@interface KCSOfflineStoreTests () <KCSOfflineUpdateDelegate>
 {
     BOOL _shouldSaveCalled;
     BOOL _testShouldSave;
@@ -62,9 +74,10 @@
     obj.objCount = 79000;
     
     KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{KCSStoreKeyUniqueOfflineSaveIdentifier : @"x0"}];
-    
-    [store setReachable:NO];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{}];
+    [KCSMockServer sharedServer].offline = YES;
+
+//    [store setReachable:NO];
     
     self.done = NO;
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -87,9 +100,9 @@
     
     KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
     KCSOfflineStoreTests* o = self;
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{KCSStoreKeyUniqueOfflineSaveIdentifier : @"x1", KCSStoreKeyOfflineSaveDelegate : o}];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{}];
     
-    [store setReachable:NO];
+//    [store setReachable:NO];
     
     self.done = NO;
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -105,7 +118,7 @@
     
     self.done = NO;
     _testShouldSave = YES;
-    [store setReachable:YES];
+//    [store setReachable:YES];
     
     [self poll];
     
@@ -131,9 +144,9 @@
     
     KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
     KCSOfflineStoreTests* o = self;
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{KCSStoreKeyUniqueOfflineSaveIdentifier : @"x3", KCSStoreKeyOfflineSaveDelegate : o}];
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{}];
     
-    [store setReachable:NO];
+//    [store setReachable:NO];
     
     self.done = NO;
     [store saveObject:@[obj1,obj2,obj3] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -148,7 +161,7 @@
     
     self.done = NO;
     _expSaveCount = 3;
-    [store setReachable:YES];
+//    [store setReachable:YES];
     
     [self poll];
     STAssertEquals((int)3, (int)_didSaveCount, @"Should have been called for each item");
@@ -156,30 +169,30 @@
 
 - (void) testPersist
 {
-    KCSSaveQueues* qs = [KCSSaveQueues sharedQueues];
-    KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
-
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{KCSStoreKeyUniqueOfflineSaveIdentifier : @"x4", KCSStoreKeyOfflineSaveDelegate : self}];
-    [store setReachable:NO];
-    ASTTestClass* obj = [[ASTTestClass alloc] init];
-    obj.date = [NSDate date];
-    obj.objCount = 79000;
-    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+//    KCSSaveQueues* qs = [KCSSaveQueues sharedQueues];
+//    KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
+//
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{}];
+//    [store setReachable:NO];
+//    ASTTestClass* obj = [[ASTTestClass alloc] init];
+//    obj.date = [NSDate date];
+//    obj.objCount = 79000;
+//    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        self.done = YES;
+//    } withProgressBlock:nil];
+//    [self poll];
+//    
+//    [qs persistQueues];
     
-    [qs persistQueues];
-    
-    
-    NSDictionary* d = [qs cachedQueues];
-    KCSSaveQueue* s = [d objectForKey:@"x4"];
-    STAssertNotNil(s, @"should have saved an x4");
-    int count = [s count];
-    STAssertEquals((int)1, count, @"should have loaded one object");
-    KCSSaveQueueItem* t = [[s array] objectAtIndex:0];
-    ASTTestClass* atc = [t object];
-    STAssertEquals((int)79000, (int)atc.objCount, @"should match");
+    STFail(@"fix this");
+//    NSDictionary* d = [qs cachedQueues];
+//    KCSSaveQueue* s = [d objectForKey:@"x4"];
+//    STAssertNotNil(s, @"should have saved an x4");
+//    int count = [s count];
+//    STAssertEquals((int)1, count, @"should have loaded one object");
+//    KCSSaveQueueItem* t = [[s array] objectAtIndex:0];
+//    ASTTestClass* atc = (ASTTestClass*)[t object];
+//    STAssertEquals((int)79000, (int)atc.objCount, @"should match");
 }
 
 #pragma mark - Offline Save Delegate
@@ -187,7 +200,7 @@
 {
     _shouldSaveCalled = YES;
     if (_testShouldSave) {
-        ASTTestClass* obj = entity;
+        ASTTestClass* obj = (ASTTestClass*) entity;
         STAssertEquals((int)79000, obj.objCount, @"should have the right obj to save");
     }
     

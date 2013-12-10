@@ -171,63 +171,6 @@
 
 
 #define AssertQuery STAssertEqualObjects([query JSONStringRepresentation], expectedJSON, @"should match");
-- (void) testRegex
-{
-    NSString* expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\"}}";
-    KCSQuery* query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef"];
-    AssertQuery
-    
-    query = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexepDefault];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"i\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpCaseInsensitive];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"x\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpAllowCommentsAndWhitespace];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"s\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpDotMatchesAll];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"m\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpAnchorsMatchLines];
-    AssertQuery
-
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"ix\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpCaseInsensitive | kKCSRegexpAllowCommentsAndWhitespace];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"ixsm\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpCaseInsensitive | kKCSRegexpAllowCommentsAndWhitespace | kKCSRegexpDotMatchesAll | kKCSRegexpAnchorsMatchLines];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$not\":{\"$regex\":\"abcdef\",\"$options\":\"ixsm\"}}}";
-    [query negateQuery];
-    AssertQuery
-    
-    expectedJSON = @"{\"age\":{\"$lt\":10},\"field\":{\"$not\":{\"$regex\":\"abcdef\",\"$options\":\"ixsm\"}}}";
-    [query addQuery:[KCSQuery queryOnField:@"age" usingConditionalsForValues:kKCSLessThan, @(10), nil]];
-    AssertQuery
-}
-
-- (void) testNSRegularExpressionQuery
-{
-    NSError* error = nil;
-    NSRegularExpression* reg = [NSRegularExpression regularExpressionWithPattern:@"&/\"[0-9a-zA-Z].*" options:NSRegularExpressionCaseInsensitive | NSRegularExpressionAnchorsMatchLines error:&error];
-    STAssertNil(error, @"no error %@", error);
-    
-    KCSQuery* query = [KCSQuery queryOnField:@"field" withRegex:reg];
-    NSString* expectedJSON = @"{\"field\":{\"$regex\":\"&/\\\"[0-9a-zA-Z].*\",\"$options\":\"im\"}}";
-    AssertQuery
-    
-    query = [KCSQuery queryOnField:@"field" withRegex:reg options:kKCSRegexpAllowCommentsAndWhitespace];
-    expectedJSON = @"{\"field\":{\"$regex\":\"&/\\\"[0-9a-zA-Z].*\",\"$options\":\"x\"}}";
-    AssertQuery
-}
-
 - (void) testMetadatQueryDate
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
@@ -393,9 +336,6 @@
     
     KCSQuery* q3 = [KCSQuery queryForEmptyValueInField:@"field"];
     STAssertEqualObjects(q3.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
-    
-    KCSQuery* q4 = [KCSQuery queryForNilValueInField:@"field"];
-    STAssertEqualObjects(q4.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
 }
 #pragma clang diagnostic pop
 

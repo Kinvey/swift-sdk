@@ -2,7 +2,6 @@
 //  KCSLogManager.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 1/11/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -103,7 +102,7 @@ withFormat:(format),##__VA_ARGS__]
                             warningEnabled: (BOOL)warningIsEnabled
                               errorEnabled: (BOOL)errorIsEnabled;
 
-
+- (BOOL) networkLogging;
 
 @property (nonatomic) BOOL suppressErrorToExceptionOnTest;
 

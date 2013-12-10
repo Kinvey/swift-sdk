@@ -1,0 +1,36 @@
+//
+//  KCSClientConfiguration+KCSInternal.h
+//  KinveyKit
+//
+//  Copyright (c) 2013 Kinvey. All rights reserved.
+//
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
+
+#import <KinveyKit/KinveyKit.h>
+
+KK2(expose & document levels)
+KCS_CONSTANT KCS_LOG_LEVEL;
+KCS_CONSTANT KCS_LOG_ADDITIONAL_LOGGERS;
+KCS_CONSTANT KCS_CONFIG_RETRY_DISABLED;
+
+#define KCSConfigValueBOOL(key) [KCSClient2 sharedClient].configuration.options[key] != nil && [[KCSClient2 sharedClient].configuration.options[key] boolValue]
+
+@interface KCSClientConfiguration (KCSInternal)
+
+- (NSString*) baseURL;
+
+- (int) loglevel;
+- (void) setLoglevel:(int)level;
+
+@end

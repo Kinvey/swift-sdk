@@ -19,6 +19,111 @@
 
 
 #import "TestUtils2.h"
+#import <objc/runtime.h>
+#import "KinveyCoreInternal.h"
+
+#import "KCSClient.h"
+
+#define POLL_INTERVAL 0.05
+#define MAX_POLL_COUNT 30 / POLL_INTERVAL
+
+#define STAGING_ALPHA @"alpha"
+#define STAGING_V3YK1N @"v3yk1n"
+
+#define STAGING_API STAGING_V3YK1N
+
+
+@interface MockCredentials : NSObject <KCSCredentials>
+
+@end
+@implementation MockCredentials
+
+- (NSString *)authString
+{
+    return @"";
+}
+
+@end
+
+id<KCSCredentials> mockCredentails()
+{
+    return [[MockCredentials alloc] init];
+}
+
+@implementation SenTestCase (TestUtils2)
+@dynamic done;
+
+- (BOOL) poll
+{
+    int pollCount = 0;
+    while (self.done == NO && pollCount < MAX_POLL_COUNT) {
+        NSLog(@"polling... %4.2fs", pollCount * POLL_INTERVAL);
+        NSRunLoop* loop = [NSRunLoop mainRunLoop];
+        NSDate* until = [NSDate dateWithTimeIntervalSinceNow:POLL_INTERVAL];
+        [loop runUntilDate:until];
+        pollCount++;
+    }
+    return pollCount == MAX_POLL_COUNT;
+}
+
+- (BOOL)done {
+    return [objc_getAssociatedObject(self, @"doneval") boolValue];
+}
+
+- (void)setDone:(BOOL)newDone {
+    objc_setAssociatedObject(self, @"doneval", [NSNumber numberWithBool:newDone], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+#pragma mark - Kinvey
+
+- (void) setupStaging
+{
+    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid10005"
+                                                       withAppSecret:@"8cce9613ecb7431ab580d20863a91e20"
+                                                        usingOptions:@{KCS_LOG_LEVEL              : @255,
+                                                                       KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}];
+    [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
+    
+}
+- (void) setupProduction
+{
+    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1880"
+                                                       withAppSecret:@"6414992408f04132bd467746f7ecbdcf"
+                                                        usingOptions:@{KCS_LOG_LEVEL              : @255,
+                                                                       KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}];
+    [self useProductionUser];
+}
+
+- (void)setupKCS
+{
+    //    [self setupStaging];
+    [self setupProduction];
+}
+
+- (void) useMockUser
+{
+    KCSUser* mockUser = [[KCSUser alloc] init];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    [KCSClient sharedClient].currentUser = mockUser;
+#pragma clang diagnostic pop
+}
+
+- (void) useProductionUser
+{
+    static NSString* username = @"Big Bob";
+    static NSString* password = @"BrianWilson'sBeard";
+    if ([KCSUser activeUser] == nil || [[KCSUser activeUser].username isEqualToString:username] == NO) {
+        self.done = NO;
+        [KCSUser loginWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *error, KCSUserActionResult result) {
+            KTAssertNoError
+            self.done = YES;
+        }];
+        [self poll];
+    }
+}
+
+@end
 
 @implementation TestUtils2
 

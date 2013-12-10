@@ -41,9 +41,10 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 
 @interface SenTestCase (TestUtils)
 @property (nonatomic) BOOL done;
-- (void) poll;
-- (void) poll:(NSTimeInterval)timeout;
+- (BOOL) poll;
+- (BOOL) poll:(NSTimeInterval)timeout;
 - (KCSCompletionBlock) pollBlock;
+- (KCSCountBlock) pollBlockCount;
 @end
 
 //@interface XCTestCase (TestUtils)

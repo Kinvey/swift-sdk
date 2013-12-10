@@ -18,12 +18,45 @@
 //
 
 #import "KCSQuery2.h"
-#import "NSString+KinveyAdditions.h"
+#import "KinveyCoreInternal.h"
+#import "KinveyDataStoreInternal.h"
 
-#import "KCS_SBJson.h"
+#define BadPredicate()  if (error != NULL) { \
+                             *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSqueryPredicateNotSupportedError userInfo:nil]; \
+                        }
+
+typedef enum KCSQueryOperation : NSInteger {
+    KCSQueryLessThan = 16,
+    KCSQueryLessThanOrEqual = 17,
+    KCSQueryGreaterThan = 18,
+    KCSQueryGreaterThanOrEqual = 19,
+} KCSQueryOperation;
+
+NSString* kcsQueryOperatorString(KCSQueryOperation op)
+{
+    NSString* operator = nil;
+    switch (op) {
+        case KCSQueryLessThan:
+            operator = @"$lt";
+            break;
+        case KCSQueryLessThanOrEqual:
+            operator = @"lte";
+            break;
+        case KCSQueryGreaterThan:
+            operator = @"gt";
+            break;
+        case KCSQueryGreaterThanOrEqual:
+            operator = @"gte";
+            break;
+        default:
+            break;
+    }
+    return operator;
+}
 
 @interface KCSQuery2 ()
 @property (nonatomic, retain) NSMutableDictionary* internalRepresentation;
+@property (nonatomic, retain) NSMutableArray* mySortDescriptors;
 @end
 
 @implementation KCSQuery2
@@ -39,14 +72,28 @@
 
 - (NSString *)description
 {
-    return [self queryString];
+    return [self queryString:NO];
 }
 
 #pragma mark - directQuery
++ (instancetype) allQuery
+{
+    KCSQuery2* query = [[KCSQuery2 alloc] init];
+    return query;
+}
+
 + (instancetype) queryMatchField:(NSString*)field toValue:(id)value
 {
     KCSQuery2* query = [[KCSQuery2 alloc] init];
     query.internalRepresentation = [@{field:value} mutableCopy];
+    return query;
+}
+
++ (instancetype) queryOnField:(NSString*)field operator:(KCSQueryOperation)operation toValue:(id)value
+{
+    KCSQuery2* query = [[KCSQuery2 alloc] init];
+    NSString* operator = kcsQueryOperatorString(operation);
+    query.internalRepresentation = [@{field:@{operator : value}} mutableCopy];
     return query;
 }
 
@@ -75,36 +122,130 @@ id kcsPredToQueryExprVal(NSExpression* expr)
             NSExpression* lhs = [cpredicate leftExpression];
             NSExpression* rhs = [cpredicate rightExpression];
             NSPredicateOperatorType type = [cpredicate predicateOperatorType];
-            if (type == NSEqualToPredicateOperatorType) {
-                id field = kcsPredToQueryExprVal(lhs);
-                id val = kcsPredToQueryExprVal(rhs);
-                if (field != nil && val != nil) {
-                    query = [self queryMatchField:field toValue:val];
-                } else {
-                    //TODO: error
+            
+            id field = kcsPredToQueryExprVal(lhs);
+            id val = kcsPredToQueryExprVal(rhs);
+            if (field != nil && val != nil) {
+                switch (type) {
+                    case NSLessThanPredicateOperatorType:
+                        query = [self queryOnField:field operator:KCSQueryLessThan toValue:val];
+                        break;
+                    case NSLessThanOrEqualToPredicateOperatorType:
+                        query = [self queryOnField:field operator:KCSQueryLessThanOrEqual toValue:val];
+                        break;
+                    case NSGreaterThanPredicateOperatorType:
+                        query = [self queryOnField:field operator:KCSQueryGreaterThan toValue:val];
+                        break;
+                    case NSGreaterThanOrEqualToPredicateOperatorType:
+                        query = [self queryOnField:field operator:KCSQueryGreaterThanOrEqual toValue:val];
+                        break;
+                    case NSEqualToPredicateOperatorType:
+                        query = [self queryMatchField:field toValue:val];
+                        break;
+                    default:
+                        break;
                 }
-            } else {
-                //TODO: error
             }
         } else {
-            //TODO: ERROR
+            //other kinds of preditcate modifiers
+            BadPredicate()
         }
+    } else {
+        //other kinds of predicate classes
+        BadPredicate()
+    }
+    if (query == nil) BadPredicate()
+    return query;
+}
+
+#pragma mark - sorting
+- (NSArray *)sortDescriptors
+{
+    return [_mySortDescriptors copy];
+}
+
+- (void)setSortDescriptors:(NSArray *)sortDescriptors
+{
+    _mySortDescriptors = [NSMutableArray arrayWithCapacity:sortDescriptors.count];
+    for (NSSortDescriptor* sort in sortDescriptors) {
+        if (sort.comparator != nil) {
+            [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Cannot use a comparator with Kinvey backend" userInfo:@{@"invalidSort":sort}] raise];
+        }
+        if (sort.selector != @selector(compare:)) {
+            [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Cannot use a selector with Kinvey backend" userInfo:@{@"invalidSort":sort}] raise];
+        }
+        [_mySortDescriptors addObject:sort];
+    }
+}
+
+//TODO handle backend vs client property name
+- (NSString*) sortString:(BOOL)escape
+{
+    NSString* sortString = @"";
+    if ([_mySortDescriptors count] > 0) {
+        NSMutableDictionary* sortDictionary = [NSMutableDictionary dictionary];
+        for (NSSortDescriptor* sort in _mySortDescriptors) {
+            NSNumber* direction = sort.ascending ? @(1) : @(-1);
+            NSString* key = sort.key;
+            sortDictionary[key] = direction;
+        }
+        sortString = [NSString stringWithFormat:@"&sort=%@", escape ? [sortDictionary escapedJSON] : [sortDictionary JSONRepresentation]];
+    }
+    
+    return sortString;
+}
+
+#pragma mark - stringification
+
+- (NSString*) queryString:(BOOL)escape
+{
+    NSString* query =  [NSString stringWithFormat:@"?query=%@", escape ? [_internalRepresentation escapedJSON] : [_internalRepresentation JSONRepresentation]];
+    query = [query stringByAppendingString:[self sortString:escape]];
+    if (self.limit > 0 ) {
+        query = [query stringByAppendingFormat:@"&limit=%lu", (unsigned long)self.limit];
+    }
+    if (self.offset > 0) {
+        query = [query stringByAppendingFormat:@"&skip=%lu", (unsigned long)self.offset];
     }
     return query;
 }
 
-
-#pragma mark - stringification
-
-- (NSString*) queryString
-{
-    return [NSString stringWithFormat:@"query=%@", [_internalRepresentation JSONRepresentation]];
-}
-
 - (NSString *)escapedQueryString
 {
-    return [NSString stringByPercentEncodingString:[self queryString]];
+    return [self queryString:YES];
 }
 
+- (NSString*) keyString
+{
+    NSString* ir = [self queryString:NO];
+    return [@([ir hash]) stringValue];
+}
+
+#pragma mark - Compatability
+
++ (instancetype) queryWithQuery1:(KCSQuery *)query
+{
+    KCSQuery2* q = [[self alloc] init];
+    q.internalRepresentation = [query.query mutableCopy];
+    
+    if ([[query sortModifiers] count] > 0) {
+        NSMutableArray* sorts = [NSMutableArray arrayWithCapacity:query.sortModifiers.count];
+        for (KCSQuerySortModifier* mod in query.sortModifiers) {
+            NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:mod.field ascending:mod.direction == kKCSAscending];
+            [sorts addObject:sort];
+        }
+        q.sortDescriptors = sorts;
+    }
+    
+    if (query.limitModifer) {
+        q.limit = query.limitModifer.limit;
+    }
+    
+    if (query.skipModifier) {
+        q.offset = query.skipModifier.count;
+    }
+    
+    return q;
+}
 
 @end

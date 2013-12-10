@@ -26,6 +26,8 @@
 
 #import "KCSKeyChain.h"
 #import "KCSLogManager.h"
+#import "KCSClientConfiguration.h"
+#import "KCSClient2.h"
 #import <Security/Security.h>
 
 @implementation KCSKeyChain
@@ -69,6 +71,27 @@
     return NO;
 }
 
++ (CFTypeRef) accessKey
+{
+    KCSDataProtectionLevel level = [[KCSClient2 sharedClient].configuration.options[KCS_DATA_PROTECTION_LEVEL] integerValue];
+    CFTypeRef access = kSecAttrAccessibleAlwaysThisDeviceOnly;
+    switch (level) {
+        case KCSDataComplete:
+            access = kSecAttrAccessibleWhenUnlockedThisDeviceOnly;
+            break;
+        case KCSDataCompleteUnlessOpen:
+            access = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly;
+            break;
+        case KCSDataCompleteUntilFirstLogin:
+            access = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly;
+            break;
+        default:
+            break;
+    }
+    return access;
+
+}
+
 + (BOOL)setString:(NSString *)string forKey:(NSString *)key {
 	if (string == nil || key == nil) {
 		return NO;
@@ -94,6 +117,7 @@
         
         NSMutableDictionary *addDict = [NSMutableDictionary dictionaryWithDictionary:existsQueryDictionary];
         addDict[(__bridge id)kSecValueData] = data;
+        addDict[(__bridge __strong id)(kSecAttrAccessible)] = (__bridge id)([self accessKey]);
         
         res = SecItemAdd((__bridge CFDictionaryRef)addDict, NULL);
         NSAssert1(res == errSecSuccess, @"Recieved %@ from SecItemAdd!", @(res));
@@ -101,8 +125,9 @@
 		// Modify an existing one
 		// Actually pull it now of the keychain at this point.
         NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
-		NSDictionary *attributeDict = [NSDictionary dictionaryWithObject:data forKey:(__bridge id)kSecValueData];
-        
+		NSDictionary *attributeDict = @{(__bridge id)kSecAttrAccessible : (__bridge id)[self accessKey],
+                                        (__bridge id)kSecValueData : data
+                                        };
 		res = SecItemUpdate((__bridge CFDictionaryRef)existsQueryDictionary, (__bridge CFDictionaryRef)attributeDict);
 		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %@!", @(res));
 		
@@ -149,6 +174,9 @@
     if (dict == nil || key == nil) {
 		return NO;
 	}
+    if ([dict isKindOfClass:[NSDictionary class]] == NO) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Input object is not a dictionary" userInfo:nil] raise];
+    }
     
     key = [NSString stringWithFormat:@"%@ - %@", [KCSKeyChain appName], key];
     
@@ -169,14 +197,16 @@
 	if (res == errSecItemNotFound) {
         NSMutableDictionary *addDict = [NSMutableDictionary dictionaryWithDictionary:existsQueryDictionary];
         addDict[(__bridge id)kSecValueData] = data;
+        addDict[(__bridge __strong id)(kSecAttrAccessible)] = (__bridge id)([self accessKey]);
         
         res = SecItemAdd((__bridge CFDictionaryRef)addDict, &o);
         NSAssert1(res == errSecSuccess, @"Recieved %@ from SecItemAdd!", @(res));
 	} else if (res == errSecSuccess) {
 		// Modify an existing one
 		// Actually pull it now of the keychain at this point.
-		NSDictionary *attributeDict = [NSDictionary dictionaryWithObject:data forKey:(__bridge id)kSecValueData];
-        
+		NSDictionary *attributeDict = @{(__bridge id)kSecAttrAccessible : (__bridge id)[self accessKey],
+                                        (__bridge id)kSecValueData : data
+                                        };
 		res = SecItemUpdate((__bridge CFDictionaryRef)existsQueryDictionary, (__bridge CFDictionaryRef)attributeDict);
 		NSAssert1(res == errSecSuccess, @"SecItemUpdated returned %@!", @(res));
 		
@@ -209,7 +239,12 @@
 	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, (CFTypeRef *)&data);
 	if (res == errSecSuccess) {
         NSDictionary* dict = [NSKeyedUnarchiver unarchiveObjectWithData:(NSData*)CFBridgingRelease(data)];
-        return dict;
+        if ([dict isKindOfClass:[NSDictionary class]] == NO) {
+            KCSLogError(@"%@ is not a dictionary type!", dict);
+            return nil;
+        } else {
+            return dict;
+        }
 	} else {
 		NSAssert1(res == errSecItemNotFound, @"SecItemCopyMatching returned %@!", @(res));
 	}

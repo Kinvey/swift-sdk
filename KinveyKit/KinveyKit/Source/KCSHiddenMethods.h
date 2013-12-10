@@ -30,6 +30,7 @@
 #import "KCSFileStore.h"
 #import "KCSFile.h"
 #import "KCSClientConfiguration.h"
+#import "KCSObjectCache.h"
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
@@ -57,6 +58,7 @@ NSDictionary* defaultBuilders();
 
 - (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint;
 - (NSString*) urlForEndpoint:(NSString*)endpoint;
+- (NSString*) route;
 
 @end
 
@@ -78,6 +80,9 @@ NSDictionary* defaultBuilders();
 - (NSDictionary*) dictionaryValue;
 @end
 
+@interface KCSAppdataStore (KCSHiddenMethods)
++ (KCSObjectCache*) caches;
+@end
 
 @interface KCSUser (KCSHiddenMethods)
 @end

@@ -5,12 +5,24 @@
 //  Created by Brian Wilson on 12/1/11.
 //  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KinveyUser.h"
 #import "KCSClient.h"
 #import "KCSKeyChain.h"
 #import "KCSRESTRequest.h"
-#import "KinveyAnalytics.h"
+#import "KCSBase64.h"
 #import "KCS_SBJson.h"
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
@@ -26,6 +38,9 @@
 
 #import "KCSObjectMapper.h"
 #import "KCSRESTRequest.h"
+#import "KCSPush.h"
+
+#import "KCSFileStore.h"
 
 #pragma mark - Constants
 
@@ -242,20 +257,10 @@ static KCSRESTRequest* lastBGUpdate = nil;
     KCSUser *createdUser = [[KCSUser alloc] init];
     createdUser.username = [KCSKeyChain getStringForKey:kKeychainUsernameKey];
     
-    KCSClient *client = [KCSClient sharedClient];
-    
     if (createdUser.username == nil){
         // No user, generate it, note, use the APP KEY/APP SECRET!
-        KCSAnalytics *analytics = [client analytics];
         NSMutableDictionary *userJSONPaylod = [NSMutableDictionary dictionary];
         // Build the dictionary that will be JSON-ified here
-        if ([analytics supportsUDID] == YES) {
-            // We have three optional, internal fields and 2 manditory fields
-            [userJSONPaylod setObject:[analytics UDID] forKey:@"UDID"];
-            [userJSONPaylod setObject:[analytics UUID] forKey:@"UUID"];
-        }
-        
-
         
         // Next we check for the username and password
         if (uname && password){
@@ -306,20 +311,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
         KCSConnectionFailureBlock fBlock = ^(NSError *error){
             // I really don't know what to do here, we can't continue... Something died...
             KCSLogError(@"Internal Error: %@", error);
-            
-            NSDictionary *errorDict = [NSDictionary dictionaryWithObjectsAndKeys:error, @"error",
-                                       @"The Kinvey Service has experienced an internal error and is unable to continue.  Please contact support with the supplied userInfo", @"reason", nil];
-            
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to create user."
-                                                                               withFailureReason:[errorDict description]
-                                                                          withRecoverySuggestion:@"Contact support."
-                                                                             withRecoveryOptions:nil];
-            
-            // No user, it's during creation
-            NSError* newError = [NSError errorWithDomain:KCSUserErrorDomain
-                                                    code:KCSUnexpectedError
-                                                userInfo:userInfo];
-            completionBlock(nil, newError, 0);
+            completionBlock(nil, error, 0);
             return;
         };
         
@@ -391,7 +383,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
         }];
     }
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-Wdeprecated" 
     return [KCSClient sharedClient].currentUser;
 #pragma clang diagnostic pop
 }
@@ -497,10 +489,11 @@ static KCSRESTRequest* lastBGUpdate = nil;
     [self clearSavedCredentials];
     NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
     KCSUser* createdUser = [[KCSUser alloc] init];
+    NSString* authToken = [dictionary valueForKeyPath:@"_kmd.authtoken"];
     
     NSError* error = nil;
     int status = 0;
-    if (createdUser.sessionAuth != nil) {
+    if (authToken != nil) {
         status = KCSUserFound;
     } else {
         NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
@@ -634,16 +627,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
     [loginRequest start];
 }
 
-+ (void)registerUserWithFacebookAcccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock
-{
-    [self registerUserWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : accessToken} withCompletionBlock:completionBlock];
-}
-
-+ (void)loginWithFacebookAccessToken:(NSString*)accessToken withCompletionBlock:(KCSUserCompletionBlock)completionBlock
-{
-    [self loginWithWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : accessToken} withCompletionBlock:completionBlock];
-}
-
 + (void)loginWithWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
     [self loginWithSocialIdentity:provider accessDictionary:accessDictionary withCompletionBlock:completionBlock];
@@ -672,7 +655,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
     KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
         if ([response responseCode] != KCS_HTTP_STATUS_OK) {
             //This is new user, log in
-            dispatch_async(dispatch_get_current_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [KCSUser registerUserWithSocialIdentity:provider accessDictionary:accessDictionary withCompletionBlock:completionBlock];
             });
         } else { //successful
@@ -722,6 +705,8 @@ static KCSRESTRequest* lastBGUpdate = nil;
         [[KCSPush sharedPush] setDeviceToken:nil];
         
         [KCSUser clearSavedCredentials];
+        [[KCSAppdataStore caches] clear];
+        [KCSFileStore clearCachedFiles];
         
         // Set the currentUser to nil
         setActive(nil);
@@ -892,11 +877,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
 }
 
 #pragma mark - Kinvey Entity
-
-- (KCSCollection *)userCollection
-{
-    return [KCSCollection userCollection];
-}
 
 + (NSDictionary *)kinveyObjectBuilderOptions
 {
@@ -1072,7 +1052,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
     [properties setValue:_email forKey:KCSUserAttributeEmail];
     [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
 }
-
+KK2(get rid of password auth)
 + (KCSUser *)activeUser
 {
 #pragma clang diagnostic push
@@ -1173,4 +1153,18 @@ static KCSRESTRequest* lastBGUpdate = nil;
         [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
     }
 }
+
+- (NSString *)authString
+{
+    NSString *authString = nil;
+    if (self.sessionAuth) {
+        authString = [@"Kinvey " stringByAppendingString: self.sessionAuth];
+        KCSLogDebug(@"Current user found, using sessionauth (%@) => XXXXXXXXX", self.username);
+    } else {
+        authString = KCSbasicAuthString(self.username, self.password);
+        KCSLogDebug(@"Current user found (%@, XXXXXXXXX) => XXXXXXXXX", self.username);
+    }
+    return authString;
+}
+
 @end
