@@ -2,7 +2,7 @@
 
 ## 1.24
 ### 1.24.0
-** Release Date:** TBA
+** Release Date:** December 11, 2013
 
 * Support for [Data Protection](http://devcenter.kinvey.com/ios/guides/encryption)
     * If you enable data protection entitlements for your app, you can configure `KCSClient` to respect various levels of data protection.
