@@ -212,7 +212,12 @@
 	OSStatus res = SecItemCopyMatching((__bridge CFDictionaryRef)existsQueryDictionary, (CFTypeRef *)&data);
 	if (res == errSecSuccess) {
         NSDictionary* dict = [NSKeyedUnarchiver unarchiveObjectWithData:(NSData*)CFBridgingRelease(data)];
-        return dict;
+        if ([dict isKindOfClass:[NSDictionary class]] == NO) {
+            KCSLogError(@"%@ is not a dictionary type!", dict);
+            return nil;
+        } else {
+            return dict;
+        }
 	} else {
 		NSAssert1(res == errSecItemNotFound, @"SecItemCopyMatching returned %@!", @(res));
 	}
