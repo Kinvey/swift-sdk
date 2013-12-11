@@ -36,7 +36,6 @@
 {
     KCSUser* user = [[KCSUser alloc] init];
     user.username = @"mock";
-    user.password = @"mock";
     user.sessionAuth = @"mock";
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"

@@ -34,9 +34,6 @@
     
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
 - (void) testKinveyMetadata
 {
     KCSCollection* collection = [KCSCollection collectionFromString:@"testmetadata" ofClass:[ASTTestClass class]];
@@ -55,9 +52,9 @@
     
     STAssertNotNil(obj.meta, @"Should have had metadata popuplated");
     STAssertNotNil([obj.meta lastModifiedTime], @"shoul have a lmt");
-    STAssertEqualObjects([obj.meta creatorId], [[[KCSClient sharedClient] currentUser] kinveyObjectId], @"this user should be the creator");
+    STAssertEqualObjects([obj.meta creatorId], [[KCSUser activeUser] kinveyObjectId], @"this user should be the creator");
     
-    [obj.meta setUsersWithReadAccess:[NSArray arrayWithObject:@"me!"]];
+    [obj.meta.readers addObjectsFromArray:@[@"me!"]];
     
     self.done = NO;
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -67,12 +64,11 @@
     } withProgressBlock:nil];
     [self poll];
     
-    NSArray* readers = [obj.meta usersWithReadAccess];
+    NSArray* readers = obj.meta.readers;
     STAssertEquals((int)1, (int) [readers count], @"should have one reader");
     STAssertEqualObjects(@"me!", [readers objectAtIndex:0], @"expecting set object");
 }
 
-#pragma clang diagnostic pop
 
 - (void) testGloballyReadable
 {

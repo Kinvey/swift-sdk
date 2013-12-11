@@ -22,9 +22,13 @@
 
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
+#import "KinveyUserService.h"
 
 #import "KCSEntityPersistence.h"
 #import "KCSOfflineUpdate.h"
+
+KK2(cleanup)
+#import "KCSHiddenMethods.h"
 
 //TODO: util this?
 NSString* kinveyObjectIdHostProperty(id<KCSPersistable>obj)
@@ -165,7 +169,6 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 }
 
 #warning handle main thread note events
-#warning minimize critical section
 - (NSString*) queryKey:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
     NSString* queryKey = [query keyString];
@@ -479,4 +482,16 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     });
     return export;
 }
+
+#pragma mark - metadata
+- (void) cacheActiveUser:(id<KCSUser2>)user
+{
+    KCSCollection* userCollection = [KCSCollection userCollection];
+    [self updateObject:user route:[userCollection route] collection:userCollection.collectionName];
+    dispatch_sync(_cacheQueue, ^{
+        [_persistenceLayer setClientMetadata:@{@"appkey" : [KCSClient2 sharedClient].configuration.appKey,
+                                               @"activeUser" : user.userId}];
+    });
+}
+
 @end

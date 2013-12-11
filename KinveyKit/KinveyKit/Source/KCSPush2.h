@@ -1,5 +1,5 @@
 //
-//  KinveyKit2.h
+//  KCSPush2.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -16,27 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
 
-#import "KinveyKit.h" //
+#import <Foundation/Foundation.h>
 
-#import "KinveyVersion.h"
+@interface KCSPush2 : NSObject
 
-#import "KinveyCore.h"
-
-#pragma mark - User & Device
-
-#import "KinveyUserService.h"
-#import "KCSPush2.h"
-
-#pragma mark - Data & Storage
-
-#import "KinveyDataStore.h"
-#import "KinveyFileStore.h"
-
-#pragma mark - Service
-
-#import "KCSRequest.h" //
-
-#endif
+@end

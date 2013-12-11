@@ -1,5 +1,5 @@
 //
-//  KinveyKit2.h
+//  KinveyUserService.h
 //  KinveyKit
 //
 //  Copyright (c) 2013 Kinvey. All rights reserved.
@@ -16,27 +16,11 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
 
-#import "KinveyKit.h" //
+#ifndef KinveyKit_KinveyUserService_h
+#define KinveyKit_KinveyUserService_h
 
-#import "KinveyVersion.h"
-
-#import "KinveyCore.h"
-
-#pragma mark - User & Device
-
-#import "KinveyUserService.h"
-#import "KCSPush2.h"
-
-#pragma mark - Data & Storage
-
-#import "KinveyDataStore.h"
-#import "KinveyFileStore.h"
-
-#pragma mark - Service
-
-#import "KCSRequest.h" //
+#import "KCSUser2.h"
+#import "KCSUser2+KinveyUserService.h"
 
 #endif

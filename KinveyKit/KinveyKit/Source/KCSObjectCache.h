@@ -23,6 +23,7 @@
 @class KCSDataModel;
 @protocol KCSPersistable;
 @protocol KCSOfflineUpdateDelegate;
+@protocol KCSUser2;
 
 @interface KCSObjectCache : NSObject
 
@@ -53,6 +54,8 @@
 - (void)jsonImport:(NSArray*)entities route:(NSString*)route collection:(NSString*)collection;
 - (NSArray*)jsonExport:(NSString*)route collection:(NSString*)collection;
 
+//metadata
+- (void) cacheActiveUser:(id<KCSUser2>)user;
 
 //destructive
 - (void) clear;

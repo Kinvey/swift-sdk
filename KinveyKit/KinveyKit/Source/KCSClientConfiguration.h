@@ -56,6 +56,11 @@ typedef enum KCSDataProtectionLevel : NSInteger {
  */
 KCS_CONSTANT KCS_DATA_PROTECTION_LEVEL;
 
+/**
+ @since 1.25.0
+ */
+KCS_CONSTANT KCS_USER_CLASS;
+
 KCS_CONSTANT KCS_SERVICE_HOST;
 
 

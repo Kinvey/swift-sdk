@@ -44,12 +44,6 @@
 
 @end
 
-
-@interface KCSUser ()
-+ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
-@end
-
-
 @implementation KCSReduceFunctionTests
 
 - (void) clearAll
