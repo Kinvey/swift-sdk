@@ -44,6 +44,8 @@
 - (BOOL) import:(NSArray*)entities route:(NSString*)route collection:(NSString*)collection;
 - (NSArray*) export:(NSString*)route collection:(NSString*)collection;
 
+- (BOOL) setClientMetadata:(NSDictionary*)metadata;
+
 #pragma mark - Management
 - (void) clearCaches;
 

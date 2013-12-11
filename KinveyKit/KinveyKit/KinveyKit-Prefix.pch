@@ -39,7 +39,7 @@
 #define DBAssert(condition,description, ...)
 #endif
 
-#if KINVEYKIT2_UPGRADE_WARNINGS
+#if NEVER && KINVEYKIT2_UPGRADE_WARNINGS
 #define DO_PRAGMA(x) _Pragma (#x)
 #define KK2(x) DO_PRAGMA(message ("KK2 - " #x))
 #else

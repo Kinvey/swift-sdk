@@ -25,7 +25,7 @@
 #import "KCS_FMDatabase.h"
 #import "KCS_FMDatabaseAdditions.h"
 
-#define KCS_CACHE_VERSION @"0.002"
+#define KCS_CACHE_VERSION @"0.003"
 
 @interface KCSEntityPersistence ()
 @property (nonatomic, strong) KCS_FMDatabase* db;
@@ -84,10 +84,11 @@
 
 - (void) createMetadata
 {
-    BOOL e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT)"];
+    BOOL e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT, client TEXT)"];
     if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
     e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
-    if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
+    if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
 }
 
 - (void) initDB
@@ -140,6 +141,21 @@
 - (void)dealloc
 {
     [_db close];
+}
+
+#pragma mark - Metadata
+- (BOOL) setClientMetadata:(NSDictionary*)metadata
+{
+    NSError* error = nil;
+    NSString* metaStr = [self.jsonWriter stringWithObject:metadata error:&error];
+    if (error != nil) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", metadata);
+        return NO;
+    }
+    BOOL e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:client)" withArgumentsInArray:@[metaStr]];
+    if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    return e;
 }
 
 #pragma mark - Save Queue

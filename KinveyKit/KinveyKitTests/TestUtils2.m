@@ -85,19 +85,21 @@ id<KCSCredentials> mockCredentails()
     [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
     
 }
-- (void) setupProduction
+- (void) setupProduction:(BOOL)initUser
 {
     (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1880"
                                                        withAppSecret:@"6414992408f04132bd467746f7ecbdcf"
                                                         usingOptions:@{KCS_LOG_LEVEL              : @255,
                                                                        KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}];
-    [self useProductionUser];
+    if (initUser) {
+        [self useProductionUser];
+    }
 }
 
-- (void)setupKCS
+- (void)setupKCS:(BOOL)initUser
 {
     //    [self setupStaging];
-    [self setupProduction];
+    [self setupProduction:initUser];
 }
 
 - (void) useMockUser

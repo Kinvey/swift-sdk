@@ -22,6 +22,7 @@
 
 KK2(remove import)
 #import "KCSClient.h"
+#import "KinveyUser.h"
 #import "KinveyCoreInternal.h"
 
 #pragma mark - Constants
@@ -37,6 +38,7 @@ KCS_CONST_IMPL KCS_LOG_LEVEL              = @"KCS_LOG_LEVEL";
 KCS_CONST_IMPL KCS_LOG_ADDITIONAL_LOGGERS = @"KCS_LOG_ADDITIONAL_LOGGERS";
 KCS_CONST_IMPL KCS_CONFIG_RETRY_DISABLED  = @"KCS_CONFIG_RETRY_DISABLED";
 KCS_CONST_IMPL KCS_DATA_PROTECTION_LEVEL  = @"KCS_DATA_PROTECTION_LEVEL";
+KCS_CONST_IMPL KCS_USER_CLASS             = @"KCS_USER_CLASS";
 
 #define KCS_HOST_PORT     @"KCS_HOST_PORT"
 #define KCS_HOST_PROTOCOL @"KCS_HOST_PROTOCOL"
@@ -68,7 +70,8 @@ KCS_CONST_IMPL KCS_DATA_PROTECTION_LEVEL  = @"KCS_DATA_PROTECTION_LEVEL";
                      KCS_HOST_DOMAIN           : KCS_DEFAULT_HOST_DOMAIN,
                      KCS_DATE_FORMAT           : KCS_DEFAULT_DATE_FORMAT,
                      KCS_LOG_LEVEL             : @(0),
-                     KCS_DATA_PROTECTION_LEVEL : @(KCSDataCompleteUntilFirstLogin)
+                     KCS_DATA_PROTECTION_LEVEL : @(KCSDataCompleteUntilFirstLogin),
+                     KCS_USER_CLASS            : [KCSUser class]
                      };
         _serviceHostname = KCS_DEFAULT_HOSTNAME;
         

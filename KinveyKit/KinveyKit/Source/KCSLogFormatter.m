@@ -88,11 +88,12 @@
     
     NSString* context;
     switch (logMessage->logContext) {
-        case KINVEY_KIT_LOG_CONTEXT  : context = @"KINVEYKIT"; break;
-        case KCS_LOG_CONTEXT_NETWORK : context = @"NETWORK"; break;
-        case KCS_LOG_CONTEXT_DATA    : context = @"DATA"; break;
-        case KCS_LOG_CONTEXT_TEST    : context = @"TEST"; break;
+        case KINVEY_KIT_LOG_CONTEXT     : context = @"KINVEYKIT"; break;
+        case KCS_LOG_CONTEXT_NETWORK    : context = @"NETWORK"; break;
+        case KCS_LOG_CONTEXT_DATA       : context = @"DATA"; break;
+        case KCS_LOG_CONTEXT_TEST       : context = @"TEST"; break;
         case KCS_LOG_CONTEXT_FILESYSTEM : context = @"FILESYSTEM"; break;
+        case KCS_LOG_CONTEXT_USER       : context = @"USER"; break;
     }
     
     NSString *dateAndTime = [self stringFromDate:(logMessage->timestamp)];

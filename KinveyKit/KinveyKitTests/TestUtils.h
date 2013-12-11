@@ -2,7 +2,6 @@
 //  TestUtils.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 6/5/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -34,10 +33,6 @@
 #define KTAssertEqualsDates(date1,date2) STAssertTrue([date1 isEqualToDate:date2], @"Dates should match.");
 
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
-
-@interface KCSUser (TestUtils)
-+ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
-@end
 
 @interface SenTestCase (TestUtils)
 @property (nonatomic) BOOL done;

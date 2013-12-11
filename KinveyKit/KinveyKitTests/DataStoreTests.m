@@ -32,7 +32,7 @@
 - (void)setUp
 {
     [super setUp];
-    [self setupKCS];
+    [self setupKCS:YES];
     //  [self useMockUser];
     
     //TODO: msg [INFO (datastore, network)] msg

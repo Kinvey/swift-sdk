@@ -65,7 +65,7 @@
 
 - (void) testManualVerify
 {
-    [self setupKCS];
+    [self setupKCS:NO];
 
     NSString* infoStr = [NSString UUID];
     NSString* warnStr = [NSString UUID];

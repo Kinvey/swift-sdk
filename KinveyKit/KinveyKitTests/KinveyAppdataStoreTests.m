@@ -27,11 +27,6 @@
 #import "KCSMockConnection.h"
 #import "KCS_SBJson.h"
 
-@interface KCSUser ()
-+ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
-@end
-
-
 @implementation KinveyAppdataStoreTests
 
 - (void) setUp

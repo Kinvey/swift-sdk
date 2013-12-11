@@ -37,7 +37,7 @@
 - (void)setUp
 {
     [super setUp];
-    [self setupKCS];
+    [self setupKCS:YES];
 }
 
 - (void)tearDown

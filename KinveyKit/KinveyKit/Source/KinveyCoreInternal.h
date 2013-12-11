@@ -41,11 +41,13 @@
 #import "KCSLogFormatter.h"
 #import "NSArray+KinveyAdditions.h"
 #import "NSDictionary+KinveyAdditions.h"
+#import "NSMutableDictionary+KinveyAdditions.h"
 #import "NSError+KinveyKit.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSBase64.h"
 #import "KCSTimedQueue.h"
 #import "KCSDBTools.h"
+#import "KCSKeychain2.h"
 
 #pragma mark - helpers
 
@@ -54,5 +56,7 @@
 
 #define KCS_CONST_IMPL NSString* const
 #define KCS_BREAK NSAssert(NO, @"BROKEN");
+
+#define setIfNil(x, val) if (!x) x = val;
 
 #endif

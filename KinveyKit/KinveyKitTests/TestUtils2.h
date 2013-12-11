@@ -48,7 +48,7 @@ id<KCSCredentials> mockCredentails();
 @interface SenTestCase (TestUtils2)
 @property (nonatomic) BOOL done;
 - (BOOL) poll;
-- (void) setupKCS;
+- (void)setupKCS:(BOOL)initUser;
 - (void) useMockUser;
 @end
 

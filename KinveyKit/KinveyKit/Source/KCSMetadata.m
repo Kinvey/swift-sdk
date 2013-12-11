@@ -178,26 +178,6 @@ KCS_CONST_IMPL KCSMetadataFieldCreationTime = @"_kmd.ect";
     return writers;
 }
 
-- (NSArray*) usersWithReadAccess
-{
-    return self.readers;
-}
-
-- (void) setUsersWithReadAccess:(NSArray*) readers
-{
-    [self.readers setArray:readers];
-}
-
-- (NSArray*) usersWithWriteAccess
-{
-    return self.writers;
-}
-
-- (void) setUsersWithWriteAccess:(NSArray*) writers
-{
-    [self.writers setArray:writers];
-}
-
 #pragma mark - Globals
 
 - (BOOL) isGloballyReadable
