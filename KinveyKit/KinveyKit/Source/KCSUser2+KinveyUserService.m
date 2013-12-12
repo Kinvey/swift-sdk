@@ -187,7 +187,45 @@ KK2(Cleanup!)
     }];
 }
 
-//TODO: apply creation method and deprecate old to main kCSUser
++ (void)changePasswordForUser:(id<KCSUser2>)user password:(NSString*)newPassword completionBlock:(KCSUser2CompletionBlock)completionBlock
+{
+    if (newPassword == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"newPassword is nil" userInfo:nil] raise];
+    }
+    if (![user isEqual:[KCSUser activeUser]]){
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Receiver is not current user.",
+                                   NSLocalizedFailureReasonErrorKey: @"An operation only applicable to the current user was tried on a different user.",
+                                   NSLocalizedRecoverySuggestionErrorKey:@"Only perform this action on the active user"};
+        NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
+        completionBlock(nil, userError);
+    } else {
+        KCSCollection* userCollection = [KCSCollection userCollection];
+        NSDictionary* entity = [[KCSAppdataStore caches].dataModel jsonEntityForObject:user route:[userCollection route] collection:userCollection.collectionName];
+        NSDictionary* body = [entity dictionaryByAddingDictionary:@{KCSUserAttributePassword : newPassword}];
+        
+        KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+            if (error) {
+                KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
+                completionBlock(nil, error);
+            } else {
+                // Ok, we're really auth'd
+                NSDictionary* userBody = [response jsonObject];
+                [self setupActiveUser:userBody completion:completionBlock];
+            }
+
+        }
+                                                            route:KCSRESTRouteUser
+                                                          options:@{KCSRequestLogMethod}
+                                                      credentials:[KCSUser activeUser]];
+        request.method = KCSRESTMethodPUT;
+        request.path = @[user.userId];
+        request.body = body;
+        [request start];
+    }
+}
+//TODO: test login
+//TODO: test change password
+
 //TODO: user object subclass and implementation
 //TODO: clear TODOs
 //TOOD: credentials for this and for v1 methods

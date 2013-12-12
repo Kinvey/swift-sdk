@@ -192,21 +192,6 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 /*! Initialize the "Current User" for Kinvey
  
  This will cause the system to initialize the "Current User" to the known "primary" user for the device
- should no user exist, one is created.  If a non-nil request is provided, the request will be started after
- user authentication.
- 
- @warning This routine is not intended for application developer use, this routine is used by the library runtime to ensure all requests are authenticated.
- 
- @warning This is a *blocking* routine and will block on other threads that are authenticating.  There is a short timeout before authentication failure.
- 
- @param request The REST request to perform after authentication.
- @deprecatedIn 1.19.0
-*/
-- (void)initializeCurrentUserWithRequest: (KCSRESTRequest *)request KCS_DEPRECATED(do not call this directly, 1.19.0);
-
-/*! Initialize the "Current User" for Kinvey
- 
- This will cause the system to initialize the "Current User" to the known "primary" user for the device
  should no user exist, one is created.
  
  @warning This routine is not intended for application developer use, this routine is used by the library runtime to ensure all requests are authenticated.

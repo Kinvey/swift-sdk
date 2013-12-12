@@ -34,10 +34,10 @@
 #import "NSString+KinveyAdditions.h"
 #import "KCSObjectMapper.h"
 
-#import "KinveyCoreInternal.h"
 #import "KCSHiddenMethods.h"
 
 #import "TestUtils.h"
+#import "KCSKeychain2.h"
 
 typedef BOOL(^KCSUserSuccessAction)(KCSUser *, KCSUserActionResult);
 typedef BOOL(^KCSUserFailureAction)(KCSUser *, NSError *);
@@ -107,7 +107,11 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     KCSUser* newUser = [[KCSUser alloc] init];
     newUser.userId = _id;
     newUser.username = username;
-    [[KCSAppdataStore caches] cacheActiveUser:newUser];
+    [[KCSAppdataStore caches] cacheActiveUser:(id)newUser];
+    
+    activeUser = [KCSUser activeUser];
+    STAssertEqualObjects(activeUser.userId, _id, @"should restore id");
+    STAssertEqualObjects(activeUser.username, username, @"should restore username");
 }
 
 - (void) testLoadAuthFromKeychain

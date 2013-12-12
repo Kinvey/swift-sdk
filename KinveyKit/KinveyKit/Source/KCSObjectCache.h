@@ -56,6 +56,8 @@
 
 //metadata
 - (void) cacheActiveUser:(id<KCSUser2>)user;
+- (id<KCSUser2>) lastActiveUser;
+
 
 //destructive
 - (void) clear;

@@ -488,10 +488,33 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 {
     KCSCollection* userCollection = [KCSCollection userCollection];
     [self updateObject:user route:[userCollection route] collection:userCollection.collectionName];
+    NSString* userId = user.userId;
+    setIfNil(userId, @"");
     dispatch_sync(_cacheQueue, ^{
         [_persistenceLayer setClientMetadata:@{@"appkey" : [KCSClient2 sharedClient].configuration.appKey,
                                                @"activeUser" : user.userId}];
     });
+}
+
+- (id<KCSUser2>) lastActiveUser
+{
+    __block NSString* lastActiveUserId = nil;
+    dispatch_sync(_cacheQueue, ^{
+        NSDictionary* metadata = [_persistenceLayer clientMetadata];
+        NSString* activeUserStr = metadata[@"activeUser"];
+        if ([activeUserStr length] > 0) {
+            lastActiveUserId = activeUserStr;
+        }
+    });
+    id<KCSUser2> user = nil;
+    if (lastActiveUserId) {
+        KCSCollection* userCollection = [KCSCollection userCollection];
+        NSArray* users = [self pullIds:@[lastActiveUserId] route:[userCollection route] collection:userCollection.collectionName];
+        if (users.count == 1) {
+            user = users[0];
+        }
+    }
+    return user;
 }
 
 @end

@@ -27,7 +27,7 @@
 {
     return [@{@"KinveyKit.Version"        : __KINVEYKIT_VERSION__,
               @"KinveyKit.Platform"       : [KCSPlatformUtils platformString],
-              @"KinveyKit.SupportMessage" : @"Copy and paste this whole error info along with other pertinent information when contacting support@kinvey.com"
+              @"KinveyKit.SupportMessage" : @"Copy and paste this whole error info along with other pertinent information when contacting Kinvey support."
             } mutableCopy];
 }
 

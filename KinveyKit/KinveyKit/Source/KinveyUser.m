@@ -20,7 +20,6 @@
 
 #import "KinveyUser.h"
 #import "KCSClient.h"
-#import "KCSKeyChain.h"
 #import "KCSRESTRequest.h"
 #import "KCSBase64.h"
 #import "KCS_SBJson.h"
@@ -43,6 +42,7 @@
 #import "KCSFileStore.h"
 
 #import "KinveyUserService.h"
+#import "KCSKeychain2.h"
 
 #pragma mark - Constants
 
@@ -281,21 +281,16 @@ static KCSRESTRequest* lastBGUpdate = nil;
 # pragma mark - Init from credentials
 + (KCSUser *)initAndActivateWithSavedCredentials
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    KCSUser* clientActiveUser = [KCSClient sharedClient].currentUser;
+#pragma clang diagnostic pop
+    
+    if (clientActiveUser != nil) {
+        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Attempting to init active user but there is already an active user" userInfo:nil] raise];
+    }
     if ([KCSUser hasSavedCredentials] == YES) {
-#warning TODO reinstate this!!
-        KCSUser *createdUser = [[KCSUser alloc] init];
-//        createdUser.username = [KCSKeyChain getStringForKey:kKeychainUsernameKey];
-//        createdUser.password = [KCSKeyChain getStringForKey:kKeychainPasswordKey];
-//        createdUser.userId = [KCSKeyChain getStringForKey:kKeychainUserIdKey];
-//        createdUser.sessionAuth = [KCSKeyChain getStringForKey:kKeychainAuthTokenKey];
-        
-        NSDictionary* properties =  @{};//[KCSKeyChain getDictForKey:kKeychainPropertyDictKey];
-        setActive(createdUser);
-        if (properties) {
-            [self setupCurrentUser:createdUser properties:properties password:nil username:createdUser.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-                //TODO: handle error
-            }];
-        }
+        KCSUser *createdUser = [[KCSAppdataStore caches] lastActiveUser];
         [createdUser refreshFromServer:^(NSArray *objectsOrNil, NSError *errorOrNil) {
             //TODO: handle error
         }];
@@ -304,15 +299,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
 #pragma clang diagnostic ignored "-Wdeprecated" 
     return [KCSClient sharedClient].currentUser;
 #pragma clang diagnostic pop
-}
-
-// These routines all do similar work, but the first two are for legacy support
-- (void)initializeCurrentUserWithRequest: (KCSRESTRequest *)request
-{
-    [KCSUser activeUser];
-    if (request){
-        [request start];
-    }
 }
 
 - (void)initializeCurrentUser
@@ -326,63 +312,9 @@ static KCSRESTRequest* lastBGUpdate = nil;
                  password: (NSString *)password
       withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
-    if (!username) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"username should not be nil." userInfo:nil] raise];
-    if (!password) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"password should not be nil." userInfo:nil] raise];
-
-    
-    KCSClient *client = [KCSClient sharedClient];
-    
-    // Just log-in and set currentUser
-    // Set up our callbacks
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        // Ok, we're probably authenticated
-        KCSUser *createdUser = [[KCSUser alloc] init];
-        createdUser.username = username;
-        if (response.responseCode != KCS_HTTP_STATUS_OK){
-            setActive(nil);
-            // This is expected here, user auth failed, do the right thing
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
-                                                                               withFailureReason:@"Invalid Username or Password"
-                                                                          withRecoverySuggestion:@"Try again with different username/password"
-                                                                             withRecoveryOptions:nil];
-            NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
-            // Delegate must retain createdUser
-            completionBlock(createdUser, error, 0);
-            return;
-        }
-        // Ok, we're really authd
-        NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-        [self setupCurrentUser:createdUser properties:dictionary password:password username:username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-            //TODO: handle registration error
-            
-            // Delegate must retain createdUser
-            completionBlock(createdUser, nil, KCSUserFound);
-        }];
-    };
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        // I really don't know what to do here, we can't continue... Something died...
-        KCSLogError(@"Internal Error: %@", error);
-        
-        setActive(nil);
-        
-        completionBlock(nil, error, 0);
-    };
-    
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
-    
-    
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"_me"] usingMethod:kGetRESTMethod];
-    
-    // We need to init the current user to something before trying this
-
-    // Create a temp user with uname/password and use it it init currentUser
-    KCSUser *tmpCurrentUser = [[KCSUser alloc] init];
-    tmpCurrentUser.username = username;
-    setActive(tmpCurrentUser);
-    
-    [request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
-    [request start];
+    [KCSUser2 loginWithUsername:username password:password completion:^(id<KCSUser2> user, NSError *error) {
+        completionBlock(user, error, KCSUserNoInformation);
+    }];
 }
 
 
@@ -924,40 +856,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
 
 
 #pragma mark - properties
-- (void)setSurname:(NSString *)surname
-{
-    _surname = [surname copy];
-//    NSMutableDictionary* properties = [[KCSKeyChain getDictForKey:kKeychainPropertyDictKey] mutableCopy];
-//    if (!properties) {
-//        properties = [NSMutableDictionary dictionary];
-//    }
-//    [properties setValue:_surname forKey:KCSUserAttributeSurname];
-//    [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
-#warning make sure properties are adequately backed up
-}
-
-- (void)setGivenName:(NSString *)givenName
-{
-    _givenName = [givenName copy];
-//    NSMutableDictionary* properties = [[KCSKeyChain getDictForKey:kKeychainPropertyDictKey] mutableCopy];
-//    if (!properties) {
-//        properties = [NSMutableDictionary dictionary];
-//    }
-//    [properties setValue:_givenName forKey:KCSUserAttributeGivenname];
-//    [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
-}
-
-- (void)setEmail:(NSString *)email
-{
-    _email = [email copy];
-//    NSMutableDictionary* properties = [[KCSKeyChain getDictForKey:kKeychainPropertyDictKey] mutableCopy];
-//    if (!properties) {
-//        properties = [NSMutableDictionary dictionary];
-//    }
-//    [properties setValue:_email forKey:KCSUserAttributeEmail];
-//    [KCSKeyChain setDict:properties forKey:kKeychainPropertyDictKey];
-}
-
 + (KCSUser *)activeUser
 {
 #pragma clang diagnostic push
@@ -985,87 +883,20 @@ static KCSRESTRequest* lastBGUpdate = nil;
 
 - (void) changePassword:(NSString*)newPassword completionBlock:(KCSCompletionBlock)completionBlock
 {
-    if (![self isEqual:[KCSUser activeUser]]){
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Receiver is not current user."
-                                                                           withFailureReason:@"An operation only applicable to the current user was tried on a different user."
-                                                                      withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
-                                                                         withRecoveryOptions:nil];
-        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        completionBlock(nil, userError);
-    } else {
-        NSString* uname = self.username;
-        NSString* pwd = [self.password copy];
-        
-        self.password = newPassword;
-        
-        KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
-        BOOL isPostRequest = obj.isPostRequest;
-        NSString *objectId = obj.objectId;
-        NSDictionary *dictionaryToMap = obj.dataToSerialize;
-        
-        NSString *resource = nil;
-        KCSCollection* collection = [KCSCollection userCollection];
-        if ([collection.collectionName isEqualToString:@""]){
-            resource = [collection.baseURL stringByAppendingFormat:@"%@", objectId];
-        } else {
-            resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
-        }
-        
-        
-        NSInteger HTTPMethod;
-        
-        // If we need to post this, then do so
-        if (isPostRequest){
-            HTTPMethod = kPostRESTMethod;
-        } else {
-            HTTPMethod = kPutRESTMethod;
-        }
-        
-        
-        // Prepare our request
-        KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:HTTPMethod];
-        
-        // This is a JSON request
-        [request setContentType:KCS_JSON_TYPE];
-        
-        // Make sure to include the UTF-8 encoded JSONData...
-        KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
-        [request addBody:[writer dataWithObject:dictionaryToMap]];
-        
-        // Prepare our handlers
-        KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
-            NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
-            
-            if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-                NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
-                completionBlock(nil, error);
-            } else {
-                [KCSUser setupCurrentUser:self properties:jsonResponse password:newPassword username:self.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-                    //TODO: handle registration error
-                    completionBlock(@[self], nil);
-                }];
-                
-            }
-        };
-        
-        KCSConnectionFailureBlock fBlock = ^(NSError *error){
-            completionBlock(nil, error);
-        };
-        
-        KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
-        [request setAuth:uname password:pwd];
-        
-        [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-    }
+    [KCSUser2 changePasswordForUser:(id)self password:newPassword completionBlock:^(id<KCSUser2> user, NSError *error) {
+        NSArray* objs = user ? @[user] : @[];
+        completionBlock(objs, error);
+    }];
+
 }
-//TODO: remove sessionauth
 //TODO: remove kcskeychain class
 
 - (NSString *)authString
 {
+    NSString* token = [KCSKeychain2 kinveyTokenForUserId:self.userId];
     NSString *authString = nil;
-    if (self.sessionAuth) {
-        authString = [@"Kinvey " stringByAppendingString: self.sessionAuth];
+    if (token) {
+        authString = [@"Kinvey " stringByAppendingString: token];
         KCSLogDebug(@"Current user found, using sessionauth (%@) => XXXXXXXXX", self.username);
     } else {
         KCSLogError(@"No session auth for current user found (%@)", self.username);

@@ -24,9 +24,11 @@
 
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
+#import "KinveyUserService.h"
 
 #import "KCSEntityPersistence.h"
 #import "KCSObjectCache.h"
+#import "ASTTestClass.h"
 
 #undef ddLogLevel
 #define ddLogLevel LOG_FLAG_DEBUG
@@ -181,7 +183,16 @@
     [cache clearCaches];
 }
 
-
+- (void) testMetadata
+{
+    KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
+    NSDictionary* meta = @{@"foo":@"bar",@"fizz":@"buzz"};
+    BOOL u = [cache setClientMetadata:meta];
+    KTAssertU
+    
+    NSDictionary* recovered = [cache clientMetadata];
+    STAssertEqualObjects(recovered, meta, @"Should get the metadata back");
+}
 
 #pragma mark - Peristance Unsaveds
 - (void) testUnsavedPersistence
@@ -244,7 +255,7 @@
     NSString* route = @"r";
     NSString* cln = @"c";
     NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
-    
+    KTAssertCount(8, results);
     KTNIY
     
     [ocache clear];
@@ -367,17 +378,26 @@
 }
 #pragma mark - Old Tests
 
-#warning REINSTATE TESTS
-#if NEVER
-
-- (KCSObjectCache*) cache
+- (void) testActiveUser
 {
-    return [[KCSObjectCache alloc] init];
+    KCSObjectCache* cache = [[KCSObjectCache alloc] init];
+
+    KCSUser2* user = [[KCSUser2 alloc] init];
+    user.userId = [NSString UUID];
+    user.username = [NSString UUID];
+    user.email = [NSString UUID];
+    [cache cacheActiveUser:user];
+    
+    KCSUser2* restoredUser = [cache lastActiveUser];
+    STAssertEqualObjects(restoredUser.userId, user.userId, @"ids should match");
+    STAssertEqualObjects(restoredUser.username, user.username, @"usernames should match");
+    STAssertEqualObjects(restoredUser.email, user.email, @"emails should match");
 }
+
 
 - (void) testRoundTripQuery
 {
-    KCSObjectCache* cache = [self cache:nil];
+    KCSObjectCache* cache = [[KCSObjectCache alloc] init];
     
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
     [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"sortOrder" inDirection:kKCSAscending]];
@@ -385,17 +405,21 @@
     obj1.objId = @"1";
     ASTTestClass* obj2 = [[ASTTestClass alloc] init];
     obj2.objId = @"2";
-    [cache setResults:@[obj1, obj2] forQuery:query];
+    [cache setObjects:@[obj1,obj2] forQuery:[KCSQuery2 queryWithQuery1:query] route:@"A" collection:@"B"];
     
     KCSQuery* query2 = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
     [query2 addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"sortOrder" inDirection:kKCSAscending]];
-    NSArray* results = [cache resultsForQuery:query2];
+    NSArray* results = [cache pullQuery:[KCSQuery2 queryWithQuery1:query2] route:@"A" collection:@"B"];
     
     STAssertTrue(results.count == 2, @"should have both objects");
     STAssertTrue([results containsObject:obj1], @"should have item 1");
     STAssertTrue([results containsObject:obj2], @"should have item 2");
     
 }
+
+#warning REINSTATE TESTS
+#if NEVER
+
 
 - (void) testRoundTripSingleId
 {
