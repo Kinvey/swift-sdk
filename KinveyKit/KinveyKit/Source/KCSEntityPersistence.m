@@ -84,7 +84,7 @@
 
 - (void) createMetadata
 {
-    BOOL e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT, client TEXT)"];
+    BOOL e = [_db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT)"];
     if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);}
     e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
     if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
@@ -136,6 +136,12 @@
             KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
         }
     }
+    if (![_db tableExists:@"clientmetadata"]) {
+        BOOL e = [_db executeUpdate:@"CREATE TABLE clientmetadata (key VARCHAR(255) PRIMARY KEY, metadata TEXT)"];
+        if (!e) {
+            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+        }
+    }
 }
 
 - (void)dealloc
@@ -152,10 +158,30 @@
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", metadata);
         return NO;
     }
-    BOOL e = [_db executeUpdate:@"INSERT INTO metadata VALUES (:client)" withArgumentsInArray:@[metaStr]];
+    BOOL e = [_db executeUpdate:@"REPLACE INTO clientmetadata VALUES (:key, :metadata)" withArgumentsInArray:@[@"client", metaStr]];
     if (!e || [_db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
     }
     return e;
+}
+
+- (NSDictionary*) clientMetadata
+{
+    NSString* q = [NSString stringWithFormat:@"SELECT metadata FROM clientmetadata WHERE key='client'"];
+    
+    KCS_FMResultSet* rs = [_db executeQuery:q];
+    if ([_db hadError]) {
+        KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"DB error %d: %@", [_db lastErrorCode], [_db lastErrorMessage]);
+    }
+    
+    NSDictionary* obj = nil;
+    if ([rs next]) {
+        NSDictionary* d = [rs resultDictionary];
+        if (d) {
+            obj = [self dictObjForJson:d[@"metadata"]];
+        }
+    }
+
+    return obj;
 }
 
 #pragma mark - Save Queue

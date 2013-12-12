@@ -99,7 +99,6 @@
     obj.objCount = 79000;
     
     KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
-    KCSOfflineStoreTests* o = self;
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{}];
     
 //    [store setReachable:NO];
@@ -143,7 +142,6 @@
     obj3.objCount = 1279000;
     
     KCSCollection* c = [TestUtils randomCollection:[ASTTestClass class]];
-    KCSOfflineStoreTests* o = self;
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:c options:@{}];
     
 //    [store setReachable:NO];

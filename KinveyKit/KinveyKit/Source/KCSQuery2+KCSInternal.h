@@ -21,7 +21,7 @@
 #import "KCSQuery2.h"
 
 @interface KCSQuery2 (KCSInternal)
-- (NSString*) escapedQueryString;
+- (NSString *)escapedQueryString;
 - (NSString*) queryString:(BOOL)escape;
 - (NSString*) keyString;
 

@@ -208,7 +208,7 @@
 - (void) loginWithUser:(NSString*)username password:(NSString*)password
 {
     self.done = NO;
-    [KCSUser userWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+    [KCSUser userWithUsername:username password:password fieldsAndValues:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         if (errorOrNil) {
             [KCSUser loginWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
                 STAssertNoError
