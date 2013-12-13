@@ -20,11 +20,7 @@
 
 #import "KinveyUser.h"
 #import "KCSClient.h"
-//#import "KCSRESTRequest.h"
-//#import "KCSBase64.h"
-#import "KCS_SBJson.h"
 #import "KinveyBlocks.h"
-#import "KCSConnectionResponse.h"
 #import "KinveyHTTPStatusCodes.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
@@ -32,14 +28,8 @@
 #import "KinveyCollection.h"
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
-#import "NSMutableDictionary+KinveyAdditions.h"
-#import "KinveyCollection.h"
 
-#import "KCSObjectMapper.h"
 #import "KCSRESTRequest.h"
-#import "KCSPush.h"
-
-//#import "KCSFileStore.h"
 
 #import "KinveyUserService.h"
 #import "KCSKeychain2.h"
@@ -100,78 +90,6 @@ void setActive(KCSUser* user)
 + (void) clearSavedCredentials
 {
     [KCSUser2 clearSavedCredentials];
-}
-
-+ (void) setupCurrentUser:(KCSUser*)user properties:(NSDictionary*)dictionary password:(NSString*)password username:(NSString*)username completionBlock:(KCSUserCompletionBlock)block
-{
-    //    [KCSKeyChain setDict:dictionary forKey:kKeychainPropertyDictKey];
-    
-    NSMutableDictionary* properties = [dictionary mutableCopy];
-    
-    NSString* propUsername = [properties popObjectForKey:@"username"];
-    //    NSString* propPassword = [properties popObjectForKey:@"password"];
-    NSString* propId = [properties popObjectForKey:@"_id"];
-    
-    user.username = propUsername != nil ? propUsername : username;
-    //    user.password = propPassword != nil ? propPassword : password;
-    user.userId   = propId;
-    
-    if (user.userId == nil || user.username == nil) {
-        //prevent that weird assertion that Colden was seeinƒƒg
-        return;
-    }
-    
-    NSMutableDictionary* tokens = [[properties popObjectForKey:@"_push"] mutableCopy];
-    user.push = tokens;
-    //    user.oauthTokens = [properties popObjectForKey:KCSUserAttributeOAuthTokens];
-    
-    user.surname = [properties popObjectForKey:KCSUserAttributeSurname];
-    user.givenName = [properties popObjectForKey:KCSUserAttributeGivenname];
-    user.email = [properties popObjectForKey:KCSUserAttributeEmail];
-    
-    NSDictionary* metadata = [properties popObjectForKey:@"_kmd"];
-    NSDictionary* emailVerification = [metadata objectForKey:@"emailVerification"];
-    NSString* verificationStatus = [emailVerification objectForKey:@"status"];
-    user->_emailVerified = [verificationStatus isEqualToString:@"confirmed"];
-    
-    NSString* sessionAuth = [metadata objectForKey:@"authtoken"]; //get the session auth
-    if (sessionAuth) {
-        user.sessionAuth = sessionAuth;
-    }
-    
-    [properties removeObjectForKey:@"UUID"];
-    [properties removeObjectForKey:@"UDID"];
-    
-    [properties enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        @try {
-            [user setValue:obj forAttribute:key];
-        }
-        @catch (NSException *exception) {
-            KCSLogWarning(@"Cannot set ('%@') for key: %@, on USER object",obj, key);
-        }
-    }];
-    
-    assert(user.username != nil && user.userId != nil);
-    
-#if NEVER
-    [KCSKeyChain setString:user.username forKey:kKeychainUsernameKey];
-    [KCSKeyChain setString:user.userId forKey:kKeychainUserIdKey];
-    
-    if (password != nil) {
-        //password auth
-        [KCSKeyChain setString:user.password forKey:kKeychainPasswordKey];
-    }
-    if (sessionAuth != nil) {
-        //session auth
-        [KCSKeyChain setString:user.sessionAuth forKey:kKeychainAuthTokenKey];
-    }
-#endif
-    
-    setActive(user);
-    
-    [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
-        block(user, error, KCSUserNoInformation);
-    }];
 }
 
 - (void) refreshFromServer:(KCSCompletionBlock)completionBlock
@@ -323,82 +241,16 @@ void setActive(KCSUser* user)
 
 - (void) removeWithCompletionBlock:(KCSCompletionBlock)completionBlock
 {
-    if (![self isEqual:[KCSUser activeUser]]){
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Receiver is not current user."
-                                                                           withFailureReason:@"An operation only applicable to the current user was tried on a different user."
-                                                                      withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
-                                                                         withRecoveryOptions:nil];
-        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        completionBlock(nil, userError);
-    } else {
-        [self deleteFromCollection:[KCSCollection userCollection] withCompletionBlock:completionBlock withProgressBlock:nil];
-    }
+    [KCSUser2 deleteUser:(id)self options:nil completion:^(unsigned long count, NSError *errorOrNil) {
+        completionBlock(@[],errorOrNil);
+    }];
 }
 
 - (void) saveWithCompletionBlock:(KCSCompletionBlock)completionBlock
 {
-    if (![self isEqual:[KCSUser activeUser]]){
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Receiver is not current user."
-                                                                           withFailureReason:@"An operation only applicable to the current user was tried on a different user."
-                                                                      withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
-                                                                         withRecoveryOptions:nil];
-        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        completionBlock(nil, userError);
-    } else {
-        
-        //-- save to collection
-        KCSSerializedObject *obj = [KCSObjectMapper makeKinveyDictionaryFromObject:self error:NULL];
-        BOOL isPostRequest = obj.isPostRequest;
-        NSString *objectId = obj.objectId;
-        NSDictionary *dictionaryToMap = obj.dataToSerialize;
-        
-        NSString *resource = nil;
-        KCSCollection* collection = [KCSCollection userCollection];
-        if ([collection.collectionName isEqualToString:@""]){
-            resource = [collection.baseURL stringByAppendingFormat:@"%@", objectId];
-        } else {
-            resource = [collection.baseURL stringByAppendingFormat:@"%@/%@", collection.collectionName, objectId];
-        }
-        
-        
-        NSInteger HTTPMethod;
-        
-        // If we need to post this, then do so
-        if (isPostRequest){
-            HTTPMethod = kPostRESTMethod;
-        } else {
-            HTTPMethod = kPutRESTMethod;
-        }
-        // Prepare our request
-        KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:HTTPMethod];
-        // This is a JSON request
-        [request setContentType:KCS_JSON_TYPE];
-        // Make sure to include the UTF-8 encoded JSONData...
-        KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
-        [request addBody:[writer dataWithObject:dictionaryToMap]];
-        
-        // Prepare our handlers
-        KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
-            NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
-            
-            if (response.responseCode != KCS_HTTP_STATUS_CREATED && response.responseCode != KCS_HTTP_STATUS_OK){
-                NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Entity operation was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
-                completionBlock(nil, error);
-            } else {
-                [KCSUser setupCurrentUser:self properties:jsonResponse password:nil username:self.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-                    //TODO: handle registration error
-                    completionBlock(@[self], nil);
-                }];
-            }
-        };
-        
-        KCSConnectionFailureBlock fBlock = ^(NSError *error){
-            completionBlock(nil, error);
-        };
-        
-        // Make the request happen
-        [[request withCompletionAction:cBlock failureAction:fBlock progressAction:^(KCSConnectionProgress *conn){}] start];
-     }
+    [KCSUser2 saveUser:(id)self options:nil completion:^(id<KCSUser2> user, NSError *error) {
+        completionBlock(user?@[user]:nil, error);
+    }];
 }
 
 - (id)getValueForAttribute: (NSString *)attribute
@@ -569,6 +421,7 @@ void setActive(KCSUser* user)
     return user;
 }
 
+//TODO: deviceTokens for KCSUser2
 - (NSMutableSet*) deviceTokens
 {
     if (_push == nil) {

@@ -103,6 +103,20 @@
     }];
 }
 
+- (void) saveWithCompletionBlock:(KCSCompletionBlock)completionBlock
+{
+    [KCSUser2 saveUser:(id)self options:nil completion:^(id<KCSUser2> user, NSError *error) {
+        completionBlock(user?@[user]:nil, error);
+    }];
+}
+
+- (void) removeWithCompletionBlock:(KCSCompletionBlock)completionBlock
+{
+    [KCSUser2 deleteUser:(id)self options:nil completion:^(unsigned long count, NSError *errorOrNil) {
+        completionBlock(@[],errorOrNil);
+    }];
+}
+
 
 - (void) logout
 {
