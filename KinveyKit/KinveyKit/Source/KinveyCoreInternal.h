@@ -27,6 +27,7 @@
 #import "KCSNetworkOperation.h"
 #import "KCSNetworkResponse.h"
 #import "KCSCredentials.h"
+#import "KinveyHTTPStatusCodes.h"
 
 #pragma mark - Configuration
 

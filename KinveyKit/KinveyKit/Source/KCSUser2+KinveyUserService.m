@@ -504,6 +504,100 @@ KK2(Cleanup!)
     [request start];
 }
 
++ (void) sendPasswordResetForUsername:(NSString*)username completion:(KCSUserSendEmailBlock)completionBlock
+{
+    // /rpc/:kid/:username/user-password-reset-initiate
+    // /rpc/:kid/:email/user-password-reset-initiaxte
+    if (username == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"username cannot be nil" userInfo:nil] raise];
+    }
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        //response will be a 204 if accepted by server
+        completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
+    }
+                                                        route:KCSRESTRouteRPC
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSClient2 sharedClient]];
+    request.method = KCSRESTMethodPOST;
+    request.path = @[username, @"user-password-reset-initiate"];
+    [request start];
+}
+
++ (void) sendPasswordResetForEmail:(NSString*)email completion:(KCSUserSendEmailBlock)completionBlock
+{
+    // /rpc/:kid/:email/user-password-reset-initiate
+    if (email == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"email cannot be nil" userInfo:nil] raise];
+    }
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        //response will be a 204 if accepted by server
+        completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
+    }
+                                                        route:KCSRESTRouteRPC
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSClient2 sharedClient]];
+    request.method = KCSRESTMethodPOST;
+    request.path = @[email, @"user-password-reset-initiate"];
+    [request start];
+}
+
++ (void) sendEmailConfirmationForUser:(NSString*)username completion:(KCSUserSendEmailBlock)completionBlock
+{
+    //req.post /rpc/:kid/:username/user-email-verification-initiate
+    if (username == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"username cannot be nil" userInfo:nil] raise];
+    }
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        //response will be a 204 if accepted by server
+        completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
+    }
+                                                        route:KCSRESTRouteRPC
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSClient2 sharedClient]];
+    request.method = KCSRESTMethodPOST;
+    request.path = @[username, @"user-email-verification-initiate"];
+    [request start];
+}
+
++ (void) sendForgotUsernameEmail:(NSString*)email completion:(KCSUserSendEmailBlock)completionBlock
+{
+    if (email == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"email cannot be nil" userInfo:nil] raise];
+    }
+    
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        //response will be a 204 if accepted by server
+        completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
+    }
+                                                        route:KCSRESTRouteRPC
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSClient2 sharedClient]];
+    request.method = KCSRESTMethodPOST;
+    request.path = @[@"user-forgot-username"];
+    request.body = @{@"email" : email};
+    [request start];
+}
+
++ (void) checkUsername:(NSString*)potentialUsername completion:(KCSUserCheckUsernameBlock)completionBlock
+{
+    if (potentialUsername == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"potentialUsername cannot be nil" userInfo:nil] raise];
+    }
+    
+    // /rpc/:appKey/check-username-exists
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        //response will be a 204 if accepted by server
+        NSDictionary* dict = [response jsonObject];
+        completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error);
+    }
+                                                        route:KCSRESTRouteRPC
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSClient2 sharedClient]];
+    request.method = KCSRESTMethodPOST;
+    request.path = @[@"check-username-exists"];
+    request.body = @{@"username": potentialUsername};
+    [request start];
+}
 
 //TODO: test change password
 

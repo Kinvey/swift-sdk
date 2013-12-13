@@ -41,4 +41,11 @@ typedef void (^KCSUser2CompletionBlock)(id<KCSUser2>user, NSError* error);
 + (void) saveUser:(id<KCSUser2>)user options:(NSDictionary*)options completion:(KCSUser2CompletionBlock)completionBlock;
 + (void) deleteUser:(id<KCSUser2>)user options:(NSDictionary*)options completion:(KCSCountBlock)completionBlock;
 
+
++ (void) sendPasswordResetForUsername:(NSString*)username completion:(KCSUserSendEmailBlock)completionBlock;
++ (void) sendPasswordResetForEmail:(NSString*)email completion:(KCSUserSendEmailBlock)completionBlock;
++ (void) sendEmailConfirmationForUser:(NSString*)username completion:(KCSUserSendEmailBlock)completionBlock;
++ (void) sendForgotUsernameEmail:(NSString*)email completion:(KCSUserSendEmailBlock)completionBlock;
++ (void) checkUsername:(NSString*)potentialUsername completion:(KCSUserCheckUsernameBlock)completionBlock;
+
 @end
