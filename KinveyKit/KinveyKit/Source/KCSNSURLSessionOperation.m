@@ -111,7 +111,7 @@
 {
     NSHTTPURLResponse* hresponse = (NSHTTPURLResponse*) response;
     //TODO strip headers?
-    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"received response: %ld %@", (long)hresponse.statusCode, hresponse.allHeaderFields);
+    //    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"received response: %ld %@", (long)hresponse.statusCode, hresponse.allHeaderFields);
     
     self.response.code = hresponse.statusCode;
     self.response.headers = hresponse.allHeaderFields;

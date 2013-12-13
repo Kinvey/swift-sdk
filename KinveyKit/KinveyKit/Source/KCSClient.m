@@ -38,6 +38,8 @@
 #import "KCSBase64.h"
 #import "KCSFileUtils.h"
 
+#import "KCSClientConfiguration+KCSInternal.h"
+
 #define kAppKeyKechainKey @"com.kinvey.kinveykit.appkey"
 
 
@@ -134,9 +136,7 @@
         _connectionTimeout = [self.options[KCS_CONNECTION_TIMEOUT] doubleValue];
     }
     
-    if (self.options[KCS_LOG_SINK] != nil) {
-        [KCSLogManager setLogSink:self.options[KCS_LOG_SINK]];
-    }
+    [configuration applyConfiguration];
 }
 
 - (NSString *)serviceHostname
@@ -207,6 +207,7 @@
     KCSUser* oldUser = _currentUser;
     _currentUser = currentUser;
     if (currentUser != oldUser) {
+        [[KCSAppdataStore caches] cacheActiveUser:(id)currentUser];
         [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:oldUser];
     }
 }

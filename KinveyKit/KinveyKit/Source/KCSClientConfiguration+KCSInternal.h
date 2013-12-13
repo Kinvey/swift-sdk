@@ -32,5 +32,7 @@ KCS_CONSTANT KCS_CONFIG_RETRY_DISABLED;
 
 - (int) loglevel;
 - (void) setLoglevel:(int)level;
+- (void) applyConfiguration;
+
 
 @end

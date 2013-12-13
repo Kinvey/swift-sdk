@@ -21,6 +21,8 @@
 #import "KinveyPersistable.h"
 @class KCSMetadata;
 
+//TODO: need to handle auth for implementers...
+
 @protocol KCSUser2 <NSObject, KCSPersistable>
 /* This is the `KCSEntityKeyId` for the user object */
 @property (nonatomic, copy) NSString* userId;

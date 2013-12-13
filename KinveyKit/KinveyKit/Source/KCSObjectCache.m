@@ -301,6 +301,11 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 #pragma mark - Saving
 - (void) updateObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection collectionCache:(NSCache*)clnCache
 {
+    NSString* key = entity[KCSEntityKeyId];
+    if (!key) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"No id provided for entity: %@, collection: %@", entity, collection);
+        return;
+    }
     [clnCache setObject:object forKey:entity[KCSEntityKeyId]];
     dispatch_sync(_cacheQueue, ^{
         [_persistenceLayer updateWithEntity:entity route:route collection:collection];
@@ -314,6 +319,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 - (void) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
 {
+    if (object == nil) {
+        return;
+    }
     NSDictionary* entity = [self.dataModel jsonEntityForObject:object route:route collection:collection];
     NSCache* clnCache = [self cacheForRoute:route collection:collection];
     
@@ -492,7 +500,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     setIfNil(userId, @"");
     dispatch_sync(_cacheQueue, ^{
         [_persistenceLayer setClientMetadata:@{@"appkey" : [KCSClient2 sharedClient].configuration.appKey,
-                                               @"activeUser" : user.userId}];
+                                               @"activeUser" : userId}];
     });
 }
 

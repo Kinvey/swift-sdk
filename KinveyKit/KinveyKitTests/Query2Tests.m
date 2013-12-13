@@ -22,6 +22,10 @@
 #import "KinveyDataStoreInternal.h"
 #import "TestUtils2.h"
 
+@interface KCSQuery2 ()
+- (NSString*)queryString:(BOOL)e;
+@end
+
 @interface Query2Tests : SenTestCase
 
 @end
