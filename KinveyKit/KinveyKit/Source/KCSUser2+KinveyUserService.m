@@ -391,7 +391,7 @@ KK2(Cleanup!)
 {
     //options to use in the future for loading references, etc
     if (![user isEqual:[KCSUser activeUser]]){
-        KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KCS Current User!");
+        KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KinveyKit Active User!");
         NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"User refresh is not on active user"};
         NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
         completionBlock(nil, userError);
@@ -399,7 +399,7 @@ KK2(Cleanup!)
     }
     if (user.userId == nil) {
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Error refreshing user, no user id.");
-        NSDictionary* errorInfo =  @{NSLocalizedDescriptionKey:@"User refresh is not on active user"};
+        NSDictionary* errorInfo =  @{NSLocalizedDescriptionKey:@"User has no _id."};
         NSError* error = [NSError createKCSError:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
         completionBlock(nil, error);
         return;
@@ -407,13 +407,13 @@ KK2(Cleanup!)
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
-            KCSLogError(KCS_LOG_CONTEXT_USER, @"Internal Error Updating user: %@", error);
+            KCSLogError(KCS_LOG_CONTEXT_USER, @"Error Updating user: %@", error);
             dispatch_async(dispatch_get_main_queue(), ^{
                 completionBlock(user, error);
             });
         } else {
             if ([KCSUser activeUser] != self) { // still have to check here because active user can be reset while loading request
-                KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KCS Current User!");
+                KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KinveyKit Active User!");
                 NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"User refresh is not on active user"};
                 NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -428,10 +428,82 @@ KK2(Cleanup!)
                                                         route:KCSRESTRouteUser
                                                       options:@{KCSRequestLogMethod}
                                                   credentials:user];
-    request.method = KCSRESTMethodPUT;
     request.path = @[user.userId];
     [request start];
 }
+
++ (void) saveUser:(id<KCSUser2>)user options:(NSDictionary*)options completion:(KCSUser2CompletionBlock)completionBlock
+{
+    //options for future with references and such
+    
+    if (![user isEqual:[KCSUser activeUser]]){
+        KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to save a user who is not the KinveyKit Active User!");
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Receiver is not current user"};
+        NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
+        completionBlock(nil, userError);
+        return;
+    }
+    if (user.userId == nil) {
+        KCSLogError(KCS_LOG_CONTEXT_USER, @"Error save user, no user id.");
+        NSDictionary* errorInfo =  @{NSLocalizedDescriptionKey:@"User object save needs and established user."};
+        NSError* error = [NSError createKCSError:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
+        completionBlock(nil, error);
+        return;
+    }
+    
+    NSDictionary* entity = [[KCSAppdataStore caches].dataModel jsonEntityForObject:user route:KCSRESTRouteUser collection:KCSUserCollectionName];
+    
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        if (error) {
+            KCSLogError(KCS_LOG_CONTEXT_USER, @"Error Updating user: %@", error);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completionBlock(user, error);
+            });
+        } else {
+            NSDictionary* userBody = [response jsonObject];
+            [self setupActiveUser:userBody completion:completionBlock];
+        }
+    }
+                                                        route:KCSRESTRouteUser
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:user];
+    request.method = KCSRESTMethodPUT;
+    request.path = @[user.userId];
+    request.body = entity;
+    [request start];
+}
+
++ (void) deleteUser:(id<KCSUser2>)user options:(NSDictionary*)options completion:(KCSCountBlock)completionBlock
+{
+    if (![user isEqual:[KCSUser activeUser]]){
+        KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to delete a user who is not the KinveyKit Active User!");
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Receiver is not current user"};
+        NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
+        completionBlock(0, userError);
+        return;
+    }
+    if (user.userId == nil) {
+        KCSLogError(KCS_LOG_CONTEXT_USER, @"Error delete user, no user id.");
+        NSDictionary* errorInfo =  @{NSLocalizedDescriptionKey:@"User object delete needs and established user."};
+        NSError* error = [NSError createKCSError:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
+        completionBlock(0, error);
+        return;
+    }
+    
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        if (error != nil) {
+            [self logoutUser:user];
+        }
+        completionBlock(error != nil, error);
+    }
+                                                        route:KCSRESTRouteUser
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:user];
+    request.method = KCSRESTMethodDELETE;
+    request.path = @[user.userId];
+    [request start];
+}
+
 
 //TODO: test change password
 
