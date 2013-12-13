@@ -19,17 +19,8 @@
 
 
 #import "KinveyUser.h"
-#import "KCSClient.h"
-#import "KinveyBlocks.h"
-#import "KinveyHTTPStatusCodes.h"
-#import "KinveyErrorCodes.h"
-#import "KCSErrorUtilities.h"
 #import "KCSLogManager.h"
-#import "KinveyCollection.h"
 #import "KCSHiddenMethods.h"
-#import "NSString+KinveyAdditions.h"
-
-#import "KCSRESTRequest.h"
 
 #import "KinveyUserService.h"
 #import "KCSKeychain2.h"
@@ -332,79 +323,22 @@ void setActive(KCSUser* user)
 
 + (void) sendPasswordResetForUser:(NSString*)usernameOrEmail withCompletionBlock:(KCSUserSendEmailBlock)completionBlock
 {
-    // /rpc/:kid/:username/user-password-reset-initiate
-    // /rpc/:kid/:email/user-password-reset-initiaxte
-    NSString* pwdReset = [[[[KCSClient sharedClient] rpcBaseURL] stringByAppendingStringWithPercentEncoding:usernameOrEmail] stringByAppendingString:@"/user-password-reset-initiate"];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:pwdReset usingMethod:kPostRESTMethod];
-    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
-        //response will be a 204 if accepted by server
-        completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
-    } failureAction:^(NSError *error) {
-        //do error
-        completionBlock(NO, error);
-    } progressAction:nil];
-    [request start];
+    [KCSUser2 sendPasswordResetForUsername:usernameOrEmail completion:completionBlock];
 }
 
 + (void) sendEmailConfirmationForUser:(NSString*)username withCompletionBlock:(KCSUserSendEmailBlock)completionBlock
 {
-    //req.post /rpc/:kid/:username/user-email-verification-initiate
-    NSString* verifyEmail = [[[[KCSClient sharedClient] rpcBaseURL] stringByAppendingStringWithPercentEncoding:username] stringByAppendingString:@"/user-email-verification-initiate"];
-    //[[[KCSClient sharedClient] rpcBaseURL] stringByAppendingStringWithPercentEncoding:[NSString stringWithFormat:@"%@/user-email-verification-initiate",username]];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:verifyEmail usingMethod:kPostRESTMethod];
-    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
-        //response will be a 204 if accepted by server
-        completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
-    } failureAction:^(NSError *error) {
-        //do error
-        completionBlock(NO, error);
-    } progressAction:nil];
-    [request start];
+    [KCSUser2 sendEmailConfirmationForUser:username completion:completionBlock];
 }
 
 + (void) sendForgotUsername:(NSString*)email withCompletionBlock:(KCSUserSendEmailBlock)completionBlock
 {
-    NSParameterAssert(email);
-    
-    NSString* pwdReset = [[[KCSClient sharedClient] rpcBaseURL] stringByAppendingString:@"user-forgot-username"];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:pwdReset usingMethod:kPostRESTMethod];
-    [request addHeaders:@{@"Content-Type":@"application/json"}];
-    [request setJsonBody:@{@"email" : email}];
-    
-    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
-        //response will be a 204 if accepted by server
-        completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
-    } failureAction:^(NSError *error) {
-        //do error
-        completionBlock(NO, error);
-    } progressAction:nil];
-    [request start];
+    [KCSUser2 sendForgotUsernameEmail:email completion:completionBlock];
 }
 
 + (void) checkUsername:(NSString*)potentialUsername withCompletionBlock:(KCSUserCheckUsernameBlock)completionBlock
 {
-    NSParameterAssert(potentialUsername != nil);
-    
-    // /rpc/:appKey/check-username-exists
-    NSString* checkExists = [[[KCSClient sharedClient] rpcBaseURL] stringByAppendingString:@"check-username-exists"];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:checkExists usingMethod:kPostRESTMethod];
-    [request setJsonBody:@{@"username": potentialUsername}];
-    [request setContentType:KCS_JSON_TYPE];
-    request = [request withCompletionAction:^(KCSConnectionResponse *response) {
-        NSDictionary* dict = [response jsonResponseValue];
-        if (response.responseCode == KCS_HTTP_STATUS_OK) {
-            completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], nil);
-        } else {
-            NSError* error = [KCSErrorUtilities createError:dict description:@"Error checking user name" errorCode:response.responseCode domain:KCSUserErrorDomain requestId:response.requestId];
-            completionBlock(potentialUsername, NO, error);
-        }
-        //response will be a 204 if accepted by server
-        //completionBlock(response.responseCode == KCS_HTTP_STATUS_NO_CONTENT, nil);
-    } failureAction:^(NSError *error) {
-        //do error
-        completionBlock(potentialUsername, NO ,error);
-    } progressAction:nil];
-    [request start];
+    [KCSUser2 checkUsername:potentialUsername completion:completionBlock];
 }
 
 

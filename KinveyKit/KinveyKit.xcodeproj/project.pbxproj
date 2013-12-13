@@ -1369,6 +1369,7 @@
 				2737D3B017BD517300FE7ACC /* KCSMockServer.m */,
 				27F5340817FD93CA0080332D /* KCSNetworkObserver.h */,
 				27F5340917FD93CA0080332D /* KCSNetworkObserver.m */,
+				D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */,
 			);
 			name = internal;
 			sourceTree = "<group>";
@@ -2122,7 +2123,6 @@
 			children = (
 				D3EA226F148543D600666259 /* KinveyBlocks.h */,
 				D3F340FB14BD2A8100DB6C37 /* KinveyErrorCodes.h */,
-				D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
