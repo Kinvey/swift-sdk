@@ -20,8 +20,8 @@
 
 #import "KinveyUser.h"
 #import "KCSClient.h"
-#import "KCSRESTRequest.h"
-#import "KCSBase64.h"
+//#import "KCSRESTRequest.h"
+//#import "KCSBase64.h"
 #import "KCS_SBJson.h"
 #import "KinveyBlocks.h"
 #import "KCSConnectionResponse.h"
@@ -39,7 +39,7 @@
 #import "KCSRESTRequest.h"
 #import "KCSPush.h"
 
-#import "KCSFileStore.h"
+//#import "KCSFileStore.h"
 
 #import "KinveyUserService.h"
 #import "KCSKeychain2.h"
@@ -60,9 +60,6 @@ NSString* const KCSUserAttributeFacebookId = @"_socialIdentity.facebook.id";
 
 #define kDeviceTokensKey @"_devicetokens"
 
-#define KCSUserAttributeOAuthTokens @"_oauth"
-@class GTMOAuth2Authentication;
-
 void setActive(KCSUser* user)
 {
 #pragma clang diagnostic push
@@ -73,7 +70,6 @@ void setActive(KCSUser* user)
 
 @interface KCSUser()
 @property (nonatomic, strong) NSMutableDictionary *userAttributes;
-@property (nonatomic, strong) NSDictionary* oauthTokens;
 @property (nonatomic, strong) NSMutableDictionary* push;
 @end
 
@@ -87,7 +83,6 @@ void setActive(KCSUser* user)
         _password = nil;
         _userId = @"";
         _userAttributes = [NSMutableDictionary dictionary];
-        _oauthTokens = [NSMutableDictionary dictionary];
         _sessionAuth = nil;
         _surname = nil;
         _email = nil;
@@ -128,7 +123,7 @@ void setActive(KCSUser* user)
     
     NSMutableDictionary* tokens = [[properties popObjectForKey:@"_push"] mutableCopy];
     user.push = tokens;
-    user.oauthTokens = [properties popObjectForKey:KCSUserAttributeOAuthTokens];
+    //    user.oauthTokens = [properties popObjectForKey:KCSUserAttributeOAuthTokens];
     
     user.surname = [properties popObjectForKey:KCSUserAttributeSurname];
     user.givenName = [properties popObjectForKey:KCSUserAttributeGivenname];
@@ -179,62 +174,11 @@ void setActive(KCSUser* user)
     }];
 }
 
-static KCSRESTRequest* lastBGUpdate = nil;
-
 - (void) refreshFromServer:(KCSCompletionBlock)completionBlock
 {
-    if ([KCSUser activeUser] != self) {
-        KCSLogError(@"Error: Attempting to refresh a non-activeUser");
-        NSDictionary* errorInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"User refresh is not on active user" withFailureReason:@"" withRecoverySuggestion:@"" withRecoveryOptions:@[]];
-        NSError* error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
-        completionBlock(nil, error);
-        return;
-    }
-    if (self.userId == nil) {
-        KCSLogError(@"Error refreshing user, no user id.");
-        NSDictionary* errorInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"User refresh is not on active user" withFailureReason:@"" withRecoverySuggestion:@"" withRecoveryOptions:@[]];
-        NSError* error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
-        completionBlock(nil, error);
-        return;
-    }
-    [lastBGUpdate cancel];
-    
-    lastBGUpdate = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", self.userId] usingMethod:kGetRESTMethod];
-    [lastBGUpdate setContentType:KCS_JSON_TYPE];
-    
-    // Set up our callbacks
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        lastBGUpdate = nil;
-
-        if ([KCSUser activeUser] != self) {
-            KCSLogError(@"Error: Attempting to refresh a non-activeUser");
-            NSDictionary* errorInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"User refresh is not on active user" withFailureReason:@"" withRecoverySuggestion:@"" withRecoveryOptions:@[]];
-            NSError* error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
-            completionBlock(nil, error);
-            return;
-        }
-        
-        // Ok, we're really auth'd
-        if ([response responseCode] < 300) {
-            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-            [KCSUser setupCurrentUser:self properties:dictionary password:nil username:self.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-                completionBlock(@[user], errorOrNil);
-            }];
-        } else {
-            KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
-            NSError* error = [KCSErrorUtilities createError:[response jsonResponseValue] description:@"Error updating active User" errorCode:response.responseCode domain:KCSUserErrorDomain requestId:response.requestId];
-            completionBlock(@[self], error);
-        }
-    };
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        lastBGUpdate = nil;
-        KCSLogError(@"Internal Error Updating user: %@", error);
-        completionBlock(nil, error);
-    };
-    
-    [lastBGUpdate withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
-    [lastBGUpdate start];
+    [KCSUser2 refreshUser:(id)self options:nil completion:^(id<KCSUser2> user, NSError *error) {
+        completionBlock(user?@[user]:nil, error);
+    }];
 }
 
 #pragma mark - Create new Users
@@ -333,7 +277,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
 
 + (void)loginWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 {
-    [KCSUser2 connectWithAuthProvider:provider accessDictionary:accessDictionary completionBlock:^(id<KCSUser2> user, NSError *error) {
+    [KCSUser2 connectWithAuthProvider:provider accessDictionary:accessDictionary completion:^(id<KCSUser2> user, NSError *error) {
         completionBlock(user, error, KCSUserNoInformation);
     }];
 }
@@ -343,7 +287,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
     if (![self isEqual:[KCSUser activeUser]]){
         KCSLogError(@"Attempted to log out a user who is not the KCS Current User!");
     } else {
-        [lastBGUpdate cancel];
+        //        [lastBGUpdate cancel];
         
         self.username = nil;
         self.userId = nil;
@@ -520,37 +464,12 @@ static KCSRESTRequest* lastBGUpdate = nil;
                       @"email" : KCSUserAttributeEmail,
                       @"givenName" : KCSUserAttributeGivenname,
                       @"surname" : KCSUserAttributeSurname,
-                      @"metadata" : KCSEntityKeyMetadata,
-                      @"oauthTokens" : KCSUserAttributeOAuthTokens,
+                      @"metadata" : KCSEntityKeyMetadata
         };
     });
     
     return mappedDict;
 }
-
-- (void) setOAuthToken:(NSString*)token forService:(NSString*)service
-{
-    [_oauthTokens setValue:token forKey:service];
-}
-
-#if NEVER
-- (BOOL)authorizeFromKeychainForName:(NSString *)serviceName
-                oauth2Authentication:(GTMOAuth2Authentication *)newAuth {
-    [newAuth setAccessToken:nil];
-    
-    BOOL didGetTokens = NO;
-    //    GTMOAuth2Keychain *keychain = [GTMOAuth2Keychain defaultKeychain];
-    //    NSString *password = [keychain passwordForService:keychainItemName
-    //                                              account:kGTMOAuth2AccountName
-    //                                                error:nil];
-    NSString* token = [_oauthTokens valueForKey:serviceName];
-    if (token != nil) {
-        [newAuth setKeysForResponseString:token];
-        didGetTokens = YES;
-    }
-    return didGetTokens;
-}
-#endif
 
 - (NSString*) debugDescription
 {
@@ -665,7 +584,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
 
 - (void) changePassword:(NSString*)newPassword completionBlock:(KCSCompletionBlock)completionBlock
 {
-    [KCSUser2 changePasswordForUser:(id)self password:newPassword completionBlock:^(id<KCSUser2> user, NSError *error) {
+    [KCSUser2 changePasswordForUser:(id)self password:newPassword completion:^(id<KCSUser2> user, NSError *error) {
         NSArray* objs = user ? @[user] : @[];
         completionBlock(objs, error);
     }];

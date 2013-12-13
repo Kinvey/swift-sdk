@@ -104,7 +104,7 @@ KK2(Cleanup!)
     [request start];
 }
 
-+ (void) createWithAuthProvider:(KCSUserSocialIdentifyProvider)provider loginBody:(NSDictionary*)body completionBlock:(KCSUser2CompletionBlock)completionBlock;
++ (void) createWithAuthProvider:(KCSUserSocialIdentifyProvider)provider loginBody:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock;
 {
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
@@ -156,7 +156,7 @@ KK2(Cleanup!)
     [request start];
 }
 
-+ (void)connectWithAuthProvider:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary completionBlock:(KCSUser2CompletionBlock)completionBlock
++ (void)connectWithAuthProvider:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary completion:(KCSUser2CompletionBlock)completionBlock
 {
     NSDictionary* loginDict = [self loginDictForProvider:provider accessDictionary:accessDictionary];
 
@@ -164,7 +164,7 @@ KK2(Cleanup!)
         if (error) {
             if (response.isKCSError == YES && response.code == KCSNotFoundError) {
                 //This is new user, create
-                [self createWithAuthProvider:provider loginBody:loginDict completionBlock:completionBlock];
+                [self createWithAuthProvider:provider loginBody:loginDict completion:completionBlock];
             } else {
                 KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
                 [self setActive:nil];
@@ -350,7 +350,7 @@ KK2(Cleanup!)
     }];
 }
 
-+ (void)changePasswordForUser:(id<KCSUser2>)user password:(NSString*)newPassword completionBlock:(KCSUser2CompletionBlock)completionBlock
++ (void)changePasswordForUser:(id<KCSUser2>)user password:(NSString*)newPassword completion:(KCSUser2CompletionBlock)completionBlock
 {
     if (newPassword == nil) {
         [[NSException exceptionWithName:NSInvalidArgumentException reason:@"newPassword is nil" userInfo:nil] raise];
@@ -386,6 +386,53 @@ KK2(Cleanup!)
         [request start];
     }
 }
+
++ (void) refreshUser:(id<KCSUser2>)user options:(NSDictionary*)options completion:(KCSUser2CompletionBlock)completionBlock
+{
+    //options to use in the future for loading references, etc
+    if (![user isEqual:[KCSUser activeUser]]){
+        KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KCS Current User!");
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"User refresh is not on active user"};
+        NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
+        completionBlock(nil, userError);
+        return;
+    }
+    if (user.userId == nil) {
+        KCSLogError(KCS_LOG_CONTEXT_USER, @"Error refreshing user, no user id.");
+        NSDictionary* errorInfo =  @{NSLocalizedDescriptionKey:@"User refresh is not on active user"};
+        NSError* error = [NSError createKCSError:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
+        completionBlock(nil, error);
+        return;
+    }
+    
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        if (error) {
+            KCSLogError(KCS_LOG_CONTEXT_USER, @"Internal Error Updating user: %@", error);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completionBlock(user, error);
+            });
+        } else {
+            if ([KCSUser activeUser] != self) { // still have to check here because active user can be reset while loading request
+                KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KCS Current User!");
+                NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"User refresh is not on active user"};
+                NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completionBlock(user, userError);
+                });
+            } else {
+                NSDictionary* userBody = [response jsonObject];
+                [self setupActiveUser:userBody completion:completionBlock];
+            }
+        }
+    }
+                                                        route:KCSRESTRouteUser
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:user];
+    request.method = KCSRESTMethodPUT;
+    request.path = @[user.userId];
+    [request start];
+}
+
 //TODO: test change password
 
 //TODO: user object subclass and implementation

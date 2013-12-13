@@ -32,10 +32,11 @@ typedef void (^KCSUser2CompletionBlock)(id<KCSUser2>user, NSError* error);
 + (void) createUserWithUsername:(NSString*)username password:(NSString*)password fieldsAndValues:(NSDictionary*) fieldsAndValues completion:(KCSUser2CompletionBlock)completionBlock;
 
 + (void) loginWithUsername:(NSString *)username password:(NSString *)password completion:(KCSUser2CompletionBlock)completionBlock;
-+ (void) connectWithAuthProvider:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary completionBlock:(KCSUser2CompletionBlock)completionBlock;
++ (void) connectWithAuthProvider:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary completion:(KCSUser2CompletionBlock)completionBlock;
 + (void) logoutUser:(id<KCSUser2>)user;
 
 
-+ (void) changePasswordForUser:(id<KCSUser2>)user password:(NSString*)newPassword completionBlock:(KCSUser2CompletionBlock)completionBlock;
++ (void) changePasswordForUser:(id<KCSUser2>)user password:(NSString*)newPassword completion:(KCSUser2CompletionBlock)completionBlock;
++ (void) refreshUser:(id<KCSUser2>)user options:(NSDictionary*)options completion:(KCSUser2CompletionBlock)completionBlock;
 
 @end
