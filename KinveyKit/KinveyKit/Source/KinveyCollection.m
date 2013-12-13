@@ -34,6 +34,7 @@
 #import "KCSBlockDefs.h"
 #import "KCSConnectionProgress.h"
 #import "KinveyUser.h"
+#import "KCSClientConfiguration.h"
 
 #import "KCSRequest2.h"
 
@@ -152,18 +153,17 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     
     if (self){
         if ([name isEqualToString:KCSUserCollectionName]) {
-            if ([theClass isSubclassOfClass:[KCSUser class]] == NO) {
-                [[NSException exceptionWithName:@"Invalid Template" reason:@"User collection must have a template that is of type 'KCSUser'" userInfo:nil] raise];
-            }
-            _collectionName = @"";
+            //remove this in the wake fo KCSUser2 & KCSUser2 subclasses
+//            if ([theClass isSubclassOfClass:[KCSUser class]] == NO) {
+//                [[NSException exceptionWithName:@"Invalid Template" reason:@"User collection must have a template that is of type 'KCSUser'" userInfo:nil] raise];
+//            }
             _category = KCSCollectionUser;
         } else if ([name isEqualToString:@"_blob"]) {
-            _collectionName = @"";
             _category = KCSCollectionBlob;
         } else {
-            _collectionName = name;
             _category = KCSCollectionAppdata;
         }
+        _collectionName = name;
         _objectTemplate = theClass;
         _lastFetchResults = nil;
         _query = nil;
@@ -423,7 +423,11 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
 #pragma mark - User collection
 + (instancetype) userCollection
 {
-    return [self collectionFromString:KCSUserCollectionName ofClass:[KCSUser class]];
+    Class userClass = [KCSClient sharedClient].configuration.options[KCS_USER_CLASS];
+    if (!userClass) {
+        userClass = [KCSUser class];
+    }
+    return [self collectionFromString:KCSUserCollectionName ofClass:userClass];
 }
 
 

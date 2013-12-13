@@ -21,6 +21,12 @@
 #import "KCSClientConfiguration+KCSInternal.h"
 #import "KinveyCoreInternal.h"
 
+#import "KCSAppdataStore.h"
+#import "KCSHiddenMethods.h"
+#import "KCSDataModel.h"
+#import "KinveyUser.h"
+#import "KCSLogManager.h"
+
 @implementation KCSClientConfiguration (KCSInternal)
 
 - (NSString*) baseURL
@@ -68,5 +74,22 @@
     d[KCS_LOG_LEVEL] = @(level);
     self.options = d;
 }
+
+- (void) applyConfiguration
+{
+    KK2(update to v2 stuff)
+    if (self.options[KCS_LOG_SINK] != nil) {
+        [KCSLogManager setLogSink:self.options[KCS_LOG_SINK]];
+    }
+    
+    //TODO: extract out into data or user service
+    Class userClass = [KCSClient sharedClient].configuration.options[KCS_USER_CLASS];
+    if (!userClass) {
+        userClass = [KCSUser class];
+    }
+    [[KCSAppdataStore caches].dataModel setClass:userClass forCollection:KCSUserCollectionName];
+}
+
+
 
 @end

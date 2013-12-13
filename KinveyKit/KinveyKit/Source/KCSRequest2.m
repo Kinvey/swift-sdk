@@ -307,10 +307,10 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
             error = [op.error errorByAddingCommonInfo];
             KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@ [KinveyKit id: '%@']", error, op.clientRequestId);
         } else if ([op.response isKCSError]) {
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@ [KinveyKit id: '%@']", (long)op.response.code, op.response.jsonData, op.clientRequestId);
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@ [KinveyKit id: '%@' %@]", (long)op.response.code, op.response.jsonData, op.clientRequestId, op.response.headers);
             error = [op.response errorObject];
         } else {
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%ld) [KinveyKit id: '%@']", (long)op.response.code, op.clientRequestId);
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%ld) [KinveyKit id: '%@'] %@", (long)op.response.code, op.clientRequestId, op.response.headers);
         }
         error = [error updateWithInfo:@{kErrorKeyMethod : request.HTTPMethod}];
         self.completionBlock(op.response, error);

@@ -84,7 +84,7 @@ void setActive(KCSUser* user)
     self = [super init];
     if (self){
         _username = @"";
-        _password = @"";
+        _password = nil;
         _userId = @"";
         _userAttributes = [NSMutableDictionary dictionary];
         _oauthTokens = [NSMutableDictionary dictionary];
@@ -291,6 +291,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
     }
     if ([KCSUser hasSavedCredentials] == YES) {
         KCSUser *createdUser = [[KCSAppdataStore caches] lastActiveUser];
+        setActive(createdUser);
         [createdUser refreshFromServer:^(NSArray *objectsOrNil, NSError *errorOrNil) {
             //TODO: handle error
         }];
@@ -317,7 +318,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
     }];
 }
 
-
 + (void)loginWithUsername: (NSString *)username
                  password: (NSString *)password
              withDelegate: (id<KCSUserActionDelegate>)delegate
@@ -331,188 +331,11 @@ static KCSRESTRequest* lastBGUpdate = nil;
     }];
 }
 
-+ (void) setupSessionAuthUser:(KCSConnectionResponse*)response client:(KCSClient*)client completionBlock:(KCSUserCompletionBlock)completionBlock
-{
-    // Ok, we're really authd
-    [self clearSavedCredentials];
-    NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
-    KCSUser* createdUser = [[KCSUser alloc] init];
-    NSString* authToken = [dictionary valueForKeyPath:@"_kmd.authtoken"];
-    
-    NSError* error = nil;
-    int status = 0;
-    if (authToken != nil) {
-        status = KCSUserFound;
-    } else {
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
-                                                                           withFailureReason:@"User could not be authorized"
-                                                                      withRecoverySuggestion:@"Try again with different access token"
-                                                                         withRecoveryOptions:nil];
-        error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
-    }
-    [self setupCurrentUser:createdUser properties:dictionary password:nil username:nil completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        //TODO: handle registration error
-        
-        
-        // Delegate must retain createdUser
-        completionBlock(createdUser, error, status);
-    }];
-
-}
-
-//TODO: constants for fields
-+ (NSDictionary*) loginDictForProvder:(KCSUserSocialIdentifyProvider)provder accessDictionary:(NSDictionary*)accessDictionary
-{
-    NSDictionary* dict = @{};
-    NSString* accessToken = [accessDictionary objectForKey:KCSUserAccessTokenKey];
-    NSString* accessTokenSecret = [accessDictionary objectForKey:KCSUserAccessTokenSecretKey];
-    switch (provder) {
-        case KCSSocialIDFacebook: {
-            NSString* appId = [accessDictionary objectForKey:KCS_FACEBOOK_APP_KEY];
-            if (appId == nil) {
-                appId = [[KCSClient sharedClient].options objectForKey:KCS_FACEBOOK_APP_KEY];
-                if (appId == nil) {
-                    appId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
-                    if (appId == nil) {
-                        // could not locate in the access dictionary, client, or plist, error
-                        KCSLogWarning(@"No Facebook App Id provided in access dictionary, or KCSClient options key");
-                        DBAssert(appId != nil, @"No Facebook App Id provided");
-                    }
-                }
-            }
-            dict = appId != nil ?  @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken, @"appid" : appId}}} :
-                                   @{@"_socialIdentity" : @{@"facebook" : @{@"access_token" : accessToken}}};
-        }
-            break;
-        case KCSSocialIDTwitter: {
-            NSString* twitterKey = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_KEY];
-            NSString* twitterSecret = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_SECRET];
-            DBAssert(twitterKey != nil && twitterSecret != nil, @"twitter info should not be nil.");
-            if (twitterKey != nil && twitterSecret != nil) {
-                dict = @{@"_socialIdentity" : @{@"twitter" : @{@"access_token" : accessToken,
-                @"access_token_secret" : accessTokenSecret,
-                @"consumer_key" : twitterKey,
-                @"consumer_secret" : twitterSecret}}};
-            }
-        }
-            break;
-        case KCSSocialIDLinkedIn: {
-            NSString* linkedInKey = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_API_KEY];
-            NSString* linkedInSecret = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_SECRET_KEY];
-            DBAssert(linkedInKey != nil && linkedInSecret != nil, @"LinkedIn info should not be nil.");
-            if (linkedInKey != nil && linkedInSecret != nil) {
-                dict = @{@"_socialIdentity" : @{@"linkedIn" : @{@"access_token" : accessToken,
-                @"access_token_secret" : accessTokenSecret,
-                @"consumer_key" : linkedInKey,
-                @"consumer_secret" : linkedInSecret}}};
-            }
-        }
-            break;
-        case KCSSocialIDSalesforce: {
-            NSString* idUrl = [accessDictionary objectForKey:KCS_SALESFORCE_IDENTITY_URL];
-            NSString* refreshToken = [accessDictionary objectForKey:KCS_SALESFORCE_REFRESH_TOKEN];
-            NSString* clientId = [accessDictionary objectForKey:KCS_SALESFORCE_CLIENT_ID];
-            if (clientId == nil) {
-                clientId = [[KCSClient sharedClient].options objectForKey:KCS_SALESFORCE_CLIENT_ID];
-            }
-            DBAssert(idUrl != nil, @"salesForce info should not be nil.");
-            if (idUrl != nil && accessToken != nil) {
-                dict = @{@"_socialIdentity" : @{@"salesforce" : @{@"access_token" : accessToken,
-                                                                KCS_SALESFORCE_IDENTITY_URL : idUrl,
-                                                                  KCS_SALESFORCE_REFRESH_TOKEN: refreshToken,
-                                                                  KCS_SALESFORCE_CLIENT_ID : clientId}}};
-            }
-
-        }
-            break;
-        default:
-            dict = accessDictionary;
-    }
-    return dict;
-}
-
-
-+ (void)registerUserWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock
-{
-    //TODO: combine with below
-    KCSClient *client = [KCSClient sharedClient];
-    KCSRESTRequest *loginRequest = [KCSRESTRequest requestForResource:client.userBaseURL usingMethod:kPostRESTMethod];
-    NSDictionary* loginDict = [self loginDictForProvder:provider accessDictionary:accessDictionary];
-    [loginRequest setJsonBody:loginDict];
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        // I really don't know what to do here, we can't continue... Something died...
-        KCSLogError(@"Internal Error: %@", error);
-        
-        setActive(nil);
-
-        completionBlock(nil, error, 0);
-    };
-    
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
-    
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
-        if ([response responseCode] >= 400) {
-            KCSUser *createdUser = [[KCSUser alloc] init];
-            
-            setActive(nil);
-            // This is expected here, user auth failed, do the right thing
-            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Login Failed"
-                                                                               withFailureReason:@"Invalid social identity credentials"                                                                          withRecoverySuggestion:@"Try again with access token"
-                                                                             withRecoveryOptions:nil];
-            NSError *error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSLoginFailureError userInfo:userInfo];
-            // Delegate must retain createdUser
-            completionBlock(createdUser, error, 0);
-            return;
-        } else { //successful
-            [self setupSessionAuthUser:response client:client completionBlock:completionBlock];
-        }
-        
-    };
-    
-    [loginRequest setContentType:KCS_JSON_TYPE];
-    [loginRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
-    [loginRequest start];
-}
-
 + (void)loginWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 {
-    KCSClient *client = [KCSClient sharedClient];
-    KCSRESTRequest *loginRequest = [KCSRESTRequest requestForResource:[client.userBaseURL stringByAppendingString:@"login"] usingMethod:kPostRESTMethod];
-    NSDictionary* loginDict = [self loginDictForProvder:provider accessDictionary:accessDictionary];
-    [loginRequest setJsonBody:loginDict];
-    
-    // We need to init the current user to something before trying this
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        // I really don't know what to do here, we can't continue... Something died...
-        KCSLogError(@"Internal Error: %@", error);
-        
-        setActive(nil);
-        
-        completionBlock(nil, error, 0);
-    };
-    
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *conn){};
-    
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response) {
-        if ([response responseCode] != KCS_HTTP_STATUS_OK) {
-            //This is new user, log in
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [KCSUser registerUserWithSocialIdentity:provider accessDictionary:accessDictionary withCompletionBlock:completionBlock];
-            });
-        } else { //successful
-            [self setupSessionAuthUser:response client:client completionBlock:completionBlock];
-        }
-    };
-    
-    KCSUser *tmpCurrentUser = [[KCSUser alloc] init];
-    tmpCurrentUser.username = @"";
-    setActive(tmpCurrentUser);
-    
-    [loginRequest setContentType:KCS_JSON_TYPE];
-    [loginRequest withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock];
-    [loginRequest start];
+    [KCSUser2 connectWithAuthProvider:provider accessDictionary:accessDictionary completionBlock:^(id<KCSUser2> user, NSError *error) {
+        completionBlock(user, error, KCSUserNoInformation);
+    }];
 }
 
 - (void)logout
@@ -554,21 +377,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
     }
 }
 
-
-- (void)removeWithDelegate: (id<KCSPersistableDelegate>)delegate
-{
-    if (![self isEqual:[[KCSClient sharedClient] currentUser]]){
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Receiver is not current user."
-                                                                           withFailureReason:@"An operation only applicable to the current user was tried on a different user."
-                                                                      withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
-                                                                         withRecoveryOptions:nil];
-        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        [delegate entity:self operationDidFailWithError:userError];
-    } else {
-        [self deleteFromCollection:[KCSCollection userCollection] withDelegate:delegate];
-    }
-}
-
 - (void) removeWithCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     if (![self isEqual:[KCSUser activeUser]]){
@@ -582,38 +390,6 @@ static KCSRESTRequest* lastBGUpdate = nil;
         [self deleteFromCollection:[KCSCollection userCollection] withCompletionBlock:completionBlock withProgressBlock:nil];
     }
 }
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-- (void)loadWithDelegate: (id<KCSEntityDelegate>)delegate
-{
-    if (![self isEqual:[[KCSClient sharedClient] currentUser]]){
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Receiver is not current user."
-                                                                           withFailureReason:@"An operation only applicable to the current user was tried on a different user."
-                                                                      withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
-                                                                         withRecoveryOptions:nil];
-        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        [delegate entity:self fetchDidFailWithError:userError];
-    } else {
-        [self loadObjectWithID:self.userId fromCollection:[KCSCollection userCollection] withDelegate:delegate];
-    }
-}
-#pragma clang diagnostic pop
-
-- (void)saveWithDelegate: (id<KCSPersistableDelegate>)delegate
-{
-    if (![self isEqual:[[KCSClient sharedClient] currentUser]]){
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Receiver is not current user."
-                                                                           withFailureReason:@"An operation only applicable to the current user was tried on a different user."
-                                                                      withRecoverySuggestion:@"Only perform this action on [[KCSClient sharedClient] currentUser]"
-                                                                         withRecoveryOptions:nil];
-        NSError *userError = [NSError errorWithDomain:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        [delegate entity:self operationDidFailWithError:userError];
-    } else {
-        [self saveToCollection:[KCSCollection userCollection] withDelegate:delegate];
-    }
-}
-
 
 - (void) saveWithCompletionBlock:(KCSCompletionBlock)completionBlock
 {
@@ -713,6 +489,12 @@ static KCSRESTRequest* lastBGUpdate = nil;
     [self.userAttributes removeObjectForKey:attribute];
 }
 
+- (void)setPassword:(NSString *)password
+{
+    DBAssert(password == nil, @"should not be setting password");
+    _password = password;
+}
+
 #pragma mark - Kinvey Entity
 
 + (NSDictionary *)kinveyObjectBuilderOptions
@@ -780,7 +562,7 @@ static KCSRESTRequest* lastBGUpdate = nil;
 + (void) sendPasswordResetForUser:(NSString*)usernameOrEmail withCompletionBlock:(KCSUserSendEmailBlock)completionBlock
 {
     // /rpc/:kid/:username/user-password-reset-initiate
-    // /rpc/:kid/:email/user-password-reset-initiate
+    // /rpc/:kid/:email/user-password-reset-initiaxte
     NSString* pwdReset = [[[[KCSClient sharedClient] rpcBaseURL] stringByAppendingStringWithPercentEncoding:usernameOrEmail] stringByAppendingString:@"/user-password-reset-initiate"];
     KCSRESTRequest *request = [KCSRESTRequest requestForResource:pwdReset usingMethod:kPostRESTMethod];
     request = [request withCompletionAction:^(KCSConnectionResponse *response) {

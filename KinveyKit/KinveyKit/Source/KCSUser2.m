@@ -25,6 +25,7 @@
 
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
+#import "KinveyUserService.h"
 
 #define KCSUserAttributeOAuthTokens @"_oauth"
 
@@ -34,16 +35,6 @@
 @end
 
 @implementation KCSUser2
-
-+ (void)initialize
-{
-    KCSCollection* userCollection = [KCSCollection userCollection];
-    Class userClass = [KCSClient2 sharedClient].configuration.options[KCS_USER_CLASS];
-    if (!userClass) {
-        userClass = self;
-    }
-    [[KCSAppdataStore caches].dataModel setClass:self forCollection:userCollection.collectionName];
-}
 
 - (instancetype) init
 {
@@ -86,6 +77,85 @@
     });
     
     return mappedDict;
+}
+
+#warning FIx THESE:
+
+- (NSString *)authString
+{
+    NSString* token = [KCSKeychain2 kinveyTokenForUserId:self.userId];
+    NSString *authString = nil;
+    if (token) {
+        authString = [@"Kinvey " stringByAppendingString: token];
+        KCSLogInfo(KCS_LOG_CONTEXT_USER, @"Current user found, using sessionauth (%@) => XXXXXXXXX", self.username);
+    } else {
+        KCSLogError(KCS_LOG_CONTEXT_USER, @"No session auth for current user found (%@)", self.username);
+    }
+    return authString;
+}
+
+ - (void) refreshFromServer:(KCSCompletionBlock)completionBlock
+{
+    completionBlock(@[self],nil);
+#if NEVER
+    if ([KCSUser activeUser] != self) {
+        KCSLogError(@"Error: Attempting to refresh a non-activeUser");
+        NSDictionary* errorInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"User refresh is not on active user" withFailureReason:@"" withRecoverySuggestion:@"" withRecoveryOptions:@[]];
+        NSError* error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
+        completionBlock(nil, error);
+        return;
+    }
+    if (self.userId == nil) {
+        KCSLogError(@"Error refreshing user, no user id.");
+        NSDictionary* errorInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"User refresh is not on active user" withFailureReason:@"" withRecoverySuggestion:@"" withRecoveryOptions:@[]];
+        NSError* error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
+        completionBlock(nil, error);
+        return;
+    }
+    [lastBGUpdate cancel];
+    
+    lastBGUpdate = [KCSRESTRequest requestForResource:[[[KCSClient sharedClient] userBaseURL] stringByAppendingFormat:@"%@", self.userId] usingMethod:kGetRESTMethod];
+    [lastBGUpdate setContentType:KCS_JSON_TYPE];
+    
+    // Set up our callbacks
+    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
+        lastBGUpdate = nil;
+        
+        if ([KCSUser activeUser] != self) {
+            KCSLogError(@"Error: Attempting to refresh a non-activeUser");
+            NSDictionary* errorInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"User refresh is not on active user" withFailureReason:@"" withRecoverySuggestion:@"" withRecoveryOptions:@[]];
+            NSError* error = [NSError errorWithDomain:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
+            completionBlock(nil, error);
+            return;
+        }
+        
+        // Ok, we're really auth'd
+        if ([response responseCode] < 300) {
+            NSDictionary *dictionary = (NSDictionary*) [response jsonResponseValue];
+            [KCSUser setupCurrentUser:self properties:dictionary password:nil username:self.username completionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+                completionBlock(@[user], errorOrNil);
+            }];
+        } else {
+            KCSLogError(@"Internal Error Updating user: %@", [response jsonResponseValue]);
+            NSError* error = [KCSErrorUtilities createError:[response jsonResponseValue] description:@"Error updating active User" errorCode:response.responseCode domain:KCSUserErrorDomain requestId:response.requestId];
+            completionBlock(@[self], error);
+        }
+    };
+    
+    KCSConnectionFailureBlock fBlock = ^(NSError *error){
+        lastBGUpdate = nil;
+        KCSLogError(@"Internal Error Updating user: %@", error);
+        completionBlock(nil, error);
+    };
+    
+    [lastBGUpdate withCompletionAction:cBlock failureAction:fBlock progressAction:nil];
+    [lastBGUpdate start];
+#endif
+}
+
+- (void) logout
+{
+    [KCSUser2 logoutUser:self];
 }
 
 @end

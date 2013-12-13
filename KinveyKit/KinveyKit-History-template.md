@@ -12,6 +12,7 @@
     * __TODO__ conflict detection    if (response.responseCode == KCS_HTTP_STATUS_CONFLICT) {
                     error = [KCSErrorUtilities createError:(NSDictionary*)[response jsonResponseValue] description:@"User already exists" errorCode:KCSConflictError domain:KCSUserErrorDomain requestId:response.requestId];
     * __TODO__ user setup/creation blocks return `KCSUserNoInformation`
+    * Removed deprecated `-[KCSUser loadWithDelegate:]`, `-[KCSUser removeWithDelegate:]`, and `-[KCSUser saveWithDelegate:]` methods.
 * Code Cleanup:
     * Removed deprecated `KCSMetadata` methods.
               

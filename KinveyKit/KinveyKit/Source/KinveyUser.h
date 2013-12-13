@@ -165,7 +165,7 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  @see sendEmailConfirmationForUser:withCompletionBlock:
  @since 10.1.0
  */
-@property (nonatomic, readonly) BOOL emailVerified;
+@property (nonatomic) BOOL emailVerified;
 
 /** Checks if credentials have been stored in the keychain. 
  
@@ -308,12 +308,6 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 + (void)loginWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 /*! Removes a user and their data from Kinvey
- * @param delegate The delegate to inform once the action is complete.
- * @deprecatedIn 1.19.0
-*/
-- (void)removeWithDelegate: (id<KCSPersistableDelegate>)delegate KCS_DEPRECATED(use removeWithCompletionBlock: instead, 1.19.0);
-
-/*! Removes a user and their data from Kinvey
  * @param completionBlock The block that is called when operation is complete or fails.
  */
 - (void) removeWithCompletionBlock:(KCSCompletionBlock)completionBlock;
@@ -326,16 +320,6 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 /// @name Updating the user object
 ///---------------------------------------------------------------------------------------
                                                                                                                                                  
-/*! Load the data for the given user, user must be logged-in.
- *
- * @param delegate The delegate to inform once the action is complete.
- * @deprecatedIn 1.19.0
- */
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-- (void)loadWithDelegate: (id<KCSEntityDelegate>)delegate;
-#pragma clang diagnostic pop
-
 /** Update the user object from the server.
  
  The block will return and automatically update the `activeUser`.
@@ -347,13 +331,6 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  */
 - (void) refreshFromServer:(KCSCompletionBlock)completionBlock;
                                                                                                                                                  
-/*! Called to update the Kinvey state of a user.
- * @param delegate The delegate to inform once the action is complete.
- * @deprecatedIn 1.19.0
- */
-- (void)saveWithDelegate: (id<KCSPersistableDelegate>)delegate KCS_DEPRECATED(Use saveWithCompletionBlock: instead, 1.19.0);
-
-
 /** Called to update the Kinvey state of a user.
   @param completionBlock block called upon completion or error
   @since 1.11.0

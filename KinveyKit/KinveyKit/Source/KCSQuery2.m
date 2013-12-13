@@ -215,12 +215,6 @@ id kcsPredToQueryExprVal(NSExpression* expr)
     return [self queryString:YES];
 }
 
-- (NSString*) keyString
-{
-    NSString* ir = [self queryString:NO];
-    return [@([ir hash]) stringValue];
-}
-
 #pragma mark - Compatability
 
 + (instancetype) queryWithQuery1:(KCSQuery *)query

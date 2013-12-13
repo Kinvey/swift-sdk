@@ -135,4 +135,79 @@
     STAssertTrue([KCSUser2 hasSavedCredentials], @"yes, please");
 }
 
+- (void) testLogin
+{
+    NSString* username = [NSString UUID];
+    NSString* password = [NSString UUID];
+    
+    self.done = NO;
+    [KCSUser2 createUserWithUsername:username password:password fieldsAndValues:nil completion:^(id<KCSUser2> user, NSError *error) {
+        KTAssertNoError
+        STAssertNotNil(user, @"should have a user");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    [KCSUser2 logoutUser:[KCSUser2 activeUser]];
+    KCSUser2* active = [KCSUser2 activeUser];
+    STAssertNil(active, @"User should be cleared");
+    
+    self.done = NO;
+    __block KCSUser2* loggedInUser;
+    [KCSUser2 loginWithUsername:username password:password completion:^(id<KCSUser2> user, NSError *error) {
+        KTAssertNoError
+        STAssertNotNil(user, @"should get a user");
+        loggedInUser = user;
+        self.done = YES;
+    }];
+    [self poll];
+    
+    STAssertEqualObjects(loggedInUser, [KCSUser2 activeUser], @"should be active");
+    
+    [KCSUser2 logoutUser:loggedInUser];
+}
+
+- (void) testChangePassword
+{
+    
+    NSString* username = [NSString UUID];
+    NSString* password = [NSString UUID];
+    
+    self.done = NO;
+    __block KCSUser2* thisUser = nil;
+    [KCSUser2 createUserWithUsername:username password:password fieldsAndValues:nil completion:^(id<KCSUser2> user, NSError *error) {
+        KTAssertNoError
+        STAssertNotNil(user, @"should have a user");
+        thisUser = user;
+        self.done = YES;
+    }];
+    [self poll];
+    
+    NSString* newPassword = [NSString UUID];
+    
+    self.done = NO;
+    [KCSUser2 changePasswordForUser:thisUser password:newPassword completionBlock:^(id<KCSUser2> user, NSError *error) {
+        KTAssertNoError
+        STAssertNotNil(user, @"Should get a user back");
+        self.done = YES;
+    }];
+    [self poll];
+    
+    
+    [KCSUser2 logoutUser:[KCSUser2 activeUser]];
+    KCSUser2* active = [KCSUser2 activeUser];
+    STAssertNil(active, @"User should be cleared");
+ 
+    __block KCSUser2* newUser = nil;
+    self.done = NO;
+    [KCSUser2 loginWithUsername:username password:newPassword completion:^(id<KCSUser2> user, NSError *error) {
+        KTAssertNoError;
+        STAssertNotNil(user, @"should get user");
+        newUser = user;
+        self.done = YES;
+    }];
+    [self poll];
+    STAssertEqualObjects(newUser, [KCSUser2 activeUser], @"should be the new active user");
+}
+
 @end

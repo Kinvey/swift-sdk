@@ -342,6 +342,7 @@
     if (error != nil) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", entity);
         DBAssert(YES, @"No object");
+        return NO;
     }
     
     KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"Insert/update %@/%@", _persistenceId, _id);

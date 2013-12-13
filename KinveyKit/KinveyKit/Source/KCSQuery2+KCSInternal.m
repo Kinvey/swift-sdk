@@ -19,17 +19,19 @@
 
 
 #import "KCSQuery2+KCSInternal.h"
-#import "KCSQuery2.h"
 
-@interface KCSQuery2 (Hidden)
-//- (NSString*) escapedQueryString;
-//- (NSString*) queryString:(BOOL)escape;
-//- (NSString*) keyString;
+@interface KCSQuery2 ()
+- (NSString*) queryString:(BOOL)escape;
 @property (nonatomic, retain) NSMutableDictionary* internalRepresentation;
 @end
 
 @implementation KCSQuery2 (KCSInternal)
 
+- (NSString*) keyString
+{
+    NSString* ir = [self queryString:NO];
+    return [@([ir hash]) stringValue];
+}
 
 - (BOOL) isAllQuery
 {
