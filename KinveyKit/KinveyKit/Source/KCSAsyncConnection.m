@@ -27,7 +27,8 @@
 #import "KCSClient.h"
 
 #import "NSDictionary+KinveyAdditions.h"
-
+#import "KCSNetworkResponse.h"
+#import "KCSCredentials.h"
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
@@ -320,7 +321,17 @@
         NSDictionary *headers = [(NSHTTPURLResponse *)self.lastResponse allHeaderFields];
         KCSLogNetwork(@"Response completed with code %d and response headers: %@", statusCode, [headers stripKeys:@[@"Authorization"]]);
         KCSLogRequestId(@"Kinvey Request ID: %@", [headers objectForKey:@"X-Kinvey-Request-Id"]);
-        self.completionBlock([KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:@{NSURLErrorFailingURLStringErrorKey : [self.request.URL absoluteString]}]);
+
+        KCSConnectionResponse* response = [KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:@{NSURLErrorFailingURLStringErrorKey : [self.request.URL absoluteString]}];
+        if (statusCode >= 400) {
+            KCSNetworkResponse* netResponse = [[KCSNetworkResponse alloc] init];
+            netResponse.code = statusCode;
+            netResponse.headers = headers;
+            netResponse.jsonData = self.downloadedData;
+            [self.credentials handleErrorResponse:netResponse];
+
+        }
+        self.completionBlock(response);
         
         [self cleanUp]; 
     }];

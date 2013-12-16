@@ -24,6 +24,7 @@
 
 #import "KinveyUserService.h"
 #import "KCSKeychain2.h"
+#import "KCSNetworkResponse.h"
 
 #pragma mark - Constants
 
@@ -390,6 +391,22 @@ void setActive(KCSUser* user)
         KCSLogError(@"No session auth for current user found (%@)", self.username);
     }
     return authString;
+}
+
+- (void)handleErrorResponse:(KCSNetworkResponse *)response
+{
+    NSString* errorCode = [response jsonObject][@"error"];
+    if (response.code == KCSDeniedError) {
+        BOOL shouldLogout = NO;
+        if ([errorCode isEqualToString:@"UserLockedDown"]) {
+            shouldLogout = YES;
+        } else if ([errorCode isEqualToString:@"InvalidCredentials"] && [[KCSClient sharedClient].configuration.options[KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS] boolValue] == NO) {
+            shouldLogout = YES;
+        }
+        if (shouldLogout) {
+            [self logout];
+        }
+    }
 }
 
 @end

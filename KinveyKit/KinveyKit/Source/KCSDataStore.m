@@ -57,10 +57,18 @@
 
 - (void) getAll:(KCSDataStoreCompletion)completion
 {
+    [self query:nil options:@{KCSRequestLogMethod} completion:completion];
+}
+
+- (void) query:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion
+{
     NSParameterAssert(completion);
     if (self.collectionName == nil) {
         [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"No collection set in data store" userInfo:nil] raise];
     }
+    
+    NSDictionary* reqOptions = @{KCSRequestLogMethod}; //start here and add what params are passed in
+    reqOptions = [reqOptions dictionaryByAddingDictionary:options];
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
@@ -71,12 +79,13 @@
                 KCSLogForcedWarn(KCS_LOG_CONTEXT_DATA, @"Results returned exactly %d items. This is the server limit, so there may more entities that match the query. Try again with a more specific query or use limit and skip modifiers to get all the data.", kKCSMaxReturnSize);
             }
             completion(elements, nil);
-        }        
+        }
     }
                                                         route:KCSRESTRouteAppdata
-                                                      options:@{KCSRequestLogMethod}
+                                                      options:reqOptions
                                                   credentials:[KCSUser activeUser]];
     request.path = @[_collectionName];
+    request.queryString = [query escapedQueryString];
     [request start];
 }
 

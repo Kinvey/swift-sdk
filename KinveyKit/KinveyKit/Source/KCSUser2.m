@@ -94,6 +94,22 @@
     return authString;
 }
 
+- (void)handleErrorResponse:(KCSNetworkResponse *)response
+{
+    NSString* errorCode = [response jsonObject][@"error"];
+    if (response.code == KCSDeniedError) {
+        BOOL shouldLogout = NO;
+        if ([errorCode isEqualToString:@"UserLockedDown"]) {
+            shouldLogout = YES;
+        } else if ([errorCode isEqualToString:@"InvalidCredentials"] && KCSConfigValueBOOL(KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS) == NO) {
+            shouldLogout = YES;
+        }
+        if (shouldLogout) {
+            [self logout];
+        }
+    }
+}
+
 #pragma mark - KinveyKit1 compatability
 
 - (void) refreshFromServer:(KCSCompletionBlock)completionBlock

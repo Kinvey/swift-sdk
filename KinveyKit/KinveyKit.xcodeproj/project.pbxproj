@@ -180,6 +180,7 @@
 		2746535F174E891D0013546E /* EXTScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 2746535C174E891D0013546E /* EXTScope.h */; };
 		27465360174E891D0013546E /* EXTScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 2746535D174E891D0013546E /* EXTScope.m */; };
 		27465361174E891D0013546E /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 2746535E174E891D0013546E /* metamacros.h */; };
+		274C20A4185F5C3800E623D8 /* KCSDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2746534A174E6CFE0013546E /* KCSDataStore.m */; };
 		274D394E17A7FDA800587886 /* KinveyCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 274D394D17A7FDA800587886 /* KinveyCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		274D394F17A7FDA800587886 /* KinveyCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 274D394D17A7FDA800587886 /* KinveyCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		274D395417A7FDFE00587886 /* KinveyCoreInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 274D395317A7FDFE00587886 /* KinveyCoreInternal.h */; };
@@ -2841,6 +2842,7 @@
 				27295D6E17E08DF800D34E2F /* KCSNSURLSessionOperation.m in Sources */,
 				277A4D6A17F1568000E545EC /* KCSFileRequest.m in Sources */,
 				278BADAA17B28EC70035B3D6 /* DDAbstractDatabaseLogger.m in Sources */,
+				274C20A4185F5C3800E623D8 /* KCSDataStore.m in Sources */,
 				27B75A451857F97B0093144E /* KCSUser2.m in Sources */,
 				271827FF16C17B8700825D50 /* KCSSaveGraph.m in Sources */,
 				27B75A591857FE370093144E /* KCSUser2+KinveyUserService.m in Sources */,
