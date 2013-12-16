@@ -271,8 +271,9 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
     //        description: "The Kinvey server encountered an unexpected error. Please retry your request"
     
     return [op.response isKCSError] == YES &&
-    op.response.code == 500 &&
-    [[op.response jsonObject][@"error"] isEqualToString:@"KinveyInternalErrorRetry"];
+    ((op.response.code == 500 &&
+      [[op.response jsonObject][@"error"] isEqualToString:@"KinveyInternalErrorRetry"]) ||
+     op.response.code == 429);
 }
 
 - (void) retryOp:(NSOperation<KCSNetworkOperation>*)oldOp request:(NSURLRequest*)request
@@ -308,6 +309,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
             KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@ [KinveyKit id: '%@']", error, op.clientRequestId);
         } else if ([op.response isKCSError]) {
             KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@ [KinveyKit id: '%@' %@]", (long)op.response.code, op.response.jsonData, op.clientRequestId, op.response.headers);
+            [self.credentials handleErrorResponse:op.response];
             error = [op.response errorObject];
         } else {
             KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%ld) [KinveyKit id: '%@'] %@", (long)op.response.code, op.clientRequestId, op.response.headers);

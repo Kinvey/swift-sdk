@@ -23,6 +23,10 @@
 #import "KinveyUserService.h"
 #import "TestUtils2.h"
 #import "KinveyCoreInternal.h"
+#import "KinveyDataStoreInternal.h"
+
+#import "KCSHiddenMethods.h"
+#import "KCSDataStore.h"
 
 @interface User2Tests : SenTestCase
 
@@ -186,7 +190,7 @@
     NSString* newPassword = [NSString UUID];
     
     self.done = NO;
-    [KCSUser2 changePasswordForUser:thisUser password:newPassword completionBlock:^(id<KCSUser2> user, NSError *error) {
+    [KCSUser2 changePasswordForUser:thisUser password:newPassword completion:^(id<KCSUser2> user, NSError *error) {
         KTAssertNoError
         STAssertNotNil(user, @"Should get a user back");
         self.done = YES;
@@ -210,4 +214,50 @@
     STAssertEqualObjects(newUser, [KCSUser2 activeUser], @"should be the new active user");
 }
 
+- (void) doLogoutTest
+{
+    NSString* token = [NSString UUID];
+    NSString* uid = [NSString UUID];
+    NSString* username = [NSString UUID];
+    KCSUser2* aUsre = [[KCSUser2 alloc] init];
+    aUsre.userId = uid;
+    aUsre.username = username;
+    [KCSKeychain2 setKinveyToken:token user:uid];
+    [[KCSAppdataStore caches] cacheActiveUser:aUsre];
+    
+    KCSUser2* user = (id)[KCSUser activeUser];
+    STAssertNotNil(user, @"should have a user");
+    
+    KCSMockServer* server = [KCSMockServer sharedServer];
+    KCSNetworkResponse* response = [KCSNetworkResponse MockResponseWith:401 data:@{@"error":@"InvalidCredentials"}];
+    [server setResponse:response forRoute:@"/appdata/kid_test/R"];
+    
+    self.done = NO;
+    KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:@"R"];
+    [store query:nil options:@{KCSRequestOptionUseMock : @YES} completion:^(NSArray* objects, NSError* error) {
+        STAssertNotNil(error, @"should have an error");
+        self.done = YES;
+    }];
+    [self poll];
+}
+
+- (void) test401Logout
+{
+    [self doLogoutTest];
+    
+    KCSUser2* user = (id)[KCSUser activeUser];
+    STAssertNil(user, @"user should be cleared");
+}
+
+- (void) testSettingStops401Logout
+{
+    NSDictionary* opts = [KCSClient2 sharedClient].configuration.options;
+    opts = [opts dictionaryByAddingDictionary:@{KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS : @YES}];
+    [[KCSClient2 sharedClient].configuration setOptions:opts];
+    
+    [self doLogoutTest];
+    
+    KCSUser2* user = (id)[KCSUser activeUser];
+    STAssertNotNil(user, @"user should still be around");
+}
 @end

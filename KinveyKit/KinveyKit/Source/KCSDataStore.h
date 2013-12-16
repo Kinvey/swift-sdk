@@ -30,6 +30,7 @@ typedef void(^KCSDataStoreCountCompletion)(NSUInteger count, NSError* error);
 - (void) getAll:(KCSDataStoreCompletion)completion;
 - (void) countAll:(KCSDataStoreCountCompletion)completion;
 
+- (void) query:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion; //todo return response object
 - (void) countQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion;
 
 - (void) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion;

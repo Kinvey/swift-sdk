@@ -61,6 +61,14 @@ KCS_CONSTANT KCS_DATA_PROTECTION_LEVEL;
  */
 KCS_CONSTANT KCS_USER_CLASS;
 
+/** Keep the user logged when the credentials become invalid.
+ 
+ By default if the user credentials change outside of the apps flow, such that the active user is no longer authorized to use the back-end, the activer user will be logged out. This is because the only way to get the new credentials is to log in, again. 
+ @since 1.25.0
+ */
+KCS_CONSTANT KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS;
+
+
 KCS_CONSTANT KCS_SERVICE_HOST;
 
 

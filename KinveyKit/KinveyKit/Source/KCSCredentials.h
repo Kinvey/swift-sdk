@@ -18,6 +18,9 @@
 
 #import <Foundation/Foundation.h>
 
+@class KCSNetworkResponse;
+
 @protocol KCSCredentials <NSObject>
 - (NSString*) authString;
+- (void) handleErrorResponse:(KCSNetworkResponse*)response;
 @end

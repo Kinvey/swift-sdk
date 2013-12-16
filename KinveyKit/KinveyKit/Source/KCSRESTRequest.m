@@ -193,6 +193,7 @@ NSString * getLogDate(void)
                 return;
             }
         }
+        self.connection.credentials = cred;
     }
     
     self.connection.followRedirects = self.followRedirects;

@@ -20,7 +20,7 @@
 #import "KinveyBlocks.h"
 
 @class KCSConnectionResponse;
-
+@protocol KCSCredentials;
 
 /*! Abstract base class for all network connections
  
@@ -29,6 +29,7 @@
 @interface KCSConnection : NSObject
 
 @property (nonatomic) BOOL followRedirects;
+@property (nonatomic, retain) id<KCSCredentials> credentials;
 
 // For Mock object injection
 - (instancetype)initWithConnection:(NSURLConnection *)theConnection; // For Mock testing
