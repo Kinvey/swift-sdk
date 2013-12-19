@@ -327,6 +327,7 @@
 #pragma mark - Updates
 - (NSString*) tableForRoute:(NSString*)route collection:(NSString*)collection
 {
+    collection = [collection stringByReplacingOccurrencesOfString:@"-" withString:@"%2D"];
     return [NSString stringWithFormat:@"%@_%@",route,collection];
 }
 

@@ -266,6 +266,10 @@ NSError* createCacheError(NSString* message)
        withProgressBlock:(KCSProgressBlock)progressBlock
              cachePolicy:(KCSCachePolicy)cachePolicy
 {
+    if (objectID == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"objectId is `nil`." userInfo:nil] raise];
+    }
+    
     NSArray* keys = [NSArray wrapIfNotArray:objectID];
     //Hold on the to the object first, in case the cache is cleared during this process
     NSArray* objs = [[KCSAppdataStore caches] pullIds:keys route:[self.backingCollection route] collection:self.backingCollection.collectionName];

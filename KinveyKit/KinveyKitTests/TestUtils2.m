@@ -43,6 +43,11 @@
     return @"";
 }
 
+- (void)handleErrorResponse:(KCSNetworkResponse *)response
+{
+    //do nothing
+}
+
 @end
 
 id<KCSCredentials> mockCredentails()
