@@ -122,7 +122,6 @@
 }
 
 #pragma mark - Saves
-#warning make sure cannot restart in the middle
 - (void) processSave:(NSDictionary*)saveInfo
 {
     NSString* objId = saveInfo[KCSEntityKeyId];
@@ -244,7 +243,6 @@
             [self.persitence removeUnsavedEntity:objId route:route collection:collection];
             [self.cache deleteObject:objId route:route collection:collection];
             DELEGATEMETHOD(didDeleteObject:inCollection:) {
-                //TODO: test this delete functionality
                 [_delegate didDeleteObject:objId inCollection:collection];
             }
         } else {

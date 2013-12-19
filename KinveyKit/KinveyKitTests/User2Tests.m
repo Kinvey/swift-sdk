@@ -214,7 +214,7 @@
     STAssertEqualObjects(newUser, [KCSUser2 activeUser], @"should be the new active user");
 }
 
-- (void) doLogoutTest
+- (void) doLogoutTest:(NSString*)errorCode
 {
     NSString* token = [NSString UUID];
     NSString* uid = [NSString UUID];
@@ -229,7 +229,7 @@
     STAssertNotNil(user, @"should have a user");
     
     KCSMockServer* server = [KCSMockServer sharedServer];
-    KCSNetworkResponse* response = [KCSNetworkResponse MockResponseWith:401 data:@{@"error":@"InvalidCredentials"}];
+    KCSNetworkResponse* response = [KCSNetworkResponse MockResponseWith:401 data:@{@"error":errorCode}];
     [server setResponse:response forRoute:@"/appdata/kid_test/R"];
     
     self.done = NO;
@@ -243,7 +243,7 @@
 
 - (void) test401Logout
 {
-    [self doLogoutTest];
+    [self doLogoutTest:@"InvalidCredentials"];
     
     KCSUser2* user = (id)[KCSUser activeUser];
     STAssertNil(user, @"user should be cleared");
@@ -255,9 +255,31 @@
     opts = [opts dictionaryByAddingDictionary:@{KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS : @YES}];
     [[KCSClient2 sharedClient].configuration setOptions:opts];
     
-    [self doLogoutTest];
+    [self doLogoutTest:@"InvalidCredentials"];
     
     KCSUser2* user = (id)[KCSUser activeUser];
     STAssertNotNil(user, @"user should still be around");
 }
+
+
+- (void) testUserLockedDown
+{
+    NSDictionary* opts = [KCSClient2 sharedClient].configuration.options;
+    opts = [opts dictionaryByAddingDictionary:@{KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS : @YES}];
+    [[KCSClient2 sharedClient].configuration setOptions:opts];
+    
+    [self doLogoutTest:@"UserLockedDown"];
+    
+    KCSUser2* user = (id)[KCSUser activeUser];
+    STAssertNil(user, @"user should be cleared");
+}
+
+- (void) testInsufficientCredentialsDoesNotLogoutUser
+{
+    [self doLogoutTest:@"InsufficientCredentials"];
+    
+    KCSUser2* user = (id)[KCSUser activeUser];
+    STAssertNotNil(user, @"user should still be around');
+}
+
 @end
