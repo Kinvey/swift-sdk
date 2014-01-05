@@ -1,5 +1,5 @@
 /** 
- * Copyright (c) 2013, Kinvey, Inc. All rights reserved.
+ * Copyright (c) 2014, Kinvey, Inc. All rights reserved.
  *
  * This software is licensed to you under the Kinvey terms of service located at
  * http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this

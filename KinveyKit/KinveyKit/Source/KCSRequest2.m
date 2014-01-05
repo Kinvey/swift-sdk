@@ -167,14 +167,17 @@ static NSOperationQueue* queue;
     [request setAllHTTPHeaderFields:headers];
     
     if (self.method == KCSRESTMethodPOST || self.method == KCSRESTMethodPUT) {
+        [request setHTTPShouldUsePipelining:NO];
+        if (!_body) {
+            _body = @{};
+        }
+    } else {
         [request setHTTPShouldUsePipelining:YES];
     }
     
     KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
     
-    if (!_body) {
-        _body = @{};
-    }
+    
     
     NSData* bodyData = [writer dataWithObject:_body];
     DBAssert(bodyData != nil, @"should be able to parse body");

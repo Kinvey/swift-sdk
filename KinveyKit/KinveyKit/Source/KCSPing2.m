@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/11/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -25,8 +25,7 @@ KCS_CONST_IMPL KCS_PING_KINVEY_VERSION = @"kinveyVersion";
 KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
 
 #define kVersionKey @"version"
-#define kKinveyKey @"kinvey"
-#define kHello @"hello "
+#define kAppnameKey @"appName"
 
 @implementation KCSPing2
 
@@ -41,10 +40,7 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
                 NSDictionary* responseVal = [response jsonObject];
                 if (responseVal) {
                     NSString* version = responseVal[kVersionKey] ? responseVal[kVersionKey] : @"";
-                    NSString* appname = responseVal[kKinveyKey] ? responseVal[kKinveyKey] : @"";
-                    if ([appname hasPrefix:kHello] == YES) {
-                        appname = [appname substringFromIndex:kHello.length];
-                    }
+                    NSString* appname = responseVal[kAppnameKey] ? responseVal[kAppnameKey] : @"";
                     appInfo = @{KCS_PING_KINVEY_VERSION : version,
                                 KCS_PING_APP_NAME : appname};
                 }
@@ -56,6 +52,7 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
                                                         route:KCSRESTRouteAppdata
                                                       options:@{KCSRequestLogMethod}
                                                   credentials:[KCSClient2 sharedClient]];
+    request.path = @[@""];
     [request start];
 }
 

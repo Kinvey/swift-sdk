@@ -279,7 +279,7 @@
     [self doLogoutTest:@"InsufficientCredentials"];
     
     KCSUser2* user = (id)[KCSUser activeUser];
-    STAssertNotNil(user, @"user should still be around');
+    STAssertNotNil(user, @"user should still be around");
 }
 
 @end

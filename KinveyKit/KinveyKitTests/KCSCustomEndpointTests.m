@@ -91,4 +91,5 @@
     
     STAssertThrowsSpecificNamed(block(), NSException, NSInvalidArgumentException, @"should be an exception");
 }
+
 @end
