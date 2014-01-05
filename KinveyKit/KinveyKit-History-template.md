@@ -1,7 +1,7 @@
 # KinveyKit Release History
 
 ## 1.25
-## 1.25.0
+### 1.25.0
 **Release Date:** TBA
 
 * Updates to User API
