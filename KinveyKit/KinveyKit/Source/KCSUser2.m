@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 12/10/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -66,13 +66,11 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         mappedDict = @{@"userId" : KCSEntityKeyId,
-                       //                       @"push" : @"_push",
                        @"username" : KCSUserAttributeUsername,
                        @"email" : KCSUserAttributeEmail,
                        @"givenName" : KCSUserAttributeGivenname,
                        @"surname" : KCSUserAttributeSurname,
                        @"metadata" : KCSEntityKeyMetadata,
-//                       @"oauthTokens" : KCSUserAttributeOAuthTokens,
                        };
     });
     
@@ -84,7 +82,7 @@
 - (NSString *)authString
 {
     NSString* token = [KCSKeychain2 kinveyTokenForUserId:self.userId];
-    NSString *authString = nil;
+    NSString *authString = @"";
     if (token) {
         authString = [@"Kinvey " stringByAppendingString: token];
         KCSLogInfo(KCS_LOG_CONTEXT_USER, @"Current user found, using sessionauth (%@) => XXXXXXXXX", self.username);

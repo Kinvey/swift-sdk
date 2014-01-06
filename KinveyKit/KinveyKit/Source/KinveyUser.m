@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/1/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -146,9 +146,6 @@ void setActive(KCSUser* user)
     if ([KCSUser hasSavedCredentials] == YES) {
         KCSUser *createdUser = [[KCSAppdataStore caches] lastActiveUser];
         setActive(createdUser);
-        [createdUser refreshFromServer:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            //TODO: handle error
-        }];
     }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated" 
@@ -206,20 +203,6 @@ void setActive(KCSUser* user)
         // the right thing.  This might be less efficient than just iterating, but these routines have
         // been optimized, we do this now, since there's no other place guarenteed to merge.
         // Login/create store this info
-        
-//TODO: comment out to keep the user from being f'ed up. Reinstate once working on the server-side.
-//        KCSDevice *sp = [KCSDevice currentDevice];
-//        
-//        if (sp.deviceToken != nil){
-//            NSMutableSet *tmpSet = [NSMutableSet setWithArray:self.deviceTokens];
-//            [tmpSet removeObject:[sp deviceTokenString]];
-//            self.deviceTokens = [tmpSet allObjects];
-//            [self saveToCollection:[KCSCollection userCollection] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-//                if (errorOrNil) {
-//                    KCSLogError(@"Error saving user when removing device tokens: %@", errorOrNil);
-//                }
-//            } withProgressBlock:nil];
-//        }
         [[KCSPush sharedPush] setDeviceToken:nil];
         
         [KCSUser clearSavedCredentials];
@@ -383,7 +366,7 @@ void setActive(KCSUser* user)
 - (NSString *)authString
 {
     NSString* token = [KCSKeychain2 kinveyTokenForUserId:self.userId];
-    NSString *authString = nil;
+    NSString *authString = @"";
     if (token) {
         authString = [@"Kinvey " stringByAppendingString: token];
         KCSLogDebug(@"Current user found, using sessionauth (%@) => XXXXXXXXX", self.username);

@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/19/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -22,7 +22,6 @@
 #import "KinveyCollection.h"
 #import "KCSClient.h"
 #import "KCSConnectionResponse.h"
-#import "KCSKeyChain.h"
 #import "KinveyUser.h"
 #import "KCS_SBJson.h"
 #import "KCSMockConnection.h"
@@ -91,15 +90,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     KCSClient *client = [KCSClient sharedClient];
     [client.configuration setServiceHostname:@"baas"];
     (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
-    
-    
-    // Fake Auth
-    [KCSKeyChain setString:@"kinvey" forKey:@"username"];
-    [KCSKeyChain setString:@"12345" forKey:@"password"];
-    
-    // Needed, otherwise we burn a connection later...
-    [KCSUser activeUser];
-
+    [self useMockUser];
     
     // Seed data types
     _allTypes = [NSDictionary dictionaryWithObjectsAndKeys:

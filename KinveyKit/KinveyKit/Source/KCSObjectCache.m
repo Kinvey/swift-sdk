@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 10/28/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -492,6 +492,17 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 }
 
 #pragma mark - metadata
+
+- (NSString*) cachedAppKey
+{
+    __block NSString* appKey = nil;
+    dispatch_sync(_cacheQueue, ^{
+        NSDictionary* metadata = [_persistenceLayer clientMetadata];
+        appKey = metadata[@"appkey"];
+    });
+    return appKey;
+}
+
 - (void) cacheActiveUser:(id<KCSUser2>)user
 {
     KCSCollection* userCollection = [KCSCollection userCollection];

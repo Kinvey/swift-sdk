@@ -2,7 +2,7 @@
 //  TestUtils.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -40,13 +40,9 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 - (BOOL) poll:(NSTimeInterval)timeout;
 - (KCSCompletionBlock) pollBlock;
 - (KCSCountBlock) pollBlockCount;
+- (void) useMockUser;
 @end
 
-//@interface XCTestCase (TestUtils)
-//@property (nonatomic) BOOL done;
-//- (void) poll;
-//- (KCSCompletionBlock) pollBlock;
-//@end
 
 @interface TestUtils : NSObject
 
