@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/13/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -29,7 +29,6 @@
 
 #import "KCSStore.h"
 #import "KCSClient+ConfigurationTest.h"
-#import "KCSKeyChain.h"
 
 #import "KinveyVersion.h"
 
@@ -39,8 +38,6 @@
 #import "KCSFileUtils.h"
 
 #import "KCSClientConfiguration+KCSInternal.h"
-
-#define kAppKeyKechainKey @"com.kinvey.kinveykit.appkey"
 
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
@@ -109,13 +106,13 @@
         [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"`nil` or invalid appSecret, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
     }
 
-    NSString* oldAppKey = [KCSKeyChain getStringForKey:kAppKeyKechainKey];
+    [configuration applyConfiguration]; //apply early to set up classes and caches
+    
+    NSString* oldAppKey = [[KCSAppdataStore caches] cachedAppKey];
     if (oldAppKey != nil && [configuration.appKey isEqualToString:oldAppKey] == NO) {
         //clear the saved user if the kid changes
         [[KCSUser activeUser] logout];
     }
-    //TODO: use defaults
-    [KCSKeyChain setString:configuration.appKey forKey:kAppKeyKechainKey];
 
     _networkReachability = [KCSReachability reachabilityForInternetConnection];
     // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
@@ -140,8 +137,6 @@
     if (self.options[KCS_LOG_SINK] != nil) {
         [KCSLogManager setLogSink:self.options[KCS_LOG_SINK]];
     }
-    
-    [configuration applyConfiguration];
 }
 
 - (NSString *)serviceHostname

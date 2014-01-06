@@ -15,6 +15,7 @@
     * Removed deprecated `-[KCSUser loadWithDelegate:]`, `-[KCSUser removeWithDelegate:]`, and `-[KCSUser saveWithDelegate:]` methods.
     * __TODO__ log out on bad token - stay logged in option (`KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS`)  By default if the user credentials change outside of the apps flow, such that the active user is no longer authorized to use the back-end, the activer user will be logged out. This is because the only way to get the new credentials is to log in, again. 
     * __TODO__ custom users?
+    * __TODO__ no more automatic refresh - must do when the user should be loaded
 * Code Cleanup:
     * Removed deprecated `KCSMetadata` methods.
               

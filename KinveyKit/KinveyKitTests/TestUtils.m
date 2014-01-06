@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 6/5/12.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -94,6 +94,16 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
         self.done = YES;
     } copy];
 }
+
+- (void) useMockUser
+{
+    KCSUser* mockUser = [[KCSUser alloc] init];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    [KCSClient sharedClient].currentUser = mockUser;
+#pragma clang diagnostic pop
+}
+
 
 @end
 

@@ -4,7 +4,7 @@
 //
 //  Created by Michael Katz on 8/22/13.
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -23,8 +23,8 @@
 
 #import "KCSClientConfiguration.h"
 #import "KCSClient.h"
-#import "KCSKeyChain.h"
 #import "KinveyUser.h"
+#import "KCSHiddenMethods.h"
 
 @interface KCSClientConfigurationTests : SenTestCase
 
@@ -88,7 +88,7 @@
     KCSClientConfiguration* c1 = [KCSClientConfiguration configurationWithAppKey:@"1" secret:@"1"];
     [[KCSClient sharedClient] initializeWithConfiguration:c1];
     
-    NSString* ak1 = [KCSKeyChain getStringForKey:@"com.kinvey.kinveykit.appkey"];
+    NSString* ak1 = [[KCSAppdataStore caches] cachedAppKey];
     STAssertNotNil(ak1, @"should have a key");
     
     KCSUser* u = [[KCSUser alloc] init];
@@ -101,7 +101,7 @@
     KCSClientConfiguration* c2 = [KCSClientConfiguration configurationWithAppKey:@"2" secret:@"2"];
     [[KCSClient sharedClient] initializeWithConfiguration:c2];
     
-    NSString* ak2 = [KCSKeyChain getStringForKey:@"com.kinvey.kinveykit.appkey"];
+    NSString* ak2 = [[KCSAppdataStore caches] cachedAppKey];
     STAssertNotNil(ak2, @"should have a key");
     STAssertFalse([ak1 isEqualToString:ak2], @"should change");
     

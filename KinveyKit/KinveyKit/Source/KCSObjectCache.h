@@ -57,6 +57,7 @@
 //metadata
 - (void) cacheActiveUser:(id<KCSUser2>)user;
 - (id<KCSUser2>) lastActiveUser;
+- (NSString*) cachedAppKey;
 
 
 //destructive
