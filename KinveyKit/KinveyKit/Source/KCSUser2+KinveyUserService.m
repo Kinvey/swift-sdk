@@ -298,18 +298,21 @@ KK2(Cleanup!)
 + (void) setupActiveUser:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock
 {
     //TODO: post user updated
-#warning return error exceptions?
-    
+
     if ([body isKindOfClass:[NSDictionary class]] == NO) {
         //check data type in case server is corrupted, yes this has happened
-        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Entity dictionary not returned for user" userInfo:nil] raise];
+        NSError* error = [NSError createKCSError:@"Entity dictionary not returned for user" code:401 userInfo:@{@"body":body}];
+        completionBlock(nil, error);
+        return;
     }
     
     NSString* userId = body[KCSEntityKeyId];
     NSString* username = body [KCSUserAttributeUsername];
     if (userId == nil || username == nil) {
         //prevent that weird assertion that Colden was seeing
-        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Entity dictionary does not have username or user id" userInfo:nil] raise];
+        NSError* error = [NSError createKCSError:@"Entity dictionary does not have username or user id" code:401 userInfo:@{@"body":body}];
+        completionBlock(nil, error);
+        return;
     }
 
     //Strip token
@@ -320,7 +323,9 @@ KK2(Cleanup!)
     NSString* authToken = [metadata popObjectForKey:KCSEntityKeyAuthtoken];
     
     if (authToken == nil) {
-        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Entity dictionary does not contain an auth token" userInfo:nil] raise];
+        NSError* error = [NSError createKCSError:@"Entity dictionary does not contain an auth token" code:401 userInfo:@{@"body":body}];
+        completionBlock(nil, error);
+        return;
     }
     
     //Handle Email Verification
@@ -337,7 +342,9 @@ KK2(Cleanup!)
     
     if (user.userId == nil || user.username == nil) {
         //prevent that weird assertion that Colden was seeing
-        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"User object not properly configured with _id and username" userInfo:nil] raise];
+        NSError* error = [NSError createKCSError:@"User object not properly configured with _id and username" code:401 userInfo:@{@"body":body}];
+        completionBlock(nil, error);
+        return;
     }
     
     [KCSKeychain2 setKinveyToken:authToken user:userId];
@@ -598,11 +605,5 @@ KK2(Cleanup!)
     request.body = @{@"username": potentialUsername};
     [request start];
 }
-
-//TODO: test change password
-
-//TODO: user object subclass and implementation
-//TODO: clear TODOs
-//TOOD: credentials for this and for v1 methods
 
 @end

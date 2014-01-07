@@ -23,7 +23,7 @@
 #import "KCSHiddenMethods.h"
 
 #import "KinveyUserService.h"
-#import "KCSKeychain2.h"
+#import "KCSKeychain.h"
 #import "KCSNetworkResponse.h"
 
 #pragma mark - Constants
@@ -194,8 +194,6 @@ void setActive(KCSUser* user)
     if (![self isEqual:[KCSUser activeUser]]){
         KCSLogError(@"Attempted to log out a user who is not the KCS Current User!");
     } else {
-        //        [lastBGUpdate cancel];
-        
         self.username = nil;
         self.userId = nil;
         
@@ -339,7 +337,6 @@ void setActive(KCSUser* user)
     return user;
 }
 
-//TODO: deviceTokens for KCSUser2
 - (NSMutableSet*) deviceTokens
 {
     if (_push == nil) {
@@ -361,7 +358,6 @@ void setActive(KCSUser* user)
     }];
 
 }
-//TODO: remove kcskeychain class
 
 - (NSString *)authString
 {

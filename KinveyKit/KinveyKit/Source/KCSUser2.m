@@ -27,11 +27,11 @@
 #import "KinveyDataStoreInternal.h"
 #import "KinveyUserService.h"
 
-#define KCSUserAttributeOAuthTokens @"_oauth"
-
+#define kDeviceTokensKey @"_devicetokens"
 
 @interface KCSUser2()
-@property (nonatomic, strong) NSMutableDictionary *userAttributes;
+@property (nonatomic, strong) NSMutableDictionary* userAttributes;
+@property (nonatomic, strong) NSMutableDictionary* push;
 @end
 
 @implementation KCSUser2
@@ -77,8 +77,6 @@
     return mappedDict;
 }
 
-#warning FIx THESE:
-
 - (NSString *)authString
 {
     NSString* token = [KCSKeychain2 kinveyTokenForUserId:self.userId];
@@ -109,6 +107,20 @@
 }
 
 #pragma mark - KinveyKit1 compatability
+
+- (NSMutableSet*) deviceTokens
+{
+    if (_push == nil) {
+        self.push = [NSMutableDictionary dictionary];
+    }
+    if (_push[kDeviceTokensKey] == nil) {
+        _push[kDeviceTokensKey] = [NSMutableSet set];
+    } else if ([_push[kDeviceTokensKey] isKindOfClass:[NSArray class]]) {
+        _push[kDeviceTokensKey] = [NSMutableSet setWithArray:_push[kDeviceTokensKey]];
+    }
+    return _push[kDeviceTokensKey];
+}
+
 
 - (void) refreshFromServer:(KCSCompletionBlock)completionBlock
 {

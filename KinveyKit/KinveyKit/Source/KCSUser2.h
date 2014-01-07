@@ -2,7 +2,7 @@
 //  KCSUser2.h
 //  KinveyKit
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -50,5 +50,8 @@
  @see KCSPersistable
  */
 @property (nonatomic, strong) KCSMetadata *metadata;
+/*! Device Tokens of this User */
+@property (nonatomic, readonly, strong) NSMutableSet *deviceTokens;
+
 
 @end

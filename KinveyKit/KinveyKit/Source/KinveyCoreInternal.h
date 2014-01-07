@@ -2,7 +2,7 @@
 //  KinveyCoreInternal.h
 //  KinveyKit
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -48,7 +48,7 @@
 #import "KCSBase64.h"
 #import "KCSTimedQueue.h"
 #import "KCSDBTools.h"
-#import "KCSKeychain2.h"
+#import "KCSKeychain.h"
 
 #pragma mark - helpers
 
