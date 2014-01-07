@@ -64,7 +64,7 @@
 {
     NSDictionary* kcsErrorDict = [self jsonObject];
     NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithCapacity:5];
-    setIfValNotNil(userInfo[NSLocalizedDescriptionKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
+    setIfValNotNil(userInfo[NSLocalizedDescriptionKey], kcsErrorDict[KCS_ERROR_DESCRIPTION_KEY]);
     setIfValNotNil(userInfo[NSLocalizedFailureReasonErrorKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
     setIfValNotNil(userInfo[kKCSErrorCode], kcsErrorDict[KCS_ERROR_KINVEY_ERROR_CODE_KEY]);
     setIfValNotNil(userInfo[NSURLErrorFailingURLErrorKey], self.originalURL);
