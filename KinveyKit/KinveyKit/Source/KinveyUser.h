@@ -60,8 +60,11 @@ KCS_CONSTANT KCSUserAccessTokenKey;
 /** Access Dictionary key for the token secret: just Twitter */
 KCS_CONSTANT KCSUserAccessTokenSecretKey;
 
-/** Notification type. This is called when a user is logged in or logged out. `userInfo` and `object` are nil. Query `+[KCSUser activeUser] to get the new value. */
-KCS_CONSTANT KCSActiveUserChangedNotification;
+
+/** 
+ @since 1.25.0
+ */
+KCS_CONSTANT KCSActiveUserUpdatedNotification;
 
 /*!  Describes required methods for an object wishing to be notified about the status of user actions.
  *

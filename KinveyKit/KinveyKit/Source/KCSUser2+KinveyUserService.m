@@ -297,8 +297,6 @@ KK2(Cleanup!)
 #pragma mark - User Object Management
 + (void) setupActiveUser:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock
 {
-    //TODO: post user updated
-
     if ([body isKindOfClass:[NSDictionary class]] == NO) {
         //check data type in case server is corrupted, yes this has happened
         NSError* error = [NSError createKCSError:@"Entity dictionary not returned for user" code:401 userInfo:@{@"body":body}];
