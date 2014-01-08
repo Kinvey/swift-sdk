@@ -100,7 +100,7 @@ NSString* largeStringOfSize(int size)
 
 NSString* largeString() 
 {
-    return largeStringOfSize(1e6);
+    return largeStringOfSize(1e3);
 }
 
 - (void) upTimeout
@@ -129,10 +129,10 @@ NSString* largeString()
 
 NSArray* largeArray() 
 {
-    int size = 1e4;
+    int size = 1e2;
     NSMutableArray* array = [NSMutableArray arrayWithCapacity:size];
     for (int i=0; i<size; i++) {
-        [array addObject:largeStringOfSize(1e3)];
+        [array addObject:largeStringOfSize(1e0)];
     }
     return array;
 }
