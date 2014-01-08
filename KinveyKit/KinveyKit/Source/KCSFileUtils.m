@@ -39,6 +39,8 @@ static BOOL _kcsFileUtilsDataUnavailable = NO;
     return manager;
 }
 
+#if TARGET_OS_IPHONE
+
 + (NSString*) fileProtectionKey
 {
     KCSDataProtectionLevel level = [[KCSClient2 sharedClient].configuration.options[KCS_DATA_PROTECTION_LEVEL] integerValue];
@@ -78,6 +80,21 @@ static BOOL _kcsFileUtilsDataUnavailable = NO;
     }
     return options;
 }
+#else
+
+#define NSFileProtectionKey @"kinveyProtection"
+
++ (NSString*) fileProtectionKey
+{
+    return @"";
+}
+
++ (NSDataWritingOptions) dataOptions
+{
+    return 0;
+}
+#endif
+
 
 + (int)dbFlags
 {
@@ -103,12 +120,13 @@ static BOOL _kcsFileUtilsDataUnavailable = NO;
 + (NSString*) kinveyDir
 {
     NSString* kinveyDir =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"kinvey"];
+#if TARGET_OS_IPHONE
     if ([[NSFileManager defaultManager] fileExistsAtPath:kinveyDir] == NO) {
-        //TODO: security?
         NSError* error = nil;
         [[NSFileManager defaultManager] createDirectoryAtPath:kinveyDir withIntermediateDirectories:YES attributes:@{NSFileProtectionKey : [self fileProtectionKey]} error:&error];
         KCSLogNSError(KCS_LOG_CONTEXT_FILESYSTEM, error);
     }
+#endif
     return kinveyDir;
 }
 

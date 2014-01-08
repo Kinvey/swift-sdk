@@ -72,8 +72,13 @@ NSString* const KCSReachabilityChangedNotification = @"KinveyKit.Notification.Re
 - (NSString *)description
 {
     SCNetworkReachabilityFlags flags = self.reachability.flags;
-    NSString* flagString = [NSString stringWithFormat:@"%c%c %c%c%c%c%c%c%c",
+    NSString* flagString =
+#if TARGET_OS_IPHONE
+      [NSString stringWithFormat:@"%c%c %c%c%c%c%c%c%c",
                             (flags & kSCNetworkReachabilityFlagsIsWWAN)               ? 'W' : '-',
+#else
+      [NSString stringWithFormat:@"%c %c%c%c%c%c%c%c",
+#endif
                             (flags & kSCNetworkReachabilityFlagsReachable)            ? 'R' : '-',
                             
                             (flags & kSCNetworkReachabilityFlagsTransientConnection)  ? 't' : '-',

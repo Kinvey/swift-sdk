@@ -2,7 +2,7 @@
 //  KCSStore.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey, Inc. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -26,6 +26,7 @@
 @class KCSReduceFunction;
 @class KCSGroup;
 
+KCS_DEPRECATED(use [KCSQuery query] instead, 1.26.0)
 @interface KCSAllObjects : KCSQuery
 @end
 
@@ -123,7 +124,7 @@
  
  This method takes a query object and calls the store to provide an array of objects that satisfies the query.
  
- @param query A query to act on a store.  The store defines the type of queries it accepts, an object of type `KCSAllObjects` causes all objects to be returned.
+ @param query A query to act on a store.  The store defines the type of queries it accepts, an object of type `[KCSQuery query]` causes all objects to be returned.
  @param completionBlock A block that gets invoked when the query/fetch is "complete" (as defined by the store)
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  
