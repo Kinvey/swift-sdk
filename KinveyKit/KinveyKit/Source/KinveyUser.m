@@ -374,16 +374,19 @@ void setActive(KCSUser* user)
 
 - (void)handleErrorResponse:(KCSNetworkResponse *)response
 {
-    NSString* errorCode = [response jsonObject][@"error"];
-    if (response.code == KCSDeniedError) {
-        BOOL shouldLogout = NO;
-        if ([errorCode isEqualToString:@"UserLockedDown"]) {
-            shouldLogout = YES;
-        } else if ([errorCode isEqualToString:@"InvalidCredentials"] && [[KCSClient sharedClient].configuration.options[KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS] boolValue] == NO) {
-            shouldLogout = YES;
-        }
-        if (shouldLogout) {
-            [self logout];
+    NSDictionary* jsonObj = [response jsonObject];
+    if (jsonObj != nil && [jsonObj isKindOfClass:[NSDictionary class]]) {
+        NSString* errorCode = [response jsonObject][@"error"];
+        if (response.code == KCSDeniedError) {
+            BOOL shouldLogout = NO;
+            if ([errorCode isEqualToString:@"UserLockedDown"]) {
+                shouldLogout = YES;
+            } else if ([errorCode isEqualToString:@"InvalidCredentials"] && [[KCSClient sharedClient].configuration.options[KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS] boolValue] == NO) {
+                shouldLogout = YES;
+            }
+            if (shouldLogout) {
+                [self logout];
+            }
         }
     }
 }
