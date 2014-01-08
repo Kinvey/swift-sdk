@@ -153,7 +153,6 @@ static NSOperationQueue* queue;
     request.HTTPMethod = self.method;
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
-    headers[kHeaderContentType] = _contentType;
     headers[kHeaderAuthorization] = [self.credentials authString];
     headers[kHeaderApiVersion] = KCS_VERSION;
     headers[kHeaderUserAgent] = [NSString stringWithFormat:@"ios-kinvey-http/%@ kcs/%@", __KINVEYKIT_VERSION__, MINIMUM_KCS_VERSION_SUPPORTED];
@@ -166,10 +165,11 @@ static NSOperationQueue* queue;
     headers[kHeaderDate] = getLogDate3(); //always update date
     [request setAllHTTPHeaderFields:headers];
     
+    [request setHTTPShouldUsePipelining:YES];
+
     if (self.method == KCSRESTMethodPOST || self.method == KCSRESTMethodPUT) {
         [request setHTTPShouldUsePipelining:NO];
-
-        //set the body 
+        //set the body
         if (!_body) {
             _body = @{};
         }
@@ -177,9 +177,9 @@ static NSOperationQueue* queue;
         NSData* bodyData = [writer dataWithObject:_body];
         DBAssert(bodyData != nil, @"should be able to parse body");
         [request setHTTPBody:bodyData];
-
-    } else {
-        [request setHTTPShouldUsePipelining:YES];
+        [request addValue:_contentType forHTTPHeaderField:kHeaderContentType];
+    } else if (self.method == KCSRESTMethodDELETE) {
+        // [request setHTTPBody:bodyData]; no need for body b/c of no content type
     }
 
     return request;
@@ -309,7 +309,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
             error = [op.error errorByAddingCommonInfo];
             KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@ [KinveyKit id: '%@']", error, op.clientRequestId);
         } else if ([op.response isKCSError]) {
-            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@ [KinveyKit id: '%@' %@]", (long)op.response.code, op.response.jsonData, op.clientRequestId, op.response.headers);
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@ [KinveyKit id: '%@' %@]", (long)op.response.code, op.response.jsonObject, op.clientRequestId, op.response.headers);
             [self.credentials handleErrorResponse:op.response];
             error = [op.response errorObject];
         } else {

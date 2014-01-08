@@ -323,7 +323,7 @@
         KCSLogRequestId(@"Kinvey Request ID: %@", [headers objectForKey:@"X-Kinvey-Request-Id"]);
 
         KCSConnectionResponse* response = [KCSConnectionResponse connectionResponseWithCode:statusCode responseData:self.downloadedData headerData:headers userData:@{NSURLErrorFailingURLStringErrorKey : [self.request.URL absoluteString]}];
-        if (statusCode >= 400) {
+        if (statusCode >= 400 && statusCode < 500) {
             KCSNetworkResponse* netResponse = [[KCSNetworkResponse alloc] init];
             netResponse.code = statusCode;
             netResponse.headers = headers;

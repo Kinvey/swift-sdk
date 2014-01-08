@@ -38,7 +38,7 @@
 #import "KCSHiddenMethods.h"
 
 #import "TestUtils.h"
-#import "KCSKeychain2.h"
+#import "KCSKeychain.h"
 
 typedef BOOL(^KCSUserSuccessAction)(KCSUser *, KCSUserActionResult);
 typedef BOOL(^KCSUserFailureAction)(KCSUser *, NSError *);
