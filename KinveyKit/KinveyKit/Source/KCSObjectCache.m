@@ -106,7 +106,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     _caches = nil;
 
     self.offline = nil;
+#if TARGET_OS_IPHONE
     dispatch_release(_cacheQueue);
+#endif
 }
 
 - (void) setOfflineUpdateDelegate:(id<KCSOfflineUpdateDelegate>)offlineUpdateDelegate

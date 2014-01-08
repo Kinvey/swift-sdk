@@ -95,7 +95,7 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
  
  This method might be used when you know the network is unavailable and you want to use `KCSCachePolicyLocalOnly` until the network connection is reestablished, and then go back to using the store's normal policy.
  
- @param query A query to act on a store.  The store defines the type of queries it accepts, an object of type "KCSAllObjects" causes all objects to be returned.
+ @param query A query to act on a store.  The store defines the type of queries it accepts, an object of type `[KCSQuery query]` causes all objects to be returned.
  @param completionBlock A block that gets invoked when the query/fetch is "complete" (as defined by the store)
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  @param cachePolicy the policy for to use for this query only. 

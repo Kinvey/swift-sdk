@@ -20,7 +20,10 @@
 
 @interface KCSFileUtils : NSObject
 
+#if TARGET_OS_IPHONE
 + (NSString*) fileProtectionKey;
+#endif
+
 + (int) dbFlags;
 
 + (NSString*) localPathForDB:(NSString*)dbname;

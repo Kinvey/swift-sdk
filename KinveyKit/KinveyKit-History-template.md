@@ -1,5 +1,12 @@
 # KinveyKit Release History
 
+## 1.26
+### 1.26.0
+** Release Date:** TBA
+
+* Code cleanup:
+     * Deprecated `KCSAllObjects`; use `[KCSQuery query]` instead.
+
 ## 1.25
 ### 1.25.0
 **Release Date:** Jan 8, 2014
