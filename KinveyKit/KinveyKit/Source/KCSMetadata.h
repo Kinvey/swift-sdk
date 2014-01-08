@@ -2,7 +2,7 @@
 //  KCSMetadata.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -80,7 +80,6 @@ KCS_CONSTANT KCSMetadataFieldCreationTime;
 
 /** The global read permission for the associated entity. This could be broader or more restrictive than its collection's permissions.
  @return `YES` if the entity can be read by any user
- @see usersWithReadAccess
  @see setGloballyReadable:
  */
 - (BOOL) isGloballyReadable;
@@ -89,14 +88,12 @@ KCS_CONSTANT KCSMetadataFieldCreationTime;
  
  Any change in permissions do not take effect until the associated object is saved to the backend.
  @param readable `YES` to allow the associated object to be read by any user.
- @see setUsersWithReadAccess:
  @see isGloballyReadable
 */
 - (void) setGloballyReadable:(BOOL)readable;
 
 /** The global write permission for the associated entity. This could be broader or more restrictive than its collection's permissions.
  @return `YES` if the entity can be modified by any user
- @see usersWithWriteAccess
  @see setGloballyWritable:
  */
 - (BOOL) isGloballyWritable;
@@ -105,7 +102,6 @@ KCS_CONSTANT KCSMetadataFieldCreationTime;
  
  Any change in permissions do not take effect until the associated object is saved to the backend.
  @param writable `YES` to allow the associated object to be modified by any user.
- @see setUsersWithWriteAccess:
  @see isGloballyWritable
  */
 - (void) setGloballyWritable:(BOOL)writable;

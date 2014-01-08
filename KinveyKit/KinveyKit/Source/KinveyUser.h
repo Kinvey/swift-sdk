@@ -2,7 +2,7 @@
 //  KinveyUser.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2014, Kinvey, Inc. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -60,11 +60,8 @@ KCS_CONSTANT KCSUserAccessTokenKey;
 /** Access Dictionary key for the token secret: just Twitter */
 KCS_CONSTANT KCSUserAccessTokenSecretKey;
 
-
-/** 
- @since 1.25.0
- */
-KCS_CONSTANT KCSActiveUserUpdatedNotification;
+/** Notification type. This is called when a user is logged in or logged out. `userInfo` and `object` are nil. Query `+[KCSUser activeUser] to get the new value. */
+KCS_CONSTANT KCSActiveUserChangedNotification;
 
 /*!  Describes required methods for an object wishing to be notified about the status of user actions.
  *

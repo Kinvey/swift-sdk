@@ -51,7 +51,7 @@ KK2(Cleanup!)
     KK2(manage active user here)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
-        [KCSClient sharedClient].currentUser = (id)user;
+    [KCSClient sharedClient].currentUser = (id)user;
 #pragma clang diagnostic pop
 }
 
@@ -128,7 +128,7 @@ KK2(Cleanup!)
 }
 
 
-#pragma mark - Login 
+#pragma mark - Login
 + (void)loginWithUsername:(NSString *)username password:(NSString *)password completion:(KCSUser2CompletionBlock)completionBlock
 {
     if (!username) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"username should not be nil." userInfo:nil] raise];
@@ -159,7 +159,7 @@ KK2(Cleanup!)
 + (void)connectWithAuthProvider:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary completion:(KCSUser2CompletionBlock)completionBlock
 {
     NSDictionary* loginDict = [self loginDictForProvider:provider accessDictionary:accessDictionary];
-
+    
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             if (response.isKCSError == YES && response.code == KCSNotFoundError) {
@@ -288,7 +288,7 @@ KK2(Cleanup!)
         [KCSUser2 clearSavedCredentials];
         [[KCSAppdataStore caches] clear];
         [KCSFileStore clearCachedFiles];
-
+        
         // Set the currentUser to nil
         [self setActive:nil];
     }
@@ -312,11 +312,11 @@ KK2(Cleanup!)
         completionBlock(nil, error);
         return;
     }
-
+    
     //Strip token
     NSMutableDictionary* modifiedProperties = [body mutableCopy];
     [modifiedProperties removeObjectForKey:KCSUserAttributePassword]; //discard the password in all cases
-
+    
     NSMutableDictionary* metadata = [NSMutableDictionary dictionaryWithDictionary:modifiedProperties[KCSEntityKeyKMD]];
     NSString* authToken = [metadata popObjectForKey:KCSEntityKeyAuthtoken];
     
@@ -329,7 +329,7 @@ KK2(Cleanup!)
     //Handle Email Verification
     NSDictionary* emailVerification = [metadata popObjectForKey:KCSEntityKeyEmailVerification];
     NSString* verificationStatus = [emailVerification objectForKey:@"status"];
-
+    
     //Put the updated properties back
     modifiedProperties[KCSEntityKeyMetadata] = metadata;
     
@@ -380,7 +380,7 @@ KK2(Cleanup!)
                 NSDictionary* userBody = [response jsonObject];
                 [self setupActiveUser:userBody completion:completionBlock];
             }
-
+            
         }
                                                             route:KCSRESTRouteUser
                                                           options:@{KCSRequestLogMethod}
