@@ -5,6 +5,18 @@
 //  Created by Brian Wilson on 11/28/11.
 //  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSRESTRequest.h"
 #import "KCSConnectionPool.h"
@@ -14,10 +26,11 @@
 #import "KCSAuthCredential.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
-#import "KinveyAnalytics.h"
+#import "KCSPlatformUtils.h"
 #import "KCS_SBJson.h"
 #import "KCSBase64.h"
 #import "KCSRESTRequest.h"
+#import "KCSClientConfiguration.h"
 
 // This is in Seconds!
 #define KCS_RETRY_DELAY 0.05
@@ -134,7 +147,7 @@ NSString * getLogDate(void)
 - (void)start
 {
     KCSClient *kinveyClient = [KCSClient sharedClient];
-      
+
     if (self.isMockRequest) {
         self.connection = [KCSConnectionPool connectionWithConnectionType:self.mockConnection];
     } else {
@@ -152,7 +165,7 @@ NSString * getLogDate(void)
     [self.request setValue:[kinveyClient userAgent] forHTTPHeaderField:@"User-Agent"];
     
     // Add the Analytics header
-    [self.request setValue:[kinveyClient.analytics headerString] forHTTPHeaderField:kinveyClient.analytics.analyticsHeaderName];
+    [self.request setValue:[KCSPlatformUtils platformString] forHTTPHeaderField:@"X-Kinvey-Device-Information"];
     
     // Add the API version
     [self.request setValue:KINVEY_KCS_API_VERSION forHTTPHeaderField:KINVEY_KCS_API_VERSION_HEADER];
@@ -180,6 +193,7 @@ NSString * getLogDate(void)
                 return;
             }
         }
+        self.connection.credentials = [cred credentials];
     }
     
     self.connection.followRedirects = self.followRedirects;

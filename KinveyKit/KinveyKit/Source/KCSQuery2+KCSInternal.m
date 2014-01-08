@@ -20,6 +20,31 @@
 
 #import "KCSQuery2+KCSInternal.h"
 
+@interface KCSQuery2 ()
+- (NSString*) queryString:(BOOL)escape;
+@property (nonatomic, retain) NSMutableDictionary* internalRepresentation;
+@end
+
 @implementation KCSQuery2 (KCSInternal)
+
+- (NSString*) keyString
+{
+    NSString* ir = [self queryString:NO];
+    return [@([ir hash]) stringValue];
+}
+
+- (BOOL) isAllQuery
+{
+    return self.internalRepresentation.count == 0;
+}
+
+- (NSPredicate*) predicate
+{
+    NSPredicate* predicate = nil;
+    if ([self isAllQuery]) {
+        predicate = [NSPredicate predicateWithValue:YES];
+    }
+    return predicate;
+}
 
 @end

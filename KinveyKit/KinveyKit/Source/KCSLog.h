@@ -2,7 +2,6 @@
 //  KCSLog.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/7/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -21,6 +20,8 @@
 #define KinveyKit_KCSLog_h
 
 #import "DDLog.h"
+#import "DDASLLogger.h"
+#import "DDTTYLogger.h"
 
 // We want to use the following log levels:
 //
@@ -63,7 +64,14 @@
 
 // Now define everything how we want it
 
-#define KINVEY_KIT_LOG_CONTEXT 2110
+typedef enum : NSInteger {
+    KINVEY_KIT_LOG_CONTEXT = 2110,
+    KCS_LOG_CONTEXT_NETWORK,
+    KCS_LOG_CONTEXT_DATA,
+    KCS_LOG_CONTEXT_FILESYSTEM,
+    KCS_LOG_CONTEXT_USER,
+    KCS_LOG_CONTEXT_TEST
+} KCSLogContext;
 
 #define LOG_FLAG_FATAL   (1 << 0)  // 0...000001
 #define LOG_FLAG_ERROR   (1 << 1)  // 0...000010
@@ -79,6 +87,8 @@
 #define LOG_LEVEL_INFO    (LOG_FLAG_INFO   | LOG_LEVEL_NOTICE) // 0...011111
 #define LOG_LEVEL_DEBUG   (LOG_FLAG_DEBUG  | LOG_LEVEL_INFO  ) // 0...111111
 
+#define ddLogLevel (int)^(){return [[KCSClient sharedClient].configuration loglevel];}()
+
 #define LOG_FATAL   (ddLogLevel & LOG_FLAG_FATAL )
 #define LOG_ERROR   (ddLogLevel & LOG_FLAG_ERROR )
 #define LOG_WARN    (ddLogLevel & LOG_FLAG_WARN  )
@@ -86,11 +96,13 @@
 #define LOG_INFO    (ddLogLevel & LOG_FLAG_INFO  )
 #define LOG_DEBUG   (ddLogLevel & LOG_FLAG_DEBUG )
 
-#define KCSLogFatal(frmt, ...)    SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_FATAL,  KINVEY_KIT_LOG_CONTEXT, frmt, ##__VA_ARGS__)
-#define KCSLogError(frmt, ...)    SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_ERROR,  KINVEY_KIT_LOG_CONTEXT, frmt, ##__VA_ARGS__)
-#define KCSLogWarn(frmt, ...)    ASYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_WARN,   KINVEY_KIT_LOG_CONTEXT, frmt, ##__VA_ARGS__)
-#define KCSLogNotice(frmt, ...)  ASYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_NOTICE, KINVEY_KIT_LOG_CONTEXT, frmt, ##__VA_ARGS__)
-#define KCSLogInfo(frmt, ...)    ASYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_INFO,   KINVEY_KIT_LOG_CONTEXT, frmt, ##__VA_ARGS__)
-#define KCSLogDebug(frmt, ...)   ASYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_DEBUG,  KINVEY_KIT_LOG_CONTEXT, frmt, ##__VA_ARGS__)
+#define KCSLogFatal(context, frmt, ...)      SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_FATAL,  context, frmt, ##__VA_ARGS__)
+#define KCSLogError(context, frmt, ...)      SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_ERROR,  context, frmt, ##__VA_ARGS__)
+#define KCSLogWarn(context, frmt, ...)       SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_WARN,   context, frmt, ##__VA_ARGS__)
+#define KCSLogNotice(context, frmt, ...)     SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_NOTICE, context, frmt, ##__VA_ARGS__)
+#define KCSLogInfo(context, frmt, ...)       SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_INFO,   context, frmt, ##__VA_ARGS__)
+#define KCSLogDebug(context, frmt, ...)      SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_DEBUG,  context, frmt, ##__VA_ARGS__)
+#define KCSLogForcedWarn(context, frmt, ...) SYNC_LOG_OBJC_MAYBE(ddLogLevel, LOG_FLAG_FATAL,  context, frmt, ##__VA_ARGS__)
+#define KCSLogNSError(context, error)        if (error) KCSLogError(context, @"Error: %@", error);
 
 #endif

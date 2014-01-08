@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/13/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -22,7 +22,6 @@
 #import "KCSClient.h"
 #import "KinveyUser.h"
 
-#import "KinveyAnalytics.h"
 #import "NSURL+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSReachability.h"
@@ -30,23 +29,15 @@
 
 #import "KCSStore.h"
 #import "KCSClient+ConfigurationTest.h"
-#import "KCSKeyChain.h"
 
 #import "KinveyVersion.h"
 
-#import "KCSEntityCache.h"
 #import "KCSClientConfiguration.h"
 #import "KCSHiddenMethods.h"
+#import "KCSBase64.h"
+#import "KCSFileUtils.h"
 
-#pragma mark - Constants
-
-NSString* const KCS_APP_KEY = @"KCS_APP_KEY";
-NSString* const KCS_APP_SECRET = @"KCS_APP_SECRET";
-NSString* const KCS_CONNECTION_TIMEOUT = @"KCS_CONNECTION_TIMEOUT";
-NSString* const KCS_SERVICE_HOST = @"KCS_SERVICE_HOST";
-NSString* const KCS_URL_CACHE_POLICY = @"KCS_URL_CACHE_POLICY";
-NSString* const KCS_DATE_FORMAT = @"KCS_DATE_FORMAT";
-NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
+#import "KCSClientConfiguration+KCSInternal.h"
 
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
@@ -94,7 +85,6 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
     if (self){
         _libraryVersion = __KINVEYKIT_VERSION__;
         _userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
-        _analytics = [[KCSAnalytics alloc] init];
         
         if (![self respondsToSelector:@selector(testCanUseCategories)]) {
             NSException* myException = [NSException exceptionWithName:@"CategoriesNotLoaded" reason:@"KinveyKit setup: Categories could not be loaded. Be sure to set '-ObjC' in the 'Other Linker Flags'." userInfo:nil];
@@ -109,21 +99,20 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
 {
     _configuration = configuration;
     
-    if (configuration.appKey==nil || configuration.appSecret == nil) {
-        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"App Key or Secret is `nil`." userInfo:nil] raise];
+    if (configuration.appKey == nil || [configuration.appKey hasPrefix:@"<"]) {
+        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"`nil` or invalid appKey, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
+    }
+    if (configuration.appSecret == nil || [configuration.appSecret hasPrefix:@"<"]) {
+        [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"`nil` or invalid appSecret, cannot use Kinvey Service, no recovery available" userInfo:nil] raise];
     }
 
-    NSString* oldAppKey = [KCSKeyChain getStringForKey:@"kinveykit.appkey"];
+    [configuration applyConfiguration]; //apply early to set up classes and caches
+    
+    NSString* oldAppKey = [[KCSAppdataStore caches] cachedAppKey];
     if (oldAppKey != nil && [configuration.appKey isEqualToString:oldAppKey] == NO) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-        [self setCurrentUser:nil];
-#pragma clang diagnostic pop
         //clear the saved user if the kid changes
-        [KCSUser clearSavedCredentials];
+        [[KCSUser activeUser] logout];
     }
-    //TODO: use defaults
-    [KCSKeyChain setString:configuration.appKey forKey:@"kinveykit.appkey"];
 
     _networkReachability = [KCSReachability reachabilityForInternetConnection];
     // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
@@ -144,6 +133,7 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
         _connectionTimeout = [self.options[KCS_CONNECTION_TIMEOUT] doubleValue];
     }
     
+    KK2(move this over)
     if (self.options[KCS_LOG_SINK] != nil) {
         [KCSLogManager setLogSink:self.options[KCS_LOG_SINK]];
     }
@@ -214,10 +204,12 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
 
 - (void) setCurrentUser:(KCSUser *)currentUser
 {
-    if (currentUser != _currentUser) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:nil];
-    }
+    KCSUser* oldUser = _currentUser;
     _currentUser = currentUser;
+    if (currentUser != oldUser) {
+        [[KCSAppdataStore caches] cacheActiveUser:(id)currentUser];
+        [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:oldUser];
+    }
 }
 
 #pragma mark - Store Interface
@@ -297,7 +289,16 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
 #pragma mark - Utilites
 - (void)clearCache
 {
-    [KCSEntityCache clearAllCaches];
+    [[KCSAppdataStore caches] clear];
+}
+
+#pragma mark - KinveyKit 1.5
+//TODO cleanup
+- (NSString *)authString
+{
+    KCSLogDebug(@"Using app key/app secret for auth: (%@, <APP_SECRET>) => XXXXXXXXX", self.configuration.appKey);
+    return KCSbasicAuthString(self.configuration.appKey, self.configuration.appSecret);
+    
 }
 
 #pragma mark - KinveyKit2
@@ -314,4 +315,18 @@ NSString* const KCS_LOG_SINK = @"KCS_LOG_SINK";
     NSString* port = self.configuration.options[@"KCS_HOST_PORT"];
     return [NSString stringWithFormat:@"%@://%@.%@%@/", protocol, hostname, hostdomain, port];
 }
+
+#pragma mark - Data Protection
+- (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application
+{
+    KCSLogTrace(@"Did became avaialble");
+    [KCSFileUtils dataDidBecomeAvailable];
+}
+
+- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
+{
+    KCSLogTrace(@"Did became unavailable");
+    [KCSFileUtils dataDidBecomeUnavailable];
+}
+
 @end

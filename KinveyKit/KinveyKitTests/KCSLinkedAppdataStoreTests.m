@@ -624,7 +624,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     done = -1;
     
-    KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"query - 1" options:kKCSRegexpCaseInsensitive];
+    KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"^query - 1"];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -729,7 +729,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     done = -1;
     
     store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
-    KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"- 2" options:kKCSRegexpCaseInsensitive];
+    KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"^- 2"];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -1243,7 +1243,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     done = -1;
     
     KCSAppdataStore* otherStore = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"OtherCollection" ofClass:[LinkedTestClass class]] options:nil];
-    [otherStore removeObject:ref withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [otherStore removeObject:ref withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         self.done = YES;
     } withProgressBlock:nil];

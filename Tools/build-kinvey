@@ -3,6 +3,9 @@
 ## Prepare the ios-lib documentation.  Right now just use appledoc, but soon-ish
 ## use both appledoc and doxygen.
 
+## Require XCPretty tool
+##   $ gem install xcpretty
+
 ## The output/input locations are passed in via command line
 if [ $# -lt 1 ]
 then
@@ -11,7 +14,10 @@ then
 fi
 KINVEYKITLOC=$1
 
-echo "Building KinveyKit in ${KINVEYKITLOC}..."
+echo "Building KinveyKit (DEBUG) in ${KINVEYKITLOC}..."
 
-(cd $KINVEYKITLOC && xcodebuild -configuration Debug clean build)
-(cd $KINVEYKITLOC && xcodebuild -configuration Release clean build)
+(cd $KINVEYKITLOC && xcodebuild -configuration Debug clean build | xcpretty -c)
+
+echo "Building KinveyKit (RELEASE) ${KINVEYKITLOC}..."
+
+(cd $KINVEYKITLOC && xcodebuild -configuration Release clean build | xcpretty -c)

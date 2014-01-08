@@ -27,7 +27,7 @@
 {
     return [@{@"KinveyKit.Version"        : __KINVEYKIT_VERSION__,
               @"KinveyKit.Platform"       : [KCSPlatformUtils platformString],
-              @"KinveyKit.SupportMessage" : @"Copy and paste this whole error info along with other pertinent information when contacting support@kinvey.com"
+              @"KinveyKit.SupportMessage" : @"Copy and paste this whole error info along with other pertinent information when contacting Kinvey support."
             } mutableCopy];
 }
 
@@ -39,6 +39,28 @@
     }
     
     return [NSError errorWithDomain:domain code:code userInfo:userInfo];
+}
+
+- (instancetype) updateWithInfo:(NSDictionary*)extraInfo
+{
+    NSMutableDictionary* info = [self.userInfo mutableCopy];
+    [info addEntriesFromDictionary:extraInfo];
+    return [NSError errorWithDomain:self.domain code:self.code userInfo:info];
+}
+
+
+- (instancetype) updateWithMessage:(NSString*)string domain:(NSString*) domain
+{
+    NSMutableDictionary* updatedInfo = [NSError commonErrorInfo];
+    [updatedInfo addEntriesFromDictionary:self.userInfo];
+    updatedInfo[NSUnderlyingErrorKey] = self;
+    
+    return [NSError errorWithDomain:domain code:self.code userInfo:updatedInfo];
+}
+
+- (instancetype) errorByAddingCommonInfo
+{
+    return [NSError createKCSError:self.domain code:self.code userInfo:self.userInfo];
 }
 
 @end

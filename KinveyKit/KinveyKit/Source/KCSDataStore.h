@@ -2,7 +2,6 @@
 //  KCSDataStore.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 5/23/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -17,10 +16,24 @@
 // contents is a violation of applicable laws.
 //
 
-#import "KinveyHeaderInfo.h"
+#import "KinveyDataStore.h"
 
-//KCS_CONSTANT KCSUserCollectionName;
+typedef void(^KCSDataStoreCompletion)(NSArray* objects, NSError* error);
+typedef void(^KCSDataStoreCountCompletion)(NSUInteger count, NSError* error);
+
+@class KCSQuery2;
 
 @interface KCSDataStore : NSObject
+
+- (instancetype)initWithCollection:(NSString*)collection;
+
+- (void) getAll:(KCSDataStoreCompletion)completion;
+- (void) countAll:(KCSDataStoreCountCompletion)completion;
+
+- (void) query:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion; //todo return response object
+- (void) countQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion;
+
+- (void) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion;
+- (void) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion;
 
 @end

@@ -24,7 +24,7 @@
 /**
  This class is a wrapper for file store information.
  */
-@interface KCSFile : NSObject <KCSPersistable>
+@interface KCSFile : NSObject <KCSPersistable, NSCoding, NSCopying>
 
 ///---
 /// @name Basic Info

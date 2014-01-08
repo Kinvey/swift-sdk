@@ -43,7 +43,7 @@ typedef void(^KCSCompletionWrapperBlock_t)();
 @property (atomic, readonly, strong) NSMutableSet* waitingObjects;
 @property (atomic, readonly, strong) NSMutableArray* waitingBlocks;
 
-- (void) finished;
+- (void) finished:(NSArray*)objectsOrNil error:(NSError*)errorOrNil;
 - (void) resaveComplete;
 - (void) ifNotLoaded:(KCSCompletionWrapperBlock_t)noloadedBlock otherwiseWhenLoaded:(KCSCompletionWrapperBlock_t)loadedBlock andResaveAfterReferencesSaved:(KCSCompletionWrapperBlock_t)resaveBlock;
 - (void) doAfterWaitingResaves:(KCSCompletionWrapperBlock_t)doAfterBlock;

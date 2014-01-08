@@ -1,10 +1,22 @@
 //
-//  KCSChaedStore.m
+//  KCSCachedStore.m
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/10/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSCachedStore.h"
 
@@ -17,22 +29,26 @@
 #import "KinveyCollection.h"
 #import "KCSReduceFunction.h"
 
-#import "KCSEntityCache.h"
+#import "KCSQuery2.h"
+#import "KCSRequest2.h"
+#import "KCSDataModel.h"
 
 #import "KCSHiddenMethods.h"
 #import "KCSReachability.h"
+#import "KCSObjectCache.h"
+#import "KCSLogManager.h"
+
+NSString* const KCSStoreKeyOfflineUpdateEnabled = @"offline.enabled";
 
 
 @interface KCSAppdataStore (KCSCachedStore) 
 - (instancetype)initWithAuth: (KCSAuthHandler *)auth;
 - (KCSCollection*) backingCollection;
-- (NSUInteger)numberOfPendingSaves;
+@property (nonatomic) BOOL offlineUpdateEnabled;
 @end
 
 @interface KCSCachedStore () {
-    id<KCSEntityCache> _cache;
 }
-
 @end
 
 @implementation KCSCachedStore
@@ -41,16 +57,14 @@
 
 - (BOOL)configureWithOptions: (NSDictionary *)options
 {
+    ifNil(options, @{});
     BOOL retVal = [super configureWithOptions:options];
 
-    KCSCachePolicy cachePolicy = (options == nil || [options objectForKey:KCSStoreKeyCachePolicy] == nil) ? [KCSCachedStore defaultCachePolicy] : [[options objectForKey:KCSStoreKeyCachePolicy] intValue];
+    KCSCachePolicy cachePolicy = (options[KCSStoreKeyCachePolicy] == nil) ? [KCSCachedStore defaultCachePolicy] : [options[KCSStoreKeyCachePolicy] intValue];
     self.cachePolicy = cachePolicy;
+    [[[KCSAppdataStore caches] dataModel] setClass:self.backingCollection.objectTemplate forCollection:self.backingCollection.collectionName];
     
-    KCSCollection* backingCollection = [self backingCollection];
-    _cache = [KCSCachedStoreCaching cacheForCollection:backingCollection.collectionName];
-    if (cachePolicy == KCSCachePolicyReadOnceAndSaveLocal_Xperimental) {
-        [_cache setPersistenceId:[options objectForKey:KCSStoreKeyLocalCachePersistanceKey_Xperimental]];
-    }
+    self.offlineUpdateEnabled = [options[KCSStoreKeyOfflineUpdateEnabled] boolValue];
     
     return retVal;
 }
@@ -111,9 +125,12 @@ NSError* createCacheError(NSString* message)
     DBAssert([query isKindOfClass:[KCSQuery class]], @"should be a query");
     if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
         //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
-        [_cache removeQuery:query];
+        BOOL removed = [[KCSAppdataStore caches] removeQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+        if (!removed) {
+            KCSLogError(@"Error clearing query '%@' from cache:", query);
+        }
     } else if (objectsOrNil != nil) {
-        [_cache setResults:objectsOrNil forQuery:query];
+        [[KCSAppdataStore caches] setObjects:objectsOrNil forQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     }
 }
 
@@ -121,9 +138,9 @@ NSError* createCacheError(NSString* message)
 {
     if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
         //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
-        [_cache removeIds:ids];
+        [[KCSAppdataStore caches] deleteObjects:ids route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     } else if (objectsOrNil != nil) {
-        [_cache addResults:objectsOrNil];
+        [[KCSAppdataStore caches] addObjects:objectsOrNil route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     }
 }
 
@@ -135,17 +152,18 @@ NSError* createCacheError(NSString* message)
     } withProgressBlock:progressBlock];
 }
 
-- (void) completeQuery:(id)obj withCompletionBlock:(KCSCompletionBlock)completionBlock
+- (void) completeQuery:(NSArray*)objs withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
-    dispatch_async(dispatch_get_current_queue(), ^{
-        NSError* error = (obj == nil) ? createCacheError(@"Query not in cache") : nil;
-        completionBlock(obj, error); 
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSError* error = (objs == nil) ? createCacheError(@"Query not in cache") : nil;
+        completionBlock(objs, error);
     });
 }
 
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
 {
-    id obj = [_cache resultsForQuery:query]; //Hold on the to the object first, in case the cache is cleared during this process
+    //Hold on the to the object first, in case the cache is cleared during this process
+    id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
         [self queryNetwork:query withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
     } else {
@@ -171,13 +189,15 @@ NSError* createCacheError(NSString* message)
 #pragma mark - Group Caching Support
 - (void) cacheGrouping:(NSArray*)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition results:(KCSGroup*)objectsOrNil error:(NSError*)errorOrNil policy:(KCSCachePolicy)cachePolicy
 {
-    if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
-        //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
-        [_cache removeGroup:fields reduce:function condition:condition];
-    } else if (objectsOrNil != nil) {
-        [_cache setResults:objectsOrNil forGroup:fields reduce:function condition:condition];
-    }
-
+    //TODO: reinstate GROUP caching?
+    
+//    if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
+//        //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
+//        [_cache removeGroup:fields reduce:function condition:condition];
+//    } else if (objectsOrNil != nil) {
+//        [_cache setResults:objectsOrNil forGroup:fields reduce:function condition:condition];
+//    }
+//
 }
 
 - (void)groupNetwork:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
@@ -246,8 +266,13 @@ NSError* createCacheError(NSString* message)
        withProgressBlock:(KCSProgressBlock)progressBlock
              cachePolicy:(KCSCachePolicy)cachePolicy
 {
+    if (objectID == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"objectId is `nil`." userInfo:nil] raise];
+    }
+    
     NSArray* keys = [NSArray wrapIfNotArray:objectID];
-    NSArray* objs = [_cache resultsForIds:keys]; //Hold on the to the object first, in case the cache is cleared during this process
+    //Hold on the to the object first, in case the cache is cleared during this process
+    NSArray* objs = [[KCSAppdataStore caches] pullIds:keys route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     if ([self shouldCallNetworkFirst:objs cachePolicy:cachePolicy] == YES) {
         [self loadEntityFromNetwork:keys withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
     } else {
@@ -277,4 +302,20 @@ NSError* createCacheError(NSString* message)
     [super saveObject:object withCompletionBlock:completionBlock withProgressBlock:progressBlock];
 }
 
+#pragma mark - import / export
+
+- (void) import:(NSArray*)jsonObjects
+{
+    [[KCSAppdataStore caches] jsonImport:jsonObjects route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+}
+
+- (NSArray*) exportCache
+{
+    return [[KCSAppdataStore caches] jsonExport:[self.backingCollection route] collection:self.backingCollection.collectionName];
+}
+
++ (void)clearCaches
+{
+    [[KCSAppdataStore caches] clear];
+}
 @end

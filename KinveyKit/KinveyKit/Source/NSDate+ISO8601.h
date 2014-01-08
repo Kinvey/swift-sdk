@@ -2,7 +2,6 @@
 //  NSDate+ISO8601.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 12/23/11.
 //  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
