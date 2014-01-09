@@ -4,6 +4,16 @@
 ### 1.26.0
 ** Release Date:** TBA
 
+* __TODO: add obsevers
+/** Notification for when a network operation starts 
+ @since 1.26.0
+ */
+KCS_CONSTANT KCSNetworkConnectionDidStart;
+/** Notification for when a network operation ends 
+ @since 1.26.0
+ */
+KCS_CONSTANT KCSNetworkConnectionDidEnd;
+     * __TODO__ see sample app, widgets 
 * Code cleanup:
      * Deprecated `KCSAllObjects`; use `[KCSQuery query]` instead.
      * Deprecated `KCSCollectionDelegate` and networking-methods of the `KCSCollection` class. These don't get the benefit of caching, error handling etc. 

@@ -2,7 +2,7 @@
 //  KCSClient.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2014, Kinvey, Inc. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -40,9 +40,13 @@
 #define KCS_SALESFORCE_REFRESH_TOKEN @"refresh_token"
 #define KCS_SALESFORCE_CLIENT_ID @"client_id"
 
-/** Notification for when a network operation starts */
+/** Notification for when a network operation starts 
+ @since 1.26.0
+ */
 KCS_CONSTANT KCSNetworkConnectionDidStart;
-/** Notification for when a network operation ends */
+/** Notification for when a network operation ends 
+ @since 1.26.0
+ */
 KCS_CONSTANT KCSNetworkConnectionDidEnd;
 
 @class KCSClientConfiguration;

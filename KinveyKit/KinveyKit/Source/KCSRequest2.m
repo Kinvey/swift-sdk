@@ -221,6 +221,8 @@ static NSOperationQueue* queue;
         [self requestCallback:op request:request];
     };
     op.progressBlock = self.progress;
+    
+    [[KCSNetworkObserver sharedObserver] connectionStart];
     [queue addOperation:op];
     return op;
 }
@@ -303,6 +305,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
 
 - (void) callCallback:(NSOperation<KCSNetworkOperation>*)op request:(NSURLRequest*)request
 {
+    [[KCSNetworkObserver sharedObserver] connectionEnd];
     [_currentQueue addOperationWithBlock:^{
         op.response.originalURL = request.URL;
         NSError* error = nil;
