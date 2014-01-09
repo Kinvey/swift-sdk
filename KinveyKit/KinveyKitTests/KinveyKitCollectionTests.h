@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/19/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -18,13 +18,9 @@
 //
 
 
-//  Logic unit tests contain unit test code that is designed to be linked into an independent test executable.
-//  See Also: http://developer.apple.com/iphone/library/documentation/Xcode/Conceptual/iphone_development/135-Unit_Testing_Applications/unit_testing_applications.html
-
 #import <SenTestingKit/SenTestingKit.h>
-#import "KinveyCollection.h"
 
-@interface KinveyKitCollectionTests : SenTestCase <KCSCollectionDelegate, KCSInformationDelegate>
+@interface KinveyKitCollectionTests : SenTestCase
 
 
 @end

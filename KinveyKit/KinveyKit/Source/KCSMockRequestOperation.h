@@ -23,5 +23,7 @@
 @interface KCSMockRequestOperation : NSOperation <KCSNetworkOperation>
 @property (atomic) NSUInteger retryCount;
 @property (nonatomic, copy) NSString* clientRequestId;
+@property (nonatomic, copy) KCSRequestProgressBlock progressBlock;
+
 - (instancetype) initWithRequest:(NSMutableURLRequest*) request;
 @end

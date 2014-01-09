@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/5/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -29,7 +29,6 @@
 #import "KinveyPing.h"
 #import "KCSLogManager.h"
 #import "KCSAuthCredential.h"
-#import "KCSRESTRequest.h"
 #import "KinveyCollection.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSObjectMapper.h"
@@ -48,7 +47,7 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
-@interface KinveyKitUserTests () <KCSUserActionDelegate, KCSEntityDelegate>
+@interface KinveyKitUserTests () <KCSUserActionDelegate>
 #pragma clang diagnostic pop
 
 @property (nonatomic) BOOL testPassed;

@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/11/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -26,6 +26,7 @@
 @property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, strong) NSMutableData* downloadedData;
 @property (nonatomic, strong) NSURLSessionDataTask* dataTask;
+@property (nonatomic) long long expectedLength;
 @property (nonatomic) BOOL done;
 @property (nonatomic, strong) KCSNetworkResponse* response;
 @property (nonatomic, strong) NSError* error;
@@ -41,7 +42,7 @@
     NSURLSession* session;
     
     NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:[NSOperationQueue currentQueue]];
+    session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
     //    });
     return session;
 }
@@ -52,6 +53,7 @@
     self = [super init];
     if (self) {
         _request = request;
+        _progressBlock = nil;
     }
     return self;
 }
@@ -105,17 +107,22 @@
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
 {
     [self.downloadedData appendData:data];
+    if (self.progressBlock) {
+        self.progressBlock(self.downloadedData, self.downloadedData.length / (double) _expectedLength);
+    }
+
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
     NSHTTPURLResponse* hresponse = (NSHTTPURLResponse*) response;
     //TODO strip headers?
-    //    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"received response: %ld %@", (long)hresponse.statusCode, hresponse.allHeaderFields);
+    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"received response: %ld %@", (long)hresponse.statusCode, hresponse.allHeaderFields);
     
     self.response.code = hresponse.statusCode;
     self.response.headers = hresponse.allHeaderFields;
     
+    _expectedLength = response.expectedContentLength;
     completionHandler(NSURLSessionResponseAllow);
 }
 

@@ -51,8 +51,11 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 @end
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-retain-cycles"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-@interface KinveyKitCollectionTests ()
+@interface KinveyKitCollectionTests () <KCSCollectionDelegate, KCSInformationDelegate>
 @property (nonatomic) BOOL testPassed;
 @property (retain, nonatomic) NSString *testID;
 @property (copy, nonatomic) SuccessAction onSuccess;
@@ -71,8 +74,6 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 @implementation KinveyKitCollectionTests
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-retain-cycles"
 
 - (void)setUp
 {

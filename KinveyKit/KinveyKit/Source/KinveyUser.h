@@ -20,9 +20,9 @@
 #import "KinveyPersistable.h"
 #import "KinveyEntity.h"
 #import "KinveyHeaderInfo.h"
+#import "KCSBlockDefs.h"
 
 @class KCSCollection;
-@class KCSRESTRequest;
 @class KCSMetadata;
 
 // Need to predefine our classes here

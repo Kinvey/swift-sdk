@@ -102,7 +102,7 @@
 }
 
 #pragma mark - Deletion
-- (void) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
+- (id<KCSNetworkOperation>) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
 {
     if (!_id) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"_id is nil" userInfo:nil] raise];
     
@@ -119,10 +119,11 @@
                                                   credentials:[KCSUser activeUser]];
     request.path = @[self.collectionName, _id];
     request.method = KCSRESTMethodDELETE;
-    [request start];
+    id<KCSNetworkOperation> op = [request start];
+    return op;
 }
 
-- (void) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
+- (id<KCSNetworkOperation>) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
 {
     if (!query) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"query is nil" userInfo:nil] raise];
     
@@ -140,8 +141,8 @@
     request.path = @[self.collectionName];
     request.queryString = [query escapedQueryString];
     request.method = KCSRESTMethodDELETE;
-    [request start];
-
+    id<KCSNetworkOperation> op = [request start];
+    return op;
 }
 
 

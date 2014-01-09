@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/28/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -29,7 +29,6 @@
 #import "KCSPlatformUtils.h"
 #import "KCS_SBJson.h"
 #import "KCSBase64.h"
-#import "KCSRESTRequest.h"
 #import "KCSClientConfiguration.h"
 
 // This is in Seconds!

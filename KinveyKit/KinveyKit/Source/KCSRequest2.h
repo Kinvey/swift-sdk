@@ -2,7 +2,7 @@
 //  KCSRequest2.h
 //  KinveyKit
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -19,6 +19,7 @@
 #import <Foundation/Foundation.h>
 
 #import "KinveyHeaderInfo.h"
+#import "KCSNetworkDefs.h"
 
 KCS_CONSTANT KCSRequestOptionUseMock;
 KCS_CONSTANT KCSRequestOptionClientMethod;
@@ -54,6 +55,7 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
 @property (nonatomic, copy) NSDictionary* headers;
 @property (nonatomic, copy) NSDictionary* body;
 @property (nonatomic, copy) NSString* queryString;
+@property (nonatomic, copy) KCSRequestProgressBlock progress;
 
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
