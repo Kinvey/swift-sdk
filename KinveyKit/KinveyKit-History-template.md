@@ -6,6 +6,8 @@
 
 * Code cleanup:
      * Deprecated `KCSAllObjects`; use `[KCSQuery query]` instead.
+     * Deprecated `KCSCollectionDelegate` and networking-methods of the `KCSCollection` class. These don't get the benefit of caching, error handling etc. 
+     * Removed `KCSEntityDelegate` protocol and `-[NSObject(KinveyEntity) loadObjectWithID:]`, originally deprecated in 1.19.0.
 
 ## 1.25
 ### 1.25.0

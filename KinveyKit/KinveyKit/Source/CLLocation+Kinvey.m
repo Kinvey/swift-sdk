@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/20/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -20,12 +20,21 @@
 
 #import "CLLocation+Kinvey.h"
 
+NSArray* CLLocationCoordinate2DToKCS(CLLocationCoordinate2D coordinate)
+{
+    return @[@(coordinate.longitude), @(coordinate.latitude)];
+}
+
 @implementation CLLocation (Kinvey)
+
+- (id) proxyForJson
+{
+    return [self kinveyValue];
+}
 
 - (NSArray *)kinveyValue
 {
-    CLLocationCoordinate2D loc = [self coordinate];
-    return @[@(loc.longitude), @(loc.latitude)];
+    return CLLocationCoordinate2DToKCS(self.coordinate);
 }
 
 + (CLLocation*) locationFromKinveyValue:(NSArray*)kinveyValue

@@ -1,8 +1,8 @@
 //
-//  KinveyKit2.h
+//  CLCircularRegion+KinveyKit.h
 //  KinveyKit
 //
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,27 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
 
-#import "KinveyKit.h" //
+#import <CoreLocation/CoreLocation.h>
 
-#import "KinveyVersion.h"
+@interface CLCircularRegion (KinveyKit)
 
-#import "KinveyCore.h"
-
-#pragma mark - User & Device
-
-#import "KinveyUserService.h"
-#import "KCSPush2.h"
-
-#pragma mark - Data & Storage
-
-#import "KinveyDataStore.h"
-#import "KinveyFileStore.h"
-
-#pragma mark - Location
-
-#import "KinveyLocation.h"
-
-#endif
+@end

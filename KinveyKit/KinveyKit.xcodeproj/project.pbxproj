@@ -36,6 +36,12 @@
 		270198B417CFED6D00E9AAB2 /* KCSNetworkOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 270198B217CFED6D00E9AAB2 /* KCSNetworkOperation.h */; };
 		27041AFE163B0ADB00538656 /* MD5Helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 27041AFC163B0ADB00538656 /* MD5Helpers.h */; };
 		27041AFF163B0ADB00538656 /* MD5Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 27041AFD163B0ADB00538656 /* MD5Helpers.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		27052F70187ED1590062500E /* KinveyLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27052F6F187ED1540062500E /* KinveyLocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27052F71187ED15C0062500E /* KinveyLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27052F6F187ED1540062500E /* KinveyLocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27052F74187ED19F0062500E /* CLCircularRegion+KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 27052F72187ED19F0062500E /* CLCircularRegion+KinveyKit.h */; };
+		27052F75187ED19F0062500E /* CLCircularRegion+KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 27052F72187ED19F0062500E /* CLCircularRegion+KinveyKit.h */; };
+		27052F76187ED19F0062500E /* CLCircularRegion+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 27052F73187ED19F0062500E /* CLCircularRegion+KinveyKit.m */; };
+		27052F77187ED19F0062500E /* CLCircularRegion+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 27052F73187ED19F0062500E /* CLCircularRegion+KinveyKit.m */; };
 		270BAEB317134107005174D2 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610214716F2D00F77A3F /* KinveyEntity.m */; };
 		270BAEB41713414D005174D2 /* NSMutableDictionary+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */; };
 		270BAEB51713415E005174D2 /* NSArray+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */; };
@@ -673,6 +679,10 @@
 		270198B217CFED6D00E9AAB2 /* KCSNetworkOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNetworkOperation.h; sourceTree = "<group>"; };
 		27041AFC163B0ADB00538656 /* MD5Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MD5Helpers.h; sourceTree = "<group>"; };
 		27041AFD163B0ADB00538656 /* MD5Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MD5Helpers.m; sourceTree = "<group>"; };
+		27052F6D187DEC6A0062500E /* KCSNetworkDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSNetworkDefs.h; sourceTree = "<group>"; };
+		27052F6F187ED1540062500E /* KinveyLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyLocation.h; sourceTree = "<group>"; };
+		27052F72187ED19F0062500E /* CLCircularRegion+KinveyKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLCircularRegion+KinveyKit.h"; sourceTree = "<group>"; };
+		27052F73187ED19F0062500E /* CLCircularRegion+KinveyKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CLCircularRegion+KinveyKit.m"; sourceTree = "<group>"; };
 		270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+KinveyAdditions.h"; sourceTree = "<group>"; };
 		270E4CAC16246954000E0A0A /* NSMutableDictionary+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+KinveyAdditions.m"; sourceTree = "<group>"; };
 		2718279C16B8A78700825D50 /* KCSImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSImageUtils.h; sourceTree = "<group>"; };
@@ -1169,6 +1179,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		27052F6E187ED1330062500E /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				27052F6F187ED1540062500E /* KinveyLocation.h */,
+				272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */,
+				272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */,
+				27052F72187ED19F0062500E /* CLCircularRegion+KinveyKit.h */,
+				27052F73187ED19F0062500E /* CLCircularRegion+KinveyKit.m */,
+			);
+			name = Location;
+			sourceTree = "<group>";
+		};
 		271827AB16B9A1E600825D50 /* Mac */ = {
 			isa = PBXGroup;
 			children = (
@@ -1206,15 +1228,6 @@
 				27B75A601858C0BC0093144E /* KeychainTests.m */,
 			);
 			name = Core;
-			sourceTree = "<group>";
-		};
-		272EF18215E2BA11008E3F68 /* UI Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				272EF18615E2BA4E008E3F68 /* CLLocation+Kinvey.h */,
-				272EF18715E2BA4E008E3F68 /* CLLocation+Kinvey.m */,
-			);
-			name = "UI Helpers";
 			sourceTree = "<group>";
 		};
 		273B64511757DE2100E1B1B9 /* RPC Service */ = {
@@ -1256,6 +1269,7 @@
 				2746536C174E948E0013546E /* Data Store */,
 				277A4D6B17F156B800E545EC /* File Store */,
 				27B75A531857FC5B0093144E /* Push */,
+				27052F6E187ED1330062500E /* Location */,
 			);
 			name = KinveyKit2;
 			path = Source;
@@ -1361,6 +1375,7 @@
 				2737D3B017BD517300FE7ACC /* KCSMockServer.m */,
 				27F5340817FD93CA0080332D /* KCSNetworkObserver.h */,
 				27F5340917FD93CA0080332D /* KCSNetworkObserver.m */,
+				27052F6D187DEC6A0062500E /* KCSNetworkDefs.h */,
 				D3C5E698147479E6002D8F2B /* KinveyHTTPStatusCodes.h */,
 			);
 			name = internal;
@@ -1907,7 +1922,6 @@
 			isa = PBXGroup;
 			children = (
 				D3F340FA14BD2A2900DB6C37 /* Headers */,
-				272EF18215E2BA11008E3F68 /* UI Helpers */,
 				D36118EB154F44E80001BB41 /* KinveyStore */,
 				D39CDF9314D1E65400E40D19 /* Query */,
 				D3EA22661484850B00666259 /* Push */,
@@ -2149,6 +2163,7 @@
 				275B42A116A97DB00064B941 /* KinveyHeaderInfo.h in Headers */,
 				278BADB017B28EC70035B3D6 /* DDFileLogger.h in Headers */,
 				277A4D7A17F1B01F00E545EC /* KCSNSURLSessionFileOperation.h in Headers */,
+				27052F75187ED19F0062500E /* CLCircularRegion+KinveyKit.h in Headers */,
 				277A4D7417F1B00D00E545EC /* KCSNSURLCxnFileOperation.h in Headers */,
 				27B3B07D16B8740D00E1B540 /* KCSConnectionResponse.h in Headers */,
 				27DA141B17C3E7D000EAB3B7 /* KCSNSURLRequestOperation.h in Headers */,
@@ -2218,6 +2233,7 @@
 				27010A9A1713313F0012D1ED /* KCSEntityDict.h in Headers */,
 				278BADA817B28EC70035B3D6 /* DDAbstractDatabaseLogger.h in Headers */,
 				27010A9B1713314A0012D1ED /* KinveyEntity.h in Headers */,
+				27052F71187ED15C0062500E /* KinveyLocation.h in Headers */,
 				2737D3C017BE5A4800FE7ACC /* KCSClientConfiguration.h in Headers */,
 				27010A9C1713315C0012D1ED /* KinveyPersistable.h in Headers */,
 				27CD8EE8176FA8AB009463E3 /* KCSFileStore.h in Headers */,
@@ -2286,6 +2302,7 @@
 				D3F7E8751488084D0044F1E8 /* KinveyUser.h in Headers */,
 				D3F3409814BC8AB800DB6C37 /* KCSReachability.h in Headers */,
 				27B2A3AB187B2102008A84E1 /* KCSKeychain.h in Headers */,
+				27052F70187ED1590062500E /* KinveyLocation.h in Headers */,
 				27B75A561857FE370093144E /* KCSUser2+KinveyUserService.h in Headers */,
 				D39CDF9714D1E67F00E40D19 /* KCSQuery.h in Headers */,
 				D3C5E699147479E6002D8F2B /* KinveyHTTPStatusCodes.h in Headers */,
@@ -2401,6 +2418,7 @@
 				2746535F174E891D0013546E /* EXTScope.h in Headers */,
 				27465361174E891D0013546E /* metamacros.h in Headers */,
 				27DA141A17C3E7D000EAB3B7 /* KCSNSURLRequestOperation.h in Headers */,
+				27052F74187ED19F0062500E /* CLCircularRegion+KinveyKit.h in Headers */,
 				277A4D6717F1568000E545EC /* KCSFileRequest.h in Headers */,
 				273B644F1757DE0F00E1B1B9 /* KCSCustomEndpoints.h in Headers */,
 				27FEBF3017B26AEB006E7FBD /* KCSCredentials.h in Headers */,
@@ -2834,6 +2852,7 @@
 				27BBB2F517EB2A1E00264C9C /* KCSLogFormatter.m in Sources */,
 				27295D7517E0AC8E00D34E2F /* KCSPing2.m in Sources */,
 				27B7724516E7C71300610D11 /* KCSWebView.m in Sources */,
+				27052F77187ED19F0062500E /* CLCircularRegion+KinveyKit.m in Sources */,
 				277A4D7C17F1B01F00E545EC /* KCSNSURLSessionFileOperation.m in Sources */,
 				27F5D7F616F20EC5001828F3 /* NSDictionary+KinveyAdditions.m in Sources */,
 				27FB2A7A16FCEC9E00CD7D5C /* KCS_TWSignedRequest.m in Sources */,
@@ -2926,6 +2945,7 @@
 				277A4D8117F1B11700E545EC /* KCSMockFileOperation.m in Sources */,
 				D3EA22581484228300666259 /* KCSRESTRequest.m in Sources */,
 				277A4D7517F1B00D00E545EC /* KCSNSURLCxnFileOperation.m in Sources */,
+				27052F76187ED19F0062500E /* CLCircularRegion+KinveyKit.m in Sources */,
 				D3EA226A1484852B00666259 /* KCSPush.m in Sources */,
 				D3EA22C81486B0BD00666259 /* KinveyPing.m in Sources */,
 				2737D3B317BD517300FE7ACC /* KCSMockServer.m in Sources */,

@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 10/13/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -18,116 +18,21 @@
 //
 
 
-#import "KinveyPersistable.h"
 #import "KinveyCollection.h"
+
 #import "KCSClient.h"
-#import "NSString+KinveyAdditions.h"
-#import "KCSRESTRequest.h"
-#import "KinveyHTTPStatusCodes.h"
-#import "KCSConnectionResponse.h"
-#import "KinveyErrorCodes.h"
-#import "KCSErrorUtilities.h"
-#import "KCSLogManager.h"
-#import "KCSObjectMapper.h"
-#import "KCSQuery.h"
-#import "KCSStore.h"
-#import "KCSBlockDefs.h"
-#import "KCSConnectionProgress.h"
 #import "KinveyUser.h"
 #import "KCSClientConfiguration.h"
-
 #import "KCSRequest2.h"
+#import "KCSAppdataStore.h"
 
 NSString* const KCSUserCollectionName = @"user";
 
 typedef enum KCSCollectionCategory : NSInteger {
-    KCSCollectionAppdata, KCSCollectionUser, KCSCollectionBlob
+    KCSCollectionAppdata,
+    KCSCollectionUser,
+    KCSCollectionBlob
 } KCSCollectionCategory;
-
-// Avoid compiler warning by prototyping here...
-KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collection,
-                                                           id<KCSCollectionDelegate>delegate,
-                                                           KCSCompletionBlock onComplete);
-
-KCSConnectionFailureBlock    makeCollectionFailureBlock(KCSCollection *collection,
-                                                        id<KCSCollectionDelegate>delegate,
-                                                        KCSCompletionBlock onComplete);
-
-KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collection,
-                                                         id<KCSCollectionDelegate>delegate,
-                                                         KCSProgressBlock onProgress);
-
-KCSConnectionCompletionBlock makeCollectionCompletionBlock(KCSCollection *collection,
-                                                           id<KCSCollectionDelegate>delegate,
-                                                           KCSCompletionBlock onComplete)
-{
-    return [^(KCSConnectionResponse *response){
-        
-        KCSLogTrace(@"In collection callback with response: %@", response);
-        NSMutableArray *processedData = [[NSMutableArray alloc] init];
-        
-        NSObject* jsonData = [response jsonResponseValue];
-        NSArray *jsonArray = nil;
-        if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:(NSDictionary*) jsonData description:@"Collection fetch was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
-            if (delegate){
-                [delegate collection:collection didFailWithError:error];
-            } else {
-                onComplete(nil, error);
-            }
-            return;
-        }
-        
-        if ([jsonData isKindOfClass:[NSArray class]]){
-            jsonArray = (NSArray *)jsonData;
-        } else {
-            if ([(NSDictionary *)jsonData count] == 0){
-                jsonArray = [NSArray array];
-            } else {
-                jsonArray = [NSArray arrayWithObjects:(NSDictionary *)jsonData, nil];
-            }
-        }
-        
-        for (NSDictionary *dict in jsonArray) {
-            [processedData addObject:[KCSObjectMapper makeObjectOfType:collection.objectTemplate withData:dict]];
-        }
-        if (delegate){
-            [delegate collection:collection didCompleteWithResult:processedData];
-        } else {
-            onComplete(processedData, nil);
-        }
-    } copy];
-}
-
-KCSConnectionFailureBlock    makeCollectionFailureBlock(KCSCollection *collection,
-                                                        id<KCSCollectionDelegate>delegate,
-                                                        KCSCompletionBlock onComplete)
-{
-    if (delegate){
-        return [^(NSError *error){
-            [delegate collection:collection didFailWithError:error];
-        } copy];
-    } else {
-        return [^(NSError *error){
-            onComplete(nil, error);
-        } copy];
-    }
-}
-
-KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collection,
-                                                         id<KCSCollectionDelegate>delegate,
-                                                         KCSProgressBlock onProgress)
-{
-    
-    return [^(KCSConnectionProgress *conn)
-            {
-                if (onProgress != nil) {
-                    //TODO: deprecate
-                    onProgress(@[], conn.percentComplete);
-                }
-            } copy];
-    
-}
 
 @interface KCSCollection ()
 @property (nonatomic) KCSCollectionCategory category;
@@ -246,171 +151,50 @@ KCSConnectionProgressBlock   makeCollectionProgressBlock(KCSCollection *collecti
     return resource;
 }
 
-- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint
-{
-    NSString *resource = [self urlForEndpoint:endpoint];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:method];
-    [request setContentType:KCS_JSON_TYPE];
-    return request;
-}
-
-
 - (void)fetchAllWithDelegate:(id<KCSCollectionDelegate>)delegate
 {
-    NSString *resource = [self.baseURL stringByAppendingFormat:@"%@/", self.collectionName];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-    
-    KCSConnectionCompletionBlock cBlock = makeCollectionCompletionBlock(self, delegate, nil);
-    KCSConnectionFailureBlock fBlock = makeCollectionFailureBlock(self, delegate, nil);
-    KCSConnectionProgressBlock pBlock = makeCollectionProgressBlock(self, delegate, nil);
-    
-    // Make the request happen
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+    [[KCSAppdataStore storeWithCollection:self options:nil] queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if (errorOrNil) {
+            [delegate collection:self didFailWithError:errorOrNil];
+        } else {
+            [delegate collection:self didCompleteWithResult:objectsOrNil];;
+        }
+    } withProgressBlock:nil];
 }
 
 - (void)fetchWithQuery:(KCSQuery *)query withCompletionBlock:(KCSCompletionBlock)onCompletion withProgressBlock:(KCSProgressBlock)onProgress
 {
-    NSString *resource = nil;
-    NSString *format = nil;
-    
-    if ([self.collectionName isEqualToString:@""]){
-        format = @"%@";
-    } else {
-        format = @"%@/";
-    }
-    
-    // Here we know that we're working with a query, so now we just check each of the params...
-    if (query != nil){
-        resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
-        resource = [resource stringByAppendingString:[query parameterStringRepresentation]];
-    }
-    
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-    
-    
-    KCSConnectionCompletionBlock cBlock = makeCollectionCompletionBlock(self, nil, onCompletion);
-    KCSConnectionFailureBlock fBlock = makeCollectionFailureBlock(self, nil, onCompletion);
-    KCSConnectionProgressBlock pBlock = makeCollectionProgressBlock(self, nil, onProgress);
-    
-    // Make the request happen
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
-    
+    [[KCSAppdataStore storeWithCollection:self options:nil] queryWithQuery:query withCompletionBlock:onCompletion withProgressBlock:onProgress];
 }
-
 
 
 - (void)fetchWithDelegate:(id<KCSCollectionDelegate>)delegate
 {
-    // Guard against an empty filter
-    if (self.query == nil){
-        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Unable to fetch with an empty query."
-                                                                           withFailureReason:@"No query or filter was supplied to fetchWithDelegate:"
-                                                                      withRecoverySuggestion:@"Provide a query or filter, or use fetchAllWithDelegate:"
-                                                                         withRecoveryOptions:nil];
-        NSError *error = [NSError errorWithDomain:KCSAppDataErrorDomain
-                                             code:KCSInvalidArgumentError
-                                         userInfo:userInfo];
-        
-        [delegate collection:self didFailWithError:error];
-        return;
-    }
-    
-    NSString *resource = nil;
-    NSString *format = nil;
-    
-    if ([self.collectionName isEqualToString:@""]){
-        format = @"%@";
-    } else {
-        format = @"%@/";
-    }
-    
-    // Here we know that we're working with a query, so now we just check each of the params...
-    resource = [self.baseURL stringByAppendingFormat:format, self.collectionName];
-    resource = [resource stringByAppendingString:[self.query parameterStringRepresentation]];
-    
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-    
-    
-    KCSConnectionCompletionBlock cBlock = makeCollectionCompletionBlock(self, delegate, nil);
-    KCSConnectionFailureBlock fBlock = makeCollectionFailureBlock(self, delegate, nil);
-    KCSConnectionProgressBlock pBlock = makeCollectionProgressBlock(self, delegate, nil);
-    
-    // Make the request happen
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+    [[KCSAppdataStore storeWithCollection:self options:nil] queryWithQuery:self.query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        if (errorOrNil) {
+            [delegate collection:self didFailWithError:errorOrNil];
+        } else {
+            [delegate collection:self didCompleteWithResult:objectsOrNil];;
+        }
+    } withProgressBlock:nil];
 }
 
 #pragma mark Utility Methods
 
 - (void)entityCountWithDelegate:(id<KCSInformationDelegate>)delegate
 {
-    NSString *resource = [self urlForEndpoint:@"_count"];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-    
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        NSDictionary* jsonResponse = (NSDictionary*) [response jsonResponseValue];
-        
-        int count;
-        
-        if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Information request  was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
-            
-            [delegate collection:self informationOperationFailedWithError:error];
-            return;
-        }
-        
-        NSString *val = [jsonResponse valueForKey:@"count"];
-        
-        if (val){
-            count = [val intValue];
+    [[KCSAppdataStore storeWithCollection:self options:nil] countWithBlock:^(unsigned long count, NSError *errorOrNil) {
+        if (errorOrNil) {
+            [delegate collection:self informationOperationFailedWithError:errorOrNil];
         } else {
-            count = 0;
+            [delegate collection:self informationOperationDidCompleteWithResult:(int)count];
         }
-        [delegate collection:self informationOperationDidCompleteWithResult:count];
-    };
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        [delegate collection:self informationOperationFailedWithError:error];
-    };
-    
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *collection) {};
-    
-    // Make the request happen
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+    }];
 }
 
 -(void)entityCountWithBlock:(KCSCountBlock)countBlock
 {
-    NSString *resource = [self urlForEndpoint:@"_count"];
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:resource usingMethod:kGetRESTMethod];
-    
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
-        int count;
-        
-        if (response.responseCode != KCS_HTTP_STATUS_OK){
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Information request  was unsuccessful." errorCode:response.responseCode domain:KCSAppDataErrorDomain requestId:response.requestId];
-            countBlock(0, error);
-            return;
-        }
-        
-        NSString *val = [jsonResponse valueForKey:@"count"];
-        
-        if (val){
-            count = [val intValue];
-        } else {
-            count = 0;
-        }
-        countBlock(count, nil);
-    };
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        countBlock(0, error);
-    };
-    
-    KCSConnectionProgressBlock pBlock = ^(KCSConnectionProgress *collection) {};
-    
-    // Make the request happen
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:pBlock] start];
+    [[KCSAppdataStore storeWithCollection:self options:nil] countWithBlock:countBlock];
 }
 
 // AVG is not in the REST docs anymore

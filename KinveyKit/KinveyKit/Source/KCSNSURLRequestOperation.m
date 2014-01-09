@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/20/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -26,6 +26,7 @@
 @property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, strong) NSMutableData* downloadedData;
 @property (nonatomic, strong) NSURLConnection* connection;
+@property (nonatomic) long long expectedLength;
 @property (nonatomic) BOOL done;
 @property (nonatomic, strong) KCSNetworkResponse* response;
 @property (nonatomic, strong) NSError* error;
@@ -38,6 +39,7 @@
     self = [super init];
     if (self) {
         _request = request;
+        _progressBlock = nil;
     }
     return self;
 }
@@ -97,6 +99,8 @@
     //TODO strip headers?
     KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"received response: %ld %@", (long)hresponse.statusCode, hresponse.allHeaderFields);
 
+    self.expectedLength = response.expectedContentLength;
+    
     self.response.code = hresponse.statusCode;
     self.response.headers = hresponse.allHeaderFields;
 }
@@ -109,6 +113,9 @@
 - (void) connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
     [self.downloadedData appendData:data];
+    if (self.progressBlock) {
+        self.progressBlock(self.downloadedData, self.downloadedData.length / (double) _expectedLength);
+    }
 }
 
 - (void) connectionDidFinishLoading:(NSURLConnection *)connection

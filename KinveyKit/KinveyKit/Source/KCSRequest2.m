@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/12/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -220,6 +220,7 @@ static NSOperationQueue* queue;
         @strongify(op);
         [self requestCallback:op request:request];
     };
+    op.progressBlock = self.progress;
     [queue addOperation:op];
     return op;
 }

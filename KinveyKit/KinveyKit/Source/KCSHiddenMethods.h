@@ -21,7 +21,6 @@
 
 #import "KCSAppdataStore.h"
 #import "KinveyCollection.h"
-#import "KCSRESTRequest.h"
 #import "KCSClient.h"
 #import "KCSReduceFunction.h"
 #import "KCSGroup.h"
@@ -38,9 +37,9 @@
 
 NSDictionary* defaultBuilders();
 
-@interface KCSGenericRESTRequest (KCSHiddenMethods)
-+ (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
-@end
+//@interface KCSGenericRESTRequest (KCSHiddenMethods)
+//+ (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
+//@end
 
 @interface KCSQueryTTLModifier : NSObject
 @property (nonatomic, strong) NSNumber* ttl;
@@ -53,10 +52,8 @@ NSDictionary* defaultBuilders();
 @end
 
 
-
 @interface KCSCollection (KCSHiddenMethods)
 
-- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint;
 - (NSString*) urlForEndpoint:(NSString*)endpoint;
 - (NSString*) route;
 

@@ -1,8 +1,9 @@
 //
-//  KinveyKit2.h
+//  CLCircularRegion+KinveyKit.m
 //  KinveyKit
 //
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Created by Michael Katz on 1/9/14.
+//  Copyright (c) 2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,27 +17,21 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyKit2_h
-#define KinveyKit_KinveyKit2_h
 
-#import "KinveyKit.h" //
+#import "CLCircularRegion+KinveyKit.h"
+#import "CLLocation+Kinvey.h"
 
-#import "KinveyVersion.h"
+//TODO: check if can build w/o importing into main header?
 
-#import "KinveyCore.h"
+#define METERS_TO_MILES 0.000621371
 
-#pragma mark - User & Device
+@implementation CLCircularRegion (KinveyKit)
 
-#import "KinveyUserService.h"
-#import "KCSPush2.h"
+/* convert a circular region to a GeoJSON $center geometry */
+- (id) proxyForJson
+{
+    CLLocationDirection radiusInMeters = self.radius;
+    return @{@"$center":@[CLLocationCoordinate2DToKCS(self.center), @(radiusInMeters * METERS_TO_MILES)]};
+}
 
-#pragma mark - Data & Storage
-
-#import "KinveyDataStore.h"
-#import "KinveyFileStore.h"
-
-#pragma mark - Location
-
-#import "KinveyLocation.h"
-
-#endif
+@end

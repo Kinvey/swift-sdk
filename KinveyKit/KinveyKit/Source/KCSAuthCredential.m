@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/17/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -19,12 +19,13 @@
 
 
 #import "KCSAuthCredential.h"
-#import "KCSRESTRequest.h"
 #import "KCSClient.h"
 #import "KinveyUser.h"
 #import "KCSLogManager.h"
 #import "KCSBase64.h"
 #import "KCSHiddenMethods.h"
+
+#define kPostRESTMethod 2 //temp compatability until this whole mechanism can go away
 
 enum {
     KCSAuthNoAuth = 0,
