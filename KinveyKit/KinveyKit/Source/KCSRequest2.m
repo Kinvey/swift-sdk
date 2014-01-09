@@ -132,7 +132,11 @@ static NSOperationQueue* queue;
     NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
     NSString* urlStr = [path componentsJoinedByString:@"/"];
     if (self.queryString) {
-        urlStr = [urlStr stringByAppendingString:self.queryString];
+        if ([urlStr hasPrefix:@"/"]) {
+            urlStr = [urlStr stringByAppendingString:self.queryString];
+        } else {
+            urlStr = [urlStr stringByAppendingFormat:@"/%@",self.queryString];
+        }
     }
     NSString* endpoint = [baseURL stringByAppendingString:urlStr];
 

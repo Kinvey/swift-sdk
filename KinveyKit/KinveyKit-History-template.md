@@ -13,7 +13,8 @@ KCS_CONSTANT KCSNetworkConnectionDidStart;
  @since 1.26.0
  */
 KCS_CONSTANT KCSNetworkConnectionDidEnd;
-     * __TODO__ see sample app, widgets 
+     * __TODO__ see sample app, widgets  (also todo: update the changelogs for these)
+     * __TODO__ update ios-specific guide
 * Code cleanup:
      * Deprecated `KCSAllObjects`; use `[KCSQuery query]` instead.
      * Deprecated `KCSCollectionDelegate` and networking-methods of the `KCSCollection` class. These don't get the benefit of caching, error handling etc. 
