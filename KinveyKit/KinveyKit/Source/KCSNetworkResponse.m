@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/23/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -31,6 +31,7 @@
 
 #define kKCSErrorCode @"Kinvey.kinveyErrorCode"
 #define kKCSRequestId @"Kinvey.RequestId"
+#define kKCSUnknownBody @"Kinvey.UnknownErrorBody"
 
 #define kResultsKey @"result"
 
@@ -63,10 +64,18 @@
 - (NSError*) errorObject
 {
     NSDictionary* kcsErrorDict = [self jsonObject];
+
     NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithCapacity:5];
-    setIfValNotNil(userInfo[NSLocalizedDescriptionKey], kcsErrorDict[KCS_ERROR_DESCRIPTION_KEY]);
-    setIfValNotNil(userInfo[NSLocalizedFailureReasonErrorKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
-    setIfValNotNil(userInfo[kKCSErrorCode], kcsErrorDict[KCS_ERROR_KINVEY_ERROR_CODE_KEY]);
+    if (kcsErrorDict) {
+        if ([kcsErrorDict isKindOfClass:[NSDictionary class]]) {
+            setIfValNotNil(userInfo[NSLocalizedDescriptionKey], kcsErrorDict[KCS_ERROR_DESCRIPTION_KEY]);
+            setIfValNotNil(userInfo[NSLocalizedFailureReasonErrorKey], kcsErrorDict[KCS_ERROR_DEBUG_KEY]);
+            setIfValNotNil(userInfo[kKCSErrorCode], kcsErrorDict[KCS_ERROR_KINVEY_ERROR_CODE_KEY]);
+        } else {
+            setIfValNotNil(userInfo[kKCSUnknownBody], kcsErrorDict);
+        }
+    }
+    
     setIfValNotNil(userInfo[NSURLErrorFailingURLErrorKey], self.originalURL);
     setIfValNotNil(userInfo[kKCSRequestId], [self requestId]);
 

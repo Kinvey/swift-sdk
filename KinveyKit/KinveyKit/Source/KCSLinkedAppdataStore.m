@@ -157,12 +157,8 @@
     return [KCSObjectMapper makeObjectWithResourcesOfType:self.backingCollection.objectTemplate withData:jsonDict withResourceDictionary:resources];
 }
 
-//TODO:group resolves?
-
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
 {
-    
-    
     if ([self.backingCollection.objectTemplate respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
         NSDictionary* hostResolves = [self.backingCollection.objectTemplate kinveyPropertyToCollectionMapping];
         NSArray* resolvesArray = [hostResolves allKeys];
@@ -174,12 +170,12 @@
 //override KCSAppdatastore
 - (NSString*) modifyLoadQuery:(NSString*)query ids:(NSArray*)array
 {
-    if ([self.backingCollection.objectTemplate respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
-        NSDictionary* hostResolves = [self.backingCollection.objectTemplate kinveyPropertyToCollectionMapping];
-        NSArray* resolvesArray = [hostResolves allKeys];
-        NSString* resolveType = (array.count == 1) ? @"?resolve=" : @"&resolve=";
-        query = [query stringByAppendingString:[resolveType stringByAppendingString:[resolvesArray join:@","]]];
-    }
+//    if ([self.backingCollection.objectTemplate respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
+//        NSDictionary* hostResolves = [self.backingCollection.objectTemplate kinveyPropertyToCollectionMapping];
+//        NSArray* resolvesArray = [hostResolves allKeys];
+//        NSString* resolveType = (array.count == 1) ? @"?resolve=" : @"&resolve=";
+//        query = [query stringByAppendingString:[resolveType stringByAppendingString:[resolvesArray join:@","]]];
+//    }
     return query;
 }
 @end
