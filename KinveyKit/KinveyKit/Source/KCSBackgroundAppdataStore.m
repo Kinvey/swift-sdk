@@ -1,9 +1,9 @@
 //
-//  KCSAppdataStore.m
+//  KCSBackgroundAppdataStore.m
 //  KinveyKit
 //
-//  Created by Brian Wilson on 5/1/12.
-//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
+//  Created by Michael Katz on 1/9/14.
+//  Copyright (c) 2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,6 +16,9 @@
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.
 //
+
+
+#import "KCSBackgroundAppdataStore.h"
 
 #import "KCSAppdataStore.h"
 
@@ -42,7 +45,7 @@ return; \
 
 #define KCS_OBJECT_LIMIT 10000
 
-@interface KCSAppdataStore () {
+@interface KCSBackgroundAppdataStore () {
     KCSSaveGraph* _previousProgress;
     NSString* _title;
 }
@@ -107,8 +110,7 @@ return; \
 
 @end
 
-@implementation KCSAppdataStore
-
+@implementation KCSBackgroundAppdataStore
 
 #pragma mark - Initialization
 
@@ -191,19 +193,19 @@ return; \
             }
         }
         self.backingCollection = collection;
-//        NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
-//        if (queueId == nil)
-//            queueId = [self description];
-//        //        _saveQueue = [KCSSaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId];
-//        self.cache2 = [[KCSObjectCache alloc] init]; //TODO: use persistence key
-//        
-//        _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
-//        
-//        //TODO: use delegate in c2
-//        id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
-//#warning        _saveQueue.delegate = del;
+        //        NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
+        //        if (queueId == nil)
+        //            queueId = [self description];
+        //        //        _saveQueue = [KCSSaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId];
+        //        self.cache2 = [[KCSObjectCache alloc] init]; //TODO: use persistence key
+        //
+        //        _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
+        //
+        //        //TODO: use delegate in c2
+        //        id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
+        //#warning        _saveQueue.delegate = del;
         
-
+        
         _previousProgress = [options objectForKey:KCSStoreKeyOngoingProgress];
         _title = [options objectForKey:KCSStoreKeyTitle];
     }
@@ -378,7 +380,7 @@ return; \
             });
             return;
         }
-
+        
         
         KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objectID];
         [self queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock]; //TODO pass down option with request method
@@ -398,7 +400,7 @@ return; \
             } else {
                 _id = [self modifyLoadQuery:_id ids:@[_id]];
                 NSString* route = [self.backingCollection route];
-        
+                
                 KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
                     [self handleLoadResponse:response error:error completionBlock:completionBlock];
                 }
@@ -467,7 +469,7 @@ return; \
             progressBlock(partialResults, progress);
         }
     };
-
+    
     [request start];
 }
 
@@ -520,7 +522,7 @@ return; \
     
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
-
+    
     NSArray* fields = [NSArray wrapIfNotArray:fieldOrFields];
     NSMutableDictionary *body = [NSMutableDictionary dictionaryWithCapacity:4];
     NSMutableDictionary *keys = [NSMutableDictionary dictionaryWithCapacity:[fields count]];
@@ -557,12 +559,12 @@ return; \
     } else {
         request.path = @[@"_group"];
     }
-
+    
     request.body = body;
     request.method = KCSRESTMethodPOST;
     request.progress = ^(id data, double progress){
         if (progressBlock != nil) {
-             progressBlock(nil, progress);
+            progressBlock(nil, progress);
         }
     };
     [request start];
@@ -692,22 +694,22 @@ return; \
         [self saveEntityWithResources:so progress:progress
                   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
                       [objKey finished:objectsOrNil error:errorOrNil];
-            [objKey doAfterWaitingResaves:^{
-                doSaveblock(objectsOrNil, errorOrNil);
-            }];
-            
-        } withProgressBlock:progressBlock];
+                      [objKey doAfterWaitingResaves:^{
+                          doSaveblock(objectsOrNil, errorOrNil);
+                      }];
+                      
+                  } withProgressBlock:progressBlock];
     }
     otherwiseWhenLoaded:alreadySavedBlock
 andResaveAfterReferencesSaved:^{
-        KCSSerializedObject* soPrime = [KCSObjectMapper makeResourceEntityDictionaryFromObject:objToSave forCollection:cname error:NULL]; //TODO: figure out if this is needed?
-        [soPrime restoreReferences:so];
-        [self saveMainEntity:soPrime progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            [saveGraph resaveComplete];
-        } withProgressBlock:^(NSArray *objects, double percentComplete) {
-            //TODO: as above
-        }];
+    KCSSerializedObject* soPrime = [KCSObjectMapper makeResourceEntityDictionaryFromObject:objToSave forCollection:cname error:NULL]; //TODO: figure out if this is needed?
+    [soPrime restoreReferences:so];
+    [self saveMainEntity:soPrime progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        [saveGraph resaveComplete];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        //TODO: as above
     }];
+}];
 }
 
 - (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
@@ -822,7 +824,7 @@ andResaveAfterReferencesSaved:^{
             }
         }];
     } else {
-       op = [store2 deleteEntity:object completion:^(NSUInteger count, NSError *error) {
+        op = [store2 deleteEntity:object completion:^(NSUInteger count, NSError *error) {
             if (error) {
                 if ([self shouldEnqueue:error]) {
                     //enqueue save
@@ -835,7 +837,7 @@ andResaveAfterReferencesSaved:^{
             } else {
                 completionBlock(count, nil);
             }
-
+            
         }];
     }
     if (progressBlock) {
@@ -843,7 +845,7 @@ andResaveAfterReferencesSaved:^{
             progressBlock(nil, progress);
         };
     }
-
+    
 }
 
 #pragma mark - Information
@@ -881,7 +883,7 @@ andResaveAfterReferencesSaved:^{
                                                         route:route
                                                       options:@{KCSRequestLogMethod}
                                                   credentials:[KCSUser activeUser]];
-
+    
     NSString* queryString = query != nil ? [query parameterStringRepresentation] : @"";
     request.queryString = queryString;
     if (route == KCSRESTRouteAppdata) {

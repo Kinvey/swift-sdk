@@ -40,7 +40,6 @@
 
 NSString* const KCSStoreKeyOfflineUpdateEnabled = @"offline.enabled";
 
-
 @interface KCSAppdataStore (KCSCachedStore) 
 - (instancetype)initWithAuth: (KCSAuthHandler *)auth;
 - (KCSCollection*) backingCollection;
@@ -162,22 +161,26 @@ NSError* createCacheError(NSString* message)
 
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
 {
-    //Hold on the to the object first, in case the cache is cleared during this process
-    id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
-    if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
-        [self queryNetwork:query withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
-    } else {
-        [self completeQuery:obj withCompletionBlock:completionBlock];
-        if ([self shouldUpdateInBackground:cachePolicy] == YES) {
-            dispatch_async(dispatch_get_current_queue(), ^{
-                [self queryNetwork:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                    if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
-                        completionBlock(objectsOrNil, errorOrNil);
-                    }
-                } withProgressBlock:nil policy:cachePolicy];
-            });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //Hold on the to the object first, in case the cache is cleared during this process
+        id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+        if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
+            [self queryNetwork:query withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
+        } else {
+            [self completeQuery:obj withCompletionBlock:completionBlock];
+            if ([self shouldUpdateInBackground:cachePolicy] == YES) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                    [self queryNetwork:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                        if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                completionBlock(objectsOrNil, errorOrNil);
+                            });
+                        }
+                    } withProgressBlock:nil policy:cachePolicy];
+                });
+            }
         }
-    }
+    });
 
 }
 
@@ -210,7 +213,7 @@ NSError* createCacheError(NSString* message)
 
 - (void) completeGroup:(id)obj withCompletionBlock:(KCSGroupCompletionBlock)completionBlock
 {
-    dispatch_async(dispatch_get_current_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         NSError* error = (obj == nil) ? createCacheError(@"Grouping query not in cache") : nil;
         completionBlock(obj, error); 
     });
@@ -227,10 +230,12 @@ NSError* createCacheError(NSString* message)
     } else {
         [self completeGroup:obj withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy] == YES) {
-            dispatch_async(dispatch_get_current_queue(), ^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 [self groupNetwork:fields reduce:function condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
                     if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
-                        completionBlock(valuesOrNil, errorOrNil);
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            completionBlock(valuesOrNil, errorOrNil);
+                        });
                     }
                 } progressBlock:nil policy:cachePolicy];
             });
@@ -248,14 +253,18 @@ NSError* createCacheError(NSString* message)
 - (void) loadEntityFromNetwork:(NSArray*)objectIDs withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
 {
     [super loadObjectWithID:objectIDs withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        [self cacheObjects:objectIDs results:objectsOrNil error:errorOrNil policy:cachePolicy];
-        completionBlock(objectsOrNil, errorOrNil);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self cacheObjects:objectIDs results:objectsOrNil error:errorOrNil policy:cachePolicy];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completionBlock(objectsOrNil, errorOrNil);
+            });
+        });
     } withProgressBlock:progressBlock];
 }
 
 - (void) completeLoad:(id)obj withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
-    dispatch_async(dispatch_get_current_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         NSError* error = (obj == nil) ? createCacheError(@"Load query not in cache" ) : nil;
         completionBlock(obj, error); 
     });
@@ -269,27 +278,32 @@ NSError* createCacheError(NSString* message)
     if (objectID == nil) {
         [[NSException exceptionWithName:NSInvalidArgumentException reason:@"objectId is `nil`." userInfo:nil] raise];
     }
-    
-    NSArray* keys = [NSArray wrapIfNotArray:objectID];
-    //Hold on the to the object first, in case the cache is cleared during this process
-    NSArray* objs = [[KCSAppdataStore caches] pullIds:keys route:[self.backingCollection route] collection:self.backingCollection.collectionName];
-    if ([self shouldCallNetworkFirst:objs cachePolicy:cachePolicy] == YES) {
-        [self loadEntityFromNetwork:keys withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
-    } else {
-        [self completeLoad:objs withCompletionBlock:completionBlock];
-        if ([self shouldUpdateInBackground:cachePolicy] == YES) {
-            dispatch_async(dispatch_get_current_queue(), ^{
-                [self loadEntityFromNetwork:keys withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                    if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
-                        completionBlock(objectsOrNil, errorOrNil);
-                    }
-                } withProgressBlock:nil policy:cachePolicy];
-            });
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSArray* keys = [NSArray wrapIfNotArray:objectID];
+        //Hold on the to the object first, in case the cache is cleared during this process
+        NSArray* objs = [[KCSAppdataStore caches] pullIds:keys route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+        if ([self shouldCallNetworkFirst:objs cachePolicy:cachePolicy] == YES) {
+            [self loadEntityFromNetwork:keys withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
+        } else {
+            [self completeLoad:objs withCompletionBlock:completionBlock];
+            if ([self shouldUpdateInBackground:cachePolicy] == YES) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                    [self loadEntityFromNetwork:keys withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                        if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                completionBlock(objectsOrNil, errorOrNil);
+                            });
+                        }
+                    } withProgressBlock:nil policy:cachePolicy];
+                });
+            }
         }
-    }
+    });
 }
 
-- (void)loadObjectWithID: (id)objectID 
+- (void)loadObjectWithID: (id)objectID
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock
 {
@@ -319,3 +333,4 @@ NSError* createCacheError(NSString* message)
     [[KCSAppdataStore caches] clear];
 }
 @end
+

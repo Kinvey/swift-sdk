@@ -20,4 +20,4 @@ echo "Building KinveyKit (DEBUG) in ${KINVEYKITLOC}..."
 
 echo "Building KinveyKit (RELEASE) ${KINVEYKITLOC}..."
 
-(cd $KINVEYKITLOC && xcodebuild -configuration Release clean build | xcpretty -c)
+##(cd $KINVEYKITLOC && xcodebuild -configuration Release clean build | xcpretty -c)
