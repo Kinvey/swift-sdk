@@ -158,6 +158,39 @@ id kcsPredToQueryExprVal(NSExpression* expr)
     return query;
 }
 
+- (NSPredicate*) predicate
+{
+    __block NSPredicate* predicate = nil;
+    [self.internalRepresentation enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if ([key hasSuffix:@"$"]) {
+            //is an operator
+        } else {
+            //is a field
+            if ([obj isKindOfClass:[NSDictionary class]]) {
+                NSDictionary* query = obj;
+                if (query.count == 1) {
+                    NSString* op = [query allKeys][0];
+                    id val = query[op];
+                    //todo handle val err if dict
+                    NSString* format = [NSString stringWithFormat:@"%@ %@ %@", key, op, val];
+                    predicate = [NSPredicate predicateWithFormat:format];
+                } else {
+                    //undef error
+                }
+            } else {
+               
+                NSString* format = [NSString stringWithFormat:@"%@ like %@", key, obj];
+                predicate = [NSPredicate predicateWithFormat:format];
+            }
+        }
+    }];
+    if (!predicate) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Support for query %@ not supported yet. Contact support@kinvey.com to get this supported.", self.internalRepresentation);
+        DBAssert(NO, @"Support query: %@", self.internalRepresentation);
+    }
+    return predicate;
+}
+
 #pragma mark - sorting
 - (NSArray *)sortDescriptors
 {

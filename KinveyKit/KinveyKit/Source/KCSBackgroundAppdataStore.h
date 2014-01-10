@@ -1,8 +1,8 @@
 //
-//  KCSAppdataStore.h
+//  KCSBackgroundAppdataStore.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -15,44 +15,24 @@
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.
 //
- 
+
 #import <Foundation/Foundation.h>
+
 #import "KCSStore.h"
-#import "KCSBackgroundAppdataStore.h"
 
 @class KCSCollection;
 
-/**
- KCSStore options dictionary key for the backing resource
- */
-#define KCSStoreKeyResource @"resource"
+#warning  documentation
 
 /**
- KCSStore options dictionary key for the backing collection name. This can be used instead of suppling a KCSStoreKeyResource. Use with KCSStoreKeyCollectionTemplateClass.
- 
- @since 1.11.0
- */
-#define KCSStoreKeyCollectionName @"collectionName"
-
-/**
- KCSStore options dictionary key for the backing collection object class.  This can be used instead of suppling a KCSStoreKeyResource. Use with KCSStoreKeyCollectionName. If a KCSStoreKeyCollectionName is supplied, but no KCSStoreKeyCollectionTemplateClass, NSMutableDictionary will be used by default.
- 
- @since 1.11.0
- */
-#define KCSStoreKeyCollectionTemplateClass @"collectionClass"
-
-//internal key
-#define KCSStoreKeyOngoingProgress @"referenceprogress"
-#define KCSStoreKeyTitle @"storetitle"
-
-/**
- Basic Store for loading Application Data from a Collection in the Kinvey backend. 
+ Basic Store for loading Application Data from a Collection in the Kinvey backend.
  
  The preferred use of this class is to use a KCSCachedStore with a `cachePolicy` of `KCSCachePolicyNone`.
  
  @see KCSCachedStore
+ @since 1.26.0
  */
-@interface KCSAppdataStore : KCSBackgroundAppdataStore
+@interface KCSBackgroundAppdataStore : NSObject <KCSStore>
 
 @property (nonatomic, strong) KCSAuthHandler *authHandler KCS_DEPRECATED(Auth handler not used, 1.22.0);
 
@@ -66,7 +46,7 @@
  @param collection the Kinvey backend Collection providing data to this store.
  @param options A dictionary of options to configure the store. (Can be nil if there are no options)
  @see [KCSStore storeWithOptions:]
- @return An autoreleased empty store with configured options and default authentication. 
+ @return An autoreleased empty store with configured options and default authentication.
  */
 + (instancetype) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options;
 
@@ -97,7 +77,7 @@
  @param completionBlock A block that gets invoked when all objects are loaded
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  */
-- (void)loadObjectWithID: (id)objectID 
+- (void)loadObjectWithID: (id)objectID
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
 
@@ -107,7 +87,7 @@
  
  @param fieldOrFields The array of fields to group by (or a single `NSString` field name). If multiple field names are supplied the groups will be made from objects that form the intersection of the field values. For instance, if you have two fields "a" and "b", and objects "{a:1,b:1},{a:1,b:1},{a:1,b:2},{a:2,b:2}" and apply the `COUNT` function, the returned KCSGroup object will have an array of 3 objects: "{a:1,b:1,count:2},{a:1,b:2,count:1},{a:2,b:2,count:1}". For objects that don't have a value for a given field, the value used will be `NSNull`.
  @param function This is the function that is applied to the items in the group. If you do not want to apply a function, just use queryWithQuery:withCompletionBlock:withProgressBlock: instead and query for items that match specific field values.
- @param completionBlock A block that is invoked when the grouping is complete, or an error occurs. 
+ @param completionBlock A block that is invoked when the grouping is complete, or an error occurs.
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  @see group:reduce:condition:completionBlock:progressBlock:
  @see KCSGroup
@@ -121,8 +101,8 @@
  
  @param fieldOrFields The array of fields to group by (or a single `NSString` field name). If multiple field names are supplied the groups will be made from objects that form the intersection of the field values. For instance, if you have two fields "a" and "b", and objects "{a:1,b:1},{a:1,b:1},{a:1,b:2},{a:2,b:2}" and apply the `COUNT` function, the returned KCSGroup object will have an array of 3 objects: "{a:1,b:1,count:2},{a:1,b:2,count:1},{a:2,b:2,count:1}". For objects that don't have a value for a given field, the value used will be `NSNull`.
  @param function This is the function that is applied to the items in the group. If you do not want to apply a function, just use queryWithQuery:withCompletionBlock:withProgressBlock: instead and query for items that match specific field values.
- @param condition This is a KCSQuery object that is used to filter the objects before grouping. Only groupings with at least one object that matches the condition will appear in the resultant KCSGroup object. __The group function does not support sorting, limit, or skip modifiers__. 
- @param completionBlock A block that is invoked when the grouping is complete, or an error occurs. 
+ @param condition This is a KCSQuery object that is used to filter the objects before grouping. Only groupings with at least one object that matches the condition will appear in the resultant KCSGroup object. __The group function does not support sorting, limit, or skip modifiers__.
+ @param completionBlock A block that is invoked when the grouping is complete, or an error occurs.
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  @see group:reduce:completionBlock:progressBlock:
  @see KCSGroup
@@ -133,15 +113,15 @@
 
 #pragma mark -  Information
 /** Count all the elements the collection
-  
- @param countBlock the block that receives the response 
+ 
+ @param countBlock the block that receives the response
  @see countWithQuery:completion:
  */
 - (void)countWithBlock: (KCSCountBlock)countBlock;
 
 /** Count all the elements the collection that match a given query.
  
- This method is useful for finding out how big a query will be without transferring all the data. This method is __not__ cached. 
+ This method is useful for finding out how big a query will be without transferring all the data. This method is __not__ cached.
  
  @param query the query to filter the elements
  @param countBlock the block that receives the response

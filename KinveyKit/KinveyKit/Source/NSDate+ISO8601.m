@@ -44,6 +44,7 @@
     return dTmp;
 }
 
+#if NEVER
 + (NSDate *)dateFromISO8601EncodedString: (NSString *)string
 {
     NSLocale* enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
@@ -69,5 +70,22 @@
     }
     return myDate;
 }
+#endif
+
++ (NSDate *)dateFromISO8601EncodedString:(NSString *)string {
+    if (!string) {
+        return nil;
+    }
+    
+    struct tm tm;
+    time_t t;
+    
+    strptime([string cStringUsingEncoding:NSUTF8StringEncoding], "%Y-%m-%dT%H:%M:%S%z", &tm);
+    tm.tm_isdst = -1;
+    t = mktime(&tm);
+    
+    return [NSDate dateWithTimeIntervalSince1970:t + [[NSTimeZone localTimeZone] secondsFromGMT]];
+}
+
 
 @end

@@ -33,18 +33,19 @@
     return [@([ir hash]) stringValue];
 }
 
+//TODO: cleanup
 - (BOOL) isAllQuery
 {
     return self.internalRepresentation.count == 0;
 }
 
-- (NSPredicate*) predicate
-{
-    NSPredicate* predicate = nil;
-    if ([self isAllQuery]) {
-        predicate = [NSPredicate predicateWithValue:YES];
-    }
-    return predicate;
-}
+//- (NSPredicate*) predicate
+//{
+//    NSPredicate* predicate = nil;
+//    if ([self isAllQuery]) {
+//        predicate = [NSPredicate predicateWithValue:YES];
+//    }
+//    return predicate;
+//}
 
 @end
