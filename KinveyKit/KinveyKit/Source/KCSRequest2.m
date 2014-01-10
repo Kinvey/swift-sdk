@@ -336,4 +336,9 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
     return [NSString stringWithFormat:@"%@ [%@]", [super debugDescription], [self finalURL]];
 }
 
+- (void)dealloc
+{
+    NSAssert(NO, @"YIII");
+}
+
 @end

@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/6/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -114,11 +114,9 @@
         self.done = YES;
         self.loading = NO;
     }
-    dispatch_async(dispatch_get_current_queue(), ^{
-        for (KCSCompletionWrapperBlock_t block in _waitingBlocks) {
-            block(objectsOrNil, errorOrNil);
-        }
-    });
+    for (KCSCompletionWrapperBlock_t block in _waitingBlocks) {
+        block(objectsOrNil, errorOrNil);
+    }
 }
 
 - (void) resaveComplete
@@ -169,11 +167,9 @@
 
 - (void) doResaves
 {
-    dispatch_async(dispatch_get_current_queue(), ^{
-        for (KCSCompletionWrapperBlock_t block in _resaveBlocks) {
-            block();
-        }
-    });
+    for (KCSCompletionWrapperBlock_t block in _resaveBlocks) {
+        block();
+    }
 }
 @end
 

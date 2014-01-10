@@ -379,7 +379,7 @@
     NSString* table = [self tableForRoute:route collection:collection];
     NSString* q = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE id='%@'", table, _id];
     
-    KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"DB fetching %@ from %@/%@", _id, route, collection);
+    KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"DB fetching '%@' from %@/%@", _id, route, collection);
     
     KCS_FMResultSet* rs = [_db executeQuery:q];
     if ([_db hadError]) {
@@ -459,7 +459,9 @@
     } else {
         NSError* error = nil;
         NSArray* ids = [self.jsonParser objectWithString:result error:&error];
-        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error converting id array string into array: %@", error);
+        if (result != nil && error != nil) {
+            KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error converting id array string into array: %@", error);
+        }
         return ids;
     }
 }

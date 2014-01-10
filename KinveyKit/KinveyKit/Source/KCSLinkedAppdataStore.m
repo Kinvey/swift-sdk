@@ -167,15 +167,4 @@
     [super queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:cachePolicy];
 }
 
-//override KCSAppdatastore
-- (NSString*) modifyLoadQuery:(NSString*)query ids:(NSArray*)array
-{
-//    if ([self.backingCollection.objectTemplate respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
-//        NSDictionary* hostResolves = [self.backingCollection.objectTemplate kinveyPropertyToCollectionMapping];
-//        NSArray* resolvesArray = [hostResolves allKeys];
-//        NSString* resolveType = (array.count == 1) ? @"?resolve=" : @"&resolve=";
-//        query = [query stringByAppendingString:[resolveType stringByAppendingString:[resolvesArray join:@","]]];
-//    }
-    return query;
-}
 @end

@@ -38,6 +38,10 @@
 #import "KCSNetworkResponse.h"
 #import "KCSNetworkOperation.h"
 
+#import "KCSCachedStore.h"
+#import "KCSAppdataStore.h"
+#import "KCSDataModel.h"
+
 #define KCSSTORE_VALIDATE_PRECONDITION BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock]; \
 if (okayToProceed == NO) { \
 return; \
@@ -52,7 +56,7 @@ return; \
 
 @property (nonatomic) BOOL treatSingleFailureAsGroupFailure;
 @property (nonatomic) BOOL offlineUpdateEnabled;
-
+@property (nonatomic, readwrite) KCSCachePolicy cachePolicy;
 @property (nonatomic, strong) KCSCollection *backingCollection;
 
 - (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources;
@@ -91,9 +95,8 @@ return; \
         KCSLogError(@"Error parsing partial progress reults: %@", _parser.error);
 	} else if (status == SBJsonStreamParserWaitingForData) {
         KCSLogTrace(@"Parsed partial progress results. Item count %d", _items.count);
-		NSLog(@"Parser waiting for more data");
 	} else if (status == SBJsonStreamParserComplete) {
-        NSLog(@"complete");
+        KCSLogTrace(@"complete");
     }
     return [_items copy];
 }
@@ -114,16 +117,6 @@ return; \
 
 #pragma mark - Initialization
 
-+ (KCSObjectCache*)caches
-{
-    static KCSObjectCache* sDataCaches;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sDataCaches = [[KCSObjectCache alloc] init];
-    });
-    return sDataCaches;
-}
-
 - (instancetype)init
 {
     return [self initWithAuth:nil];
@@ -134,8 +127,8 @@ return; \
     self = [super init];
     if (self) {
         _treatSingleFailureAsGroupFailure = YES;
-        //        _saveQueue = nil;
-        //        _title = nil;
+        _cachePolicy = [KCSCachedStore defaultCachePolicy];
+        _title = nil;
     }
     return self;
 }
@@ -178,37 +171,42 @@ return; \
 
 - (BOOL)configureWithOptions: (NSDictionary *)options
 {
-    
-    if (options) {
-        // Configure
-        KCSCollection* collection = [options objectForKey:KCSStoreKeyResource];
-        if (collection == nil) {
-            NSString* collectionName = [options objectForKey:KCSStoreKeyCollectionName];
-            if (collectionName != nil) {
-                Class objectClass = [options objectForKey:KCSStoreKeyCollectionTemplateClass];
-                if (objectClass == nil) {
-                    objectClass = [NSMutableDictionary class];
-                }
-                collection = [KCSCollection collectionFromString:collectionName ofClass:objectClass];
+    ifNil(options, @{});
+    // Configure
+    KCSCollection* collection = [options objectForKey:KCSStoreKeyResource];
+    if (collection == nil) {
+        NSString* collectionName = [options objectForKey:KCSStoreKeyCollectionName];
+        if (collectionName != nil) {
+            Class objectClass = [options objectForKey:KCSStoreKeyCollectionTemplateClass];
+            if (objectClass == nil) {
+                objectClass = [NSMutableDictionary class];
             }
+            collection = [KCSCollection collectionFromString:collectionName ofClass:objectClass];
         }
-        self.backingCollection = collection;
-        //        NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
-        //        if (queueId == nil)
-        //            queueId = [self description];
-        //        //        _saveQueue = [KCSSaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId];
-        //        self.cache2 = [[KCSObjectCache alloc] init]; //TODO: use persistence key
-        //
-        //        _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
-        //
-        //        //TODO: use delegate in c2
-        //        id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
-        //#warning        _saveQueue.delegate = del;
-        
-        
-        _previousProgress = [options objectForKey:KCSStoreKeyOngoingProgress];
-        _title = [options objectForKey:KCSStoreKeyTitle];
     }
+    self.backingCollection = collection;
+    //        NSString* queueId = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier];
+    //        if (queueId == nil)
+    //            queueId = [self description];
+    //        //        _saveQueue = [KCSSaveQueue saveQueueForCollection:self.backingCollection uniqueIdentifier:queueId];
+    //        self.cache2 = [[KCSObjectCache alloc] init]; //TODO: use persistence key
+    //
+    //        _offlineSaveEnabled = [options valueForKey:KCSStoreKeyUniqueOfflineSaveIdentifier] != nil;
+    //
+    //        //TODO: use delegate in c2
+    //        id del = [options valueForKey:KCSStoreKeyOfflineSaveDelegate];
+    //#warning        _saveQueue.delegate = del;
+    
+    
+    _previousProgress = [options objectForKey:KCSStoreKeyOngoingProgress];
+    _title = [options objectForKey:KCSStoreKeyTitle];
+    
+    KCSCachePolicy cachePolicy = (options[KCSStoreKeyCachePolicy] == nil) ? [KCSCachedStore defaultCachePolicy] : [options[KCSStoreKeyCachePolicy] intValue];
+    self.cachePolicy = cachePolicy;
+    [[[KCSAppdataStore caches] dataModel] setClass:self.backingCollection.objectTemplate forCollection:self.backingCollection.collectionName];
+    
+    self.offlineUpdateEnabled = [options[KCSStoreKeyOfflineUpdateEnabled] boolValue];
+    
     
     if (self.backingCollection == nil) {
         [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Collection cannot be nil" userInfo:options] raise];
@@ -237,10 +235,7 @@ return; \
     BOOL okay = YES;
     KCSCollection* collection = self.backingCollection;
     if (collection == nil) {
-        collection = NO;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completionBlock(nil, [self noCollectionError]);
-        });
+        completionBlock(nil, [self noCollectionError]);
     }
     return okay;
 }
@@ -260,49 +255,35 @@ return; \
     } else if ([object conformsToProtocol:@protocol(KCSPersistable)]) {
         theId = [object kinveyObjectId];
         if (theId == nil) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
-                                                                                   withFailureReason:@"Object id cannot be empty."
-                                                                              withRecoverySuggestion:nil
-                                                                                 withRecoveryOptions:nil];
-                NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
-                completionBlock(nil, error);
-            });
-        }
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
             NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
-                                                                               withFailureReason:@"Object id must be a NSString."
+                                                                               withFailureReason:@"Object id cannot be empty."
                                                                           withRecoverySuggestion:nil
                                                                              withRecoveryOptions:nil];
             NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
             completionBlock(nil, error);
-        });
+        }
+    } else {
+        NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
+                                                                           withFailureReason:@"Object id must be a NSString."
+                                                                      withRecoverySuggestion:nil
+                                                                         withRecoveryOptions:nil];
+        NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
+        completionBlock(nil, error);
     }
     return theId;
-}
-
-//for overriding by subclasses (simpler than strategy, for now)
-- (NSString*) modifyLoadQuery:(NSString*)query ids:(NSArray*)array
-{
-    return query;
 }
 
 - (void) handleLoadResponse:(KCSNetworkResponse*)response error:(NSError*)error completionBlock:(KCSCompletionBlock)completionBlock
 {
     if (error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completionBlock(nil, error);
-        });
+        completionBlock(nil, error);
     } else {
         NSDictionary* jsonResponse = [response jsonObject];
         if (jsonResponse) {
             NSArray* jsonArray = [NSArray wrapIfNotArray:jsonResponse];
             NSUInteger itemCount = jsonArray.count;
             if (itemCount == 0) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completionBlock(@[], nil);
-                });
+                completionBlock(@[], nil);
             } else if (itemCount == KCS_OBJECT_LIMIT) {
                 KCSLogWarning(@"Returned exactly %i objects. This is the Kinvey limit for a query, and there may actually be more results. If this is the case use the limit & skip modifiers on `KCSQuery` to page through the results.", KCS_OBJECT_LIMIT);
             }
@@ -335,9 +316,7 @@ return; \
                                 //all resources loaded
                                 completedCount++;
                                 if (completedCount == itemCount) {
-                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                        completionBlock(returnObjects, resourceError);
-                                    });
+                                    completionBlock(returnObjects, resourceError);
                                 }
                             }
                         } progressBlock:^(NSArray *objects, double percentComplete) {
@@ -348,21 +327,17 @@ return; \
                     //no linked resources
                     completedCount++;
                     if (completedCount == itemCount) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            completionBlock(returnObjects, resourceError);
-                        });
+                        completionBlock(returnObjects, resourceError);
                     }
                 }
             }
         } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(nil, nil);
-            });
+            completionBlock(nil, nil);
         }
     }
 }
 
-- (void)loadObjectWithID: (id)objectID
+- (void)doLoadObjectWithID: (id)objectID
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
 {
@@ -370,35 +345,30 @@ return; \
     
     if ([objectID isKindOfClass:[NSArray class]]) {
         if ([objectID containsObject:@""]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
+                                                                               withFailureReason:@"Object id cannot be empty."
+                                                                          withRecoverySuggestion:nil
+                                                                             withRecoveryOptions:nil];
+            NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
+            completionBlock(nil, error);
+            return;
+        }
+        
+        
+        KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objectID];
+        [self doQueryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock]; //TODO pass down option with request method
+    } else {
+        NSString* _id = [self getObjIdFromObject:objectID completionBlock:completionBlock];
+        if (_id) {
+            if ([_id isEqualToString:@""]) {
                 NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
                                                                                    withFailureReason:@"Object id cannot be empty."
                                                                               withRecoverySuggestion:nil
                                                                                  withRecoveryOptions:nil];
                 NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
                 completionBlock(nil, error);
-            });
-            return;
-        }
-        
-        
-        KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objectID];
-        [self queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock]; //TODO pass down option with request method
-    } else {
-        NSString* _id = [self getObjIdFromObject:objectID completionBlock:completionBlock];
-        if (_id) {
-            if ([_id isEqualToString:@""]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
-                                                                                       withFailureReason:@"Object id cannot be empty."
-                                                                                  withRecoverySuggestion:nil
-                                                                                     withRecoveryOptions:nil];
-                    NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
-                    completionBlock(nil, error);
-                });
                 return;
             } else {
-                _id = [self modifyLoadQuery:_id ids:@[_id]];
                 NSString* route = [self.backingCollection route];
                 
                 KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
@@ -427,20 +397,68 @@ return; \
                 [request start];
             }
         } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
-                                                                                   withFailureReason:@"Object id cannot be empty."
-                                                                              withRecoverySuggestion:nil
-                                                                                 withRecoveryOptions:nil];
-                NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
-                completionBlock(nil, error);
-            });
+            NSDictionary *userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:@"Invalid object ID."
+                                                                               withFailureReason:@"Object id cannot be empty."
+                                                                          withRecoverySuggestion:nil
+                                                                             withRecoveryOptions:nil];
+            NSError* error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSInvalidArgumentError userInfo:userInfo];
+            completionBlock(nil, error);
             return;
         }
     }
 }
 
-- (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+
+- (void) loadEntityFromNetwork:(NSArray*)objectIDs withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
+{
+    [self doLoadObjectWithID:objectIDs withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        [self cacheObjects:objectIDs results:objectsOrNil error:errorOrNil policy:cachePolicy];
+        completionBlock(objectsOrNil, errorOrNil);
+    } withProgressBlock:progressBlock];
+}
+
+- (void) completeLoad:(id)obj withCompletionBlock:(KCSCompletionBlock)completionBlock
+{
+    NSError* error = (obj == nil) ? createCacheError(@"Load query not in cache" ) : nil;
+    completionBlock(obj, error);
+}
+
+- (void)loadObjectWithID:(id)objectID
+     withCompletionBlock:(KCSCompletionBlock)completionBlock
+       withProgressBlock:(KCSProgressBlock)progressBlock
+             cachePolicy:(KCSCachePolicy)cachePolicy
+{
+    if (objectID == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"objectId is `nil`." userInfo:nil] raise];
+    }
+    
+    //    NSArray* keys = [NSArray wrapIfNotArray:objectID];
+    //Hold on the to the object first, in case the cache is cleared during this process
+    NSArray* objs = [[KCSAppdataStore caches] pullIds:objectID route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+    if ([self shouldCallNetworkFirst:objs cachePolicy:cachePolicy] == YES) {
+        [self loadEntityFromNetwork:objectID withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
+    } else {
+        [self completeLoad:objs withCompletionBlock:completionBlock];
+        if ([self shouldUpdateInBackground:cachePolicy] == YES) {
+            [self loadEntityFromNetwork:objectID withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
+                    completionBlock(objectsOrNil, errorOrNil);
+                }
+            } withProgressBlock:nil policy:cachePolicy];
+        }
+    }
+}
+
+- (void)loadObjectWithID: (id)objectID
+     withCompletionBlock: (KCSCompletionBlock)completionBlock
+       withProgressBlock: (KCSProgressBlock)progressBlock
+{
+    [self loadObjectWithID:objectID withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:_cachePolicy];
+}
+
+#pragma mark - Querying
+
+- (void)doQueryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     KCSSTORE_VALIDATE_PRECONDITION
     KCSCollection* collection = self.backingCollection;
@@ -457,7 +475,7 @@ return; \
     } else {
         request.path = @[];
     }
-    request.queryString = [self modifyLoadQuery:[query parameterStringRepresentation] ids:@[]];
+    request.queryString = [query parameterStringRepresentation];
     KCSPartialDataParser* partialParser = nil;
     if (progressBlock!= nil) {
         partialParser = [[KCSPartialDataParser alloc] init];
@@ -472,6 +490,95 @@ return; \
     
     [request start];
 }
+
+NSError* createCacheError(NSString* message)
+{
+    NSDictionary* userInfo = [KCSErrorUtilities createErrorUserDictionaryWithDescription:message
+                                                                       withFailureReason:@"The specified query could not be found in the cache"
+                                                                  withRecoverySuggestion:@"Resend query with cache policy that allows network connectivity"
+                                                                     withRecoveryOptions:nil];
+    return [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSNotFoundError userInfo:userInfo];
+}
+
+- (BOOL) shouldCallNetworkFirst:(id)cachedResult cachePolicy:(KCSCachePolicy)cachePolicy
+{
+    return cachePolicy == KCSCachePolicyNone ||
+           cachePolicy == KCSCachePolicyNetworkFirst ||
+           (cachePolicy != KCSCachePolicyLocalOnly && cachedResult == nil);
+}
+
+- (BOOL) shouldUpdateInBackground:(KCSCachePolicy)cachePolicy
+{
+    return cachePolicy == KCSCachePolicyLocalFirst || cachePolicy == KCSCachePolicyBoth;
+}
+
+- (BOOL) shouldIssueCallbackOnBackgroundQuery:(KCSCachePolicy)cachePolicy
+{
+    return cachePolicy == KCSCachePolicyBoth;
+}
+
+- (void) cacheQuery:(KCSQuery*)query value:(id)objectsOrNil error:(NSError*)errorOrNil policy:(KCSCachePolicy)cachePolicy
+{
+    DBAssert([query isKindOfClass:[KCSQuery class]], @"should be a query");
+    if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
+        //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
+        BOOL removed = [[KCSAppdataStore caches] removeQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+        if (!removed) {
+            KCSLogError(@"Error clearing query '%@' from cache:", query);
+        }
+    } else if (objectsOrNil != nil) {
+        [[KCSAppdataStore caches] setObjects:objectsOrNil forQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+    }
+}
+
+- (void) cacheObjects:(NSArray*)ids results:(id)objectsOrNil error:(NSError*)errorOrNil policy:(KCSCachePolicy)cachePolicy
+{
+    if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
+        //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
+        [[KCSAppdataStore caches] deleteObjects:[NSArray wrapIfNotArray:ids] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+    } else if (objectsOrNil != nil) {
+        [[KCSAppdataStore caches] addObjects:objectsOrNil route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+    }
+}
+
+- (void) queryNetwork:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
+{
+    [self doQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+        completionBlock(objectsOrNil, errorOrNil);
+    } withProgressBlock:progressBlock];
+}
+
+- (void) completeQuery:(NSArray*)objs withCompletionBlock:(KCSCompletionBlock)completionBlock
+{
+    NSError* error = (objs == nil) ? createCacheError(@"Query not in cache") : nil;
+    completionBlock(objs, error);
+}
+
+- (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
+{
+    //Hold on the to the object first, in case the cache is cleared during this process
+    id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+    if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
+        [self queryNetwork:query withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
+    } else {
+        [self completeQuery:obj withCompletionBlock:completionBlock];
+        if ([self shouldUpdateInBackground:cachePolicy] == YES) {
+            [self queryNetwork:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
+                    completionBlock(objectsOrNil, errorOrNil);
+                }
+            } withProgressBlock:nil policy:cachePolicy];
+        }
+    }
+}
+
+- (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    [self queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:_cachePolicy];
+}
+
+#pragma mark - grouping
 
 - (void) handleGroupResponse:(KCSNetworkResponse*)response key:(NSString*)key fields:(NSArray*)fields buildsObjects:(BOOL)buildsObjects completionBlock:(KCSGroupCompletionBlock)completionBlock
 {
@@ -508,12 +615,10 @@ return; \
     
     KCSGroup* group = [[KCSGroup alloc] initWithJsonArray:jsonArray valueKey:key queriedFields:fields];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        completionBlock(group, nil);
-    });
+    completionBlock(group, nil);
 }
 
-- (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+- (void)doGroup:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock];
     if (okayToProceed == NO) {
@@ -540,9 +645,7 @@ return; \
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(nil, error);
-            });
+            completionBlock(nil, error);
         } else {
             [self handleGroupResponse:response
                                   key:[function outputValueName:fields]
@@ -573,6 +676,58 @@ return; \
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     [self group:fieldOrFields reduce:function condition:[KCSQuery query] completionBlock:completionBlock progressBlock:progressBlock];
+}
+
+- (void) cacheGrouping:(NSArray*)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition results:(KCSGroup*)objectsOrNil error:(NSError*)errorOrNil policy:(KCSCachePolicy)cachePolicy
+{
+    //TODO: reinstate GROUP caching?
+    
+    //    if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
+    //        //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
+    //        [_cache removeGroup:fields reduce:function condition:condition];
+    //    } else if (objectsOrNil != nil) {
+    //        [_cache setResults:objectsOrNil forGroup:fields reduce:function condition:condition];
+    //    }
+    //
+}
+
+- (void)groupNetwork:(NSArray *)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
+{
+    [self doGroup:fields reduce:function condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+        [self cacheGrouping:fields reduce:function condition:condition results:valuesOrNil error:errorOrNil policy:cachePolicy ];
+        completionBlock(valuesOrNil, errorOrNil);
+    } progressBlock:progressBlock];
+}
+
+- (void) completeGroup:(id)obj withCompletionBlock:(KCSGroupCompletionBlock)completionBlock
+{
+    NSError* error = (obj == nil) ? createCacheError(@"Grouping query not in cache") : nil;
+    completionBlock(obj, error);
+}
+
+- (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
+{
+    NSArray* fields = [NSArray wrapIfNotArray:fieldOrFields];
+    //TODO:
+    //    KCSCacheKey* key = [[[KCSCacheKey alloc] initWithFields:fields reduce:function condition:condition] autorelease];
+    id obj = nil; // [_cache objectForKey:key]; //Hold on the to the object first, in case the cache is cleared during this process
+    if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
+        [self groupNetwork:fields reduce:function condition:condition completionBlock:completionBlock progressBlock:progressBlock policy:cachePolicy];
+    } else {
+        [self completeGroup:obj withCompletionBlock:completionBlock];
+        if ([self shouldUpdateInBackground:cachePolicy] == YES) {
+            [self groupNetwork:fields reduce:function condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+                if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
+                    completionBlock(valuesOrNil, errorOrNil);
+                }
+            } progressBlock:nil policy:cachePolicy];
+        }
+    }
+}
+
+- (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+{
+    [self group:fieldOrFields reduce:function condition:condition completionBlock:completionBlock progressBlock:progressBlock cachePolicy:_cachePolicy];
 }
 
 
@@ -626,9 +781,7 @@ return; \
                     error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[_id]}];
                 }
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(nil, error);
-            });
+            completionBlock(nil, error);
         } else {
             NSDictionary* jsonResponse = [response jsonObject];
             NSArray* arr = nil;
@@ -636,9 +789,7 @@ return; \
                 id newObj = [KCSObjectMapper populateExistingObject:serializedObj withNewData:jsonResponse];
                 arr = @[newObj];
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(arr, nil);
-            });
+            completionBlock(arr, nil);
         }
     }
                                                         route:route
@@ -859,9 +1010,7 @@ andResaveAfterReferencesSaved:^{
     if (countBlock == nil) {
         return;
     } else if (self.backingCollection == nil) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            countBlock(0, [self noCollectionError]);
-        });
+        countBlock(0, [self noCollectionError]);
         return;
     }
     
@@ -869,15 +1018,11 @@ andResaveAfterReferencesSaved:^{
     NSString* route = [collection route];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                countBlock(0, error);
-            });
+            countBlock(0, error);
         } else {
             NSDictionary *jsonResponse = [response jsonObject];
             NSNumber* val = jsonResponse[@"count"];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                countBlock([val unsignedLongValue], nil);
-            });
+            countBlock([val unsignedLongValue], nil);
         }
     }
                                                         route:route

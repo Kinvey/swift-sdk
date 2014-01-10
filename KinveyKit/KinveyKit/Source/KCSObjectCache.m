@@ -216,6 +216,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 - (NSArray*) pullIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection
 {
+    ids = [NSArray wrapIfNotArray:ids];
     return [self objectsForIds:ids route:route collection:collection];
 }
 

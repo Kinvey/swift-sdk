@@ -158,9 +158,34 @@ id kcsPredToQueryExprVal(NSExpression* expr)
     return query;
 }
 
+NSString* kcsConvertMongoOpToPredicate(NSString* op)
+{
+    static NSDictionary* opMapper;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        opMapper = @{@"$in" : @"IN"};
+    });
+    return opMapper[op];
+}
+
+id kcsConvertMongoValToPredicate(id val)
+{
+    id retVal = val;
+    if ([val isKindOfClass:[NSArray class]]) {
+        retVal = [NSString stringWithFormat:@"{%@}", [val componentsJoinedByString:@","]];
+    } else if ([val isKindOfClass:[NSDictionary class]]) {
+        retVal = nil;
+    }
+    return retVal;
+}
+
+
 - (NSPredicate*) predicate
 {
     __block NSPredicate* predicate = nil;
+    if (self.internalRepresentation.count == 0) {
+        predicate = [NSPredicate predicateWithValue:YES];
+    }
     [self.internalRepresentation enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         if ([key hasSuffix:@"$"]) {
             //is an operator
@@ -172,21 +197,37 @@ id kcsPredToQueryExprVal(NSExpression* expr)
                     NSString* op = [query allKeys][0];
                     id val = query[op];
                     //todo handle val err if dict
-                    NSString* format = [NSString stringWithFormat:@"%@ %@ %@", key, op, val];
-                    predicate = [NSPredicate predicateWithFormat:format];
+                    NSString* fOp = kcsConvertMongoOpToPredicate(op);
+                    id fVal = kcsConvertMongoValToPredicate(val);
+                    NSString* format = [NSString stringWithFormat:@"%@ %@ %@", key, fOp, fVal];
+                    @try {
+                        predicate = [NSPredicate predicateWithFormat:format];
+                    }
+                    @catch (NSException *exception) {
+                        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error making predicate: %@", exception);
+                    }
+                    @finally {
+                    }
                 } else {
                     //undef error
                 }
             } else {
-               
-                NSString* format = [NSString stringWithFormat:@"%@ like %@", key, obj];
-                predicate = [NSPredicate predicateWithFormat:format];
+                NSString* format = [NSString stringWithFormat:@"%@ like \"%@\"", key, obj];
+                @try {
+                    predicate = [NSPredicate predicateWithFormat:format];
+                }
+                @catch (NSException *exception) {
+                    KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error making predicate: %@", exception);
+                }
+                @finally {
+                }
             }
         }
     }];
     if (!predicate) {
-        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Support for query %@ not supported yet. Contact support@kinvey.com to get this supported.", self.internalRepresentation);
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Support for query \"%@\" not supported yet. Contact support@kinvey.com to get this supported.", self.internalRepresentation);
         DBAssert(NO, @"Support query: %@", self.internalRepresentation);
+        predicate = [NSPredicate predicateWithValue:YES];
     }
     return predicate;
 }

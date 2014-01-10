@@ -148,5 +148,8 @@
 
 #pragma mark - completion
 
-
+- (void)dealloc
+{
+    NSAssert(NO,@"No way, man");
+}
 @end
