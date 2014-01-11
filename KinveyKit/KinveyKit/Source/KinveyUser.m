@@ -298,7 +298,7 @@ void setActive(KCSUser* user)
 
 - (NSString*) debugDescription
 {
-    return [NSString stringWithFormat:@"KCSUser: %@",[NSDictionary dictionaryWithObjectsAndKeys:self.username, @"username", self.email, @"email", self.givenName, @"given name", self.surname, @"surname", nil]];
+    return [NSString stringWithFormat:@"KCSUser: %@",[NSDictionary dictionaryWithObjectsAndKeys:self.username, @"username", self.email, @"email", self.givenName, @"given name", self.surname, @"surname", self.userId, @"userId", nil]];
 }
 
 #pragma mark - Password

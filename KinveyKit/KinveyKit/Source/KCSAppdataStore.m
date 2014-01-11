@@ -50,12 +50,30 @@
 {
     [self setExecuting:YES];
     _block();
-    
 }
 
 - (BOOL)isConcurrent
 {
     return YES;
+}
+
+- (BOOL)isReady
+{
+    return YES;
+}
+
+- (void)setFinished:(BOOL)finished
+{
+    [self willChangeValueForKey:@"isFinished"];
+    _finished = finished;
+    [self didChangeValueForKey:@"isFinished"];
+}
+
+- (void)setExecuting:(BOOL)executing
+{
+    [self willChangeValueForKey:@"isExecuting"];
+    _executing = executing;
+    [self didChangeValueForKey:@"isExecuting"];
 }
 
 - (BOOL)isExecuting
@@ -80,7 +98,7 @@ static NSOperationQueue* queue;
 + (void)initialize
 {
     queue = [[NSOperationQueue alloc] init];
-    queue.maxConcurrentOperationCount = 10;
+    queue.maxConcurrentOperationCount = 5;
     [queue setName:@"com.kinvey.KinveyKit.DataStoreQueue"];
 }
 
@@ -109,6 +127,9 @@ static NSOperationQueue* queue;
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
 {
+    NSLog(@"COUNT %d", queue.operationCount);
+    NSLog(@"ITEMS %@", queue.operations);
+    
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{

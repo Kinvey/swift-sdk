@@ -517,10 +517,12 @@ NSError* createCacheError(NSString* message)
     return cachePolicy == KCSCachePolicyBoth;
 }
 
+//TODO: should differentiate between ref error and main q error
 - (void) cacheQuery:(KCSQuery*)query value:(id)objectsOrNil error:(NSError*)errorOrNil policy:(KCSCachePolicy)cachePolicy
 {
     DBAssert([query isKindOfClass:[KCSQuery class]], @"should be a query");
-    if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
+    if ((errorOrNil != nil && ([[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO || [[errorOrNil domain] isEqualToString:KCSFileStoreErrorDomain] == NO)) ||
+        (objectsOrNil == nil && errorOrNil == nil)) {
         //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
         BOOL removed = [[KCSAppdataStore caches] removeQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
         if (!removed) {
@@ -533,7 +535,8 @@ NSError* createCacheError(NSString* message)
 
 - (void) cacheObjects:(NSArray*)ids results:(id)objectsOrNil error:(NSError*)errorOrNil policy:(KCSCachePolicy)cachePolicy
 {
-    if ((errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO) || (objectsOrNil == nil && errorOrNil == nil)) {
+    if ((errorOrNil != nil &&  ([[errorOrNil domain] isEqualToString:KCSNetworkErrorDomain] == NO || [[errorOrNil domain] isEqualToString:KCSFileStoreErrorDomain] == NO))  ||
+        (objectsOrNil == nil && errorOrNil == nil)) {
         //remove the object from the cache, if it exists if the there was an error or return nil, but not if there was a network error (keep using the cached value)
         [[KCSAppdataStore caches] deleteObjects:[NSArray wrapIfNotArray:ids] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     } else if (objectsOrNil != nil) {

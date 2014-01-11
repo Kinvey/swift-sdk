@@ -105,6 +105,9 @@
 		27264AE3187FA2B1002C37C9 /* KCSBackgroundAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27264AE0187FA2B1002C37C9 /* KCSBackgroundAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27264AE4187FA2B1002C37C9 /* KCSBackgroundAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27264AE1187FA2B1002C37C9 /* KCSBackgroundAppdataStore.m */; };
 		27264AE5187FA2B1002C37C9 /* KCSBackgroundAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27264AE1187FA2B1002C37C9 /* KCSBackgroundAppdataStore.m */; };
+		27264AEA1880AD1E002C37C9 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27264AE91880AD1E002C37C9 /* Social.framework */; };
+		27264AEB1880AD34002C37C9 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27264AE91880AD1E002C37C9 /* Social.framework */; };
+		27264AEC1880AD79002C37C9 /* KCSUserSocialExtrasTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */; };
 		2726F98B15E6CE370087099D /* KCSBuilders.h in Headers */ = {isa = PBXBuildFile; fileRef = 2726F98915E6CE370087099D /* KCSBuilders.h */; };
 		2726F98C15E6CE370087099D /* KCSBuilders.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F98A15E6CE370087099D /* KCSBuilders.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27295D6B17E08DF800D34E2F /* KCSNSURLSessionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27295D6917E08DF800D34E2F /* KCSNSURLSessionOperation.h */; };
@@ -166,7 +169,6 @@
 		273A3E9A160A255900F3742C /* KCSUser+SocialExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 2795FC3A160915A1002ED162 /* KCSUser+SocialExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		273A3E9B160A256100F3742C /* KinveyKitExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD0876160A03A8009473A3 /* KinveyKitExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		273A3E9C160A384C00F3742C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A3E92160A1A9F00F3742C /* Accounts.framework */; };
-		273A3E9D160A385100F3742C /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
 		273B644F1757DE0F00E1B1B9 /* KCSCustomEndpoints.h in Headers */ = {isa = PBXBuildFile; fileRef = 273B644D1757DE0E00E1B1B9 /* KCSCustomEndpoints.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		273B64501757DE0F00E1B1B9 /* KCSCustomEndpoints.m in Sources */ = {isa = PBXBuildFile; fileRef = 273B644E1757DE0E00E1B1B9 /* KCSCustomEndpoints.m */; };
 		273B645C1757FAAA00E1B1B9 /* KCSCustomEndpointTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 273B645B1757FAAA00E1B1B9 /* KCSCustomEndpointTests.m */; };
@@ -412,7 +414,6 @@
 		27BD086E16095D7D009473A3 /* KCS_OAuthCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD086C16095D7D009473A3 /* KCS_OAuthCore.m */; };
 		27BD087116095E62009473A3 /* KCS_OAuth+Additions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD086F16095E62009473A3 /* KCS_OAuth+Additions.h */; };
 		27BD087216095E62009473A3 /* KCS_OAuth+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD087016095E62009473A3 /* KCS_OAuth+Additions.m */; };
-		27BD0875160A038B009473A3 /* KCSUserSocialExtrasTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */; };
 		27BD0877160A03BD009473A3 /* KinveyKitExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 27BD0876160A03A8009473A3 /* KinveyKitExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27BD087C160A0B2B009473A3 /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60C814716EE300F77A3F /* KinveyKit.framework */; };
 		27BD087E160A0B6A009473A3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */; };
@@ -425,7 +426,6 @@
 		27BD0886160A0BA4009473A3 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
 		27BD0888160A0BB2009473A3 /* KinveyKitTests.octest in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60D914716EE300F77A3F /* KinveyKitTests.octest */; };
 		27BD088D160A0C27009473A3 /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD088C160A0C27009473A3 /* TestUtils.m */; };
-		27BD088F160A0DC5009473A3 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2785F55A160917C9004AA410 /* Twitter.framework */; };
 		27BFEC3317C6876100E6605D /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27BFEC3217C6876100E6605D /* TestConfig.plist */; };
 		27C22279161DE9B200D827AE /* KCS_SBJson.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22260161DE9B200D827AE /* KCS_SBJson.h */; };
 		27C2227A161DE9B200D827AE /* KCS_SBJsonParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C22261161DE9B200D827AE /* KCS_SBJsonParser.h */; };
@@ -708,6 +708,7 @@
 		27264AD2187EF48F002C37C9 /* NetworkObserverTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkObserverTest.m; sourceTree = "<group>"; };
 		27264AE0187FA2B1002C37C9 /* KCSBackgroundAppdataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBackgroundAppdataStore.h; sourceTree = "<group>"; };
 		27264AE1187FA2B1002C37C9 /* KCSBackgroundAppdataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBackgroundAppdataStore.m; sourceTree = "<group>"; };
+		27264AE91880AD1E002C37C9 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		2726F98915E6CE370087099D /* KCSBuilders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBuilders.h; sourceTree = "<group>"; };
 		2726F98A15E6CE370087099D /* KCSBuilders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBuilders.m; sourceTree = "<group>"; };
 		27295D6917E08DF800D34E2F /* KCSNSURLSessionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNSURLSessionOperation.h; sourceTree = "<group>"; };
@@ -1139,8 +1140,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27264AEA1880AD1E002C37C9 /* Social.framework in Frameworks */,
 				273A3E95160A1AA900F3742C /* Accounts.framework in Frameworks */,
-				27BD088F160A0DC5009473A3 /* Twitter.framework in Frameworks */,
 				27BD087C160A0B2B009473A3 /* KinveyKit.framework in Frameworks */,
 				27BD087E160A0B6A009473A3 /* CFNetwork.framework in Frameworks */,
 				27BD087F160A0B6A009473A3 /* Foundation.framework in Frameworks */,
@@ -1167,7 +1168,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				273A3E9D160A385100F3742C /* Twitter.framework in Frameworks */,
+				27264AEB1880AD34002C37C9 /* Social.framework in Frameworks */,
 				273A3E9C160A384C00F3742C /* Accounts.framework in Frameworks */,
 				2764B53D15DD9242003964D1 /* libobjc.dylib in Frameworks */,
 				27347F7215B4665800133F64 /* CoreLocation.framework in Frameworks */,
@@ -1848,6 +1849,7 @@
 		D32A60CA14716EE300F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				27264AE91880AD1E002C37C9 /* Social.framework */,
 				27EAB7361770A610008E6B32 /* XCTest.framework */,
 				27FB2A7616FCEC7400CD7D5C /* Accounts.framework */,
 				273A3E92160A1A9F00F3742C /* Accounts.framework */,
@@ -2927,7 +2929,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				27B75A3B1855F7200093144E /* DocTests.m in Sources */,
-				27BD0875160A038B009473A3 /* KCSUserSocialExtrasTest.m in Sources */,
 				27BD088D160A0C27009473A3 /* TestUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3075,6 +3076,7 @@
 				D3715ABF14B690BD0030F5E9 /* KinveyKitUserTests.m in Sources */,
 				D3715AC214B693530030F5E9 /* KinveyKitPushTests.m in Sources */,
 				D3715AC514B695520030F5E9 /* KinveyKitEntityDictTests.m in Sources */,
+				27264AEC1880AD79002C37C9 /* KCSUserSocialExtrasTest.m in Sources */,
 				27B5EFFE17C7DED70050DFD0 /* KCSRequest2Tests.m in Sources */,
 				D3715AC814B695680030F5E9 /* KinveyKitEntityTests.m in Sources */,
 				D3715AD414B696D80030F5E9 /* KinveyKitConnectionPoolTests.m in Sources */,
