@@ -417,7 +417,7 @@ KK2(Cleanup!)
                 completionBlock(user, error);
             });
         } else {
-            if ([KCSUser activeUser] != self) { // still have to check here because active user can be reset while loading request
+            if ([KCSUser activeUser] != user) { // still have to check here because active user can be reset while loading request
                 KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KinveyKit Active User!");
                 NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"User refresh is not on active user"};
                 NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
