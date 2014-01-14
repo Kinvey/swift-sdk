@@ -19,21 +19,7 @@
 
 #import "KCSAppdataStore.h"
 
-#import "KCS_SBJson.h"
-#import "KCSLogManager.h"
-#import "KinveyErrorCodes.h"
-#import "KCSErrorUtilities.h"
-#import "NSArray+KinveyAdditions.h"
-#import "KCSObjectMapper.h"
-#import "KCSHiddenMethods.h"
-#import "KCSSaveGraph.h"
 #import "KCSObjectCache.h"
-#import "KCSRequest2.h"
-#import "NSError+KinveyKit.h"
-#import "KCSClient+KinveyDataStore.h"
-#import "KinveyDataStore.h"
-#import "KCSNetworkResponse.h"
-#import "KCSNetworkOperation.h"
 #import "EXTScope.h"
 
 
@@ -54,12 +40,17 @@
 
 - (BOOL)isConcurrent
 {
-    return YES;
+    return NO;
 }
 
 - (BOOL)isReady
 {
     return YES;
+}
+
+- (BOOL)isCancelled
+{
+    return NO;
 }
 
 - (void)setFinished:(BOOL)finished
@@ -85,7 +76,6 @@
 {
     return _finished;
 }
-
 @end
 
 @interface KCSBackgroundAppdataStore()

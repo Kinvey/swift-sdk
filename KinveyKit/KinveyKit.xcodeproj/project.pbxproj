@@ -108,6 +108,7 @@
 		27264AEA1880AD1E002C37C9 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27264AE91880AD1E002C37C9 /* Social.framework */; };
 		27264AEB1880AD34002C37C9 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27264AE91880AD1E002C37C9 /* Social.framework */; };
 		27264AEC1880AD79002C37C9 /* KCSUserSocialExtrasTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */; };
+		27264AEF18847D83002C37C9 /* ThreadTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27264AEE18847D83002C37C9 /* ThreadTests.m */; };
 		2726F98B15E6CE370087099D /* KCSBuilders.h in Headers */ = {isa = PBXBuildFile; fileRef = 2726F98915E6CE370087099D /* KCSBuilders.h */; };
 		2726F98C15E6CE370087099D /* KCSBuilders.m in Sources */ = {isa = PBXBuildFile; fileRef = 2726F98A15E6CE370087099D /* KCSBuilders.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27295D6B17E08DF800D34E2F /* KCSNSURLSessionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27295D6917E08DF800D34E2F /* KCSNSURLSessionOperation.h */; };
@@ -709,6 +710,7 @@
 		27264AE0187FA2B1002C37C9 /* KCSBackgroundAppdataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBackgroundAppdataStore.h; sourceTree = "<group>"; };
 		27264AE1187FA2B1002C37C9 /* KCSBackgroundAppdataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBackgroundAppdataStore.m; sourceTree = "<group>"; };
 		27264AE91880AD1E002C37C9 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		27264AEE18847D83002C37C9 /* ThreadTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadTests.m; sourceTree = "<group>"; };
 		2726F98915E6CE370087099D /* KCSBuilders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBuilders.h; sourceTree = "<group>"; };
 		2726F98A15E6CE370087099D /* KCSBuilders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBuilders.m; sourceTree = "<group>"; };
 		27295D6917E08DF800D34E2F /* KCSNSURLSessionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNSURLSessionOperation.h; sourceTree = "<group>"; };
@@ -1915,6 +1917,7 @@
 				D32A60E614716EE300F77A3F /* Supporting Files */,
 				27AFD4CE15C8866D00A44F4F /* Metatests.h */,
 				27AFD4CF15C8866D00A44F4F /* Metatests.m */,
+				27264AEE18847D83002C37C9 /* ThreadTests.m */,
 			);
 			path = KinveyKitTests;
 			sourceTree = "<group>";
@@ -3085,6 +3088,7 @@
 				27AFF3A51832893800B9992C /* OfflineTests.m in Sources */,
 				2774CD7517E8E68800125E47 /* DataStoreTests.m in Sources */,
 				27225747183547AD009AC268 /* KCSMockReachability.m in Sources */,
+				27264AEF18847D83002C37C9 /* ThreadTests.m in Sources */,
 				D3715ADD14B697EA0030F5E9 /* KinveyKitNSStringTests.m in Sources */,
 				2774CD7B17EA28B100125E47 /* LogTester.m in Sources */,
 				27DA142217C654A100EAB3B7 /* KCSClientConfigurationTests.m in Sources */,
