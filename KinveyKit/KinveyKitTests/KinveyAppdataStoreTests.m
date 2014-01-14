@@ -496,4 +496,28 @@ NSArray* largeArray()
     }];
     [self poll];
 }
+
+
+#pragma mark - User Collection
+
+- (void) testUserCollectionMakesUsers
+{
+    __block NSArray* objs = nil;
+    self.done = NO;
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        KTAssertCountAtLeast(1, objectsOrNil);
+        objs = objectsOrNil;
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    
+    for (KCSUser* u in objs) {
+        STAssertTrue([u isKindOfClass:[KCSUser class]], @"is not a user.");
+    }
+    
+}
+
 @end

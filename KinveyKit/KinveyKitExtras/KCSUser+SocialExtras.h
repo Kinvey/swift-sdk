@@ -42,7 +42,7 @@ typedef void (^KCSLocalCredentialBlock)(NSDictionary* accessDictOrNil, NSError* 
  
  If sucessful, the completion block will provide a dictionary ready for `+[KCSUser loginWithWithSocialIdentity:accessDictionary:withCompletionBlock]`.
  
- If the user has multiple twitter accounts configured in Settings, this will use the first one in the list. 
+ If the user has multiple twitter accounts configured in Settings, this will use the first one in the list. If you wish to let the user select from multiple accounts, you will have to write your own helper to obtain the list of accounts and get the auth token. See https://dev.twitter.com/docs/ios/using-reverse-auth and https://developer.apple.com/library/ios/documentation/Accounts/Reference/ACAccountStoreClassRef/ACAccountStore.html .
  
  @param completionBlock the block to be called when the request completes or faults.
  @since 1.9

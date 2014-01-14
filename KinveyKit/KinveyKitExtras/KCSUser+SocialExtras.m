@@ -102,12 +102,7 @@
                 NSDictionary *step2Params = @{@"x_reverse_auth_target" : twitterKey, @"x_reverse_auth_parameters" : signedReverseAuthSignature};
                 NSURL *authTokenURL = [NSURL URLWithString:@"https://api.twitter.com/oauth/access_token"];
                 
-                //#if TARGET_OS_IPHONE
-                //                    //TODO: handle iOS 5 & 6
-                //                    TWRequest *step2Request = [[TWRequest alloc] initWithURL:authTokenURL parameters:step2Params requestMethod:TWRequestMethodPOST];
-                //#else
                 SLRequest* step2Request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:authTokenURL parameters:step2Params];
-                //#endif
                 
                 //  Obtain the user's permission to access the store
                 //
