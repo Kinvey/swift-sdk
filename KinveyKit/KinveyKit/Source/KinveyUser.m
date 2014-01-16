@@ -61,9 +61,9 @@ void setActive(KCSUser* user)
 {
     self = [super init];
     if (self){
-        _username = @"";
+        _username = nil;
         _password = nil;
-        _userId = @"";
+        _userId = nil;
         _userAttributes = [NSMutableDictionary dictionary];
         _sessionAuth = nil;
         _surname = nil;

@@ -2,7 +2,7 @@
 //  KinveyKitNSDateTests.m
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -87,5 +87,19 @@
     STAssertFalse([origDate isEarlierThan:earlierDate], @"");
     STAssertTrue([origDate isEarlierThan:laterDate], @"");
     STAssertFalse([origDate isEarlierThan:sameDate], @"");
+}
+
+- (void) testMidnight
+{
+    //                    @"2013-04-12T17:46:55.827Z"
+    NSString* midnightEOD = @"2011-01-15T24:01:00.000Z";
+    NSDate* eod = [NSDate dateFromISO8601EncodedString:midnightEOD];
+    STAssertNotNil(eod, @"should get back a date");
+
+    NSString* midnightBOD = @"2011-01-16T00:00:00.000Z";
+    NSDate* bod = [NSDate dateFromISO8601EncodedString:midnightBOD];
+    STAssertNotNil(bod, @"should get back a date");
+
+    STAssertEqualObjects(bod, eod, @"Midnights should match");
 }
 @end
