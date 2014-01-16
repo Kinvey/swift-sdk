@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/23/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -21,6 +21,10 @@
 #import "NSDate+ISO8601.h"
 #import "KCSLogManager.h"
 #import "KCSClient.h"
+
+#import <time.h>
+#import <xlocale.h>
+
 
 @implementation NSDate (ISO8601)
 
@@ -44,7 +48,7 @@
     return dTmp;
 }
 
-#if NEVER
+#if 1
 + (NSDate *)dateFromISO8601EncodedString: (NSString *)string
 {
     NSLocale* enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
@@ -56,7 +60,7 @@
 #pragma clang diagnostic pop
     if (!dateFormat) {
         KK2(cleanup)
-        dateFormat =  @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
+        dateFormat =  @"yyyy'-'MM'-'dd'T'kk':'mm':'ss'.'SSS'Z'";
     }
     
     [df setDateFormat:dateFormat];
@@ -65,27 +69,32 @@
     NSDate *myDate = [df dateFromString:string];
     if (!myDate) {
         //The string might not have milliseconds, try again w/o them
-        [df setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+        [df setDateFormat:@"yyyy'-'MM'-'dd'T'kk':'mm':'ss'Z'"];
+
         myDate = [df dateFromString:string];
     }
     return myDate;
 }
-#endif
 
+#else
 + (NSDate *)dateFromISO8601EncodedString:(NSString *)string {
     if (!string) {
         return nil;
     }
     
     struct tm tm;
-    time_t t;
+//    time_t t;
+//    
+//    strptime([string cStringUsingEncoding:NSUTF8StringEncoding], "%Y-%m-%dT%k:%M:%S%z", &tm);
+//    tm.tm_isdst = -1;
+//    t = mktime(&tm);
     
-    strptime([string cStringUsingEncoding:NSUTF8StringEncoding], "%Y-%m-%dT%H:%M:%S%z", &tm);
-    tm.tm_isdst = -1;
-    t = mktime(&tm);
-    
-    return [NSDate dateWithTimeIntervalSince1970:t + [[NSTimeZone localTimeZone] secondsFromGMT]];
-}
+    (void) strptime_l([string cStringUsingEncoding:NSUTF8StringEncoding], "%Y-%m-%dT%k:%M:%S%z", &tm, NULL);
+    NSLog(@"NSDate is %@", [NSDate dateWithTimeIntervalSince1970: mktime(&tm)]);
 
+    
+    return [NSDate dateWithTimeIntervalSince1970: mktime(&tm) + [[NSTimeZone localTimeZone] secondsFromGMT]];
+}
+#endif
 
 @end

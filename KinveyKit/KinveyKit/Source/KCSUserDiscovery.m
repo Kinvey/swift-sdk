@@ -36,9 +36,7 @@
             id responseObj = [response jsonObject];
             NSArray* jsonArray = [NSArray wrapIfNotArray:responseObj];
             NSUInteger itemCount = jsonArray.count;
-            if (itemCount == 0) {
-                completionBlock(@[], nil);
-            }
+
             NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:itemCount];
             for (NSDictionary* jsonDict in jsonArray) {
                 id newobj = [[KCSAppdataStore caches].dataModel objectFromCollection:KCSUserCollectionName data:jsonDict];
@@ -53,6 +51,7 @@
                                                         route:KCSRESTRouteUser
                                                       options:@{KCSRequestLogMethod}
                                                   credentials:[KCSUser activeUser]];
+    request.method = KCSRESTMethodPOST;
     request.path = @[@"_lookup"];
     request.body = fieldMatchDictionary;
     request.progress = ^(id intermediateData, double progress) {
