@@ -225,6 +225,10 @@ NSArray* largeArray()
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNotNil(errorOrNil, @"should have an error");
         KTAssertEqualsInt(errorOrNil.code, 550, @"should be a 550");
+        
+        NSDictionary* errorVals = errorOrNil.userInfo;
+        STAssertNotNil(errorVals[@"Kinvey.RequestId"], @"should have request id");
+        STAssertNotNil(errorVals[@"Kinvey.ExecutedHooks"], @"should have hooks");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
