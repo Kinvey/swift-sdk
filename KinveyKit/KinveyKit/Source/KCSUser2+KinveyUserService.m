@@ -93,7 +93,7 @@ KK2(Cleanup!)
         } else {
             // Ok, we're really auth'd
             NSDictionary* userBody = [response jsonObject];
-            [self setupActiveUser:userBody completion:completionBlock];
+            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
         }
     }
                                                         route:KCSRESTRouteUser
@@ -116,7 +116,7 @@ KK2(Cleanup!)
         } else {
             // Ok, we're really auth'd
             NSDictionary* userBody = [response jsonObject];
-            [self setupActiveUser:userBody completion:completionBlock];
+            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
         }
     }
                                                         route:KCSRESTRouteUser
@@ -144,7 +144,7 @@ KK2(Cleanup!)
         } else {
             // Ok, we're really auth'd
             NSDictionary* userBody = [response jsonObject];
-            [self setupActiveUser:userBody completion:completionBlock];
+            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
         }
     }
                                                         route:KCSRESTRouteUser
@@ -175,7 +175,7 @@ KK2(Cleanup!)
         } else {
             // Ok, we're really auth'd
             NSDictionary* userBody = [response jsonObject];
-            [self setupActiveUser:userBody completion:completionBlock];
+            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
         }
     }
                                                         route:KCSRESTRouteUser
@@ -295,9 +295,9 @@ KK2(Cleanup!)
 }
 
 #pragma mark - User Object Management
-+ (void) setupActiveUser:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock
++ (void) setupActiveUser:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock checkAuth:(BOOL) checkAuth
 {
-    if ([body isKindOfClass:[NSDictionary class]] == NO) {
+    if (![body isKindOfClass:[NSDictionary class]]) {
         //check data type in case server is corrupted, yes this has happened
         NSError* error = [NSError createKCSError:@"Entity dictionary not returned for user" code:401 userInfo:@{@"body":body}];
         completionBlock(nil, error);
@@ -318,12 +318,16 @@ KK2(Cleanup!)
     [modifiedProperties removeObjectForKey:KCSUserAttributePassword]; //discard the password in all cases
     
     NSMutableDictionary* metadata = [NSMutableDictionary dictionaryWithDictionary:modifiedProperties[KCSEntityKeyKMD]];
-    NSString* authToken = [metadata popObjectForKey:KCSEntityKeyAuthtoken];
     
-    if (authToken == nil) {
-        NSError* error = [NSError createKCSError:@"Entity dictionary does not contain an auth token" code:401 userInfo:@{@"body":body}];
-        completionBlock(nil, error);
-        return;
+    NSString* authToken = nil;
+    if (checkAuth) {
+        authToken = [metadata popObjectForKey:KCSEntityKeyAuthtoken];
+        
+        if (authToken == nil) {
+            NSError* error = [NSError createKCSError:@"Entity dictionary does not contain an auth token" code:401 userInfo:@{@"body":body}];
+            completionBlock(nil, error);
+            return;
+        }
     }
     
     //Handle Email Verification
@@ -345,7 +349,9 @@ KK2(Cleanup!)
         return;
     }
     
-    [KCSKeychain2 setKinveyToken:authToken user:userId];
+    if (checkAuth) {
+        [KCSKeychain2 setKinveyToken:authToken user:userId];
+    }
     [self setActive:user];
     
     [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
@@ -378,7 +384,7 @@ KK2(Cleanup!)
             } else {
                 // Ok, we're really auth'd
                 NSDictionary* userBody = [response jsonObject];
-                [self setupActiveUser:userBody completion:completionBlock];
+                [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
             }
             
         }
@@ -426,7 +432,7 @@ KK2(Cleanup!)
                 });
             } else {
                 NSDictionary* userBody = [response jsonObject];
-                [self setupActiveUser:userBody completion:completionBlock];
+                [self setupActiveUser:userBody completion:completionBlock checkAuth:NO];
             }
         }
     }
@@ -466,7 +472,7 @@ KK2(Cleanup!)
             });
         } else {
             NSDictionary* userBody = [response jsonObject];
-            [self setupActiveUser:userBody completion:completionBlock];
+            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
         }
     }
                                                         route:KCSRESTRouteUser

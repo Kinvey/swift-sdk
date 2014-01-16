@@ -11,7 +11,7 @@
 // therein) and agree that you have read, understand and agree to be bound by such
 // terms of service and are of legal age to agree to such terms with Kinvey.
 //
-// This software contains valuable confidential and proprietary information of
+// This software contains valuable confidential and proprietary information of 
 // KINVEY, INC and is subject to applicable licensing agreements.
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.

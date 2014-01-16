@@ -92,7 +92,7 @@
 - (void) testMidnight
 {
     //                    @"2013-04-12T17:46:55.827Z"
-    NSString* midnightEOD = @"2011-01-15T24:01:00.000Z";
+    NSString* midnightEOD = @"2011-01-15T24:00:00.000Z";
     NSDate* eod = [NSDate dateFromISO8601EncodedString:midnightEOD];
     STAssertNotNil(eod, @"should get back a date");
 
