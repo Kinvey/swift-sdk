@@ -16,6 +16,7 @@ KCS_CONSTANT KCSNetworkConnectionDidStart;
 KCS_CONSTANT KCSNetworkConnectionDidEnd;
      * __TODO__ see sample app, widgets  (also todo: update the changelogs for these)
      * __TODO__ update ios-specific guide
+* Added `@"Kinvey.ExecutedHooks"`key to completionBlock error object `userInfo` dictionaries. This will show which collection hooks were executed as part of the request. This will help troubleshoot when getting unexpected results from an API call.
 * Internal performance improvements. In particular, data store completion block callbacks should now always be called on main thread, and progress blocks on arbitrary background thread. 
 * Dependency change:
      * `KinveyKit` now links against `Social.framework` instead of `Twitter.framework`.

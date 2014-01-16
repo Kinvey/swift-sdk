@@ -24,6 +24,7 @@
 #define kKinveyErrorDomain @"KinveyErrorDomain"
 
 #define kHeaderRequestId @"X-Kinvey-Request-Id"
+#define kHeaderExecutedHooks @"x-kinvey-executed-collection-hooks"
 
 #define KCS_ERROR_DEBUG_KEY @"debug"
 #define KCS_ERROR_DESCRIPTION_KEY @"description"
@@ -32,6 +33,7 @@
 #define kKCSErrorCode @"Kinvey.kinveyErrorCode"
 #define kKCSRequestId @"Kinvey.RequestId"
 #define kKCSUnknownBody @"Kinvey.UnknownErrorBody"
+#define kKCSExecutedBL @"Kinvey.ExecutedHooks"
 
 #define kResultsKey @"result"
 
@@ -78,6 +80,8 @@
     
     setIfValNotNil(userInfo[NSURLErrorFailingURLErrorKey], self.originalURL);
     setIfValNotNil(userInfo[kKCSRequestId], [self requestId]);
+    
+    setIfValNotNil(userInfo[kKCSExecutedBL], self.headers[kHeaderExecutedHooks]);
 
     NSError* error = [NSError createKCSError:kKinveyErrorDomain code:self.code userInfo:userInfo];
     return error;
