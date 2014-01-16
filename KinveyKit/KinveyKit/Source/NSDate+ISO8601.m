@@ -48,7 +48,7 @@
     return dTmp;
 }
 
-#if 1
+#if 0
 + (NSDate *)dateFromISO8601EncodedString: (NSString *)string
 {
     NSLocale* enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
@@ -60,7 +60,7 @@
 #pragma clang diagnostic pop
     if (!dateFormat) {
         KK2(cleanup)
-        dateFormat =  @"yyyy'-'MM'-'dd'T'kk':'mm':'ss'.'SSS'Z'";
+        dateFormat =  @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'";
     }
     
     [df setDateFormat:dateFormat];
@@ -69,7 +69,8 @@
     NSDate *myDate = [df dateFromString:string];
     if (!myDate) {
         //The string might not have milliseconds, try again w/o them
-        [df setDateFormat:@"yyyy'-'MM'-'dd'T'kk':'mm':'ss'Z'"];
+        [df setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+        [df setLenient:YES];
 
         myDate = [df dateFromString:string];
     }
@@ -83,17 +84,16 @@
     }
     
     struct tm tm;
-//    time_t t;
-//    
-//    strptime([string cStringUsingEncoding:NSUTF8StringEncoding], "%Y-%m-%dT%k:%M:%S%z", &tm);
-//    tm.tm_isdst = -1;
-//    t = mktime(&tm);
     
-    (void) strptime_l([string cStringUsingEncoding:NSUTF8StringEncoding], "%Y-%m-%dT%k:%M:%S%z", &tm, NULL);
-    NSLog(@"NSDate is %@", [NSDate dateWithTimeIntervalSince1970: mktime(&tm)]);
-
+    (void) strptime_l([string cStringUsingEncoding:NSUTF8StringEncoding], "%Y-%m-%dT%H:%M:%S%z", &tm, NULL);
+    time_t t = mktime(&tm);
+    NSLog(@"NSDate is %@", [NSDate dateWithTimeIntervalSince1970:t]);
+    NSDate* date = nil;
+    if (t >= 0) {
+        date = [NSDate dateWithTimeIntervalSince1970:t + [[NSTimeZone localTimeZone] secondsFromGMT]];
+    }
     
-    return [NSDate dateWithTimeIntervalSince1970: mktime(&tm) + [[NSTimeZone localTimeZone] secondsFromGMT]];
+    return date;
 }
 #endif
 

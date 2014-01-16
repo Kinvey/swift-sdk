@@ -22,6 +22,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
      * `KinveyKit` now links against `Social.framework` instead of `Twitter.framework`.
 * Bug fix(es):
      * Fix issue where `KCSUserDiscovery` callback called twice.
+     * Stability fixes for active user refresh.
 * Code cleanup:
      * Deprecated `KCSAllObjects`; use `[KCSQuery query]` instead.
      * Deprecated `KCSCollectionDelegate` and networking-methods of the `KCSCollection` class. These don't get the benefit of caching, error handling etc. 

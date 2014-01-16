@@ -206,7 +206,7 @@
 {
     KCSUser* oldUser = _currentUser;
     _currentUser = currentUser;
-    if (currentUser != oldUser) {
+    if (![[currentUser  userId] isEqualToString:[oldUser userId]]) {
         [[KCSAppdataStore caches] cacheActiveUser:(id)currentUser];
         [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:oldUser];
     }
