@@ -2,7 +2,7 @@
 //  KCSFileRequest.h
 //  KinveyKit
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -30,5 +30,14 @@
                     alreadyWrittenBytes:(NSNumber*)alreadyWritten
                         completionBlock:(StreamCompletionBlock)completionBlock
                           progressBlock:(KCSProgressBlock2)progressBlock;
+
+- (id<KCSFileOperation>) uploadStream:(NSInputStream*)stream
+                               length:(NSUInteger)length
+                          contentType:(NSString*)contentType
+                                toURL:(NSURL*)url
+                      requiredHeaders:(NSDictionary*)requiredHeaders
+                      completionBlock:(StreamCompletionBlock)completionBlock
+                        progressBlock:(KCSProgressBlock2)progressBlock;
+
 
 @end

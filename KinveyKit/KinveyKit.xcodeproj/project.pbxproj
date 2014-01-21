@@ -249,6 +249,7 @@
 		276B73D61832580D0037CAAC /* KCSOfflineUpdate.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B73D31832580D0037CAAC /* KCSOfflineUpdate.h */; };
 		276B73D71832580D0037CAAC /* KCSOfflineUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 276B73D41832580D0037CAAC /* KCSOfflineUpdate.m */; };
 		276B73D81832580D0037CAAC /* KCSOfflineUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 276B73D41832580D0037CAAC /* KCSOfflineUpdate.m */; };
+		276E4747188D529100A8FC69 /* Metatests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AFD4CF15C8866D00A44F4F /* Metatests.m */; };
 		2774CD7117E8E06F00125E47 /* KCSTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 2774CD7017E8E06F00125E47 /* KCSTask.h */; };
 		2774CD7217E8E06F00125E47 /* KCSTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 2774CD7017E8E06F00125E47 /* KCSTask.h */; };
 		2774CD7317E8E11000125E47 /* KCSDataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465349174E6CFE0013546E /* KCSDataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3113,6 +3114,7 @@
 				27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */,
 				273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */,
 				27E0B36415E523B400B83E72 /* KCSGenericRestTests.m in Sources */,
+				276E4747188D529100A8FC69 /* Metatests.m in Sources */,
 				2736B19216271D50006CF960 /* KinveyKitNSDictionaryTests.m in Sources */,
 				27CA5A7817F20838007E0E10 /* FileRequestTests.m in Sources */,
 				27E4E748181B36620071061B /* EntityCacheTests.m in Sources */,

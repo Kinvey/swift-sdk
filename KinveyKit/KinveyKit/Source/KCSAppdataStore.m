@@ -117,9 +117,6 @@ static NSOperationQueue* queue;
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
 {
-    NSLog(@"COUNT %d", queue.operationCount);
-    NSLog(@"ITEMS %@", queue.operations);
-    
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{

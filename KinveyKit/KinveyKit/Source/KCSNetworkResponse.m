@@ -21,8 +21,6 @@
 #import "KCSNetworkResponse.h"
 #import "KinveyCoreInternal.h"
 
-#define kKinveyErrorDomain @"KinveyErrorDomain"
-
 #define kHeaderRequestId @"X-Kinvey-Request-Id"
 #define kHeaderExecutedHooks @"x-kinvey-executed-collection-hooks"
 
@@ -83,7 +81,7 @@
     
     setIfValNotNil(userInfo[kKCSExecutedBL], self.headers[kHeaderExecutedHooks]);
 
-    NSError* error = [NSError createKCSError:kKinveyErrorDomain code:self.code userInfo:userInfo];
+    NSError* error = [NSError createKCSError:KCSServerErrorDomain code:self.code userInfo:userInfo];
     return error;
 }
 
@@ -94,7 +92,7 @@
     setIfValNotNil(userInfo[kKCSRequestId], [self requestId]);
     setIfValNotNil(userInfo[NSLocalizedDescriptionKey], parser.error);
     
-    return [NSError createKCSError:kKinveyErrorDomain code:KCSInvalidJSONFormatError userInfo:userInfo];
+    return [NSError createKCSError:KCSServerErrorDomain code:KCSInvalidJSONFormatError userInfo:userInfo];
 }
 
 - (NSString*) stringValue

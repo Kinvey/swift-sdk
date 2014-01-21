@@ -337,6 +337,11 @@ return; \
     }
 }
 
+- (NSString*)refStr
+{
+    return nil;
+}
+
 - (void)doLoadObjectWithID: (id)objectID
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
@@ -382,6 +387,7 @@ return; \
                 } else {
                     request.path = @[_id];
                 }
+                request.queryString = [self refStr];
                 
                 KCSPartialDataParser* partialParser = nil;
                 if (progressBlock!= nil) {

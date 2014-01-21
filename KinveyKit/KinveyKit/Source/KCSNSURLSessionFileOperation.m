@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/24/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -27,7 +27,6 @@
 @property (nonatomic, retain) NSURLSession* session;
 @property (nonatomic, retain) NSURLSessionDownloadTask* task;
 @property (nonatomic, strong) NSMutableURLRequest* request;
-@property (nonatomic) unsigned long long bytesWritten;
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSDictionary* returnVals;
 @property (nonatomic) BOOL done;

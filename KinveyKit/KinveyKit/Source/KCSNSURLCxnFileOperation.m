@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/24/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -33,11 +33,12 @@
 @property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, retain) NSHTTPURLResponse* response;
 @property (nonatomic, retain) NSMutableData* responseData;
-@property (nonatomic) unsigned long long bytesWritten;
+
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSDictionary* returnVals;
 @property (nonatomic) BOOL done;
 @property (nonatomic, strong) id context;
+@property (nonatomic) BOOL isUpload;
 @end
 
 @implementation KCSNSURLCxnFileOperation
@@ -82,29 +83,31 @@
         
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         
-        NSError* error = nil;
-        _outputHandle = [self prepFile:self.localURL error:&error];
-        if (_outputHandle == nil || error != nil) {
-            [self complete:error];
-            return;
-        }
-
-        
-        NSNumber* alreadyWritten = (NSNumber*)self.context;
-        if (alreadyWritten != nil) {
-            //TODO: figure this one out
-            unsigned long long written = [_outputHandle seekToEndOfFile];
-            //unsigned long long written = [alreadyWritten unsignedLongLongValue];
-            if ([alreadyWritten unsignedLongLongValue] == written) {
-                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
-                [self.request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
-            } else {
-                //if they don't match start from begining
-                [_outputHandle seekToFileOffset:0];
+        if (_localURL) {
+            //only do this for the downloads
+            NSError* error = nil;
+            _outputHandle = [self prepFile:self.localURL error:&error];
+            if (_outputHandle == nil || error != nil) {
+                [self complete:error];
+                return;
             }
+            
+            NSNumber* alreadyWritten = (NSNumber*)self.context;
+            if (alreadyWritten != nil) {
+                //TODO: figure this one out
+                unsigned long long written = [_outputHandle seekToEndOfFile];
+                //unsigned long long written = [alreadyWritten unsignedLongLongValue];
+                if ([alreadyWritten unsignedLongLongValue] == written) {
+                    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
+                    [self.request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
+                } else {
+                    //if they don't match start from begining
+                    [_outputHandle seekToFileOffset:0];
+                }
+            }
+        } else {
+            _isUpload = YES;
         }
-
-
 
         _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
         // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
@@ -149,9 +152,6 @@
     [_outputHandle closeFile];
     self.error = error;
 
-
-    //SET finished _completionBlock(NO, returnVals, error);
-    
     self.finished = YES;
 }
 
@@ -160,6 +160,11 @@
 - (NSString*) contentType
 {
     return self.request.allHTTPHeaderFields[kHeaderContentType];
+}
+
+- (BOOL) captureReponse
+{
+    return (_response && _response.statusCode >= 400) || _isUpload;
 }
 
 #pragma mark - delegate methods
@@ -178,14 +183,13 @@
     NSString* length = headers[kHeaderContentLength];
     _maxLength = [length longLongValue];
     
-    if (_response.statusCode >= 400) {
+    if ([self captureReponse]) {
         _responseData = [NSMutableData data];
     }
 }
 
 - (void) connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    
     NSInteger responseCode = self.response.statusCode;
     NSError* error = nil;
     if (responseCode >= 400) {
@@ -205,7 +209,7 @@
 {
     KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"downloaded %lu bytes from file service", (long)[data length]);
     
-    if (_response && _response.statusCode >= 400) {
+    if ([self captureReponse]) {
         //is an error just get the data locally
         [_responseData appendData:data];
     } else {
@@ -219,6 +223,21 @@
             double progress = (double)downloadedAmount / (double) _maxLength;
             _progressBlock(@[], progress, @{});
         }
+    }
+}
+
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
+{
+    if (!_isUpload) {
+        return;
+    }
+    
+    _bytesWritten += bytesWritten;
+    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"Uploaded %llu bytes (%ld / %ld)", _bytesWritten, (long)totalBytesWritten, (long)totalBytesExpectedToWrite);
+    
+    double progress = (double) totalBytesWritten / (double) totalBytesExpectedToWrite;
+    if (_progressBlock) {
+        _progressBlock(nil, progress, @{});
     }
 }
 

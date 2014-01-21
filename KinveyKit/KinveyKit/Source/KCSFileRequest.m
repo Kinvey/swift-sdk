@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/24/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -28,7 +28,7 @@
 #import "KCSMockFileOperation.h"
 
 @interface KCSFileRequest ()
-@property (nonatomic, copy) StreamCompletionBlock completionBlock;
+//@property (nonatomic, copy) StreamCompletionBlock completionBlock;
 //@property (nonatomic, copy) KCSProgressBlock2 progressBlock;
 
 //@property (nonatomic, retain) NSFileHandle* outputHandle;
@@ -54,7 +54,7 @@ static NSOperationQueue* queue;
                 completionBlock:(StreamCompletionBlock)completionBlock
                   progressBlock:(KCSProgressBlock2)progressBlock
 {
-    self.completionBlock = completionBlock;
+    //    self.completionBlock = completionBlock;
 
 //    NSError* error = nil;
 //    _outputHandle = [self prepFile:intermediate error:&error];
@@ -80,7 +80,7 @@ static NSOperationQueue* queue;
 //        }
 //    }
     
-    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"%@ %@", request.HTTPMethod, request.URL);
+    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"File Download: %@ %@", request.HTTPMethod, request.URL);
 
     NSOperation<KCSFileOperation>* op = nil;
 
@@ -105,6 +105,60 @@ static NSOperationQueue* queue;
     op.progressBlock = ^(NSArray *objects, double percentComplete, NSDictionary* additionalContext) {
         if (progressBlock) {
             progressBlock(@[intermediate], percentComplete, additionalContext);
+        }
+    };
+    
+    [queue addOperation:op];
+    return op;
+}
+
+- (id<KCSFileOperation>) uploadStream:(NSInputStream*)stream
+                               length:(NSUInteger)length
+                          contentType:(NSString*)contentType
+                                toURL:(NSURL*)url
+                      requiredHeaders:(NSDictionary*)requiredHeaders
+                      completionBlock:(StreamCompletionBlock)completionBlock
+                        progressBlock:(KCSProgressBlock2)progressBlock
+{
+    
+    
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+    [request setHTTPMethod:KCSRESTMethodPUT];
+    [request setHTTPBodyStream:stream];
+    
+    
+    NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithDictionary:requiredHeaders];
+    headers[@"Content-Length"] = [@(length) stringValue];
+    headers[@"Content-Type"] = contentType;
+    [request setAllHTTPHeaderFields:headers];
+    
+    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"File Upload: %@ %@", request.HTTPMethod, request.URL);
+    
+    NSOperation<KCSFileOperation>* op = nil;
+    
+    
+    //    if (_useMock == YES) {
+    //        op = [[KCSMockFileOperation alloc] initWithRequest:request];
+    //    } else {
+    //
+//    if ([KCSPlatformUtils supportsNSURLSession]) {
+//        op = [[KCSNSURLSessionFileOperation alloc] initWithRequest:request output:intermediate.localURL context:alreadyWritten];
+//    } else {
+        op = [[KCSNSURLCxnFileOperation alloc] initWithRequest:request output:nil context:nil];
+//    }
+  
+    @weakify(op);
+    op.completionBlock = ^() {
+        @strongify(op);
+        long long bytesWritten = op.bytesWritten;
+        if (![@(bytesWritten) isEqualToNumber:@(length)]) {
+            KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"Only %lld bytes written", bytesWritten);
+        }
+        completionBlock(YES, op.returnVals, op.error);
+    };
+    op.progressBlock = ^(NSArray *objects, double percentComplete, NSDictionary* additionalContext) {
+        if (progressBlock) {
+            progressBlock(@[], percentComplete, additionalContext);
         }
     };
     

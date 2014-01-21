@@ -2,7 +2,7 @@
 //  KCSLinkedAppdataStore.m
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey, Inc. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -156,6 +156,19 @@
 {
     return [KCSObjectMapper makeObjectWithResourcesOfType:self.backingCollection.objectTemplate withData:jsonDict withResourceDictionary:resources];
 }
+
+KK2(abstract out all of this)
+- (NSString*) refStr
+{
+    NSString* refStr = nil;
+    if ([self.backingCollection.objectTemplate respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
+        NSDictionary* hostResolves = [self.backingCollection.objectTemplate kinveyPropertyToCollectionMapping];
+        NSArray* resolvesArray = [hostResolves allKeys];
+        refStr = [@"?resolve=" stringByAppendingString:[resolvesArray join:@","]];
+    }
+    return refStr;
+}
+
 
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
 {

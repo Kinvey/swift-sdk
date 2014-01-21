@@ -101,7 +101,6 @@ NSDictionary* defaultBuilders();
 @interface KCSFile (KCSHiddenMethods)
 @property (nonatomic, retain) NSURL* localURL;
 @property (nonatomic, retain) NSData* data;
-@property (nonatomic, copy) NSString* gcsULID;
 @property (nonatomic, retain) NSURL* remoteURL;
 - (void) updateAfterUpload:(KCSFile*)newFile;
 @end
