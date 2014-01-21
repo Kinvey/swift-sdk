@@ -27,6 +27,8 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
      * Deprecated `KCSAllObjects`; use `[KCSQuery query]` instead.
      * Deprecated `KCSCollectionDelegate` and networking-methods of the `KCSCollection` class. These don't get the benefit of caching, error handling etc. 
      * Removed `KCSEntityDelegate` protocol and `-[NSObject(KinveyEntity) loadObjectWithID:]`, originally deprecated in 1.19.0.
+     * Removed store and collection factory methods from `KCSClient`, originally deprecated in 1.14.0.
+     * Removed reachability helpers from `KCSPing`, originally deprecated in 1.16.0 and 1.20.1.
 
 ## 1.25
 ### 1.25.0

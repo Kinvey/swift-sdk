@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 6/18/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -1744,7 +1744,7 @@ NSData* testData2()
         STAssertNotNil(error, @"should get an error");
         
         KTAssertEqualsInt(error.code, 404, @"no item error");
-        STAssertEqualObjects(error.domain, KCSResourceErrorDomain, @"is a file error");
+        STAssertEqualObjects(error.domain, KCSServerErrorDomain, @"is a file error");
         
         self.done = YES;
     }];
@@ -2663,32 +2663,55 @@ NSData* testData2()
     self.done = NO;
     [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
         NSLog(@"$$$$ COUNT = %d", count);
-        STAssertNoError_;
-        KTAssertCount(1, downloadedResources);
+        if (count == 0) {
+            STAssertNoError_;
+            KTAssertCount(1, downloadedResources);
+        } else {
+            STAssertNotNil(error, @"should be error");
+            KTAssertCount(0, downloadedResources);
+        }
         self.done = ++count == 5;
     } progressBlock:nil];
     [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
         NSLog(@"$$$$ COUNT = %d", count);
-        STAssertNotNil(error, @"should be error");
-        KTAssertCount(0, downloadedResources);
+        if (count == 0) {
+            STAssertNoError_;
+            KTAssertCount(1, downloadedResources);
+        } else {
+            STAssertNotNil(error, @"should be error");
+            KTAssertCount(0, downloadedResources);
+        }
         self.done = ++count == 5;
     } progressBlock:nil];
     [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
         NSLog(@"$$$$ COUNT = %d", count);
-        STAssertNotNil(error, @"should be error");
-        KTAssertCount(0, downloadedResources);
-        self.done = ++count == 5;
-    } progressBlock:nil];
+        if (count == 0) {
+            STAssertNoError_;
+            KTAssertCount(1, downloadedResources);
+        } else {
+            STAssertNotNil(error, @"should be error");
+            KTAssertCount(0, downloadedResources);
+        }
+        self.done = ++count == 5;    } progressBlock:nil];
     [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
         NSLog(@"$$$$ COUNT = %d", count);
-        STAssertNotNil(error, @"should be error");
-        KTAssertCount(0, downloadedResources);
-        self.done = ++count == 5;
-    } progressBlock:nil];
+        if (count == 0) {
+            STAssertNoError_;
+            KTAssertCount(1, downloadedResources);
+        } else {
+            STAssertNotNil(error, @"should be error");
+            KTAssertCount(0, downloadedResources);
+        }
+        self.done = ++count == 5;    } progressBlock:nil];
     [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
         NSLog(@"$$$$ COUNT = %d", count);
-        STAssertNotNil(error, @"should be error");
-        KTAssertCount(0, downloadedResources);
+        if (count == 0) {
+            STAssertNoError_;
+            KTAssertCount(1, downloadedResources);
+        } else {
+            STAssertNotNil(error, @"should be error");
+            KTAssertCount(0, downloadedResources);
+        }
         self.done = ++count == 5;
     } progressBlock:nil];
     [self poll];

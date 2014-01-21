@@ -2,7 +2,7 @@
 //  KCSMockFileOperation.m
 //  KinveyKit
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -32,7 +32,6 @@
 @property (nonatomic, strong) NSURLRequest* request;
 @property (nonatomic, retain) NSHTTPURLResponse* response;
 //@property (nonatomic, retain) NSMutableData* responseData;
-@property (nonatomic) unsigned long long bytesWritten;
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSDictionary* returnVals;
 @property (nonatomic) BOOL done;

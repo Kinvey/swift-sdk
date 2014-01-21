@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/14/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -25,7 +25,7 @@
 #import "KCS_FMDatabase.h"
 #import "KCS_FMDatabaseAdditions.h"
 
-#define KCS_CACHE_VERSION @"0.003"
+#define KCS_CACHE_VERSION @"0.004"
 
 @interface KCSEntityPersistence ()
 @property (nonatomic, strong) KCS_FMDatabase* db;
@@ -327,8 +327,8 @@
 #pragma mark - Updates
 - (NSString*) tableForRoute:(NSString*)route collection:(NSString*)collection
 {
-    collection = [collection stringByReplacingOccurrencesOfString:@"-" withString:@"%2D"];
-    return [NSString stringWithFormat:@"%@_%@",route,collection];
+    // collection = [collection stringByReplacingOccurrencesOfString:@"-" withString:@"%2D"];
+    return [NSString stringWithFormat:@"[%@_%@]",route,collection];
 }
 
 - (BOOL) updateWithEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection

@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/29/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -37,7 +37,6 @@
 @property (nonatomic, retain) NSDate* expirationDate;
 @property (nonatomic, retain) id resolvedObject;
 @property (nonatomic, retain) Class valClass;
-@property (nonatomic, copy) NSString* gcsULID;
 @end
 
 @implementation KCSFile
@@ -82,7 +81,6 @@
     f.localURL = self.localURL;
     f.refType = self.refType;
     f.resolvedObject = self.resolvedObject;
-    f.gcsULID = self.gcsULID;
     f.remoteURL = self.remoteURL;
     f.expirationDate = self.expirationDate;
     f.valClass = self.valClass;

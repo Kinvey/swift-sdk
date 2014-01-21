@@ -206,67 +206,11 @@
 {
     KCSUser* oldUser = _currentUser;
     _currentUser = currentUser;
-    if (![[currentUser  userId] isEqualToString:[oldUser userId]]) {
+    BOOL sameUser = (_currentUser == oldUser) || [[currentUser  userId] isEqualToString:[oldUser userId]];
+    if (!sameUser) {
         [[KCSAppdataStore caches] cacheActiveUser:(id)currentUser];
         [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:oldUser];
     }
-}
-
-#pragma mark - Store Interface
-- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource
-{
-    return [self store:storeType forResource:resource withClass:nil withAuthHandler:nil];
-}
-
-- (id<KCSStore>)store: (NSString *)storeType forResource: (NSString *)resource withAuthHandler: (KCSAuthHandler *)authHandler
-{
-    return [self store:storeType forResource:resource withClass:nil withAuthHandler:authHandler];
-}
-
-- (id<KCSStore>)store: (NSString *)storeType
-        forResource: (NSString *)resource
-          withClass: (Class)collectionClass
-{
-    return [self store:storeType forResource:resource withClass:collectionClass withAuthHandler:nil];
-}
-
-- (id<KCSStore>)store: (NSString *)storeType
-        forResource: (NSString *)resource
-          withClass: (Class)collectionClass
-    withAuthHandler: (KCSAuthHandler *)authHandler
-{
-    Class storeClass = NSClassFromString(storeType);
-    
-    if (storeClass == nil){
-        // Object not found
-        KCSLogError(@"Store class %@ not found!", storeType);
-        return nil;
-    }
-
-
-    id<KCSStore> store = [[storeClass alloc] init];
-    [store setAuthHandler:authHandler];
-    
-    if (resource && collectionClass){
-        KCSCollection *backing = [KCSCollection collectionFromString:resource ofClass:collectionClass];
-        NSDictionary *options = [NSDictionary dictionaryWithObject:backing forKey:@"resource"];
-        [store configureWithOptions:options];
-    }
-    
-    return store;
-}
-
-
-#pragma mark Collection Interface
-
-// We don't want to own the collection, we just want to create the collection
-// for the library client and instatiate ourselves as the KinveyClient to use
-// for that collection
-
-// Basically this is just a convienience method which I think may get
-- (KCSCollection *)collectionFromString:(NSString *)collection withClass:(Class)collectionClass
-{
-    return [KCSCollection collectionFromString:collection ofClass:collectionClass];
 }
 
 #pragma mark - Logging

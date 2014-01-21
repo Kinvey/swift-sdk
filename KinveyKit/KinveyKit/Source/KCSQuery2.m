@@ -172,7 +172,11 @@ id kcsConvertMongoValToPredicate(id val)
 {
     id retVal = val;
     if ([val isKindOfClass:[NSArray class]]) {
-        retVal = [NSString stringWithFormat:@"{%@}", [val componentsJoinedByString:@","]];
+        if ([val count] > 0) {
+            retVal = [NSString stringWithFormat:@"{'%@'}", [val componentsJoinedByString:@"','"]];
+        } else {
+            retVal = @"{}";
+        }
     } else if ([val isKindOfClass:[NSDictionary class]]) {
         retVal = nil;
     }

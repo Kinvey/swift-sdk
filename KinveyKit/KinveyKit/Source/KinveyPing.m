@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/30/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -20,8 +20,6 @@
 
 #import "KinveyPing.h"
 
-#import "KCSClient.h"
-#import "KCSReachability.h"
 #import "KCSPing2.h"
 
 @implementation KCSPingResult
@@ -39,23 +37,6 @@
 @end
 
 @implementation KCSPing
-
-+ (BOOL)networkIsReachable
-{
-    KCSReachability *reachability = [[KCSClient sharedClient] networkReachability];
-    return [reachability isReachable];
-}
-
-+ (BOOL)kinveyServiceIsReachable
-{
-    KCSReachability *reachability = [[KCSClient sharedClient] kinveyReachability];
-    return [reachability isReachable];    
-}
-
-+ (void)checkKinveyServiceStatusWithAction: (KCSPingBlock)completionAction
-{
-    [self pingKinveyWithBlock:completionAction];
-}
 
 + (void)pingKinveyWithBlock: (KCSPingBlock)completionAction
 {

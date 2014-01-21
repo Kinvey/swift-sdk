@@ -48,7 +48,7 @@
     return dTmp;
 }
 
-#if 0
+#if 1
 + (NSDate *)dateFromISO8601EncodedString: (NSString *)string
 {
     NSLocale* enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
