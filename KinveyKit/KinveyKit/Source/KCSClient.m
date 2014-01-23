@@ -209,6 +209,7 @@
     BOOL sameUser = (_currentUser == oldUser) || [[currentUser  userId] isEqualToString:[oldUser userId]];
     if (!sameUser) {
         [[KCSAppdataStore caches] cacheActiveUser:(id)currentUser];
+#warning handle main thread note events
         [[NSNotificationCenter defaultCenter] postNotificationName:KCSActiveUserChangedNotification object:oldUser];
     }
 }

@@ -3,6 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/9/11.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this

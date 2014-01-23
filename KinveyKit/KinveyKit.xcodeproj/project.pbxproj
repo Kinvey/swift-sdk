@@ -69,7 +69,6 @@
 		271827A416B8AA5000825D50 /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F360981598BF5C006B699E /* KCSMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		271827A516B8AA5500825D50 /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609C1598C1CB006B699E /* KCSMetadata.m */; };
 		271827AA16B9A1D100825D50 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271827A916B9A1D000825D50 /* CoreLocation.framework */; };
-		271827B116B9A27800825D50 /* KCSAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 271827AF16B9A27800825D50 /* KCSAnalytics.m */; };
 		271827B216B9A40700825D50 /* KCSImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 2718279C16B8A78700825D50 /* KCSImageUtils.h */; };
 		271827B316B9A40B00825D50 /* KCSImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2718279D16B8A78700825D50 /* KCSImageUtils.m */; };
 		271827C716C0357700825D50 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271827C616C0357500825D50 /* Security.framework */; };
@@ -510,8 +509,6 @@
 		27E4E752181EDF480071061B /* KCSDataModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4E74F181EDF480071061B /* KCSDataModel.h */; };
 		27E4E753181EDF480071061B /* KCSDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4E750181EDF480071061B /* KCSDataModel.m */; };
 		27E4E754181EDF480071061B /* KCSDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4E750181EDF480071061B /* KCSDataModel.m */; };
-		27E4E757181FDC400071061B /* KCSTimedQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E4E755181FDC400071061B /* KCSTimedQueue.h */; };
-		27E4E758181FDC400071061B /* KCSTimedQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E4E756181FDC400071061B /* KCSTimedQueue.m */; };
 		27F3609A1598BF5C006B699E /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 27F360981598BF5C006B699E /* KCSMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27F3609D1598C1CB006B699E /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609C1598C1CB006B699E /* KCSMetadata.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27F360A01598C250006B699E /* KCSMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F3609F1598C250006B699E /* KCSMetadataTests.m */; };
@@ -973,8 +970,6 @@
 		27E4E74A181ECA9A0071061B /* KCSObjectCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSObjectCache.m; sourceTree = "<group>"; };
 		27E4E74F181EDF480071061B /* KCSDataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDataModel.h; sourceTree = "<group>"; };
 		27E4E750181EDF480071061B /* KCSDataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSDataModel.m; sourceTree = "<group>"; };
-		27E4E755181FDC400071061B /* KCSTimedQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSTimedQueue.h; sourceTree = "<group>"; };
-		27E4E756181FDC400071061B /* KCSTimedQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSTimedQueue.m; sourceTree = "<group>"; };
 		27EAB7361770A610008E6B32 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		27F360981598BF5C006B699E /* KCSMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMetadata.h; sourceTree = "<group>"; };
 		27F3609C1598C1CB006B699E /* KCSMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMetadata.m; sourceTree = "<group>"; };
@@ -1420,8 +1415,6 @@
 				2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */,
 				D32A610414716F2D00F77A3F /* NSString+KinveyAdditions.h */,
 				D32A610514716F2D00F77A3F /* NSString+KinveyAdditions.m */,
-				27E4E755181FDC400071061B /* KCSTimedQueue.h */,
-				27E4E756181FDC400071061B /* KCSTimedQueue.m */,
 			);
 			name = Internal;
 			sourceTree = "<group>";
@@ -1826,6 +1819,7 @@
 			isa = PBXGroup;
 			children = (
 				D32A60CD14716EE300F77A3F /* KinveyKit */,
+				D32A60CE14716EE300F77A3F /* Supporting Files */,
 				D32A60E514716EE300F77A3F /* KinveyKitTests */,
 				2785F5301609179E004AA410 /* KinveyKitExtras */,
 				2785F5461609179E004AA410 /* KinveyKitExtrasTests */,
@@ -1880,7 +1874,6 @@
 				D32A612114716F5200F77A3F /* KinveyKit.h */,
 				D32A61231471700200F77A3F /* 3rdParty */,
 				D32A60F614716F2D00F77A3F /* Source */,
-				D32A60CE14716EE300F77A3F /* Supporting Files */,
 				2746533D174E6A9A0013546E /* KinveyKit2 */,
 			);
 			path = KinveyKit;
@@ -1894,6 +1887,7 @@
 				D32A60D314716EE300F77A3F /* KinveyKit-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			path = KinveyKit;
 			sourceTree = "<group>";
 		};
 		D32A60E514716EE300F77A3F /* KinveyKitTests */ = {
@@ -2410,7 +2404,6 @@
 				27BAB3EB166FED0500C5D156 /* KCS_OAuthCore.h in Headers */,
 				27295D8417E0FA0700D34E2F /* KCSClient2+KCSInternal.h in Headers */,
 				27D1559216713DD000171230 /* KCSLinkedInHelper.h in Headers */,
-				27E4E757181FDC400071061B /* KCSTimedQueue.h in Headers */,
 				275B42A016A97DB00064B941 /* KinveyHeaderInfo.h in Headers */,
 				27B3B08516B8757C00E1B540 /* KinveyVersion.h in Headers */,
 				277A4D7917F1B01F00E545EC /* KCSNSURLSessionFileOperation.h in Headers */,
@@ -2783,8 +2776,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				278519BC17BAD5660044D877 /* KCSPush.m in Sources */,
 				2737D3B417BD517300FE7ACC /* KCSMockServer.m in Sources */,
 				278BADB617B28EC70035B3D6 /* DDLog.m in Sources */,
+				27B75A521857FC560093144E /* KCSPush2.m in Sources */,
 				27E4E746181B1B6F0071061B /* KCSFileUtils.m in Sources */,
 				2766E63916834B78000D27C5 /* KinveyKit_mac.m in Sources */,
 				2766E65916834F1D000D27C5 /* KCSGenericRESTRequest.m in Sources */,
@@ -2797,7 +2792,6 @@
 				275B426516A82A100064B941 /* KCS_SBJsonStreamParserAdapter.m in Sources */,
 				275B426616A82A100064B941 /* KCS_SBJsonStreamParserState.m in Sources */,
 				276883E8183B944C00CC5B9E /* KCSDBTools.m in Sources */,
-				27B75A521857FC560093144E /* KCSPush2.m in Sources */,
 				27CD8EEA176FA8AB009463E3 /* KCSFileStore.m in Sources */,
 				278BADC217B28EC70035B3D6 /* DispatchQueueLogFormatter.m in Sources */,
 				275B426716A82A100064B941 /* KCS_SBJsonStreamWriter.m in Sources */,
@@ -2827,7 +2821,6 @@
 				27E4E74E181ECA9A0071061B /* KCSObjectCache.m in Sources */,
 				2722574D18355E66009AC268 /* KCSClient+KinveyDataStore.m in Sources */,
 				27B3B08216B8743500E1B540 /* KCSClient.m in Sources */,
-				278519BC17BAD5660044D877 /* KCSPush.m in Sources */,
 				27B3B08916B875F100E1B540 /* KinveyCollection.m in Sources */,
 				27B3B08B16B8760100E1B540 /* KinveyUser.m in Sources */,
 				27B3B08D16B8764200E1B540 /* KCSRESTRequest.m in Sources */,
@@ -2843,7 +2836,6 @@
 				271827A516B8AA5500825D50 /* KCSMetadata.m in Sources */,
 				27E4E754181EDF480071061B /* KCSDataModel.m in Sources */,
 				278BADAE17B28EC70035B3D6 /* DDASLLogger.m in Sources */,
-				271827B116B9A27800825D50 /* KCSAnalytics.m in Sources */,
 				271827B316B9A40B00825D50 /* KCSImageUtils.m in Sources */,
 				278BADB217B28EC70035B3D6 /* DDFileLogger.m in Sources */,
 				271827C916C0910700825D50 /* KCSQuery.m in Sources */,
@@ -2954,7 +2946,6 @@
 				D32A611C14716F2D00F77A3F /* NSString+KinveyAdditions.m in Sources */,
 				D32A611F14716F2D00F77A3F /* NSURL+KinveyAdditions.m in Sources */,
 				278BADAD17B28EC70035B3D6 /* DDASLLogger.m in Sources */,
-				27E4E758181FDC400071061B /* KCSTimedQueue.m in Sources */,
 				D33E686F147DBA5700EE885E /* KCSConnection.m in Sources */,
 				D33E6874147DBA7200EE885E /* KCSAsyncConnection.m in Sources */,
 				277A4D6917F1568000E545EC /* KCSFileRequest.m in Sources */,
@@ -3398,6 +3389,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -3428,6 +3420,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = DebugForTest;
@@ -3458,6 +3451,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = DebugForTest_run_tests;
@@ -3488,6 +3482,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;

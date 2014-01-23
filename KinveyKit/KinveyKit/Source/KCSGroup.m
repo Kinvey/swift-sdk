@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/21/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -73,7 +73,7 @@
     [self enumerateWithBlock:^(NSArray *fieldValues, id value, NSUInteger idx, BOOL *stop) {
         BOOL found = NO;
         for (NSString* field in [fields allKeys]) {
-            if ([_queriedFields containsObject:field] && [[fieldValues objectAtIndex:[_queriedFields indexOfObject:field]] isEqual:[fields objectForKey:field]]) {
+            if ([_queriedFields containsObject:field] && [fieldValues[[_queriedFields indexOfObject:field]] isEqual:fields[field]]) {
                 found = YES;
             } else {
                 found = NO;

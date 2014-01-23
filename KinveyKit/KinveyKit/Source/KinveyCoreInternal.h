@@ -48,7 +48,6 @@
 #import "NSError+KinveyKit.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSBase64.h"
-#import "KCSTimedQueue.h"
 #import "KCSDBTools.h"
 #import "KCSKeychain.h"
 

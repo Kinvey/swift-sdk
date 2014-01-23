@@ -158,6 +158,16 @@
 }
 
 KK2(abstract out all of this)
+- (KCSQuery*) modifyQuery:(KCSQuery*)query
+{
+    if ([self.backingCollection.objectTemplate respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
+        NSDictionary* hostResolves = [self.backingCollection.objectTemplate kinveyPropertyToCollectionMapping];
+        NSArray* resolvesArray = [hostResolves allKeys];
+        [query setReferenceFieldsToResolve:resolvesArray];
+    }
+    return query;
+}
+
 - (NSString*) refStr
 {
     NSString* refStr = nil;
@@ -167,17 +177,6 @@ KK2(abstract out all of this)
         refStr = [@"?resolve=" stringByAppendingString:[resolvesArray join:@","]];
     }
     return refStr;
-}
-
-
-- (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
-{
-    if ([self.backingCollection.objectTemplate respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
-        NSDictionary* hostResolves = [self.backingCollection.objectTemplate kinveyPropertyToCollectionMapping];
-        NSArray* resolvesArray = [hostResolves allKeys];
-        [query setReferenceFieldsToResolve:resolvesArray];
-    }
-    [super queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:cachePolicy];
 }
 
 @end

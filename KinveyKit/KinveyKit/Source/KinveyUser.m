@@ -25,6 +25,7 @@
 #import "KinveyUserService.h"
 #import "KCSKeychain.h"
 #import "KCSNetworkResponse.h"
+#import "KCSPush.h"
 
 #pragma mark - Constants
 
