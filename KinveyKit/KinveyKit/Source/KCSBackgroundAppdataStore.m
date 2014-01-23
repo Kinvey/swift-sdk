@@ -463,8 +463,13 @@ return; \
 }
 
 #pragma mark - Querying
+- (KCSQuery*) modifyQuery:(KCSQuery*)query
+{
+    return query;
+}
 
-- (void)doQueryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+
+- (void)doQueryWithQuery:(KCSQuery*)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
     KCSSTORE_VALIDATE_PRECONDITION
     KCSCollection* collection = self.backingCollection;
@@ -481,7 +486,7 @@ return; \
     } else {
         request.path = @[];
     }
-    request.queryString = [query parameterStringRepresentation];
+    request.queryString = [[self modifyQuery:query] parameterStringRepresentation];
     KCSPartialDataParser* partialParser = nil;
     if (progressBlock!= nil) {
         partialParser = [[KCSPartialDataParser alloc] init];

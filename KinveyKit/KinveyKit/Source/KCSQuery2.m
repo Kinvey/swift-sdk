@@ -163,7 +163,8 @@ NSString* kcsConvertMongoOpToPredicate(NSString* op)
     static NSDictionary* opMapper;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        opMapper = @{@"$in" : @"IN"};
+        opMapper = @{@"$in"    : @"IN",
+                     @"$regex" : @"MATCHES"};
     });
     return opMapper[op];
 }
@@ -171,7 +172,9 @@ NSString* kcsConvertMongoOpToPredicate(NSString* op)
 id kcsConvertMongoValToPredicate(id val)
 {
     id retVal = val;
-    if ([val isKindOfClass:[NSArray class]]) {
+    if ([val isKindOfClass:[NSString class]]) {
+        retVal = [NSString stringWithFormat:@"'%@'", val];
+    } else if ([val isKindOfClass:[NSArray class]]) {
         if ([val count] > 0) {
             retVal = [NSString stringWithFormat:@"{'%@'}", [val componentsJoinedByString:@"','"]];
         } else {

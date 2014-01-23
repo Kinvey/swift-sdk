@@ -26,6 +26,7 @@
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
 
+
 #define STAGING_ALPHA @"alpha"
 #define STAGING_V3YK1N @"v3yk1n"
 
@@ -231,7 +232,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 + (NSURL*) randomFileUrl:(NSString*)extension
 {
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString* basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    NSString* basePath = ([paths count] > 0) ? paths[0] : nil;
     NSString* path = [basePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@",[self uuid], extension]];
     return [NSURL fileURLWithPath:path];
 }

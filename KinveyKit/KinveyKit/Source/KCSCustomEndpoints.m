@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/30/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -34,7 +34,7 @@
     NSParameterAssert(endpoint);
     NSParameterAssert(completionBlock);
     if ([KCSUser activeUser] == nil) {
-        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Active User is `nil`. Login before calling custom endpoints" userInfo:nil] raise];
+        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Active User is `nil`. Log-in before calling custom endpoints" userInfo:nil] raise];
     }
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {

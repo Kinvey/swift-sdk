@@ -170,7 +170,6 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     return objs;
 }
 
-#warning handle main thread note events
 - (NSString*) queryKey:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
     NSString* queryKey = [query keyString];

@@ -327,8 +327,18 @@
 #pragma mark - Updates
 - (NSString*) tableForRoute:(NSString*)route collection:(NSString*)collection
 {
-    // collection = [collection stringByReplacingOccurrencesOfString:@"-" withString:@"%2D"];
-    return [NSString stringWithFormat:@"[%@_%@]",route,collection];
+//    collection = [collection stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+    return [NSString stringWithFormat:@"%@_%@",route,collection];
+}
+
+- (BOOL) tableExists:(NSString*)tableString
+{
+    static NSCharacterSet* charset;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        charset = [NSCharacterSet characterSetWithCharactersInString:@"[]"];
+    });
+    return [_db tableExists:[tableString stringByTrimmingCharactersInSet:charset]];
 }
 
 - (BOOL) updateWithEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection
@@ -357,7 +367,7 @@
     
     NSString* table = [self tableForRoute:route collection:collection];
 
-    if (![_db tableExists:table]) {
+    if (![self tableExists:table]) {
         NSString* update = [NSString stringWithFormat:@"CREATE TABLE %@ (id VARCHAR(255) PRIMARY KEY, obj TEXT, time VARCHAR(255), saved BOOL, count INT, classname TEXT)", table];
         BOOL created = [_db executeUpdate:update];
         if (created == NO) {
@@ -509,7 +519,7 @@
 {
     NSString* table = [self tableForRoute:route collection:collection];
     
-    if (![_db tableExists:table]) {
+    if (![self tableExists:table]) {
         KCSLogWarn(KCS_LOG_CONTEXT_DATA, @"No persisted table for '%@'", collection);
         return @[];
     }

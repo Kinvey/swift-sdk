@@ -41,6 +41,11 @@
 
 - (void) setClass:(Class)class forCollection:(NSString*)collection
 {
+    if (class == nil || collection == nil) {
+        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Setting nil class (%@) or collection (%@) into data model", class, collection);
+        return;
+    }
+    
     if (_collectionMap[collection] != nil && [_collectionMap[collection]  isEqual:class] == NO) {
         //TODO: make this robust - either ignore, overwrite, or make configurable
         NSAssert(NO, @"More than one class defined for a collection");

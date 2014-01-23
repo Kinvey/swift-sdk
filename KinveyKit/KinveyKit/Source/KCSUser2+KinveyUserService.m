@@ -26,6 +26,7 @@ KK2(Cleanup!)
 #import "KinveyUser.h"
 #import "KCSHiddenMethods.h"
 #import "KCSDataModel.h"
+#import "KCSPush.h"
 
 #define KCSEntityKeyKMD @"_kmd"
 #define KCSEntityKeyAuthtoken @"authtoken"

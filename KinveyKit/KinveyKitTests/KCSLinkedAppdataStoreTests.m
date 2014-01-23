@@ -264,8 +264,8 @@ static NSString* _collectionName;
     [self poll];
     
     for (int i = 1; i< progArray.count; i++) {
-        STAssertTrue([[progArray objectAtIndex:i] doubleValue] > [[progArray objectAtIndex:i-1] doubleValue], @"progress should be monotonically increasing");
-        STAssertTrue([[progArray objectAtIndex:i] doubleValue] <= 1.0, @"progres should be 0 to 1");
+        STAssertTrue([progArray[i] doubleValue] >= [progArray[i-1] doubleValue], @"progress should be monotonically increasing");
+        STAssertTrue([progArray[i] doubleValue] <= 1.0, @"progres should be 0 to 1");
     }
 }
 
@@ -522,7 +522,7 @@ LinkedTestClass* randomTestClass(NSString* description)
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
-        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
         done = percentComplete;
     }];
@@ -534,9 +534,9 @@ LinkedTestClass* randomTestClass(NSString* description)
     [store loadObjectWithID:@[[obj1 kinveyObjectId],[obj2 kinveyObjectId]] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
-        ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
+        ReffedTestClass* ret = objectsOrNil[0];
         STAssertEquals((int) [ret.arrayOfOthers count], (int)2, @"Should have two saved objects");
-        LinkedTestClass* newRef = [ret.arrayOfOthers objectAtIndex:0];
+        LinkedTestClass* newRef = ret.arrayOfOthers[0];
         STAssertEquals(newRef.objCount, ref2.objCount, @"Should be the same object back");
         newRef = [ret.arrayOfOthers objectAtIndex:1];
         STAssertEquals(newRef.objCount, ref3.objCount, @"Should be the same object back");
@@ -631,7 +631,7 @@ LinkedTestClass* randomTestClass(NSString* description)
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
-        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
         done = percentComplete;
     }];
@@ -640,7 +640,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     done = -1;
     
-    KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"^query - 1"];
+    KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"^Test with.*1"];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -668,7 +668,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
+    KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:@[obj1,obj2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -679,7 +679,7 @@ LinkedTestClass* randomTestClass(NSString* description)
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
-        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
         done = percentComplete;
     }];
@@ -725,7 +725,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     __block double done = -1;
     
-    KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
+    KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
     [store saveObject:@[obj2, obj1] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -736,7 +736,7 @@ LinkedTestClass* randomTestClass(NSString* description)
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
-        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
         done = percentComplete;
     }];
@@ -747,12 +747,12 @@ LinkedTestClass* randomTestClass(NSString* description)
     done = -1;
     
     KCSLinkedAppdataStore* store2 = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
-    KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"^- 2"];
+    KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"^.*- 2"];
     [store2 queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         STAssertEquals((int) [objectsOrNil count], (int) 1, @"should have loaded just one object");
-        ReffedTestClass* newObj = [objectsOrNil objectAtIndex:0];
+        ReffedTestClass* newObj = objectsOrNil[0];
         STAssertEqualObjects(newObj.objId, obj2.objId, @"Should get back the right id");
         ReffedTestClass* ref = newObj.thisOther;
         STAssertTrue([ref isKindOfClass:[ReffedTestClass class]], @"Should be a ref class");
@@ -760,7 +760,7 @@ LinkedTestClass* randomTestClass(NSString* description)
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
-        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
         done = percentComplete;
     }];
@@ -994,10 +994,10 @@ LinkedTestClass* randomTestClass(NSString* description)
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         STAssertEquals((int) [objectsOrNil count], (int) 4, @"should have loaded all four objects");
-        ReffedTestClass* prime1 = [objectsOrNil objectAtIndex:0];
-        ReffedTestClass* prime2 = [objectsOrNil objectAtIndex:1];
-        ReffedTestClass* prime3 = [objectsOrNil objectAtIndex:2];
-        ReffedTestClass* prime4 = [objectsOrNil objectAtIndex:3];
+        ReffedTestClass* prime1 = objectsOrNil[0];
+        ReffedTestClass* prime2 = objectsOrNil[1];
+        ReffedTestClass* prime3 = objectsOrNil[2];
+        ReffedTestClass* prime4 = objectsOrNil[3];
         STAssertEqualObjects(prime1.thisOther.objId, prime2.objId, @"Should get back the original reference object");
         STAssertEqualObjects(prime2.thisOther.objId, prime3.objId, @"Should get back the original reference object");
         STAssertEqualObjects(prime3.thisOther.objId, prime4.objId, @"Should get back the original reference object");
@@ -1088,7 +1088,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     [store saveObject:obj1 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
-        NestingRefClass* ret = [objectsOrNil objectAtIndex:0];
+        NestingRefClass* ret = objectsOrNil[0];
         ReffedTestClass* newRef = ret.relatedObject;
         STAssertEquals(newRef.objCount, obj2.objCount, @"Should be the same object back");
         self.done = YES;
@@ -1103,13 +1103,12 @@ LinkedTestClass* randomTestClass(NSString* description)
     self.done = NO;
     done = -1;
 
-    KCSQuery *query = [KCSQuery queryOnField:@"relatedObject"
-                      withExactMatchForValue:obj2];
+    KCSQuery *query = [KCSQuery queryOnField:@"relatedObject._id" withExactMatchForValue:obj2];
     
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertNotNil(objectsOrNil, @"should have gotten back the objects");
-        NestingRefClass* ret = [objectsOrNil objectAtIndex:0];
+        NestingRefClass* ret = objectsOrNil[0];
         ReffedTestClass* newRef = ret.relatedObject;
         STAssertEquals(newRef.objCount, obj2.objCount, @"Should be the same object back");
         self.done = YES;

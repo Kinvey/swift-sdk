@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/26/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -235,9 +235,9 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
             NSString *within = KCSConditionalStringFromEnum(kKCSWithin);
             NSDictionary *geoQ = nil;
             if (op == kKCSNearSphere){
-                geoQ = @{ opName : [queries objectAtIndex:0] };
+                geoQ = @{ opName : queries[0] };
             } else {
-                geoQ = @{ within :@{ opName : [queries objectAtIndex:0]}};
+                geoQ = @{ within :@{ opName : queries[0]}};
             }
             
             //////////// HACK //////////////
@@ -260,8 +260,8 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
             if (fieldname == nil || queries == nil){
                 return nil;
             }
-            if (queries.count >0 && [[queries objectAtIndex:0] isKindOfClass:[NSArray class]]) {
-                queries = [queries objectAtIndex:0];
+            if (queries.count >0 && [queries[0] isKindOfClass:[NSArray class]]) {
+                queries = queries[0];
             }
             NSDictionary *innerQ = @{opName : queries};
             query = @{fieldname : innerQ};

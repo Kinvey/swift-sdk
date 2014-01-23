@@ -562,6 +562,9 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
             }
             NSMutableArray* refArray = [NSMutableArray arrayWithCapacity:[arrayValue count]];
             for (id arrayVal in arrayValue) {
+                if ([arrayVal isEqual:[NSNull null]]) {
+                    continue;
+                }
                 KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:arrayVal andCollection:refCollection];
                 if ([ref unableToSaveReference:shouldSaveRef]) {
                     setError(error, *objectId, jsonName);
