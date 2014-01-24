@@ -65,9 +65,11 @@
     NSString            *_path;
     dispatch_queue_t    _queue;
     KCS_FMDatabase          *_db;
+    int                 _openFlags;
 }
 
 @property (atomic, retain) NSString *path;
+@property (atomic, readonly) int openFlags;
 
 ///----------------------------------------------------
 /// @name Initialization, opening, and closing of queue
@@ -82,6 +84,15 @@
 
 + (instancetype)databaseQueueWithPath:(NSString*)aPath;
 
+/** Create queue using path and specified flags.
+ 
+ @param aPath The file path of the database.
+ @param openFlags Flags passed to the openWithFlags method of the database
+ 
+ @return The `FMDatabaseQueue` object. `nil` on error.
+ */
++ (instancetype)databaseQueueWithPath:(NSString*)aPath flags:(int)openFlags;
+
 /** Create queue using path.
 
  @param aPath The file path of the database.
@@ -90,6 +101,25 @@
  */
 
 - (instancetype)initWithPath:(NSString*)aPath;
+
+/** Create queue using path and specified flags.
+ 
+ @param aPath The file path of the database.
+ @param openFlags Flags passed to the openWithFlags method of the database
+ 
+ @return The `FMDatabaseQueue` object. `nil` on error.
+ */
+
+- (instancetype)initWithPath:(NSString*)aPath flags:(int)openFlags;
+
+/** Returns the Class of 'FMDatabase' subclass, that will be used to instantiate database object.
+ 
+ Subclasses can override this method to return specified Class of 'FMDatabase' subclass.
+ 
+ @return The Class of 'FMDatabase' subclass, that will be used to instantiate database object.
+ */
+
++ (Class)databaseClass;
 
 /** Close database used by queue. */
 

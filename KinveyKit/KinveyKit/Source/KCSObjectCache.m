@@ -301,33 +301,34 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 }
 
 #pragma mark - Saving
-- (void) updateObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection collectionCache:(NSCache*)clnCache
+- (BOOL) updateObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection collectionCache:(NSCache*)clnCache
 {
     NSString* key = entity[KCSEntityKeyId];
     if (!key) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"No id provided for entity: %@, collection: %@", entity, collection);
-        return;
+        return NO;
     }
     [clnCache setObject:object forKey:entity[KCSEntityKeyId]];
+    __block BOOL updated = NO;
     dispatch_sync(_cacheQueue, ^{
-        [_persistenceLayer updateWithEntity:entity route:route collection:collection];
+        updated = [_persistenceLayer updateWithEntity:entity route:route collection:collection];
     });
     
-    if (_preCalculatesResults == YES) {
+    if (updated && _preCalculatesResults) {
         [self preCalculateQueries:entity route:route collection:collection];
     }
-    
+    return updated;
 }
 
-- (void) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
+- (BOOL) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
 {
     if (object == nil) {
-        return;
+        return NO;
     }
     NSDictionary* entity = [self.dataModel jsonEntityForObject:object route:route collection:collection];
     NSCache* clnCache = [self cacheForRoute:route collection:collection];
     
-    [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
+    BOOL updated = [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
     
     if (self.offlineUpdateEnabled) {
         //had a good save
@@ -335,6 +336,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
             [_offline hadASucessfulConnection];
         });
     }
+    return updated;
 }
 
 - (void) updateCacheForObject:(NSString*)objId withEntity:(NSDictionary*)entity atRoute:(NSString*)route collection:(NSString*)collection
@@ -508,13 +510,16 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 - (void) cacheActiveUser:(id<KCSUser2>)user
 {
     KCSCollection* userCollection = [KCSCollection userCollection];
-    [self updateObject:user route:[userCollection route] collection:userCollection.collectionName];
-    NSString* userId = user.userId;
-    setIfNil(userId, @"");
-    dispatch_sync(_cacheQueue, ^{
-        [_persistenceLayer setClientMetadata:@{@"appkey" : [KCSClient2 sharedClient].configuration.appKey,
-                                               @"activeUser" : userId}];
-    });
+    BOOL updated = [self updateObject:user route:[userCollection route] collection:userCollection.collectionName];
+    
+    if (updated) {
+        NSString* userId = user.userId;
+        setIfNil(userId, @"");
+        dispatch_sync(_cacheQueue, ^{
+            [_persistenceLayer setClientMetadata:@{@"appkey" : [KCSClient2 sharedClient].configuration.appKey,
+                                                   @"activeUser" : userId}];
+        });
+    }
 }
 
 - (id<KCSUser2>) lastActiveUser

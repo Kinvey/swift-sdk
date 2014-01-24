@@ -328,7 +328,7 @@
 - (NSString*) tableForRoute:(NSString*)route collection:(NSString*)collection
 {
 //    collection = [collection stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
-    return [NSString stringWithFormat:@"%@_%@",route,collection];
+    return [NSString stringWithFormat:@"[%@_%@]",route,collection];
 }
 
 - (BOOL) tableExists:(NSString*)tableString
