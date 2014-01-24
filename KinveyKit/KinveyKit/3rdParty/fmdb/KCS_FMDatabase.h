@@ -13,7 +13,7 @@
 
     #define FMDBRelease(__v) ([__v release]);
 
-	#define FMDBDispatchQueueRelease(__v) (dispatch_release(__v));
+    #define FMDBDispatchQueueRelease(__v) (dispatch_release(__v));
 #else
     // -fobjc-arc
     #define FMDBAutorelease(__v)
@@ -24,25 +24,14 @@
 
     #define FMDBRelease(__v)
 
-	#if TARGET_OS_IPHONE
-		// Compiling for iOS
-		#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
-			// iOS 6.0 or later
-			#define FMDBDispatchQueueRelease(__v)
-		#else
-			// iOS 5.X or earlier
-			#define FMDBDispatchQueueRelease(__v) (dispatch_release(__v));
-		#endif
-	#else
-		// Compiling for Mac OS X
-		#if MAC_OS_X_VERSION_MIN_REQUIRED >= 1080     
-			// Mac OS X 10.8 or later
-			#define FMDBDispatchQueueRelease(__v)
-		#else
-			// Mac OS X 10.7 or earlier
-			#define FMDBDispatchQueueRelease(__v) (dispatch_release(__v));
-		#endif
-	#endif
+// If OS_OBJECT_USE_OBJC=1, then the dispatch objects will be treated like ObjC objects
+// and will participate in ARC.
+// See the section on "Dispatch Queues and Automatic Reference Counting" in "Grand Central Dispatch (GCD) Reference" for details. 
+    #if OS_OBJECT_USE_OBJC
+        #define FMDBDispatchQueueRelease(__v)
+    #else
+        #define FMDBDispatchQueueRelease(__v) (dispatch_release(__v));
+    #endif
 #endif
 
 #if !__has_feature(objc_instancetype)
@@ -85,7 +74,7 @@
     BOOL                _shouldCacheStatements;
     BOOL                _isExecutingStatement;
     BOOL                _inTransaction;
-    int                 _busyRetryTimeout;
+    NSTimeInterval      _busyTimeout;
     
     NSMutableDictionary *_cachedStatements;
     NSMutableSet        *_openResultSets;
@@ -108,7 +97,7 @@
 
 /** Busy retry timeout */
 
-@property (atomic, assign) int busyRetryTimeout;
+@property (atomic, assign) NSTimeInterval busyTimeout;
 
 /** Crash on errors */
 
@@ -347,6 +336,12 @@
 
 - (BOOL)executeUpdate:(NSString*)sql withParameterDictionary:(NSDictionary *)arguments;
 
+
+
+// Documentation forthcoming.
+- (BOOL)executeUpdate:(NSString*)sql withVAList: (va_list)args;
+
+
 /** Last insert rowid
  
  Each entry in an SQLite table has a unique 64-bit signed integer key called the "rowid". The rowid is always available as an undeclared column named `ROWID`, `OID`, or `_ROWID_` as long as those names are not also used by explicitly declared columns. If the table has a column of type `INTEGER PRIMARY KEY` then that column is another alias for the rowid.
@@ -452,6 +447,12 @@
  */
 
 - (KCS_FMResultSet *)executeQuery:(NSString *)sql withParameterDictionary:(NSDictionary *)arguments;
+
+
+// Documentation forthcoming.
+- (KCS_FMResultSet *)executeQuery:(NSString*)sql withVAList: (va_list)args;
+
+
 
 ///-------------------
 /// @name Transactions
@@ -688,6 +689,11 @@
  */
 
 - (NSError*)lastError;
+
+
+// description forthcoming
+- (void)setRetryTimeout:(NSTimeInterval)timeout;
+- (NSTimeInterval)retryTimeout;
 
 
 #if SQLITE_VERSION_NUMBER >= 3007000
@@ -931,6 +937,7 @@
     sqlite3_stmt *_statement;
     NSString *_query;
     long _useCount;
+    BOOL _inUse;
 }
 
 ///-----------------
@@ -952,6 +959,7 @@
 
 @property (atomic, assign) sqlite3_stmt *statement;
 
+@property (atomic, assign) BOOL inUse;
 
 ///----------------------------
 /// @name Closing and Resetting
