@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/10/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -20,12 +20,8 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 
-@class KCSMockConnection;
-
 @interface KCSCachedStoreTests : SenTestCase
 {
-    KCSMockConnection* _conn;
-    NSUInteger _callbackCount;
 }
 
 @end

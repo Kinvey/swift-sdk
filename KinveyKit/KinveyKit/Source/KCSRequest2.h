@@ -63,4 +63,5 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
 
 //for testing
 - (NSMutableURLRequest*)urlRequest;
++ (void) setRequestArray:(NSMutableArray*)requestArray;
 @end

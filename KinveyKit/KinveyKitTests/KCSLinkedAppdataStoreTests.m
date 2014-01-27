@@ -849,7 +849,7 @@ LinkedTestClass* randomTestClass(NSString* description)
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
-        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
         done = percentComplete;
     }];
@@ -909,7 +909,7 @@ LinkedTestClass* randomTestClass(NSString* description)
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
-        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        STAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
         done = percentComplete;
     }];

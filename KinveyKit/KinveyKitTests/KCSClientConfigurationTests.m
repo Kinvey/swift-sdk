@@ -25,6 +25,7 @@
 #import "KCSClient.h"
 #import "KinveyUser.h"
 #import "KCSHiddenMethods.h"
+#import "NSString+KinveyAdditions.h"
 
 @interface KCSClientConfigurationTests : SenTestCase
 
@@ -83,6 +84,17 @@
     STAssertThrows([[KCSClient sharedClient] initializeWithConfiguration:badConfig], @"throws");
 }
 
+- (void) setUser
+{
+    KCSUser* u = [[KCSUser alloc] init];
+    u.userId = [NSString UUID];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    [KCSClient sharedClient].currentUser = u;
+#pragma clang diagnostic pop
+    STAssertNotNil([KCSUser  activeUser], @"should have a user");
+}
+
 - (void) testKeyChangesClearsUser
 {
     KCSClientConfiguration* c1 = [KCSClientConfiguration configurationWithAppKey:@"1" secret:@"1"];
@@ -91,12 +103,7 @@
     NSString* ak1 = [[KCSAppdataStore caches] cachedAppKey];
     STAssertNotNil(ak1, @"should have a key");
     
-    KCSUser* u = [[KCSUser alloc] init];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-    [KCSClient sharedClient].currentUser = u;
-#pragma clang diagnostic pop
-    STAssertNotNil([KCSUser  activeUser], @"should have a user");
+    [self setUser];
     
     KCSClientConfiguration* c2 = [KCSClientConfiguration configurationWithAppKey:@"2" secret:@"2"];
     [[KCSClient sharedClient] initializeWithConfiguration:c2];

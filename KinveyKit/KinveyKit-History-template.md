@@ -23,6 +23,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
 * Bug fix(es):
      * Fix issue where `KCSUserDiscovery` callback called twice.
      * Stability fixes for active user refresh.
+     * Fix several issues with files and user queries. 
 * Code cleanup:
      * Deprecated `KCSAllObjects`; use `[KCSQuery query]` instead.
      * Deprecated `KCSCollectionDelegate` and networking-methods of the `KCSCollection` class. These don't get the benefit of caching, error handling etc. 

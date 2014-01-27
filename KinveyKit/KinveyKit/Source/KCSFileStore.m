@@ -1011,7 +1011,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                         }
                         DBAssert(downloadedResources == nil || downloadedResources.count == 1, @"should only get 1 per download");
                         if (downloadedResources != nil && downloadedResources.count > 0) {
-                            files[idx] = downloadedResources[0];
+                            [files addObject:downloadedResources[0]];
                         }
                         if (++completedCount == objectsOrNil.count) {
                             //only call completion when all done

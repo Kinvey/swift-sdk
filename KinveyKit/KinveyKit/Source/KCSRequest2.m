@@ -226,6 +226,10 @@ static NSOperationQueue* queue;
     
     [[KCSNetworkObserver sharedObserver] connectionStart];
     [queue addOperation:op];
+    
+#if BUILD_FOR_UNIT_TEST
+    [_sRequestArray addObject:request];
+#endif
     return op;
 }
 
@@ -331,4 +335,12 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
 {
     return [NSString stringWithFormat:@"%@ [%@]", [super debugDescription], [self finalURL]];
 }
+
+#if BUILD_FOR_UNIT_TEST
+static NSMutableArray* _sRequestArray;
++ (void) setRequestArray:(NSMutableArray*)requestArray
+{
+    _sRequestArray = requestArray;
+}
+#endif
 @end
