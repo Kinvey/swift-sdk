@@ -107,8 +107,10 @@ return; \
 }
 
 - (void)parser:(KCS_SBJsonStreamParser *)parser foundObject:(NSDictionary *)dict {
-    id obj = [self.objectMaker manufactureNewObject:dict resourcesOrNil:nil];
-    [_items addObject:obj];
+    if ([dict isKindOfClass:[NSDictionary class]]) {
+        id obj = [self.objectMaker manufactureNewObject:dict resourcesOrNil:nil];
+        [_items addObject:obj];
+    }
 }
 
 @end
@@ -446,11 +448,17 @@ return; \
     } else {
         [self completeLoad:objs withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy] == YES) {
-            [self loadEntityFromNetwork:objectID withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
-                    completionBlock(objectsOrNil, errorOrNil);
-                }
-            } withProgressBlock:nil policy:cachePolicy];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //TODO: this is to keep this operation alive now that this method is called on a background thread.
+                KK2(use a series of dependent operation blocks)
+                KK2(should this use silent bg updates ever? - maybe everything should have a notification that the client can ignore)
+
+                [self loadEntityFromNetwork:objectID withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                    if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
+                        completionBlock(objectsOrNil, errorOrNil);
+                    }
+                } withProgressBlock:nil policy:cachePolicy];
+            });
         }
     }
 }
@@ -459,7 +467,7 @@ return; \
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    [self loadObjectWithID:objectID withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:_cachePolicy];
+    [self loadObjectWithID:objectID withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:self.cachePolicy];
 }
 
 #pragma mark - Querying
@@ -515,7 +523,8 @@ NSError* createCacheError(NSString* message)
 {
     return cachePolicy == KCSCachePolicyNone ||
            cachePolicy == KCSCachePolicyNetworkFirst ||
-           (cachePolicy != KCSCachePolicyLocalOnly && cachedResult == nil);
+           (cachePolicy != KCSCachePolicyLocalOnly && (cachedResult == nil ||
+                                                       ([cachedResult isKindOfClass:[NSArray class]] && [cachedResult count] == 0)));
 }
 
 - (BOOL) shouldUpdateInBackground:(KCSCachePolicy)cachePolicy
@@ -573,23 +582,28 @@ NSError* createCacheError(NSString* message)
 {
     //Hold on the to the object first, in case the cache is cleared during this process
     id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
-    if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy] == YES) {
+    if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy]) {
         [self queryNetwork:query withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
     } else {
         [self completeQuery:obj withCompletionBlock:completionBlock];
-        if ([self shouldUpdateInBackground:cachePolicy] == YES) {
-            [self queryNetwork:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
-                    completionBlock(objectsOrNil, errorOrNil);
-                }
-            } withProgressBlock:nil policy:cachePolicy];
+        if ([self shouldUpdateInBackground:cachePolicy]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //TODO: this is to keep this operation alive now that this method is called on a background thread.
+                KK2(use a series of dependent operation blocks)
+                KK2(should this use silent bg updates ever? - maybe everything should have a notification that the client can ignore)
+                [self queryNetwork:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                    if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy]) {
+                        completionBlock(objectsOrNil, errorOrNil);
+                    }
+                } withProgressBlock:nil policy:cachePolicy];
+            });
         }
     }
 }
 
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    [self queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:_cachePolicy];
+    [self queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:self.cachePolicy];
 }
 
 #pragma mark - grouping
@@ -730,18 +744,24 @@ NSError* createCacheError(NSString* message)
     } else {
         [self completeGroup:obj withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy] == YES) {
-            [self groupNetwork:fields reduce:function condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-                if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
-                    completionBlock(valuesOrNil, errorOrNil);
-                }
-            } progressBlock:nil policy:cachePolicy];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //TODO: this is to keep this operation alive now that this method is called on a background thread.
+                KK2(use a series of dependent operation blocks)
+                KK2(should this use silent bg updates ever? - maybe everything should have a notification that the client can ignore)
+
+                [self groupNetwork:fields reduce:function condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+                    if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy] == YES) {
+                        completionBlock(valuesOrNil, errorOrNil);
+                    }
+                } progressBlock:nil policy:cachePolicy];
+            });
         }
     }
 }
 
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
-    [self group:fieldOrFields reduce:function condition:condition completionBlock:completionBlock progressBlock:progressBlock cachePolicy:_cachePolicy];
+    [self group:fieldOrFields reduce:function condition:condition completionBlock:completionBlock progressBlock:progressBlock cachePolicy:self.cachePolicy];
 }
 
 

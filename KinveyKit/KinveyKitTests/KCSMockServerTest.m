@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/15/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -103,13 +103,13 @@
     NSMutableURLRequest* req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://v3yk1n.kinvey.com/!reflection/kid_test"]];
     NSDictionary* headers = @{@"A":@"B"};
     req.allHTTPHeaderFields = headers;
-    id body = @[@"A",@{@"K":@1}];
+    id body = @{@"results":@[@"A",@{@"K":@1}]};
     req.HTTPBody = [[[KCS_SBJsonWriter alloc] init] dataWithObject:body];
     
     KCSNetworkResponse* x = [_server responseForRequest:req];
     KTAssertNotNil(x);
     KTAssertEqualsInt(x.code, 200);
-    STAssertEqualObjects(x.jsonData, body, @"body must match");
+    STAssertEqualObjects([x jsonObject], body, @"body must match");
     STAssertEqualObjects(x.headers, headers, @"headers must match");
 }
 

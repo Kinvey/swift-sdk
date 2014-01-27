@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 11/12/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -36,6 +36,7 @@
 {
     KCSUser* user = [[KCSUser alloc] init];
     user.username = @"mock";
+    user.userId = @"mockId";
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
     [KCSClient sharedClient].currentUser = user;
@@ -184,7 +185,7 @@
     self.done = NO;
     [self.update start];
     [self poll];
-    STAssertTrue(self.delegate.shouldDeleteCalled, @"should be called");
+    STAssertTrue(self.delegate.shouldEnqueueCalled, @"should be called");
     STAssertFalse(self.delegate.didDeleteCalled, @"shoul dnot calle delete");
     STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
     STAssertEquals([self.persistence unsavedCount], (int)1, @"should be one");

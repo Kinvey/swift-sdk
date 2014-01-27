@@ -129,6 +129,8 @@
         [[NSException exceptionWithName:@"KinveyInitializationError" reason:@"App Key contains invalid characters, check to make sure App Key is correct!" userInfo:nil] raise];
     }
     
+    [[KCSAppdataStore caches] cacheAppKey:configuration.appKey];
+    
     if (self.options[KCS_CONNECTION_TIMEOUT]) {
         _connectionTimeout = [self.options[KCS_CONNECTION_TIMEOUT] doubleValue];
     }

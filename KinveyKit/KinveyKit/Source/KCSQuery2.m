@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/23/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -40,13 +40,13 @@ NSString* kcsQueryOperatorString(KCSQueryOperation op)
             operator = @"$lt";
             break;
         case KCSQueryLessThanOrEqual:
-            operator = @"lte";
+            operator = @"$lte";
             break;
         case KCSQueryGreaterThan:
-            operator = @"gt";
+            operator = @"$gt";
             break;
         case KCSQueryGreaterThanOrEqual:
-            operator = @"gte";
+            operator = @"$gte";
             break;
         default:
             break;
@@ -163,7 +163,12 @@ NSString* kcsConvertMongoOpToPredicate(NSString* op)
     static NSDictionary* opMapper;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        opMapper = @{@"$in"    : @"IN",
+        opMapper = @{@"$lt"    : @"<",
+                     @"$lte"   : @"<=",
+                     @"$gt"    : @">",
+                     @"$gte"   : @">=",
+                     @"ne"     : @"!=",
+                     @"$in"    : @"IN",
                      @"$regex" : @"MATCHES"};
     });
     return opMapper[op];

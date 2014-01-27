@@ -497,6 +497,15 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 #pragma mark - metadata
 
+- (void) cacheAppKey:(NSString*)appKey
+{
+    dispatch_sync(_cacheQueue, ^{
+        NSMutableDictionary* metadata = [NSMutableDictionary dictionaryWithDictionary:[_persistenceLayer clientMetadata]];
+        metadata[@"appkey"] = appKey;
+        [_persistenceLayer setClientMetadata:metadata];
+    });
+}
+
 - (NSString*) cachedAppKey
 {
     __block NSString* appKey = nil;
@@ -516,8 +525,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
         NSString* userId = user.userId;
         setIfNil(userId, @"");
         dispatch_sync(_cacheQueue, ^{
-            [_persistenceLayer setClientMetadata:@{@"appkey" : [KCSClient2 sharedClient].configuration.appKey,
-                                                   @"activeUser" : userId}];
+            NSMutableDictionary* metadata = [NSMutableDictionary dictionaryWithDictionary:[_persistenceLayer clientMetadata]];
+            metadata[@"activeUser"] = userId;
+            [_persistenceLayer setClientMetadata:metadata];
         });
     }
 }

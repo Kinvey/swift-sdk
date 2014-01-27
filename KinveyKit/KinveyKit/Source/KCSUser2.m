@@ -79,6 +79,9 @@
 
 - (NSString *)authString
 {
+    if (!self.userId) {
+        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Active user does not have an `id` set." userInfo:@{@"user":self}] raise];
+    }
     NSString* token = [KCSKeychain2 kinveyTokenForUserId:self.userId];
     NSString *authString = @"";
     if (token) {
