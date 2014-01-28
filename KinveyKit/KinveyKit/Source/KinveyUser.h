@@ -135,32 +135,42 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 ///---------------------------------------------------------------------------------------
 /// @name User Information
 ///---------------------------------------------------------------------------------------
+
 /*! Username of this Kinvey User. Publicly queryable be default. */
 @property (nonatomic, copy) NSString *username;
-/*! Password of this Kinvey User 
+
+/*! Password of this Kinvey User
  @deprecatedIn 1.25.0 
  @deprecated password is no longer stored
  */
 @property (nonatomic, copy) NSString *password KCS_DEPRECATED(Password no longer stored in library, 1.25.0);
+
 /** The Kinvey user collection id for the user */
 @property (nonatomic, strong) NSString *userId;
+
 /*! Device Tokens of this User */
 @property (nonatomic, readonly, strong) NSMutableSet *deviceTokens;
-/*! Session Auth Token, if available 
+
+/*! Session Auth Token, if available
  @deprecated token now lives in the keychain
  @deprecatedIn 1.25.0
  */
 @property (nonatomic, copy) NSString *sessionAuth  KCS_DEPRECATED(Token no longer stored with the user object, 1.25.0);;
-/*! Access Control Metadata of this User 
+
+/*! Access Control Metadata of this User
  @see KCSPersistable
  */
 @property (nonatomic, strong) KCSMetadata *metadata;
+
 /** Optional surname for the user. Publicly queryable be default. */
 @property (nonatomic, copy) NSString *surname;
+
 /** Optional given (first) name for the user. Publicly queryable be default. */
 @property (nonatomic, copy) NSString *givenName;
+
 /** Optional email address for the user. Publicly queryable be default. */
 @property (nonatomic, copy) NSString *email;
+
 /** Checks if the user has verified email (by clicking the link in the email sent via `sendEmailConfirmationForUser:withCompletionBlock:`).
  @see sendEmailConfirmationForUser:withCompletionBlock:
  @since 10.1.0
