@@ -248,7 +248,6 @@
 		276B73D61832580D0037CAAC /* KCSOfflineUpdate.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B73D31832580D0037CAAC /* KCSOfflineUpdate.h */; };
 		276B73D71832580D0037CAAC /* KCSOfflineUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 276B73D41832580D0037CAAC /* KCSOfflineUpdate.m */; };
 		276B73D81832580D0037CAAC /* KCSOfflineUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 276B73D41832580D0037CAAC /* KCSOfflineUpdate.m */; };
-		276E4747188D529100A8FC69 /* Metatests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AFD4CF15C8866D00A44F4F /* Metatests.m */; };
 		2774CD7117E8E06F00125E47 /* KCSTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 2774CD7017E8E06F00125E47 /* KCSTask.h */; };
 		2774CD7217E8E06F00125E47 /* KCSTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 2774CD7017E8E06F00125E47 /* KCSTask.h */; };
 		2774CD7317E8E11000125E47 /* KCSDataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27465349174E6CFE0013546E /* KCSDataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -693,8 +692,6 @@
 		2718279C16B8A78700825D50 /* KCSImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSImageUtils.h; sourceTree = "<group>"; };
 		2718279D16B8A78700825D50 /* KCSImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSImageUtils.m; sourceTree = "<group>"; };
 		271827A916B9A1D000825D50 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
-		271827AE16B9A27800825D50 /* KCSAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAnalytics.h; sourceTree = "<group>"; };
-		271827AF16B9A27800825D50 /* KCSAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSAnalytics.m; sourceTree = "<group>"; };
 		271827C616C0357500825D50 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		271DE7B917728815003541D4 /* mavericks.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = mavericks.jpg; sourceTree = "<group>"; };
 		271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPropertyUtil.h; sourceTree = "<group>"; };
@@ -1329,8 +1326,6 @@
 			children = (
 				2766E63716834B78000D27C5 /* KinveyKit_mac.h */,
 				2766E63816834B78000D27C5 /* KinveyKit_mac.m */,
-				271827AE16B9A27800825D50 /* KCSAnalytics.h */,
-				271827AF16B9A27800825D50 /* KCSAnalytics.m */,
 				278519B917BAD5660044D877 /* KCSPush.h */,
 				278519BA17BAD5660044D877 /* KCSPush.m */,
 				2766E63116834B78000D27C5 /* Supporting Files */,
@@ -3107,7 +3102,6 @@
 				27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */,
 				273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */,
 				27E0B36415E523B400B83E72 /* KCSGenericRestTests.m in Sources */,
-				276E4747188D529100A8FC69 /* Metatests.m in Sources */,
 				2736B19216271D50006CF960 /* KinveyKitNSDictionaryTests.m in Sources */,
 				27CA5A7817F20838007E0E10 /* FileRequestTests.m in Sources */,
 				27E4E748181B36620071061B /* EntityCacheTests.m in Sources */,
