@@ -342,5 +342,11 @@ static NSMutableArray* _sRequestArray;
 {
     _sRequestArray = requestArray;
 }
+#else
++ (void) setRequestArray:(NSMutableArray*)requestArray
+{
+    NSAssert(NO, @"Should not call this function");
+}
 #endif
+
 @end

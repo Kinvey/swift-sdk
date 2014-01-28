@@ -47,26 +47,18 @@
 
 + (BOOL) checkForTwitterCredentials
 {
-    //#if TARGET_OS_IPHONE
-    //    return [TWTweetComposeViewController canSendTweet];
-    //#else
-    //    NSSharingService *tweetSharingService = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
-    //    return [tweetSharingService canPerformWithItems:nil];
-    //#endif
-    return [SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter];
+    #if TARGET_OS_IPHONE
+        return [SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter];
+    #else
+        NSSharingService *tweetSharingService = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
+        return [tweetSharingService canPerformWithItems:nil];
+    #endif
 }
 
 + (BOOL) canUseNativeTwitter
 {
-#if TARGET_OS_IPHONE
-    NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
-    BOOL osVersionSupported = ([currSysVer compare:@"5.0" options:NSNumericSearch] != NSOrderedAscending);
-#else
-    SInt32 version = 0;
-    Gestalt( gestaltSystemVersion, &version );
-    BOOL osVersionSupported = YES; //TODO: check for 10.8
-#endif
-    return osVersionSupported && [self checkForTwitterCredentials] && [self checkForTwitterKeys];
+    //support is OS 10.9+, iOS 6.0+
+    return YES;
 }
 
 + (void) getAccessDictionaryFromTwitterFromPrimaryAccount:(KCSLocalCredentialBlock)completionBlock

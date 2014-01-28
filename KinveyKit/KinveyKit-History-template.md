@@ -5,17 +5,7 @@
 ** Release Date:** TBA
 
 * Drop support for iOS 5. 
-* __TODO: add obsevers
-/** Notification for when a network operation starts 
- @since 1.26.0
- */
-KCS_CONSTANT KCSNetworkConnectionDidStart;
-/** Notification for when a network operation ends 
- @since 1.26.0
- */
-KCS_CONSTANT KCSNetworkConnectionDidEnd;
-     * __TODO__ see sample app, widgets  (also todo: update the changelogs for these)
-     * __TODO__ update ios-specific guide
+* Added [network activity notifications](http://devcenter.kinvey.com/ios/guides/iossdk#activityindicator): `KCSNetworkConnectionDidStart` and `KCSNetworkConnectionDidEnd`.
 * Added `@"Kinvey.ExecutedHooks"`key to completionBlock error object `userInfo` dictionaries. This will show which collection hooks were executed as part of the request. This will help troubleshoot when getting unexpected results from an API call.
 * Internal performance improvements. In particular, data store completion block callbacks should now always be called on main thread, and progress blocks on arbitrary background thread. 
 * Dependency change:
@@ -24,6 +14,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
      * Fix issue where `KCSUserDiscovery` callback called twice.
      * Stability fixes for active user refresh.
      * Fix several issues with files and user queries. 
+     * Multiple simultaneous custom endpoint requests is now handled properly. 
 * Code cleanup:
      * Deprecated `KCSAllObjects`; use `[KCSQuery query]` instead.
      * Deprecated `KCSCollectionDelegate` and networking-methods of the `KCSCollection` class. These don't get the benefit of caching, error handling etc. 

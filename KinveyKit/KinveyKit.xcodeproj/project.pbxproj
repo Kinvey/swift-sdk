@@ -330,6 +330,8 @@
 		2798E33017C7B69D00284F2A /* NSError+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */; };
 		27A93B53156AD14800810B88 /* KCSReduceFunctionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */; };
 		27A93B57156AD2D500810B88 /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
+		27AB77B818971EED00D9A6F7 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27AB77B718971EEC00D9A6F7 /* CoreLocation.framework */; };
+		27AB77BA18971F3800D9A6F7 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27AB77B918971F3800D9A6F7 /* Social.framework */; };
 		27AC2F25161CA258008A05E1 /* KCSClient+ConfigurationTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27AC2F23161CA258008A05E1 /* KCSClient+ConfigurationTest.h */; };
 		27AC2F26161CA258008A05E1 /* KCSClient+ConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AC2F24161CA258008A05E1 /* KCSClient+ConfigurationTest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		27AFF3A51832893800B9992C /* OfflineTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AFF3A41832893800B9992C /* OfflineTests.m */; };
@@ -860,6 +862,8 @@
 		27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReduceFunctionTests.m; sourceTree = "<group>"; };
 		27A93B55156AD2D500810B88 /* ASTTestClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASTTestClass.h; sourceTree = "<group>"; };
 		27A93B56156AD2D500810B88 /* ASTTestClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASTTestClass.m; sourceTree = "<group>"; };
+		27AB77B718971EEC00D9A6F7 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
+		27AB77B918971F3800D9A6F7 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Social.framework; sourceTree = DEVELOPER_DIR; };
 		27AC2F23161CA258008A05E1 /* KCSClient+ConfigurationTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSClient+ConfigurationTest.h"; sourceTree = "<group>"; };
 		27AC2F24161CA258008A05E1 /* KCSClient+ConfigurationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSClient+ConfigurationTest.m"; sourceTree = "<group>"; };
 		27AFD4CE15C8866D00A44F4F /* Metatests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Metatests.h; sourceTree = "<group>"; };
@@ -1102,6 +1106,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27AB77BA18971F3800D9A6F7 /* Social.framework in Frameworks */,
+				27AB77B818971EED00D9A6F7 /* CoreLocation.framework in Frameworks */,
 				27FB2A7716FCEC7400CD7D5C /* Accounts.framework in Frameworks */,
 				27B7724216E7C63500610D11 /* WebKit.framework in Frameworks */,
 				271827C716C0357700825D50 /* Security.framework in Frameworks */,
@@ -1843,6 +1849,8 @@
 		D32A60CA14716EE300F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				27AB77B918971F3800D9A6F7 /* Social.framework */,
+				27AB77B718971EEC00D9A6F7 /* CoreLocation.framework */,
 				27264AE91880AD1E002C37C9 /* Social.framework */,
 				27EAB7361770A610008E6B32 /* XCTest.framework */,
 				27FB2A7616FCEC7400CD7D5C /* Accounts.framework */,
@@ -2817,7 +2825,6 @@
 				2722574D18355E66009AC268 /* KCSClient+KinveyDataStore.m in Sources */,
 				27B3B08216B8743500E1B540 /* KCSClient.m in Sources */,
 				27B3B08916B875F100E1B540 /* KinveyCollection.m in Sources */,
-				27B3B08B16B8760100E1B540 /* KinveyUser.m in Sources */,
 				27B3B08D16B8764200E1B540 /* KCSRESTRequest.m in Sources */,
 				27B3B08F16B8769300E1B540 /* KCSObjectMapper.m in Sources */,
 				277A4D7617F1B00D00E545EC /* KCSNSURLCxnFileOperation.m in Sources */,
@@ -2840,6 +2847,7 @@
 				276B73D81832580D0037CAAC /* KCSOfflineUpdate.m in Sources */,
 				271827F316C17AE100825D50 /* KCSUserDiscovery.m in Sources */,
 				27525A3C17668E9A0054C17F /* KCS_FMResultSet.m in Sources */,
+				27B3B08B16B8760100E1B540 /* KinveyUser.m in Sources */,
 				271827F516C17AEF00825D50 /* KCSStore.m in Sources */,
 				271827F716C17AF700825D50 /* KCSResourceStore.m in Sources */,
 				277A4D8217F1B11700E545EC /* KCSMockFileOperation.m in Sources */,
@@ -3378,6 +3386,11 @@
 				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/KinveyKit-mac",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
 				INFOPLIST_FILE = "KinveyKit-mac/KinveyKit-mac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
@@ -3409,6 +3422,11 @@
 				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/KinveyKit-mac",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
 				INFOPLIST_FILE = "KinveyKit-mac/KinveyKit-mac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
@@ -3440,6 +3458,11 @@
 				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/KinveyKit-mac",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
 				INFOPLIST_FILE = "KinveyKit-mac/KinveyKit-mac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
@@ -3472,6 +3495,11 @@
 				GCC_PREFIX_HEADER = "KinveyKit-mac/KinveyKit-mac-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/KinveyKit-mac",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
 				INFOPLIST_FILE = "KinveyKit-mac/KinveyKit-mac-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
