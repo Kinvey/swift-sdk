@@ -3,8 +3,20 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/30/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSCustomEndpointTests.h"
 
@@ -45,26 +57,39 @@
 {
     [[KCSUser activeUser] logout];
     STAssertNil([KCSUser activeUser], @"user should be nil'd");
-    self.done = NO;
-    [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
-        STAssertNotNil(errorOrNil, @"should have an error");
-        KTAssertEqualsInt(errorOrNil.code, 401, @"no auth error");
-        self.done = YES;
-    }];
-    [self poll];
-
+    dispatch_block_t call = ^{
+        [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
+            STAssertNotNil(errorOrNil, @"should have an error");
+            KTAssertEqualsInt(errorOrNil.code, 401, @"no auth error");
+            self.done = YES;
+        }];
+    };
+    STAssertThrowsSpecificNamed(call(), NSException, NSInternalInconsistencyException, @"should be an exception");
 }
 
 - (void) testCustomEndpointError
 {
     self.done = NO;
-    [KCSCustomEndpoints callEndpoint:@"bltest-error" params:nil completionBlock:^(id results, NSError *errorOrNil) {
+    [KCSCustomEndpoints callEndpoint:@"bltest-notexist" params:nil completionBlock:^(id results, NSError *errorOrNil) {
         STAssertNotNil(errorOrNil, @"should have an error");
-        STAssertEqualObjects(errorOrNil.domain, KCSBusinessLogicErrorDomain, @"Should be a bl error");
-        STAssertNotNil(errorOrNil.userInfo[NSURLErrorFailingURLStringErrorKey], @"should list the URL");
-        KTAssertEqualsInt(errorOrNil.code, 400, @"should be a 400");
+        //        STAssertEqualObjects(errorOrNil.domain, KCSBusinessLogicErrorDomain, @"Should be a bl error");
+        NSString* url = errorOrNil.userInfo[NSURLErrorFailingURLErrorKey];
+        STAssertNotNil(url, @"should list the URL");
+        KTAssertEqualsInt(errorOrNil.code, 404, @"should be a 400 Not Found");
         self.done = YES;
     }];
     [self poll];
 }
+
+- (void) testChecksBadInputs
+{
+    dispatch_block_t block = ^{
+        [KCSCustomEndpoints callEndpoint:@"foo" params:@{@"A":[NSObject new]} completionBlock:^(id results, NSError *error) {
+            STFail(@"should not get here");
+        }];
+    };
+    
+    STAssertThrowsSpecificNamed(block(), NSException, NSInvalidArgumentException, @"should be an exception");
+}
+
 @end

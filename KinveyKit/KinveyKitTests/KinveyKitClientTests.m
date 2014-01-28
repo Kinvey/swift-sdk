@@ -3,8 +3,20 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/15/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KinveyKitClientTests.h"
 #import "KCSClient.h"
@@ -119,22 +131,6 @@
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil],
                    @"Malformed input DID NOT raise exception!");
-}
-
-// Check that asking for a collection is a lightweight wrapper
-// Semantics of the collections will be tested there
-
-
-- (void)testCollectionIsReallyCollection
-{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    KCSCollection *coll1 = [[KCSClient sharedClient] collectionFromString:@"test"
-                                                                withClass:[NSObject class]];
-#pragma  clang diagnostic pop
-    KCSCollection *coll2 = [KCSCollection collectionFromString:@"test"
-                                                       ofClass:[NSObject class]];
-    STAssertEqualObjects(coll1, coll2, @"should be equal");
 }
 
 - (void)testSingletonIsSingleton

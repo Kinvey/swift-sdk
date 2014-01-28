@@ -2,7 +2,6 @@
 //  KCSMockServer.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/15/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -19,14 +18,23 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KCSNetworkResponse : NSObject
-@property (nonatomic, readonly) NSInteger code;
-@property (nonatomic, readonly, copy) id jsonData;
-+ (instancetype) MockResponseWith:(NSInteger)code data:(id)data;
+@class KCSNetworkResponse;
 
-@end
+KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NSString* message, NSInteger code);
 
 @interface KCSMockServer : NSObject
-- (KCSNetworkResponse*) responseForURL:(NSString*)url;
++ (instancetype)sharedServer;
+
+//default is nil - will match any kid
+@property (nonatomic, retain) NSString* appKey;
+@property (nonatomic) BOOL offline;
+
++ (KCSNetworkResponse*) makeDeleteResponse:(NSInteger)count;
+
+
+- (KCSNetworkResponse*) responseForRequest:(NSURLRequest*)request;
 - (void) setResponse:(KCSNetworkResponse*)response forRoute:(NSString*)route;
+
+- (NSError*) errorForRequest:(NSURLRequest*)request;
+- (void) setError:(NSError*)error forRoute:(NSString*)route;
 @end

@@ -1,11 +1,22 @@
-
-//
+ //
 //  KCSFileStore.m
 //  KinveyKit
 //
 //  Created by Michael Katz on 6/17/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSFileStore.h"
 
@@ -20,13 +31,19 @@
 #import "NSArray+KinveyAdditions.h"
 
 #import "KCSHiddenMethods.h"
-#import "KCSUser+KinveyKit2.h"
 #import "KCSMetadata.h"
 
 #import "KCSAppdataStore.h"
 #import "KCSErrorUtilities.h"
 #import "NSDate+KinveyAdditions.h"
 #import "NSString+KinveyAdditions.h"
+
+#import "KinveyFileStoreInteral.h"
+#import "KCSPlatformUtils.h"
+#import "KCSFileUtils.h"
+
+#import "KCSRequest2.h"
+#import "KCSNetworkResponse.h"
 
 NSString* const KCSFileId = KCSEntityKeyId;
 NSString* const KCSFileACL = KCSEntityKeyMetadata;
@@ -43,14 +60,13 @@ NSString* const KCSFileLinkExpirationTimeInterval = @"ttl_in_seconds";
 #define kServerLMT @"serverlmt"
 #define kRequiredHeaders @"_requiredHeaders"
 #define kBytesWritten @"bytesWritten"
-#define kGCSULID @"ulid"
 #define TIME_INTERVAL 10
 
-NSString* mimeTypeForFilename(NSString* filename)
+NSString* kcsMimeType(id filenameOrURL)
 {
     CFStringRef MIMEType = nil;
-    if (filename != nil) {
-        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[filename pathExtension], NULL);
+    if (filenameOrURL != nil) {
+        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[filenameOrURL pathExtension], NULL);
         if (UTI != nil) {
             MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
             CFRelease(UTI);
@@ -59,23 +75,8 @@ NSString* mimeTypeForFilename(NSString* filename)
     NSString* mimeType = MIMEType ? (NSString*)CFBridgingRelease(MIMEType) : @"application/octet-stream";
     
     return mimeType;
+
 }
-
-
-NSString* mimeTypeForFileURL(NSURL* fileURL)
-{
-    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[fileURL pathExtension], NULL);
-    CFStringRef MIMEType = nil;
-    if (UTI != nil) {
-        MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
-        CFRelease(UTI);
-    }
-    NSString* mimeType = MIMEType ? (NSString*)CFBridgingRelease(MIMEType) : @"application/octet-stream";
-
-    return mimeType;
-}
-
-typedef void (^StreamCompletionBlock)(BOOL done, NSDictionary* returnInfo, NSError* error);
 
 #if BUILD_FOR_UNIT_TEST
 static id lastRequest = nil;
@@ -133,244 +134,114 @@ static id lastRequest = nil;
 }
 @end
 
-@interface KCSUploadStreamRequest : NSObject <NSURLConnectionDataDelegate, NSURLConnectionDelegate>
-@property (nonatomic, retain) NSMutableData* data;
-@property (nonatomic, copy) StreamCompletionBlock completionBlock;
-@property (nonatomic, copy) KCSProgressBlock progressBlock;
-@property (nonatomic, strong) NSURLConnection* connection;
-@property (nonatomic) unsigned long long bytesWritten;
-@property (nonatomic, strong) NSHTTPURLResponse* response;
-@end
+//@interface KCSUploadStreamRequest : NSObject <NSURLConnectionDataDelegate, NSURLConnectionDelegate>
+//@property (nonatomic, retain) NSMutableData* data;
+//@property (nonatomic, copy) StreamCompletionBlock completionBlock;
+//@property (nonatomic, copy) KCSProgressBlock progressBlock;
+//@property (nonatomic, strong) NSURLConnection* connection;
+//@property (nonatomic) unsigned long long bytesWritten;
+//@property (nonatomic, strong) NSHTTPURLResponse* response;
+//@end
+//
+//@implementation KCSUploadStreamRequest
+//- (void) uploadStream:(NSInputStream*)stream
+//               length:(NSUInteger)length
+//          contentType:(NSString*)contentType
+//                toURL:(NSURL*)url
+//               offset:(unsigned long long) offset
+//      requiredHeaders:(NSDictionary*)requiredHeaders
+//{
+//    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+//    [request setHTTPMethod:@"PUT"];
+//    [request setHTTPBodyStream:stream];
+//    
+//    NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithDictionary:requiredHeaders];
+//    headers[@"Content-Length"] = [@(length) stringValue];
+//    headers[@"Content-Type"] = contentType;
+//    
+//    if (offset > 0) {
+//        NSUInteger remaining = length - offset;
+//        headers[@"Content-Length"] = [@(remaining) stringValue];
+//        headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes %llu-%lu/%lu",offset+1,(unsigned long)length,(unsigned long)length];
+//        [stream setProperty:@(offset) forKey:NSStreamFileCurrentOffsetKey];
+//    }
+//
+//    [request setAllHTTPHeaderFields:headers];
+//    
+//    KCSLogTrace(@"upload stream: PUT %@ headers=%@", url, headers);
+//    
+//    _connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+//    [_connection start];
+//    
+//#if BUILD_FOR_UNIT_TEST
+//    lastRequest = self;
+//#endif
+//}
+//
+////-
+//- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+//{
+//    NSDictionary* returnVals = @{kBytesWritten: @(_bytesWritten)};
+//    _completionBlock(NO, returnVals, error);
+//}
+//
+////-
+//- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
+//{
+//    _bytesWritten += bytesWritten;
+//    KCSLogTrace(@"Uploaded %u bytes (%u / %u)", bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
+//    double progress = (double) totalBytesWritten / (double) totalBytesExpectedToWrite;
+//    if (_progressBlock) {
+//        _progressBlock(nil, progress);
+//    }
+//}
+//
+////-
+//- (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+//{
+//    KCSLogNetwork(@"Upload received GCS response code: %d", [(NSHTTPURLResponse*)response statusCode]);
+//    KCSLogTrace(@"GCS upload response headers: %@", [(NSHTTPURLResponse*)response allHeaderFields]);
+//
+//    self.response = (NSHTTPURLResponse*) response;
+//    NSString* length = [(NSHTTPURLResponse*)response allHeaderFields][@"Content-Length"];
+//    NSUInteger expectedSize = [length longLongValue];
+//    _data = [NSMutableData dataWithCapacity:expectedSize];
+//}
+//
+////-
+//- (void) connectionDidFinishLoading:(NSURLConnection *)connection
+//{
+//    NSInteger responseCode = self.response.statusCode;
+//    NSError* error = nil;
+//    if (responseCode >= 400) {
+//        NSString* errorStr = [[NSString alloc] initWithData:_data encoding:NSUTF8StringEncoding];
+//        ifNil(errorStr, @"");
+//        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Upload to GCS Failed", NSLocalizedFailureReasonErrorKey : errorStr};
+//        error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:responseCode userInfo:userInfo];
+//    }
+//    
+//    NSDictionary* returnVals = @{kBytesWritten: @(_bytesWritten)};
+//    _completionBlock(YES, returnVals, error);
+//}
+//
+////-
+//- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+//{
+//    [_data appendData:data];
+//}
+//
+////-
+//- (void) cancel
+//{
+//    [_connection cancel];
+//    NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
+//    
+//    NSDictionary* returnVals = @{kBytesWritten: @(_bytesWritten)};
+//    _completionBlock(NO, returnVals, error);
+//}
+//
+//@end
 
-@implementation KCSUploadStreamRequest
-- (void) uploadStream:(NSInputStream*)stream
-               length:(NSUInteger)length
-          contentType:(NSString*)contentType
-                toURL:(NSURL*)url
-               offset:(unsigned long long) offset
-      requiredHeaders:(NSDictionary*)requiredHeaders
-{
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
-    [request setHTTPMethod:@"PUT"];
-    [request setHTTPBodyStream:stream];
-    
-    NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithDictionary:requiredHeaders];
-    headers[@"Content-Length"] = [@(length) stringValue];
-    headers[@"Content-Type"] = contentType;
-    
-    if (offset > 0) {
-        NSUInteger remaining = length - offset;
-        headers[@"Content-Length"] = [@(remaining) stringValue];
-        headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes %llu-%d/%d",offset+1,length,length];
-        [stream setProperty:@(offset) forKey:NSStreamFileCurrentOffsetKey];
-    }
-
-    [request setAllHTTPHeaderFields:headers];
-    
-    KCSLogTrace(@"upload stream: PUT %@ headers=%@", url, headers);
-    
-    _connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    [_connection start];
-    
-#if BUILD_FOR_UNIT_TEST
-    lastRequest = self;
-#endif
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    NSDictionary* returnVals = @{kBytesWritten: @(_bytesWritten)};
-    _completionBlock(NO, returnVals, error);
-}
-
-- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
-{
-    _bytesWritten += bytesWritten;
-    KCSLogTrace(@"Uploaded %u bytes (%u / %u)", bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
-    double progress = (double) totalBytesWritten / (double) totalBytesExpectedToWrite;
-    if (_progressBlock) {
-        _progressBlock(nil, progress);
-    }
-}
-
-- (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    KCSLogNetwork(@"Upload received GCS response code: %d", [(NSHTTPURLResponse*)response statusCode]);
-    KCSLogTrace(@"GCS upload response headers: %@", [(NSHTTPURLResponse*)response allHeaderFields]);
-
-    self.response = (NSHTTPURLResponse*) response;
-    NSString* length = [(NSHTTPURLResponse*)response allHeaderFields][@"Content-Length"];
-    NSUInteger expectedSize = [length longLongValue];
-    _data = [NSMutableData dataWithCapacity:expectedSize];
-}
-
-- (void) connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    NSInteger responseCode = self.response.statusCode;
-    NSError* error = nil;
-    if (responseCode >= 400) {
-        NSString* errorStr = [[NSString alloc] initWithData:_data encoding:NSUTF8StringEncoding];
-        ifNil(errorStr, @"");
-        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Upload to GCS Failed", NSLocalizedFailureReasonErrorKey : errorStr};
-        error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:responseCode userInfo:userInfo];
-    }
-    
-    NSDictionary* returnVals = @{kBytesWritten: @(_bytesWritten)};
-    _completionBlock(YES, returnVals, error);
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    [_data appendData:data];
-}
-
-- (void) cancel
-{
-    [_connection cancel];
-    NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
-    
-    NSDictionary* returnVals = @{kBytesWritten: @(_bytesWritten)};
-    _completionBlock(NO, returnVals, error);
-}
-
-@end
-
-
-@interface KCSDownloadStreamRequest : NSObject <NSURLConnectionDataDelegate, NSURLConnectionDelegate>
-@property (nonatomic, retain) NSFileHandle* outputHandle;
-@property (nonatomic) NSUInteger maxLength;
-@property (nonatomic, copy) StreamCompletionBlock completionBlock;
-@property (nonatomic, copy) KCSProgressBlock progressBlock;
-@property (nonatomic, retain) KCSFile* intermediateFile;
-@property (nonatomic, retain) NSString* serverContentType;
-@property (nonatomic, retain) NSURLConnection* connection;
-@property (nonatomic, retain) NSHTTPURLResponse* response;
-@property (nonatomic, retain) NSMutableData* responseData;
-@property (nonatomic) unsigned long long bytesWritten;
-@end
-
-@implementation KCSDownloadStreamRequest
-- (void) downloadStream:(KCSFile*)intermediate fromURL:(NSURL*)url alreadyWrittenBytes:(NSNumber*)alreadyWritten completionBlock:(StreamCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    self.completionBlock = completionBlock;
-    self.progressBlock = progressBlock;
-    
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
-    [request setHTTPMethod:@"GET"];
-
-    NSURL* file = [intermediate localURL];
-    NSError* error = nil;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[file path]] == NO) {
-        [[NSFileManager defaultManager] createFileAtPath:[file path] contents:nil attributes:nil];
-    }
-    if (error != nil) {
-        error = [KCSErrorUtilities createError:nil description:@"Unable to write to intermediate file" errorCode:error.code domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
-        completionBlock(NO, @{}, error);
-        return;
-    }
-    _outputHandle = [NSFileHandle fileHandleForWritingToURL:file error:&error];
-    if (error != nil) {
-        error = [KCSErrorUtilities createError:nil description:@"Unable to write to intermediate file" errorCode:error.code domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
-        completionBlock(NO, @{}, error);
-        return;
-    }
-    if (alreadyWritten != nil) {
-        unsigned long long written = [_outputHandle seekToEndOfFile];
-        if ([alreadyWritten unsignedLongLongValue] == written) {
-            KCSLogTrace(@"Download was already in progress. Resuming from byte %llu.", written);
-            [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
-        }
-    }
-    
-    _intermediateFile = intermediate;
-    _bytesWritten = 0;
-    
-    _connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    [_connection start];
-
-    
-#if BUILD_FOR_UNIT_TEST
-    lastRequest = self;
-#endif
-}
-
-- (void) cancel
-{
-    [_connection cancel];
-    [_outputHandle closeFile];
-    NSError* error = [NSError errorWithDomain:@"UNIT TEST" code:700 userInfo:nil];
-
-    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
-    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
-    _completionBlock(NO, returnVals, error);
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    [_outputHandle closeFile];
-    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
-    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
-    _completionBlock(NO, returnVals, error);
-}
-
-
-- (void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    KCSLogNetwork(@"GCS download response code: %d",[(NSHTTPURLResponse*)response statusCode]);
-    
-    _response = (NSHTTPURLResponse*)response;
-    NSDictionary* headers =  [_response allHeaderFields];
-    NSString* length = headers[@"Content-Length"];
-    _maxLength = [length longLongValue];
-    _serverContentType = headers[@"Content-Type"];
-    
-    if (_response.statusCode >= 400) {
-        _responseData = [NSMutableData data];
-    }
-}
-
-- (void) connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    [_outputHandle closeFile];
-    
-    NSMutableDictionary* returnVals = [NSMutableDictionary dictionary];
-    setIfValNotNil(returnVals[KCSFileMimeType], _serverContentType);
-    setIfValNotNil(returnVals[kBytesWritten], @(_bytesWritten));
-    
-    NSInteger responseCode = self.response.statusCode;
-    NSError* error = nil;
-    if (responseCode >= 400) {
-        NSString* errorStr = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
-        ifNil(errorStr, @"");
-        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download from GCS Failed", NSLocalizedFailureReasonErrorKey : errorStr};
-        error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:responseCode userInfo:userInfo];
-    }
-    
-    _completionBlock(YES, returnVals, error);
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    KCSLogTrace(@"downloaded %u bytes from file service", [data length]);
-    
-    if (_response && _response.statusCode >= 400) {
-        //is an error just get the data locally
-        [_responseData appendData:data];
-    } else {
-        //response is good, collect data
-        [_outputHandle writeData:data];
-        _bytesWritten += data.length;
-        if (_progressBlock) {
-            NSUInteger downloadedAmount = [_outputHandle offsetInFile];
-            _intermediateFile.length = downloadedAmount;
-            
-            double progress = (double)downloadedAmount / (double) _maxLength;
-            _progressBlock(@[_intermediateFile], progress);
-        }
-    }
-}
-
-@end
 
 @implementation KCSFileStore
 static NSMutableSet* _ongoingDownloads;
@@ -384,74 +255,74 @@ static NSMutableSet* _ongoingDownloads;
 }
 
 #pragma mark - Uploads
-+ (void) _getUploadHeader:(NSURL*)url
-                  options:(NSDictionary*)options
-          requiredHeaders:(NSDictionary*)requiredHeaders
-               uploadFile:(KCSFile*)uploadFile
-                   stream:(NSInputStream*)stream
-          completionBlock:(KCSFileUploadCompletionBlock)completionBlock
-            progressBlock:(KCSProgressBlock)progressBlock
-{
-    //PUT {session_uri} HTTP/1.1
-    //Authorization: your_auth_token
-    //Content-Length: 0
-    //Content-Range: bytes */2000000
-    
-    NSString* urlstr = [[url absoluteString] stringByAppendingFormat:@"&%@", options[kGCSULID]];
-    
-    
-    KCSGenericRESTRequest* req = [KCSGenericRESTRequest requestForResource:urlstr usingMethod:kPutRESTMethod withCompletionAction:^(KCSConnectionResponse *response) {
-        
-        if (response.responseCode == 308) {
-            //can resume
-            NSString* rangeStr = [response responseHeaders][@"Range"];
-            NSString* bytesW =[rangeStr componentsSeparatedByString:@"-"][1];
-            NSNumber* bytesN = [[[NSNumberFormatter alloc] init] numberFromString:bytesW];
-            NSUInteger ulBytes = [bytesN unsignedIntegerValue];
-            KCSLogTrace(@"Already uploaded %d bytes. Need to upload rest", ulBytes);
-            
-            
-            KCSUploadStreamRequest* request = [[KCSUploadStreamRequest alloc] init];
-            request.completionBlock = ^(BOOL done,  NSDictionary* returnInfo, NSError *error) {
-                uploadFile.bytesWritten = [returnInfo[kBytesWritten] longLongValue];
-                completionBlock(uploadFile, error);
-            };
-            if (progressBlock) {
-                request.progressBlock = ^(NSArray* objects, double progress){
-                    progressBlock(@[uploadFile], progress);
-                };
-            }
-            
-            [request uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:[NSURL URLWithString:urlstr] offset:ulBytes requiredHeaders:requiredHeaders];
-            
-        } else {
-            //start from beginning
-            KCSLogTrace(@"Got a %d from GCS, so restarting upload from beginning", response.responseCode);
-            NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:options];
-            [d removeObjectForKey:kGCSULID];
-            [self uploadFile:uploadFile.localURL options:d completionBlock:completionBlock progressBlock:progressBlock];
-        }
-    } failureAction:^(NSError *error) {
-        KCSLogTrace(@"Error resuming upload, restarting from beginning");
-        //start from beginning
-        NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:options];
-        [d removeObjectForKey:kGCSULID];
-        [self uploadFile:uploadFile.localURL options:d completionBlock:completionBlock progressBlock:progressBlock];
-
-    } progressAction:nil];
-    
-    req.headers[@"Content-Length"] = @"0";
-    req.headers[@"Content-Type"] = options[KCSFileMimeType];
-    
-    NSNumber* fileSize = options[KCSFileSize];
-    req.headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes */%@", fileSize];
-
-    [requiredHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        req.headers[key] = obj;
-    }];
-    
-    [req start];
-}
+//+ (void) _getUploadHeader:(NSURL*)url
+//                  options:(NSDictionary*)options
+//          requiredHeaders:(NSDictionary*)requiredHeaders
+//               uploadFile:(KCSFile*)uploadFile
+//                   stream:(NSInputStream*)stream
+//          completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+//            progressBlock:(KCSProgressBlock)progressBlock
+//{
+//    //PUT {session_uri} HTTP/1.1
+//    //Authorization: your_auth_token
+//    //Content-Length: 0
+//    //Content-Range: bytes */2000000
+//    
+//    NSString* urlstr = [[url absoluteString] stringByAppendingFormat:@"&%@", options[kGCSULID]];
+//    
+//    
+//    KCSGenericRESTRequest* req = [KCSGenericRESTRequest requestForResource:urlstr usingMethod:kPutRESTMethod withCompletionAction:^(KCSConnectionResponse *response) {
+//        
+//        if (response.responseCode == 308) {
+//            //can resume
+//            NSString* rangeStr = [response responseHeaders][@"Range"];
+//            NSString* bytesW =[rangeStr componentsSeparatedByString:@"-"][1];
+//            NSNumber* bytesN = [[[NSNumberFormatter alloc] init] numberFromString:bytesW];
+//            NSUInteger ulBytes = [bytesN unsignedIntegerValue];
+//            KCSLogTrace(@"Already uploaded %d bytes. Need to upload rest", ulBytes);
+//            
+//            
+//            KCSUploadStreamRequest* request = [[KCSUploadStreamRequest alloc] init];
+//            request.completionBlock = ^(BOOL done,  NSDictionary* returnInfo, NSError *error) {
+//                uploadFile.bytesWritten = [returnInfo[kBytesWritten] longLongValue];
+//                completionBlock(uploadFile, error);
+//            };
+//            if (progressBlock) {
+//                request.progressBlock = ^(NSArray* objects, double progress){
+//                    progressBlock(@[uploadFile], progress);
+//                };
+//            }
+//            
+//            [request uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:[NSURL URLWithString:urlstr] offset:ulBytes requiredHeaders:requiredHeaders];
+//            
+//        } else {
+//            //start from beginning
+//            KCSLogTrace(@"Got a %d from GCS, so restarting upload from beginning", response.responseCode);
+//            NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:options];
+//            [d removeObjectForKey:kGCSULID];
+//            [self uploadFile:uploadFile.localURL options:d completionBlock:completionBlock progressBlock:progressBlock];
+//        }
+//    } failureAction:^(NSError *error) {
+//        KCSLogTrace(@"Error resuming upload, restarting from beginning");
+//        //start from beginning
+//        NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:options];
+//        [d removeObjectForKey:kGCSULID];
+//        [self uploadFile:uploadFile.localURL options:d completionBlock:completionBlock progressBlock:progressBlock];
+//
+//    } progressAction:nil];
+//    
+//    req.headers[@"Content-Length"] = @"0";
+//    req.headers[@"Content-Type"] = options[KCSFileMimeType];
+//    
+//    NSNumber* fileSize = options[KCSFileSize];
+//    req.headers[@"Content-Range"] = [NSString stringWithFormat:@"bytes */%@", fileSize];
+//
+//    [requiredHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+//        req.headers[key] = obj;
+//    }];
+//    
+//    [req start];
+//}
 
 + (void) _uploadStream3:(NSInputStream*)stream
                  toURL:(NSURL*)url
@@ -461,113 +332,130 @@ static NSMutableSet* _ongoingDownloads;
        completionBlock:(KCSFileUploadCompletionBlock)completionBlock
          progressBlock:(KCSProgressBlock)progressBlock
 {
-  
-    
-    KCSUploadStreamRequest* request = [[KCSUploadStreamRequest alloc] init];
-    request.completionBlock = ^(BOOL done,  NSDictionary* returnInfo, NSError *error) {
+    KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
+    #if BUILD_FOR_UNIT_TEST
+        lastRequest =
+    #endif
+    [fileRequest uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:url requiredHeaders:requiredHeaders completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
         uploadFile.bytesWritten = [returnInfo[kBytesWritten] longLongValue];
         completionBlock(uploadFile, error);
-    };
-    if (progressBlock) {
-        request.progressBlock = ^(NSArray* objects, double progress){
-            progressBlock(@[uploadFile], progress);
-        };
-    }
-    
-    unsigned long long bytes = 0;
-    // GCS RESUMABLE UPLOAD STEP #3 ---------------
-    [request uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:url offset:bytes requiredHeaders:requiredHeaders];
-}
-
-
-+ (void) _uploadStream:(NSInputStream*)stream
-                 toURL:(NSURL*)url
-       requiredHeaders:(NSDictionary*)requiredHeaders
-            uploadFile:(KCSFile*)uploadFile
-               options:(NSDictionary*)options
-       completionBlock:(KCSFileUploadCompletionBlock)completionBlock
-         progressBlock:(KCSProgressBlock)progressBlock
-{
-    if (fieldExistsAndIsYES(options, KCSFileResume)) {
-        NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:options];
-        d[KCSFileSize] = @(uploadFile.length);
-        d[KCSFileMimeType] = uploadFile.mimeType;
-
-        d[kGCSULID] = uploadFile.gcsULID;
-        [self _getUploadHeader:url options:d requiredHeaders:requiredHeaders uploadFile:uploadFile stream:stream completionBlock:completionBlock progressBlock:progressBlock];
-        
-        return;
-    }
-    
-    KCSLogTrace(@"Upload location found, uploading file to: %@", url);
-
-    KCSGenericRESTRequest* req = [KCSGenericRESTRequest requestForResource:[url absoluteString] usingMethod:kPutRESTMethod withCompletionAction:^(KCSConnectionResponse *response) {
-        if (response.responseCode >= 400) {
-            //handle error
-            NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Error uploading to GCS: %@", [response jsonResponseValue]] errorCode:response.responseCode domain:KCSFileStoreErrorDomain requestId:nil];
-            completionBlock(nil, error);
-        } else {
-            NSDictionary* h = [response responseHeaders];
-            NSString* loc = h[@"Location"];
-            NSString* queryParams = [[NSURL URLWithString:loc] query];
-            NSArray* ps = [queryParams componentsSeparatedByString:@"&"];
-            
-            NSString* ulid = @"";
-            for (NSString* s in ps) {
-                if ([s hasPrefix:@"upload_id"]) {
-                    ulid = s;
-                }
-            }
-            
-            uploadFile.gcsULID = ulid;
-            
-            NSString* newstr = [[url absoluteString] stringByAppendingFormat:@"&%@", ulid];
-            NSURL * newurl = [NSURL URLWithString:newstr];
-            [self _uploadStream3:stream toURL:newurl requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
+    } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
+        if (progressBlock) {
+            progressBlock(objects, percentComplete);
         }
-    } failureAction:^(NSError *error) {
-        completionBlock(nil, error);
-    } progressAction:nil];
-    req.headers[@"Content-Length"] = @"0";
-    if (options[KCSFileMimeType] != nil) {
-        req.headers[@"Content-Type"] = options[KCSFileMimeType];
-    }
-    
-    [requiredHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        req.headers[key] = obj;
     }];
     
-    // GCS RESUMABLE UPLOAD STEP #1---------------
-    [req start];
+//    
+//    KCSUploadStreamRequest* request = [[KCSUploadStreamRequest alloc] init];
+//    request.completionBlock = ^(BOOL done,  NSDictionary* returnInfo, NSError *error) {
+//        uploadFile.bytesWritten = [returnInfo[kBytesWritten] longLongValue];
+//        completionBlock(uploadFile, error);
+//    };
+//    if (progressBlock) {
+//        request.progressBlock = ^(NSArray* objects, double progress){
+//            progressBlock(@[uploadFile], progress);
+//        };
+//    }
+//    
+//    unsigned long long bytes = 0;
+//    // GCS RESUMABLE UPLOAD STEP #3 ---------------
+//    [request uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:url offset:bytes requiredHeaders:requiredHeaders];
 }
+
+// commenting out since no gcs resume
+//+ (void) _uploadStream:(NSInputStream*)stream
+//                 toURL:(NSURL*)url
+//       requiredHeaders:(NSDictionary*)requiredHeaders
+//            uploadFile:(KCSFile*)uploadFile
+//               options:(NSDictionary*)options
+//       completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+//         progressBlock:(KCSProgressBlock)progressBlock
+//{
+//    if (fieldExistsAndIsYES(options, KCSFileResume)) {
+//        NSMutableDictionary* d = [NSMutableDictionary dictionaryWithDictionary:options];
+//        d[KCSFileSize] = @(uploadFile.length);
+//        d[KCSFileMimeType] = uploadFile.mimeType;
+//
+//        d[kGCSULID] = uploadFile.gcsULID;
+//        [self _getUploadHeader:url options:d requiredHeaders:requiredHeaders uploadFile:uploadFile stream:stream completionBlock:completionBlock progressBlock:progressBlock];
+//        
+//        return;
+//    }
+//    
+//    KCSLogTrace(@"Upload location found, uploading file to: %@", url);
+//
+//    KCSGenericRESTRequest* req = [KCSGenericRESTRequest requestForResource:[url absoluteString] usingMethod:kPutRESTMethod withCompletionAction:^(KCSConnectionResponse *response) {
+//        if (response.responseCode >= 400) {
+//            //handle error
+//            NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Error uploading to GCS: %@", [response jsonResponseValue]] errorCode:response.responseCode domain:KCSFileStoreErrorDomain requestId:nil];
+//            completionBlock(nil, error);
+//        } else {
+//            NSDictionary* h = [response responseHeaders];
+//            NSString* loc = h[@"Location"];
+//            NSString* queryParams = [[NSURL URLWithString:loc] query];
+//            NSArray* ps = [queryParams componentsSeparatedByString:@"&"];
+//            
+//            NSString* ulid = @"";
+//            for (NSString* s in ps) {
+//                if ([s hasPrefix:@"upload_id"]) {
+//                    ulid = s;
+//                }
+//            }
+//            
+//            uploadFile.gcsULID = ulid;
+//            
+//            NSString* newstr = [[url absoluteString] stringByAppendingFormat:@"&%@", ulid];
+//            NSURL * newurl = [NSURL URLWithString:newstr];
+//            [self _uploadStream3:stream toURL:newurl requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
+//        }
+//    } failureAction:^(NSError *error) {
+//        completionBlock(nil, error);
+//    } progressAction:nil];
+//    
+//    req.headers[@"Content-Length"] = @"0";
+//    if (options[KCSFileMimeType] != nil) {
+//        req.headers[@"Content-Type"] = options[KCSFileMimeType];
+//    }
+//    
+//    [requiredHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+//        req.headers[key] = obj;
+//    }];
+//    
+//    // GCS RESUMABLE UPLOAD STEP #1---------------
+//    [req start];
+//}
 
 + (void) _uploadData:(NSData*)data toURL:(NSURL*)url requiredHeaders:(NSDictionary*)requiredHeaders uploadFile:(KCSFile*)uploadFile options:(NSDictionary*)options completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     NSInputStream* stream = [NSInputStream inputStreamWithData:data];
-    [self _uploadStream:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
+    [self _uploadStream3:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 + (void) _uploadFile:(NSURL*)localFile toURL:(NSURL*)url requiredHeaders:(NSDictionary*)requiredHeaders uploadFile:(KCSFile*)uploadFile options:(NSDictionary*)options completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
     NSInputStream* stream = [NSInputStream inputStreamWithURL:localFile];
-    [self _uploadStream:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
+    [self _uploadStream3:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
 }
 
-+ (KCSNetworkRequest*) _getUploadLoc:(NSMutableDictionary *)options
++ (KCSRequest2*) _getUploadLoc:(NSMutableDictionary *)options completion:(KCSRequestCompletionBlock)completion apiMethod:(NSString*)apiMethod
 {
     //remove unwanted keys
     NSMutableDictionary* body = [NSMutableDictionary dictionaryWithDictionary:options];
     [body removeObjectForKey:KCSFileResume];
-    [body removeObjectForKey:kGCSULID];
     
     NSString* fileId = body[KCSFileId];
     
-    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-    request.httpMethod = kKCSRESTMethodPOST;
-    request.contextRoot = kKCSContextBLOB;
+    //KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:completion
+                                                        route:KCSRESTRouteBlob
+                                                      options:@{KCSRequestOptionClientMethod : apiMethod}
+                                                  credentials:[KCSUser activeUser]];
+    request.method = KCSRESTMethodPOST;
     if (fileId) {
-        request.pathComponents = @[fileId];
-        request.httpMethod = kKCSRESTMethodPUT;
+        request.path = @[fileId];
+        request.method = KCSRESTMethodPUT;
+    } else {
+        request.method = KCSRESTMethodPOST;
     }
     
     KCSMetadata* metadata = [body popObjectForKey:KCSEntityKeyMetadata];
@@ -575,11 +463,9 @@ static NSMutableSet* _ongoingDownloads;
         body[@"_acl"] = [metadata aclValue];
     }
     
-    request.authorization = [KCSUser activeUser];
     request.body = body;
-    
-    request.headers[@"x-Kinvey-content-type"] = body[@"mimeType"];
-    
+    request.headers = @{@"x-Kinvey-content-type" : body[@"mimeType"]};
+
     return request;
 }
 
@@ -602,8 +488,8 @@ KCSFile* fileFromResults(NSDictionary* results)
 
 + (void)uploadData:(NSData *)data options:(NSDictionary *)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
-    NSParameterAssert(data != nil);
-    NSParameterAssert(completionBlock != nil);
+    NSParameterAssert(data);
+    NSParameterAssert(completionBlock);
     if (uploadOptions && uploadOptions[KCSFileSize]) {
         [[NSException exceptionWithName:@"KCSInvalidParameter" reason:@"Specifing upload file size (`KCSFileSize`) is not supported. Size is determined by the data." userInfo:nil] raise];
     }
@@ -611,26 +497,26 @@ KCSFile* fileFromResults(NSDictionary* results)
     NSMutableDictionary* opts = [NSMutableDictionary dictionaryWithDictionary:uploadOptions];
     opts[KCSFileSize] = @(data.length);
     NSString* mimeType = opts[KCSFileMimeType];
-    ifNil(mimeType, mimeTypeForFilename(opts[KCSFileFileName]));
+    ifNil(mimeType, kcsMimeType(opts[KCSFileFileName]));
     setIfEmpty(opts, KCSFileMimeType, mimeType);
     
-    KCSNetworkRequest* request = [self _getUploadLoc:opts];    
-    [request run:^(id results, NSError *error) {
+    KCSRequest2* request = [self _getUploadLoc:opts completion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
-            error = [error updateDomain:KCSFileStoreErrorDomain];
             completionBlock(nil, error);
         } else {
+            NSDictionary* results = [response jsonObject];
             NSString* url = results[@"_uploadURL"];
             if (url) {
                 KCSFile* uploadFile = fileFromResults(results);
                 NSDictionary* requiredHeaders = results[kRequiredHeaders];
                 [self _uploadData:data toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
             } else {
-                NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:nil];
+                NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:response.requestId];
                 completionBlock(nil, error);
             }
         }
-    }];
+    } apiMethod:KCSRequestMethodString];
+    [request start];
 }
 
 + (void) uploadFile:(NSURL*)fileURL options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
@@ -642,7 +528,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     }
     
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]];
-    if (exists == NO) {
+    if (!exists) {
         NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"fileURL does not exist '%@'", fileURL] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:nil];
         completionBlock(nil, error);
         return;
@@ -660,35 +546,29 @@ KCSFile* fileFromResults(NSDictionary* results)
     opts[KCSFileSize] = attr[NSFileSize]; //overwrite size
     setIfEmpty(opts, KCSFileFileName, [fileURL lastPathComponent]);
     
-    NSString* mimeType = mimeTypeForFileURL(fileURL);
+    NSString* mimeType = kcsMimeType(fileURL);
     
     setIfEmpty(opts, KCSFileMimeType, mimeType);
 
-    NSNumber* resume = opts[KCSFileResume];
-    
-    KCSNetworkRequest* request = [self _getUploadLoc:opts];
-    [request run:^(id results, NSError *error) {
+    KCSRequest2 * request = [self _getUploadLoc:opts completion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
-            error = [error updateDomain:KCSFileStoreErrorDomain];
             completionBlock(nil, error);
         } else {
+            NSDictionary* results = [response jsonObject];
             NSString* url = results[@"_uploadURL"];
             if (url) {
                 KCSFile* uploadFile = fileFromResults(results);
                 uploadFile.localURL = fileURL;
                 NSDictionary* requiredHeaders = results[kRequiredHeaders];
-                if (resume) {
-                    opts[KCSFileResume] = resume;
-                    uploadFile.gcsULID = uploadOptions[kGCSULID];
-                }
-
+                
                 [self _uploadFile:fileURL toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
             } else {
-                NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:nil];
+                NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:response.requestId];
                 completionBlock(nil, error);
             }
         }
-    }];
+    } apiMethod:KCSRequestMethodString];
+    [request start];
 }
 
 #pragma mark - Downloads
@@ -711,8 +591,6 @@ KCSFile* fileFromResults(NSDictionary* results)
         NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
         completionBlock(nil, error);
         return;
-    } else {
-        [_ongoingDownloads addObject:fileId];
     }
     
     KCSFile* intermediateFile = [[KCSFile alloc] initWithLocalFile:localFile
@@ -721,16 +599,16 @@ KCSFile* fileFromResults(NSDictionary* results)
                                                           mimeType:mimeType];
     intermediateFile.remoteURL = url;
     
-    if (onlyIfNewer == YES) {
+    if (onlyIfNewer) {
         BOOL fileAlreadyExists = [[NSFileManager defaultManager] fileExistsAtPath:[localFile path]];
-        if (fileAlreadyExists == YES) {
+        if (fileAlreadyExists) {
             NSError* error = nil;
             NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:&error];
             if (error == nil && attributes != nil) {
                 NSDate* localLMT = attributes[NSFileModificationDate];
                 if (localLMT != nil) {
                     //get lmt from server
-                    ifNil(mimeType, mimeTypeForFileURL(localFile));
+                    ifNil(mimeType, kcsMimeType(localFile));
                     KCSHeadRequest* hr = [[KCSHeadRequest alloc] init];
                     [hr headersForURL:url completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
                         if (done && returnInfo && returnInfo[kServerLMT]) {
@@ -757,21 +635,46 @@ KCSFile* fileFromResults(NSDictionary* results)
 
     }
 
+    [_ongoingDownloads addObject:fileId];
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
     
-    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
-    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:bytes completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
-        [_ongoingDownloads removeObject:fileId];
-        if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
-            intermediateFile.mimeType = returnInfo[KCSFileMimeType];
-        } else if (intermediateFile.mimeType == nil) {
-            intermediateFile.mimeType = mimeTypeForFilename(intermediateFile.filename);
-        }
-        intermediateFile.bytesWritten = [returnInfo[kBytesWritten] unsignedLongLongValue];
-        intermediateFile.length = [[[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:NULL] fileSize];
-
-        completionBlock(@[intermediateFile], error);
-    } progressBlock:progressBlock];
+    KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
+#if BUILD_FOR_UNIT_TEST
+    id fileop =
+#endif
+    [fileRequest downloadStream:intermediateFile
+                        fromURL:url
+            alreadyWrittenBytes:bytes
+                completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
+                    [_ongoingDownloads removeObject:fileId];
+                    if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
+                        intermediateFile.mimeType = returnInfo[KCSFileMimeType];
+                    } else if (intermediateFile.mimeType == nil) {
+                        intermediateFile.mimeType = kcsMimeType(intermediateFile.filename);
+                    }
+                    intermediateFile.bytesWritten = [returnInfo[kBytesWritten] unsignedLongLongValue];
+                    intermediateFile.length = [[[NSFileManager defaultManager] attributesOfItemAtPath:[localFile path] error:NULL] fileSize];
+                    
+#if TARGET_OS_IPHONE
+                    if (intermediateFile.localURL) {
+                        NSError* error = nil;
+                        [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey : [KCSFileUtils fileProtectionKey]} ofItemAtPath:[intermediateFile.localURL path] error:&error];
+                        if (error) {
+                            KCSLogError(@"Error setting file permissions: %@", error);
+                        }
+                    }
+#endif
+                    
+                    completionBlock(@[intermediateFile], error);
+                } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
+                    if (progressBlock != nil) {
+                        progressBlock(objects, percentComplete);
+                    }
+                }];
+    
+#if BUILD_FOR_UNIT_TEST
+    lastRequest = fileop;
+#endif
 }
 
 
@@ -783,7 +686,7 @@ KCSFile* fileFromResults(NSDictionary* results)
            progressBlock:(KCSProgressBlock)progressBlock
 {
     if ([_ongoingDownloads containsObject:fileId]) {
-        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download already in progress."};
+        NSDictionary* userInfo = @{NSLocalizedDescriptionKey : @"Download already in progress.", KCSFileId : fileId};
         NSError* error = [NSError errorWithDomain:KCSFileStoreErrorDomain code:KCSFileError userInfo:userInfo];
         completionBlock(nil, error);
         return;
@@ -791,9 +694,7 @@ KCSFile* fileFromResults(NSDictionary* results)
         [_ongoingDownloads addObject:fileId];
     }
     
-    NSURL* cachesDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
-    NSString* tempName = [NSString stringByPercentEncodingString:[fileId stringByReplacingOccurrencesOfString:@"/" withString:@""]];
-    NSURL* localFile = [NSURL URLWithString:tempName relativeToURL:cachesDir];
+    NSURL* localFile = [KCSFileUtils fileURLForName:fileId];
     
     NSAssert(localFile != nil, @"%@ is not a valid file name for temp storage", fileId);
 
@@ -804,9 +705,8 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
-    
-    KCSDownloadStreamRequest* downloader = [[KCSDownloadStreamRequest alloc] init];
-    [downloader downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary* returnInfo, NSError *error) {
+    KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
+    [fileRequest downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
         [_ongoingDownloads removeObject:fileId];
         
         if (error) {
@@ -830,7 +730,11 @@ KCSFile* fileFromResults(NSDictionary* results)
             KCSLogNSError(@"error removing temp download cache", error);
             completionBlock(@[file], nil);
         }
-    } progressBlock:progressBlock];
+    } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
+        if (progressBlock) {
+            progressBlock(objects, percentComplete);
+        }
+    }];
 }
 
 + (void) _getDownloadObject:(NSString*)fileId options:(NSDictionary*)options intermediateCompletionBlock:(KCSCompletionBlock)completionBlock
@@ -887,24 +791,27 @@ KCSFile* fileFromResults(NSDictionary* results)
             KCSFile* file = objectsOrNil[0];
             if (file && file.remoteURL) {
                 
-                NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
                 ifNil(destinationName, file.filename);
-                NSURL*  destinationFile = [NSURL URLWithString:destinationName relativeToURL:downloadsDir];
+                NSURL*  destinationFile = [KCSFileUtils fileURLForName:destinationName];
+                DBAssert(destinationFile != nil, @"Should have a valid destination file: '%@'", destinationName);
                 
                 
                 if (fieldExistsAndIsYES(options, KCSFileOnlyIfNewer)) {
                     
                     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[destinationFile path]];
-                    if (fileExists == YES) {
+                    if (fileExists) {
                         
                         NSDate* serverDate = file.metadata.lastModifiedTime;
                         NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[destinationFile path] error:NULL];
                         NSDate* fileDate = fileAttributes ? [fileAttributes fileModificationDate]: nil;
 
-                        if ([serverDate isLaterThan:fileDate] == NO) {
+                        if (![serverDate isLaterThan:fileDate]) {
                             //return existing file
                             KCSLogTrace(@"File %@ is older or same as file on disk. Using local file cache", fileId);
                             file.localURL = destinationFile;
+                            if (progressBlock) {
+                                progressBlock(@[file],1.0);
+                            }
                             completionBlock(@[file], nil);
                             return;
                         } // else re-download the file (NOTE: requires fall through to below)
@@ -998,7 +905,6 @@ KCSFile* fileFromResults(NSDictionary* results)
                 if (thisFile && thisFile.remoteURL) {
                     
                     NSURL* destinationFile = nil;
-                    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
                     NSString* destinationFilename = thisFile.filename;
                     
                     if (destinationIds != nil && filenames != nil) {
@@ -1008,7 +914,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                         }
                     }
                     
-                    destinationFile = [NSURL URLWithString:destinationFilename relativeToURL:downloadsDir];
+                    destinationFile = [KCSFileUtils fileURLForName:destinationFilename];
 
                     //TODO: onlyIfNewer check download object
                     [self _downloadToFile:destinationFile fromURL:thisFile.remoteURL fileId:thisFile.fileId filename:destinationFilename mimeType:thisFile.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -1093,7 +999,7 @@ KCSFile* fileFromResults(NSDictionary* results)
             }
             
             NSUInteger totalBytes = [[objectsOrNil valueForKeyPath:@"@sum.length"] unsignedIntegerValue];
-            NSMutableArray* files = [NSMutableArray arrayWith:objectsOrNil.count copiesOf:[NSNull null]];
+            NSMutableArray* files = [NSMutableArray arrayWithCapacity:objectsOrNil.count];
             __block NSUInteger completedCount = 0;
             __block NSError* firstError = nil;
             [objectsOrNil enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -1105,7 +1011,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                         }
                         DBAssert(downloadedResources == nil || downloadedResources.count == 1, @"should only get 1 per download");
                         if (downloadedResources != nil && downloadedResources.count > 0) {
-                            files[idx] = downloadedResources[0];
+                            [files addObject:downloadedResources[0]];
                         }
                         if (++completedCount == objectsOrNil.count) {
                             //only call completion when all done
@@ -1163,7 +1069,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     ifNil(options, @{});
     
-    NSURL* downloadsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL* downloadsDir = [KCSFileUtils filesFolder];
     
     //NOTE: this logic is heavily based on GCS url structure
     NSArray* pathComponents = [url pathComponents];
@@ -1177,11 +1083,17 @@ KCSFile* fileFromResults(NSDictionary* results)
     BOOL onlyIfNewer = fieldExistsAndIsYES(options, KCSFileOnlyIfNewer);
     NSNumber* bytes = nil;
     if (fieldExistsAndIsYES(options, KCSFileResume)) {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[destinationFile path]] == YES) {
-            NSError* error = nil;
-            NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[destinationFile path] error:&error];
-            if (error == nil) {
-                bytes = attributes[NSFileSize];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[destinationFile path]]) {
+            if (![KCSPlatformUtils supportsResumeData]) {
+                //iOS 6 --
+                NSError* error = nil;
+                NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[destinationFile path] error:&error];
+                if (error == nil) {
+                    bytes = attributes[NSFileSize];
+                }
+            } else {
+                //iOS 7
+                bytes = @(-1001);
             }
         }
     }
@@ -1240,7 +1152,6 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     [self _getDownloadObject:fileId options:options intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
-            errorOrNil = [errorOrNil updateDomain:KCSResourceErrorDomain];
             completionBlock(nil, errorOrNil);
         } else {
             if (objectsOrNil.count != 1) {
@@ -1262,12 +1173,11 @@ KCSFile* fileFromResults(NSDictionary* results)
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
     [store queryWithQuery:nameQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
-            errorOrNil = [errorOrNil updateDomain:KCSResourceErrorDomain];
             completionBlock(nil, errorOrNil);
         } else {
             if (objectsOrNil.count != 1) {
                 KCSLogError(@"returned %u results for file metadata with query: %@", objectsOrNil.count, nameQuery);
-                errorOrNil = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"No matching file by name: %@", fileName] errorCode:KCSNotFoundError domain:KCSResourceErrorDomain requestId:nil];
+                errorOrNil = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"No matching file or more than one matching file by name: %@", fileName] errorCode:KCSNotFoundError domain:KCSResourceErrorDomain requestId:nil];
                 completionBlock(nil, errorOrNil);
             } else {
                 completionBlock( objectsOrNil[0], nil);
@@ -1283,15 +1193,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     NSParameterAssert(fileId != nil);
     NSParameterAssert(completionBlock != nil);
     
-    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-    request.httpMethod = kKCSRESTMethodDELETE;
-    request.contextRoot = kKCSContextBLOB;
-    request.pathComponents = @[fileId];
-    
-    request.authorization = [KCSUser activeUser];
-    request.body = @{};
-    
-    [request run:^(id results, NSError *error) {
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
             error = [KCSErrorUtilities createError:nil
                                        description:[NSString stringWithFormat:@"Error Deleting file, id='%@'", fileId]
@@ -1301,9 +1203,17 @@ KCSFile* fileFromResults(NSDictionary* results)
                                        sourceError:error];
             completionBlock(0, error);
         } else {
+            NSDictionary* results = [response jsonObject];
             completionBlock([results[@"count"] unsignedLongValue], nil);
         }
-    }];
+    }
+                                                        route:KCSRESTRouteBlob
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSUser activeUser]];
+    request.method = KCSRESTMethodDELETE;
+    request.path = @[fileId];
+    request.body = @{};
+    [request start];
 }
 
 #pragma mark - for Linked Data
@@ -1315,7 +1225,6 @@ KCSFile* fileFromResults(NSDictionary* results)
     setIfValNotNil(newOptions[KCSFileFileName], file.filename);
     setIfValNotNil(newOptions[KCSFileId], file.fileId);
     setIfValNotNil(newOptions[KCSFileACL], file.metadata);
-    setIfValNotNil(newOptions[kGCSULID], file.gcsULID);
     
     if (file.data != nil) {
         [self uploadData:file.data options:newOptions completionBlock:completionBlock progressBlock:progressBlock];
@@ -1361,6 +1270,12 @@ KCSFile* fileFromResults(NSDictionary* results)
     return lastRequest;
 }
 #endif
+
+#pragma mark - Cache Management
++ (void) clearCachedFiles
+{
+    [KCSFileUtils clearFiles];
+}
 
 @end
 

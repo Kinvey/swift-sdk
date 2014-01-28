@@ -2,8 +2,7 @@
 //  KCSRequest2.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/12/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -19,6 +18,50 @@
 
 #import <Foundation/Foundation.h>
 
+#import "KinveyHeaderInfo.h"
+#import "KCSNetworkDefs.h"
+
+KCS_CONSTANT KCSRequestOptionUseMock;
+KCS_CONSTANT KCSRequestOptionClientMethod;
+
+KCS_CONSTANT KCSRESTRouteAppdata;
+KCS_CONSTANT KCSRESTRouteUser;
+KCS_CONSTANT KCSRESTRouteRPC;
+KCS_CONSTANT KCSRESTRouteBlob;
+KCS_CONSTANT KCSRESTRoutePush;
+KCS_CONSTANT KCSRestRouteTestReflection;
+
+KCS_CONSTANT KCSRESTMethodDELETE;
+KCS_CONSTANT KCSRESTMethodGET;
+KCS_CONSTANT KCSRESTMethodPATCH;
+KCS_CONSTANT KCSRESTMethodPOST;
+KCS_CONSTANT KCSRESTMethodPUT;
+
+#define KCSRequestMethodString [NSStringFromClass([self class]) stringByAppendingFormat:@" %@", NSStringFromSelector(_cmd)]
+#define KCSRequestLogMethod KCSRequestOptionClientMethod : KCSRequestMethodString
+
+#define kHeaderContentType   @"Content-Type"
+#define kHeaderContentLength @"Content-Length"
+
+@class KCSNetworkResponse;
+@protocol KCSCredentials;
+@protocol KCSNetworkOperation;
+
+typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*error);
+
 @interface KCSRequest2 : NSObject
-- (void) start;
+@property (nonatomic, copy) NSArray* path;
+@property (nonatomic, weak) NSString* method;
+@property (nonatomic, copy) NSDictionary* headers;
+@property (nonatomic, copy) NSDictionary* body;
+@property (nonatomic, copy) NSString* queryString;
+@property (nonatomic, copy) KCSRequestProgressBlock progress;
+
+
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
+- (id<KCSNetworkOperation>) start;
+
+//for testing
+- (NSMutableURLRequest*)urlRequest;
++ (void) setRequestArray:(NSMutableArray*)requestArray;
 @end

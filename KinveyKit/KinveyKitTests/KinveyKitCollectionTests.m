@@ -3,14 +3,25 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/19/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KinveyKitCollectionTests.h"
 #import "KinveyCollection.h"
 #import "KCSClient.h"
 #import "KCSConnectionResponse.h"
-#import "KCSKeyChain.h"
 #import "KinveyUser.h"
 #import "KCS_SBJson.h"
 #import "KCSMockConnection.h"
@@ -40,8 +51,11 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 @end
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-retain-cycles"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-@interface KinveyKitCollectionTests ()
+@interface KinveyKitCollectionTests () <KCSCollectionDelegate, KCSInformationDelegate>
 @property (nonatomic) BOOL testPassed;
 @property (retain, nonatomic) NSString *testID;
 @property (copy, nonatomic) SuccessAction onSuccess;
@@ -60,8 +74,6 @@ typedef BOOL(^InfoSuccessAction)(int);
 
 @implementation KinveyKitCollectionTests
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-retain-cycles"
 
 - (void)setUp
 {
@@ -79,15 +91,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     KCSClient *client = [KCSClient sharedClient];
     [client.configuration setServiceHostname:@"baas"];
     (void)[client initializeKinveyServiceForAppKey:@"kid1234" withAppSecret:@"1234" usingOptions:nil];
-    
-    
-    // Fake Auth
-    [KCSKeyChain setString:@"kinvey" forKey:@"username"];
-    [KCSKeyChain setString:@"12345" forKey:@"password"];
-    
-    // Needed, otherwise we burn a connection later...
-    [KCSUser activeUser];
-
+    [self useMockUser];
     
     // Seed data types
     _allTypes = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -224,7 +228,7 @@ typedef BOOL(^InfoSuccessAction)(int);
     
     self.onSuccess = ^(NSArray *results){
         
-        self.message = [NSString stringWithFormat:@"Expected array with 0 count, got array with %d count (%@)", results.count, results];
+        self.message = [NSString stringWithFormat:@"Expected array with 0 count, got array with %lu count (%@)", (unsigned long)results.count, results];
         if (results.count == 0){
             return YES;
         } else {

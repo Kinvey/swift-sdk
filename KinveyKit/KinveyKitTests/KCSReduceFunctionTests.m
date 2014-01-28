@@ -5,6 +5,18 @@
 //  Created by Michael Katz on 5/21/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSReduceFunctionTests.h"
 
@@ -12,11 +24,6 @@
 
 #import "ASTTestClass.h"
 #import "TestUtils.h"
-
-//TODO: FIXME
-@interface KCSAppdataStore (FIX)
-- (void)groupByKeyFunction:(id)keyFunction reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
-@end
 
 @interface GroupTestClass : ASTTestClass
 @property (nonatomic, retain) NSDictionary* objDict;
@@ -31,12 +38,6 @@
 }
 
 @end
-
-
-@interface KCSUser ()
-+ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
-@end
-
 
 @implementation KCSReduceFunctionTests
 
@@ -55,7 +56,7 @@
     }];
     [self poll];
     
-    [store removeObject:allObjs withCompletionBlock:[self pollBlock] withProgressBlock:^(NSArray *objects, double percentComplete) {
+    [store removeObject:allObjs withCompletionBlock:[self pollBlockCount] withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"clear all delete = %f",percentComplete);
     }];
     [self poll];
@@ -237,23 +238,6 @@
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
         STAssertEquals([value[0] objCount], -30, @"expecting 10 as the min for objects of 'math'");
-        
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
-}
-
-- (void) testGroupObjByKeyFunction
-{
-    self.done = NO;
-    [store groupByKeyFunction:@"function(obj) { var dt = new ISODate(obj._kmd.lmt); var g = {}; g[dt.getDate()] = true; return g;}" reduce:[KCSReduceFunction AGGREGATE] condition:[KCSQuery query] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNoError;
-        NSCalendar *calendar = [NSCalendar currentCalendar];
-        NSDateComponents* components = [calendar components:NSDayCalendarUnit | NSYearCalendarUnit fromDate:[NSDate date]];
-        NSInteger day = [components day];
-        NSString* keyf = [NSString stringWithFormat:@"%i", day];
-        NSArray* value = [valuesOrNil reducedValueForFields:@{keyf : @1}];
-        STAssertEquals((int)[value count], (int)6, @"expecting 6 new objects");
         
         self.done = YES;
     } progressBlock:nil];

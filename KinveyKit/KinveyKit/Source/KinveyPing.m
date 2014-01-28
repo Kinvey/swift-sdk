@@ -3,30 +3,26 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 11/30/11.
-//  Copyright (c) 2011-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
+//
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
 //
 
+
 #import "KinveyPing.h"
-#import "KinveyBlocks.h"
-#import "KCSRESTRequest.h"
-#import "KCSConnectionResponse.h"
-#import "KCS_SBJson.h"
-#import "KCSClient.h"
-#import "KCSReachability.h"
-#import "KinveyErrorCodes.h"
-#import "KCSErrorUtilities.h"
-#import "KinveyHTTPStatusCodes.h"
 
-typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *response, NSError *error);
-
-@interface KCSPing (private)
-+ (void)commonPingHelper:(KCSCommonPingBlock)onComplete;
-@end
+#import "KCSPing2.h"
 
 @implementation KCSPingResult
-
-@synthesize description=_description;
-@synthesize pingWasSuccessful=_pingWasSuccessful;
 
 - (instancetype) initWithDescription:(NSString *)description withResult:(BOOL)result
 {
@@ -42,78 +38,22 @@ typedef void(^KCSCommonPingBlock)(BOOL didSucceed, KCSConnectionResponse *respon
 
 @implementation KCSPing
 
-+ (BOOL)networkIsReachable
-{
-    KCSReachability *reachability = [[KCSClient sharedClient] networkReachability];
-    return [reachability isReachable];
-}
-
-+ (BOOL)kinveyServiceIsReachable
-{
-    KCSReachability *reachability = [[KCSClient sharedClient] kinveyReachability];
-    return [reachability isReachable];    
-}
-
-+ (void)commonPingHelper:(KCSCommonPingBlock)onComplete
-{
-    KCSConnectionCompletionBlock cBlock = ^(KCSConnectionResponse *response){
-        if (response.responseCode == KCS_HTTP_STATUS_OK){
-            onComplete(YES, response, nil);
-        } else {
-            NSDictionary *jsonResponse = (NSDictionary*) [response jsonResponseValue];
-            NSError* error = [KCSErrorUtilities createError:jsonResponse description:@"Unable to Ping Kinvey" errorCode:response.responseCode domain:KCSNetworkErrorDomain requestId:response.requestId];
-            onComplete(NO, nil, error);
-        }
-        
-    };
-    
-    KCSConnectionFailureBlock fBlock = ^(NSError *error){
-        onComplete(NO, nil, error);
-    };
-    
-    
-    KCSRESTRequest *request = [KCSRESTRequest requestForResource:[[KCSClient sharedClient] appdataBaseURL] usingMethod:kGetRESTMethod];
-    [[request withCompletionAction:cBlock failureAction:fBlock progressAction:nil] start];
-}
-
-+ (void)checkKinveyServiceStatusWithAction: (KCSPingBlock)completionAction
-{
-    KCSCommonPingBlock cpb = ^(BOOL didSucceed, KCSConnectionResponse *response, NSError *error){
-        NSString *description = nil;
-        if (didSucceed){
-            description = [NSString stringWithFormat:@"Kinvey Service is Alive"];
-        } else {
-            description = [NSString stringWithFormat:@"%@, %@, %@", error.localizedDescription, error.localizedFailureReason, error.localizedRecoveryOptions];
-        }
-        
-        completionAction([[KCSPingResult alloc] initWithDescription:description withResult:didSucceed]);
-    };
-    
-    [KCSPing commonPingHelper:cpb];
-}
-
-// Pings
 + (void)pingKinveyWithBlock: (KCSPingBlock)completionAction
 {
-    KCSCommonPingBlock cpb = ^(BOOL didSucceed, KCSConnectionResponse *response, NSError *error){
-        NSString *description = nil;
+    [KCSPing2 pingKinveyWithBlock:^(NSDictionary *appInfo, NSError *error) {
+        BOOL didSucceed = (error == nil || appInfo != nil);
+        NSString* description;
         if (didSucceed){
-            NSDictionary *jsonData = (NSDictionary*) [response jsonResponseValue];
-            NSNumber *useOldStyle = [[[KCSClient sharedClient] options] valueForKey:KCS_USE_OLD_PING_STYLE_KEY];
-            if ([useOldStyle boolValue]){
-                description = [jsonData description];
-            } else {
-                description = [NSString stringWithFormat:@"Kinvey Service is alive, version: %@, response: %@",
-                               [jsonData valueForKey:@"version"], [jsonData valueForKey:@"kinvey"]];
-            }
+            description = [NSString stringWithFormat:@"Kinvey Service is alive, version: %@, response: %@",
+                           appInfo[KCS_PING_KINVEY_VERSION], appInfo[KCS_PING_APP_NAME]];
         } else {
             description = [NSString stringWithFormat:@"%@, %@, %@", error.localizedDescription, error.localizedFailureReason, error.localizedRecoveryOptions];
         }
-
+        
         completionAction([[KCSPingResult alloc] initWithDescription:description withResult:didSucceed]);
-    };
 
-    [KCSPing commonPingHelper:cpb];
+    }];
+
 }
 
 @end

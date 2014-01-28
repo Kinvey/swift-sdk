@@ -21,7 +21,6 @@
 
 #import "KCSAppdataStore.h"
 #import "KinveyCollection.h"
-#import "KCSRESTRequest.h"
 #import "KCSClient.h"
 #import "KCSReduceFunction.h"
 #import "KCSGroup.h"
@@ -30,6 +29,7 @@
 #import "KCSFileStore.h"
 #import "KCSFile.h"
 #import "KCSClientConfiguration.h"
+#import "KCSObjectCache.h"
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
@@ -37,9 +37,9 @@
 
 NSDictionary* defaultBuilders();
 
-@interface KCSGenericRESTRequest (KCSHiddenMethods)
-+ (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
-@end
+//@interface KCSGenericRESTRequest (KCSHiddenMethods)
+//+ (NSString *)getHTTPMethodForConstant:(NSInteger)constant;
+//@end
 
 @interface KCSQueryTTLModifier : NSObject
 @property (nonatomic, strong) NSNumber* ttl;
@@ -52,11 +52,10 @@ NSDictionary* defaultBuilders();
 @end
 
 
-
 @interface KCSCollection (KCSHiddenMethods)
 
-- (KCSRESTRequest*)restRequestForMethod:(KCSRESTMethod)method apiEndpoint:(NSString*)endpoint;
 - (NSString*) urlForEndpoint:(NSString*)endpoint;
+- (NSString*) route;
 
 @end
 
@@ -78,6 +77,9 @@ NSDictionary* defaultBuilders();
 - (NSDictionary*) dictionaryValue;
 @end
 
+@interface KCSAppdataStore (KCSHiddenMethods)
++ (KCSObjectCache*) caches;
+@end
 
 @interface KCSUser (KCSHiddenMethods)
 @end
@@ -99,7 +101,6 @@ NSDictionary* defaultBuilders();
 @interface KCSFile (KCSHiddenMethods)
 @property (nonatomic, retain) NSURL* localURL;
 @property (nonatomic, retain) NSData* data;
-@property (nonatomic, copy) NSString* gcsULID;
 @property (nonatomic, retain) NSURL* remoteURL;
 - (void) updateAfterUpload:(KCSFile*)newFile;
 @end

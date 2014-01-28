@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/19/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -20,7 +20,11 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 #import "KinveyDataStoreInternal.h"
-#import "TestUtils.h"
+#import "TestUtils2.h"
+
+@interface KCSQuery2 ()
+- (NSString*)queryString:(BOOL)e;
+@end
 
 @interface Query2Tests : SenTestCase
 
@@ -43,10 +47,41 @@
 - (void)testPredicateBasic
 {
     NSPredicate* basicPredicate = [NSPredicate predicateWithFormat:@"foo=X"];
-    KCSQuery2* query = [KCSQuery2 queryWithPredicate:basicPredicate error:NULL];
+    NSError* error = nil;
+    KCSQuery2* query = [KCSQuery2 queryWithPredicate:basicPredicate error:&error];
     
+    KTAssertNoError
     STAssertNotNil(query, @"should be valid");
-    STAssertEqualObjects([query queryString], @"query={\"foo\":\"X\"}", @"basic");
+    STAssertEqualObjects([query queryString:NO], @"?query={\"foo\":\"X\"}", @"basic");
+    
+    basicPredicate = [NSPredicate predicateWithFormat:@"foo < X"];
+    query = [KCSQuery2 queryWithPredicate:basicPredicate error:&error];
+    
+    KTAssertNoError
+    STAssertNotNil(query, @"should be valid");
+    STAssertEqualObjects([query queryString:NO], @"?query={\"foo\":{\"$lt\":\"X\"}}", @"basic");
+    
+    basicPredicate = [NSPredicate predicateWithFormat:@"foo <= X"];
+    query = [KCSQuery2 queryWithPredicate:basicPredicate error:&error];
+    
+    KTAssertNoError
+    STAssertNotNil(query, @"should be valid");
+    STAssertEqualObjects([query queryString:NO], @"?query={\"foo\":{\"$lte\":\"X\"}}", @"basic");
+}
+
+- (void)testSorts
+{
+    NSPredicate* basicPredicate = [NSPredicate predicateWithFormat:@"foo=X"];
+    KCSQuery2* query = [KCSQuery2 queryWithPredicate:basicPredicate error:NULL];
+    query.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"foo" ascending:YES]];
+    STAssertEqualObjects([query queryString:NO], @"?query={\"foo\":\"X\"}&sort={\"foo\":1}", @"basic");
+    query.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"foo" ascending:NO]];
+    STAssertEqualObjects([query queryString:NO], @"?query={\"foo\":\"X\"}&sort={\"foo\":-1}", @"basic");
+}
+
+- (void) testConversion
+{
+    KTNIY
 }
 
 @end

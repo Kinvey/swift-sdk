@@ -5,63 +5,22 @@
 //  Created by Brian Wilson on 10/21/11.
 //  Copyright (c) 2011-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSEntityDict.h"
 #import "KCSLogManager.h"
 
-// Private interface
-@interface KCSEntityDict () 
-@property (nonatomic, strong) NSMutableDictionary *entityProperties;
-@end
-
-
-
-@implementation KCSEntityDict
-
-- (instancetype) init
-{
-    self = [super init];
-    if (self) {
-        _entityProperties = [[NSMutableDictionary alloc] init];
-        _objectId = nil;
-    }
-    return self;
-}
-
-
-- (id) getValueForProperty: (NSString *)property
-{
-    return [self.entityProperties objectForKey:property];
-}
-
-- (void)setValue: (id)value forProperty:(NSString *)property
-{
-    [self.entityProperties setObject:value forKey:property];
-}
-
-+ (NSDictionary *)kinveyObjectBuilderOptions
-{
-    static NSDictionary *options = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        options = @{KCS_USE_DICTIONARY_KEY : @(YES),
-                     KCS_DICTIONARY_NAME_KEY : @"entityProperties"
-                    };
-    });
-    
-    return options;
-}
-
-- (NSDictionary *)hostToKinveyPropertyMapping
-{
-    return @{ @"objectId" : KCSEntityKeyId};
-}
-
-- (NSString *)debugDescription
-{
-    return [self.entityProperties description];
-}
-@end
 
 @implementation NSDictionary (KCSEntityDict)
 

@@ -27,6 +27,7 @@ typedef void (^RunBlock_t)();
 
 /* Stored credentials for Kinvey access */
 @property (strong) NSURLCredential *basicAuthCred;
+@property (nonatomic, retain) id<KCSCredentials> credentials;
 
 /* How long to wait for a response before timing out */
 @property (readonly) double connectionTimeout;

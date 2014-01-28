@@ -3,22 +3,30 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/18/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSUser+SocialExtras.h"
 
 #import "KCSErrorUtilities.h"
 
-#if TARGET_OS_IPHONE
-#import <Twitter/Twitter.h>
-#else
-//#import <objc/message.h>
-//#import <objc/runtime.h>
-//#import <objc/objc-runtime.h>
-//#import <objc/Object.h>
+//#if TARGET_OS_IPHONE
+//#import <Twitter/Twitter.h>
+//#else
 #import <Social/Social.h>
-#endif
+//#endif
 
 #import <Accounts/Accounts.h>
 #import "KCS_TWSignedRequest.h"
@@ -39,25 +47,18 @@
 
 + (BOOL) checkForTwitterCredentials
 {
-#if TARGET_OS_IPHONE
-    return [TWTweetComposeViewController canSendTweet];
-#else 
-    NSSharingService *tweetSharingService = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
-    return [tweetSharingService canPerformWithItems:nil];
-#endif
+    #if TARGET_OS_IPHONE
+        return [SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter];
+    #else
+        NSSharingService *tweetSharingService = [NSSharingService sharingServiceNamed:NSSharingServiceNamePostOnTwitter];
+        return [tweetSharingService canPerformWithItems:nil];
+    #endif
 }
 
 + (BOOL) canUseNativeTwitter
 {
-#if TARGET_OS_IPHONE
-    NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
-    BOOL osVersionSupported = ([currSysVer compare:@"5.0" options:NSNumericSearch] != NSOrderedAscending);
-#else
-    SInt32 version = 0;
-    Gestalt( gestaltSystemVersion, &version );
-    BOOL osVersionSupported = YES; //TODO: check for 10.8
-#endif
-    return osVersionSupported && [self checkForTwitterCredentials] && [self checkForTwitterKeys];
+    //support is OS 10.9+, iOS 6.0+
+    return YES;
 }
 
 + (void) getAccessDictionaryFromTwitterFromPrimaryAccount:(KCSLocalCredentialBlock)completionBlock
@@ -67,7 +68,6 @@
     BOOL hasTwitterCred = [self checkForTwitterCredentials];
     if (hasKeys && hasTwitterCred) {
         
-        dispatch_queue_t current_queue = dispatch_get_current_queue();
         //
         //  Step 1)  Ask Twitter for a special request_token for reverse auth
         //
@@ -79,7 +79,7 @@
         [signedRequest performRequestWithHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             if (!data || [(NSHTTPURLResponse*)response statusCode] >= 400) {
                 NSError* tokenError =[KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
-                dispatch_async(current_queue, ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
                     completionBlock(nil, tokenError);
                 });
             } else {
@@ -89,75 +89,68 @@
                 //  Step 2)  Ask Twitter for the user's auth token and secret
                 //           include x_reverse_auth_target=CK2 and x_reverse_auth_parameters=signedReverseAuthSignature parameters
                 //
-                dispatch_async(dispatch_get_current_queue(), ^{
-                    NSString* twitterKey = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_KEY];
-
-                    NSDictionary *step2Params = @{@"x_reverse_auth_target" : twitterKey, @"x_reverse_auth_parameters" : signedReverseAuthSignature};
-                    NSURL *authTokenURL = [NSURL URLWithString:@"https://api.twitter.com/oauth/access_token"];
-                    
+                NSString* twitterKey = [[KCSClient sharedClient].options objectForKey:KCS_TWITTER_CLIENT_KEY];
+                
+                NSDictionary *step2Params = @{@"x_reverse_auth_target" : twitterKey, @"x_reverse_auth_parameters" : signedReverseAuthSignature};
+                NSURL *authTokenURL = [NSURL URLWithString:@"https://api.twitter.com/oauth/access_token"];
+                
+                SLRequest* step2Request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:authTokenURL parameters:step2Params];
+                
+                //  Obtain the user's permission to access the store
+                //
+                //  NB: You *MUST* keep the ACAccountStore around for as long as you need an ACAccount around.  See WWDC 2011 Session 124 for more info.
+                ACAccountStore* accountStore = [[ACAccountStore alloc] init];
+                ACAccountType *twitterType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+                
 #if TARGET_OS_IPHONE
-                    //TODO: handle iOS 5 & 6
-                    TWRequest *step2Request = [[TWRequest alloc] initWithURL:authTokenURL parameters:step2Params requestMethod:TWRequestMethodPOST];
+                [accountStore requestAccessToAccountsWithType:twitterType withCompletionHandler:^(BOOL granted, NSError *error) {
 #else
-                    SLRequest* step2Request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:authTokenURL parameters:step2Params];
+                [accountStore requestAccessToAccountsWithType:twitterType options:@{} completion:^(BOOL granted, NSError *error) {
 #endif
-                    
-                    //  Obtain the user's permission to access the store
-                    //
-                    //  NB: You *MUST* keep the ACAccountStore around for as long as you need an ACAccount around.  See WWDC 2011 Session 124 for more info.
-                    ACAccountStore* accountStore = [[ACAccountStore alloc] init];
-                    ACAccountType *twitterType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-                    
-#if TARGET_OS_IPHONE
-                    [accountStore requestAccessToAccountsWithType:twitterType withCompletionHandler:^(BOOL granted, NSError *error) {
-#else
-                    [accountStore requestAccessToAccountsWithType:twitterType options:@{} completion:^(BOOL granted, NSError *error) {
-#endif
-                        if (!granted) {
-                            NSError* tokenError =[KCSErrorUtilities createError:nil description:@"User rejected access to Twitter account" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
-                            dispatch_async(current_queue, ^{
-                                completionBlock(nil, tokenError);
-                            });
-                        } else {
-                            // obtain all the local account instances
-                            NSArray *accounts = [accountStore accountsWithAccountType:twitterType];
-                            
-                            // we can assume that we have at least one account thanks to +[TWTweetComposeViewController canSendTweet], let's return it
-                            [step2Request setAccount:[accounts objectAtIndex:0]];
-                            [step2Request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-                                if (!responseData || ((NSHTTPURLResponse*)urlResponse).statusCode >= 400) {
-                                    NSError* tokenError = [KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
-                                    dispatch_async(current_queue, ^{
-                                        completionBlock(nil, tokenError);
-                                    });
-                                }
-                                else {
-                                    NSString *responseStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-                                    //will get back in the form of oauth_token=XXXX&oauth_token_secret=YYYY&user_id=ZZZZ&screen_name=AAAAA
-                                    NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithCapacity:2];
-                                    NSArray* components = [responseStr componentsSeparatedByString:@"&"];
-                                    for (NSString* component in components) {
-                                        NSArray* items = [component componentsSeparatedByString:@"="];
-                                        if (items.count == 2) {
-                                            NSString* key = [items objectAtIndex:0];
-                                            if ([key isEqualToString:@"oauth_token"]) {
-                                                [dictionary setValue:[items objectAtIndex:1] forKey:@"access_token"];
-                                            } else if ([key isEqualToString:@"oauth_token_secret"]) {
-                                                [dictionary setValue:[items objectAtIndex:1] forKey:@"access_token_secret"];
-                                            }
+                    if (!granted) {
+                        NSError* tokenError =[KCSErrorUtilities createError:nil description:@"User rejected access to Twitter account" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            completionBlock(nil, tokenError);
+                        });
+                    } else {
+                        // obtain all the local account instances
+                        NSArray *accounts = [accountStore accountsWithAccountType:twitterType];
+                        
+                        // we can assume that we have at least one account thanks to +[TWTweetComposeViewController canSendTweet], let's return it
+                        [step2Request setAccount:[accounts objectAtIndex:0]];
+                        [step2Request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+                            if (!responseData || ((NSHTTPURLResponse*)urlResponse).statusCode >= 400) {
+                                NSError* tokenError = [KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    completionBlock(nil, tokenError);
+                                });
+                            }
+                            else {
+                                NSString *responseStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+                                //will get back in the form of oauth_token=XXXX&oauth_token_secret=YYYY&user_id=ZZZZ&screen_name=AAAAA
+                                NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithCapacity:2];
+                                NSArray* components = [responseStr componentsSeparatedByString:@"&"];
+                                for (NSString* component in components) {
+                                    NSArray* items = [component componentsSeparatedByString:@"="];
+                                    if (items.count == 2) {
+                                        NSString* key = [items objectAtIndex:0];
+                                        if ([key isEqualToString:@"oauth_token"]) {
+                                            [dictionary setValue:[items objectAtIndex:1] forKey:@"access_token"];
+                                        } else if ([key isEqualToString:@"oauth_token_secret"]) {
+                                            [dictionary setValue:[items objectAtIndex:1] forKey:@"access_token_secret"];
                                         }
                                     }
-                                    dispatch_async(current_queue, ^{
-                                        completionBlock(dictionary, nil);
-                                    });
                                 }
-                            }];
-                        }
-                    }];
-                });
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    completionBlock(dictionary, nil);
+                                });
+                            }
+                        }];
+                    }
+                }];
             }
         }];
-
+        
     } else {
         NSDictionary* info;
         NSString* description;
@@ -172,7 +165,7 @@
         completionBlock(nil, error);
     }
 }
-                            
+
 + (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock permissions:(NSString*)permissions usingWebView:(KCSWebViewClass*) webview
 {
     if (permissions == nil) permissions = @"r_basicprofile";
@@ -203,15 +196,15 @@
         }];
     }
 }
-                               
-                               
+
+
 + (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(KCSWebViewClass*) webview
 {
     [self getAccessDictionaryFromLinkedIn:completionBlock permissions:@"r_basicprofile" usingWebView:webview];
 }
 
-    
+
 
 @end
-                               
-                               
+
+

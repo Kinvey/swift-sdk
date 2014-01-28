@@ -3,8 +3,20 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 5/1/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KinveyAppdataStoreTests.h"
 #import <KinveyKit/KinveyKit.h>
@@ -14,11 +26,6 @@
 
 #import "KCSMockConnection.h"
 #import "KCS_SBJson.h"
-
-@interface KCSUser ()
-+ (void)registerUserWithUsername:(NSString *)uname withPassword:(NSString *)password withDelegate:(id<KCSUserActionDelegate>)delegate forceNew:(BOOL)forceNew;
-@end
-
 
 @implementation KinveyAppdataStoreTests
 
@@ -81,15 +88,6 @@
     [self poll];
 }
 
-- (void)testQuery
-{
-    
-}
-
-- (void)testQueryAll
-{
-    
-}
 
 NSString* largeStringOfSize(int size) 
 {
@@ -102,7 +100,7 @@ NSString* largeStringOfSize(int size)
 
 NSString* largeString() 
 {
-    return largeStringOfSize(1e6);
+    return largeStringOfSize(1e3);
 }
 
 - (void) upTimeout
@@ -131,10 +129,10 @@ NSString* largeString()
 
 NSArray* largeArray() 
 {
-    int size = 1e4;
+    int size = 1e2;
     NSMutableArray* array = [NSMutableArray arrayWithCapacity:size];
     for (int i=0; i<size; i++) {
-        [array addObject:largeStringOfSize(1e3)];
+        [array addObject:largeStringOfSize(1e0)];
     }
     return array;
 }
@@ -168,8 +166,9 @@ NSArray* largeArray()
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:4]];
     
     self.done = NO;
-    [_store removeObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [_store removeObject:obj withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
+        KTAssertEqualsInt(count, 1, @"should delete one object");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -202,8 +201,10 @@ NSArray* largeArray()
     
     
     self.done = NO;
-    [_store removeObject:vals withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [_store removeObject:vals withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
+        KTAssertEqualsInt(count, 10, @"should delete one object");
+
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -214,19 +215,24 @@ NSArray* largeArray()
         self.done = YES;
     }];
     [self poll];
+
 }
 
-
-- (void)testConfigure
+- (void) testBlErrors
 {
-    
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"bl-errors" ofClass:[NSMutableDictionary class]] options:@{}];
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNotNil(errorOrNil, @"should have an error");
+        KTAssertEqualsInt(errorOrNil.code, 550, @"should be a 550");
+        
+        NSDictionary* errorVals = errorOrNil.userInfo;
+        STAssertNotNil(errorVals[@"Kinvey.RequestId"], @"should have request id");
+        STAssertNotNil(errorVals[@"Kinvey.ExecutedHooks"], @"should have hooks");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
 }
-
-- (void)testAuth
-{
-    
-}
-
 
 - (ASTTestClass*)makeObject:(NSString*)desc count:(int)count
 {
@@ -334,7 +340,7 @@ NSArray* largeArray()
     [baseObjs addObject:[self makeObject:@"one" count:10]];
     [baseObjs addObject:[self makeObject:@"two" count:10]];
     [baseObjs addObject:[self makeObject:@"two" count:30]];
-    [baseObjs addObject:[self makeObject:@"two" count:70]];
+    //    [baseObjs addObject:[self makeObject:@"two" count:70]];
     [baseObjs addObject:[self makeObject:@"one" count:5]];
     [baseObjs addObject:[self makeObject:@"two" count:70]];    
     [_store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
@@ -356,7 +362,7 @@ NSArray* largeArray()
     [self poll];
     
     self.done = NO;
-    KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThanOrEqual forValue:[NSNumber numberWithInt:10]];
+    KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThanOrEqual forValue:@10];
     [_store group:@[@"objDescription", @"objCount"] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -494,4 +500,28 @@ NSArray* largeArray()
     }];
     [self poll];
 }
+
+
+#pragma mark - User Collection
+
+- (void) testUserCollectionMakesUsers
+{
+    __block NSArray* objs = nil;
+    self.done = NO;
+    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        KTAssertCountAtLeast(1, objectsOrNil);
+        objs = objectsOrNil;
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    
+    for (KCSUser* u in objs) {
+        STAssertTrue([u isKindOfClass:[KCSUser class]], @"is not a user.");
+    }
+    
+}
+
 @end

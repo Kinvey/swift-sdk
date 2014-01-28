@@ -25,26 +25,6 @@ NSString* const KCSReachabilityChangedNotification = @"KinveyKit.Notification.Re
 @property (strong) KCS_KSReachability* reachability;
 @end
 
-@interface KCSUnreachable : KCSReachability
-@end
-@implementation KCSUnreachable
-
-- (BOOL)isReachable
-{
-    return NO;
-}
-
-- (BOOL)isReachableViaWiFi
-{
-    return NO;
-}
-
-- (BOOL)isReachableViaWWAN
-{
-    return NO;
-}
-@end
-
 @implementation KCSReachability
 
 + (instancetype) reachabilityForInternetConnection
@@ -61,11 +41,6 @@ NSString* const KCSReachabilityChangedNotification = @"KinveyKit.Notification.Re
         [nCenter postNotificationName:KCSReachabilityChangedNotification object:reachy];
     };
     return reachy;
-}
-
-+ (instancetype) unreachableReachability
-{
-    return [[KCSUnreachable alloc] init];
 }
 
 - (instancetype) initWithReachability:(KCS_KSReachability*)reachability
@@ -97,8 +72,13 @@ NSString* const KCSReachabilityChangedNotification = @"KinveyKit.Notification.Re
 - (NSString *)description
 {
     SCNetworkReachabilityFlags flags = self.reachability.flags;
-    NSString* flagString = [NSString stringWithFormat:@"%c%c %c%c%c%c%c%c%c",
+    NSString* flagString =
+#if TARGET_OS_IPHONE
+      [NSString stringWithFormat:@"%c%c %c%c%c%c%c%c%c",
                             (flags & kSCNetworkReachabilityFlagsIsWWAN)               ? 'W' : '-',
+#else
+      [NSString stringWithFormat:@"%c %c%c%c%c%c%c%c",
+#endif
                             (flags & kSCNetworkReachabilityFlagsReachable)            ? 'R' : '-',
                             
                             (flags & kSCNetworkReachabilityFlagsTransientConnection)  ? 't' : '-',

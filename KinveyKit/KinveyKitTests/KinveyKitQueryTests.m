@@ -3,8 +3,20 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/26/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KinveyKitQueryTests.h"
 #import "NSString+KinveyAdditions.h"
@@ -171,63 +183,6 @@
 
 
 #define AssertQuery STAssertEqualObjects([query JSONStringRepresentation], expectedJSON, @"should match");
-- (void) testRegex
-{
-    NSString* expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\"}}";
-    KCSQuery* query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef"];
-    AssertQuery
-    
-    query = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexepDefault];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"i\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpCaseInsensitive];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"x\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpAllowCommentsAndWhitespace];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"s\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpDotMatchesAll];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"m\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpAnchorsMatchLines];
-    AssertQuery
-
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"ix\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpCaseInsensitive | kKCSRegexpAllowCommentsAndWhitespace];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$regex\":\"abcdef\",\"$options\":\"ixsm\"}}";
-    query  = [KCSQuery queryOnField:@"field" withRegex:@"abcdef" options:kKCSRegexpCaseInsensitive | kKCSRegexpAllowCommentsAndWhitespace | kKCSRegexpDotMatchesAll | kKCSRegexpAnchorsMatchLines];
-    AssertQuery
-    
-    expectedJSON = @"{\"field\":{\"$not\":{\"$regex\":\"abcdef\",\"$options\":\"ixsm\"}}}";
-    [query negateQuery];
-    AssertQuery
-    
-    expectedJSON = @"{\"age\":{\"$lt\":10},\"field\":{\"$not\":{\"$regex\":\"abcdef\",\"$options\":\"ixsm\"}}}";
-    [query addQuery:[KCSQuery queryOnField:@"age" usingConditionalsForValues:kKCSLessThan, @(10), nil]];
-    AssertQuery
-}
-
-- (void) testNSRegularExpressionQuery
-{
-    NSError* error = nil;
-    NSRegularExpression* reg = [NSRegularExpression regularExpressionWithPattern:@"&/\"[0-9a-zA-Z].*" options:NSRegularExpressionCaseInsensitive | NSRegularExpressionAnchorsMatchLines error:&error];
-    STAssertNil(error, @"no error %@", error);
-    
-    KCSQuery* query = [KCSQuery queryOnField:@"field" withRegex:reg];
-    NSString* expectedJSON = @"{\"field\":{\"$regex\":\"&/\\\"[0-9a-zA-Z].*\",\"$options\":\"im\"}}";
-    AssertQuery
-    
-    query = [KCSQuery queryOnField:@"field" withRegex:reg options:kKCSRegexpAllowCommentsAndWhitespace];
-    expectedJSON = @"{\"field\":{\"$regex\":\"&/\\\"[0-9a-zA-Z].*\",\"$options\":\"x\"}}";
-    AssertQuery
-}
-
 - (void) testMetadatQueryDate
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
@@ -265,7 +220,7 @@
 - (void) loginWithUser:(NSString*)username password:(NSString*)password
 {
     self.done = NO;
-    [KCSUser userWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+    [KCSUser userWithUsername:username password:password fieldsAndValues:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         if (errorOrNil) {
             [KCSUser loginWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
                 STAssertNoError
@@ -393,24 +348,8 @@
     
     KCSQuery* q3 = [KCSQuery queryForEmptyValueInField:@"field"];
     STAssertEqualObjects(q3.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
-    
-    KCSQuery* q4 = [KCSQuery queryForNilValueInField:@"field"];
-    STAssertEqualObjects(q4.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
 }
 #pragma clang diagnostic pop
-
-- (void) testSortCollectionAPI
-{
-    [TestUtils setUpKinveyUnittestBackend];
-    
-    KCSQuery* q = [KCSQuery queryOnField:@"field" withExactMatchForValue:@1];
-    [q addSortModifier:[[KCSQuerySortModifier alloc] initWithField: @"Fitness" inDirection: kKCSDescending]];
-    
-    KCSCollection* c = [KCSCollection collectionFromString:@"collection" ofClass:[NSMutableDictionary class]];
-    c.query = q;
-//  [c fetchWithDelegate:nil];
-}
-
 
 - (void) testHamadComplexQuery
 {

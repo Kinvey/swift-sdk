@@ -20,134 +20,130 @@
 
 #import "KCSDataStore.h"
 
+#import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
-#import "KCSRequest.h"
-#import "KCSDataStoreCaches.h"
 
-#import "KinveyErrorCodes.h"
+#define kKCSMaxReturnSize 10000
 
-#import "EXTScope.h"
-
-//NSString* const KCSUserCollectionName = @"user";
-static KCSQuery2* KCSQueryAll;
 
 @interface KCSDataStore ()
-@property (nonatomic, strong) NSString* collectionName;
+@property (nonatomic, copy) NSString* collectionName;
+@property (nonatomic, retain) NSString* route;
 @property (nonatomic) BOOL cacheEnabled;
 @end
 
 @implementation KCSDataStore
 
-+ (void)initialize
-{
-    KCSQueryAll = [[KCSQuery2 alloc] init];
-}
-
-
-- (instancetype) init
-{
-    return [self initWithCollection:nil];
-}
-
-- (instancetype)initWithCollection:(NSString*)collection
+- (instancetype) initWithCollection:(NSString*)collection
 {
     NSParameterAssert(collection);
     
     self = [super init];
     if (self) {
+        KK2(Have collection object supply these and get rid of cln names?)
         _collectionName = collection;
+        if ([_collectionName isEqualToString:KCSUserCollectionName]) {
+            _route = KCSRESTRouteUser;
+        } else if ([_collectionName isEqualToString:KCSFileStoreCollectionName]) {
+            _route = KCSRESTRouteBlob;
+        } else {
+            _route = KCSRESTRouteAppdata;
+        }
     }
     return self;
 }
 
-enum KCSContextRoot contextRootForCollection(NSString* collectionName)
+#pragma mark - READ
+
+- (void) getAll:(KCSDataStoreCompletion)completion
 {
-    return (collectionName == KCSUserCollectionName || [collectionName isEqualToString:KCSUserCollectionName])  ?  kKCSContextUSER : kKCSContextAPPDATA;
+    [self query:nil options:@{KCSRequestLogMethod} completion:completion];
 }
 
-#pragma mark - Query
-
-- (id<KCSRequest>) query:(KCSQuery2*)query completion:(void (^)(NSArray* objects, NSError* error))completionBlock
+- (void) query:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion
 {
-    ifNil(query, KCSQueryAll);
-    
-    id<KCSRequest> request = nil;
-    
-    if ([self goToNetwork:query] == YES) {
-        request = [self queryAgainstNetwork:query completion:completionBlock];
-    } else {
-        //query cache
-        request = [self queryAgainstCache:query completion:completionBlock];
+    NSParameterAssert(completion);
+    if (self.collectionName == nil) {
+        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"No collection set in data store" userInfo:nil] raise];
     }
     
-    return request;
-}
-
-#pragma mark Query-Helpers
-
-- (BOOL) goToNetwork:(KCSQuery2*) query
-{
-    return _cacheEnabled == NO;
-}
-
-
-- (id<KCSRequest>) queryAgainstNetwork:(KCSQuery2*)query completion:(void (^)(NSArray* objects, NSError* error))completionBlock
-{    
-    KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-    request.contextRoot = contextRootForCollection(_collectionName);
-    request.queryString = [query escapedQueryString];
+    NSDictionary* reqOptions = @{KCSRequestLogMethod}; //start here and add what params are passed in
+    reqOptions = [reqOptions dictionaryByAddingDictionary:options];
     
-    @weakify(self);
-    @weakify(query);
-    @weakify(completionBlock);
-    [request run:^(NSData *data, NSError *error) {
-        @strongify(self);
-        @strongify(query);
-        @strongify(completionBlock);
-        [self handleNetworkResponse:data error:error query:query completion:completionBlock];
-    }];
-    
-    return request;
-}
-
-- (void) handleNetworkResponse:(NSData*)data error:(NSError*)error query:(KCSQuery2*)query completion:(void (^)(NSArray* objects, NSError* error))completionBlock
-{
-    if (error != nil) {
-        //query local on error? yes - goto query else return error
-        if ([self queryCacheOnError:error] == YES) {
-            // return from cache
-            [self queryAgainstCache:query completion:completionBlock];
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        if (error) {
+            completion(nil, error);
         } else {
-            //return error
-            completionBlock(nil, error);
+            NSArray* elements = [response jsonObject];
+            if ([elements count] == kKCSMaxReturnSize) {
+                KCSLogForcedWarn(KCS_LOG_CONTEXT_DATA, @"Results returned exactly %d items. This is the server limit, so there may more entities that match the query. Try again with a more specific query or use limit and skip modifiers to get all the data.", kKCSMaxReturnSize);
+            }
+            completion(elements, nil);
         }
-    } else {
-        //insert update entities
-        //TODO #
     }
+                                                        route:KCSRESTRouteAppdata
+                                                      options:reqOptions
+                                                  credentials:[KCSUser activeUser]];
+    request.path = @[_collectionName];
+    request.queryString = [query escapedQueryString];
+    [request start];
 }
 
-- (BOOL) queryCacheOnError:(NSError*) error
+#pragma mark - Count
+
+- (void) countAll:(KCSDataStoreCountCompletion)completion
 {
-    return
-    _cacheEnabled == YES &&
-    error != nil && isNetworkError(error);
+    KCS_BREAK
 }
 
-BOOL isNetworkError(NSError* error)
+- (void) countQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
 {
-    return [error.domain isEqualToString:KCSNetworkErrorDomain];
+    KCS_BREAK
 }
 
-- (id<KCSRequest>) queryAgainstCache:(KCSQuery2*)query completion:(void (^)(NSArray* objects, NSError* error))completionBlock
+#pragma mark - Deletion
+- (id<KCSNetworkOperation>) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
 {
-    //TODO #
-    KCSCacheRequest* request = [[KCSCacheRequest alloc] init];
+    if (!_id) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"_id is nil" userInfo:nil] raise];
     
-    //TODO - implement this - KCSEntityCache2* cache = [KCSDataStoreCaches cacheForCollection:_collectionName];
-    
-    
-    return request;
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        NSUInteger count = 0;
+        if (!error) {
+            NSDictionary* responseDict = [response jsonObject];
+            count = [responseDict[@"count"] unsignedIntegerValue];
+        }
+        completion(count, error);
+    }
+                                                        route:self.route
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSUser activeUser]];
+    request.path = @[self.collectionName, _id];
+    request.method = KCSRESTMethodDELETE;
+    id<KCSNetworkOperation> op = [request start];
+    return op;
 }
+
+- (id<KCSNetworkOperation>) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
+{
+    if (!query) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"query is nil" userInfo:nil] raise];
+    
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        NSUInteger count = 0;
+        if (!error) {
+            NSDictionary* responseDict = [response jsonObject];
+            count = [responseDict[@"count"] unsignedIntegerValue];
+        }
+        completion(count, error);
+    }
+                                                        route:self.route
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSUser activeUser]];
+    request.path = @[self.collectionName];
+    request.queryString = [query escapedQueryString];
+    request.method = KCSRESTMethodDELETE;
+    id<KCSNetworkOperation> op = [request start];
+    return op;
+}
+
 
 @end

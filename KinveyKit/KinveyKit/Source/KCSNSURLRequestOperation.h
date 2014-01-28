@@ -2,8 +2,7 @@
 //  KCSNSURLRequestOperation.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/20/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -20,7 +19,13 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KCSNSURLRequestOperation : NSOperation
+#import "KCSNetworkOperation.h"
+
+@interface KCSNSURLRequestOperation : NSOperation <KCSNetworkOperation>
+@property (atomic) NSUInteger retryCount;
+@property (nonatomic, copy) NSString* clientRequestId;
+@property (nonatomic, copy) KCSRequestProgressBlock progressBlock;
+
 - (instancetype) initWithRequest:(NSMutableURLRequest*) request;
 
 @end

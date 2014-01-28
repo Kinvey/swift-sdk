@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/29/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -24,6 +24,7 @@
 
 #import "KCSImageUtils.h"
 #import "NSString+KinveyAdditions.h"
+#import "KCSLogManager.h"
 
 #define kTypeResourceValue @"resource"
 #define kImageMimeType @"image/png"
@@ -36,7 +37,6 @@
 @property (nonatomic, retain) NSDate* expirationDate;
 @property (nonatomic, retain) id resolvedObject;
 @property (nonatomic, retain) Class valClass;
-@property (nonatomic, copy) NSString* gcsULID;
 @end
 
 @implementation KCSFile
@@ -66,6 +66,64 @@
         _fileId = fileId;
         _filename = filename;
         _mimeType = mimeType;
+    }
+    return self;
+}
+
+- (instancetype) copyWithZone:(NSZone *)zone
+{
+    KCSFile* f = [[[self class] allocWithZone:zone] init];
+    f.data = self.data;
+    f.length = self.length;
+    f.fileId = self.fileId;
+    f.filename = self.filename;
+    f.mimeType = self.mimeType;
+    f.localURL = self.localURL;
+    f.refType = self.refType;
+    f.resolvedObject = self.resolvedObject;
+    f.remoteURL = self.remoteURL;
+    f.expirationDate = self.expirationDate;
+    f.valClass = self.valClass;
+    f.publicFile = self.publicFile;
+    f.metadata = [self.metadata copy];
+    f.bytesWritten = self.bytesWritten;
+    return f;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    if ([aCoder isKindOfClass:[NSKeyedArchiver class]]) {
+        [aCoder encodeObject:self.fileId forKey:KCSEntityKeyId];
+        [aCoder encodeObject:self.mimeType forKey:KCSFileMimeType];
+        [aCoder encodeObject:self.filename forKey:KCSFileFileName];
+        [aCoder encodeObject:self.remoteURL forKey:@"remoteurl"];
+        [aCoder encodeObject:self.localURL forKey:@"localurl"];
+        [aCoder encodeInteger:self.length forKey:@"size"];
+        [aCoder encodeObject:self.metadata forKey:KCSEntityKeyMetadata];
+        [aCoder encodeObject:self.expirationDate forKey:@"_expiresAt"];
+        [aCoder encodeObject:self.refType forKey:@"_type"];
+        [aCoder encodeObject:self.publicFile forKey:@"_public"];
+    } else {
+        KCSLogError(@"Tried to encode %@, but encoder %@ is not a NSKeyedArchiver", self, aCoder);
+    }
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if ([aDecoder isKindOfClass:[NSKeyedUnarchiver class]]) {
+        self = [super init];
+        self.fileId = [aDecoder decodeObjectForKey:KCSEntityKeyId];
+        self.mimeType = [aDecoder decodeObjectForKey:KCSFileMimeType];
+        self.filename = [aDecoder decodeObjectForKey:KCSFileFileName];
+        self.remoteURL = [aDecoder decodeObjectForKey:@"remoteurl"];
+        self.localURL = [aDecoder decodeObjectForKey:@"localurl"];
+        self.length = [aDecoder decodeIntegerForKey:@"size"];
+        self.metadata = [aDecoder decodeObjectForKey:KCSEntityKeyMetadata];
+        self.expirationDate = [aDecoder decodeObjectForKey:@"_expiresAt"];
+        self.refType = [aDecoder decodeObjectForKey:@"_type"];
+        self.publicFile = [aDecoder decodeObjectForKey:@"_public"];
+    } else {
+        KCSLogError(@"Tried to decode %@, but decoder %@ is not a NSKeyedUnArchiver", self, aDecoder);
     }
     return self;
 }
@@ -210,15 +268,15 @@
 
 - (NSString*) debugDescription
 {
-    NSString* descr = [NSString stringWithFormat:@"%@ [Data from file: '%@' (id: '%@', length: %u)]", [super debugDescription], _filename, _fileId, _length];
+    NSString* descr = [NSString stringWithFormat:@"%@ [Data from file: '%@' (id: '%@', length: %lu)]", [super debugDescription], _filename, _fileId, (unsigned long)_length];
     if (_localURL == nil && _data == nil && _remoteURL == nil) {
-        descr = [NSString stringWithFormat:@"%@ [Uploaded file id: '%@', (filename: '%@', mime-type:'%@', length: %u)]", [super debugDescription], _fileId, _filename, _mimeType, _length];
+        descr = [NSString stringWithFormat:@"%@ [Uploaded file id: '%@', (filename: '%@', mime-type:'%@', length: %lu)]", [super debugDescription], _fileId, _filename, _mimeType, (unsigned long)_length];
     } else if (_localURL == nil && _data == nil) {
-        descr = [NSString stringWithFormat:@"%@ [Remote file (id: '%@', length: %u) url: '%@' / expires: '%@']", [super debugDescription], _fileId, _length, _remoteURL, _expirationDate];
+        descr = [NSString stringWithFormat:@"%@ [Remote file (id: '%@', length: %lu) url: '%@' / expires: '%@']", [super debugDescription], _fileId, (unsigned long)_length, _remoteURL, _expirationDate];
     } else if (_localURL != nil) {
-        descr = [NSString stringWithFormat:@"%@ [Locally cached file '%@' (id: '%@', length: %u)]", [super debugDescription], _localURL, _fileId, _length];
+        descr = [NSString stringWithFormat:@"%@ [Locally cached file '%@' (id: '%@', length: %lu)]", [super debugDescription], _localURL, _fileId, (unsigned long)_length];
     } else if (_data != nil) {
-        descr = [NSString stringWithFormat:@"%@ [Upload data '%@' (id: '%@', data-length: %u)]", [super debugDescription], _localURL, _fileId, _data.length];
+        descr = [NSString stringWithFormat:@"%@ [Upload data '%@' (id: '%@', data-length: %lu)]", [super debugDescription], _localURL, _fileId, (unsigned long)_data.length];
     }
     return descr;
 }

@@ -2,8 +2,7 @@
 //  KCSErrorUtilities.h
 //  KinveyKit
 //
-//  Created by Brian Wilson on 1/10/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -30,9 +29,5 @@
 
 + (NSError*) createError:(NSDictionary*)jsonErrorDictionary description:(NSString*) description errorCode:(NSInteger)errorCode domain:(NSString*)domain requestId:(NSString*)requestId;
 
-@end
-
-@interface NSError (KCSErrorUtilities)
-- (instancetype) updateDomain:(NSString*)domain;
 @end
 

@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/20/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -20,13 +20,16 @@
 
 #import "KCSNSURLRequestOperation.h"
 
-#import "KCS_SBJson.h"
+#import "KinveyCoreInternal.h"
 
-@interface KCSNSURLRequestOperation ()
+@interface KCSNSURLRequestOperation () <NSURLConnectionDataDelegate, NSURLConnectionDataDelegate>
 @property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, strong) NSMutableData* downloadedData;
 @property (nonatomic, strong) NSURLConnection* connection;
+@property (nonatomic) long long expectedLength;
 @property (nonatomic) BOOL done;
+@property (nonatomic, strong) KCSNetworkResponse* response;
+@property (nonatomic, strong) NSError* error;
 @end
 
 @implementation KCSNSURLRequestOperation
@@ -36,6 +39,7 @@
     self = [super init];
     if (self) {
         _request = request;
+        _progressBlock = nil;
     }
     return self;
 }
@@ -44,12 +48,10 @@
     @autoreleasepool {
         [super start];
         
-        [[NSThread currentThread] setName:@"KinveyKit"];
-        
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         
-        NSLog(@"started");
         self.downloadedData = [NSMutableData data];
+        self.response = [[KCSNetworkResponse alloc] init];
         
         _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
         // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
@@ -59,31 +61,19 @@
     }
 }
 
-//- (void)start
-//{
-//    NSLog(@"started");
-//    self.downloadedData = [NSMutableData data];
-//    NSString* pingStr = @"http://v3yk1n.kinvey.com/appdata/kid10005";
-//    NSURL* pingURL = [NSURL URLWithString:pingStr];
-//
-//    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:pingURL];
-//
-//    NSMutableDictionary* headers = [NSMutableDictionary dictionary];
-//    headers[@"Content-Type"] = @"application/json";
-//    headers[@"Authorization"] = @"Basic a2lkMTAwMDU6OGNjZTk2MTNlY2I3NDMxYWI1ODBkMjA4NjNhOTFlMjA=";
-//    headers[@"X-Kinvey-Api-Version"] = @"3";
-//    [request setAllHTTPHeaderFields:headers];
-//
-//    NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
-//    [connection setDelegateQueue:[NSOperationQueue currentQueue]];
-//    [connection start];
-//
-//}
+
+- (void)setFinished:(BOOL)isFinished
+{
+    [self willChangeValueForKey:@"isFinished"];
+    _done = isFinished;
+    [self didChangeValueForKey:@"isFinished"];
+}
 
 - (BOOL)isFinished
 {
-    return _done;
+    return ([self isCancelled] ? YES : _done);
 }
+
 
 -(BOOL)isExecuting
 {
@@ -97,8 +87,22 @@
 
 - (void) complete:(NSError*) error
 {
-    NSLog(@"-----");
-    _done = YES;
+    self.response.jsonData = self.downloadedData;
+    self.error = error;
+    self.finished = YES;
+}
+
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    NSHTTPURLResponse* hresponse = (NSHTTPURLResponse*) response;
+    //TODO strip headers?
+    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"received response: %ld %@", (long)hresponse.statusCode, hresponse.allHeaderFields);
+
+    self.expectedLength = response.expectedContentLength;
+    
+    self.response.code = hresponse.statusCode;
+    self.response.headers = hresponse.allHeaderFields;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
@@ -109,23 +113,16 @@
 - (void) connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
     [self.downloadedData appendData:data];
+    if (self.progressBlock) {
+        self.progressBlock(self.downloadedData, self.downloadedData.length / (double) _expectedLength);
+    }
 }
 
 - (void) connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    id obj = [[[KCS_SBJsonParser alloc] init] objectWithData:self.downloadedData];
-    if (obj != nil && [obj isKindOfClass:[NSDictionary class]]) {
-        NSString* appHello = obj[@"kinvey"];
-        NSString* kcsVersion = obj[@"version"];
-        NSLog(@"%@-%@", appHello, kcsVersion);
-        
-        
-        [self complete:nil];
-    } else {
-        //TODO: is an error
-        NSError* error = nil;
-        [self complete:error];
-    }
+    //TODO: is an error
+    NSError* error = nil;
+    [self complete:error];
 }
 
 @end

@@ -2,8 +2,20 @@
 //  KCSLinkedAppdataStore.m
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey, Inc. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSLinkedAppdataStore.h"
 
@@ -145,29 +157,26 @@
     return [KCSObjectMapper makeObjectWithResourcesOfType:self.backingCollection.objectTemplate withData:jsonDict withResourceDictionary:resources];
 }
 
-//TODO:group resolves?
-
-- (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
+KK2(abstract out all of this)
+- (KCSQuery*) modifyQuery:(KCSQuery*)query
 {
-    
-    
     if ([self.backingCollection.objectTemplate respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
         NSDictionary* hostResolves = [self.backingCollection.objectTemplate kinveyPropertyToCollectionMapping];
         NSArray* resolvesArray = [hostResolves allKeys];
         [query setReferenceFieldsToResolve:resolvesArray];
     }
-    [super queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:cachePolicy];
+    return query;
 }
 
-//override KCSAppdatastore
-- (NSString*) modifyLoadQuery:(NSString*)query ids:(NSArray*)array
+- (NSString*) refStr
 {
+    NSString* refStr = nil;
     if ([self.backingCollection.objectTemplate respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
         NSDictionary* hostResolves = [self.backingCollection.objectTemplate kinveyPropertyToCollectionMapping];
         NSArray* resolvesArray = [hostResolves allKeys];
-        NSString* resolveType = (array.count == 1) ? @"?resolve=" : @"&resolve=";
-        query = [query stringByAppendingString:[resolveType stringByAppendingString:[resolvesArray join:@","]]];
+        refStr = [@"?resolve=" stringByAppendingString:[resolvesArray join:@","]];
     }
-    return query;
+    return refStr;
 }
+
 @end

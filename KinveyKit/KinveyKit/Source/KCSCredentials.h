@@ -2,7 +2,6 @@
 //  KCSCredentials.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/7/13.
 //  Copyright (c) 2013 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -19,6 +18,9 @@
 
 #import <Foundation/Foundation.h>
 
+@class KCSNetworkResponse;
+
 @protocol KCSCredentials <NSObject>
 - (NSString*) authString;
+- (void) handleErrorResponse:(KCSNetworkResponse*)response;
 @end

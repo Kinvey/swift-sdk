@@ -5,6 +5,18 @@
 //  Created by Brian Wilson on 1/19/12.
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
+//
+
 
 #import "KCSObjectMapper.h"
 
@@ -152,7 +164,8 @@ NSDictionary* builderOptions(id object)
 @end
 
 @implementation KCSObjectMapper
-+ (id)populateObject:(id)object withData: (NSDictionary *)data {
++ (id)populateObject:(id)object withData: (NSDictionary *)data
+{
     return [self populateObjectWithLinkedResources:object withData:data resourceDictionary:nil];
 }
 
@@ -231,7 +244,7 @@ bool isAUserObject(id object)
 {
     BOOL isDictionary = [object isKindOfClass:[NSDictionary class]];
     BOOL isKCSObject = [NSStringFromClass([object class]) hasPrefix:@"KCS"];
-    return isDictionary == NO && isKCSObject == NO;
+    return isDictionary == NO && isKCSObject == YES;
 }
 
 void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NSMutableDictionary* resourcesToLoad, KCSSerializedObject* serializedObject)
@@ -265,6 +278,10 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
             hostToJsonMap = d;
         }
     }
+    NSDictionary* kinveyRefMapping = nil;
+    if (resourcesToLoad != nil && [[object class] respondsToSelector:@selector(kinveyPropertyToCollectionMapping)]) {
+        kinveyRefMapping = [[object class] kinveyPropertyToCollectionMapping];
+    }
     
     BOOL isUserObject = isAUserObject(object);
     
@@ -282,7 +299,7 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
         }
         
         if (value == nil) {
-            if (isUserObject == YES)  {
+            if (isUserObject == NO)  {
                 //dictionaries don't have set properties, so no need to warn, just continue
                 KCSLogWarning(@"Data Mismatch, unable to find value for JSON Key: '%@' (Client Key: '%@').  Object not 100%% valid.", jsonKey, hostKey);
             }
@@ -313,7 +330,14 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
                 } else {
                     //this is a new object & need to download resources
                     KCSFile* file = [KCSFile fileRefFromKinvey:value class:valClass];
-                    resourcesToLoad[hostKey] = file;
+                    if (kinveyRefMapping[hostKey] == nil ||
+                        [[properties valueForKey:hostKey] isEqualToString:NSStringFromClass([KCSFile class])]) {
+                        // just a KCSFile if the type is KCSFile or if the reference is not mapped
+                        [object setValue:file forKey:hostKey];
+                    } else {
+                        //otherwise need to load the binary
+                        resourcesToLoad[hostKey] = file;
+                    }
                 }
             } else if (maybeType == AppdataRef) {
                 //this is a reference
@@ -538,6 +562,9 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
             }
             NSMutableArray* refArray = [NSMutableArray arrayWithCapacity:[arrayValue count]];
             for (id arrayVal in arrayValue) {
+                if ([arrayVal isEqual:[NSNull null]]) {
+                    continue;
+                }
                 KCSKinveyRef* ref = [[KCSKinveyRef alloc] initWithObj:arrayVal andCollection:refCollection];
                 if ([ref unableToSaveReference:shouldSaveRef]) {
                     setError(error, *objectId, jsonName);
@@ -625,6 +652,11 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
         
         if (value == nil) {
             //don't map nils
+            continue;
+        }
+        if ([jsonName isEqualToString:KCSEntityKeyId] && [value isEqualToString:@""]) {
+            //treat @"" as nil for the _id case; assembla #2676
+            objectId = nil;
             continue;
         }
         

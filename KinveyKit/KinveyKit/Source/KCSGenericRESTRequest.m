@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/22/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -24,11 +24,11 @@
 #import "KCSClient.h"
 #import "KinveyUser.h"
 #import "KCSLogManager.h"
-#import "KCSAuthCredential.h"
+//#import "KCSAuthCredential.h"
 #import "KinveyErrorCodes.h"
 #import "KCSErrorUtilities.h"
-#import "KinveyAnalytics.h"
 #import "KCS_SBJson.h"
+#import "KCSClientConfiguration.h"
 
 @interface KCSGenericRESTRequest()
 

@@ -3,79 +3,62 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 1/5/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
+//
+// This software is licensed to you under the Kinvey terms of service located at
+// http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+// software, you hereby accept such terms of service  (and any agreement referenced
+// therein) and agree that you have read, understand and agree to be bound by such
+// terms of service and are of legal age to agree to such terms with Kinvey.
+//
+// This software contains valuable confidential and proprietary information of
+// KINVEY, INC and is subject to applicable licensing agreements.
+// Unauthorized reproduction, transmission or distribution of this file and its
+// contents is a violation of applicable laws.
 //
 
+
 #import "KinveyKitKeyChainTests.h"
-#import "KCSKeyChain.h"
+#import "KinveyCoreInternal.h"
 
 
 @implementation KinveyKitKeyChainTests
 
-- (void)setUp{
-    [KCSKeyChain setString:@"Test String" forKey:@"getTest"];
-    [KCSKeyChain setString:@"Delete Test" forKey:@"rmTest"];
+- (void)setUp
+{
 }
 
-- (void)tearDown{
-    [KCSKeyChain removeStringForKey:@"getTest"];
-    [KCSKeyChain removeStringForKey:@"rmTest"];
+- (void)tearDown
+{
 }
 
-- (void)testGetNonExistentKeyReturnsNil{
-    NSString *value = [KCSKeyChain getStringForKey:@"DoesNotExist"];
-    STAssertNil(value, @"should be nil");
-}
+- (void) testToknes
+{
+    NSString* token = [NSString UUID];
+    NSString* u1 = [NSString UUID];
+    NSString* u2 = [NSString UUID];
 
-- (void)testNilKeyReturnsNil{
-    NSString *value = [KCSKeyChain getStringForKey:nil];
-    STAssertNil(value, @"should be nil");
-}
-
-- (void)testRemoveNonExistentValueReturnsFalse{
-    BOOL retVal = [KCSKeyChain removeStringForKey:@"DoesNotExist"];
-
-    STAssertFalse(retVal, @"should be false");
-}
-
-- (void)testSetValueWithNilKeyReturnsFalse{
-    BOOL retVal = [KCSKeyChain setString:@"testSetValueWithNilKeyReturnsFalse" forKey:nil];
-    STAssertFalse(retVal, @"should be false");
-}
-
-- (void)testGetValue{
-    NSString *retVal = [KCSKeyChain getStringForKey:@"getTest"];
-    STAssertEqualObjects(retVal, @"Test String", @"strings should match");
-}
-
-- (void)testRemoveValue{
-    NSString *retVal = [KCSKeyChain getStringForKey:@"rmTest"];
-    STAssertEqualObjects(retVal, @"Delete Test", @"strings should match");
-   
-    BOOL rmRetVal = [KCSKeyChain removeStringForKey:@"rmTest"];
-    STAssertTrue(rmRetVal, @"Should be true");
-
-    retVal = [KCSKeyChain getStringForKey:@"rmTest"];
-    STAssertNil(retVal, @"string should be nil after removal");
-}
-
-
-- (void)testSetValueSetsValue{
-
-    NSString *testKey = @"testKey";
-    NSString *testValue = @"testSetValueSetsValue";
+    BOOL set = [KCSKeychain2 setKinveyToken:token user:u1];
+    STAssertTrue(set, @"should be set");
     
-    // Set value, make sure response is YES
-    BOOL setRetVal = [KCSKeyChain setString:testValue forKey:testKey];
-    STAssertTrue(setRetVal, @"set should be YES");
+    NSString* t1 = [KCSKeychain2 kinveyTokenForUserId:u1];
+    NSString* t2 = [KCSKeychain2 kinveyTokenForUserId:u2];
     
-    // Check value
-    NSString *key = [KCSKeyChain getStringForKey:testKey];
-    STAssertEqualObjects(key, testValue, @"keys should match");
+    STAssertEqualObjects(t1, token, @"should get back original token");
+    STAssertNil(t2, @"should get no token for u2");
     
-    // Remove value
-    setRetVal = [KCSKeyChain removeStringForKey:testKey];
-    STAssertTrue(setRetVal, @"remove should be YES");
+    BOOL has = [KCSKeychain2 hasTokens];
+    STAssertTrue(has, @"has a token");
+    
+    BOOL deleted = [KCSKeychain2 deleteTokens];
+    STAssertTrue(deleted, @"should have been deleted.");
+
+    has = [KCSKeychain2 hasTokens];
+    STAssertFalse(has, @"should not have a token");
+
+    t1 = [KCSKeychain2 kinveyTokenForUserId:u1];
+    STAssertNil(t1, @"should get no token for u1");
 }
+
 
 @end
