@@ -46,7 +46,7 @@
 
 @interface KCSCachedStoreTests ()
 @property (nonatomic, retain) NSMutableArray* requestArray;
-@property (nonatomic) BOOL callbackCount;
+@property (nonatomic) NSUInteger callbackCount;
 @end
 
 @implementation KCSCachedStoreTests
@@ -61,8 +61,8 @@ static float pollTime;
 
     id query = [KCSQuery query];
  
-    int previouscount = self.requestArray.count;
-    __block int newcount =
+    NSUInteger previouscount = self.requestArray.count;
+    __block NSUInteger newcount;
     self.done = NO;
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         NSLog(@"completion block: %@", query);
@@ -169,7 +169,7 @@ static float pollTime;
 {
     id<KCSStore> store = [self createStore:KCSCachePolicyLocalFirst];
     STAssertNotNil(store, @"must make a store");
-    int prevCount = self.requestArray.count;
+    NSUInteger prevCount = self.requestArray.count;
     
     //call 1
     STAssertTrue([self queryServer:store], @"expecting to call server for first time");

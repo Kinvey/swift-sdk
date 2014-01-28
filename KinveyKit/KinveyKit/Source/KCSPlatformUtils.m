@@ -70,8 +70,12 @@
 
 + (NSString*) platformString
 {
+#if TARGET_OS_IPHONE
     UIDevice* device = [UIDevice currentDevice];
     return [NSString stringWithFormat:@"%@/%@ %@ %@", device.model, [self platform], device.systemName, device.systemVersion];
+#else
+    return [NSString stringWithFormat:@"%@", [self platform]];
+#endif
 }
 
 
