@@ -20,12 +20,8 @@
 
 #import "KCSLinkedInHelper.h"
 
-#import "NSString+KinveyAdditions.h"
-#import "KCSGenericRestRequest.h"
-#import "KCS_OAuthCore.h"
-#import "KCSConnectionResponse.h"
-#import "KCSLogManager.h"
-#import "KCSErrorUtilities.h"
+#import "KinveyCoreInternal.h"
+#import "KinveySocialInternal.h"
 
 #import "KCSWebView.h"
 
@@ -44,29 +40,20 @@
     NSString* urlString = @"https://api.linkedin.com/uas/oauth/requestToken";
     urlString = [urlString stringByAppendingQueryString:[@"scope=" stringByAppendingString:linkedInScope]];
     
-    NSString *method = [KCSGenericRESTRequest getHTTPMethodForConstant:kPostRESTMethod];
-    NSString* auth = KCS_OAuthorizationHeader([NSURL URLWithString:urlString], method, nil, self.apiKey, self.secretKey, nil, nil, nil);
-    
-    KCSGenericRESTRequest* request = [KCSGenericRESTRequest requestForResource:urlString usingMethod:kPostRESTMethod withCompletionAction:^(KCSConnectionResponse *response) {
+    KCSSocialRequest* request = [[KCSSocialRequest alloc] initWithApiKey:self.apiKey secret:self.secretKey url:urlString httpMethod:KCSRESTMethodPOST];
+    request.completionBlock = ^(KCSNetworkResponse *response, NSError *error) {
         NSString* results = [response stringValue];
-        KCSLogTrace(@"LinkedIn requestToken response: %@", results);
-        
-        if ([response responseCode] < 300) {
+        KCSLogDebug(KCS_LOG_CONTEXT_USER, @"LinkedIn requestToken response: %@", results);
+
+        if (error) {
+            error = [NSError errorWithDomain:KCSNetworkErrorDomain code:error.code userInfo:@{ NSUnderlyingErrorKey : error, NSURLErrorFailingURLStringErrorKey : urlString, NSLocalizedDescriptionKey : @"Unable to reach LinkedIn to obtain OAuth token." }];
+            completionBlock(nil, error);
+        } else {
             //OK
             _completionBlock = [completionBlock copy];
             [self getCredentialsFromWeb:results];
-        } else {
-            // error loading page
-            NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:[response responseCode] userInfo:@{NSURLErrorFailingURLStringErrorKey : urlString, NSLocalizedDescriptionKey : @"Reached LinkedIn But was unable to show the credentials page.", NSLocalizedFailureReasonErrorKey : results }];
-            completionBlock(nil, error);
         }
-        
-    } failureAction:^(NSError *errorOrNil) {
-        NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:errorOrNil.code userInfo:@{ NSUnderlyingErrorKey : errorOrNil, NSURLErrorFailingURLStringErrorKey : urlString, NSLocalizedDescriptionKey : @"Unable to reach LinkedIn to obtain OAuth token." }];
-        completionBlock(nil, error);
-    } progressAction:nil];
-    [request.headers setValue:auth forKey:@"Authorization"];
-    
+    };
     [request start];
 }
 
@@ -151,23 +138,21 @@ NSString* KCS_GetOAuthTokenFromQuery(NSString* results, NSString* parameter)
 - (void) getAccessToken:(NSString*)token verifier:(NSString*) verifier
 {
     NSString* urlString =  @"https://api.linkedin.com/uas/oauth/accessToken";
-    NSString *method = [KCSGenericRESTRequest getHTTPMethodForConstant:kPostRESTMethod];
-    NSString* auth = KCS_OAuthorizationHeader([NSURL URLWithString:urlString], method, nil, self.apiKey, self.secretKey, token, _tokenSecret, @{@"oauth_verifier" : verifier});
-    
-    KCSGenericRESTRequest* request = [KCSGenericRESTRequest requestForResource:urlString usingMethod:kPostRESTMethod withCompletionAction:^(KCSConnectionResponse *response) {
-        NSString* results = [response stringValue];        
-        
-        NSString* oauthToken = KCS_GetOAuthTokenFromQuery(results, @"oauth_token");
-        NSString* tokenSecret = KCS_GetOAuthTokenFromQuery(results, @"oauth_token_secret");
-        
-        NSDictionary* accessDictionary = @{ @"access_token" : oauthToken, @"access_token_secret" : tokenSecret, @"consumer_key" : self.apiKey, @"consumer_secret" : self.secretKey};
-        _completionBlock(accessDictionary, nil);
-    } failureAction:^(NSError *errorOrNil) {
-        //TODO: wrap error
-        _completionBlock(nil, errorOrNil);
-    } progressAction:nil];
-    
-    [request.headers setValue:auth forKey:@"Authorization"];
+
+    KCSSocialRequest* request = [[KCSSocialRequest alloc] initWithApiKey:self.apiKey secret:self.secretKey token:token tokenSecret:_tokenSecret additionalKeys:@{@"oauth_verifier" : verifier} url:urlString httpMethod:KCSRESTMethodPOST];
+    request.completionBlock = ^(KCSNetworkResponse *response, NSError *error) {
+        if (error) {
+            _completionBlock(nil, error);
+        } else {
+            NSString* results = [response stringValue];
+            
+            NSString* oauthToken = KCS_GetOAuthTokenFromQuery(results, @"oauth_token");
+            NSString* tokenSecret = KCS_GetOAuthTokenFromQuery(results, @"oauth_token_secret");
+            
+            NSDictionary* accessDictionary = @{ @"access_token" : oauthToken, @"access_token_secret" : tokenSecret, @"consumer_key" : self.apiKey, @"consumer_secret" : self.secretKey};
+            _completionBlock(accessDictionary, nil);
+        }
+    };
     [request start];
 }
 

@@ -17,3 +17,5 @@ extern NSString *KCS_OAuthorizationHeader(NSURL *url,
 									  NSString *_oAuthTokenSecret,
                                       NSDictionary* additionalOAuthKeys);
 
+#warning LICENSES
+#warning delete LICENSES.txt

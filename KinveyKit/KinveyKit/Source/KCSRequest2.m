@@ -84,14 +84,21 @@ NSString * getLogDate3()
 @end
 
 @implementation KCSRequest2
-
-static NSOperationQueue* queue;
+static NSOperationQueue* kcsRequestQueue;
 
 + (void)initialize
 {
-    queue = [[NSOperationQueue alloc] init];
-    queue.maxConcurrentOperationCount = 4;
-    [queue setName:@"com.kinvey.KinveyKit.RequestQueue"];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        kcsRequestQueue = [[NSOperationQueue alloc] init];
+        kcsRequestQueue.maxConcurrentOperationCount = 4;
+        [kcsRequestQueue setName:@"com.kinvey.KinveyKit.RequestQueue"];
+    });
+}
+
++ (NSOperationQueue*) requestQueue
+{
+    return kcsRequestQueue;
 }
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
@@ -225,7 +232,7 @@ static NSOperationQueue* queue;
     op.progressBlock = self.progress;
     
     [[KCSNetworkObserver sharedObserver] connectionStart];
-    [queue addOperation:op];
+    [kcsRequestQueue addOperation:op];
     
 #if BUILD_FOR_UNIT_TEST
     [_sRequestArray addObject:request];
@@ -304,7 +311,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         double delayInSeconds = 0.1 * pow(2, newcount - 1); //exponential backoff
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [queue addOperation:op];
+            [kcsRequestQueue addOperation:op];
         });
     }
 }
