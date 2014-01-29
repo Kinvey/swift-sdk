@@ -1,8 +1,8 @@
 //
-//  KCSNetworkResponse.h
+//  KinveySocialInternal.h
 //  KinveyKit
 //
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,21 +16,10 @@
 // contents is a violation of applicable laws.
 //
 
+#ifndef KinveyKit_KinveySocialInternal_h
+#define KinveyKit_KinveySocialInternal_h
 
-#import <Foundation/Foundation.h>
+#import "KCSSocialRequest.h"
+#import "KCS_OAuthCore.h"
 
-@interface KCSNetworkResponse : NSObject
-@property (nonatomic) NSInteger code;
-@property (nonatomic, copy) NSData* jsonData;
-@property (nonatomic, copy) NSDictionary* headers;
-@property (nonatomic, copy) NSURL* originalURL;
-
-+ (instancetype) MockResponseWith:(NSInteger)code data:(id)data;
-
-- (BOOL) isKCSError;
-- (NSError*) errorObject;
-- (NSString*) stringValue;
-- (id) jsonObject;
-- (NSString*) requestId;
-
-@end
+#endif

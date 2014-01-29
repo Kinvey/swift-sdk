@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/17/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -49,7 +49,8 @@
 {
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:@"GetAll"];
     [store getAll:^(NSArray *objects, NSError *error) {
-        KTNIY
+        KTAssertNoError
+        KTAssertCountAtLeast(1, objects);
         KTPollDone
     }];
     KTPollStart

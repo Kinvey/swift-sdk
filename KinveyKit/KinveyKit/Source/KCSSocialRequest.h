@@ -1,9 +1,8 @@
 //
-//  KCSGenericRestTests.h
+//  KCSSocialRequest.h
 //  KinveyKit
 //
-//  Created by Michael Katz on 8/22/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -18,8 +17,14 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <Foundation/Foundation.h>
+#import "KCSRequest2.h"
 
-@interface KCSGenericRestTests : SenTestCase
+@interface KCSSocialRequest : NSObject
+@property (nonatomic, copy) KCSRequestCompletionBlock completionBlock;
+
+- (instancetype) initWithApiKey:(NSString*)apiKey secret:(NSString*)secretKey url:(NSString*)url httpMethod:(NSString*)method;
+- (instancetype) initWithApiKey:(NSString*)apiKey secret:(NSString*)secretKey token:(NSString*)token tokenSecret:(NSString*)tokenSecret additionalKeys:(NSDictionary*)additionalKeys url:(NSString*)url httpMethod:(NSString*)method;
+- (id<KCSNetworkOperation>) start;
 
 @end

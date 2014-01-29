@@ -22,10 +22,9 @@
 //    IN THE SOFTWARE.
 //
 
-//  Modified 2012, Kinvey Inc
+//  Modified 2012-2013, Kinvey Inc
 
 #import <Foundation/Foundation.h>
-#import "KCSGenericRestRequest.h"
 
 typedef void(^KCS_TWSignedRequestHandler)(NSData *data, NSURLResponse *response, NSError *error);
 
@@ -35,7 +34,7 @@ typedef void(^KCS_TWSignedRequestHandler)(NSData *data, NSURLResponse *response,
 @property (nonatomic, copy) NSString *authTokenSecret;
 
 // Creates a new request 
-- (id)initWithURL:(NSURL *)url parameters:(NSDictionary *)parameters requestMethod:(KCSRESTMethod)requestMethod;
+- (id)initWithURL:(NSURL *)url parameters:(NSDictionary *)parameters requestMethod:(NSString*)requestMethod;
 
 // Perform the request, and notify handler of results
 - (void)performRequestWithHandler:(KCS_TWSignedRequestHandler)handler;

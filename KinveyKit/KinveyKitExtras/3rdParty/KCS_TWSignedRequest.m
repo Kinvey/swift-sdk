@@ -21,7 +21,7 @@
 //    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //    IN THE SOFTWARE.
 //
-//  Modified by Kinvey 2012
+//  Modified by Kinvey 2012-2014
 
 #import "KCS_TWSignedRequest.h"
 
@@ -33,7 +33,7 @@
 {
     NSURL *_url;
     NSDictionary *_parameters;
-    KCSRESTMethod _signedRequestMethod;
+    NSString* _signedRequestMethod;
 }
 
 - (NSURLRequest *)_buildRequest;
@@ -44,7 +44,7 @@
 @synthesize authToken = _authToken;
 @synthesize authTokenSecret = _authTokenSecret;
 
-- (id)initWithURL:(NSURL *)url parameters:(NSDictionary *)parameters requestMethod:(KCSRESTMethod)requestMethod;
+- (id)initWithURL:(NSURL *)url parameters:(NSDictionary *)parameters requestMethod:(NSString*)requestMethod;
 {
     self = [super init];
     if (self) {
@@ -59,7 +59,7 @@
 {
     NSAssert(_url, @"You can't build a request without an URL");
 
-    NSString *method = [KCSGenericRESTRequest getHTTPMethodForConstant:_signedRequestMethod];
+    NSString *method = _signedRequestMethod;
 
     //  Build our parameter string
     NSMutableString *paramsAsString = [[NSMutableString alloc] init];

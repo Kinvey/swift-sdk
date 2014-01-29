@@ -22,16 +22,12 @@
 
 #import "KCSErrorUtilities.h"
 
-//#if TARGET_OS_IPHONE
-//#import <Twitter/Twitter.h>
-//#else
 #import <Social/Social.h>
-//#endif
 
 #import <Accounts/Accounts.h>
 #import "KCS_TWSignedRequest.h"
 #import "KCSLinkedInHelper.h"
-
+#import "KCSRequest2.h"
 
 
 @implementation KCSUser (SocialExtras)
@@ -75,10 +71,15 @@
         
         // "reverse_auth" is a required parameter
         NSDictionary* dict = @{ @"x_auth_mode" : @"reverse_auth"};
-        KCS_TWSignedRequest* signedRequest = [[KCS_TWSignedRequest alloc] initWithURL:url parameters:dict requestMethod:kPostRESTMethod];
-        [signedRequest performRequestWithHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        SLRequest* step1Request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:url parameters:dict];
+        //        KCS_TWSignedRequest* signedRequest = [[KCS_TWSignedRequest alloc] initWithURL:url parameters:dict requestMethod:KCSRESTMethodPOST];
+        [step1Request performRequestWithHandler:^(NSData *data, NSHTTPURLResponse *response, NSError *error) {
+//            <#code#>
+//        }]
+//        [signedRequest performRequestWithHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             if (!data || [(NSHTTPURLResponse*)response statusCode] >= 400) {
-                NSError* tokenError =[KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
+                NSError* tokenError =[KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:response.statusCode domain:KCSUserErrorDomain requestId:nil sourceError:error];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completionBlock(nil, tokenError);
                 });

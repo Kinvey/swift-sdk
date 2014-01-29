@@ -773,7 +773,7 @@ NSError* createCacheError(NSString* message)
         NSError* underlying = [error userInfo][NSUnderlyingErrorKey];
         if (underlying) {
             //not sure what kind this is, so try again later
-            //error objects should have an underlying eror when coming from KCSAsyncRequest
+            //error objects should have an underlying eror when coming from KCSRequest
             return [self isNoNetworkError:underlying];
         }
     } else if ([[error domain] isEqualToString:NSURLErrorDomain]) {

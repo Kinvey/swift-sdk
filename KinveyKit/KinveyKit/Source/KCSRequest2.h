@@ -61,6 +61,9 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
 - (id<KCSNetworkOperation>) start;
 
+BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op);
++ (NSOperationQueue*) requestQueue;
+
 //for testing
 - (NSMutableURLRequest*)urlRequest;
 + (void) setRequestArray:(NSMutableArray*)requestArray;
