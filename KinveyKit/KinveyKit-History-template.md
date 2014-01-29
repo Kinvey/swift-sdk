@@ -1,8 +1,14 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.26.1
+**Release Date:** TBD
+
+* Stability and performance improvements.
+
+
 ### 1.26.0
-** Release Date:** January 28, 2014
+**Release Date:** January 28, 2014
 
 * Drop support for iOS 5. 
 * Added [network activity notifications](http://devcenter.kinvey.com/ios/guides/iossdk#activityindicator): `KCSNetworkConnectionDidStart` and `KCSNetworkConnectionDidEnd`.

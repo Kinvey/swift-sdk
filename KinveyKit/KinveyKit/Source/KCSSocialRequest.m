@@ -36,6 +36,7 @@
 @property (nonatomic, copy) NSString* token;
 @property (nonatomic, copy) NSString* tokenSecret;
 @property (nonatomic, copy) NSDictionary* additionalKeys;
+@property (nonatomic, retain) NSData* bodyData;
 @end
 
 @implementation KCSSocialRequest
@@ -51,6 +52,7 @@
         _token = nil;
         _tokenSecret = nil;
         _additionalKeys = nil;
+        _bodyData = nil;
     }
     return self;
 }
@@ -62,6 +64,15 @@
         _token = token;
         _tokenSecret = tokenSecret;
         _additionalKeys = additionalKeys;
+    }
+    return self;
+}
+
+- (instancetype) initWithApiKey:(NSString*)apiKey secret:(NSString*)secretKey token:(NSString*)token tokenSecret:(NSString*)tokenSecret additionalKeys:(NSDictionary*)additionalKeys body:(NSData*)bodyData url:(NSString*)url httpMethod:(NSString*)method
+{
+    self = [self initWithApiKey:apiKey secret:secretKey token:token tokenSecret:tokenSecret additionalKeys:additionalKeys url:url httpMethod:method];
+    if (self) {
+        _bodyData = bodyData;
     }
     return self;
 }
@@ -78,8 +89,12 @@
     request.HTTPMethod = self.method;
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionary];
-    headers[@"Authorization"] = KCS_OAuthorizationHeader([NSURL URLWithString:self.url], self.method, nil, self.apiKey, self.secretKey, self.token, self.tokenSecret, self.additionalKeys);
+    headers[@"Authorization"] = KCS_OAuthorizationHeader([NSURL URLWithString:self.url], self.method, self.bodyData, self.apiKey, self.secretKey, self.token, self.tokenSecret, self.additionalKeys);
     [request setAllHTTPHeaderFields:headers];
+    
+    if (self.bodyData) {
+        request.HTTPBody = self.bodyData;
+    }
 
     return request;
 }

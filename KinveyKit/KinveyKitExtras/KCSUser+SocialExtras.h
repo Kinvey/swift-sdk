@@ -2,7 +2,7 @@
 //  KCSUser+SocialExtras.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -28,13 +28,6 @@ typedef void (^KCSLocalCredentialBlock)(NSDictionary* accessDictOrNil, NSError* 
  @since 1.9
  */
 @interface KCSUser (SocialExtras)
-
-/**
- Checks that the a twitter account has been set up by the user on the device and that the KCSClient has been configured to obtain an auth token.
- @return true if there is enough information to request an access token from twitter
- @since 1.9
- */
-+ (BOOL) canUseNativeTwitter;
 
 /** Calls the Twitter reverse auth service to obtain an access token for the native user.
  
@@ -63,11 +56,7 @@ typedef void (^KCSLocalCredentialBlock)(NSDictionary* accessDictOrNil, NSError* 
  @param webview for showing the LinkedIn access form. 
  @since 1.13
  */
-#if TARGET_OS_IPHONE
 + (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(KCSWebViewClass*) webview;
-#else
-+ (void) getAccessDictionaryFromLinkedIn:(KCSLocalCredentialBlock)completionBlock usingWebView:(KCSWebViewClass*) webview;
-#endif
 
 /** Calls LinkedIn to obtain a user's auth token. You have to specify `KCS_LINKEDIN_API_KEY`, `KCS_LINKEDIN_SECRET_KEY`,  `KCS_LINKEDIN_ACCEPT_REDIRECT`, and `KCS_LINKEDIN_CANCEL_REDIRECT` in the `KCSClient` set-up. A web view is needed in order to display LinkedIn's sign-in page. A user must enter LinkedIn credentials and press "Allow access". If the user cancels or the system is unable to verify the app credentials, the process will fail.
  
