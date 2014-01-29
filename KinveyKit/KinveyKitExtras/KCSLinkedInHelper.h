@@ -2,7 +2,7 @@
 //  KCSLinkedInHelper.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -18,11 +18,8 @@
 
 #import <Foundation/Foundation.h>
 
-#if TARGET_OS_IPHONE
-#import <UIKit/UIKit.h>
-#endif
-
 #import "KCSUser+SocialExtras.h"
+#import "KCSWebView.h"
 
 @interface KCSLinkedInHelper : NSObject
 
@@ -31,11 +28,7 @@
 @property (nonatomic, copy) NSString* acceptRedirect;
 @property (nonatomic, copy) NSString* cancelRedirect;
 
-#if TARGET_OS_IPHONE
-@property (nonatomic, strong) UIWebView* webview;
-#else
-@property (nonatomic, strong) WebView* webview;
-#endif
+@property (nonatomic, strong) KCSWebViewClass* webview;
 
 - (void) requestToken:(NSString*)linkedInScope completionBlock:(KCSLocalCredentialBlock)completionBlock;
 

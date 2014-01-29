@@ -25,6 +25,10 @@
 
 - (instancetype) initWithApiKey:(NSString*)apiKey secret:(NSString*)secretKey url:(NSString*)url httpMethod:(NSString*)method;
 - (instancetype) initWithApiKey:(NSString*)apiKey secret:(NSString*)secretKey token:(NSString*)token tokenSecret:(NSString*)tokenSecret additionalKeys:(NSDictionary*)additionalKeys url:(NSString*)url httpMethod:(NSString*)method;
+- (instancetype) initWithApiKey:(NSString*)apiKey secret:(NSString*)secretKey token:(NSString*)token tokenSecret:(NSString*)tokenSecret additionalKeys:(NSDictionary*)additionalKeys body:(NSData*)bodyData url:(NSString*)url httpMethod:(NSString*)method;
+
 - (id<KCSNetworkOperation>) start;
+
+
 
 @end

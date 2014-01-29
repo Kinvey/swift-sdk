@@ -55,7 +55,7 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
  @warning Note that this class is a singleton and the single method to get the instance is @see sharedClient.
 
  */
-@interface KCSClient : NSObject <NSURLConnectionDelegate>
+@interface KCSClient : NSObject
 
 #pragma mark - Properties
 
