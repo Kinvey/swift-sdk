@@ -454,6 +454,15 @@
 		27C96F52189862400094E2D2 /* KCSSocialRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C96F4F189862400094E2D2 /* KCSSocialRequest.h */; };
 		27C96F53189862400094E2D2 /* KCSSocialRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C96F50189862400094E2D2 /* KCSSocialRequest.m */; };
 		27C96F54189862400094E2D2 /* KCSSocialRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C96F50189862400094E2D2 /* KCSSocialRequest.m */; };
+		27C96F5E1899AD400094E2D2 /* KCSDataOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C96F5D1899AD400094E2D2 /* KCSDataOperation.h */; };
+		27C96F5F1899AD400094E2D2 /* KCSDataOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C96F5D1899AD400094E2D2 /* KCSDataOperation.h */; };
+		27C96F611899AECD0094E2D2 /* KCSPersistable2.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C96F601899AECD0094E2D2 /* KCSPersistable2.h */; };
+		27C96F621899AECD0094E2D2 /* KCSPersistable2.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C96F601899AECD0094E2D2 /* KCSPersistable2.h */; };
+		27C96F651899AF1C0094E2D2 /* KCSPersistableDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C96F631899AF1C0094E2D2 /* KCSPersistableDescription.h */; };
+		27C96F661899AF1C0094E2D2 /* KCSPersistableDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C96F631899AF1C0094E2D2 /* KCSPersistableDescription.h */; };
+		27C96F671899AF1C0094E2D2 /* KCSPersistableDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C96F641899AF1C0094E2D2 /* KCSPersistableDescription.m */; };
+		27C96F681899AF1C0094E2D2 /* KCSPersistableDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C96F641899AF1C0094E2D2 /* KCSPersistableDescription.m */; };
+		27C96F6A1899E77F0094E2D2 /* DataModelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C96F691899E77F0094E2D2 /* DataModelTests.m */; };
 		27CA5A7817F20838007E0E10 /* FileRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CA5A7717F20838007E0E10 /* FileRequestTests.m */; };
 		27CA5A7C17F217AF007E0E10 /* KCSFile+KCSInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 27CA5A7A17F217AF007E0E10 /* KCSFile+KCSInternal.h */; };
 		27CA5A7D17F217AF007E0E10 /* KCSFile+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CA5A7B17F217AF007E0E10 /* KCSFile+KCSInternal.m */; };
@@ -900,6 +909,11 @@
 		27C96F4E1898621B0094E2D2 /* KinveySocialInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveySocialInternal.h; sourceTree = "<group>"; };
 		27C96F4F189862400094E2D2 /* KCSSocialRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSocialRequest.h; sourceTree = "<group>"; };
 		27C96F50189862400094E2D2 /* KCSSocialRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSocialRequest.m; sourceTree = "<group>"; };
+		27C96F5D1899AD400094E2D2 /* KCSDataOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDataOperation.h; sourceTree = "<group>"; };
+		27C96F601899AECD0094E2D2 /* KCSPersistable2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPersistable2.h; sourceTree = "<group>"; };
+		27C96F631899AF1C0094E2D2 /* KCSPersistableDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPersistableDescription.h; sourceTree = "<group>"; };
+		27C96F641899AF1C0094E2D2 /* KCSPersistableDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPersistableDescription.m; sourceTree = "<group>"; };
+		27C96F691899E77F0094E2D2 /* DataModelTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataModelTests.m; sourceTree = "<group>"; };
 		27CA5A7717F20838007E0E10 /* FileRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileRequestTests.m; sourceTree = "<group>"; };
 		27CA5A7A17F217AF007E0E10 /* KCSFile+KCSInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSFile+KCSInternal.h"; sourceTree = "<group>"; };
 		27CA5A7B17F217AF007E0E10 /* KCSFile+KCSInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSFile+KCSInternal.m"; sourceTree = "<group>"; };
@@ -1226,6 +1240,7 @@
 			isa = PBXGroup;
 			children = (
 				27C95BFC17C26B4A0003498D /* KinveyDataStore.h */,
+				27C96F601899AECD0094E2D2 /* KCSPersistable2.h */,
 				27465349174E6CFE0013546E /* KCSDataStore.h */,
 				2746534A174E6CFE0013546E /* KCSDataStore.m */,
 				2746534E174E6D0F0013546E /* KCSQuery2.h */,
@@ -1233,6 +1248,7 @@
 				27AFF3A61832E73400B9992C /* KCSOfflineUpdateDelegate.h */,
 				2722574818355E66009AC268 /* KCSClient+KinveyDataStore.h */,
 				2722574918355E66009AC268 /* KCSClient+KinveyDataStore.m */,
+				27C96F5D1899AD400094E2D2 /* KCSDataOperation.h */,
 				2774CD7617E8FA4300125E47 /* internal */,
 			);
 			name = "Data Store";
@@ -1367,10 +1383,9 @@
 				278554C21742CCD9005052D6 /* KCSEntityPersistence.m */,
 				27E4E749181ECA9A0071061B /* KCSObjectCache.h */,
 				27E4E74A181ECA9A0071061B /* KCSObjectCache.m */,
-				27E4E74F181EDF480071061B /* KCSDataModel.h */,
-				27E4E750181EDF480071061B /* KCSDataModel.m */,
 				276B73D31832580D0037CAAC /* KCSOfflineUpdate.h */,
 				276B73D41832580D0037CAAC /* KCSOfflineUpdate.m */,
+				27C96F6B189AAEFA0094E2D2 /* Data Modeling */,
 			);
 			name = internal;
 			sourceTree = "<group>";
@@ -1602,6 +1617,7 @@
 				2774CD7417E8E68800125E47 /* DataStoreTests.m */,
 				27E4E747181B36620071061B /* EntityCacheTests.m */,
 				27AFF3A41832893800B9992C /* OfflineTests.m */,
+				27C96F691899E77F0094E2D2 /* DataModelTests.m */,
 			);
 			name = "Data Stores";
 			sourceTree = "<group>";
@@ -1634,6 +1650,19 @@
 				27BD086C16095D7D009473A3 /* KCS_OAuthCore.m */,
 			);
 			name = 3rdParty;
+			sourceTree = "<group>";
+		};
+		27C96F6B189AAEFA0094E2D2 /* Data Modeling */ = {
+			isa = PBXGroup;
+			children = (
+				27C96F631899AF1C0094E2D2 /* KCSPersistableDescription.h */,
+				27C96F641899AF1C0094E2D2 /* KCSPersistableDescription.m */,
+				27E4E74F181EDF480071061B /* KCSDataModel.h */,
+				27E4E750181EDF480071061B /* KCSDataModel.m */,
+				271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */,
+				271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */,
+			);
+			name = "Data Modeling";
 			sourceTree = "<group>";
 		};
 		27CA5A7917F20864007E0E10 /* File Store */ = {
@@ -1713,8 +1742,6 @@
 				D3E7326314C879A4002972B8 /* KCSObjectMapper.m */,
 				2726F98915E6CE370087099D /* KCSBuilders.h */,
 				2726F98A15E6CE370087099D /* KCSBuilders.m */,
-				271E8240157D70B3000AF9EF /* KCSPropertyUtil.h */,
-				271E8241157D70B3000AF9EF /* KCSPropertyUtil.m */,
 				27F360981598BF5C006B699E /* KCSMetadata.h */,
 				27F3609C1598C1CB006B699E /* KCSMetadata.m */,
 			);
@@ -2084,6 +2111,7 @@
 				27B2A3AC187B2102008A84E1 /* KCSKeychain.h in Headers */,
 				276B73D61832580D0037CAAC /* KCSOfflineUpdate.h in Headers */,
 				271827C816C0910200825D50 /* KCSQuery.h in Headers */,
+				27C96F5F1899AD400094E2D2 /* KCSDataOperation.h in Headers */,
 				271827EE16C17A7C00825D50 /* KCSReduceFunction.h in Headers */,
 				2737D3B217BD517300FE7ACC /* KCSMockServer.h in Headers */,
 				271827F016C17A8500825D50 /* KCSGroup.h in Headers */,
@@ -2123,6 +2151,7 @@
 				2737D3C017BE5A4800FE7ACC /* KCSClientConfiguration.h in Headers */,
 				27010A9C1713315C0012D1ED /* KinveyPersistable.h in Headers */,
 				27CD8EE8176FA8AB009463E3 /* KCSFileStore.h in Headers */,
+				27C96F661899AF1C0094E2D2 /* KCSPersistableDescription.h in Headers */,
 				27010A9D1713316F0012D1ED /* KinveyBlocks.h in Headers */,
 				27B75A431857F97B0093144E /* KCSUser2.h in Headers */,
 				27AFF3A91832E7A200B9992C /* KCSQuery2.h in Headers */,
@@ -2149,6 +2178,7 @@
 				27B1E37E17334DF300E12333 /* KCSLinkedInHelper.h in Headers */,
 				278BADBC17B28EC70035B3D6 /* ContextFilterLogFormatter.h in Headers */,
 				273B64A41758F2CB00E1B1B9 /* KCSCustomEndpoints.h in Headers */,
+				27C96F621899AECD0094E2D2 /* KCSPersistable2.h in Headers */,
 				27BBB2F317EB2A1E00264C9C /* KCSLogFormatter.h in Headers */,
 				2798E32E17C7B69D00284F2A /* NSError+KinveyKit.h in Headers */,
 			);
@@ -2183,6 +2213,7 @@
 				D3F340FC14BD2A8100DB6C37 /* KinveyErrorCodes.h in Headers */,
 				D3EA22691484852B00666259 /* KCSPush.h in Headers */,
 				27B75A4B1857F9E70093144E /* KinveyUserService.h in Headers */,
+				27C96F651899AF1C0094E2D2 /* KCSPersistableDescription.h in Headers */,
 				D3EA22C71486B0BD00666259 /* KinveyPing.h in Headers */,
 				D3F7E8751488084D0044F1E8 /* KinveyUser.h in Headers */,
 				D3F3409814BC8AB800DB6C37 /* KCSReachability.h in Headers */,
@@ -2243,6 +2274,7 @@
 				27CD8EE7176FA8AB009463E3 /* KCSFileStore.h in Headers */,
 				273A3E9A160A255900F3742C /* KCSUser+SocialExtras.h in Headers */,
 				27CA5A7C17F217AF007E0E10 /* KCSFile+KCSInternal.h in Headers */,
+				27C96F611899AECD0094E2D2 /* KCSPersistable2.h in Headers */,
 				27F5340A17FD93CA0080332D /* KCSNetworkObserver.h in Headers */,
 				273A3E9B160A256100F3742C /* KinveyKitExtras.h in Headers */,
 				27AC2F25161CA258008A05E1 /* KCSClient+ConfigurationTest.h in Headers */,
@@ -2275,6 +2307,7 @@
 				277A4D7917F1B01F00E545EC /* KCSNSURLSessionFileOperation.h in Headers */,
 				2718279E16B8A78700825D50 /* KCSImageUtils.h in Headers */,
 				27B425EE16C3DA6600C59E1A /* KCSWebView.h in Headers */,
+				27C96F5E1899AD400094E2D2 /* KCSDataOperation.h in Headers */,
 				27F5D7E916F141F5001828F3 /* KCSLogSink.h in Headers */,
 				27F5D7F316F20EC5001828F3 /* NSDictionary+KinveyAdditions.h in Headers */,
 				275512011707CCDB007E8320 /* KCSFacebookHelper.h in Headers */,
@@ -2713,6 +2746,7 @@
 				271827FB16C17B6900825D50 /* KCSBlobService.m in Sources */,
 				27295D6E17E08DF800D34E2F /* KCSNSURLSessionOperation.m in Sources */,
 				277A4D6A17F1568000E545EC /* KCSFileRequest.m in Sources */,
+				27C96F681899AF1C0094E2D2 /* KCSPersistableDescription.m in Sources */,
 				278BADAA17B28EC70035B3D6 /* DDAbstractDatabaseLogger.m in Sources */,
 				274C20A4185F5C3800E623D8 /* KCSDataStore.m in Sources */,
 				27B75A451857F97B0093144E /* KCSUser2.m in Sources */,
@@ -2828,6 +2862,7 @@
 				D3E7326514C879A4002972B8 /* KCSObjectMapper.m in Sources */,
 				278BADB117B28EC70035B3D6 /* DDFileLogger.m in Sources */,
 				D39CDF9814D1E67F00E40D19 /* KCSQuery.m in Sources */,
+				27C96F671899AF1C0094E2D2 /* KCSPersistableDescription.m in Sources */,
 				2722574C18355E66009AC268 /* KCSClient+KinveyDataStore.m in Sources */,
 				D306B5A71550B29100A52CB8 /* KCSAppdataStore.m in Sources */,
 				D3BE9C5C15524C6100ED0FDF /* KCSResourceStore.m in Sources */,
@@ -2945,6 +2980,7 @@
 				27BBD91615ADD3A2005E27E1 /* TestThreads.m in Sources */,
 				27B1FDCF15B19CDE003CC4C6 /* KinveyUserDiscoveryTests.m in Sources */,
 				273DB2E315D171E80072A444 /* KCSOfflineStoreTests.m in Sources */,
+				27C96F6A1899E77F0094E2D2 /* DataModelTests.m in Sources */,
 				2736B19216271D50006CF960 /* KinveyKitNSDictionaryTests.m in Sources */,
 				27CA5A7817F20838007E0E10 /* FileRequestTests.m in Sources */,
 				27E4E748181B36620071061B /* EntityCacheTests.m in Sources */,

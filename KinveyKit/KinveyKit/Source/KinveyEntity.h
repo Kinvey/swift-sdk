@@ -43,18 +43,4 @@
  @param objId the string `_id` for the entity
  */
 - (void) setKinveyObjectId:(NSString*) objId;
-
-/*! Returns the value for a given property in this entity
-*
-* @param property The property that we're interested in.
-* @returns the value of this property.
-*/
-//- (NSString *)valueForProperty: (NSString *)property;
-
-/*! Set a value for a given property (Depricated as of version 1.2)
-* @param value The value to set for the given property
-* @param property The property to assign this value to.
-*/
-- (void)setValue: (NSString *)value forProperty: (NSString *)property;
-
 @end

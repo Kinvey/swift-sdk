@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 3/14/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -45,5 +45,16 @@
 {
     NSString* jsonStr = [self JSONRepresentation];
     return [NSString stringByPercentEncodingString:jsonStr];
+}
+
+- (NSDictionary*) invert
+{
+    NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:self.count];
+    [self enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if ([obj isKindOfClass:[NSString class]]) {
+            d[obj] = key;
+        }
+    }];
+    return d;
 }
 @end
