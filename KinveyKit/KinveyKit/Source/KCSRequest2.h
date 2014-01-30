@@ -38,7 +38,7 @@ KCS_CONSTANT KCSRESTMethodPOST;
 KCS_CONSTANT KCSRESTMethodPUT;
 
 #define KCSRequestMethodString [NSStringFromClass([self class]) stringByAppendingFormat:@" %@", NSStringFromSelector(_cmd)]
-#define KCSRequestLogMethod KCSRequestOptionClientMethod : KCSRequestMethodString
+#define KCSRequestLogMethod KCSRequestOptionClientMethod : KCSRequestOptionClientMethod
 
 #define kHeaderContentType   @"Content-Type"
 #define kHeaderContentLength @"Content-Length"

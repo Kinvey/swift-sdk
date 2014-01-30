@@ -3,10 +3,11 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 10/11/12.
-//  Copyright (c) 2012 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitNSDictionaryTests.h"
+#import "NSDictionary+KinveyAdditions.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
 
 @implementation KinveyKitNSDictionaryTests
@@ -61,6 +62,15 @@
     [self doTest:@{@"A" : @[@{@"Z" : @1, @"X" : @2}, @{@"Y": @10}, @"B"]}
           keyset:@[@"X"]
          expected:@{@"A" : @[@{@"Z" : @1, @"XX" : @2}, @{@"Y": @10}, @"B"]}];
+}
+
+- (void) testInvert
+{
+    NSDictionary* source = @{@"Ak":@"Av",@"Bk":@"Bv",@"Nk":@1,@"Nuk":[NSNull null],@"Ck":@"Cv"};
+    NSDictionary* inverted = [source invert];
+    NSDictionary* expected = @{@"Av":@"Ak",@"Bv":@"Bk",@"Cv":@"Ck"};
+    STAssertEqualObjects(inverted, expected, @"should be inverted, no non-strings");
+    
 }
 
 @end

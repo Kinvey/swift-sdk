@@ -18,7 +18,6 @@
 //
 
 
-
 #import "KinveyEntity.h"
 
 #import "KCSLogManager.h"
@@ -61,36 +60,6 @@
     } else {
         [self setValue:objId forKey:objKey];
     }
-}
-
-- (NSString *)valueForProperty: (NSString *)property
-{
-    if ([property isEqualToString:@"_id"]){
-        return [self kinveyObjectId];
-    } else {
-        NSDictionary *kinveyMapping = [self hostToKinveyPropertyMapping];
-        for (NSString *key in kinveyMapping){
-            NSString *jsonName = [kinveyMapping valueForKey:key];
-            if ([property isEqualToString:jsonName]){
-                return [self valueForKey:key];
-            }
-        }
-        // Didn't find anything yet, search the dictionary if there is one
-        if ([[[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_USE_DICTIONARY_KEY] boolValue]){
-            // Need to check dictionary
-            NSString *dictionaryName = [[[self class] kinveyObjectBuilderOptions] objectForKey:KCS_DICTIONARY_NAME_KEY];
-            NSString *keyPath = [dictionaryName stringByAppendingFormat:@".%@", property];
-            return [self valueForKeyPath:keyPath];
-        }
-    }
-    // Nothing found, return nil
-    return nil;
-}
-
-
-- (void)setValue: (NSString *)value forProperty: (NSString *)property
-{
-    [self setValue:value forKey:property];
 }
 
 - (NSDictionary *)hostToKinveyPropertyMapping
