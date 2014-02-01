@@ -378,6 +378,11 @@ void setActive(KCSUser* user)
     return authString;
 }
 
+- (NSString *)sessionAuth
+{
+    return [self authString];
+}
+
 - (void)handleErrorResponse:(KCSNetworkResponse *)response
 {
     NSDictionary* jsonObj = [response jsonObject];
