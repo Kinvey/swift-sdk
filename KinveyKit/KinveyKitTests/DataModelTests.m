@@ -26,21 +26,24 @@
 #import "TestUtils2.h"
 
 @interface TC : NSObject <KCSPersistable>
-@property (nonatomic, retain) id<KCSPersistable> p1;
+@property (nonatomic, retain) NSDictionary* dRef;
 @property (nonatomic, retain) TC* enemy;
 @property (nonatomic, retain) NSMutableArray* friends;
+@property (nonatomic, weak) TC* this;
+@property (nonatomic, retain) NSSet* setRef;
+@property (nonatomic, retain) NSMutableOrderedSet* oSetRef;
 @end
 
 @implementation TC
 
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
-    return @{@"p1":@"f1",@"enemy":@"enemyF",@"friends":@"friendsF"};
+    return @{@"dRef":@"dRefF",@"enemy":@"enemyF",@"friends":@"friendsF",@"setRef":@"setRefF",@"oSetRef":@"oSetRefF"};
 }
 
 + (NSDictionary *)kinveyPropertyToCollectionMapping
 {
-    return @{@"f1":@"p1",@"enemyF":@"c",@"friendsF":@"c"};
+    return @{@"enemyF":@"c",@"friendsF":@"c",@"dRefF.theRef":@"dc",@"dRefF.innerD.theRef":@"dc2",@"setRefF":@"sc",@"oSetRefF":@"sc"};
 }
 
 @end
@@ -73,7 +76,7 @@ KK2(update tests with KCSPersistable2 objects)
     
     NSArray* refs = descr.references;
     STAssertNotNil(refs, @"refs");
-    KTAssertCount(3, refs);
+    KTAssertCount(6, refs);
 }
 
 - (void) testObjectGraphEmpty
@@ -160,37 +163,296 @@ KK2(update tests with KCSPersistable2 objects)
     STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
     STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
     STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
-
 }
 
 - (void) testGraphMultipleObjSelfRef
 {
+    TC* obj1 = [[TC alloc] init];
+    TC* obj2 = [[TC alloc] init];
+    TC* obj3 = [[TC alloc] init];
     
+    obj1.enemy = obj3;
+    obj2.enemy = obj3;
+    obj3.enemy = obj1;
+    
+    obj1.friends = [@[obj2,obj3] mutableCopy];
+    obj2.friends = [@[obj1] mutableCopy];
+    obj3.friends = [@[obj1,obj2] mutableCopy];
+    
+    obj1.this = obj1;
+    obj2.this = obj2;
+    obj3.this = obj3;
+    
+    KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:obj1 collection:@"c"];
+    NSDictionary* graph = [descr objectListFromObjects:@[obj1,obj2,obj3]];
+    
+    KTAssertCount(1, graph);
+    NSSet* recoverdObjs = graph[@"c"];
+    KTAssertCount(3, recoverdObjs);
+    
+    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
 }
 
 - (void) testRefInDictionary
 {
+    TC* obj1 = [[TC alloc] init];
+    TC* obj2 = [[TC alloc] init];
+    TC* obj3 = [[TC alloc] init];
     
+    obj1.enemy = obj3;
+    obj2.enemy = obj3;
+    obj3.enemy = obj1;
+    
+    obj1.friends = [@[obj2,obj3] mutableCopy];
+    obj2.friends = [@[obj1] mutableCopy];
+    obj3.friends = [@[obj1,obj2] mutableCopy];
+    
+    obj1.this = obj1;
+    obj2.this = obj2;
+    obj3.this = obj3;
+    
+    TC* ref = [[TC alloc] init];
+    obj1.dRef = @{@"theRef":ref};
+    
+    KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:obj1 collection:@"c"];
+    NSDictionary* graph = [descr objectListFromObjects:@[obj1,obj2,obj3]];
+    
+    KTAssertCount(3, graph);
+    NSSet* recoverdObjs = graph[@"c"];
+    KTAssertCount(3, recoverdObjs);
+    
+    NSSet* refObjs = graph[@"dc"];
+    KTAssertCount(1, refObjs);
+    
+    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    
+    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
 }
 
-#define WA(a)     NSLog(@"cfc: %@",[a classForCoder]); NSLog(@"cfka: %@", [a classForKeyedArchiver]); NSLog(@"cfku: %@", [[a class] classForKeyedUnarchiver]); NSLog(@"ro: %@", [[a replacementObjectForKeyedArchiver:ka] class]);
+- (void) testRefInDictionaryTwoLevels
+{
+    TC* obj1 = [[TC alloc] init];
+    TC* obj2 = [[TC alloc] init];
+    TC* obj3 = [[TC alloc] init];
+    
+    obj1.enemy = obj3;
+    obj2.enemy = obj3;
+    obj3.enemy = obj1;
+    
+    obj1.friends = [@[obj2,obj3] mutableCopy];
+    obj2.friends = [@[obj1] mutableCopy];
+    obj3.friends = [@[obj1,obj2] mutableCopy];
+    
+    obj1.this = obj1;
+    obj2.this = obj2;
+    obj3.this = obj3;
+    
+    TC* ref = [[TC alloc] init];
+    TC* innerRef = [[TC alloc] init];
+    obj1.dRef = @{@"theRef":ref,@"innerD":@{@"theRef":innerRef}};
+    
+    KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:obj1 collection:@"c"];
+    NSDictionary* graph = [descr objectListFromObjects:@[obj1,obj2,obj3]];
+    KTAssertCount(3, graph);
+    
+    NSSet* recoverdObjs = graph[@"c"];
+    KTAssertCount(3, recoverdObjs);
+    
+    NSSet* refObjs = graph[@"dc"];
+    KTAssertCount(1, refObjs);
 
+    NSSet* refObjs2 = graph[@"dc2"];
+    KTAssertCount(1, refObjs);
+
+    
+    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    
+    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
+    STAssertTrue([refObjs2 containsObject:innerRef], @"should have the ref in the third collection");
+}
+
+- (void) testRefInSet
+{
+    TC* obj1 = [[TC alloc] init];
+    TC* obj2 = [[TC alloc] init];
+    TC* obj3 = [[TC alloc] init];
+    
+    obj1.enemy = obj3;
+    obj2.enemy = obj3;
+    obj3.enemy = obj1;
+    
+    obj1.friends = [@[obj2,obj3] mutableCopy];
+    obj2.friends = [@[obj1] mutableCopy];
+    obj3.friends = [@[obj1,obj2] mutableCopy];
+    
+    obj1.this = obj1;
+    obj2.this = obj2;
+    obj3.this = obj3;
+    
+    TC* ref = [[TC alloc] init];
+    TC* innerRef = [[TC alloc] init];
+    obj1.dRef = @{@"theRef":ref,@"innerD":@{@"theRef":innerRef}};
+    
+    obj1.setRef = [NSSet setWithObjects:ref, innerRef, nil];
+    
+    KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:obj1 collection:@"c"];
+    NSDictionary* graph = [descr objectListFromObjects:@[obj1,obj2,obj3]];
+    KTAssertCount(4, graph);
+    
+    NSSet* recoverdObjs = graph[@"c"];
+    KTAssertCount(3, recoverdObjs);
+    
+    NSSet* refObjs = graph[@"dc"];
+    KTAssertCount(1, refObjs);
+    
+    NSSet* refObjs2 = graph[@"dc2"];
+    KTAssertCount(1, refObjs)
+    
+    NSSet* setObjs = graph[@"sc"];
+    KTAssertCount(2, setObjs);
+    
+    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    
+    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
+    STAssertTrue([refObjs2 containsObject:innerRef], @"should have the ref in the third collection");
+    STAssertTrue([setObjs containsObject:ref], @"Should have ref in the set collection");
+    STAssertTrue([setObjs containsObject:innerRef], @"Should have ref in the set collection");
+}
+
+- (void) testRefInOrderedSet
+{
+    TC* obj1 = [[TC alloc] init];
+    TC* obj2 = [[TC alloc] init];
+    TC* obj3 = [[TC alloc] init];
+    
+    obj1.enemy = obj3;
+    obj2.enemy = obj3;
+    obj3.enemy = obj1;
+    
+    obj1.friends = [@[obj2,obj3] mutableCopy];
+    obj2.friends = [@[obj1] mutableCopy];
+    obj3.friends = [@[obj1,obj2] mutableCopy];
+    
+    obj1.this = obj1;
+    obj2.this = obj2;
+    obj3.this = obj3;
+    
+    TC* ref = [[TC alloc] init];
+    TC* innerRef = [[TC alloc] init];
+    obj1.dRef = @{@"theRef":ref,@"innerD":@{@"theRef":innerRef}};
+    
+    obj1.setRef = [NSSet setWithObjects:ref, innerRef, nil];
+    obj2.oSetRef = [NSMutableOrderedSet orderedSetWithObjects:obj1, obj2, obj3, nil];
+    
+    KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:obj1 collection:@"c"];
+    NSDictionary* graph = [descr objectListFromObjects:@[obj1,obj2,obj3]];
+    KTAssertCount(4, graph);
+    
+    NSSet* recoverdObjs = graph[@"c"];
+    KTAssertCount(3, recoverdObjs);
+    
+    NSSet* refObjs = graph[@"dc"];
+    KTAssertCount(1, refObjs);
+    
+    NSSet* refObjs2 = graph[@"dc2"];
+    KTAssertCount(1, refObjs)
+    
+    NSSet* setObjs = graph[@"sc"];
+    KTAssertCount(5, setObjs);
+    
+    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    
+    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
+    STAssertTrue([refObjs2 containsObject:innerRef], @"should have the ref in the third collection");
+
+    STAssertTrue([setObjs containsObject:ref], @"Should have ref in the set collection");
+    STAssertTrue([setObjs containsObject:innerRef], @"Should have ref in the set collection");
+    STAssertTrue([setObjs containsObject:obj1],  @"Should have ref in the set collection");
+    STAssertTrue([setObjs containsObject:obj2],  @"Should have ref in the set collection");
+    STAssertTrue([setObjs containsObject:obj3],  @"Should have ref in the set collection");
+}
 
 - (void) testRefInArrayInDictionary
 {
- 
-    NSArray* a = [[NSMutableArray alloc] init];
-    NSDictionary* d = [[NSMutableDictionary alloc] init];
-    NSSet* s = [[NSMutableSet alloc] init];
-    NSOrderedSet* os = [[NSMutableOrderedSet alloc] init];
+    TC* obj1 = [[TC alloc] init];
+    TC* obj2 = [[TC alloc] init];
+    TC* obj3 = [[TC alloc] init];
     
-    NSKeyedArchiver* ka = [[NSKeyedArchiver alloc] initForWritingWithMutableData:[NSMutableData data]];
+    obj1.enemy = obj3;
+    obj2.enemy = obj3;
+    obj3.enemy = obj1;
     
-    //    NSLog(@"cfc: %@",[a classForCoder]); NSLog(@"cfka: %@", [a classForKeyedArchiver]); NSLog(@"cfku: %@", [[a class] classForKeyedUnarchiver]);
-    WA(a)
-    WA(d)
-    WA(s)
-    WA(os)
+    obj1.friends = [@[obj2,obj3] mutableCopy];
+    obj2.friends = [@[obj1] mutableCopy];
+    obj3.friends = [@[obj1,obj2] mutableCopy];
+    
+    obj1.this = obj1;
+    obj2.this = obj2;
+    obj3.this = obj3;
+    
+    TC* ref = [[TC alloc] init];
+    TC* a1 = [[TC alloc] init];
+    TC* a2 = [[TC alloc] init];
+    obj1.dRef = @{@"theRef":ref,@"innerD":@{@"theRef":@[a1,a2]}};
+    
+    KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:obj1 collection:@"c"];
+    NSDictionary* graph = [descr objectListFromObjects:@[obj1,obj2,obj3]];
+    KTAssertCount(3, graph);
+    
+    NSSet* recoverdObjs = graph[@"c"];
+    KTAssertCount(3, recoverdObjs);
+    
+    NSSet* refObjs = graph[@"dc"];
+    KTAssertCount(1, refObjs);
+    NSSet* refObjs2 = graph[@"dc2"];
+    KTAssertCount(2, refObjs2);
+    
+    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    
+    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
+    STAssertTrue([refObjs2 containsObject:a1], @"should have the ref in the dict array collection");
+    STAssertTrue([refObjs2 containsObject:a2], @"should have the ref in the dict array collection");
 }
 
+- (void) testRefDictionaryInArray
+{
+    KTNIY
+}
+
+- (void) testTwoLevelRef
+{
+    KTNIY
+}
+
+- (void) testRefToUserCollection
+{
+    KTNIY
+}
+
+- (void) testUserHasRef
+{
+    KTNIY
+}
+
+- (void) testRefToFile
+{
+    KTNIY
+}
+
+- (void) testFileHasRef
+{
+    KTNIY
+}
 @end

@@ -22,7 +22,7 @@
 #import "KinveyDataStoreInternal.h"
 
 @interface KCSReferenceDescription ()
-@property (nonatomic, retain) KCSPersistableDescription* sourceEntity;
+//@property (nonatomic, copy) NSString* sourceEntity;
 @property (nonatomic, copy) NSString* classname; //TODO: needed?
 @property (nonatomic) BOOL isContainer;
 @end
@@ -30,9 +30,9 @@
 @implementation KCSReferenceDescription
 
 
-- (id<KCSPersistable2>) destinationObjFromObj:(id<KCSPersistable2>)sourceObj
+- (id<KCSPersistable2>) destinationObjFromObj:(NSObject<KCSPersistable2>*)sourceObj
 {
-    return [sourceObj valueForKey:self.sourceProperty];
+    return [sourceObj valueForKeyPath:self.sourceProperty];
 }
 
 @end
@@ -49,7 +49,8 @@
 
 BOOL kcsIsContainerClass(Class aClass)
 {
-    return [aClass isKindOfClass:[NSArray class]] || [aClass isKindOfClass:[NSDictionary class]] || [aClass isKindOfClass:[NSSet class]] || [aClass isKindOfClass:[NSOrderedSet class]];
+    return [aClass isSubclassOfClass:[NSArray class]] || [aClass isSubclassOfClass:[NSDictionary class]] || [aClass isSubclassOfClass:[NSSet class]] || [aClass isSubclassOfClass:[NSOrderedSet class]];
+    // || [aClass isKindOfClass:[NSMutableArray class]] || [aClass isKindOfClass:[NSMutableDictionary class]] || [aClass isKindOfClass:[NSMutableSet class]] || [aClass isKindOfClass:[NSMutableOrderedSet class]];
 }
 
 - (NSArray*) discoverReferences:(id<KCSPersistable>)object
@@ -65,9 +66,15 @@ BOOL kcsIsContainerClass(Class aClass)
             
             [mapping enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
                 KCSReferenceDescription* rd = [[KCSReferenceDescription alloc] init];
-                rd.sourceEntity = key;
+                rd.sourceField = key;
                 rd.destinationCollection = obj;
-                rd.sourceProperty = self.fieldToPropertyMapping[key];
+                
+                NSUInteger dotLocation = [(NSString*)key rangeOfString:@"."].location;
+                NSString* refField = dotLocation == NSNotFound ? key : [key substringToIndex:dotLocation];
+                NSString* sourceProp = self.fieldToPropertyMapping[refField];
+                NSAssert(sourceProp, @"No property mapping for field '%@'", key);
+                rd.sourceProperty = sourceProp;
+                
                 rd.classname = classProps[rd.sourceProperty];
                 rd.isContainer = kcsIsContainerClass(NSClassFromString(rd.classname));
                 [mRefs addObject:rd];
@@ -99,7 +106,32 @@ BOOL kcsIsContainerClass(Class aClass)
 }
 
 #pragma mark - Graph Helpers
+- (void) addRefsFromContainer:(id)objContainer desc:(KCSReferenceDescription*)rDesc graph:(NSMutableDictionary*)graph
+{
+    NSMutableSet* thisSet = graph[rDesc.destinationCollection];
+    if ([objContainer isKindOfClass:[NSArray class]]) {
+        [thisSet addObjectsFromArray:objContainer];
+    } else if ([objContainer isKindOfClass:[NSSet class]]) {
+        [thisSet unionSet:objContainer];
+    } else if ([objContainer isKindOfClass:[NSOrderedSet class]]) {
+        [thisSet addObjectsFromArray:[objContainer array]];
+    } else if ([objContainer isKindOfClass:[NSDictionary class]]) {
+        NSString* entityPath = rDesc.sourceField;
+        NSUInteger dotLocation = [(NSString*)entityPath rangeOfString:@"."].location;
+        NSString* keyPath = dotLocation == NSNotFound ? entityPath : [entityPath substringFromIndex:dotLocation+1];
 
+        id obj = [objContainer valueForKeyPath:keyPath];
+        if (obj) {
+            if (kcsIsContainerClass([obj class])) {
+                [self addRefsFromContainer:obj desc:rDesc graph:graph];
+            } else {
+                [thisSet addObject:obj];
+            }
+        }
+    } else {
+        DBAssert(NO, @"Container should be one the tested classes.");
+    }
+}
 
 //TODO: pull back refdescription as private class?
 - (NSDictionary*) objectListFromObjects:(NSArray*)objects
@@ -122,10 +154,9 @@ BOOL kcsIsContainerClass(Class aClass)
                     d[rdesc.destinationCollection] = [NSMutableSet set];
                 }
                 if (rdesc.isContainer) {
-                    
+                    [self addRefsFromContainer:refObj desc:rdesc graph:d];
                 } else {
                     [d[rdesc.destinationCollection] addObject:refObj];
-                    
                 }
             }
         }

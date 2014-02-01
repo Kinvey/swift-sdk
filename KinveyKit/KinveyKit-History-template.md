@@ -5,6 +5,8 @@
 **Release Date:** TBD
 
 * Stability and performance improvements.
+* Bug fixes:
+     * `-[KCSUser sessionAuth]` is still deprecated, but now returns the auth token.
 * Code cleanup:
      * Deprecated collection-style methods from `KCSPersistable` protocol, including `KCSPersistableDelegate`, `deleteFromCollection:withDelegate:`, and `saveToCollection:withDelegate:delegate`.
      * Removed deprecated `NSObject` category method `setValue:forProperty:`, deprecated in 1.2.0.
