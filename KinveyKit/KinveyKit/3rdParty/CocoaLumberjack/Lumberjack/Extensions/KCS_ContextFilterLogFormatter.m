@@ -1,4 +1,4 @@
-#import "ContextFilterLogFormatter.h"
+#import "KCS_ContextFilterLogFormatter.h"
 #import <libkern/OSAtomic.h>
 
 /**
@@ -15,7 +15,7 @@
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
 
-@interface LoggingContextSet : NSObject
+@interface KCS_LoggingContextSet : NSObject
 
 - (void)addToSet:(int)loggingContext;
 - (void)removeFromSet:(int)loggingContext;
@@ -30,16 +30,16 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation ContextWhitelistFilterLogFormatter
+@implementation KCS_ContextWhitelistFilterLogFormatter
 {
-	LoggingContextSet *contextSet;
+	KCS_LoggingContextSet *contextSet;
 }
 
 - (id)init
 {
 	if ((self = [super init]))
 	{
-		contextSet = [[LoggingContextSet alloc] init];
+		contextSet = [[KCS_LoggingContextSet alloc] init];
 	}
 	return self;
 }
@@ -65,7 +65,7 @@
 	return [contextSet isInSet:loggingContext];
 }
 
-- (NSString *)formatLogMessage:(DDLogMessage *)logMessage
+- (NSString *)formatLogMessage:(KCS_DDLogMessage *)logMessage
 {
 	if ([self isOnWhitelist:logMessage->logContext])
 		return logMessage->logMsg;
@@ -79,16 +79,16 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation ContextBlacklistFilterLogFormatter
+@implementation KCS_ContextBlacklistFilterLogFormatter
 {
-	LoggingContextSet *contextSet;
+	KCS_LoggingContextSet *contextSet;
 }
 
 - (id)init
 {
 	if ((self = [super init]))
 	{
-		contextSet = [[LoggingContextSet alloc] init];
+		contextSet = [[KCS_LoggingContextSet alloc] init];
 	}
 	return self;
 }
@@ -114,7 +114,7 @@
 	return [contextSet isInSet:loggingContext];
 }
 
-- (NSString *)formatLogMessage:(DDLogMessage *)logMessage
+- (NSString *)formatLogMessage:(KCS_DDLogMessage *)logMessage
 {
 	if ([self isOnBlacklist:logMessage->logContext])
 		return nil;
@@ -128,7 +128,7 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation LoggingContextSet
+@implementation KCS_LoggingContextSet
 {
 	OSSpinLock lock;
 	NSMutableSet *set;

@@ -1,4 +1,4 @@
-#import "DDAbstractDatabaseLogger.h"
+#import "KCS_DDAbstractDatabaseLogger.h"
 #import <math.h>
 
 /**
@@ -15,14 +15,14 @@
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
 
-@interface DDAbstractDatabaseLogger ()
+@interface KCS_DDAbstractDatabaseLogger ()
 - (void)destroySaveTimer;
 - (void)destroyDeleteTimer;
 @end
 
 #pragma mark -
 
-@implementation DDAbstractDatabaseLogger
+@implementation KCS_DDAbstractDatabaseLogger
 
 - (id)init
 {
@@ -47,7 +47,7 @@
 #pragma mark Override Me
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)db_log:(DDLogMessage *)logMessage
+- (BOOL)db_log:(KCS_DDLogMessage *)logMessage
 {
 	// Override me and add your implementation.
 	// 
@@ -228,7 +228,7 @@
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	__block NSUInteger result;
 	
@@ -270,7 +270,7 @@
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -294,7 +294,7 @@
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	__block NSTimeInterval result;
 	
@@ -372,7 +372,7 @@
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -396,7 +396,7 @@
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	__block NSTimeInterval result;
 	
@@ -480,7 +480,7 @@
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -504,7 +504,7 @@
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	__block NSTimeInterval result;
 	
@@ -581,7 +581,7 @@
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -605,7 +605,7 @@
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	__block BOOL result;
 	
@@ -634,7 +634,7 @@
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -696,7 +696,7 @@
 	[self destroyDeleteTimer];
 }
 
-- (void)logMessage:(DDLogMessage *)logMessage
+- (void)logMessage:(KCS_DDLogMessage *)logMessage
 {
 	if ([self db_log:logMessage])
 	{

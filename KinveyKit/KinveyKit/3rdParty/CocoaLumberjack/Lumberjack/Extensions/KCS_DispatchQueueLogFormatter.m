@@ -1,4 +1,4 @@
-#import "DispatchQueueLogFormatter.h"
+#import "KCS_DispatchQueueLogFormatter.h"
 #import <libkern/OSAtomic.h>
 
 /**
@@ -16,7 +16,7 @@
 #endif
 
 
-@implementation DispatchQueueLogFormatter
+@implementation KCS_DispatchQueueLogFormatter
 {
 	int32_t atomicLoggerCount;
 	NSDateFormatter *threadUnsafeDateFormatter; // Use [self stringFromDate]
@@ -125,7 +125,7 @@
 	}
 }
 
-- (NSString *)queueThreadLabelForLogMessage:(DDLogMessage *)logMessage
+- (NSString *)queueThreadLabelForLogMessage:(KCS_DDLogMessage *)logMessage
 {
 	// As per the DDLogFormatter contract, this method is always invoked on the same thread/dispatch_queue
 	
@@ -230,7 +230,7 @@
 	}
 }
 
-- (NSString *)formatLogMessage:(DDLogMessage *)logMessage
+- (NSString *)formatLogMessage:(KCS_DDLogMessage *)logMessage
 {
 	NSString *timestamp = [self stringFromDate:(logMessage->timestamp)];
 	NSString *queueThreadLabel = [self queueThreadLabelForLogMessage:logMessage];
@@ -238,12 +238,12 @@
 	return [NSString stringWithFormat:@"%@ [%@] %@", timestamp, queueThreadLabel, logMessage->logMsg];
 }
 
-- (void)didAddToLogger:(id <DDLogger>)logger
+- (void)didAddToLogger:(id <KCS_DDLogger>)logger
 {
 	OSAtomicIncrement32(&atomicLoggerCount);
 }
 
-- (void)willRemoveFromLogger:(id <DDLogger>)logger
+- (void)willRemoveFromLogger:(id <KCS_DDLogger>)logger
 {
 	OSAtomicDecrement32(&atomicLoggerCount);
 }

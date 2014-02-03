@@ -1,4 +1,4 @@
-#import "DDFileLogger.h"
+#import "KCS_DDFileLogger.h"
 
 #import <unistd.h>
 #import <sys/attr.h>
@@ -33,14 +33,14 @@
 #define NSLogInfo(frmt, ...)     do{ if(LOG_LEVEL >= 3) NSLog((frmt), ##__VA_ARGS__); } while(0)
 #define NSLogVerbose(frmt, ...)  do{ if(LOG_LEVEL >= 4) NSLog((frmt), ##__VA_ARGS__); } while(0)
 
-@interface DDLogFileManagerDefault (PrivateAPI)
+@interface KCS_DDLogFileManagerDefault (PrivateAPI)
 
 - (void)deleteOldLogFiles;
 - (NSString *)defaultLogsDirectory;
 
 @end
 
-@interface DDFileLogger (PrivateAPI)
+@interface KCS_DDFileLogger (PrivateAPI)
 
 - (void)rollLogFileNow;
 - (void)maybeRollLogFileDueToAge;
@@ -52,7 +52,7 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation DDLogFileManagerDefault
+@implementation KCS_DDLogFileManagerDefault
 
 @synthesize maximumNumberOfLogFiles;
 
@@ -109,7 +109,7 @@
 	{
 		NSLogInfo(@"DDFileLogManagerDefault: Responding to configuration change: maximumNumberOfLogFiles");
 		
-		dispatch_async([DDLog loggingQueue], ^{ @autoreleasepool {
+		dispatch_async([KCS_DDLog loggingQueue], ^{ @autoreleasepool {
 			
 			[self deleteOldLogFiles];
 		}});
@@ -146,7 +146,7 @@
 	
 	if (count > 0)
 	{
-		DDLogFileInfo *logFileInfo = [sortedLogFileInfos objectAtIndex:0];
+		KCS_DDLogFileInfo *logFileInfo = [sortedLogFileInfos objectAtIndex:0];
 		
 		if (!logFileInfo.isArchived)
 		{
@@ -168,7 +168,7 @@
 	NSUInteger i;
 	for (i = maxNumLogFiles; i < count; i++)
 	{
-		DDLogFileInfo *logFileInfo = [sortedArchivedLogFileInfos objectAtIndex:i];
+		KCS_DDLogFileInfo *logFileInfo = [sortedArchivedLogFileInfos objectAtIndex:i];
 		
 		NSLogInfo(@"DDLogFileManagerDefault: Deleting file: %@", logFileInfo.fileName);
 		
@@ -304,7 +304,7 @@
 	
 	for (NSString *filePath in unsortedLogFilePaths)
 	{
-		DDLogFileInfo *logFileInfo = [[DDLogFileInfo alloc] initWithFilePath:filePath];
+		KCS_DDLogFileInfo *logFileInfo = [[KCS_DDLogFileInfo alloc] initWithFilePath:filePath];
 		
 		[unsortedLogFileInfos addObject:logFileInfo];
 	}
@@ -323,7 +323,7 @@
 	
 	NSMutableArray *sortedLogFilePaths = [NSMutableArray arrayWithCapacity:[sortedLogFileInfos count]];
 	
-	for (DDLogFileInfo *logFileInfo in sortedLogFileInfos)
+	for (KCS_DDLogFileInfo *logFileInfo in sortedLogFileInfos)
 	{
 		[sortedLogFilePaths addObject:[logFileInfo filePath]];
 	}
@@ -342,7 +342,7 @@
 	
 	NSMutableArray *sortedLogFileNames = [NSMutableArray arrayWithCapacity:[sortedLogFileInfos count]];
 	
-	for (DDLogFileInfo *logFileInfo in sortedLogFileInfos)
+	for (KCS_DDLogFileInfo *logFileInfo in sortedLogFileInfos)
 	{
 		[sortedLogFileNames addObject:[logFileInfo fileName]];
 	}
@@ -416,7 +416,7 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation DDLogFileFormatterDefault
+@implementation KCS_DDLogFileFormatterDefault
 
 - (id)init
 {
@@ -441,7 +441,7 @@
 	return self;
 }
 
-- (NSString *)formatLogMessage:(DDLogMessage *)logMessage
+- (NSString *)formatLogMessage:(KCS_DDLogMessage *)logMessage
 {
 	NSString *dateAndTime = [dateFormatter stringFromDate:(logMessage->timestamp)];
 	
@@ -454,16 +454,16 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation DDFileLogger
+@implementation KCS_DDFileLogger
 
 - (id)init
 {
-	DDLogFileManagerDefault *defaultLogFileManager = [[DDLogFileManagerDefault alloc] init];
+	KCS_DDLogFileManagerDefault *defaultLogFileManager = [[KCS_DDLogFileManagerDefault alloc] init];
 	
 	return [self initWithLogFileManager:defaultLogFileManager];
 }
 
-- (id)initWithLogFileManager:(id <DDLogFileManager>)aLogFileManager
+- (id)initWithLogFileManager:(id <KCS_DDLogFileManager>)aLogFileManager
 {
 	if ((self = [super init]))
 	{
@@ -472,7 +472,7 @@
 		
 		logFileManager = aLogFileManager;
 		
-		formatter = [[DDLogFileFormatterDefault alloc] init];
+		formatter = [[KCS_DDLogFileFormatterDefault alloc] init];
 	}
 	return self;
 }
@@ -516,7 +516,7 @@
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	dispatch_sync(globalLoggingQueue, ^{
 		dispatch_sync(loggerQueue, block);
@@ -547,7 +547,7 @@
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	dispatch_async(globalLoggingQueue, ^{
 		dispatch_async(loggerQueue, block);
@@ -575,7 +575,7 @@
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	dispatch_sync(globalLoggingQueue, ^{
 		dispatch_sync(loggerQueue, block);
@@ -605,7 +605,7 @@
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	dispatch_async(globalLoggingQueue, ^{
 		dispatch_async(loggerQueue, block);
@@ -682,7 +682,7 @@
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -764,7 +764,7 @@
  * 
  * Otherwise a new file is created and returned.
 **/
-- (DDLogFileInfo *)currentLogFileInfo
+- (KCS_DDLogFileInfo *)currentLogFileInfo
 {
 	if (currentLogFileInfo == nil)
 	{
@@ -772,7 +772,7 @@
 		
 		if ([sortedLogFileInfos count] > 0)
 		{
-			DDLogFileInfo *mostRecentLogFileInfo = [sortedLogFileInfos objectAtIndex:0];
+			KCS_DDLogFileInfo *mostRecentLogFileInfo = [sortedLogFileInfos objectAtIndex:0];
 			
 			BOOL useExistingLogFile = YES;
 			BOOL shouldArchiveMostRecent = NO;
@@ -817,7 +817,7 @@
 		{
 			NSString *currentLogFilePath = [logFileManager createNewLogFile];
 			
-			currentLogFileInfo = [[DDLogFileInfo alloc] initWithFilePath:currentLogFilePath];
+			currentLogFileInfo = [[KCS_DDLogFileInfo alloc] initWithFilePath:currentLogFilePath];
 		}
 	}
 	
@@ -846,7 +846,7 @@
 #pragma mark DDLogger Protocol
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)logMessage:(DDLogMessage *)logMessage
+- (void)logMessage:(KCS_DDLogMessage *)logMessage
 {
 	NSString *logMsg = logMessage->logMsg;
 	
@@ -894,7 +894,7 @@
   #define XATTR_ARCHIVED_NAME  @"lumberjack.log.archived"
 #endif
 
-@implementation DDLogFileInfo
+@implementation KCS_DDLogFileInfo
 
 @synthesize filePath;
 
@@ -912,7 +912,7 @@
 
 + (id)logFileWithPath:(NSString *)aFilePath
 {
-	return [[DDLogFileInfo alloc] initWithFilePath:aFilePath];
+	return [[KCS_DDLogFileInfo alloc] initWithFilePath:aFilePath];
 }
 
 - (id)initWithFilePath:(NSString *)aFilePath
@@ -1315,7 +1315,7 @@
 {
 	if ([object isKindOfClass:[self class]])
 	{
-		DDLogFileInfo *another = (DDLogFileInfo *)object;
+		KCS_DDLogFileInfo *another = (KCS_DDLogFileInfo *)object;
 		
 		return [filePath isEqualToString:[another filePath]];
 	}
@@ -1323,7 +1323,7 @@
 	return NO;
 }
 
-- (NSComparisonResult)reverseCompareByCreationDate:(DDLogFileInfo *)another
+- (NSComparisonResult)reverseCompareByCreationDate:(KCS_DDLogFileInfo *)another
 {
 	NSDate *us = [self creationDate];
 	NSDate *them = [another creationDate];
@@ -1339,7 +1339,7 @@
 	return NSOrderedSame;
 }
 
-- (NSComparisonResult)reverseCompareByModificationDate:(DDLogFileInfo *)another
+- (NSComparisonResult)reverseCompareByModificationDate:(KCS_DDLogFileInfo *)another
 {
 	NSDate *us = [self modificationDate];
 	NSDate *them = [another modificationDate];

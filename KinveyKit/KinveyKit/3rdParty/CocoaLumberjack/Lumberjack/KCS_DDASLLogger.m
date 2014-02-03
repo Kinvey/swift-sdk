@@ -1,4 +1,4 @@
-#import "DDASLLogger.h"
+#import "KCS_DDASLLogger.h"
 
 #import <libkern/OSAtomic.h>
 
@@ -17,9 +17,9 @@
 #endif
 
 
-@implementation DDASLLogger
+@implementation KCS_DDASLLogger
 
-static DDASLLogger *sharedInstance;
+static KCS_DDASLLogger *sharedInstance;
 
 /**
  * The runtime sends initialize to each class in a program exactly one time just before the class,
@@ -36,11 +36,11 @@ static DDASLLogger *sharedInstance;
 	{
 		initialized = YES;
 		
-		sharedInstance = [[DDASLLogger alloc] init];
+		sharedInstance = [[KCS_DDASLLogger alloc] init];
 	}
 }
 
-+ (DDASLLogger *)sharedInstance
++ (KCS_DDASLLogger *)sharedInstance
 {
 	return sharedInstance;
 }
@@ -62,7 +62,7 @@ static DDASLLogger *sharedInstance;
 	return self;
 }
 
-- (void)logMessage:(DDLogMessage *)logMessage
+- (void)logMessage:(KCS_DDLogMessage *)logMessage
 {
 	NSString *logMsg = logMessage->logMsg;
 	

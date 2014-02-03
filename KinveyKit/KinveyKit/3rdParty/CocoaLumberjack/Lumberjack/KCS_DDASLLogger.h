@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <asl.h>
 
-#import "DDLog.h"
+#import "KCS_DDLog.h"
 
 /**
  * Welcome to Cocoa Lumberjack!
@@ -26,12 +26,12 @@
  * you may choose to use a file logger and a tty logger.
 **/
 
-@interface DDASLLogger : DDAbstractLogger <DDLogger>
+@interface KCS_DDASLLogger : KCS_DDAbstractLogger <KCS_DDLogger>
 {
 	aslclient client;
 }
 
-+ (DDASLLogger *)sharedInstance;
++ (KCS_DDASLLogger *)sharedInstance;
 
 // Inherited from DDAbstractLogger
 

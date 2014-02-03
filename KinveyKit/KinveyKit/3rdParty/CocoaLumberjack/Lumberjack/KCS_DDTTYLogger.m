@@ -1,4 +1,4 @@
-#import "DDTTYLogger.h"
+#import "KCS_DDTTYLogger.h"
 
 #import <unistd.h>
 #import <sys/uio.h>
@@ -123,7 +123,7 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation DDTTYLogger
+@implementation KCS_DDTTYLogger
 
 static BOOL isaColorTTY;
 static BOOL isaColor256TTY;
@@ -133,7 +133,7 @@ static NSArray *codes_fg = nil;
 static NSArray *codes_bg = nil;
 static NSArray *colors   = nil;
 
-static DDTTYLogger *sharedInstance;
+static KCS_DDTTYLogger *sharedInstance;
 
 /**
  * Initializes the colors array, as well as the codes_fg and codes_bg arrays, for 16 color mode.
@@ -806,11 +806,11 @@ static DDTTYLogger *sharedInstance;
 		NSLogInfo(@"DDTTYLogger: isaColor256TTY: %@", (isaColor256TTY ? @"YES" : @"NO"));
 		NSLogInfo(@"DDTTYLogger: isaXcodeColorTTY: %@", (isaXcodeColorTTY ? @"YES" : @"NO"));
 		
-		sharedInstance = [[DDTTYLogger alloc] init];
+		sharedInstance = [[KCS_DDTTYLogger alloc] init];
 	}
 }
 
-+ (DDTTYLogger *)sharedInstance
++ (KCS_DDTTYLogger *)sharedInstance
 {
 	return sharedInstance;
 }
@@ -885,7 +885,7 @@ static DDTTYLogger *sharedInstance;
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	__block BOOL result;
 	
@@ -922,7 +922,7 @@ static DDTTYLogger *sharedInstance;
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	dispatch_async(globalLoggingQueue, ^{
 		dispatch_async(loggerQueue, block);
@@ -972,7 +972,7 @@ static DDTTYLogger *sharedInstance;
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -1007,7 +1007,7 @@ static DDTTYLogger *sharedInstance;
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -1051,7 +1051,7 @@ static DDTTYLogger *sharedInstance;
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -1078,7 +1078,7 @@ static DDTTYLogger *sharedInstance;
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -1103,7 +1103,7 @@ static DDTTYLogger *sharedInstance;
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -1128,7 +1128,7 @@ static DDTTYLogger *sharedInstance;
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -1154,7 +1154,7 @@ static DDTTYLogger *sharedInstance;
 	}
 	else
 	{
-		dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+		dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 		NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 		
 		dispatch_async(globalLoggingQueue, ^{
@@ -1163,7 +1163,7 @@ static DDTTYLogger *sharedInstance;
 	}
 }
 
-- (void)logMessage:(DDLogMessage *)logMessage
+- (void)logMessage:(KCS_DDLogMessage *)logMessage
 {
 	NSString *logMsg = logMessage->logMsg;
 	BOOL isFormatted = NO;
@@ -1383,7 +1383,7 @@ static DDTTYLogger *sharedInstance;
 		
 		if (fgColor)
 		{
-			[DDTTYLogger getRed:&r green:&g blue:&b fromColor:fgColor];
+			[KCS_DDTTYLogger getRed:&r green:&g blue:&b fromColor:fgColor];
 			
 			fg_r = (uint8_t)(r * 255.0f);
 			fg_g = (uint8_t)(g * 255.0f);
@@ -1391,7 +1391,7 @@ static DDTTYLogger *sharedInstance;
 		}
 		if (bgColor)
 		{
-			[DDTTYLogger getRed:&r green:&g blue:&b fromColor:bgColor];
+			[KCS_DDTTYLogger getRed:&r green:&g blue:&b fromColor:bgColor];
 			
 			bg_r = (uint8_t)(r * 255.0f);
 			bg_g = (uint8_t)(g * 255.0f);
@@ -1402,7 +1402,7 @@ static DDTTYLogger *sharedInstance;
 		{
 			// Map foreground color to closest available shell color
 			
-			fgCodeIndex = [DDTTYLogger codeIndexForColor:fgColor];
+			fgCodeIndex = [KCS_DDTTYLogger codeIndexForColor:fgColor];
 			fgCodeRaw   = [codes_fg objectAtIndex:fgCodeIndex];
 			
 			NSString *escapeSeq = @"\033[";
@@ -1437,7 +1437,7 @@ static DDTTYLogger *sharedInstance;
 		{
 			// Map background color to closest available shell color
 			
-			bgCodeIndex = [DDTTYLogger codeIndexForColor:bgColor];
+			bgCodeIndex = [KCS_DDTTYLogger codeIndexForColor:bgColor];
 			bgCodeRaw   = [codes_bg objectAtIndex:bgCodeIndex];
 			
 			NSString *escapeSeq = @"\033[";
