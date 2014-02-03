@@ -32,20 +32,44 @@
 @property (nonatomic, weak) TC* this;
 @property (nonatomic, retain) NSSet* setRef;
 @property (nonatomic, retain) NSMutableOrderedSet* oSetRef;
+@property (nonatomic, retain) NSArray* arrOfDicts;
 @end
 
 @implementation TC
 
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
-    return @{@"dRef":@"dRefF",@"enemy":@"enemyF",@"friends":@"friendsF",@"setRef":@"setRefF",@"oSetRef":@"oSetRefF"};
+    return @{@"dRef":@"dRefF",@"enemy":@"enemyF",@"friends":@"friendsF",@"setRef":@"setRefF",@"oSetRef":@"oSetRefF",@"arrOfDicts":@"arrOfDictsF"};
 }
 
 + (NSDictionary *)kinveyPropertyToCollectionMapping
 {
-    return @{@"enemyF":@"c",@"friendsF":@"c",@"dRefF.theRef":@"dc",@"dRefF.innerD.theRef":@"dc2",@"setRefF":@"sc",@"oSetRefF":@"sc"};
+    return @{@"enemyF":@"c",@"friendsF":@"c",@"dRefF.theRef":@"dc",@"dRefF.innerD.theRef":@"dc2",@"setRefF":@"sc",@"oSetRefF":@"sc",@"arrOfDictsF.d":@"dc"};
 }
+@end
 
+
+@interface ARef : NSObject <KCSPersistable>
+@property (nonatomic, retain) id nextRef;
+@end
+
+@interface BRef : NSObject <KCSPersistable>
+@end
+
+@implementation ARef
+
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    return @{@"nextRef":@"nextRefF"};
+}
++ (NSDictionary *)kinveyPropertyToCollectionMapping
+{
+    return @{@"nextRefF":@"BCollection"};
+}
+@end
+
+
+@implementation BRef
 @end
 
 @interface DataModelTests : SenTestCase
@@ -76,7 +100,7 @@ KK2(update tests with KCSPersistable2 objects)
     
     NSArray* refs = descr.references;
     STAssertNotNil(refs, @"refs");
-    KTAssertCount(6, refs);
+    KTAssertCount(7, refs);
 }
 
 - (void) testObjectGraphEmpty
@@ -428,12 +452,54 @@ KK2(update tests with KCSPersistable2 objects)
 
 - (void) testRefDictionaryInArray
 {
-    KTNIY
+    TC* obj1 = [[TC alloc] init];
+    TC* a1 = [[TC alloc] init];
+    TC* a2 = [[TC alloc] init];
+    
+    obj1.arrOfDicts = @[@{@"d":a1},@{@"d":a2}];
+    
+    KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:obj1 collection:@"c"];
+    NSDictionary* graph = [descr objectListFromObjects:@[obj1]];
+    KTAssertCount(2, graph);
+    
+    NSSet* recoverdObjs = graph[@"c"];
+    KTAssertCount(1, recoverdObjs);
+    
+    NSSet* refObjs = graph[@"dc"];
+    KTAssertCount(2, refObjs);
+    
+    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    
+    STAssertTrue([refObjs containsObject:a1], @"should have the ref in the second collection");
+    STAssertTrue([refObjs containsObject:a2], @"should have the ref in the second collection");
 }
 
 - (void) testTwoLevelRef
 {
-    KTNIY
+    TC* lvl1 = [[TC alloc] init];
+    ARef* lvl2 = [[ARef alloc] init];
+    BRef* lvl3 = [[BRef alloc] init];
+    
+    lvl1.setRef = [NSSet setWithObjects:lvl2, nil];
+    lvl2.nextRef = lvl3;
+    
+    KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:lvl1 collection:@"c"];
+    NSDictionary* graph = [descr objectListFromObjects:@[lvl1]];
+    KTAssertCount(3, graph);
+    
+    NSSet* recoverdObjs = graph[@"c"];
+    KTAssertCount(1, recoverdObjs);
+    
+    NSSet* lvl1Objs = graph[@"sc"];
+    KTAssertCount(1, lvl1Objs);
+
+    NSSet* lvl2Objs = graph[@"BCollection"];
+    KTAssertCount(1, lvl2Objs)
+    
+    STAssertTrue([recoverdObjs containsObject:lvl1], @"should get back original");
+    
+    STAssertTrue([lvl1Objs containsObject:lvl2], @"should have the ref in the second collection");
+    STAssertTrue([lvl2Objs containsObject:lvl3], @"should have the ref in the third collection");
 }
 
 - (void) testRefToUserCollection

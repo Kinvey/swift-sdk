@@ -33,10 +33,10 @@
 **/
 
 
-@class DDLogMessage;
+@class KCS_DDLogMessage;
 
-@protocol DDLogger;
-@protocol DDLogFormatter;
+@protocol KCS_DDLogger;
+@protocol KCS_DDLogFormatter;
 
 /**
  * This is the single macro that all other macros below compile into.
@@ -44,7 +44,7 @@
 **/
 
 #define LOG_MACRO(isAsynchronous, lvl, flg, ctx, atag, fnct, frmt, ...) \
-  [DDLog log:isAsynchronous                                             \
+  [KCS_DDLog log:isAsynchronous                                             \
        level:lvl                                                        \
         flag:flg                                                        \
      context:ctx                                                        \
@@ -245,7 +245,7 @@
  * For example: DDLogWarn(@"%@: Unable to find thingy", THIS_FILE) -> @"MyViewController: Unable to find thingy"
 **/
 
-NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
+NSString *KCS_DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
 
 #define THIS_FILE (DDExtractFileNameWithoutExtension(__FILE__, NO))
 
@@ -265,7 +265,7 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface DDLog : NSObject
+@interface KCS_DDLog : NSObject
 
 /**
  * Provides access to the underlying logging queue.
@@ -323,8 +323,8 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
  * you should create and add a logger.
 **/
 
-+ (void)addLogger:(id <DDLogger>)logger;
-+ (void)removeLogger:(id <DDLogger>)logger;
++ (void)addLogger:(id <KCS_DDLogger>)logger;
++ (void)removeLogger:(id <KCS_DDLogger>)logger;
 
 + (void)removeAllLoggers;
 
@@ -350,10 +350,10 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@protocol DDLogger <NSObject>
+@protocol KCS_DDLogger <NSObject>
 @required
 
-- (void)logMessage:(DDLogMessage *)logMessage;
+- (void)logMessage:(KCS_DDLogMessage *)logMessage;
 
 /**
  * Formatters may optionally be added to any logger.
@@ -361,8 +361,8 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
  * If no formatter is set, the logger simply logs the message as it is given in logMessage,
  * or it may use its own built in formatting style.
 **/
-- (id <DDLogFormatter>)logFormatter;
-- (void)setLogFormatter:(id <DDLogFormatter>)formatter;
+- (id <KCS_DDLogFormatter>)logFormatter;
+- (void)setLogFormatter:(id <KCS_DDLogFormatter>)formatter;
 
 @optional
 
@@ -413,7 +413,7 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@protocol DDLogFormatter <NSObject>
+@protocol KCS_DDLogFormatter <NSObject>
 @required
 
 /**
@@ -427,7 +427,7 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
  * The formatter may also optionally filter the log message by returning nil,
  * in which case the logger will not log the message.
 **/
-- (NSString *)formatLogMessage:(DDLogMessage *)logMessage;
+- (NSString *)formatLogMessage:(KCS_DDLogMessage *)logMessage;
 
 @optional
 
@@ -440,8 +440,8 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
  * Or if a formatter has potentially thread-unsafe code (e.g. NSDateFormatter),
  * it could possibly use these hooks to switch to thread-safe versions of the code.
 **/
-- (void)didAddToLogger:(id <DDLogger>)logger;
-- (void)willRemoveFromLogger:(id <DDLogger>)logger;
+- (void)didAddToLogger:(id <KCS_DDLogger>)logger;
+- (void)willRemoveFromLogger:(id <KCS_DDLogger>)logger;
 
 @end
 
@@ -449,7 +449,7 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@protocol DDRegisteredDynamicLogging
+@protocol KCS_DDRegisteredDynamicLogging
 
 /**
  * Implement these methods to allow a file's log level to be managed from a central location.
@@ -488,12 +488,12 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy);
 **/
 
 enum {
-	DDLogMessageCopyFile     = 1 << 0,
-	DDLogMessageCopyFunction = 1 << 1
+	KCS_DDLogMessageCopyFile     = 1 << 0,
+	KCS_DDLogMessageCopyFunction = 1 << 1
 };
-typedef int DDLogMessageOptions;
+typedef int KCS_DDLogMessageOptions;
 
-@interface DDLogMessage : NSObject
+@interface KCS_DDLogMessage : NSObject
 {
 
 // The public variables below can be accessed directly (for speed).
@@ -516,7 +516,7 @@ typedef int DDLogMessageOptions;
 	id tag;
 	
 	// For 3rd party extensions that manually create DDLogMessage instances.
-	DDLogMessageOptions options;
+	KCS_DDLogMessageOptions options;
 }
 
 /**
@@ -542,7 +542,7 @@ typedef int DDLogMessageOptions;
             function:(const char *)function
                 line:(int)line
                  tag:(id)tag
-             options:(DDLogMessageOptions)optionsMask;
+             options:(KCS_DDLogMessageOptions)optionsMask;
 
 /**
  * Returns the threadID as it appears in NSLog.
@@ -584,15 +584,15 @@ typedef int DDLogMessageOptions;
  * and they can ACCESS THE FORMATTER VARIABLE DIRECTLY from within their logMessage method!
 **/
 
-@interface DDAbstractLogger : NSObject <DDLogger>
+@interface KCS_DDAbstractLogger : NSObject <KCS_DDLogger>
 {
-	id <DDLogFormatter> formatter;
+	id <KCS_DDLogFormatter> formatter;
 	
 	dispatch_queue_t loggerQueue;
 }
 
-- (id <DDLogFormatter>)logFormatter;
-- (void)setLogFormatter:(id <DDLogFormatter>)formatter;
+- (id <KCS_DDLogFormatter>)logFormatter;
+- (void)setLogFormatter:(id <KCS_DDLogFormatter>)formatter;
 
 // For thread-safety assertions
 - (BOOL)isOnGlobalLoggingQueue;

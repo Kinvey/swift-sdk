@@ -1,4 +1,4 @@
-#import "DDLog.h"
+#import "KCS_DDLog.h"
 
 #import <pthread.h>
 #import <objc/runtime.h>
@@ -52,26 +52,26 @@
 // The logging queue sets a flag via dispatch_queue_set_specific using this key.
 // We can check for this key via dispatch_get_specific() to see if we're on the "global logging queue".
 
-static void *const GlobalLoggingQueueIdentityKey = (void *)&GlobalLoggingQueueIdentityKey;
+static void *const KCS_GlobalLoggingQueueIdentityKey = (void *)&KCS_GlobalLoggingQueueIdentityKey;
 
 
-@interface DDLoggerNode : NSObject {
+@interface KCS_DDLoggerNode : NSObject {
 @public 
-	id <DDLogger> logger;	
+	id <KCS_DDLogger> logger;	
 	dispatch_queue_t loggerQueue;
 }
 
-+ (DDLoggerNode *)nodeWithLogger:(id <DDLogger>)logger loggerQueue:(dispatch_queue_t)loggerQueue;
++ (KCS_DDLoggerNode *)nodeWithLogger:(id <KCS_DDLogger>)logger loggerQueue:(dispatch_queue_t)loggerQueue;
 
 @end
 
 
-@interface DDLog (PrivateAPI)
+@interface KCS_DDLog (PrivateAPI)
 
-+ (void)lt_addLogger:(id <DDLogger>)logger;
-+ (void)lt_removeLogger:(id <DDLogger>)logger;
++ (void)lt_addLogger:(id <KCS_DDLogger>)logger;
++ (void)lt_removeLogger:(id <KCS_DDLogger>)logger;
 + (void)lt_removeAllLoggers;
-+ (void)lt_log:(DDLogMessage *)logMessage;
++ (void)lt_log:(KCS_DDLogMessage *)logMessage;
 + (void)lt_flush;
 
 @end
@@ -80,7 +80,7 @@ static void *const GlobalLoggingQueueIdentityKey = (void *)&GlobalLoggingQueueId
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation DDLog
+@implementation KCS_DDLog
 
 // An array used to manage all the individual loggers.
 // The array is only modified on the loggingQueue/loggingThread.
@@ -122,8 +122,8 @@ static unsigned int numProcessors;
 		loggingQueue = dispatch_queue_create("cocoa.lumberjack", NULL);
 		loggingGroup = dispatch_group_create();
 		
-		void *nonNullValue = GlobalLoggingQueueIdentityKey; // Whatever, just not null
-		dispatch_queue_set_specific(loggingQueue, GlobalLoggingQueueIdentityKey, nonNullValue, NULL);
+		void *nonNullValue = KCS_GlobalLoggingQueueIdentityKey; // Whatever, just not null
+		dispatch_queue_set_specific(loggingQueue, KCS_GlobalLoggingQueueIdentityKey, nonNullValue, NULL);
 		
 		queueSemaphore = dispatch_semaphore_create(LOG_MAX_QUEUE_SIZE);
 		
@@ -178,7 +178,7 @@ static unsigned int numProcessors;
 #pragma mark Logger Management
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+ (void)addLogger:(id <DDLogger>)logger
++ (void)addLogger:(id <KCS_DDLogger>)logger
 {
 	if (logger == nil) return;
 		
@@ -188,7 +188,7 @@ static unsigned int numProcessors;
 	}});
 }
 
-+ (void)removeLogger:(id <DDLogger>)logger
++ (void)removeLogger:(id <KCS_DDLogger>)logger
 {
 	if (logger == nil) return;
 	
@@ -210,7 +210,7 @@ static unsigned int numProcessors;
 #pragma mark Master Logging
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+ (void)queueLogMessage:(DDLogMessage *)logMessage asynchronously:(BOOL)asyncFlag
++ (void)queueLogMessage:(KCS_DDLogMessage *)logMessage asynchronously:(BOOL)asyncFlag
 {
 	// We have a tricky situation here...
 	// 
@@ -282,7 +282,7 @@ static unsigned int numProcessors;
 		va_start(args, format);
 		
 		NSString *logMsg = [[NSString alloc] initWithFormat:format arguments:args];
-		DDLogMessage *logMessage = [[DDLogMessage alloc] initWithLogMsg:logMsg
+		KCS_DDLogMessage *logMessage = [[KCS_DDLogMessage alloc] initWithLogMsg:logMsg
 		                                                          level:level
 		                                                           flag:flag
 		                                                        context:context
@@ -312,7 +312,7 @@ static unsigned int numProcessors;
 	if (format)
 	{
 		NSString *logMsg = [[NSString alloc] initWithFormat:format arguments:args];
-		DDLogMessage *logMessage = [[DDLogMessage alloc] initWithLogMsg:logMsg
+		KCS_DDLogMessage *logMessage = [[KCS_DDLogMessage alloc] initWithLogMsg:logMsg
 		                                                          level:level
 		                                                           flag:flag
 		                                                        context:context
@@ -504,7 +504,7 @@ static unsigned int numProcessors;
 /**
  * This method should only be run on the logging thread/queue.
 **/
-+ (void)lt_addLogger:(id <DDLogger>)logger
++ (void)lt_addLogger:(id <KCS_DDLogger>)logger
 {
 	// Add to loggers array.
 	// Need to create loggerQueue if loggerNode doesn't provide one.
@@ -532,7 +532,7 @@ static unsigned int numProcessors;
 		loggerQueue = dispatch_queue_create(loggerQueueName, NULL);
 	}
 	
-	DDLoggerNode *loggerNode = [DDLoggerNode nodeWithLogger:logger loggerQueue:loggerQueue];
+	KCS_DDLoggerNode *loggerNode = [KCS_DDLoggerNode nodeWithLogger:logger loggerQueue:loggerQueue];
 	[loggers addObject:loggerNode];
 	
 	if ([logger respondsToSelector:@selector(didAddLogger)])
@@ -547,13 +547,13 @@ static unsigned int numProcessors;
 /**
  * This method should only be run on the logging thread/queue.
 **/
-+ (void)lt_removeLogger:(id <DDLogger>)logger
++ (void)lt_removeLogger:(id <KCS_DDLogger>)logger
 {
 	// Find associated loggerNode in list of added loggers
 	
-	DDLoggerNode *loggerNode = nil;
+	KCS_DDLoggerNode *loggerNode = nil;
 	
-	for (DDLoggerNode *node in loggers)
+	for (KCS_DDLoggerNode *node in loggers)
 	{
 		if (node->logger == logger)
 		{
@@ -590,7 +590,7 @@ static unsigned int numProcessors;
 {
 	// Notify all loggers
 	
-	for (DDLoggerNode *loggerNode in loggers)
+	for (KCS_DDLoggerNode *loggerNode in loggers)
 	{
 		if ([loggerNode->logger respondsToSelector:@selector(willRemoveLogger)])
 		{
@@ -609,7 +609,7 @@ static unsigned int numProcessors;
 /**
  * This method should only be run on the logging thread/queue.
 **/
-+ (void)lt_log:(DDLogMessage *)logMessage
++ (void)lt_log:(KCS_DDLogMessage *)logMessage
 {
 	// Execute the given log message on each of our loggers.
 		
@@ -622,7 +622,7 @@ static unsigned int numProcessors;
 		// The waiting ensures that a slow logger doesn't end up with a large queue of pending log messages.
 		// This would defeat the purpose of the efforts we made earlier to restrict the max queue size.
 		
-		for (DDLoggerNode *loggerNode in loggers)
+		for (KCS_DDLoggerNode *loggerNode in loggers)
 		{
 			dispatch_group_async(loggingGroup, loggerNode->loggerQueue, ^{ @autoreleasepool {
 				
@@ -637,7 +637,7 @@ static unsigned int numProcessors;
 	{
 		// Execute each logger serialy, each within its own queue.
 		
-		for (DDLoggerNode *loggerNode in loggers)
+		for (KCS_DDLoggerNode *loggerNode in loggers)
 		{
 			dispatch_sync(loggerNode->loggerQueue, ^{ @autoreleasepool {
 				
@@ -674,7 +674,7 @@ static unsigned int numProcessors;
 	// Now we need to propogate the flush request to any loggers that implement the flush method.
 	// This is designed for loggers that buffer IO.
 		
-	for (DDLoggerNode *loggerNode in loggers)
+	for (KCS_DDLoggerNode *loggerNode in loggers)
 	{
 		if ([loggerNode->logger respondsToSelector:@selector(flush)])
 		{
@@ -771,9 +771,9 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy)
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation DDLoggerNode
+@implementation KCS_DDLoggerNode
 
-- (id)initWithLogger:(id <DDLogger>)aLogger loggerQueue:(dispatch_queue_t)aLoggerQueue
+- (id)initWithLogger:(id <KCS_DDLogger>)aLogger loggerQueue:(dispatch_queue_t)aLoggerQueue
 {
 	if ((self = [super init]))
 	{
@@ -789,9 +789,9 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy)
 	return self;
 }
 
-+ (DDLoggerNode *)nodeWithLogger:(id <DDLogger>)logger loggerQueue:(dispatch_queue_t)loggerQueue
++ (KCS_DDLoggerNode *)nodeWithLogger:(id <KCS_DDLogger>)logger loggerQueue:(dispatch_queue_t)loggerQueue
 {
-	return [[DDLoggerNode alloc] initWithLogger:logger loggerQueue:loggerQueue];
+	return [[KCS_DDLoggerNode alloc] initWithLogger:logger loggerQueue:loggerQueue];
 }
 
 - (void)dealloc
@@ -807,7 +807,7 @@ NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy)
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation DDLogMessage
+@implementation KCS_DDLogMessage
 
 static char *dd_str_copy(const char *str)
 {
@@ -830,7 +830,7 @@ static char *dd_str_copy(const char *str)
             function:(const char *)aFunction
                 line:(int)line
                  tag:(id)aTag
-             options:(DDLogMessageOptions)optionsMask
+             options:(KCS_DDLogMessageOptions)optionsMask
 {
 	if ((self = [super init]))
 	{
@@ -842,12 +842,12 @@ static char *dd_str_copy(const char *str)
 		tag        = aTag;
 		options    = optionsMask;
 		
-		if (options & DDLogMessageCopyFile)
+		if (options & KCS_DDLogMessageCopyFile)
 			file = dd_str_copy(aFile);
 		else
 			file = (char *)aFile;
 		
-		if (options & DDLogMessageCopyFunction)
+		if (options & KCS_DDLogMessageCopyFunction)
 			function = dd_str_copy(aFunction);
 		else
 			function = (char *)aFunction;
@@ -900,10 +900,10 @@ static char *dd_str_copy(const char *str)
 
 - (void)dealloc
 {
-	if (file && (options & DDLogMessageCopyFile))
+	if (file && (options & KCS_DDLogMessageCopyFile))
 		free(file);
 	
-	if (function && (options & DDLogMessageCopyFunction))
+	if (function && (options & KCS_DDLogMessageCopyFunction))
 		free(function);
 	
 	if (queueLabel)
@@ -916,7 +916,7 @@ static char *dd_str_copy(const char *str)
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation DDAbstractLogger
+@implementation KCS_DDAbstractLogger
 
 - (id)init
 {
@@ -959,12 +959,12 @@ static char *dd_str_copy(const char *str)
 	#endif
 }
 
-- (void)logMessage:(DDLogMessage *)logMessage
+- (void)logMessage:(KCS_DDLogMessage *)logMessage
 {
 	// Override me
 }
 
-- (id <DDLogFormatter>)logFormatter
+- (id <KCS_DDLogFormatter>)logFormatter
 {
 	// This method must be thread safe and intuitive.
 	// Therefore if somebody executes the following code:
@@ -1018,9 +1018,9 @@ static char *dd_str_copy(const char *str)
 	NSAssert(![self isOnGlobalLoggingQueue], @"Core architecture requirement failure");
 	NSAssert(![self isOnInternalLoggerQueue], @"MUST access ivar directly, NOT via self.* syntax.");
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
-	__block id <DDLogFormatter> result;
+	__block id <KCS_DDLogFormatter> result;
 	
 	dispatch_sync(globalLoggingQueue, ^{
 		dispatch_sync(loggerQueue, ^{
@@ -1031,7 +1031,7 @@ static char *dd_str_copy(const char *str)
 	return result;
 }
 
-- (void)setLogFormatter:(id <DDLogFormatter>)logFormatter
+- (void)setLogFormatter:(id <KCS_DDLogFormatter>)logFormatter
 {
 	// The design of this method is documented extensively in the logFormatter message (above in code).
 	
@@ -1054,7 +1054,7 @@ static char *dd_str_copy(const char *str)
 		}
 	}};
 	
-	dispatch_queue_t globalLoggingQueue = [DDLog loggingQueue];
+	dispatch_queue_t globalLoggingQueue = [KCS_DDLog loggingQueue];
 	
 	dispatch_async(globalLoggingQueue, ^{
 		dispatch_async(loggerQueue, block);
@@ -1073,7 +1073,7 @@ static char *dd_str_copy(const char *str)
 
 - (BOOL)isOnGlobalLoggingQueue
 {
-	return (dispatch_get_specific(GlobalLoggingQueueIdentityKey) != NULL);
+	return (dispatch_get_specific(KCS_GlobalLoggingQueueIdentityKey) != NULL);
 }
 
 - (BOOL)isOnInternalLoggerQueue

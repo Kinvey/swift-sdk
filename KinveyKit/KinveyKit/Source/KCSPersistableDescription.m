@@ -109,14 +109,32 @@ BOOL kcsIsContainerClass(Class aClass)
 - (void) addRefsFromContainer:(id)objContainer desc:(KCSReferenceDescription*)rDesc graph:(NSMutableDictionary*)graph
 {
     NSMutableSet* thisSet = graph[rDesc.destinationCollection];
+    
+    NSString* entityPath = rDesc.sourceField;
+    
+    NSUInteger dotLocation = [(NSString*)entityPath rangeOfString:@"."].location;
+    if (dotLocation != NSNotFound) {
+        NSString* keyPath = [entityPath substringFromIndex:dotLocation+1];
+        objContainer = [objContainer valueForKeyPath:keyPath];
+    }
+
+    
     if ([objContainer isKindOfClass:[NSArray class]]) {
-        [thisSet addObjectsFromArray:objContainer];
+//        NSUInteger dotLocation = [(NSString*)entityPath rangeOfString:@"." options:NSBackwardsSearch].location;
+//        BOOL hasKeyPath = dotLocation != NSNotFound;
+//        NSString* keyPath = hasKeyPath ? [entityPath substringFromIndex:dotLocation+1] : entityPath;
+//
+//        if (hasKeyPath) {
+//            [thisSet addObjectsFromArray:[objContainer valueForKeyPath:keyPath]];
+//        } else {
+            [thisSet addObjectsFromArray:objContainer];
+//        }
     } else if ([objContainer isKindOfClass:[NSSet class]]) {
         [thisSet unionSet:objContainer];
     } else if ([objContainer isKindOfClass:[NSOrderedSet class]]) {
         [thisSet addObjectsFromArray:[objContainer array]];
     } else if ([objContainer isKindOfClass:[NSDictionary class]]) {
-        NSString* entityPath = rDesc.sourceField;
+        //TODO? remove this?
         NSUInteger dotLocation = [(NSString*)entityPath rangeOfString:@"."].location;
         NSString* keyPath = dotLocation == NSNotFound ? entityPath : [entityPath substringFromIndex:dotLocation+1];
 
@@ -129,7 +147,10 @@ BOOL kcsIsContainerClass(Class aClass)
             }
         }
     } else {
-        DBAssert(NO, @"Container should be one the tested classes.");
+        if (objContainer) {
+            [thisSet addObject:objContainer];
+            //        DBAssert(NO, @"Container should be one the tested classes.");
+        }
     }
 }
 

@@ -73,7 +73,7 @@
     }
 }
 
-- (NSString *)formatLogMessage:(DDLogMessage *)logMessage
+- (NSString *)formatLogMessage:(KCS_DDLogMessage *)logMessage
 {
     NSString *logLevel;
     switch (logMessage->logFlag)
@@ -103,11 +103,11 @@
     return [NSString stringWithFormat:@"%@ %@:%d [%@ (%@)] %@", dateAndTime, fname, logMessage->lineNumber, logLevel, context, logMsg];
 }
 
-- (void)didAddToLogger:(id <DDLogger>)logger
+- (void)didAddToLogger:(id <KCS_DDLogger>)logger
 {
     OSAtomicIncrement32(&atomicLoggerCount);
 }
-- (void)willRemoveFromLogger:(id <DDLogger>)logger
+- (void)willRemoveFromLogger:(id <KCS_DDLogger>)logger
 {
     OSAtomicDecrement32(&atomicLoggerCount);
 }

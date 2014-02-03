@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "DDLog.h"
+#import "KCS_DDLog.h"
 
-@class DDLogFileInfo;
+@class KCS_DDLogFileInfo;
 
 /**
  * Welcome to Cocoa Lumberjack!
@@ -56,7 +56,7 @@
 // The DDLogFileInfo class is documented below, and provides a handy wrapper that
 // gives you easy access to various file attributes such as the creation date or the file size.
 
-@protocol DDLogFileManager <NSObject>
+@protocol KCS_DDLogFileManager <NSObject>
 @required
 
 // Public properties
@@ -113,7 +113,7 @@
  * 
  * Archived log files are automatically deleted according to the maximumNumberOfLogFiles property.
 **/
-@interface DDLogFileManagerDefault : NSObject <DDLogFileManager>
+@interface KCS_DDLogFileManagerDefault : NSObject <KCS_DDLogFileManager>
 {
 	NSUInteger maximumNumberOfLogFiles;
 	NSString *_logsDirectory;
@@ -154,7 +154,7 @@
  * In addition to the convenience of having a logical default formatter,
  * it will also provide a template that makes it easy for developers to copy and change.
 **/
-@interface DDLogFileFormatterDefault : NSObject <DDLogFormatter>
+@interface KCS_DDLogFileFormatterDefault : NSObject <KCS_DDLogFormatter>
 {
 	NSDateFormatter *dateFormatter;
 }
@@ -168,11 +168,11 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface DDFileLogger : DDAbstractLogger <DDLogger>
+@interface KCS_DDFileLogger : KCS_DDAbstractLogger <KCS_DDLogger>
 {
-	__strong id <DDLogFileManager> logFileManager;
+	__strong id <KCS_DDLogFileManager> logFileManager;
 	
-	DDLogFileInfo *currentLogFileInfo;
+	KCS_DDLogFileInfo *currentLogFileInfo;
 	NSFileHandle *currentLogFileHandle;
 	
 	dispatch_source_t rollingTimer;
@@ -182,7 +182,7 @@
 }
 
 - (id)init;
-- (id)initWithLogFileManager:(id <DDLogFileManager>)logFileManager;
+- (id)initWithLogFileManager:(id <KCS_DDLogFileManager>)logFileManager;
 
 /**
  * Log File Rolling:
@@ -224,7 +224,7 @@
  * 
  * @see DDLogFileManager.maximumNumberOfLogFiles
 **/
-@property (strong, nonatomic, readonly) id <DDLogFileManager> logFileManager;
+@property (strong, nonatomic, readonly) id <KCS_DDLogFileManager> logFileManager;
 
 
 // You can optionally force the current log file to be rolled with this method.
@@ -256,7 +256,7 @@
  * If you absolutely must get updated values,
  * you can invoke the reset method which will clear the cache.
 **/
-@interface DDLogFileInfo : NSObject
+@interface KCS_DDLogFileInfo : NSObject
 {
 	__strong NSString *filePath;
 	__strong NSString *fileName;
@@ -328,7 +328,7 @@
 
 #endif
 
-- (NSComparisonResult)reverseCompareByCreationDate:(DDLogFileInfo *)another;
-- (NSComparisonResult)reverseCompareByModificationDate:(DDLogFileInfo *)another;
+- (NSComparisonResult)reverseCompareByCreationDate:(KCS_DDLogFileInfo *)another;
+- (NSComparisonResult)reverseCompareByModificationDate:(KCS_DDLogFileInfo *)another;
 
 @end
