@@ -25,6 +25,8 @@
 //@property (nonatomic, copy) NSString* sourceEntity;
 @property (nonatomic, copy) NSString* classname; //TODO: needed?
 @property (nonatomic) BOOL isContainer;
+//@property (nonatomic) BOOL isKCSObject;
+@property (nonatomic, retain) KCSPersistableDescription* destinationDescription;
 @end
 
 @implementation KCSReferenceDescription
@@ -39,6 +41,7 @@
 
 
 @interface KCSPersistableDescription ()
+@property (nonatomic, copy) NSString* objectClass;
 @property (nonatomic, copy) NSString* collection;
 @property (nonatomic, retain) NSDictionary* fieldToPropertyMapping;
 @property (nonatomic, retain) NSDictionary* propertyToFieldMapping;
@@ -76,7 +79,15 @@ BOOL kcsIsContainerClass(Class aClass)
                 rd.sourceProperty = sourceProp;
                 
                 rd.classname = classProps[rd.sourceProperty];
-                rd.isContainer = kcsIsContainerClass(NSClassFromString(rd.classname));
+                Class sourcePropClass = NSClassFromString(rd.classname);
+                rd.isContainer = kcsIsContainerClass(sourcePropClass);
+                
+                
+#warning TOTEST: id
+                //The destination class?
+                if (!rd.isContainer) {
+                    rd.destinationDescription = [self.objectClass isEqualToString:rd.classname] ? self : [[KCSPersistableDescription alloc] initWithKinveyKit1Object:[[sourcePropClass alloc] init] collection:rd.destinationCollection];
+                }
                 [mRefs addObject:rd];
             }];
             refs = mRefs;
@@ -91,6 +102,7 @@ BOOL kcsIsContainerClass(Class aClass)
     if (self) {
         //WARNING: ordering matters, below! Each property builds on the previous
         _collection = collection;
+        _objectClass = NSStringFromClass([object class]);
         _propertyToFieldMapping = [[object hostToKinveyPropertyMapping] copy];
         _fieldToPropertyMapping = [_propertyToFieldMapping invert];
         _references = [self discoverReferences:object];
@@ -108,7 +120,7 @@ BOOL kcsIsContainerClass(Class aClass)
 #pragma mark - Graph Helpers
 - (void) addRefsFromContainer:(id)objContainer desc:(KCSReferenceDescription*)rDesc graph:(NSMutableDictionary*)graph
 {
-    NSMutableSet* thisSet = graph[rDesc.destinationCollection];
+    //    NSMutableSet* thisSet = graph[rDesc.destinationCollection];
     
     NSString* entityPath = rDesc.sourceField;
     
@@ -116,6 +128,10 @@ BOOL kcsIsContainerClass(Class aClass)
     if (dotLocation != NSNotFound) {
         NSString* keyPath = [entityPath substringFromIndex:dotLocation+1];
         objContainer = [objContainer valueForKeyPath:keyPath];
+    }
+    
+    if (!objContainer) {
+        return;
     }
 
     
@@ -127,12 +143,20 @@ BOOL kcsIsContainerClass(Class aClass)
 //        if (hasKeyPath) {
 //            [thisSet addObjectsFromArray:[objContainer valueForKeyPath:keyPath]];
 //        } else {
-            [thisSet addObjectsFromArray:objContainer];
+//            [thisSet addObjectsFromArray:objContainer];
+//        for (id<KCSPersistable> obj in objContainer) {
+//            BOOL needToWalk = [self addObjToTree:graph obj:obj collection:rDesc.destinationCollection];
+//            if (needToWalk) {
+                [self addRefs:graph collection:rDesc.destinationCollection objects:objContainer description:rDesc.destinationDescription];
+//            }
+//        }
 //        }
     } else if ([objContainer isKindOfClass:[NSSet class]]) {
-        [thisSet unionSet:objContainer];
+        [self addRefs:graph collection:rDesc.destinationCollection objects:[objContainer allObjects] description:rDesc.destinationDescription];
+        //        [thisSet unionSet:objContainer];
     } else if ([objContainer isKindOfClass:[NSOrderedSet class]]) {
-        [thisSet addObjectsFromArray:[objContainer array]];
+        [self addRefs:graph collection:rDesc.destinationCollection objects:[objContainer allObjects] description:rDesc.destinationDescription];
+        //        [thisSet addObjectsFromArray:[objContainer array]];
     } else if ([objContainer isKindOfClass:[NSDictionary class]]) {
         //TODO? remove this?
         NSUInteger dotLocation = [(NSString*)entityPath rangeOfString:@"."].location;
@@ -143,18 +167,92 @@ BOOL kcsIsContainerClass(Class aClass)
             if (kcsIsContainerClass([obj class])) {
                 [self addRefsFromContainer:obj desc:rDesc graph:graph];
             } else {
-                [thisSet addObject:obj];
+//                [thisSet addObject:obj];
+                [self addRefs:graph collection:rDesc.destinationCollection objects:[NSArray wrapIfNotArray:objContainer] description:rDesc.destinationDescription];
             }
         }
     } else {
-        if (objContainer) {
-            [thisSet addObject:objContainer];
+        //        if (objContainer) {
+            [self addRefs:graph collection:rDesc.destinationCollection objects:[NSArray wrapIfNotArray:objContainer] description:rDesc.destinationDescription];
+            //            [thisSet addObject:objContainer];
             //        DBAssert(NO, @"Container should be one the tested classes.");
+            //        }
+    }
+}
+
+- (BOOL) addObjToTree:(NSMutableDictionary*)tree obj:(id<KCSPersistable2>)obj collection:(NSString*)collection
+{
+    NSParameterAssert(collection);
+    if (!tree[collection]) {
+        tree[collection] = [NSMutableSet set];
+    }
+    BOOL toAdd = ![tree[collection] containsObject:obj];
+    if (toAdd) {
+        [tree[collection] addObject:obj];
+    }
+    return toAdd;
+}
+
+//TODO: pull back refdescription as private class?
+- (void) addRefs:(NSMutableDictionary*)d collection:(NSString*)collection objects:(NSArray*)objects description:(KCSPersistableDescription*)desc
+{
+//    if (!d[collection]) {
+//        d[collection] = [NSMutableSet setWithCapacity:objects.count];
+//    }
+    for (id<KCSPersistable2> obj in objects) {
+//        if ([d[collection] containsObject:obj]) {
+//            continue;
+//        }
+//        [d[collection] addObject:obj];
+        BOOL needToWalk = [self addObjToTree:d obj:obj collection:collection];
+        if (needToWalk) {
+            //            NSArray* refs = self.references;
+            for (KCSReferenceDescription* rdesc in desc.references) {
+                id<KCSPersistable2> refObj = [rdesc destinationObjFromObj:obj];
+                if (refObj) {
+//                    if (!d[rdesc.destinationCollection]) {
+//                        d[rdesc.destinationCollection] = [NSMutableSet set];
+//                    }
+//                    BOOL walkSub = NO;
+                    if (rdesc.isContainer) {
+                        [self addRefsFromContainer:refObj desc:rdesc graph:d];
+                    } else {
+                        [self addRefs:d collection:rdesc.destinationCollection objects:[NSArray wrapIfNotArray:refObj] description:rdesc.destinationDescription];
+//                        [d[rdesc.destinationCollection] addObject:refObj];
+                    }
+//                    if (rdesc.isKCSObject) {
+//                        [self addRefs:d collection:rdesc.destinationCollection objects:[NSArray wrapIfNotArray:refObj]];
+//                    }
+                }
+            }
         }
     }
 }
 
-//TODO: pull back refdescription as private class?
+/* Algorithm
+ For every object, add it to the "graph"
+ For each object, add its reference.
+ For each reference, add its references.
+ */
+
+- (void) doAdds:(NSArray*)objects graph:(NSMutableDictionary*)graph description:(KCSPersistableDescription*)desc
+{
+    NSString* collection = desc.collection;
+    for (id<KCSPersistable2> obj in objects) {
+        BOOL shouldWalk = [self addObjToTree:graph obj:obj collection:collection];
+        if (shouldWalk) {
+            for (KCSReferenceDescription* rdesc in desc.references) {
+                id refObj = [rdesc destinationObjFromObj:obj];
+                if (refObj) {
+                    if (shouldWalk) {
+                        [self doAdds:@[refObj] graph:graph description:rdesc.destinationDescription];
+                    }
+                }
+            }
+        }
+    }
+}
+
 - (NSDictionary*) objectListFromObjects:(NSArray*)objects
 {
     if (objects.count == 0) {
@@ -163,26 +261,10 @@ BOOL kcsIsContainerClass(Class aClass)
     
     NSString* collection = self.collection;
     
-    NSMutableDictionary* d = [NSMutableDictionary dictionary];
-    d[collection] = [NSMutableSet setWithCapacity:objects.count];
-    for (id<KCSPersistable2> obj in objects) {
-        [d[collection] addObject:obj];
-        NSArray* refs = self.references;
-        for (KCSReferenceDescription* rdesc in refs) {
-            id<KCSPersistable2> refObj = [rdesc destinationObjFromObj:obj];
-            if (refObj) {
-                if (!d[rdesc.destinationCollection]) {
-                    d[rdesc.destinationCollection] = [NSMutableSet set];
-                }
-                if (rdesc.isContainer) {
-                    [self addRefsFromContainer:refObj desc:rdesc graph:d];
-                } else {
-                    [d[rdesc.destinationCollection] addObject:refObj];
-                }
-            }
-        }
-    }
-    return d;
+    NSMutableDictionary* graph = [NSMutableDictionary dictionary];
+    [self doAdds:objects graph:graph description:self];
+    //    [self addRefs:d collection:collection objects:objects description:self];
+    return graph;
 }
 
 @end

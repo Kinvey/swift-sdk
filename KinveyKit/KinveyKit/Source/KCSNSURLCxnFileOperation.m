@@ -81,8 +81,6 @@
     @autoreleasepool {
         [super start];
         
-        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-        
         if (_localURL) {
             //only do this for the downloads
             NSError* error = nil;
@@ -109,11 +107,7 @@
             _isUpload = YES;
         }
 
-        _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
-        // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
-        [_connection scheduleInRunLoop:runLoop forMode:NSRunLoopCommonModes];
-        [_connection start];
-        [runLoop run];
+        _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:YES];
     }
 }
 

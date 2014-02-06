@@ -30,6 +30,25 @@
 #import "TestUtils.h"
 #import "KCSHiddenMethods.h"
 
+
+@interface TSSMessage : NSObject <KCSPersistable>
+@property (nonatomic, copy) NSString* objId;
+@property (nonatomic, copy) NSMutableArray* recipients;
+@end
+
+@implementation TSSMessage
+
+- (NSDictionary *)hostToKinveyPropertyMapping
+{
+    return @{@"objId":KCSEntityKeyId, @"recipients":@"recipients"};
+}
+
++ (NSDictionary *)kinveyPropertyToCollectionMapping
+{
+    return @{@"recipients":KCSUserCollectionName};
+}
+@end
+
 static NSString* _collectionName;
 
 @interface LinkedTestClass : ASTTestClass
@@ -1335,6 +1354,32 @@ LinkedTestClass* randomTestClass(NSString* description)
         STAssertObjects(1);
         LinkedTestClass* o = objectsOrNil[0];
         STAssertNil(o.resource, @"should be nilled");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+}
+
+- (void) testQueryAll
+{
+    KCSQuery* findSenders = [KCSQuery queryOnField:@"recipients._id" usingConditional:kKCSAll forValue:@[[KCSUser activeUser].userId]];
+    
+    KCSCollection* collection = [KCSCollection collectionFromString:@"inbox" ofClass:[TSSMessage class]];
+    KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithOptions:@{KCSStoreKeyResource: collection,
+                                                                             KCSStoreKeyCachePolicy: @(KCSCachePolicyNetworkFirst)}];
+    
+    TSSMessage* message = [[TSSMessage alloc] init];
+    message.recipients = [@[@{@"_type":@"KinveyRef",@"collection":@"user",@"_id":[KCSUser activeUser].userId},
+                           @{@"_type":@"KinveyRef",@"collection":@"user",@"_id":@"XXA"}] mutableCopy];
+    self.done = NO;
+    [store saveObject:message withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [store queryWithQuery:findSenders withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError;
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];

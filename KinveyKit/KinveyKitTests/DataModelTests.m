@@ -46,6 +46,11 @@
 {
     return @{@"enemyF":@"c",@"friendsF":@"c",@"dRefF.theRef":@"dc",@"dRefF.innerD.theRef":@"dc2",@"setRefF":@"sc",@"oSetRefF":@"sc",@"arrOfDictsF.d":@"dc"};
 }
+
+//+ (NSDictionary *)kinveyObjectBuilderOptions
+//{
+//    
+//}
 @end
 
 
@@ -243,7 +248,7 @@ KK2(update tests with KCSPersistable2 objects)
     KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:obj1 collection:@"c"];
     NSDictionary* graph = [descr objectListFromObjects:@[obj1,obj2,obj3]];
     
-    KTAssertCount(3, graph);
+    KTAssertCount(2, graph);
     NSSet* recoverdObjs = graph[@"c"];
     KTAssertCount(3, recoverdObjs);
     

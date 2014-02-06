@@ -5,8 +5,11 @@
 **Release Date:** TBD
 
 * Stability and performance improvements.
+* Added `+[KCSUser getAccessDictionaryFromTwitterFromTwitterAccounts:accountChooseBock:]` to allow clients to present a list of twitter account for the user to choose which one to access. 
+* Prefixed Cocoalumberjack classes to avoid conflicts.
 * Bug fixes:
      * `-[KCSUser sessionAuth]` is still deprecated, but now returns the auth token.
+     * Fixed deadlock when downloading a list of named files.
 * Code cleanup:
      * Deprecated collection-style methods from `KCSPersistable` protocol, including `KCSPersistableDelegate`, `deleteFromCollection:withDelegate:`, and `saveToCollection:withDelegate:delegate`.
      * Removed deprecated `NSObject` category method `setValue:forProperty:`, deprecated in 1.2.0.
