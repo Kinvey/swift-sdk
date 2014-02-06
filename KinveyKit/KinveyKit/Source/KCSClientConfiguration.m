@@ -79,9 +79,11 @@ KCS_CONST_IMPL KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS = @"KCS_KEEP_USER_LOGG
         
         
         KCSLogFormatter* formatter = [[KCSLogFormatter alloc] init];
+        
         id<KCS_DDLogger> logger = [KCS_DDASLLogger sharedInstance];
         [logger setLogFormatter:formatter];
         [KCS_DDLog addLogger:logger];
+        
         logger = [KCS_DDTTYLogger sharedInstance];
         [logger setLogFormatter:formatter];
         [KCS_DDLog addLogger:logger];

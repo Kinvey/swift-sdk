@@ -57,8 +57,6 @@
     @autoreleasepool {
         [super start];
         
-        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-        
         NSData* resumeData = nil;
         NSNumber* alreadyWritten = (NSNumber*)self.context;
         if (alreadyWritten != nil) {
@@ -78,7 +76,7 @@
         
         
         NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
-        _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:[NSOperationQueue currentQueue]];
+        _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
         if (resumeData == nil) {
             _task = [_session downloadTaskWithRequest:_request];
         } else {
@@ -86,8 +84,6 @@
         }
 
         [_task resume];
-        
-        [runLoop run];
     }
 }
 
@@ -105,7 +101,7 @@
 
 - (BOOL)isExecuting
 {
-    return ![self isFinished];
+    return YES;//![self isFinished];
 }
 
 - (void)cancel
@@ -114,6 +110,11 @@
         self.resumeData = resumeData;
         [super cancel];
     }];
+}
+
+- (BOOL)isReady
+{
+    return YES;
 }
 
 - (void) complete:(NSError*)error

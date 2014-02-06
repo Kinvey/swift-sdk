@@ -295,4 +295,44 @@ static float pollTime;
     
 }
 
+- (void) testNoCachePolicy
+{
+    KCSCollection* rc = [TestUtils randomCollection:[NSMutableDictionary class]];
+    KCSCachedStore* store = [KCSCachedStore storeWithCollection:rc options:@{KCSStoreKeyCachePolicy : @(KCSCachePolicyNone)}];
+    
+    NSMutableDictionary* obj = [@{@"foo":@"bar"} mutableCopy];
+    self.done = NO;
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        KTAssertCount(1, objectsOrNil);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    self.done = NO;
+    [store removeObject:obj[KCSEntityKeyId] withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
+        STAssertNoError
+        KTAssertEqualsInt(count, 1, @"Should delete one");
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+    
+    //the pay-off the object should no longer be in the cache
+    self.done = NO;
+    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        KTAssertCount(0, objectsOrNil);
+        self.done = YES;
+    } withProgressBlock:nil];
+    [self poll];
+
+}
+
 @end

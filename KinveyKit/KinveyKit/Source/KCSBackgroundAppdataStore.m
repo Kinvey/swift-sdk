@@ -984,6 +984,9 @@ andResaveAfterReferencesSaved:^{
         } else {
             [[NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil] raise];
         }
+    } else if ([object isKindOfClass:[NSString class]]) {
+        //do this since all objs are KCSPersistables
+        object = object;
     } else if ([object conformsToProtocol:@protocol(KCSPersistable)]) {
         //if its just a single object get the _id
         object = [object kinveyObjectId];

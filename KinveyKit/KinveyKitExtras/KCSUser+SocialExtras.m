@@ -50,6 +50,13 @@
 
 + (void) getAccessDictionaryFromTwitterFromPrimaryAccount:(KCSLocalCredentialBlock)completionBlock
 {
+    [self getAccessDictionaryFromTwitterFromTwitterAccounts:completionBlock accountChooseBlock:^ACAccount *(NSArray *twitterAccounts) {
+        return twitterAccounts[0];
+    }];
+}
+
++ (void) getAccessDictionaryFromTwitterFromTwitterAccounts:(KCSLocalCredentialBlock)completionBlock accountChooseBlock:(ACAccount* (^)(NSArray* twitterAccounts))chooseBlock
+{
     //  Check to make sure that the user has added his credentials
     BOOL hasKeys = [self checkForTwitterKeys];
     BOOL hasTwitterCred = [self checkForTwitterCredentials];
@@ -104,8 +111,10 @@
                         // obtain all the local account instances
                         NSArray *accounts = [accountStore accountsWithAccountType:twitterType];
                         
+                        ACAccount* acountToUse = chooseBlock(accounts);
+                        
                         // we can assume that we have at least one account thanks to +[TWTweetComposeViewController canSendTweet], let's return it
-                        [step2Request setAccount:[accounts objectAtIndex:0]];
+                        [step2Request setAccount:acountToUse];
                         [step2Request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
                             if (!responseData || ((NSHTTPURLResponse*)urlResponse).statusCode >= 400) {
                                 NSError* tokenError = [KCSErrorUtilities createError:nil description:@"Unable to obtain a Twitter access token" errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil sourceError:error];
