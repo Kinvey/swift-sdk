@@ -177,7 +177,7 @@ static NSOperationQueue* kcsRequestQueue;
     
     [request setHTTPShouldUsePipelining:YES];
 
-    if (self.method == KCSRESTMethodPOST || self.method == KCSRESTMethodPUT) {
+    if ([self.method isEqualToString:KCSRESTMethodPOST] || [self.method isEqualToString:KCSRESTMethodPUT]) {
         [request setHTTPShouldUsePipelining:NO];
         //set the body
         if (!_body) {
@@ -188,7 +188,7 @@ static NSOperationQueue* kcsRequestQueue;
         DBAssert(bodyData != nil, @"should be able to parse body");
         [request setHTTPBody:bodyData];
         [request addValue:_contentType forHTTPHeaderField:kHeaderContentType];
-    } else if (self.method == KCSRESTMethodDELETE) {
+    } else if ([self.method isEqualToString:KCSRESTMethodDELETE]) {
         // [request setHTTPBody:bodyData]; no need for body b/c of no content type
     }
 
@@ -198,7 +198,7 @@ static NSOperationQueue* kcsRequestQueue;
 - (id<KCSNetworkOperation>) start
 {
     NSAssert(_route, @"should have route");
-    if (self.credentials == nil) {
+    if (!self.credentials) {
         NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSDeniedError userInfo:@{NSLocalizedDescriptionKey : @"No Authorization Found", NSLocalizedFailureReasonErrorKey : @"There is no active user/client and this request requires credentials.", NSURLErrorFailingURLStringErrorKey : [self finalURL]}];
         self.completionBlock(nil, error);
         return nil;
@@ -209,7 +209,7 @@ static NSOperationQueue* kcsRequestQueue;
     NSMutableURLRequest* request = [self urlRequest];
     
     NSOperation<KCSNetworkOperation>* op = nil;
-    if (_useMock == YES) {
+    if (_useMock) {
         op = [[KCSMockRequestOperation alloc] initWithRequest:request];
     } else {
         
@@ -287,7 +287,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
     //        statusCode: 500
     //        description: "The Kinvey server encountered an unexpected error. Please retry your request"
     
-    return [op.response isKCSError] == YES &&
+    return [op.response isKCSError] &&
     ((op.response.code == 500 &&
       [[op.response jsonObject][@"error"] isEqualToString:@"KinveyInternalErrorRetry"]) ||
      op.response.code == 429);

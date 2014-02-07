@@ -10,6 +10,7 @@
 * Bug fixes:
      * `-[KCSUser sessionAuth]` is still deprecated, but now returns the auth token.
      * Fixed deadlock when downloading a list of named files.
+     * Fixed bug when PUTing objects from offline save had empty bodies.
 * Code cleanup:
      * Deprecated collection-style methods from `KCSPersistable` protocol, including `KCSPersistableDelegate`, `deleteFromCollection:withDelegate:`, and `saveToCollection:withDelegate:delegate`.
      * Removed deprecated `NSObject` category method `setValue:forProperty:`, deprecated in 1.2.0.
