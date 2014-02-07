@@ -299,7 +299,9 @@ void setActive(KCSUser* user)
 
 - (NSString*) debugDescription
 {
-    return [NSString stringWithFormat:@"KCSUser: %@",[NSDictionary dictionaryWithObjectsAndKeys:self.username, @"username", self.email, @"email", self.givenName, @"given name", self.surname, @"surname", self.userId, @"userId", nil]];
+    NSMutableDictionary* attrs = [NSMutableDictionary dictionaryWithDictionary:_userAttributes];
+    [attrs addEntriesFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:self.username, @"username", self.email, @"email", self.givenName, @"given name", self.surname, @"surname", self.userId, @"userId", nil]];
+    return [NSString stringWithFormat:@"%@: %@",[super debugDescription], attrs];
 }
 
 #pragma mark - Password
@@ -374,6 +376,11 @@ void setActive(KCSUser* user)
         KCSLogError(@"No session auth for current user found (%@)", self.username);
     }
     return authString;
+}
+
+- (NSString *)sessionAuth
+{
+    return [self authString];
 }
 
 - (void)handleErrorResponse:(KCSNetworkResponse *)response

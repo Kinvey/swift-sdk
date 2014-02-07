@@ -84,14 +84,21 @@ NSString * getLogDate3()
 @end
 
 @implementation KCSRequest2
-
-static NSOperationQueue* queue;
+static NSOperationQueue* kcsRequestQueue;
 
 + (void)initialize
 {
-    queue = [[NSOperationQueue alloc] init];
-    queue.maxConcurrentOperationCount = 4;
-    [queue setName:@"com.kinvey.KinveyKit.RequestQueue"];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        kcsRequestQueue = [[NSOperationQueue alloc] init];
+        kcsRequestQueue.maxConcurrentOperationCount = 4;
+        [kcsRequestQueue setName:@"com.kinvey.KinveyKit.RequestQueue"];
+    });
+}
+
++ (NSOperationQueue*) requestQueue
+{
+    return kcsRequestQueue;
 }
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
@@ -170,7 +177,7 @@ static NSOperationQueue* queue;
     
     [request setHTTPShouldUsePipelining:YES];
 
-    if (self.method == KCSRESTMethodPOST || self.method == KCSRESTMethodPUT) {
+    if ([self.method isEqualToString:KCSRESTMethodPOST] || [self.method isEqualToString:KCSRESTMethodPUT]) {
         [request setHTTPShouldUsePipelining:NO];
         //set the body
         if (!_body) {
@@ -181,7 +188,7 @@ static NSOperationQueue* queue;
         DBAssert(bodyData != nil, @"should be able to parse body");
         [request setHTTPBody:bodyData];
         [request addValue:_contentType forHTTPHeaderField:kHeaderContentType];
-    } else if (self.method == KCSRESTMethodDELETE) {
+    } else if ([self.method isEqualToString:KCSRESTMethodDELETE]) {
         // [request setHTTPBody:bodyData]; no need for body b/c of no content type
     }
 
@@ -191,7 +198,7 @@ static NSOperationQueue* queue;
 - (id<KCSNetworkOperation>) start
 {
     NSAssert(_route, @"should have route");
-    if (self.credentials == nil) {
+    if (!self.credentials) {
         NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSDeniedError userInfo:@{NSLocalizedDescriptionKey : @"No Authorization Found", NSLocalizedFailureReasonErrorKey : @"There is no active user/client and this request requires credentials.", NSURLErrorFailingURLStringErrorKey : [self finalURL]}];
         self.completionBlock(nil, error);
         return nil;
@@ -202,7 +209,7 @@ static NSOperationQueue* queue;
     NSMutableURLRequest* request = [self urlRequest];
     
     NSOperation<KCSNetworkOperation>* op = nil;
-    if (_useMock == YES) {
+    if (_useMock) {
         op = [[KCSMockRequestOperation alloc] initWithRequest:request];
     } else {
         
@@ -225,7 +232,7 @@ static NSOperationQueue* queue;
     op.progressBlock = self.progress;
     
     [[KCSNetworkObserver sharedObserver] connectionStart];
-    [queue addOperation:op];
+    [kcsRequestQueue addOperation:op];
     
 #if BUILD_FOR_UNIT_TEST
     [_sRequestArray addObject:request];
@@ -280,7 +287,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
     //        statusCode: 500
     //        description: "The Kinvey server encountered an unexpected error. Please retry your request"
     
-    return [op.response isKCSError] == YES &&
+    return [op.response isKCSError] &&
     ((op.response.code == 500 &&
       [[op.response jsonObject][@"error"] isEqualToString:@"KinveyInternalErrorRetry"]) ||
      op.response.code == 429);
@@ -304,7 +311,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         double delayInSeconds = 0.1 * pow(2, newcount - 1); //exponential backoff
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [queue addOperation:op];
+            [kcsRequestQueue addOperation:op];
         });
     }
 }

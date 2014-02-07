@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/23/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -145,5 +145,28 @@
     return op;
 }
 
+#pragma mark - Save
+
+- (id<KCSDataOperation>)saveObjects:(NSArray*)objectsToSave options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion
+{
+    NSParameterAssert(objectsToSave);
+    NSParameterAssert(completion);
+    
+    if (objectsToSave.count == 0) {
+#warning TODO KCSTrivialOperation
+    }
+    
+    NSMutableDictionary* fullOptions = [NSMutableDictionary dictionaryWithDictionary:options];
+    setIfEmpty(fullOptions, KCSRequestOptionClientMethod, KCSRequestOptionClientMethod);
+
+    KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:objectsToSave[0] collection:self.collectionName];
+    NSDictionary* objGraph = [descr objectListFromObjects:objectsToSave];
+}
+
+- (void) saveObjects:(NSArray*)objectsToSave completion:(KCSDataStoreCompletion)completion
+{
+    id<KCSDataOperation> op = [self saveObjects:objectsToSave options:@{KCSRequestLogMethod} completion:completion];
+    [op start];
+}
 
 @end

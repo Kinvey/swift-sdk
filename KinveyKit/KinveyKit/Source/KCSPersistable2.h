@@ -1,8 +1,8 @@
 //
-//  NSDictionary+KinveyAdditions.h
+//  KCSPersistable2.h
 //  KinveyKit
 //
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,13 +16,12 @@
 // contents is a violation of applicable laws.
 //
 
+
 #import <Foundation/Foundation.h>
 
-@interface NSDictionary (KinveyAdditions)
-- (NSDictionary*) stripKeys:(NSArray*)keys;
-- (instancetype) dictionaryByAddingDictionary:(NSDictionary*)dictionary;
+@protocol KCSPersistable2 <NSObject>
 
-- (NSString*) escapedJSON;
-- (NSDictionary*) invert;
+//key-value coding
+- (id)valueForKey:(NSString *)key;
 
 @end

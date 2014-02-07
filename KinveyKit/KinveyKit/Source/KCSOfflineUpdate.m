@@ -1,9 +1,9 @@
-  //
+//
 //  KCSOfflineUpdate.m
 //  KinveyKit
 //
 //  Created by Michael Katz on 11/12/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -90,7 +90,9 @@
 
 - (void)hadASucessfulConnection
 {
-    [self drainQueue];
+    //TODO    dispatch_async(dispatch_get_main_queue(), ^{, holding off b/c of multiple calls to this on launch/success
+        [self drainQueue];
+    //    });
 }
 
 - (NSUInteger) count

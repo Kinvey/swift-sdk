@@ -1,8 +1,22 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.26.1
+**Release Date:** February 7, 2014
+
+* Stability and performance improvements.
+* Added `+[KCSUser getAccessDictionaryFromTwitterFromTwitterAccounts:accountChooseBock:]` to allow clients to present a list of twitter account for the user to choose which one to access. 
+* Prefixed Cocoalumberjack classes to avoid conflicts.
+* Bug fixes:
+     * `-[KCSUser sessionAuth]` is still deprecated, but now returns the auth token.
+     * Fixed deadlock when downloading a list of named files.
+     * Fixed bug when PUTing objects from offline save had empty bodies.
+* Code cleanup:
+     * Deprecated collection-style methods from `KCSPersistable` protocol, including `KCSPersistableDelegate`, `deleteFromCollection:withDelegate:`, and `saveToCollection:withDelegate:delegate`.
+     * Removed deprecated `NSObject` category method `setValue:forProperty:`, deprecated in 1.2.0.
+
 ### 1.26.0
-** Release Date:** January 28, 2014
+**Release Date:** January 28, 2014
 
 * Drop support for iOS 5. 
 * Added [network activity notifications](http://devcenter.kinvey.com/ios/guides/iossdk#activityindicator): `KCSNetworkConnectionDidStart` and `KCSNetworkConnectionDidEnd`.

@@ -773,7 +773,7 @@ NSError* createCacheError(NSString* message)
         NSError* underlying = [error userInfo][NSUnderlyingErrorKey];
         if (underlying) {
             //not sure what kind this is, so try again later
-            //error objects should have an underlying eror when coming from KCSAsyncRequest
+            //error objects should have an underlying eror when coming from KCSRequest
             return [self isNoNetworkError:underlying];
         }
     } else if ([[error domain] isEqualToString:NSURLErrorDomain]) {
@@ -984,6 +984,9 @@ andResaveAfterReferencesSaved:^{
         } else {
             [[NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil] raise];
         }
+    } else if ([object isKindOfClass:[NSString class]]) {
+        //do this since all objs are KCSPersistables
+        object = object;
     } else if ([object conformsToProtocol:@protocol(KCSPersistable)]) {
         //if its just a single object get the _id
         object = [object kinveyObjectId];

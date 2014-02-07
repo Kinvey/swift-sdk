@@ -1,8 +1,9 @@
 //
-//  NSDictionary+KinveyAdditions.h
+//  KCSPersistableDescription.h
 //  KinveyKit
 //
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Created by Michael Katz on 1/29/14.
+//  Copyright (c) 2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,13 +17,27 @@
 // contents is a violation of applicable laws.
 //
 
+
 #import <Foundation/Foundation.h>
 
-@interface NSDictionary (KinveyAdditions)
-- (NSDictionary*) stripKeys:(NSArray*)keys;
-- (instancetype) dictionaryByAddingDictionary:(NSDictionary*)dictionary;
+@protocol KCSPersistable;
+@protocol KCSPersistable2;
 
-- (NSString*) escapedJSON;
-- (NSDictionary*) invert;
+@interface KCSReferenceDescription : NSObject
+@property (nonatomic, copy) NSString* sourceField;
+@property (nonatomic, copy) NSString* sourceProperty;
+@property (nonatomic, copy) NSString* destinationCollection;
+
+- (id<KCSPersistable2>) destinationObjFromObj:(id<KCSPersistable2>)sourceObj;
+@end
+
+
+@interface KCSPersistableDescription : NSObject
+
+@property (nonatomic, copy, readonly) NSArray* references;
+
+- (instancetype) initWithKinveyKit1Object:(id<KCSPersistable>)object collection:(NSString*)collection;
+
+- (NSDictionary*) objectListFromObjects:(NSArray*)objects;
 
 @end

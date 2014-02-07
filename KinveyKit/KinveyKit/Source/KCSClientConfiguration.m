@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 8/16/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -79,12 +79,14 @@ KCS_CONST_IMPL KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS = @"KCS_KEEP_USER_LOGG
         
         
         KCSLogFormatter* formatter = [[KCSLogFormatter alloc] init];
-        id<DDLogger> logger = [DDASLLogger sharedInstance];
+        
+        id<KCS_DDLogger> logger = [KCS_DDASLLogger sharedInstance];
         [logger setLogFormatter:formatter];
-        [DDLog addLogger:logger];
-        logger = [DDTTYLogger sharedInstance];
+        [KCS_DDLog addLogger:logger];
+        
+        logger = [KCS_DDTTYLogger sharedInstance];
         [logger setLogFormatter:formatter];
-        [DDLog addLogger:logger];
+        [KCS_DDLog addLogger:logger];
     }
     return self;
 }
@@ -125,7 +127,7 @@ KCS_CONST_IMPL KCS_KEEP_USER_LOGGED_IN_ON_BAD_CREDENTIALS = @"KCS_KEEP_USER_LOGG
     
     NSArray* loggers = config.options[KCS_LOG_ADDITIONAL_LOGGERS];
     for (id logger in loggers) {
-        [DDLog addLogger:logger];
+        [KCS_DDLog addLogger:logger];
     }
     
     return config;

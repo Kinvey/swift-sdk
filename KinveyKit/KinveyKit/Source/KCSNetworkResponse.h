@@ -29,6 +29,7 @@
 
 - (BOOL) isKCSError;
 - (NSError*) errorObject;
+- (NSString*) stringValue;
 - (id) jsonObject;
 - (NSString*) requestId;
 

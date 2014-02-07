@@ -1,8 +1,8 @@
 //
-//  NSDictionary+KinveyAdditions.h
+//  KinveySocialInternal.h
 //  KinveyKit
 //
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,13 +16,10 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+#ifndef KinveyKit_KinveySocialInternal_h
+#define KinveyKit_KinveySocialInternal_h
 
-@interface NSDictionary (KinveyAdditions)
-- (NSDictionary*) stripKeys:(NSArray*)keys;
-- (instancetype) dictionaryByAddingDictionary:(NSDictionary*)dictionary;
+#import "KCSSocialRequest.h"
+#import "KCS_OAuthCore.h"
 
-- (NSString*) escapedJSON;
-- (NSDictionary*) invert;
-
-@end
+#endif

@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 11/19/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -48,6 +48,7 @@ void md5(NSString* s, unsigned char* result)
     unsigned char hostbytes[16];
     md5(hostName, hostbytes);
     int pid = getpid();
+#warning MAKE THIS ATOMIC
     counter = (counter + 1) % 16777216;
     NSString* s = [NSString stringWithFormat:
                    @"%08lx%02x%02x%02x%04x%06x",

@@ -2,7 +2,7 @@
 //  KCSLog.h
 //  KinveyKit
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -19,9 +19,9 @@
 #ifndef KinveyKit_KCSLog_h
 #define KinveyKit_KCSLog_h
 
-#import "DDLog.h"
-#import "DDASLLogger.h"
-#import "DDTTYLogger.h"
+#import "KCS_DDLog.h"
+#import "KCS_DDASLLogger.h"
+#import "KCS_DDTTYLogger.h"
 
 // We want to use the following log levels:
 //
