@@ -1,8 +1,16 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.26.2
+**Release Date:** February 10, 2014
+* Bug fixes:
+     * Add prefix to Cocoalumberjack classes missed in the last release.
+     * Fix file upload completion block not being called.
+* Code cleanup:
+     * Deprecated `-[KCSClient userAgent]`.
+
 ### 1.26.1
-**Release Date:** TBD
+**Release Date:** February 7, 2014
 
 * Stability and performance improvements.
 * Added `+[KCSUser getAccessDictionaryFromTwitterFromTwitterAccounts:accountChooseBock:]` to allow clients to present a list of twitter account for the user to choose which one to access. 

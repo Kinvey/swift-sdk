@@ -174,14 +174,24 @@ NSString* kcsConvertMongoOpToPredicate(NSString* op)
     return opMapper[op];
 }
 
+#warning add test for _filename IN {'Evan.O'Donnell.png'}
+
+NSString* kcsEscapeForPred(NSString* string)
+{
+    string = [string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+    string = [string stringByReplacingOccurrencesOfString:@"\'" withString:@"\\\'"];
+    string = [string stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    return string;
+}
+
 id kcsConvertMongoValToPredicate(id val)
 {
     id retVal = val;
     if ([val isKindOfClass:[NSString class]]) {
-        retVal = [NSString stringWithFormat:@"'%@'", val];
+        retVal = [NSString stringWithFormat:@"'%@'", kcsEscapeForPred(val)];
     } else if ([val isKindOfClass:[NSArray class]]) {
         if ([val count] > 0) {
-            retVal = [NSString stringWithFormat:@"{'%@'}", [val componentsJoinedByString:@"','"]];
+            retVal = [NSString stringWithFormat:@"{'%@'}", kcsEscapeForPred([val componentsJoinedByString:@"','"])];
         } else {
             retVal = @"{}";
         }
