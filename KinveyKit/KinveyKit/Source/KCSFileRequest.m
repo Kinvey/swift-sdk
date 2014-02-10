@@ -141,11 +141,11 @@ static NSOperationQueue* queue;
     //        op = [[KCSMockFileOperation alloc] initWithRequest:request];
     //    } else {
     //
-//    if ([KCSPlatformUtils supportsNSURLSession]) {
-//        op = [[KCSNSURLSessionFileOperation alloc] initWithRequest:request output:intermediate.localURL context:alreadyWritten];
-//    } else {
+    if ([KCSPlatformUtils supportsNSURLSession]) {
+        op = [[KCSNSURLSessionFileOperation alloc] initWithRequest:request output:nil context:nil];
+    } else {
         op = [[KCSNSURLCxnFileOperation alloc] initWithRequest:request output:nil context:nil];
-//    }
+    }
   
     @weakify(op);
     op.completionBlock = ^() {

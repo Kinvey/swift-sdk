@@ -22,15 +22,16 @@
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 
-@interface KCSNSURLSessionFileOperation () <NSURLSessionDelegate, NSURLSessionDownloadDelegate>
+@interface KCSNSURLSessionFileOperation () <NSURLSessionDelegate, NSURLSessionDownloadDelegate, NSURLSessionTaskDelegate>
 @property (nonatomic, retain) NSURL* localFile;
 @property (nonatomic, retain) NSURLSession* session;
-@property (nonatomic, retain) NSURLSessionDownloadTask* task;
+@property (nonatomic, retain) NSURLSessionTask* task;
 @property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSDictionary* returnVals;
 @property (nonatomic) BOOL done;
 @property (nonatomic, strong) id context;
+@property (nonatomic) BOOL isUpload;
 @end
 
 @implementation KCSNSURLSessionFileOperation
@@ -56,33 +57,40 @@
     
     @autoreleasepool {
         [super start];
-        
-        NSData* resumeData = nil;
-        NSNumber* alreadyWritten = (NSNumber*)self.context;
-        if (alreadyWritten != nil) {
-            resumeData = [NSData dataWithContentsOfURL:self.localFile];
-            //TODO: figure this one out
-            //        unsigned long long written = [_outputHandle seekToEndOfFile];
-            unsigned long long written = [alreadyWritten unsignedLongLongValue];
-            if ([alreadyWritten unsignedLongLongValue] == written) {
-                KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
-                //                [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
-                //        } else {
-                //            //if they don't match start from begining
-                //            [_outputHandle seekToFileOffset:0];
-            }
-        }
 
-        
-        
         NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
         _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-        if (resumeData == nil) {
-            _task = [_session downloadTaskWithRequest:_request];
+        
+        if (_localFile) {
+            NSData* resumeData = nil;
+            NSNumber* alreadyWritten = (NSNumber*)self.context;
+            if (alreadyWritten != nil) {
+                resumeData = [NSData dataWithContentsOfURL:self.localFile];
+                //TODO: figure this one out
+                //        unsigned long long written = [_outputHandle seekToEndOfFile];
+                unsigned long long written = [alreadyWritten unsignedLongLongValue];
+                if ([alreadyWritten unsignedLongLongValue] == written) {
+                    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Download was already in progress. Resuming from byte %@.", alreadyWritten);
+                    //                [request addValue:[NSString stringWithFormat:@"bytes=%llu-", written] forHTTPHeaderField:@"Range"];
+                    //        } else {
+                    //            //if they don't match start from begining
+                    //            [_outputHandle seekToFileOffset:0];
+                }
+            }
+            
+            
+            
+            if (resumeData == nil) {
+                _task = [_session downloadTaskWithRequest:_request];
+            } else {
+                _task = [_session downloadTaskWithResumeData:resumeData];
+            }
         } else {
-            _task = [_session downloadTaskWithResumeData:resumeData];
+            _isUpload = YES;
+            
+            _task = [_session uploadTaskWithStreamedRequest:_request];
         }
-
+        
         [_task resume];
     }
 }
@@ -106,10 +114,12 @@
 
 - (void)cancel
 {
-    [self.task cancelByProducingResumeData:^(NSData *resumeData) {
-        self.resumeData = resumeData;
-        [super cancel];
-    }];
+    if (!_isUpload) {
+        [(NSURLSessionDownloadTask*)self.task cancelByProducingResumeData:^(NSData *resumeData) {
+            self.resumeData = resumeData;
+            [super cancel];
+        }];
+    }
 }
 
 - (BOOL)isReady
@@ -209,6 +219,28 @@
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes
 {
     //TODO: do something here
+}
+
+#pragma mark - upload
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task needNewBodyStream:(void (^)(NSInputStream *))completionHandler
+{
+    completionHandler(_request.HTTPBodyStream);
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
+{
+    if (!_isUpload) {
+        return;
+    }
+    
+    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"Uploaded %llu bytes (%ld / %ld)", bytesSent, (long)totalBytesSent, (long)totalBytesExpectedToSend);
+    
+    double progress = (double) totalBytesSent / (double) totalBytesExpectedToSend;
+    if (_progressBlock) {
+        _progressBlock(nil, progress, @{});
+    }
+
 }
 
 @end

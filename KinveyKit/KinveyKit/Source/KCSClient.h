@@ -74,8 +74,12 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
 ///---------------------------------------------------------------------------------------
 /// @name Library Information
 ///---------------------------------------------------------------------------------------
-/*! User Agent string returned to Kinvey (used automatically, provided for reference. */
-@property (nonatomic, copy, readonly) NSString *userAgent;
+
+/*! User Agent string returned to Kinvey (used automatically, provided for reference. 
+ @deprecated no longer used
+ @deprecatedIn 1.26.2
+ */
+@property (nonatomic, copy, readonly) NSString *userAgent KCS_DEPRECATED(no longer used in the client, 1.26.2);
 
 /*! Library Version string returned to Kinvey (used automatically, provided for reference. */
 @property (nonatomic, copy, readonly) NSString *libraryVersion;

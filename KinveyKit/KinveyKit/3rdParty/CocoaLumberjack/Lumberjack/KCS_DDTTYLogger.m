@@ -86,7 +86,7 @@
 #define MAP_TO_TERMINAL_APP_COLORS 1
 
 
-@interface DDTTYLoggerColorProfile : NSObject {
+@interface KCS_DDTTYLoggerColorProfile : NSObject {
 @public
 	int mask;
 	int context;
@@ -938,8 +938,8 @@ static KCS_DDTTYLogger *sharedInstance;
 {
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		DDTTYLoggerColorProfile *newColorProfile =
-		    [[DDTTYLoggerColorProfile alloc] initWithForegroundColor:txtColor
+		KCS_DDTTYLoggerColorProfile *newColorProfile =
+		    [[KCS_DDTTYLoggerColorProfile alloc] initWithForegroundColor:txtColor
 		                                             backgroundColor:bgColor
 		                                                        flag:mask
 		                                                     context:ctxt];
@@ -947,7 +947,7 @@ static KCS_DDTTYLogger *sharedInstance;
 		NSLogInfo(@"DDTTYLogger: newColorProfile: %@", newColorProfile);
 		
 		NSUInteger i = 0;
-		for (DDTTYLoggerColorProfile *colorProfile in colorProfilesArray)
+		for (KCS_DDTTYLoggerColorProfile *colorProfile in colorProfilesArray)
 		{
 			if ((colorProfile->mask == mask) && (colorProfile->context == ctxt))
 			{
@@ -987,8 +987,8 @@ static KCS_DDTTYLogger *sharedInstance;
 	
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		DDTTYLoggerColorProfile *newColorProfile =
-		    [[DDTTYLoggerColorProfile alloc] initWithForegroundColor:txtColor
+		KCS_DDTTYLoggerColorProfile *newColorProfile =
+		    [[KCS_DDTTYLoggerColorProfile alloc] initWithForegroundColor:txtColor
 		                                             backgroundColor:bgColor
 		                                                        flag:0
 		                                                     context:0];
@@ -1026,7 +1026,7 @@ static KCS_DDTTYLogger *sharedInstance;
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
 		NSUInteger i = 0;
-		for (DDTTYLoggerColorProfile *colorProfile in colorProfilesArray)
+		for (KCS_DDTTYLoggerColorProfile *colorProfile in colorProfilesArray)
 		{
 			if ((colorProfile->mask == mask) && (colorProfile->context == context))
 			{
@@ -1178,7 +1178,7 @@ static KCS_DDTTYLogger *sharedInstance;
 	{
 		// Search for a color profile associated with the log message
 		
-		DDTTYLoggerColorProfile *colorProfile = nil;
+		KCS_DDTTYLoggerColorProfile *colorProfile = nil;
 		
 		if (colorsEnabled)
 		{
@@ -1188,7 +1188,7 @@ static KCS_DDTTYLogger *sharedInstance;
 			}
 			if (colorProfile == nil)
 			{
-				for (DDTTYLoggerColorProfile *cp in colorProfilesArray)
+				for (KCS_DDTTYLoggerColorProfile *cp in colorProfilesArray)
 				{
 					if ((logMessage->logFlag & cp->mask) && (logMessage->logContext == cp->context))
 					{
@@ -1370,7 +1370,7 @@ static KCS_DDTTYLogger *sharedInstance;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation DDTTYLoggerColorProfile
+@implementation KCS_DDTTYLoggerColorProfile
 
 - (id)initWithForegroundColor:(OSColor *)fgColor backgroundColor:(OSColor *)bgColor flag:(int)aMask context:(int)ctxt
 {
