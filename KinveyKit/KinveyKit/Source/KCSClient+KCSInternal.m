@@ -1,7 +1,8 @@
 //
-//  KinveyVersion.h
+//  KCSClient+KCSInternal.m
 //  KinveyKit
 //
+//  Created by Michael Katz on 9/11/13.
 //  Copyright (c) 2013-2014 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
@@ -16,10 +17,20 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyVersion_h
-#define KinveyKit_KinveyVersion_h
 
+#import "KCSClient+KCSInternal.h"
+#import "KinveyCoreInternal.h"
 
-#define __KINVEYKIT_VERSION__ @"1.26.2"
+@implementation KCSClient (KCSInternal)
 
-#endif
+- (NSString *)authString
+{
+    KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"Using app key/app secret for auth: (%@, <APP_SECRET>) => XXXXXXXXX", self.configuration.appKey);
+    return KCSbasicAuthString(self.configuration.appKey, self.configuration.appSecret);
+}
+
+- (void)handleErrorResponse:(KCSNetworkResponse *)response
+{
+}
+
+@end

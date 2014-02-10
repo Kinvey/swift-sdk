@@ -1,5 +1,5 @@
 //
-//  KinveyVersion.h
+//  KCSClient+KCSInternal.h
 //  KinveyKit
 //
 //  Copyright (c) 2013-2014 Kinvey. All rights reserved.
@@ -16,10 +16,12 @@
 // contents is a violation of applicable laws.
 //
 
-#ifndef KinveyKit_KinveyVersion_h
-#define KinveyKit_KinveyVersion_h
 
+#import <KinveyKit/KinveyKit.h>
 
-#define __KINVEYKIT_VERSION__ @"1.26.2"
+#import "KCSClient.h"
+#import "KCSCredentials.h"
 
-#endif
+@interface KCSClient (KCSInternal) <KCSCredentials>
+
+@end

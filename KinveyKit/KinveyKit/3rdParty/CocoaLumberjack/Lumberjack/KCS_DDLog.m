@@ -693,7 +693,7 @@ static unsigned int numProcessors;
 #pragma mark Utilities
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-NSString *DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy)
+NSString *KCS_DDExtractFileNameWithoutExtension(const char *filePath, BOOL copy)
 {
 	if (filePath == NULL) return nil;
 	
@@ -887,7 +887,7 @@ static char *dd_str_copy(const char *str)
 
 - (NSString *)fileName
 {
-	return DDExtractFileNameWithoutExtension(file, NO);
+	return KCS_DDExtractFileNameWithoutExtension(file, NO);
 }
 
 - (NSString *)methodName

@@ -67,11 +67,6 @@
         _localURL = fileURL;
         _bytesWritten = 0;
         _context = context;
-        
-        //#if BUILD_FOR_UNIT_TEST
-        //    lastRequest = self;
-        //#endif
-
     }
     return self;
 }
