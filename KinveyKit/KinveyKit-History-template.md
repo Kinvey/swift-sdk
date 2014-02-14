@@ -3,7 +3,7 @@
 ## 1.26
 
 ### 1.26.3
-**Release Date:** February 13, 2014
+**Release Date:** February 14, 2014
 
 * Bug fix(es):
      * Fix memory leak when using progress block. 
