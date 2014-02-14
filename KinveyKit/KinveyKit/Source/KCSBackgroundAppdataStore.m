@@ -41,6 +41,7 @@
 #import "KCSCachedStore.h"
 #import "KCSAppdataStore.h"
 #import "KCSDataModel.h"
+#import "EXTScope.h"
 
 #define KCSSTORE_VALIDATE_PRECONDITION BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock]; \
 if (okayToProceed == NO) { \
@@ -500,8 +501,10 @@ return; \
         partialParser = [[KCSPartialDataParser alloc] init];
         partialParser.objectMaker = self;
     }
+    @weakify(partialParser)
     request.progress = ^(id data, double progress){
         if (progressBlock != nil) {
+            @strongify(partialParser)
             NSArray* partialResults = [partialParser parseData:data hasArray:YES];
             progressBlock(partialResults, progress);
         }

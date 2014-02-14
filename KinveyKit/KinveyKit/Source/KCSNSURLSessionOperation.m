@@ -108,7 +108,7 @@
 {
     [self.downloadedData appendData:data];
     if (self.progressBlock) {
-        id partial = self.response.code <= 300 ? self.downloadedData : nil;
+        id partial = self.response.code <= 300 ? data : nil;
         self.progressBlock(partial, self.downloadedData.length / (double) _expectedLength);
     }
 
