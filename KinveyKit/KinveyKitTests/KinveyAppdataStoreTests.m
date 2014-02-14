@@ -464,6 +464,54 @@ NSArray* largeArray()
     [self poll];
 }
 
+- (void) testProgressPerformance
+{
+    KCSQuery* planRoomQuery = [KCSQuery query];
+    
+    KCSQueryLimitModifier *limitModifier = [[KCSQueryLimitModifier alloc] initWithLimit:200];
+    KCSQuerySkipModifier *skipModifier = [[KCSQuerySkipModifier alloc] initWithcount:1800];
+    
+    planRoomQuery.limitModifer = limitModifier;
+    // planRoomQuery.skipModifier = skipModifier;
+    
+    KCSAppdataStore *planRoomStore = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
+    
+    self.done = NO;
+    [planRoomStore queryWithQuery:planRoomQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        NSLog(@"Done.");
+        self.done = YES;
+     } withProgressBlock:nil
+//     ^(NSArray *objects, double percentComplete) {
+//         NSLog(@"objects.count: %lu", (unsigned long)objects.count);
+//         
+//     }
+     ];
+    [self poll];
+    
+//    This code creates unbounded memory growth, and, the objects array is empty and that log prints 0.
+//    percentComplete prints correct values.
+//    
+//    
+//    This code also results in unbounded memory growth:
+    
+//    [planRoomStore queryWithQuery:planRoomQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+//    {
+//        completionHandler(nil, 100);
+//    }
+//     
+//                withProgressBlock:^(NSArray *objects, double percentComplete)
+//    {
+//    }];
+    
+//    This code does not have the memory issues, but, of course, I am unable to track the progress of the request.
+    
+//    [planRoomStore queryWithQuery:planRoomQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+//    {
+//        completionHandler(nil, 100);
+//    }
+}
+
 #pragma mark - Count
 
 - (void) testCountWithQuery
