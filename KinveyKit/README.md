@@ -1,4 +1,4 @@
-KinveyKit (1.26.2, February 10, 2014)
+KinveyKit (1.26.3, February 14, 2014)
 ==========
 
 ## Welcome

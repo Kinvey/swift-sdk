@@ -124,7 +124,7 @@
     }
     //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-    NSDictionary *jsonResponse = [parser objectWithData:self.jsonData];
+    NSDictionary *jsonResponse = [[parser objectWithData:self.jsonData] copy];
     NSObject* jsonObj = nil;
     if (parser.error) {
         KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"JSON Serialization failed: %@", parser.error);

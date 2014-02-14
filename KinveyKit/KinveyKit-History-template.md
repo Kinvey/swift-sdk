@@ -1,8 +1,16 @@
 # KinveyKit Release History
 
 ## 1.26
+
+### 1.26.3
+**Release Date:** February 14, 2014
+
+* Bug fix(es):
+     * Fix memory leak when using progress block. 
+
 ### 1.26.2
 **Release Date:** February 10, 2014
+
 * Bug fixes:
      * Add prefix to Cocoalumberjack classes missed in the last release.
      * Fix file upload completion block not being called.
