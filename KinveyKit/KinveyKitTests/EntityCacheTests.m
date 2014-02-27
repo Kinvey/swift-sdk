@@ -376,6 +376,34 @@
     
     [ocache clear];
 }
+
+- (void) testInterestingQueries
+{
+
+    NSDate* tenHoursAgo = [NSDate dateWithTimeIntervalSinceNow:-10*60*60];
+    KCSQuery* query = [KCSQuery queryOnField:@"location.timestamp" usingConditional:kKCSGreaterThanOrEqual forValue:tenHoursAgo];
+    KCSObjectCache* cache = [[KCSObjectCache alloc] init];
+    KCSQuery2* q = [KCSQuery2 queryWithQuery1:query];
+
+    ASTTestClass* obj1 = [[ASTTestClass alloc] init];
+    obj1.objId = @"1";
+    ASTTestClass* obj2 = [[ASTTestClass alloc] init];
+    obj2.objId = @"2";
+    [cache setObjects:@[obj1,obj2] forQuery:q route:@"user" collection:@"_user"];
+
+    
+    NSPredicate* queryPredicate = [q predicate];
+    NSArray* allObjs = @[obj1,obj2];
+    NSArray* filteredObj = [allObjs filteredArrayUsingPredicate:queryPredicate];
+    NSArray* results = [filteredObj valueForKeyPath:KCSEntityKeyId];
+    
+    
+//    NSArray* results = [cache pullQuery:q route:@"user" collection:@"_user"];
+//    NSLog(@"results = %@", results);
+
+    STFail(@"this should not work");
+}
+
 #pragma mark - Old Tests
 
 - (void) testActiveUser
