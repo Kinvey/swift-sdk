@@ -1,6 +1,11 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.26.4
+**Release Date:** TBA
+
+* Bug fix(es):
+    * 
 
 ### 1.26.3
 **Release Date:** February 14, 2014

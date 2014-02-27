@@ -402,4 +402,15 @@ void setActive(KCSUser* user)
     }
 }
 
+#pragma mark - 
+- (BOOL)isEqual:(id)object
+{
+    return [[object class] isEqual:[self class]] && [self.userId isEqualToString:[object userId]];
+}
+
+- (NSUInteger)hash
+{
+    return [self.userId hash];
+}
+
 @end

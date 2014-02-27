@@ -54,6 +54,35 @@ NSString* kcsQueryOperatorString(KCSQueryOperation op)
     return operator;
 }
 
+BOOL kcsQueryIsComparison(KCSQueryOperation op)
+{
+    BOOL comparison;
+    switch (op) {
+        case KCSQueryGreaterThan:
+        case KCSQueryGreaterThanOrEqual:
+        case KCSQueryLessThan:
+        case KCSQueryLessThanOrEqual:
+            //ne
+            comparison = YES;
+            break;
+            
+        default:
+            comparison = NO;
+            break;
+    }
+    return comparison;
+}
+
+BOOL kcsQueryIsComparisonS(NSString* opStr)
+{
+    NSDictionary* d = @{@"$lt"    : @YES,
+                        @"$lte"   : @YES,
+                        @"$gt"    : @YES,
+                        @"$gte"   : @YES,
+                        @"ne"     : @YES};
+    return [d[opStr] boolValue];
+}
+
 @interface KCSQuery2 ()
 @property (nonatomic, retain) NSMutableDictionary* internalRepresentation;
 @property (nonatomic, retain) NSMutableArray* mySortDescriptors;
@@ -209,7 +238,7 @@ id kcsConvertMongoValToPredicate(id val)
         predicate = [NSPredicate predicateWithValue:YES];
     }
     [self.internalRepresentation enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        if ([key hasSuffix:@"$"]) {
+        if ([key hasPrefix:@"$"]) {
             //is an operator
         } else {
             //is a field
@@ -221,14 +250,20 @@ id kcsConvertMongoValToPredicate(id val)
                     //todo handle val err if dict
                     NSString* fOp = kcsConvertMongoOpToPredicate(op);
                     id fVal = kcsConvertMongoValToPredicate(val);
-                    NSString* format = [NSString stringWithFormat:@"%@ %@ %@", key, fOp, fVal];
-                    @try {
-                        predicate = [NSPredicate predicateWithFormat:format];
-                    }
-                    @catch (NSException *exception) {
-                        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error making predicate: %@", exception);
-                    }
-                    @finally {
+                    
+                    if (kcsQueryIsComparisonS(op) && ![val isKindOfClass:[NSNumber class]]) {
+//                        predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+//                            NSComparisonResult* c = [evaluatedObject compare:<#(NSNumber *)#>]
+//                        }];
+                    } else {
+                    
+                        NSString* format = [NSString stringWithFormat:@"%@ %@ %@", key, fOp, fVal];
+                        @try {
+                            predicate = [NSPredicate predicateWithFormat:format];
+                        }
+                        @catch (NSException *exception) {
+                            KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error making predicate: %@", exception);
+                        }
                     }
                 } else {
                     //undef error
