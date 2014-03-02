@@ -117,6 +117,10 @@ static NSOperationQueue* queue;
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
 {
+    if (objectID == nil) {
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"objectId is `nil`." userInfo:nil] raise];
+    }
+    
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
