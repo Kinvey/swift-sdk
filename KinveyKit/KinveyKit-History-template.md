@@ -2,10 +2,10 @@
 
 ## 1.26
 ### 1.26.4
-**Release Date:** TBA
+**Release Date:** March 5, 2014
 
 * Bug fix(es):
-    * 
+    * Fix crash when using certain query formats.
 
 ### 1.26.3
 **Release Date:** February 14, 2014
