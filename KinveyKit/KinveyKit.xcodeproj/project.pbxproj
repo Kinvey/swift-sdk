@@ -36,10 +36,6 @@
 		270198B417CFED6D00E9AAB2 /* KCSNetworkOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 270198B217CFED6D00E9AAB2 /* KCSNetworkOperation.h */; };
 		27052F70187ED1590062500E /* KinveyLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27052F6F187ED1540062500E /* KinveyLocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27052F71187ED15C0062500E /* KinveyLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 27052F6F187ED1540062500E /* KinveyLocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		27052F74187ED19F0062500E /* CLCircularRegion+KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 27052F72187ED19F0062500E /* CLCircularRegion+KinveyKit.h */; };
-		27052F75187ED19F0062500E /* CLCircularRegion+KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 27052F72187ED19F0062500E /* CLCircularRegion+KinveyKit.h */; };
-		27052F76187ED19F0062500E /* CLCircularRegion+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 27052F73187ED19F0062500E /* CLCircularRegion+KinveyKit.m */; };
-		27052F77187ED19F0062500E /* CLCircularRegion+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 27052F73187ED19F0062500E /* CLCircularRegion+KinveyKit.m */; };
 		270BAEB317134107005174D2 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A610214716F2D00F77A3F /* KinveyEntity.m */; };
 		270BAEB41713414D005174D2 /* NSMutableDictionary+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 270E4CAB16246953000E0A0A /* NSMutableDictionary+KinveyAdditions.h */; };
 		270BAEB51713415E005174D2 /* NSArray+KinveyAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CC1155D4B4100A0183E /* NSArray+KinveyAdditions.h */; };
@@ -2078,7 +2074,6 @@
 				275B42A116A97DB00064B941 /* KinveyHeaderInfo.h in Headers */,
 				278BADB017B28EC70035B3D6 /* KCS_DDFileLogger.h in Headers */,
 				277A4D7A17F1B01F00E545EC /* KCSNSURLSessionFileOperation.h in Headers */,
-				27052F75187ED19F0062500E /* CLCircularRegion+KinveyKit.h in Headers */,
 				277A4D7417F1B00D00E545EC /* KCSNSURLCxnFileOperation.h in Headers */,
 				27DA141B17C3E7D000EAB3B7 /* KCSNSURLRequestOperation.h in Headers */,
 				27295D7C17E0F63D00D34E2F /* KCSClient2.h in Headers */,
@@ -2328,7 +2323,6 @@
 				2746535F174E891D0013546E /* EXTScope.h in Headers */,
 				27465361174E891D0013546E /* metamacros.h in Headers */,
 				27DA141A17C3E7D000EAB3B7 /* KCSNSURLRequestOperation.h in Headers */,
-				27052F74187ED19F0062500E /* CLCircularRegion+KinveyKit.h in Headers */,
 				277A4D6717F1568000E545EC /* KCSFileRequest.h in Headers */,
 				273B644F1757DE0F00E1B1B9 /* KCSCustomEndpoints.h in Headers */,
 				27FEBF3017B26AEB006E7FBD /* KCSCredentials.h in Headers */,
@@ -2757,7 +2751,6 @@
 				27BBB2F517EB2A1E00264C9C /* KCSLogFormatter.m in Sources */,
 				27295D7517E0AC8E00D34E2F /* KCSPing2.m in Sources */,
 				27B7724516E7C71300610D11 /* KCSWebView.m in Sources */,
-				27052F77187ED19F0062500E /* CLCircularRegion+KinveyKit.m in Sources */,
 				277A4D7C17F1B01F00E545EC /* KCSNSURLSessionFileOperation.m in Sources */,
 				27F5D7F616F20EC5001828F3 /* NSDictionary+KinveyAdditions.m in Sources */,
 				27525A3A17668E910054C17F /* KCS_FMDatabase.m in Sources */,
@@ -2843,7 +2836,6 @@
 				277A4D8117F1B11700E545EC /* KCSMockFileOperation.m in Sources */,
 				277A4D7517F1B00D00E545EC /* KCSNSURLCxnFileOperation.m in Sources */,
 				27C96F53189862400094E2D2 /* KCSSocialRequest.m in Sources */,
-				27052F76187ED19F0062500E /* CLCircularRegion+KinveyKit.m in Sources */,
 				D3EA226A1484852B00666259 /* KCSPush.m in Sources */,
 				D3EA22C81486B0BD00666259 /* KinveyPing.m in Sources */,
 				2737D3B317BD517300FE7ACC /* KCSMockServer.m in Sources */,
@@ -3116,7 +3108,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "-ObjC";
@@ -3666,7 +3658,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "-ObjC";
@@ -3761,7 +3753,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = NO;
@@ -3801,7 +3793,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "-ObjC";

@@ -217,6 +217,9 @@
     STAssertEqualObjects(unsaveds[0][@"obj"], d2, @"");
     STAssertEqualObjects(unsaveds[1][@"obj"], d3, @"should be the updated 2");
     
+    NSDate* saveDate = unsaveds[0][@"time"];
+    STAssertTrue([saveDate isKindOfClass:[NSDate class]], @"Should be a date");
+    
 }
 
 #pragma mark - Cache

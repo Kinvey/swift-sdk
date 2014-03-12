@@ -311,7 +311,7 @@
                 NSString* collection = routes[1];
                 NSDictionary* entity = @{@"obj":obj,
                                          @"headers":headers,
-                                         @"time":d[@"time"],
+                                         @"time":[NSDate dateWithTimeIntervalSince1970:[d[@"time"] doubleValue]],
                                          @"method":d[@"method"],
                                          @"_id":d[@"id"],
                                          @"route":route,

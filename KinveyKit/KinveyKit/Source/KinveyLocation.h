@@ -20,7 +20,7 @@
 #ifndef KinveyKit_KinveyLocation_h
 #define KinveyKit_KinveyLocation_h
 
-#import "CLCircularRegion+KinveyKit.h"
+//#import "CLCircularRegion+KinveyKit.h"
 #import "CLLocation+Kinvey.h"
 
 #endif
