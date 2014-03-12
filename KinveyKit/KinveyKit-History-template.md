@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.26.5
+**Release Date:** TBA
+
+* Bug fix(es):
+    * Fix issue on `KCSOfflineUpdateDelegate` where dates were returned as strings.
+
 ### 1.26.4
 **Release Date:** March 5, 2014
 

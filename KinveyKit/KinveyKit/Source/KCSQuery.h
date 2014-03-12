@@ -210,6 +210,7 @@ typedef enum {
 ///---------------------------------------------------------------------------------------
 /// @name Creating Queries
 ///---------------------------------------------------------------------------------------
+
 /*! Create a new Simple Query.
  
  This is the simplest query constructor.  This will build a query that matches a single value against a property/field using the given
