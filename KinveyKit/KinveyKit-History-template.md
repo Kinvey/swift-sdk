@@ -2,7 +2,7 @@
 
 ## 1.26
 ### 1.26.5
-**Release Date:** TBA
+**Release Date:** March 19, 2014
 
 * Bug fix(es):
     * Fix issue on `KCSOfflineUpdateDelegate` where dates were returned as strings.

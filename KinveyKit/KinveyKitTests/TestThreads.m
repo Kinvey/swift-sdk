@@ -224,4 +224,13 @@
     self.done = YES;
 }
 
+#pragma mark -
+
+- (void) testLengthIssue
+{
+    NSURL* URL = [NSURL URLWithString:@"/mike/Downloads/lgf.tif"];
+    NSOutputStream* stream = [[NSOutputStream alloc] initWithURL:URL append:NO];
+    
+}
+
 @end
