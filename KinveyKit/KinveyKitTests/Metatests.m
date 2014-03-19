@@ -48,6 +48,25 @@
 - (NSArray*) rectArray {
     return @[@(self.rect.origin.x), @(self.rect.origin.y), @(self.rect.size.width), @(self.rect.size.height)];
 }
+-(void)GETALLCROP{
+    NSLog(@"GETALLCROP : ");
+    KCSCollection* collection = [KCSCollection collectionFromString:@"crops" ofClass:[Crops class]];
+    KCSCachedStore* store = [KCSCachedStore storeWithCollection:collection options:@{KCSStoreKeyCachePolicy : @(KCSCachePolicyLocalFirst)}];
+    KCSQuery* query = [KCSQuery query];
+    [store queryWithQuery:query withCompletionBlock:^(NSArray objectsOrNil, NSError *errorOrNil) {
+        if (errorOrNil != nil) {
+            //An error happened, just log for now
+            NSLog(@"GETALLCROP ERROR : %@",errorOrNil.description);
+        } else {
+            NSLog(@"Successful Load CROP: %d", [objectsOrNil count]);
+            if([objectsOrNil count]>0){
+                for(int i = 0;i<[objectsOrNil count];i++){
+                    Crops * currPage = (Crops)[objectsOrNil objectAtIndex:i];
+                    NSLog(@"name - %@", [currPage name]);
+                }
+            }
+        }
+    } withProgressBlock:nil cachePo
 
 @end
 
