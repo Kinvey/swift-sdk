@@ -187,6 +187,7 @@
 #pragma mark - Offline Save Delegate
 - (BOOL)shouldSave:(id<KCSPersistable>)entity lastSaveTime:(NSDate *)timeSaved
 {
+    STAssertTrue([timeSaved isKindOfClass:[NSDate class]], @"should be a date");
     _shouldSaveCalled = YES;
     if (_testShouldSave) {
         ASTTestClass* obj = (ASTTestClass*) entity;
@@ -198,6 +199,7 @@
 
 - (void) willSave:(id<KCSPersistable>)entity lastSaveTime:(NSDate *)timeSaved
 {
+    STAssertTrue([timeSaved isKindOfClass:[NSDate class]], @"should be a date");
     _willSaveCalled = YES;
 }
 

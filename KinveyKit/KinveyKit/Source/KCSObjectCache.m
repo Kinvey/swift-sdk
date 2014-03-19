@@ -182,9 +182,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
             //did not persist this query previously, so let's calculate:
             NSPredicate* queryPredicate = [query predicate];
             if (queryPredicate) {
-                NSArray* allObjs = [_persistenceLayer export:route collection:collection];
-                NSArray* filteredObj = [allObjs filteredArrayUsingPredicate:queryPredicate];
-                ids = [filteredObj valueForKeyPath:KCSEntityKeyId];
+//                NSArray* allObjs = [_persistenceLayer export:route collection:collection];
+//                NSArray* filteredObj = [allObjs filteredArrayUsingPredicate:queryPredicate];
+//                ids = [filteredObj valueForKeyPath:KCSEntityKeyId];
             } else {
                 KCSLogWarn(KCS_LOG_CONTEXT_DATA, @"Query '%@' filtering has not been built out yet. Contact support@kinvey.com with this query format to help us improve local filtering.", query);
             }
