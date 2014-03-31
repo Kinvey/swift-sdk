@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.26.6
+**Release Date:** TBA
+
+* Bug fix(es):
+    * Fix issue with file store upload blocks on iOS6. 
+
 ### 1.26.5
 **Release Date:** March 19, 2014
 

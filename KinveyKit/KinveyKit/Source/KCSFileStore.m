@@ -155,9 +155,9 @@ static NSMutableSet* _ongoingDownloads;
          progressBlock:(KCSProgressBlock)progressBlock
 {
     KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
-    #if BUILD_FOR_UNIT_TEST
-        lastRequest =
-    #endif
+#if BUILD_FOR_UNIT_TEST
+    lastRequest =
+#endif
     [fileRequest uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:url requiredHeaders:requiredHeaders completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
         uploadFile.bytesWritten = [returnInfo[kBytesWritten] longLongValue];
         completionBlock(uploadFile, error);
