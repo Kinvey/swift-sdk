@@ -70,11 +70,6 @@
     return YES;
 }
 
-+ (void) initializePushWithPushKey:(NSString*)pushKey pushSecret:(NSString*)pushSecretKey mode:(KCS_PUSH_MODE)pushMode enabled:(BOOL)enabled
-{
-    [self registerForPush];
-}
-
 + (void) registerForPush
 {
     [[KCSPush sharedPush] doRegister];
