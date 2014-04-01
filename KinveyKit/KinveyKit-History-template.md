@@ -1,6 +1,15 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.26.6
+**Release Date:** April 1, 2014
+
+* Exposes `- [KCSPush unreigsterDeviceToken:]` to remove a device token from a user.
+* Code Cleanup:
+    * Remove deprecated `KCSPush` methods.
+* Bug fix(es):
+    * Fix issue with file store upload blocks on iOS6. 
+
 ### 1.26.5
 **Release Date:** March 19, 2014
 

@@ -102,7 +102,9 @@
             _isUpload = YES;
         }
 
-        _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:YES];
+        _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
+        [_connection setDelegateQueue:[NSOperationQueue mainQueue]];
+        [_connection start];
     }
 }
 

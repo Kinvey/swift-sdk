@@ -13,6 +13,8 @@
 #import "NSString+KinveyAdditions.h"
 #import "KCSHiddenMethods.h"
 
+
+
 @interface KinveyKitPushTests()
 @property (nonatomic, strong) NSString* token;
 @property (nonatomic, strong) NSData* tokenData;
