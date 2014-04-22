@@ -178,17 +178,17 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     if (!ids) {
         //not in the local cache, pull from the db
         ids = [_persistenceLayer idsForQuery:queryKey route:route collection:collection];
-        if ([ids count] == 0 ) {
-            //did not persist this query previously, so let's calculate:
-            NSPredicate* queryPredicate = [query predicate];
-            if (queryPredicate) {
-//                NSArray* allObjs = [_persistenceLayer export:route collection:collection];
-//                NSArray* filteredObj = [allObjs filteredArrayUsingPredicate:queryPredicate];
-//                ids = [filteredObj valueForKeyPath:KCSEntityKeyId];
-            } else {
-                KCSLogWarn(KCS_LOG_CONTEXT_DATA, @"Query '%@' filtering has not been built out yet. Contact support@kinvey.com with this query format to help us improve local filtering.", query);
-            }
-        }
+//        if ([ids count] == 0 ) {
+//            //did not persist this query previously, so let's calculate:
+//            NSPredicate* queryPredicate = [query predicate];
+////            if (queryPredicate) {
+//////                NSArray* allObjs = [_persistenceLayer export:route collection:collection];
+//////                NSArray* filteredObj = [allObjs filteredArrayUsingPredicate:queryPredicate];
+//////                ids = [filteredObj valueForKeyPath:KCSEntityKeyId];
+////            } else {
+////                KCSLogWarn(KCS_LOG_CONTEXT_DATA, @"Query '%@' filtering has not been built out yet. Contact support@kinvey.com with this query format to help us improve local filtering.", query);
+////            }
+//        }
         if ([ids count] > 0) {
             shouldCacheFromPersistence = YES;
         }

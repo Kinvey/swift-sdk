@@ -252,18 +252,6 @@
     return _resolvedObject;
 }
 
-#pragma mark - properties
-
-- (NSNumber *)public
-{
-    return self.publicFile;
-}
-
-- (void)setPublic:(NSNumber *)public
-{
-    self.publicFile = public;
-}
-
 #pragma mark - debug
 
 - (NSString*) debugDescription

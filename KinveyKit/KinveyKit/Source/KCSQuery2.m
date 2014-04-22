@@ -282,7 +282,7 @@ id kcsConvertMongoValToPredicate(id val)
         }
     }];
     if (!predicate) {
-        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Support for query \"%@\" not supported yet. Contact support@kinvey.com to get this supported.", self.internalRepresentation);
+//        KCSLogError(KCS_LOG_CONTEXT_DATA, @"Support for query \"%@\" not supported yet. Contact support@kinvey.com to get this supported.", self.internalRepresentation);
         DBAssert(NO, @"Support query: %@", self.internalRepresentation);
         predicate = [NSPredicate predicateWithValue:YES];
     }

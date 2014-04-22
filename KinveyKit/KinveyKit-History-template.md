@@ -1,6 +1,13 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.26.7
+**Release Date:** April 22, 2014
+
+* Code Cleanup:
+    * Removed deprecated `public` property of `KCSFile`.
+    * Removed spurious logged error with queries. 
+
 ### 1.26.6
 **Release Date:** April 1, 2014
 
