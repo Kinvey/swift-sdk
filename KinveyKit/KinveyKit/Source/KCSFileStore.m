@@ -160,6 +160,7 @@ static NSMutableSet* _ongoingDownloads;
 #endif
     [fileRequest uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:url requiredHeaders:requiredHeaders completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
         uploadFile.bytesWritten = [returnInfo[kBytesWritten] longLongValue];
+        uploadFile.remoteURL = url;
         completionBlock(uploadFile, error);
     } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
         if (progressBlock) {
@@ -220,6 +221,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     uploadFile.fileId = results[KCSFileId];
     uploadFile.filename = results[KCSFileFileName];
     uploadFile.publicFile = results[KCSFilePublic];
+    uploadFile.downloadURL = results[@"_downloadURL"];
     
     NSDictionary* kmd = results[@"_kmd"];
     NSDictionary* acl = results[@"_acl"];
