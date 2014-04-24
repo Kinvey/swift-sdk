@@ -354,6 +354,7 @@ KK2(Cleanup!)
         [KCSKeychain2 setKinveyToken:authToken user:userId];
     }
     [self setActive:user];
+    [[KCSAppdataStore caches] cacheActiveUser:user];
     
     [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
