@@ -1,6 +1,12 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.28.8
+**Release Date:** April 28, 2014
+
+* Bug fix(es):
+    * Fix bug where active user not properly cached between sessions.
+
 ### 1.26.7
 **Release Date:** April 22, 2014
 
