@@ -2,7 +2,7 @@
 
 ## 1.26
 ### 1.28.8
-**Release Date:** TBA
+**Release Date:** April 28, 2014
 
 * Bug fix(es):
     * Fix bug where active user not properly cached between sessions.
