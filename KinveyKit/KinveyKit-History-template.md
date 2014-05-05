@@ -1,7 +1,13 @@
 # KinveyKit Release History
 
 ## 1.26
-### 1.28.8
+### 1.26.9
+**Release Date:** May 5, 2014
+
+* Bug fix(es):
+    * Improved algorithm for `KCSCachePolicyNetworkFirst` loading.
+
+### 1.26.8
 **Release Date:** April 28, 2014
 
 * Bug fix(es):
