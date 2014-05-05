@@ -418,11 +418,16 @@ return; \
 }
 
 
-- (void) loadEntityFromNetwork:(NSArray*)objectIDs withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
+- (void) loadEntityFromNetwork:(id)objectIDs withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
 {
     [self doLoadObjectWithID:objectIDs withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        [self cacheObjects:objectIDs results:objectsOrNil error:errorOrNil policy:cachePolicy];
-        completionBlock(objectsOrNil, errorOrNil);
+        if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain]  && cachePolicy == KCSCachePolicyNetworkFirst) {
+            NSArray* objs = [[KCSAppdataStore caches] pullIds:objectIDs route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+            [self completeLoad:objs withCompletionBlock:completionBlock];
+        } else {
+            [self cacheObjects:objectIDs results:objectsOrNil error:errorOrNil policy:cachePolicy];
+            completionBlock(objectsOrNil, errorOrNil);
+        }
     } withProgressBlock:progressBlock];
 }
 
@@ -570,8 +575,13 @@ NSError* createCacheError(NSString* message)
 - (void) queryNetwork:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
 {
     [self doQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
-        completionBlock(objectsOrNil, errorOrNil);
+        if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain] && cachePolicy == KCSCachePolicyNetworkFirst) {
+            id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+            [self completeQuery:obj withCompletionBlock:completionBlock];
+        } else {
+            [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+            completionBlock(objectsOrNil, errorOrNil);
+        }
     } withProgressBlock:progressBlock];
 }
 
