@@ -1,6 +1,13 @@
 # KinveyKit Release History
 
 ## 1.26
+### 1.26.10
+**Release Date:** TBA
+
+* Internal Improvements
+* Bug fix(es):
+    * Fix crash when network error occurs using `checkUsername:completion:`.
+
 ### 1.26.9
 **Release Date:** May 5, 2014
 

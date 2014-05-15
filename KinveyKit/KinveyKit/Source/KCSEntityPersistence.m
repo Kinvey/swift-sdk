@@ -538,6 +538,50 @@
     return ids;
 }
 
+- (NSArray*)allIds:(NSString*)route collection:(NSString*)collection
+{
+    NSString* table = [self tableForRoute:route collection:collection];
+
+    NSString* q = [NSString stringWithFormat:@"SELECT id FROM [%@]", table];
+    NSMutableArray* results = [NSMutableArray array];
+    [_db inDatabase:^(KCS_FMDatabase *db) {
+        KCS_FMResultSet* rs = [db executeQuery:q];
+        if ([db hadError]) {
+            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"DB error %d: %@", [db lastErrorCode], [db lastErrorMessage]);
+        }
+        
+        if ([rs next]) {
+            NSDictionary* d = [rs resultDictionary];
+            if (d) {
+                NSString* anid = d[@"id"];
+                if (anid) {
+                    [results addObject:anid];
+                }
+            }
+        }
+        [rs close];
+
+//        
+//        result = [db ]
+//        result = [db stringForQuery:q];
+//        if ([db hadError]) {
+//            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [db lastErrorCode], [db lastErrorMessage]);
+//        }
+    }];
+//    NSArray* ids = nil;
+//    
+//    if (result) {
+//        NSError* error = nil;
+//        ids = [self.jsonParser objectWithString:result error:&error];
+//        if (result != nil && error != nil) {
+//            KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error converting id array string into array: %@", error);
+//        }
+//    }
+    return results;
+}
+
+
+
 - (NSUInteger) removeIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection
 {
     NSUInteger count = 0;
