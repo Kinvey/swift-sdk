@@ -23,6 +23,7 @@
 @interface KCSQuery2 (KCSInternal)
 //- (NSString*) queryString:(BOOL)escape;
 - (NSString*) keyString;
+- (BOOL) isAllQuery;
 
 //- (NSPredicate*) predicate;
 @end

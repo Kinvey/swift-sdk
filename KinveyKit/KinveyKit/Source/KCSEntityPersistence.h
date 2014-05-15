@@ -25,6 +25,7 @@
 - (instancetype) initWithPersistenceId:(NSString*)key;
 
 - (NSArray*)idsForQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection;
+- (NSArray*)allIds:(NSString*)route collection:(NSString*)collection;
 - (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection;
 - (BOOL) removeQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection;
 

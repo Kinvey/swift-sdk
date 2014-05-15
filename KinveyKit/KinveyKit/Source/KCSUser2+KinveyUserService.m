@@ -600,8 +600,12 @@ KK2(Cleanup!)
     // /rpc/:appKey/check-username-exists
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
-        NSDictionary* dict = [response jsonObject];
-        completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error);
+        if (!error) {
+            NSDictionary* dict = [response jsonObject];
+            completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error);
+        } else {
+            completionBlock(potentialUsername, NO, error);
+        }
     }
                                                         route:KCSRESTRouteRPC
                                                       options:@{KCSRequestLogMethod}
