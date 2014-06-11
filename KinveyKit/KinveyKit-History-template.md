@@ -1,13 +1,17 @@
 # KinveyKit Release History
 
-## 1.26
-### 1.26.10
+## 1.27
+### 1.27.0 
+
 **Release Date:** TBA
 
+* Add configuration option `KCS_ALWAYS_USE_NSURLREQUEST`, set to `@YES` for better performance when sending many simultaneous requests. 
 * Internal Improvements
 * Bug fix(es):
     * Fix crash when network error occurs using `checkUsername:completion:`.
 
+
+## 1.26
 ### 1.26.9
 **Release Date:** May 5, 2014
 
