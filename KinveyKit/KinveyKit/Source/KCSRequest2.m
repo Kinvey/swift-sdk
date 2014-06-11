@@ -213,7 +213,7 @@ static NSOperationQueue* kcsRequestQueue;
         op = [[KCSMockRequestOperation alloc] initWithRequest:request];
     } else {
         
-        if ([KCSPlatformUtils supportsNSURLSession]) {
+        if ([KCSPlatformUtils supportsNSURLSession] && !KCSConfigValueBOOL(KCS_ALWAYS_USE_NSURLREQUEST)) {
             op = [[KCSNSURLSessionOperation alloc] initWithRequest:request];
         } else {
             op = [[KCSNSURLRequestOperation alloc] initWithRequest:request];
