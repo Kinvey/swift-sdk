@@ -117,22 +117,6 @@ void setActive(KCSUser* user)
     [self userWithUsername:username password:password fieldsAndValues:nil withCompletionBlock:completionBlock];
 }
 
-+ (void)userWithUsername: (NSString *)username
-                password: (NSString *)password
-            withDelegate: (id<KCSUserActionDelegate>)delegate
-{
-    [self userWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        if (delegate != nil) {
-            if (errorOrNil != nil) {
-                [delegate user:user actionDidFailWithError:errorOrNil];
-            } else {
-                [delegate user:user actionDidCompleteWithResult:result];
-            }
-        }
-    }];
-}
-
-
 # pragma mark - Init from credentials
 + (KCSUser *)initAndActivateWithSavedCredentials
 {
@@ -167,19 +151,6 @@ void setActive(KCSUser* user)
 {
     [KCSUser2 loginWithUsername:username password:password completion:^(id<KCSUser2> user, NSError *error) {
         completionBlock(user, error, KCSUserNoInformation);
-    }];
-}
-
-+ (void)loginWithUsername: (NSString *)username
-                 password: (NSString *)password
-             withDelegate: (id<KCSUserActionDelegate>)delegate
-{
-    [self loginWithUsername:username password:password withCompletionBlock:^(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result) {
-        if (errorOrNil != nil) {
-            [delegate user:nil actionDidFailWithError:errorOrNil];
-        } else {
-            [delegate user:user actionDidCompleteWithResult:result];
-        }
     }];
 }
 
