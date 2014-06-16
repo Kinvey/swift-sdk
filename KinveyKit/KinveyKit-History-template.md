@@ -7,6 +7,9 @@
 
 * Add configuration option `KCS_ALWAYS_USE_NSURLREQUEST`, set to `@YES` for better performance when sending many simultaneous requests. 
 * Internal Improvements
+* Code cleanup:
+	* Removed deprecated `KCSResourceService` and associated classes.
+	* Removed final delegated-based `KCSUser` methods.
 * Bug fix(es):
     * Fix crash when network error occurs using `checkUsername:completion:`.
 

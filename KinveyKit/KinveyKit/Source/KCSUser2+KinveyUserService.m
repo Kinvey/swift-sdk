@@ -252,6 +252,9 @@ KK2(Cleanup!)
             
         }
             break;
+        case KCSSocialIDKinvey: {
+            dict = @{@"_socialIdentity" : @{@"kinveyAuth" : accessDictionary}};
+        }
         default:
             dict = accessDictionary;
     }
