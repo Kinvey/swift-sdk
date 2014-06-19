@@ -3,13 +3,27 @@
 ## 1.27
 ### 1.27.0 
 
-**Release Date:** TBA
+**Release Date:** June 19, 2014
+
+* Added new identity provider `KCSSocialIDKinvey` to use new Kinvey OAuth2 tokens for log-in. See the updated REST documentation for instructions on how to obtain an access token.
+
+For example:
+
+    [KCSUser loginWithSocialIdentity:KCSSocialIDKinvey accessDictionary:@{@"access_token":@"<#Access Token#>"} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        if (!errorOrNil) {
+            //Do Stuff
+        } else {
+            //handle error
+        }
+    }];
+
+
 
 * Add configuration option `KCS_ALWAYS_USE_NSURLREQUEST`, set to `@YES` for better performance when sending many simultaneous requests. 
 * Internal Improvements
 * Code cleanup:
 	* Removed deprecated `KCSResourceService` and associated classes.
-	* Removed final delegated-based `KCSUser` methods.
+	* Removed the remaining delegated-based `KCSUser` methods.
 	* Removed the project template since it was pretty outdated. 
 * Bug fix(es):
     * Fix crash when network error occurs using `checkUsername:completion:`.
