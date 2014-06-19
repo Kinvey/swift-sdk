@@ -10,6 +10,7 @@
 * Code cleanup:
 	* Removed deprecated `KCSResourceService` and associated classes.
 	* Removed final delegated-based `KCSUser` methods.
+	* Removed the project template since it was pretty outdated. 
 * Bug fix(es):
     * Fix crash when network error occurs using `checkUsername:completion:`.
 

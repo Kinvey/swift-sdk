@@ -312,6 +312,7 @@
 		2798E32E17C7B69D00284F2A /* NSError+KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 2798E32B17C7B69D00284F2A /* NSError+KinveyKit.h */; };
 		2798E32F17C7B69D00284F2A /* NSError+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */; };
 		2798E33017C7B69D00284F2A /* NSError+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */; };
+		279CAD0719520F0100897715 /* KASTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 279CAD0619520F0100897715 /* KASTest.m */; };
 		27A93B53156AD14800810B88 /* KCSReduceFunctionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */; };
 		27A93B57156AD2D500810B88 /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
 		27AB77B818971EED00D9A6F7 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27AB77B718971EEC00D9A6F7 /* CoreLocation.framework */; };
@@ -812,6 +813,7 @@
 		2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSUser+SocialExtras.m"; sourceTree = "<group>"; };
 		2798E32B17C7B69D00284F2A /* NSError+KinveyKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+KinveyKit.h"; sourceTree = "<group>"; };
 		2798E32C17C7B69D00284F2A /* NSError+KinveyKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+KinveyKit.m"; sourceTree = "<group>"; };
+		279CAD0619520F0100897715 /* KASTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KASTest.m; sourceTree = "<group>"; };
 		27A93B51156AD14800810B88 /* KCSReduceFunctionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReduceFunctionTests.h; sourceTree = "<group>"; };
 		27A93B52156AD14800810B88 /* KCSReduceFunctionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReduceFunctionTests.m; sourceTree = "<group>"; };
 		27A93B55156AD2D500810B88 /* ASTTestClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASTTestClass.h; sourceTree = "<group>"; };
@@ -1837,6 +1839,7 @@
 				D32A60E614716EE300F77A3F /* Supporting Files */,
 				27AFD4CE15C8866D00A44F4F /* Metatests.h */,
 				27AFD4CF15C8866D00A44F4F /* Metatests.m */,
+				279CAD0619520F0100897715 /* KASTest.m */,
 				27BBD91415ADD3A2005E27E1 /* TestThreads.h */,
 				27BBD91515ADD3A2005E27E1 /* TestThreads.m */,
 				27264AEE18847D83002C37C9 /* ThreadTests.m */,
@@ -2352,7 +2355,7 @@
 			name = "KinveyKit-macTests";
 			productName = "KinveyKit-macTests";
 			productReference = 2766E63F16834B78000D27C5 /* KinveyKit-macTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.ocunit-test";
 		};
 		2785F52D1609179E004AA410 /* KinveyKitExtras */ = {
 			isa = PBXNativeTarget;
@@ -2395,7 +2398,7 @@
 			name = KinveyKitExtrasTests;
 			productName = KinveyKitExtrasTests;
 			productReference = 2785F53C1609179E004AA410 /* KinveyKitExtrasTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.ocunit-test";
 		};
 		D32A60C714716EE300F77A3F /* KinveyKit */ = {
 			isa = PBXNativeTarget;
@@ -2435,7 +2438,7 @@
 			name = KinveyKitTests;
 			productName = KinveyKitTests;
 			productReference = D32A60D914716EE300F77A3F /* KinveyKitTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.ocunit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -2955,6 +2958,7 @@
 				274D396217A800F500587886 /* PlatformUtilsTest.m in Sources */,
 				273B645C1757FAAA00E1B1B9 /* KCSCustomEndpointTests.m in Sources */,
 				2774CD7817E9E76B00125E47 /* LogTests.m in Sources */,
+				279CAD0719520F0100897715 /* KASTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
