@@ -2355,7 +2355,7 @@
 			name = "KinveyKit-macTests";
 			productName = "KinveyKit-macTests";
 			productReference = 2766E63F16834B78000D27C5 /* KinveyKit-macTests.octest */;
-			productType = "com.apple.product-type.bundle.ocunit-test";
+			productType = "com.apple.product-type.bundle";
 		};
 		2785F52D1609179E004AA410 /* KinveyKitExtras */ = {
 			isa = PBXNativeTarget;
@@ -2398,7 +2398,7 @@
 			name = KinveyKitExtrasTests;
 			productName = KinveyKitExtrasTests;
 			productReference = 2785F53C1609179E004AA410 /* KinveyKitExtrasTests.octest */;
-			productType = "com.apple.product-type.bundle.ocunit-test";
+			productType = "com.apple.product-type.bundle";
 		};
 		D32A60C714716EE300F77A3F /* KinveyKit */ = {
 			isa = PBXNativeTarget;
@@ -2438,7 +2438,7 @@
 			name = KinveyKitTests;
 			productName = KinveyKitTests;
 			productReference = D32A60D914716EE300F77A3F /* KinveyKitTests.octest */;
-			productType = "com.apple.product-type.bundle.ocunit-test";
+			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
 

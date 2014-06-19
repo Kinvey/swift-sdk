@@ -41,7 +41,9 @@
     // This is an example of a functional test case.
     
     KCSClientConfiguration* config = [KCSClientConfiguration configurationWithAppKey:@"kid_eeDgeL5lAJ" secret:@"ad6e3a563f394d3ea56672764b0be936"];
+    config.serviceHostname = @"v3yk1n";
     [[KCSClient sharedClient] initializeWithConfiguration:config];
+    [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     self.done = NO;
     [KCSUser loginWithSocialIdentity:KCSSocialIDKinvey accessDictionary:@{@"access_token":@"abc"} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError
