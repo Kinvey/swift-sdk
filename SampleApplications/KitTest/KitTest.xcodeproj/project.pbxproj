@@ -25,7 +25,7 @@
 		278BB06817B2B79D0035B3D6 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27347F7E15B4839500133F64 /* CoreLocation.framework */; };
 		278BB06917B2B7A20035B3D6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A64F114717B4800F77A3F /* Foundation.framework */; };
 		278BB06A17B2B7B40035B3D6 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A65191471A57700F77A3F /* MobileCoreServices.framework */; };
-		27ED01DF17B175D20070D7A0 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 27ED01DE17B175D20070D7A0 /* Default-568h@2x.png */; };
+		C582F2D219532AF200EE7202 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C582F2D119532AF200EE7202 /* Social.framework */; };
 		D30F7DDE14743C2F0005D2EC /* metal_kinvey_1280x800.png in Resources */ = {isa = PBXBuildFile; fileRef = D30F7DDD14743C2F0005D2EC /* metal_kinvey_1280x800.png */; };
 		D32A64FA14717B4800F77A3F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D32A64F814717B4800F77A3F /* InfoPlist.strings */; };
 		D32A64FC14717B4800F77A3F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D32A64FB14717B4800F77A3F /* main.m */; };
@@ -60,7 +60,7 @@
 		2770A9EF156451DE00D619B3 /* CachingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CachingViewController.xib; sourceTree = "<group>"; };
 		27C2229A161E32BE00D827AE /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		27C2229D161E32C300D827AE /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
-		27ED01DE17B175D20070D7A0 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		C582F2D119532AF200EE7202 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		D30F7DDD14743C2F0005D2EC /* metal_kinvey_1280x800.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = metal_kinvey_1280x800.png; path = KitTest/metal_kinvey_1280x800.png; sourceTree = SOURCE_ROOT; };
 		D32A64EB14717B4800F77A3F /* KitTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KitTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D32A64EF14717B4800F77A3F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -102,6 +102,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C582F2D219532AF200EE7202 /* Social.framework in Frameworks */,
 				278BB06A17B2B7B40035B3D6 /* MobileCoreServices.framework in Frameworks */,
 				278BB06917B2B7A20035B3D6 /* Foundation.framework in Frameworks */,
 				278BB06817B2B79D0035B3D6 /* CoreLocation.framework in Frameworks */,
@@ -122,7 +123,6 @@
 		D32A64E014717B4800F77A3F = {
 			isa = PBXGroup;
 			children = (
-				27ED01DE17B175D20070D7A0 /* Default-568h@2x.png */,
 				D35E07DF1471D63300DD9E41 /* twitter_round_57.png */,
 				D35E07DD1471D5B400DD9E41 /* logo114.png */,
 				D35E07DA1471D5B100DD9E41 /* logo57.png */,
@@ -143,6 +143,7 @@
 		D32A64EE14717B4800F77A3F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C582F2D119532AF200EE7202 /* Social.framework */,
 				27C2229D161E32C300D827AE /* Twitter.framework */,
 				27C2229A161E32BE00D827AE /* Accounts.framework */,
 				27347F7E15B4839500133F64 /* CoreLocation.framework */,
@@ -268,7 +269,6 @@
 				D3C5E6A71474B61A002D8F2B /* ImageView.xib in Resources */,
 				D3C5E6AC1474B930002D8F2B /* RootViewController.xib in Resources */,
 				2770A9F1156451DF00D619B3 /* CachingViewController.xib in Resources */,
-				27ED01DF17B175D20070D7A0 /* Default-568h@2x.png in Resources */,
 				274EBF741594A4BD004A29C7 /* LinkedResourceViewController.xib in Resources */,
 				27347F8415B484E400133F64 /* UserDiscoveryViewController.xib in Resources */,
 				272FBE5D15FA8CE700EC7031 /* KinveyRefViewController.xib in Resources */,

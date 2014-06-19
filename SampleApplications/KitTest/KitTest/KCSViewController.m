@@ -254,12 +254,12 @@
 
 - (IBAction)deleteLast:(id)sender {
     [self.networkActivity startAnimating];
-    [self.testStore removeObject:self.lastObject withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [self.testStore removeObject:self.lastObject withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         if (errorOrNil) {
             NSLog(@"Delete failed: %@", errorOrNil);
             [self.networkActivity stopAnimating];
         } else {
-            NSLog(@"Delet Succeeded: %@", objectsOrNil);
+            NSLog(@"Delete Succeeded: %lu", count);
             [self refreshAllFields];
         }
     } withProgressBlock:nil];
