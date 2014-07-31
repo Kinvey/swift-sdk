@@ -3,7 +3,7 @@
 ## 1.27
 ### 1.27.1
 
-**Release Date:** TBA
+**Release Date:** July 31, 2014
 
 * Bug fix(es):
     * Fix issue where only one result returned from local cache.
