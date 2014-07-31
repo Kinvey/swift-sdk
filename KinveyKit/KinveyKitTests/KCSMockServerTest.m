@@ -66,7 +66,7 @@
 
 - (void) testNoURL
 {
-    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n.kinvey.com/foo/kid_test/a/b/c"];
+    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n-kcs.kinvey.com/foo/kid_test/a/b/c"];
     KTAssertNotNil(x);
     KTAssertEqualsInt(x.code, 404);
 }
@@ -84,7 +84,7 @@
 
 - (void) testPing
 {
-    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n.kinvey.com/appdata/kid_test"];
+    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n-kcs.kinvey.com/appdata/kid_test"];
     KTAssertNotNil(x);
     KTAssertEqualsInt(x.code, 200);
 }
@@ -92,7 +92,7 @@
 - (void) testBadCreds
 {
     
-    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n.kinvey.com/appdata/kid_fail"];
+    KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n-kcs.kinvey.com/appdata/kid_fail"];
     KTAssertNotNil(x);
     KTAssertEqualsInt(x.code, 401);
     STAssertEqualObjects(x.jsonObject[@"error"], @"InvalidCredentials", @"should be an invalid creds error");
@@ -100,7 +100,7 @@
 
 - (void) testReflection
 {
-    NSMutableURLRequest* req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://v3yk1n.kinvey.com/!reflection/kid_test"]];
+    NSMutableURLRequest* req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://v3yk1n-kcs.kinvey.com/!reflection/kid_test"]];
     NSDictionary* headers = @{@"A":@"B"};
     req.allHTTPHeaderFields = headers;
     id body = @{@"results":@[@"A",@{@"K":@1}]};

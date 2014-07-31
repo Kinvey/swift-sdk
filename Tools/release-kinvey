@@ -46,7 +46,7 @@ fi
 
 ## Make output dirs
 mkdir ${RKK}
-mkdir ${REXTRAS}
+#mkdir ${REXTRAS}
 
 # This needs to be an option...
 
@@ -63,8 +63,8 @@ mkdir ${REXTRAS}
 
 
 # Copy Project & Add Lib
-( cd ${KINVEYKITLOC}/.. && tar cf - ./ProjectTemplates) | (cd ${REXTRAS}/ && tar -xf - ) 
-cp -R ${RKK}/KinveyKit.framework "${REXTRAS}/ProjectTemplates/Single View Application (Kinvey).xctemplate/"
+#( cd ${KINVEYKITLOC}/.. && tar cf - ./ProjectTemplates) | (cd ${REXTRAS}/ && tar -xf - ) 
+#cp -R ${RKK}/KinveyKit.framework "${REXTRAS}/ProjectTemplates/Single View Application (Kinvey).xctemplate/"
 #cp ${RKK}/Airship/*.a "${REXTRAS}/ProjectTemplates/Single View Application (Kinvey).xctemplate/"
 
 # Clean up SVN

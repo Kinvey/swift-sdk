@@ -28,7 +28,7 @@
 #define MAX_POLL_COUNT 30 / POLL_INTERVAL
 
 #define STAGING_ALPHA @"alpha"
-#define STAGING_V3YK1N @"v3yk1n"
+#define STAGING_V3YK1N @"v3yk1n-kcs"
 
 #define STAGING_API STAGING_V3YK1N
 

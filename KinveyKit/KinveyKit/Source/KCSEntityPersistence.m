@@ -550,7 +550,7 @@
             KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"DB error %d: %@", [db lastErrorCode], [db lastErrorMessage]);
         }
         
-        if ([rs next]) {
+        while ([rs next]) {
             NSDictionary* d = [rs resultDictionary];
             if (d) {
                 NSString* anid = d[@"id"];
@@ -560,23 +560,8 @@
             }
         }
         [rs close];
-
-//        
-//        result = [db ]
-//        result = [db stringForQuery:q];
-//        if ([db hadError]) {
-//            KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [db lastErrorCode], [db lastErrorMessage]);
-//        }
     }];
-//    NSArray* ids = nil;
-//    
-//    if (result) {
-//        NSError* error = nil;
-//        ids = [self.jsonParser objectWithString:result error:&error];
-//        if (result != nil && error != nil) {
-//            KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error converting id array string into array: %@", error);
-//        }
-//    }
+
     return results;
 }
 

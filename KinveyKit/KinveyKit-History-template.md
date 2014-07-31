@@ -1,6 +1,13 @@
 # KinveyKit Release History
 
 ## 1.27
+### 1.27.1
+
+**Release Date:** July 31, 2014
+
+* Bug fix(es):
+    * Fix issue where only one result returned from local cache.
+
 ### 1.27.0 
 
 **Release Date:** June 19, 2014
