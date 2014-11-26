@@ -1,5 +1,15 @@
 # KinveyKit Release History
 
+## 1.28
+### 1.28.0
+
+**Release Date:** November 26, 2014
+
+* Added support for iOS 8 push notifications
+* Removed support for iOS versions < 7.1
+* Bug fix(es):
+    * Fix an issue with PingResults
+
 ## 1.27
 ### 1.27.1
 
