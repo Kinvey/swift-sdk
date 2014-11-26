@@ -102,10 +102,28 @@
 - (void) registerForRemoteNotifications
 {
     // Register for notifications
+    NSLog(@"Testing for version: %@: %@", [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]);
+
     if (self.pushEnabled) {
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
-                                                                               UIRemoteNotificationTypeSound |
-                                                                               UIRemoteNotificationTypeAlert)];
+        NSLog(@"Checking for iOS 8 support");
+
+
+        if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+            NSLog(@"In iOS 8");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
+            UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes: UIUserNotificationTypeAlert |
+                                                                                                             UIUserNotificationTypeBadge |
+                                                                                                             UIUserNotificationTypeSound categories:nil];
+            [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+#pragma clang diagnostic pop
+        } else {
+            NSLog(@"Less than 8");
+            [[UIApplication sharedApplication] registerForRemoteNotificationTypes: (UIRemoteNotificationTypeBadge |
+                                                                                    UIRemoteNotificationTypeSound |
+                                                                                    UIRemoteNotificationTypeAlert)];
+        }
     }
 }
 
