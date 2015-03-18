@@ -10,10 +10,10 @@ build:
 	xcodebuild -configuration $(CONFIGURATION) -target $(TARGET) -sdk iphoneos
 	xcodebuild -configuration $(CONFIGURATION) -target $(TARGET) -sdk iphonesimulator
 	cd build; \
-	mkdir Release-universal; \
-	cp -R Release-iphoneos/include Release-universal; \
-	lipo -create Release-iphoneos/$(STATIC_LIB) Release-iphonesimulator/$(STATIC_LIB) -output Release-universal/$(STATIC_LIB); \
-	cd Release-universal; \
+	mkdir $(CONFIGURATION)-universal; \
+	cp -R $(CONFIGURATION)-iphoneos/include $(CONFIGURATION)-universal; \
+	lipo -create $(CONFIGURATION)-iphoneos/$(STATIC_LIB) $(CONFIGURATION)-iphonesimulator/$(STATIC_LIB) -output $(CONFIGURATION)-universal/$(STATIC_LIB); \
+	cd $(CONFIGURATION)-universal; \
 	mkdir -p $(FRAMEWORK)/Versions/A/Headers; \
 	ln -sfh A "$(FRAMEWORK)/Versions/Current"; \
 	ln -sfh Versions/Current/Headers "$(FRAMEWORK)/Headers"; \
