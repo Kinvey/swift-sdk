@@ -19,7 +19,7 @@
 
 #import <KinveyKit/KinveyKit.h>
 
-KK2(expose & document levels)
+KK2(expose & document levels);
 KCS_CONSTANT KCS_LOG_LEVEL;
 KCS_CONSTANT KCS_LOG_ADDITIONAL_LOGGERS;
 KCS_CONSTANT KCS_CONFIG_RETRY_DISABLED;
