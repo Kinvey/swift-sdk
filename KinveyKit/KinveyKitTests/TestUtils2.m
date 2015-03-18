@@ -61,7 +61,7 @@ id<KCSCredentials> mockCredentails()
 - (BOOL) poll
 {
     int pollCount = 0;
-    while (self.done == NO && pollCount < MAX_POLL_COUNT) {
+    while (self.done == NO && pollCount < MAX_POLL_COUNT) @autoreleasepool {
         NSLog(@"polling... %4.2fs", pollCount * POLL_INTERVAL);
         NSRunLoop* loop = [NSRunLoop mainRunLoop];
         NSDate* until = [NSDate dateWithTimeIntervalSinceNow:POLL_INTERVAL];
