@@ -18,8 +18,8 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface KCSCustomEndpointTests : SenTestCase
+@interface KCSCustomEndpointTests : XCTestCase
 
 @end

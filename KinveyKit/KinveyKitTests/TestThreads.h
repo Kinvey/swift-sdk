@@ -17,8 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface TestThreads : SenTestCase
+@interface TestThreads : XCTestCase
 
 @end

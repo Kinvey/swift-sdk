@@ -127,21 +127,21 @@ static float pollTime;
     pollTime = 2.;
     
     id<KCSStore> store = [self createStore:KCSCachePolicyNone];
-    STAssertNotNil(store, @"must make a store");
+    XCTAssertNotNil(store, @"must make a store");
     
-    STAssertTrue([self queryServer:store], @"expecting to call server");
-    STAssertTrue([self queryServer:store], @"expecting to call server");
-    STAssertTrue([self queryServer:store], @"expecting to call server");    
+    XCTAssertTrue([self queryServer:store], @"expecting to call server");
+    XCTAssertTrue([self queryServer:store], @"expecting to call server");
+    XCTAssertTrue([self queryServer:store], @"expecting to call server");    
 }
 
 - (void) testCachedStoreLocalCache
 {
     id<KCSStore> store = [self createStore:KCSCachePolicyLocalOnly];
-    STAssertNotNil(store, @"must make a store");
+    XCTAssertNotNil(store, @"must make a store");
     
-    STAssertFalse([self queryServer:store], @"expecting to use cache, not server");
-    STAssertFalse([self queryServer:store], @"expecting to use cache, not server");
-    STAssertFalse([self queryServer:store], @"expecting to use cache, call server");    
+    XCTAssertFalse([self queryServer:store], @"expecting to use cache, not server");
+    XCTAssertFalse([self queryServer:store], @"expecting to use cache, not server");
+    XCTAssertFalse([self queryServer:store], @"expecting to use cache, call server");    
 }
 
 #define POLL_INTERVAL 0.05
@@ -159,7 +159,7 @@ static float pollTime;
         block();
     }
     if (pollCount == maxPollCount) {
-        STFail(@"polling timed out");
+        XCTFail(@"polling timed out");
     }
     return YES;
 }
@@ -168,14 +168,14 @@ static float pollTime;
 - (void) testCachedStoreLocalFirst
 {
     id<KCSStore> store = [self createStore:KCSCachePolicyLocalFirst];
-    STAssertNotNil(store, @"must make a store");
+    XCTAssertNotNil(store, @"must make a store");
     NSUInteger prevCount = self.requestArray.count;
     
     //call 1
-    STAssertTrue([self queryServer:store], @"expecting to call server for first time");
+    XCTAssertTrue([self queryServer:store], @"expecting to call server for first time");
 
     //call 2
-    STAssertFalse([self queryServer:store], @"expecting to use cache, not server on repeat call");
+    XCTAssertFalse([self queryServer:store], @"expecting to use cache, not server on repeat call");
     
     self.done = NO;
     //need this extra poll to wait for the background completion block to be called
@@ -191,36 +191,36 @@ static float pollTime;
     pollTime = 2.;
     
     id<KCSStore> store = [self createStore:KCSCachePolicyNetworkFirst];
-    STAssertNotNil(store, @"must make a store");
+    XCTAssertNotNil(store, @"must make a store");
     
-    STAssertTrue([self queryServer:store], @"expecting to call server");
-    STAssertTrue([self queryServer:store], @"expecting to call server");
+    XCTAssertTrue([self queryServer:store], @"expecting to call server");
+    XCTAssertTrue([self queryServer:store], @"expecting to call server");
 
     _callbackCount = 0;
-    STAssertTrue([self queryServer:store], @"expecting to call server");
-    STAssertTrue(1 == _callbackCount, @"expecting callback to be called only once");
+    XCTAssertTrue([self queryServer:store], @"expecting to call server");
+    XCTAssertTrue(1 == _callbackCount, @"expecting callback to be called only once");
     
 #warning [(KCSCachedStore*)store setReachable:NO];
 
-    STAssertFalse([self queryServer:store], @"expecting to use cache, not server on repeat call");
+    XCTAssertFalse([self queryServer:store], @"expecting to use cache, not server on repeat call");
 
 }
 
 - (void) testCachedStoreBoth
 {
     id<KCSStore> store = [self createStore:KCSCachePolicyBoth];
-    STAssertNotNil(store, @"must make a store");
+    XCTAssertNotNil(store, @"must make a store");
     
     BOOL useServer = [self queryServer:store];
-    STAssertTrue(useServer, @"expecting to call server for first time");
+    XCTAssertTrue(useServer, @"expecting to call server for first time");
     
     NSLog(@"0");
     _callbackCount = 0;
     
     useServer = [self queryServer:store];
-    STAssertFalse(useServer, @"expecting to use cache, not server on repeat call");
+    XCTAssertFalse(useServer, @"expecting to use cache, not server on repeat call");
 #warning  STAssertTrue(_conn.wasCalled, @"expecting to call server after cache");
-    STAssertTrue(2 == _callbackCount, @"expecting callback to be called twice");
+    XCTAssertTrue(2 == _callbackCount, @"expecting callback to be called twice");
 }
 
 - (void) testTwoCollectionsNotSameCache
@@ -235,10 +235,10 @@ static float pollTime;
     collection2.objectTemplate = [TestEntity class];
     KCSCachedStore* store2 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection2, KCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst], KCSStoreKeyCachePolicy, nil]];
     
-    STAssertTrue([self queryServer:store1], @"expecting to call server for first time");    
-    STAssertFalse([self queryServer:store1], @"expecting to use cache, not server on repeat call");
-    STAssertTrue([self queryServer:store2], @"expecting to call server for first time");    
-    STAssertFalse([self queryServer:store2], @"expecting to use cache, not server on repeat call");
+    XCTAssertTrue([self queryServer:store1], @"expecting to call server for first time");    
+    XCTAssertFalse([self queryServer:store1], @"expecting to use cache, not server on repeat call");
+    XCTAssertTrue([self queryServer:store2], @"expecting to call server for first time");    
+    XCTAssertFalse([self queryServer:store2], @"expecting to use cache, not server on repeat call");
 }
 
 - (void) testTwoCollectionsReuseCache
@@ -253,10 +253,10 @@ static float pollTime;
     collection2.objectTemplate = [TestEntity class];
     KCSCachedStore* store2 = [KCSCachedStore storeWithOptions:[NSDictionary dictionaryWithObjectsAndKeys:collection2, KCSStoreKeyResource, [NSNumber numberWithInt:KCSCachePolicyLocalFirst], KCSStoreKeyCachePolicy, nil]];
     
-    STAssertTrue([self queryServer:store1], @"expecting to call server for first time");    
-    STAssertFalse([self queryServer:store1], @"expecting to use cache, not server on repeat call");
-    STAssertFalse([self queryServer:store2], @"expecting to use cache, even with new store because of shared cache");
-    STAssertFalse([self queryServer:store2], @"expecting to use cache, not server on repeat call");
+    XCTAssertTrue([self queryServer:store1], @"expecting to call server for first time");    
+    XCTAssertFalse([self queryServer:store1], @"expecting to use cache, not server on repeat call");
+    XCTAssertFalse([self queryServer:store2], @"expecting to use cache, even with new store because of shared cache");
+    XCTAssertFalse([self queryServer:store2], @"expecting to use cache, not server on repeat call");
 }
 
 #pragma mark - Import/Export
@@ -266,7 +266,7 @@ static float pollTime;
     NSString* cdata = @"[{\"date\":\"ISODate(\\\"2013-06-21T12:51:38.969Z\\\")\",\"objCount\":10,\"objDescription\":\"one\",\"_acl\":{\"creator\":\"51c44c5982cd0ade36000012\"},\"_kmd\":{\"lmt\":\"2013-06-21T12:51:37.817Z\",\"ect\":\"2013-06-21T12:51:37.817Z\"},\"_id\":\"51c44c5982cd0ade36000013\"},{\"date\":\"ISODate(\\\"2013-06-21T12:51:38.969Z\\\")\",\"objCount\":10,\"objDescription\":\"two\",\"_acl\":{\"creator\":\"51c44c5982cd0ade36000012\"},\"_kmd\":{\"lmt\":\"2013-06-21T12:51:37.818Z\",\"ect\":\"2013-06-21T12:51:37.818Z\"},\"_id\":\"51c44c5982cd0ade36000014\"},{\"date\":\"ISODate(\\\"2013-06-21T12:51:38.969Z\\\")\",\"objCount\":10,\"objDescription\":\"two\",\"_acl\":{\"creator\":\"51c44c5982cd0ade36000012\"},\"_kmd\":{\"lmt\":\"2013-06-21T12:51:37.819Z\",\"ect\":\"2013-06-21T12:51:37.819Z\"},\"_id\":\"51c44c5982cd0ade36000015\"},{\"_acl\":{\"creator\":\"kid10005\"},\"_kmd\":{\"lmt\":\"2013-08-07T02:22:50.154Z\",\"ect\":\"2013-08-07T02:22:50.154Z\"},\"_id\":\"5201af7a3bb9501365000025\"},{\"_acl\":{\"creator\":\"506f3c35aa9734091d0000ee\"},\"_kmd\":{\"lmt\":\"2013-08-07T02:23:02.122Z\",\"ect\":\"2013-08-07T02:23:02.122Z\"},\"_id\":\"5201af863bb9501365000026\"},{\"_acl\":{\"creator\":\"kid10005\"},\"_kmd\":{\"lmt\":\"2013-09-24T19:14:55.984Z\",\"ect\":\"2013-09-24T19:14:55.984Z\"},\"_id\":\"5241e4af8daed3725400009c\"},{\"abc\":\"1\",\"_acl\":{\"creator\":\"kid10005\"},\"_kmd\":{\"lmt\":\"2013-09-24T19:15:02.536Z\",\"ect\":\"2013-09-24T19:15:02.536Z\"},\"_id\":\"5241e4b68daed3725400009d\"},{\"abc\":\"true\",\"_acl\":{\"creator\":\"kid10005\"},\"_kmd\":{\"lmt\":\"2013-09-24T19:15:11.263Z\",\"ect\":\"2013-09-24T19:15:11.263Z\"},\"_id\":\"5241e4bf8daed3725400009e\"}]";
     KCS_SBJsonParser* p = [[KCS_SBJsonParser alloc] init];
     NSArray* entities = [p objectWithString:cdata];
-    STAssertNotNil(entities, @"Should have data to import: %@", p.error);
+    XCTAssertNotNil(entities, @"Should have data to import: %@", p.error);
     
     return entities;
 }
@@ -291,7 +291,7 @@ static float pollTime;
     //3. do an export and check the data
     NSArray* out = [store exportCache];
     KTAssertCount(8, out);
-    STAssertEqualObjects(out, array, @"should match");
+    XCTAssertEqualObjects(out, array, @"should match");
     
 }
 

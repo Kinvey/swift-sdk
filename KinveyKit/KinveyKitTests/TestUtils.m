@@ -20,7 +20,7 @@
 
 #import "TestUtils.h"
 #import <KinveyKit/KinveyKit.h>
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <objc/runtime.h>
 
 #import "KCSHiddenMethods.h"
@@ -39,7 +39,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 }
 
 
-@implementation SenTestCase (TestUtils)
+@implementation XCTestCase (TestUtils)
 @dynamic done;
 #define POLL_INTERVAL 0.05
 #define MAX_POLL_SECONDS 30
@@ -61,7 +61,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
         pollCount++;
     }
     if (pollCount == maxPollCount) {
-        STFail(@"polling timed out");
+        XCTFail(@"polling timed out");
     }
     return YES;
 }
@@ -79,7 +79,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     self.done = NO;
     return [^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
-            STFail(@"%@", errorOrNil);
+            XCTFail(@"%@", errorOrNil);
         }
         self.done = YES;
     } copy];
@@ -90,7 +90,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     self.done = NO;
     return [^(NSUInteger count, NSError *errorOrNil) {
         if (errorOrNil != nil) {
-            STFail(@"%@", errorOrNil);
+            XCTFail(@"%@", errorOrNil);
         }
         self.done = YES;
     } copy];
@@ -195,7 +195,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     __block BOOL loaded = NO;
     
-    SenTestCase* pollObj = [[SenTestCase alloc] init];
+    XCTestCase* pollObj = [[XCTestCase alloc] init];
     
     [[KCSUser activeUser] logout];
     //    NSAssert([KCSUser hasSavedCredentials] == NO, @"should have cleared creds");

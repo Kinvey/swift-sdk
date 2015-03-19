@@ -36,7 +36,7 @@
     
     NSLog(@"Then: %@, Now: %@, delta: %f, inRange? %@", then, now, deltaDate, (fabs(deltaDate) < 0.001)?@"YES":@"NO");
     
-    STAssertTrue(abs(deltaDate) < 0.001, @"should be within the delta");
+    XCTAssertTrue(abs(deltaDate) < 0.001, @"should be within the delta");
 }
 
 - (NSString *)nomillis:(NSString *)rfc3339DateTimeString
@@ -68,7 +68,7 @@
     NSTimeInterval deltaDate = [now timeIntervalSinceDate:then];
     
     NSLog(@"Then: %@, Now: %@, delta: %f, inRange? %@", then, now, deltaDate, (fabs(deltaDate) < 1)?@"YES":@"NO");
-    STAssertTrue(abs(deltaDate) < 1, @"should be within the delta");
+    XCTAssertTrue(abs(deltaDate) < 1, @"should be within the delta");
 }
 
 
@@ -80,13 +80,13 @@
     NSDate* earlierDate = [origDate dateByAddingTimeInterval:-1000];
     NSDate* laterDate = [origDate dateByAddingTimeInterval:1000];
     
-    STAssertTrue([origDate isLaterThan:earlierDate], @"");
-    STAssertFalse([origDate isLaterThan:laterDate], @"");
-    STAssertFalse([origDate isLaterThan:sameDate], @"");
+    XCTAssertTrue([origDate isLaterThan:earlierDate], @"");
+    XCTAssertFalse([origDate isLaterThan:laterDate], @"");
+    XCTAssertFalse([origDate isLaterThan:sameDate], @"");
     
-    STAssertFalse([origDate isEarlierThan:earlierDate], @"");
-    STAssertTrue([origDate isEarlierThan:laterDate], @"");
-    STAssertFalse([origDate isEarlierThan:sameDate], @"");
+    XCTAssertFalse([origDate isEarlierThan:earlierDate], @"");
+    XCTAssertTrue([origDate isEarlierThan:laterDate], @"");
+    XCTAssertFalse([origDate isEarlierThan:sameDate], @"");
 }
 
 - (void) testMidnight
@@ -94,12 +94,12 @@
     //                    @"2013-04-12T17:46:55.827Z"
     NSString* midnightEOD = @"2011-01-15T24:00:00.000Z";
     NSDate* eod = [NSDate dateFromISO8601EncodedString:midnightEOD];
-    STAssertNotNil(eod, @"should get back a date");
+    XCTAssertNotNil(eod, @"should get back a date");
 
     NSString* midnightBOD = @"2011-01-16T00:00:00.000Z";
     NSDate* bod = [NSDate dateFromISO8601EncodedString:midnightBOD];
-    STAssertNotNil(bod, @"should get back a date");
+    XCTAssertNotNil(bod, @"should get back a date");
 
-    STAssertEqualObjects(bod, eod, @"Midnights should match");
+    XCTAssertEqualObjects(bod, eod, @"Midnights should match");
 }
 @end

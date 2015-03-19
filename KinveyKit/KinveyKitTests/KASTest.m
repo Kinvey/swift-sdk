@@ -21,7 +21,7 @@
 
 #import "TestUtils.h"
 
-@interface KASTest : SenTestCase
+@interface KASTest : XCTestCase
 
 @end
 

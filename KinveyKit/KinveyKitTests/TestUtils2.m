@@ -55,7 +55,7 @@ id<KCSCredentials> mockCredentails()
     return [[MockCredentials alloc] init];
 }
 
-@implementation SenTestCase (TestUtils2)
+@implementation XCTestCase (TestUtils2)
 @dynamic done;
 
 - (BOOL) poll

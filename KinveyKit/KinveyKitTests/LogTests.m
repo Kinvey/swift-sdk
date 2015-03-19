@@ -18,12 +18,12 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "TestUtils2.h"
 #import "KinveyCoreInternal.h"
 
-@interface LogTests : SenTestCase
+@interface LogTests : XCTestCase
 
 @end
 
@@ -76,8 +76,8 @@
     
     LogTester* logger = [LogTester sharedInstance];
     NSArray* logs = logger.logs;
-    STAssertEqualObjects(logs[0], infoStr, @"");
-    STAssertEqualObjects(logs[1], warnStr, @"");
+    XCTAssertEqualObjects(logs[0], infoStr, @"");
+    XCTAssertEqualObjects(logs[1], warnStr, @"");
 
 }
 

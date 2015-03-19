@@ -17,11 +17,11 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KinveyCoreInternal.h"
 
-@interface KeychainTests : SenTestCase
+@interface KeychainTests : XCTestCase
 
 @end
 
@@ -44,33 +44,33 @@
 {
     NSString* token = [NSString UUID];
     BOOL set = [KCSKeychain2 setKinveyToken:token user:@"macTheKnife"];
-    STAssertTrue(set, @"should have been set");
+    XCTAssertTrue(set, @"should have been set");
     
     NSString* retreivedToken = [KCSKeychain2 kinveyTokenForUserId:@"macTheKnife"];
-    STAssertEqualObjects(retreivedToken, token, @"token should match");
+    XCTAssertEqualObjects(retreivedToken, token, @"token should match");
     
     NSString* unsetToken = [KCSKeychain2 kinveyTokenForUserId:@"bobTheSword"];
-    STAssertNil(unsetToken, @"Should not be a token for bob");
+    XCTAssertNil(unsetToken, @"Should not be a token for bob");
     
-    STAssertTrue([KCSKeychain2 hasTokens], @"");
+    XCTAssertTrue([KCSKeychain2 hasTokens], @"");
 }
 
 - (void)testDelete
 {
     NSString* token = [NSString UUID];
     BOOL set = [KCSKeychain2 setKinveyToken:token user:@"macTheKnife"];
-    STAssertTrue(set, @"should have been set");
+    XCTAssertTrue(set, @"should have been set");
     
     NSString* retreivedToken = [KCSKeychain2 kinveyTokenForUserId:@"macTheKnife"];
-    STAssertEqualObjects(retreivedToken, token, @"token should match");
+    XCTAssertEqualObjects(retreivedToken, token, @"token should match");
     
     BOOL deleted = [KCSKeychain2 deleteTokens];
-    STAssertTrue(deleted, @"Should be deleted");
+    XCTAssertTrue(deleted, @"Should be deleted");
 
     NSString* unsetToken = [KCSKeychain2 kinveyTokenForUserId:@"macTheKnife"];
-    STAssertNil(unsetToken, @"Should not be a token for bob");
+    XCTAssertNil(unsetToken, @"Should not be a token for bob");
     
-    STAssertFalse([KCSKeychain2 hasTokens], @"");
+    XCTAssertFalse([KCSKeychain2 hasTokens], @"");
 }
 
 @end

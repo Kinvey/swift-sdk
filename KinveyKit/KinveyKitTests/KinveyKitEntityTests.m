@@ -136,22 +136,22 @@
     t.locParam = [[CLLocation alloc] initWithLatitude:10 longitude:130];
     
     KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:t error:NULL];
-    STAssertNotNil(so, @"should not have a nil object");
+    XCTAssertNotNil(so, @"should not have a nil object");
     
     NSDictionary* d = [so dataToSerialize];
-    STAssertNotNil(d, @"should not have a nil dictionary");
-    STAssertEquals([d count], (NSUInteger) 8, @"should have 8 params");
+    XCTAssertNotNil(d, @"should not have a nil dictionary");
+    XCTAssertEqual([d count], (NSUInteger) 8, @"should have 8 params");
     
-    STAssertEqualObjects([d objectForKey:KCSEntityKeyId], @"idX", @"should have set the id");
-    STAssertEqualObjects([d objectForKey:@"testParam1i"],  @"p1", @"should have set the string");
-    STAssertEqualObjects([d objectForKey:@"testParam2i"],  @1.245, @"should have set the number");
-    STAssertEqualObjects([d objectForKey:@"dateParam"],   @"ISODate(\"1970-01-01T00:00:00.000Z\")", @"should have set the date");
+    XCTAssertEqualObjects([d objectForKey:KCSEntityKeyId], @"idX", @"should have set the id");
+    XCTAssertEqualObjects([d objectForKey:@"testParam1i"],  @"p1", @"should have set the string");
+    XCTAssertEqualObjects([d objectForKey:@"testParam2i"],  @1.245, @"should have set the number");
+    XCTAssertEqualObjects([d objectForKey:@"dateParam"],   @"ISODate(\"1970-01-01T00:00:00.000Z\")", @"should have set the date");
     NSArray* a = @[@"2",@"1",@7];
-    STAssertEqualObjects([d objectForKey:@"setParam"],    a, @"should have set the set");
-    STAssertEqualObjects([d objectForKey:@"oSetParam"],   a, @"should have set the ordered set");
-    STAssertEqualObjects([d objectForKey:@"asParam"],   @"abcdef", @"should have set the ordered set");
+    XCTAssertEqualObjects([d objectForKey:@"setParam"],    a, @"should have set the set");
+    XCTAssertEqualObjects([d objectForKey:@"oSetParam"],   a, @"should have set the ordered set");
+    XCTAssertEqualObjects([d objectForKey:@"asParam"],   @"abcdef", @"should have set the ordered set");
     a = @[@130,@10];
-    STAssertEqualObjects([d objectForKey:@"locParam"], a, @"should have set cllocation");
+    XCTAssertEqualObjects([d objectForKey:@"locParam"], a, @"should have set cllocation");
 }
 
 - (void) testTypesDeserialize
@@ -166,18 +166,18 @@
                             @"locParam"    : @[@100,@-30]};
     TestObject* out = [KCSObjectMapper makeObjectOfType:[TestObject class] withData:data];
     
-    STAssertNotNil(out, @"Should not be nil");
+    XCTAssertNotNil(out, @"Should not be nil");
     
     NSArray* a = @[@"2",@"1",@7];
-    STAssertTrue([out.setParam isKindOfClass:[NSSet class]], @"should be a NSSet");
-    STAssertEqualObjects(out.setParam,  [NSSet setWithArray:a], @"NSSets should be equal");
-    STAssertTrue([out.oSetParam isKindOfClass:[NSOrderedSet class]], @"should be a NSOrderedSet");
-    STAssertEqualObjects(out.oSetParam,  [NSOrderedSet orderedSetWithArray:a], @"NSOrderedSets should be equal");
-    STAssertTrue([out.dateParam isKindOfClass:[NSDate class]], @"should be a NSOrderedSet");
-    STAssertEqualObjects(out.dateParam,  [NSDate dateWithTimeIntervalSince1970:0], @"NSOrderedSets should be equal");
-    STAssertTrue([out.asParam isKindOfClass:[NSMutableAttributedString class]], @"should be a NSOrderedSet");
+    XCTAssertTrue([out.setParam isKindOfClass:[NSSet class]], @"should be a NSSet");
+    XCTAssertEqualObjects(out.setParam,  [NSSet setWithArray:a], @"NSSets should be equal");
+    XCTAssertTrue([out.oSetParam isKindOfClass:[NSOrderedSet class]], @"should be a NSOrderedSet");
+    XCTAssertEqualObjects(out.oSetParam,  [NSOrderedSet orderedSetWithArray:a], @"NSOrderedSets should be equal");
+    XCTAssertTrue([out.dateParam isKindOfClass:[NSDate class]], @"should be a NSOrderedSet");
+    XCTAssertEqualObjects(out.dateParam,  [NSDate dateWithTimeIntervalSince1970:0], @"NSOrderedSets should be equal");
+    XCTAssertTrue([out.asParam isKindOfClass:[NSMutableAttributedString class]], @"should be a NSOrderedSet");
     a = @[@100,@-30];
-    STAssertEqualObjects([out.locParam kinveyValue] , a, @"should be matching CLLocation");
+    XCTAssertEqualObjects([out.locParam kinveyValue] , a, @"should be matching CLLocation");
 }
 
 - (void) testLinkedRefOldStyle
@@ -197,22 +197,22 @@
                             }};
     TestObject* out = [KCSObjectMapper makeObjectOfType:[TestObject class] withData:data];
     
-    STAssertNotNil(out, @"Should not be nil");
+    XCTAssertNotNil(out, @"Should not be nil");
     id im = out.image;
-    STAssertNotNil(im, @"image should be valid");
-    STAssertTrue([im isKindOfClass:[NSDictionary class]], @"should be a dictionary");
+    XCTAssertNotNil(im, @"image should be valid");
+    XCTAssertTrue([im isKindOfClass:[NSDictionary class]], @"should be a dictionary");
     
     NSMutableDictionary* resources = [NSMutableDictionary dictionary];
     TestObject* out2 = [KCSObjectMapper makeObjectWithResourcesOfType:[TestObject class] withData:data withResourceDictionary:resources];
 
-    STAssertNotNil(out2, @"Should not be nil");
+    XCTAssertNotNil(out2, @"Should not be nil");
     id im2 = out2.image;
-    STAssertNil(im2, @"image should be nil");
-    STAssertEquals((int) 1, (int) resources.count, @"should have a resource to load");
+    XCTAssertNil(im2, @"image should be nil");
+    XCTAssertEqual((int) 1, (int) resources.count, @"should have a resource to load");
 
     KCSFile* imgRef = resources[@"image"];
-    STAssertNotNil(imgRef, @"should have an image value");
-    STAssertEqualObjects(imgRef.filename, @"OfflineSave-linked1-photo.png", @"ids should match");
+    XCTAssertNotNil(imgRef, @"should have an image value");
+    XCTAssertEqualObjects(imgRef.filename, @"OfflineSave-linked1-photo.png", @"ids should match");
 }
 
 - (void) testLinkedFile
@@ -233,23 +233,23 @@
                                     }};
     TestObject* out = [KCSObjectMapper makeObjectOfType:[TestObject class] withData:data];
     
-    STAssertNotNil(out, @"Should not be nil");
+    XCTAssertNotNil(out, @"Should not be nil");
     id im = out.image;
-    STAssertNotNil(im, @"image should be valid");
-    STAssertTrue([im isKindOfClass:[NSDictionary class]], @"should be a dictionary");
+    XCTAssertNotNil(im, @"image should be valid");
+    XCTAssertTrue([im isKindOfClass:[NSDictionary class]], @"should be a dictionary");
     
     NSMutableDictionary* resources = [NSMutableDictionary dictionary];
     TestObject* out2 = [KCSObjectMapper makeObjectWithResourcesOfType:[TestObject class] withData:data withResourceDictionary:resources];
     
-    STAssertNotNil(out2, @"Should not be nil");
+    XCTAssertNotNil(out2, @"Should not be nil");
     id im2 = out2.image;
-    STAssertNil(im2, @"image should be nil");
-    STAssertEquals((int) 1, (int) resources.count, @"should have a resource to load");
+    XCTAssertNil(im2, @"image should be nil");
+    XCTAssertEqual((int) 1, (int) resources.count, @"should have a resource to load");
     
     KCSFile* imgRef = resources[@"image"];
-    STAssertNotNil(imgRef, @"should have an image value");
-    STAssertEqualObjects(imgRef.fileId, @"special-image-id", @"ids should match");
-    STAssertEqualObjects(imgRef.remoteURL, [NSURL URLWithString:@"http://images.com/OfflineSave-linked1-photo.png"], @"urls should match");
+    XCTAssertNotNil(imgRef, @"should have an image value");
+    XCTAssertEqualObjects(imgRef.fileId, @"special-image-id", @"ids should match");
+    XCTAssertEqualObjects(imgRef.remoteURL, [NSURL URLWithString:@"http://images.com/OfflineSave-linked1-photo.png"], @"urls should match");
 }
 
 - (void) testLinkedFileOrMetdata
@@ -270,10 +270,10 @@
     id ifile = jsonData[@"image"];
     id ffile = jsonData[@"fileRef"];
     
-    STAssertNotNil(ifile, @"");
-    STAssertTrue([ifile isKindOfClass:[KCSFile class]], @"");
-    STAssertNotNil(ffile, @"");
-    STAssertTrue([ffile isKindOfClass:[KCSFile class]], @"");
+    XCTAssertNotNil(ifile, @"");
+    XCTAssertTrue([ifile isKindOfClass:[KCSFile class]], @"");
+    XCTAssertNotNil(ffile, @"");
+    XCTAssertTrue([ffile isKindOfClass:[KCSFile class]], @"");
     KTAssertCount(2, metaObj.resourcesToSave);
     
     NSData* serialized = [[[KCS_SBJsonWriter alloc] init] dataWithObject:jsonData];
@@ -285,7 +285,7 @@
     KTAssertCount(1, resources);
     
     KCSFile* madeFile = made.fileRef;
-    STAssertNotNil(madeFile, @"should be valid");
+    XCTAssertNotNil(madeFile, @"should be valid");
 }
 
 - (void) testBrokenPropMap
@@ -295,9 +295,9 @@
     BrokenHostMappingObj* obj = [[BrokenHostMappingObj alloc] init];
     NSError* error = nil;
     KCSSerializedObject* d = [KCSObjectMapper makeKinveyDictionaryFromObject:obj error:&error];
-    STAssertNil(d, @"should be nil");
-    STAssertNotNil(error, @"Should have an error");
-    STAssertEquals((int)KCSInvalidKCSPersistableError, (int) error.code, @"should make a invalid persistable error");
+    XCTAssertNil(d, @"should be nil");
+    XCTAssertNotNil(error, @"Should have an error");
+    XCTAssertEqual((int)KCSInvalidKCSPersistableError, (int) error.code, @"should make a invalid persistable error");
 
     [KCSLogManager sharedLogManager].suppressErrorToExceptionOnTest = NO;
 }
@@ -312,16 +312,16 @@
     
     NSError* error = nil;
     KCSSerializedObject* o = [KCSObjectMapper makeResourceEntityDictionaryFromObject:obj forCollection:@"TestObjects" error:&error];
-    STAssertNil(error, @"should serialize correctly");
-    STAssertNotNil(o.resourcesToSave, @"Should have resources");
+    XCTAssertNil(error, @"should serialize correctly");
+    XCTAssertNotNil(o.resourcesToSave, @"Should have resources");
     KTAssertCount(1, o.resourcesToSave);
     
     [KCSObjectMapper populateExistingObject:o withNewData:newData];
     
-    STAssertNotNil(obj.testId, @"should not nil id");
+    XCTAssertNotNil(obj.testId, @"should not nil id");
     UIImage* resolvedImage = obj.image;
-    STAssertNotNil(resolvedImage, @"should still be an image");
-    STAssertTrue([resolvedImage isKindOfClass:[UIImage class]], @"still an image");
+    XCTAssertNotNil(resolvedImage, @"should still be an image");
+    XCTAssertTrue([resolvedImage isKindOfClass:[UIImage class]], @"still an image");
 }
 
 //Test for addObject to set 'nil' values into a set
@@ -330,7 +330,7 @@
 {
     
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(setup, @"Should be set-up");
+    XCTAssertTrue(setup, @"Should be set-up");
 
     
     HS1789* newFlat = [[HS1789 alloc] init];
@@ -352,15 +352,15 @@
     to.testId = @"";
     
     KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:to error:NULL];
-    STAssertNotNil(so, @"should not have a nil object");
+    XCTAssertNotNil(so, @"should not have a nil object");
     
     NSDictionary* d = [so dataToSerialize];
-    STAssertNotNil(d, @"should not have a nil dictionary");
+    XCTAssertNotNil(d, @"should not have a nil dictionary");
 
-    STAssertNil(d[@"_id"], @"should not have an id");
-    STAssertNotNil(d[@"testParam1i"], @"should have the param");
+    XCTAssertNil(d[@"_id"], @"should not have an id");
+    XCTAssertNotNil(d[@"testParam1i"], @"should have the param");
     
-    STAssertNil(so.objectId, @"should have no obj id");
+    XCTAssertNil(so.objectId, @"should have no obj id");
 }
 
 @end

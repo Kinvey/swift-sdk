@@ -17,8 +17,8 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface KCSUserSocialExtrasTest : SenTestCase
+@interface KCSUserSocialExtrasTest : XCTestCase
 
 @end

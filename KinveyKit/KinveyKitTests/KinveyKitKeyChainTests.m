@@ -39,25 +39,25 @@
     NSString* u2 = [NSString UUID];
 
     BOOL set = [KCSKeychain2 setKinveyToken:token user:u1];
-    STAssertTrue(set, @"should be set");
+    XCTAssertTrue(set, @"should be set");
     
     NSString* t1 = [KCSKeychain2 kinveyTokenForUserId:u1];
     NSString* t2 = [KCSKeychain2 kinveyTokenForUserId:u2];
     
-    STAssertEqualObjects(t1, token, @"should get back original token");
-    STAssertNil(t2, @"should get no token for u2");
+    XCTAssertEqualObjects(t1, token, @"should get back original token");
+    XCTAssertNil(t2, @"should get no token for u2");
     
     BOOL has = [KCSKeychain2 hasTokens];
-    STAssertTrue(has, @"has a token");
+    XCTAssertTrue(has, @"has a token");
     
     BOOL deleted = [KCSKeychain2 deleteTokens];
-    STAssertTrue(deleted, @"should have been deleted.");
+    XCTAssertTrue(deleted, @"should have been deleted.");
 
     has = [KCSKeychain2 hasTokens];
-    STAssertFalse(has, @"should not have a token");
+    XCTAssertFalse(has, @"should not have a token");
 
     t1 = [KCSKeychain2 kinveyTokenForUserId:u1];
-    STAssertNil(t1, @"should get no token for u1");
+    XCTAssertNil(t1, @"should get no token for u1");
 }
 
 

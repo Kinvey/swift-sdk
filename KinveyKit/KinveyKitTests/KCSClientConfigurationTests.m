@@ -19,7 +19,7 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KCSClientConfiguration.h"
 #import "KCSClient.h"
@@ -27,7 +27,7 @@
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
 
-@interface KCSClientConfigurationTests : SenTestCase
+@interface KCSClientConfigurationTests : XCTestCase
 
 @end
 
@@ -51,37 +51,37 @@
 {
     //Tests that we get a configuration from environment in hidden cases
     NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
-    STAssertEqualObjects(appKey, @"TEST_KEY", @"test keys should match");
+    XCTAssertEqualObjects(appKey, @"TEST_KEY", @"test keys should match");
     NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_SECRET"];
-    STAssertEqualObjects(appSecret, @"TEST_SECRET", @"test keys should match");
+    XCTAssertEqualObjects(appSecret, @"TEST_SECRET", @"test keys should match");
     NSString* appHost = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_SERVICE_HOST"];
-    STAssertEqualObjects(appHost, @"TEST_HOST", @"test keys should match");
+    XCTAssertEqualObjects(appHost, @"TEST_HOST", @"test keys should match");
     
     KCSClientConfiguration* config = [KCSClientConfiguration configurationWithAppKey:@"<#KEY#>" secret:@"<#SECRET#>"];
-    STAssertEqualObjects(config.appKey, @"TEST_KEY", @"test keys should match");
-    STAssertEqualObjects(config.appSecret, @"TEST_SECRET", @"test keys should match");
-    STAssertEqualObjects(config.serviceHostname, @"TEST_HOST", @"test keys should match");
+    XCTAssertEqualObjects(config.appKey, @"TEST_KEY", @"test keys should match");
+    XCTAssertEqualObjects(config.appSecret, @"TEST_SECRET", @"test keys should match");
+    XCTAssertEqualObjects(config.serviceHostname, @"TEST_HOST", @"test keys should match");
 }
 
 - (void) testPlist
 {
     KCSClientConfiguration* config = [KCSClientConfiguration configurationFromPlist:@"TestConfig"];
-    STAssertNotNil(config, @"should have valid config");
+    XCTAssertNotNil(config, @"should have valid config");
 
     KCSClient* client = [KCSClient sharedClient];
     [client initializeWithConfiguration:config];
-    STAssertEqualObjects(config.options, client.options, @"Equals Objects");
+    XCTAssertEqualObjects(config.options, client.options, @"Equals Objects");
     
-    STAssertEqualObjects(config.options[@"NOT USED"], @"FOO", @"Crazy string");
-    STAssertEqualObjects(config.appSecret, @"TEST_SECRET", @"Crazy string");
-    STAssertEqualObjects(config.appKey, @"TEST_KEY", @"Crazy string");
+    XCTAssertEqualObjects(config.options[@"NOT USED"], @"FOO", @"Crazy string");
+    XCTAssertEqualObjects(config.appSecret, @"TEST_SECRET", @"Crazy string");
+    XCTAssertEqualObjects(config.appKey, @"TEST_KEY", @"Crazy string");
 }
 
 
 - (void) testThrowsIfNoSecretOrKey
 {
     KCSClientConfiguration* badConfig = [KCSClientConfiguration new];
-    STAssertThrows([[KCSClient sharedClient] initializeWithConfiguration:badConfig], @"throws");
+    XCTAssertThrows([[KCSClient sharedClient] initializeWithConfiguration:badConfig], @"throws");
 }
 
 - (void) setUser
@@ -92,7 +92,7 @@
 #pragma clang diagnostic ignored "-Wdeprecated"
     [KCSClient sharedClient].currentUser = u;
 #pragma clang diagnostic pop
-    STAssertNotNil([KCSUser  activeUser], @"should have a user");
+    XCTAssertNotNil([KCSUser  activeUser], @"should have a user");
 }
 
 - (void) testKeyChangesClearsUser
@@ -101,7 +101,7 @@
     [[KCSClient sharedClient] initializeWithConfiguration:c1];
     
     NSString* ak1 = [[KCSAppdataStore caches] cachedAppKey];
-    STAssertNotNil(ak1, @"should have a key");
+    XCTAssertNotNil(ak1, @"should have a key");
     
     [self setUser];
     
@@ -109,10 +109,10 @@
     [[KCSClient sharedClient] initializeWithConfiguration:c2];
     
     NSString* ak2 = [[KCSAppdataStore caches] cachedAppKey];
-    STAssertNotNil(ak2, @"should have a key");
-    STAssertFalse([ak1 isEqualToString:ak2], @"should change");
+    XCTAssertNotNil(ak2, @"should have a key");
+    XCTAssertFalse([ak1 isEqualToString:ak2], @"should change");
     
-    STAssertNil([KCSUser  activeUser], @"user should be cleared");
+    XCTAssertNil([KCSUser  activeUser], @"user should be cleared");
 }
 
 @end
