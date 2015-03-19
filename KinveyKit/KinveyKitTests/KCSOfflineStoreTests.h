@@ -17,9 +17,9 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "KCSOfflineUpdateDelegate.h"
 
-@interface KCSOfflineStoreTests : SenTestCase 
+@interface KCSOfflineStoreTests : XCTestCase 
 
 @end

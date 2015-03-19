@@ -18,11 +18,11 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 @class KCSCollection;
 @class KCSAppdataStore;
-@interface KinveyAppdataStoreTests : SenTestCase {
+@interface KinveyAppdataStoreTests : XCTestCase {
     KCSCollection* _collection;
     KCSAppdataStore* _store;
 }

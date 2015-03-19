@@ -18,12 +18,12 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KinveyCoreInternal.h"
 #import "TestUtils2.h"
 
-@interface KCSPingTests : SenTestCase
+@interface KCSPingTests : XCTestCase
 
 @end
 
@@ -45,11 +45,11 @@
 {    
     [KCSPing2 pingKinveyWithBlock:^(NSDictionary *appInfo, NSError *error) {
         KTAssertNoError
-        STAssertNotNil(appInfo, @"should be a valid value");
+        XCTAssertNotNil(appInfo, @"should be a valid value");
         NSString* version = appInfo[KCS_PING_KINVEY_VERSION];
         NSString* appname = appInfo[KCS_PING_APP_NAME];
         
-        STAssertEqualObjects(appname, @"0 iOS Tests", @"Should be test app name");
+        XCTAssertEqualObjects(appname, @"0 iOS Tests", @"Should be test app name");
         KTAssertLengthAtLeast(version, 1); //don't hardcode backend version
         
         KTPollDone

@@ -27,13 +27,13 @@
 
 - (void) testNilAppKeyRaisesException
 {
-    STAssertThrows((void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:nil withAppSecret:@"text" usingOptions:nil],
+    XCTAssertThrows((void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:nil withAppSecret:@"text" usingOptions:nil],
                    @"nil AppKey Did Not raise exception!");
 }
 
 - (void) testNilAppSecretRaisesException
 {
-    STAssertThrows((void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969" withAppSecret:nil usingOptions:nil],
+    XCTAssertThrows((void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid6969" withAppSecret:nil usingOptions:nil],
                    @"nil AppSecret did not raise exception!");
 }
 
@@ -41,9 +41,9 @@
 - (void)testUserAgentStringIsMeaningful
 {
     KCSClient *client = [KCSClient sharedClient];
-    STAssertTrue([client.userAgent hasPrefix:@"ios-kinvey-http/"], @"should be meaningful string: %@", client.userAgent);
+    XCTAssertTrue([client.userAgent hasPrefix:@"ios-kinvey-http/"], @"should be meaningful string: %@", client.userAgent);
     NSString* suffix = [NSString stringWithFormat:@"kcs/%@", MINIMUM_KCS_VERSION_SUPPORTED];
-    STAssertTrue([client.userAgent hasSuffix:suffix], @"should be meaningful string: %@", client.userAgent);
+    XCTAssertTrue([client.userAgent hasSuffix:suffix], @"should be meaningful string: %@", client.userAgent);
 }
 
 - (void)testAppdataBaseURL
@@ -57,7 +57,7 @@
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
-    STAssertEqualObjects([[KCSClient sharedClient] appdataBaseURL], urlString, @"should match");
+    XCTAssertEqualObjects([[KCSClient sharedClient] appdataBaseURL], urlString, @"should match");
 }
 
 - (void)testResourceBaseURL
@@ -71,7 +71,7 @@
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil];
     
-    STAssertEqualObjects([[KCSClient sharedClient] resourceBaseURL], urlString, @"should match");
+    XCTAssertEqualObjects([[KCSClient sharedClient] resourceBaseURL], urlString, @"should match");
 }
 
 - (void)testUserBaseURL
@@ -86,7 +86,7 @@
                                                   usingOptions:nil];
     
     
-    STAssertEqualObjects([[KCSClient sharedClient] userBaseURL], urlString, @"should match");
+    XCTAssertEqualObjects([[KCSClient sharedClient] userBaseURL], urlString, @"should match");
 }
 
 - (void)testBaseURLIsValid
@@ -96,7 +96,7 @@
                                                   usingOptions:nil];
     
     NSURL *baseURL = [NSURL URLWithString:[[KCSClient sharedClient] appdataBaseURL]];
-    STAssertNotNil(baseURL, @"url should not be nil");
+    XCTAssertNotNil(baseURL, @"url should not be nil");
 }
 
 - (void)testURLOverrideWorks
@@ -113,21 +113,21 @@
                                                   usingOptions:nil];
 
     // Make sure starting value is good
-    STAssertEqualObjects([[KCSClient sharedClient] userBaseURL], urlString, @"should match");
+    XCTAssertEqualObjects([[KCSClient sharedClient] userBaseURL], urlString, @"should match");
     
     [[KCSClient sharedClient].configuration setServiceHostname:newHost];
 
     NSString* testStr = [NSString stringWithFormat:@"https://%@.kinvey.com/appdata/%@/", newHost, kidID];
-    STAssertEqualObjects([[KCSClient sharedClient] appdataBaseURL], testStr, @"should match");
+    XCTAssertEqualObjects([[KCSClient sharedClient] appdataBaseURL], testStr, @"should match");
     testStr = [NSString stringWithFormat:@"https://%@.kinvey.com/blob/%@/", newHost, kidID];
-    STAssertEqualObjects([[KCSClient sharedClient] resourceBaseURL], testStr, @"should match");
+    XCTAssertEqualObjects([[KCSClient sharedClient] resourceBaseURL], testStr, @"should match");
     testStr = [NSString stringWithFormat:@"https://%@.kinvey.com/user/%@/", newHost, kidID];
-    STAssertEqualObjects([[KCSClient sharedClient] userBaseURL], testStr, @"should match");
+    XCTAssertEqualObjects([[KCSClient sharedClient] userBaseURL], testStr, @"should match");
 }
 
 - (void)testThatInitializeWithKeyAndSecretRejectsInvalidInput
 {
-    STAssertThrows((void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"<app key>"
+    XCTAssertThrows((void) [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"<app key>"
                                                  withAppSecret:@"secret"
                                                   usingOptions:nil],
                    @"Malformed input DID NOT raise exception!");
@@ -139,7 +139,7 @@
                                                                       withAppSecret:@"secret"
                                                                        usingOptions:nil];
     KCSClient *client2 = [KCSClient sharedClient];
-    STAssertEquals(client1, client2, @"should be same instance");
+    XCTAssertEqual(client1, client2, @"should be same instance");
 }
 
 

@@ -44,7 +44,7 @@
 - (void)setUp
 {
     BOOL up = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(up, @"should be setup");
+    XCTAssertTrue(up, @"should be setup");
     
     _shouldSaveCalled = NO;
     _testShouldSave = NO;
@@ -74,7 +74,7 @@
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertError(errorOrNil, KCSKinveyUnreachableError);
         NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
-        STAssertEquals((NSUInteger)1, (NSUInteger) objs.count, @"should have one unsaved obj, from above");
+        XCTAssertEqual((NSUInteger)1, (NSUInteger) objs.count, @"should have one unsaved obj, from above");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"%f", percentComplete);
@@ -98,7 +98,7 @@
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertError(errorOrNil, KCSKinveyUnreachableError);
         NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
-        STAssertEquals((int)1, (int)objs.count, @"should have one unsaved obj, from above");
+        XCTAssertEqual((int)1, (int)objs.count, @"should have one unsaved obj, from above");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"%f", percentComplete);
@@ -112,10 +112,10 @@
     
     [self poll];
     
-    STAssertTrue(_shouldSaveCalled, @"shouldsave: should have been called");
-    STAssertTrue(_willSaveCalled, @"willsave: should have been called");
-    STAssertTrue(_didSaveCalled, @"didsave: should have been called");
-    STAssertNil(_errorCalled, @"should have had a nil error %@", _errorCalled);
+    XCTAssertTrue(_shouldSaveCalled, @"shouldsave: should have been called");
+    XCTAssertTrue(_willSaveCalled, @"willsave: should have been called");
+    XCTAssertTrue(_didSaveCalled, @"didsave: should have been called");
+    XCTAssertNil(_errorCalled, @"should have had a nil error %@", _errorCalled);
 }
 
 - (void) testSaveMultiple
@@ -141,7 +141,7 @@
     [store saveObject:@[obj1,obj2,obj3] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertError(errorOrNil, KCSKinveyUnreachableError);
         NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
-        STAssertEquals((int)3, (int)objs.count, @"should have one unsaved obj, from above");
+        XCTAssertEqual((int)3, (int)objs.count, @"should have one unsaved obj, from above");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"%f", percentComplete);
@@ -153,7 +153,7 @@
 //    [store setReachable:YES];
     
     [self poll];
-    STAssertEquals((int)3, (int)_didSaveCount, @"Should have been called for each item");
+    XCTAssertEqual((int)3, (int)_didSaveCount, @"Should have been called for each item");
 }
 
 - (void) testPersist
@@ -173,7 +173,7 @@
 //    
 //    [qs persistQueues];
     
-    STFail(@"fix this");
+    XCTFail(@"fix this");
 //    NSDictionary* d = [qs cachedQueues];
 //    KCSSaveQueue* s = [d objectForKey:@"x4"];
 //    STAssertNotNil(s, @"should have saved an x4");
@@ -187,11 +187,11 @@
 #pragma mark - Offline Save Delegate
 - (BOOL)shouldSave:(id<KCSPersistable>)entity lastSaveTime:(NSDate *)timeSaved
 {
-    STAssertTrue([timeSaved isKindOfClass:[NSDate class]], @"should be a date");
+    XCTAssertTrue([timeSaved isKindOfClass:[NSDate class]], @"should be a date");
     _shouldSaveCalled = YES;
     if (_testShouldSave) {
         ASTTestClass* obj = (ASTTestClass*) entity;
-        STAssertEquals((int)79000, obj.objCount, @"should have the right obj to save");
+        XCTAssertEqual((int)79000, obj.objCount, @"should have the right obj to save");
     }
     
     return _shouldSaveReturn;
@@ -199,7 +199,7 @@
 
 - (void) willSave:(id<KCSPersistable>)entity lastSaveTime:(NSDate *)timeSaved
 {
-    STAssertTrue([timeSaved isKindOfClass:[NSDate class]], @"should be a date");
+    XCTAssertTrue([timeSaved isKindOfClass:[NSDate class]], @"should be a date");
     _willSaveCalled = YES;
 }
 

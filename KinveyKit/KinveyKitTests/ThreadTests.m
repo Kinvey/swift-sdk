@@ -18,7 +18,7 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "EXTScope.h"
 #import "TestUtils2.h"
@@ -82,7 +82,7 @@
 @end
 
 
-@interface ThreadTests : SenTestCase <NSURLSessionDataDelegate>
+@interface ThreadTests : XCTestCase <NSURLSessionDataDelegate>
 @property (nonatomic) int count;
 @property (nonatomic, retain) NSMutableDictionary* d;
 @end
@@ -179,7 +179,7 @@ static NSOperationQueue* queue;
     [self poll];
 
     
-    STAssertEquals(_count, 3, @".");
+    XCTAssertEqual(_count, 3, @".");
 }
 
 - (void) testThreadTestDataStore
@@ -190,7 +190,7 @@ static NSOperationQueue* queue;
     
     self.done = NO;
     [KCSUser loginWithUsername:@"roger" password:@"roger" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        STAssertNil(errorOrNil, @"error should be nil");
+        XCTAssertNil(errorOrNil, @"error should be nil");
         self.done = YES;
     }];
     [self poll];
@@ -201,7 +201,7 @@ static NSOperationQueue* queue;
     NSArray* toFetch = @[@"523a0b3fd4af557103001771",@"523a0b3fd4af557103001771",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac"];
     for (NSString* anId in toFetch){
         [store loadObjectWithID:anId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            STAssertNil(errorOrNil, @"no error");
+            XCTAssertNil(errorOrNil, @"no error");
             self.done = ++_count == toFetch.count;
         } withProgressBlock:nil];
     }

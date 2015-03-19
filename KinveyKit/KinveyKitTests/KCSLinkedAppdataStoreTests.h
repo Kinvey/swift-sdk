@@ -17,12 +17,12 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
  
 @class KCSLinkedAppdataStore;
 @class KCSCollection;
 
-@interface KCSLinkedAppdataStoreTests : SenTestCase {
+@interface KCSLinkedAppdataStoreTests : XCTestCase {
     KCSCollection* _collection;
 }
 

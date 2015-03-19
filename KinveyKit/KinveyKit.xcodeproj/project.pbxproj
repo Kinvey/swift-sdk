@@ -220,7 +220,6 @@
 		2766E62F16834B78000D27C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2766E62E16834B78000D27C5 /* Cocoa.framework */; };
 		2766E63516834B78000D27C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2766E63316834B78000D27C5 /* InfoPlist.strings */; };
 		2766E63916834B78000D27C5 /* KinveyKit_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 2766E63816834B78000D27C5 /* KinveyKit_mac.m */; };
-		2766E64016834B78000D27C5 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
 		2766E64116834B78000D27C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2766E62E16834B78000D27C5 /* Cocoa.framework */; };
 		2766E64416834B78000D27C5 /* KinveyKit-mac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2766E62D16834B77000D27C5 /* KinveyKit-mac.framework */; };
 		2766E64A16834B78000D27C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2766E64816834B78000D27C5 /* InfoPlist.strings */; };
@@ -273,7 +272,6 @@
 		278554D91742D42E005052D6 /* KCS_FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 278554D51742D42E005052D6 /* KCS_FMDatabaseQueue.m */; };
 		2785F52F1609179E004AA410 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
 		2785F5351609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5331609179E004AA410 /* InfoPlist.strings */; };
-		2785F53D1609179E004AA410 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
 		2785F53E1609179E004AA410 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DC14716EE300F77A3F /* UIKit.framework */; };
 		2785F54B1609179E004AA410 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2785F5491609179E004AA410 /* InfoPlist.strings */; };
 		2785F557160917AF004AA410 /* KCSUser+SocialExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -668,7 +666,6 @@
 		578834571AB8D25500078CC5 /* TestThreads.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BBD91515ADD3A2005E27E1 /* TestThreads.m */; };
 		578834581AB8D25500078CC5 /* ThreadTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27264AEE18847D83002C37C9 /* ThreadTests.m */; };
 		578834591AB8D29800078CC5 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
-		5788345A1AB8D2A600078CC5 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
 		5788345B1AB8D39300078CC5 /* KCSUserSocialExtrasTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */; };
 		57C8DB041AB8C968007F2E42 /* libKinvey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C8DAF91AB8C968007F2E42 /* libKinvey.a */; };
 		57FF3D8F1AB9BD4700128BC7 /* KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A612114716F5200F77A3F /* KinveyKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -807,12 +804,15 @@
 		57FF3E141AB9ECAF00128BC7 /* KCSUser+SocialExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 2795FC3B160915A1002ED162 /* KCSUser+SocialExtras.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		57FF3E151AB9ED8000128BC7 /* KCSLinkedInHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D1558D16713C3C00171230 /* KCSLinkedInHelper.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		57FF3E171AB9EF8A00128BC7 /* KCSFacebookHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 272D73FA16FCB82E004F26FC /* KCSFacebookHelper.m */; };
+		57FF3E431ABA294C00128BC7 /* mavericks.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 271DE7B917728815003541D4 /* mavericks.jpg */; };
+		57FF3E441ABA296200128BC7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D32A60E814716EE300F77A3F /* InfoPlist.strings */; };
+		57FF3E451ABA297A00128BC7 /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
+		57FF3E461ABA298800128BC7 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27BFEC3217C6876100E6605D /* TestConfig.plist */; };
 		D306B58E154F847C00A52CB8 /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B58D154F847C00A52CB8 /* KCSStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D306B5A3155095A800A52CB8 /* KinveyAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */; };
 		D306B5A61550B29100A52CB8 /* KCSAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B5A41550B29100A52CB8 /* KCSAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D306B5A71550B29100A52CB8 /* KCSAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D306B5A51550B29100A52CB8 /* KCSAppdataStore.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		D32A60D214716EE300F77A3F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D32A60D014716EE300F77A3F /* InfoPlist.strings */; };
-		D32A60DB14716EE300F77A3F /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DA14716EE300F77A3F /* SenTestingKit.framework */; };
 		D32A60DD14716EE300F77A3F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60DC14716EE300F77A3F /* UIKit.framework */; };
 		D32A60DE14716EE300F77A3F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60CB14716EE300F77A3F /* Foundation.framework */; };
 		D32A60E314716EE300F77A3F /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D32A60C814716EE300F77A3F /* KinveyKit.framework */; };
@@ -1250,7 +1250,7 @@
 		27FB2A7616FCEC7400CD7D5C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Accounts.framework; sourceTree = DEVELOPER_DIR; };
 		27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCredentials.h; sourceTree = "<group>"; };
 		57C8DAF91AB8C968007F2E42 /* libKinvey.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libKinvey.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		57C8DB031AB8C968007F2E42 /* KinveyTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		57C8DB031AB8C968007F2E42 /* KinveyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		57C8DB091AB8C968007F2E42 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D306B58D154F847C00A52CB8 /* KCSStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSStore.h; sourceTree = "<group>"; };
 		D306B5A1155095A800A52CB8 /* KinveyAppdataStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyAppdataStoreTests.h; sourceTree = "<group>"; };
@@ -1263,7 +1263,6 @@
 		D32A60D114716EE300F77A3F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D32A60D314716EE300F77A3F /* KinveyKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyKit-Prefix.pch"; sourceTree = "<group>"; };
 		D32A60D914716EE300F77A3F /* KinveyKitTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyKitTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D32A60DA14716EE300F77A3F /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		D32A60DC14716EE300F77A3F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		D32A60E714716EE300F77A3F /* KinveyKitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KinveyKitTests-Info.plist"; sourceTree = "<group>"; };
 		D32A60E914716EE300F77A3F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1358,7 +1357,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2766E64016834B78000D27C5 /* SenTestingKit.framework in Frameworks */,
 				2766E64116834B78000D27C5 /* Cocoa.framework in Frameworks */,
 				2766E64416834B78000D27C5 /* KinveyKit-mac.framework in Frameworks */,
 			);
@@ -1388,7 +1386,6 @@
 				27BD0884160A0B8E009473A3 /* CoreGraphics.framework in Frameworks */,
 				27BD0886160A0BA4009473A3 /* libsqlite3.dylib in Frameworks */,
 				27BD0885160A0B94009473A3 /* MobileCoreServices.framework in Frameworks */,
-				2785F53D1609179E004AA410 /* SenTestingKit.framework in Frameworks */,
 				27BD0888160A0BB2009473A3 /* KinveyKitTests.octest in Frameworks */,
 				27BD0883160A0B83009473A3 /* CoreLocation.framework in Frameworks */,
 				2785F53E1609179E004AA410 /* UIKit.framework in Frameworks */,
@@ -1406,7 +1403,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5788345A1AB8D2A600078CC5 /* SenTestingKit.framework in Frameworks */,
 				578834591AB8D29800078CC5 /* libsqlite3.dylib in Frameworks */,
 				57C8DB041AB8C968007F2E42 /* libKinvey.a in Frameworks */,
 			);
@@ -1433,7 +1429,6 @@
 				D3C5E68914745F09002D8F2B /* SystemConfiguration.framework in Frameworks */,
 				D3C5E68214745EEE002D8F2B /* libsqlite3.dylib in Frameworks */,
 				D3C5E67D14745E6E002D8F2B /* CFNetwork.framework in Frameworks */,
-				D32A60DB14716EE300F77A3F /* SenTestingKit.framework in Frameworks */,
 				D32A60DD14716EE300F77A3F /* UIKit.framework in Frameworks */,
 				D32A60DE14716EE300F77A3F /* Foundation.framework in Frameworks */,
 				D32A60E314716EE300F77A3F /* KinveyKit.framework in Frameworks */,
@@ -2122,7 +2117,7 @@
 				2766E62D16834B77000D27C5 /* KinveyKit-mac.framework */,
 				2766E63F16834B78000D27C5 /* KinveyKit-macTests.octest */,
 				57C8DAF91AB8C968007F2E42 /* libKinvey.a */,
-				57C8DB031AB8C968007F2E42 /* KinveyTests.octest */,
+				57C8DB031AB8C968007F2E42 /* KinveyTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2146,7 +2141,6 @@
 				D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */,
 				D3C5E67C14745E6E002D8F2B /* CFNetwork.framework */,
 				D32A60CB14716EE300F77A3F /* Foundation.framework */,
-				D32A60DA14716EE300F77A3F /* SenTestingKit.framework */,
 				D32A60DC14716EE300F77A3F /* UIKit.framework */,
 				271827AB16B9A1E600825D50 /* Mac */,
 				2795FC0F16091570002ED162 /* Other Frameworks */,
@@ -2944,7 +2938,7 @@
 			);
 			name = KinveyTests;
 			productName = KinveyTests;
-			productReference = 57C8DB031AB8C968007F2E42 /* KinveyTests.octest */;
+			productReference = 57C8DB031AB8C968007F2E42 /* KinveyTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		D32A60C714716EE300F77A3F /* KinveyKit */ = {
@@ -3071,6 +3065,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57FF3E461ABA298800128BC7 /* TestConfig.plist in Resources */,
+				57FF3E431ABA294C00128BC7 /* mavericks.jpg in Resources */,
+				57FF3E441ABA296200128BC7 /* InfoPlist.strings in Resources */,
+				57FF3E451ABA297A00128BC7 /* 1px.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4497,7 +4495,6 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
@@ -4533,7 +4530,6 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = DebugForTest;
 		};
@@ -4569,7 +4565,6 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = DebugForTest_run_tests;
 		};
@@ -4602,7 +4597,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};

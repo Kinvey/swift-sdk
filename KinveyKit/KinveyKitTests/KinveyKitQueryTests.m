@@ -43,7 +43,7 @@
     
     NSString *computedJSON = [orQuery JSONStringRepresentation];
     
-    STAssertEqualObjects(computedJSON, expectedJSON, @"");
+    XCTAssertEqualObjects(computedJSON, expectedJSON, @"");
     
     
     KCSQuery *geoQuery = [KCSQuery queryOnField:KCSEntityKeyGeolocation usingConditional:kKCSNearSphere forValue:[NSArray arrayWithObjects:[NSNumber numberWithFloat:50.0], [NSNumber numberWithFloat:50.0], nil]];
@@ -60,7 +60,7 @@
 
     NSString *a = [q1 JSONStringRepresentation];
     NSString *b = [q2 JSONStringRepresentation];
-    STAssertEqualObjects(a, b, @"");
+    XCTAssertEqualObjects(a, b, @"");
 }
 
 - (void)testMongoOps
@@ -92,7 +92,7 @@
                                  forValue: [NSArray arrayWithObjects:
                                             [NSNumber numberWithInt:-71],
                                             [NSNumber numberWithInt:41], nil]];
-    STAssertEqualObjects([q1 JSONStringRepresentation], r1, @"");
+    XCTAssertEqualObjects([q1 JSONStringRepresentation], r1, @"");
 
     NSString *r2 = @"{\"_geoloc\":{\"$nearSphere\":[-71,42],\"$maxDistance\":0.5}}";
     KCSQuery *q2 = [KCSQuery queryOnField:KCSEntityKeyGeolocation
@@ -104,7 +104,7 @@
                     kKCSMaxDistance,
                     [NSNumber numberWithFloat:0.5], nil]; // Does this need to be a string?
     
-    STAssertEqualObjects([q2 JSONStringRepresentation], r2, @"");
+    XCTAssertEqualObjects([q2 JSONStringRepresentation], r2, @"");
     
     NSString *r3 = @"{\"_geoloc\":{\"$within\":{\"$box\":[[-70,44],[-72,42]]}}}";
     NSArray *point1 = [NSArray arrayWithObjects:[NSNumber numberWithInt:-70],
@@ -118,14 +118,14 @@
                          usingConditional:kKCSWithinBox
                                  forValue:box];
 
-    STAssertEqualObjects([q3 JSONStringRepresentation], r3, @"");
+    XCTAssertEqualObjects([q3 JSONStringRepresentation], r3, @"");
 
 }
 
 - (void) testAscendingDecending
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(setup, @"Backend should be good to go");
+    XCTAssertTrue(setup, @"Backend should be good to go");
     
     KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
     
@@ -139,7 +139,7 @@
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
     self.done = NO;
     [store saveObject:arr withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"not expecting error: %@");
+        XCTAssertNil(errorOrNil, @"not expecting error: %@");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -151,13 +151,13 @@
     
     self.done = NO;
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"not expecting error: %@");
-        STAssertEquals((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
+        XCTAssertNil(errorOrNil, @"not expecting error: %@");
+        XCTAssertEqual((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
         int count = 0;
         for (TestClass* a in objectsOrNil) {
             count += a.objCount;
         }
-        STAssertEquals(count, (int) 45, @"count should match");
+        XCTAssertEqual(count, (int) 45, @"count should match");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -169,13 +169,13 @@
     
     self.done = NO;
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"not expecting error: %@");
-        STAssertEquals((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
+        XCTAssertNil(errorOrNil, @"not expecting error: %@");
+        XCTAssertEqual((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
         int count = 0;
         for (TestClass* a in objectsOrNil) {
             count += a.objCount;
         }
-        STAssertEquals(count, (int) 145, @"count should match");
+        XCTAssertEqual(count, (int) 145, @"count should match");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -186,7 +186,7 @@
 - (void) testMetadatQueryDate
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(setup, @"Backend should be good to go");
+    XCTAssertTrue(setup, @"Backend should be good to go");
     
     KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
     
@@ -236,12 +236,12 @@
 - (void) testMetadataQueryCreator
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(setup, @"Backend should be good to go");
+    XCTAssertTrue(setup, @"Backend should be good to go");
     
     //setup a test user
     [self loginWithUser:@"testMetadataQueryCreator1" password:@"b"];    
     NSString* origId = [[[KCSUser activeUser] kinveyObjectId] copy];
-    STAssertNotNil(origId, @"expecting an id");
+    XCTAssertNotNil(origId, @"expecting an id");
     
     KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
     
@@ -310,7 +310,7 @@
     
     NSString* exp = @"{\"$and\":[{\"eventId\":\"eventId:\"},{\"isRevoked\":false}]}";
     NSString* act = [query JSONStringRepresentation];
-    STAssertEqualObjects(act, exp, @"queries should match");
+    XCTAssertEqualObjects(act, exp, @"queries should match");
     
     //method 2
     KCSQuery *query_2 = [KCSQuery queryOnField:@"eventId" withExactMatchForValue:@"eventId"];
@@ -318,20 +318,20 @@
     [query_2 addQueryForJoiningOperator:kKCSAnd onQueries:q2_2, nil];
     exp = @"{\"$and\":[{\"isRevoked\":false}],\"eventId\":\"eventId\"}";
     act = [query_2 JSONStringRepresentation];
-    STAssertEqualObjects(act, exp, @"queries should match");
+    XCTAssertEqualObjects(act, exp, @"queries should match");
     
 }
 
 - (void) testNegate
 {
     KCSQuery* q1 = [KCSQuery queryOnField:@"field" usingConditional:kKCSGreaterThan forValue:@1];
-    STAssertEqualObjects(q1.query, @{@"field" : @{@"$gt" : @1}}, @"should properly construct the gt query");
+    XCTAssertEqualObjects(q1.query, @{@"field" : @{@"$gt" : @1}}, @"should properly construct the gt query");
     
     [q1 negateQuery];
-    STAssertEqualObjects(q1.query, @{@"field" : @{@"$not" : @{@"$gt" : @1}}}, @"should properly construct the gt query");
+    XCTAssertEqualObjects(q1.query, @{@"field" : @{@"$not" : @{@"$gt" : @1}}}, @"should properly construct the gt query");
     
     KCSQuery* q2 = [KCSQuery queryOnField:@"field" withExactMatchForValue:@1];
-    STAssertThrows([q2 negateQuery], @"InvalidArguments", @"Should throw an error");
+    XCTAssertThrows([q2 negateQuery], @"InvalidArguments", @"Should throw an error");
 
 }
 
@@ -340,14 +340,14 @@
 - (void) testNil
 {
     KCSQuery* q1 = [KCSQuery queryOnField:@"field" withExactMatchForValue:[NSNull null]];
-    STAssertEqualObjects(q1.query, @{@"field" : @{@"$type" : @(10)}}, @"should properly construct the null query");
+    XCTAssertEqualObjects(q1.query, @{@"field" : @{@"$type" : @(10)}}, @"should properly construct the null query");
     
     KCSQuery* q2 = [KCSQuery queryForEmptyOrNullValueInField:@"field"];
-    STAssertEqualObjects(q2.query, @{@"field" : [NSNull null]}, @"should properly construct the null query");
+    XCTAssertEqualObjects(q2.query, @{@"field" : [NSNull null]}, @"should properly construct the null query");
 
     
     KCSQuery* q3 = [KCSQuery queryForEmptyValueInField:@"field"];
-    STAssertEqualObjects(q3.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
+    XCTAssertEqualObjects(q3.query, @{@"field" : @{@"$exists" : @(NO)}}, @"should properly construct the null query");
 }
 #pragma clang diagnostic pop
 
@@ -375,12 +375,12 @@
     
     KCSQuery* q2 = [KCSQuery queryWithQuery:q1];
     
-    STAssertTrue(q1 != q2, @"Should be different objects");
-    STAssertEqualObjects([q1 parameterStringRepresentation], [q2 parameterStringRepresentation], @"The query strings should match");
+    XCTAssertTrue(q1 != q2, @"Should be different objects");
+    XCTAssertEqualObjects([q1 parameterStringRepresentation], [q2 parameterStringRepresentation], @"The query strings should match");
     
     q1.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:5];
     
-    STAssertFalse([[q1 parameterStringRepresentation] isEqualToString:[q2 parameterStringRepresentation]], @"strings should be independent");
+    XCTAssertFalse([[q1 parameterStringRepresentation] isEqualToString:[q2 parameterStringRepresentation]], @"strings should be independent");
 }
 
 

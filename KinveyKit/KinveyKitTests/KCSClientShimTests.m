@@ -17,11 +17,11 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KinveyCoreInternal.h"
 
-@interface KCSClientShimTests : SenTestCase
+@interface KCSClientShimTests : XCTestCase
 
 @end
 
@@ -45,14 +45,14 @@
     [[KCSClient sharedClient] initializeWithConfiguration:config];
     
     KCSClient2* c2 = [KCSClient2 sharedClient];
-    STAssertEqualObjects(c2.configuration.appKey, @"TEST_KEY", @"match");
-    STAssertEqualObjects(c2.configuration.appSecret, @"TEST_SECRET", @"match");
-    STAssertEqualObjects(c2.configuration.serviceHostname, @"baas", @"should be a baas");
+    XCTAssertEqualObjects(c2.configuration.appKey, @"TEST_KEY", @"match");
+    XCTAssertEqualObjects(c2.configuration.appSecret, @"TEST_SECRET", @"match");
+    XCTAssertEqualObjects(c2.configuration.serviceHostname, @"baas", @"should be a baas");
     
     config.serviceHostname = @"ch";
     [KCSClient sharedClient].configuration = config;
     
-    STAssertEqualObjects(c2.configuration.serviceHostname, @"ch", @"match");
+    XCTAssertEqualObjects(c2.configuration.serviceHostname, @"ch", @"match");
 }
 
 @end

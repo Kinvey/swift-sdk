@@ -28,7 +28,7 @@
 - (void) setUp
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(setup, @"need to be set-up");    
+    XCTAssertTrue(setup, @"need to be set-up");    
 }
 
 - (void) createUser:(NSString*)username email:(NSString*)email fname:(NSString*)fname lname:(NSString*)lname
@@ -52,7 +52,7 @@
         }
     }];
     [self poll];
-    STAssertEqualObjects(fname,[[KCSUser activeUser] givenName], @"names should match");
+    XCTAssertEqualObjects(fname,[[KCSUser activeUser] givenName], @"names should match");
 
 }
 
@@ -69,7 +69,7 @@
         STAssertNoError
         STAssertObjects(1)
         KCSUser* obj = objectsOrNil[0];
-        STAssertEqualObjects(@"Wayne", obj.surname, @"expecting a match");
+        XCTAssertEqualObjects(@"Wayne", obj.surname, @"expecting a match");
         self.done = YES;
     } progressBlock:nil];
     [self poll];
