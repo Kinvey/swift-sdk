@@ -24,15 +24,18 @@
 #import "KCSNSURLRequestOperation.h"
 #import "KCSMockRequestOperation.h"
 #import "KCSNSURLSessionOperation.h"
+#import "KCSMutableSortedDictionary.h"
 
-#define kHeaderAuthorization   @"Authorization"
-#define kHeaderDate            @"Date"
-#define kHeaderUserAgent       @"User-Agent"
-#define kHeaderApiVersion      @"X-Kinvey-Api-Version"
-#define kHeaderClientMethod    @"X-Kinvey-Client-Method"
-#define kHeaderDeviceInfo      @"X-Kinvey-Device-Information"
-#define kHeaderResponseWrapper @"X-Kinvey-ResponseWrapper"
-#define kHeaderBypassBL        @"x-kinvey-skip-business-logic"
+#define kHeaderAuthorization           @"Authorization"
+#define kHeaderDate                    @"Date"
+#define kHeaderUserAgent               @"User-Agent"
+#define kHeaderApiVersion              @"X-Kinvey-Api-Version"
+#define kHeaderClientMethod            @"X-Kinvey-Client-Method"
+#define kHeaderDeviceInfo              @"X-Kinvey-Device-Information"
+#define kHeaderResponseWrapper         @"X-Kinvey-ResponseWrapper"
+#define kHeaderBypassBL                @"x-kinvey-skip-business-logic"
+#define kHeaderClientAppVersion        @"X-Kinvey-Client-App-Version"
+#define kHeaderCustomRequestProperties @"X-Kinvey-Custom-Request-Properties"
 
 #define kHeaderValueJson @"application/json"
 
@@ -101,7 +104,23 @@ static NSOperationQueue* kcsRequestQueue;
     return kcsRequestQueue;
 }
 
-+ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
+                                 route:(NSString*)route
+                               options:(NSDictionary*)options
+                           credentials:(id)credentials
+{
+    return [self requestWithCompletion:completion
+                                 route:route
+                               options:options
+                           credentials:credentials
+                  requestConfiguration:nil];
+}
+
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
+                                 route:(NSString*)route
+                               options:(NSDictionary*)options
+                           credentials:(id)credentials
+                  requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 {
     KCSRequest2* request = [[KCSRequest2 alloc] init];
     request.useMock = [options[KCSRequestOptionUseMock] boolValue];
@@ -109,6 +128,7 @@ static NSOperationQueue* kcsRequestQueue;
     request.credentials = credentials;
     request.route = route;
     request.options = options;
+    request.requestConfiguration = requestConfiguration;
     return request;
 }
 
@@ -149,6 +169,39 @@ static NSOperationQueue* kcsRequestQueue;
     return endpoint;
 }
 
+-(NSString*)clientAppVersion
+{
+    NSString* clientAppVersion;
+    
+    if (self.requestConfiguration &&
+        self.requestConfiguration.clientAppVersion)
+    {
+        clientAppVersion = self.requestConfiguration.clientAppVersion;
+    } else if ([KCSClient2 sharedClient].configuration &&
+               [KCSClient2 sharedClient].configuration.requestConfiguration &&
+               [KCSClient2 sharedClient].configuration.requestConfiguration.clientAppVersion)
+    {
+        clientAppVersion = [KCSClient2 sharedClient].configuration.requestConfiguration.clientAppVersion;
+    } else {
+        clientAppVersion = nil;
+    }
+    
+    return clientAppVersion;
+}
+
+-(NSDictionary*)customRequestProperties
+{
+    NSMutableDictionary* customRequestProperties = [NSMutableDictionary dictionary];
+    
+    [customRequestProperties addEntriesFromDictionary:[KCSClient sharedClient].configuration.requestConfiguration.customRequestProperties];
+    
+    [customRequestProperties addEntriesFromDictionary:[KCSClient2 sharedClient].configuration.requestConfiguration.customRequestProperties];
+    
+    [customRequestProperties addEntriesFromDictionary:self.requestConfiguration.customRequestProperties];
+    
+    return [KCSMutableSortedDictionary dictionaryWithDictionary:customRequestProperties];
+}
+
 - (NSMutableURLRequest*)urlRequest
 {
     KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
@@ -169,6 +222,21 @@ static NSOperationQueue* kcsRequestQueue;
     headers[kHeaderDeviceInfo] = [KCSPlatformUtils platformString];
     headers[kHeaderResponseWrapper] = @"true";
     setIfValNotNil(headers[kHeaderClientMethod], self.options[KCSRequestOptionClientMethod]);
+    
+    NSString* clientAppVersion = self.clientAppVersion;
+    setIfValNotNil(headers[kHeaderClientAppVersion], clientAppVersion);
+    
+    NSDictionary* customRequestProperties = self.customRequestProperties;
+    if (customRequestProperties && customRequestProperties.count > 0) {
+        NSError *error = nil;
+        NSData *data = [NSJSONSerialization dataWithJSONObject:customRequestProperties
+                                                       options:0
+                                                         error:&error];
+        if (data && !error) {
+            headers[kHeaderCustomRequestProperties] = [[NSString alloc] initWithData:data
+                                                                            encoding:NSUTF8StringEncoding];
+        }
+    }
 
     [headers addEntriesFromDictionary:self.headers];
     

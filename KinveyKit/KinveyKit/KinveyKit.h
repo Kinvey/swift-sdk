@@ -53,6 +53,7 @@
 
 #import "KCSLogSink.h"
 
+#import "KCSURLProtocol.h"
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"

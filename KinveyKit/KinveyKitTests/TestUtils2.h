@@ -24,6 +24,7 @@
 #import "LogTester.h"
 #import "KCSMockServer.h"
 #import "KCSMockReachability.h"
+#import "KCSRequestConfiguration.h"
 
 #define KTAssertNoError XCTAssertNil(error, @"Should not get an error: %@", error);
 
@@ -47,9 +48,16 @@ id<KCSCredentials> mockCredentails();
 
 @interface XCTestCase (TestUtils2)
 @property (nonatomic) BOOL done;
+
 - (BOOL) poll;
+
 - (void)setupKCS:(BOOL)initUser;
+
+- (void)    setupKCS:(BOOL)initUser
+requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
+
 - (void) useMockUser;
+
 @end
 
 @interface TestUtils2 : NSObject
