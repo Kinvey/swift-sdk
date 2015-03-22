@@ -811,7 +811,11 @@ NSError* createCacheError(NSString* message)
     return self.offlineUpdateEnabled && [KCSAppdataStore caches].offlineUpdateEnabled && [self isNoNetworkError:error] == YES;
 }
 
-- (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void) saveMainEntity:(KCSSerializedObject*)serializedObj
+   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+               progress:(KCSSaveGraph*)progress
+    withCompletionBlock:(KCSCompletionBlock)completionBlock
+      withProgressBlock:(KCSProgressBlock)progressBlock
 {
     BOOL isPostRequest = serializedObj.isPostRequest;
     
@@ -841,7 +845,8 @@ NSError* createCacheError(NSString* message)
     }
                                                         route:route
                                                       options:@{KCSRequestLogMethod}
-                                                  credentials:[KCSUser activeUser]];
+                                                  credentials:[KCSUser activeUser]
+                                         requestConfiguration:requestConfiguration];
     NSString *objectId = serializedObj.objectId;
     NSDictionary *dictionaryToMap = serializedObj.dataToSerialize;
     
@@ -864,10 +869,18 @@ NSError* createCacheError(NSString* message)
     [request start];
 }
 
-- (void) saveEntityWithResources:(KCSSerializedObject*)so progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void) saveEntityWithResources:(KCSSerializedObject*)so
+            requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                        progress:(KCSSaveGraph*)progress
+             withCompletionBlock:(KCSCompletionBlock)completionBlock
+               withProgressBlock:(KCSProgressBlock)progressBlock
 {
     //just go right on to main entity here sine this store does not do resources
-    [self saveMainEntity:so progress:progress withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+    [self saveMainEntity:so
+    requestConfiguration:requestConfiguration
+                progress:progress
+     withCompletionBlock:completionBlock
+       withProgressBlock:progressBlock];
 }
 
 - (KCSSerializedObject*) makeSO:(id<KCSPersistable>)object error:(NSError**)error
@@ -875,7 +888,12 @@ NSError* createCacheError(NSString* message)
     return [KCSObjectMapper makeKinveyDictionaryFromObject:object error:error];
 }
 
-- (void) saveEntity:(id<KCSPersistable>)objToSave progressGraph:(KCSSaveGraph*)progress doSaveBlock:(KCSCompletionBlock)doSaveblock alreadySavedBlock:(KCSCompletionWrapperBlock_t)alreadySavedBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void)  saveEntity:(id<KCSPersistable>)objToSave
+requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+       progressGraph:(KCSSaveGraph*)progress
+         doSaveBlock:(KCSCompletionBlock)doSaveblock
+   alreadySavedBlock:(KCSCompletionWrapperBlock_t)alreadySavedBlock
+   withProgressBlock:(KCSProgressBlock)progressBlock
 {
     //Step 0: Serialize Object
     NSError* error = nil;
@@ -889,20 +907,27 @@ NSError* createCacheError(NSString* message)
     DBAssert(objKey != nil, @"should have a valid obj key here");
     NSString* cname = self.backingCollection.collectionName;
     [objKey ifNotLoaded:^{
-        [self saveEntityWithResources:so progress:progress
-                  withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-                      [objKey finished:objectsOrNil error:errorOrNil];
-                      [objKey doAfterWaitingResaves:^{
-                          doSaveblock(objectsOrNil, errorOrNil);
-                      }];
-                      
-                  } withProgressBlock:progressBlock];
+        [self saveEntityWithResources:so
+                 requestConfiguration:requestConfiguration
+                             progress:progress
+                  withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+        {
+            [objKey finished:objectsOrNil error:errorOrNil];
+            [objKey doAfterWaitingResaves:^{
+                doSaveblock(objectsOrNil, errorOrNil);
+            }];
+        }
+                    withProgressBlock:progressBlock];
     }
     otherwiseWhenLoaded:alreadySavedBlock
 andResaveAfterReferencesSaved:^{
     KCSSerializedObject* soPrime = [KCSObjectMapper makeResourceEntityDictionaryFromObject:objToSave forCollection:cname error:NULL]; //TODO: figure out if this is needed?
     [soPrime restoreReferences:so];
-    [self saveMainEntity:soPrime progress:progress withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    [self saveMainEntity:soPrime
+    requestConfiguration:requestConfiguration
+                progress:progress
+     withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+    {
         [saveGraph resaveComplete];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         //TODO: as above
@@ -910,7 +935,20 @@ andResaveAfterReferencesSaved:^{
 }];
 }
 
-- (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void) saveObject:(id)object
+withCompletionBlock:(KCSCompletionBlock)completionBlock
+  withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    [self saveObject:object
+requestConfiguration:nil
+ withCompletionBlock:completionBlock
+   withProgressBlock:progressBlock];
+}
+
+- (void)  saveObject:(id)object
+requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+ withCompletionBlock:(KCSCompletionBlock)completionBlock
+   withProgressBlock:(KCSProgressBlock)progressBlock
 {
     KCSSTORE_VALIDATE_PRECONDITION
     
@@ -932,6 +970,7 @@ andResaveAfterReferencesSaved:^{
     [objectsToSave enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         //Step 0: Serialize Object
         [self saveEntity:obj
+    requestConfiguration:requestConfiguration
            progressGraph:progress
              doSaveBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
                  if (done) {

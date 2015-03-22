@@ -91,11 +91,13 @@ id<KCSCredentials> mockCredentails()
     
 }
 - (void) setupProduction:(BOOL)initUser
+    requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 {
     (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1880"
                                                        withAppSecret:@"6414992408f04132bd467746f7ecbdcf"
                                                         usingOptions:@{KCS_LOG_LEVEL              : @255,
-                                                                       KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}];
+                                                                       KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}
+                                                requestConfiguration:requestConfiguration];
     if (initUser) {
         [self useProductionUser];
     }
@@ -103,8 +105,16 @@ id<KCSCredentials> mockCredentails()
 
 - (void)setupKCS:(BOOL)initUser
 {
+    [self   setupKCS:initUser
+requestConfiguration:nil];
+}
+
+- (void)    setupKCS:(BOOL)initUser
+requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+{
     //    [self setupStaging];
-    [self setupProduction:initUser];
+    [self setupProduction:initUser
+     requestConfiguration:requestConfiguration];
 }
 
 - (void) useMockUser

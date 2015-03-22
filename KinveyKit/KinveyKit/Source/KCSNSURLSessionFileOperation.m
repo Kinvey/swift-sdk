@@ -21,6 +21,7 @@
 
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
+#import "KCSURLProtocol.h"
 
 @interface KCSNSURLSessionFileOperation () <NSURLSessionDelegate, NSURLSessionDownloadDelegate, NSURLSessionTaskDelegate>
 @property (nonatomic, retain) NSURL* localFile;
@@ -59,6 +60,7 @@
         [super start];
 
         NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
+        config.protocolClasses = [KCSURLProtocol protocolClasses];
         _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
         
         if (_localFile) {
