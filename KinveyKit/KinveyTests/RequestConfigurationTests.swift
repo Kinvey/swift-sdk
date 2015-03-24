@@ -13,7 +13,7 @@ class RequestConfigurationTests: XCTestCase {
     var collection: KCSCollection!
     var store: KCSStore!
     var offlineUpdateDelegate: KCSOfflineUpdateDelegate!
-    let timeout = 30
+    let timeout = NSTimeInterval(30)
     
     override func setUp() {
         super.setUp()
