@@ -54,6 +54,7 @@ id<KCSCredentials> mockCredentails();
 - (void)setupKCS:(BOOL)initUser;
 
 - (void)    setupKCS:(BOOL)initUser
+             options:(NSDictionary*)options
 requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
 
 - (void) useMockUser;

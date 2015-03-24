@@ -5,4 +5,4 @@
 #import <XCTest/XCTest.h>
 #import "KinveyKit.h"
 #import "TestUtils2.h"
-#import "KCSMutableSortedDictionary.h"
+#import "KCSMutableOrderedDictionary.h"

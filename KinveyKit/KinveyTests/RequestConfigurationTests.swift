@@ -12,6 +12,8 @@ class RequestConfigurationTests: XCTestCase {
     
     var collection: KCSCollection!
     var store: KCSStore!
+    var offlineUpdateDelegate: KCSOfflineUpdateDelegate!
+    let timeout = 30
     
     override func setUp() {
         super.setUp()
@@ -22,12 +24,45 @@ class RequestConfigurationTests: XCTestCase {
                 "globalProperty" : "abc"
             ]
         )
-        setupKCS(true, requestConfiguration: requestConfiguration)
+        setupKCS(true, options: nil, requestConfiguration: requestConfiguration)
+        
+        class MockOfflineUpdateDelegate:NSObject, KCSOfflineUpdateDelegate {
+            
+            private func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
+                return true
+            }
+            
+            private func didEnqueueObject(objectId: String!, inCollection collectionName: String!) {             
+            }
+            
+            private func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
+                return true
+            }
+            
+            private func willSaveObject(objectId: String!, inCollection collectionName: String!) {
+            }
+            
+            private func didSaveObject(objectId: String!, inCollection collectionName: String!) {
+            }
+            
+            private func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
+                return true
+            }
+            
+            private func willDeleteObject(objectId: String!, inCollection collectionName: String!) {
+            }
+            
+            private func didDeleteObject(objectId: String!, inCollection collectionName: String!) {
+            }
+            
+        }
+        offlineUpdateDelegate = MockOfflineUpdateDelegate()
+        KCSClient.sharedClient().setOfflineDelegate(offlineUpdateDelegate)
         
         collection = KCSCollection(fromString: "city", ofClass: NSMutableDictionary.self)
         store = KCSCachedStore(collection: collection, options: [
-            KCSStoreKeyCachePolicy : KCSCachePolicy.None.rawValue,
-            KCSStoreKeyOfflineUpdateEnabled : false
+            KCSStoreKeyCachePolicy : KCSCachePolicy.LocalFirst.rawValue,
+            KCSStoreKeyOfflineUpdateEnabled : true
         ])
     }
     
@@ -55,7 +90,7 @@ class RequestConfigurationTests: XCTestCase {
                     "lang" : "fr",
                     "globalProperty" : "abc"
                     ] as Dictionary<String, String>
-                let data = NSJSONSerialization.dataWithJSONObject(KCSMutableSortedDictionary(dictionary: expectedResult),
+                let data = NSJSONSerialization.dataWithJSONObject(KCSMutableOrderedDictionary(dictionary: expectedResult),
                     options: nil,
                     error: &error)
                 XCTAssertNil(error)
@@ -75,12 +110,16 @@ class RequestConfigurationTests: XCTestCase {
                 XCTAssertNotNil(results)
                 XCTAssertEqual(results.count, 1)
                 
+                if results.count > 0 {
+                    XCTAssertEqual(results[0] as Dictionary, obj)
+                }
+                
                 expectationSave.fulfill()
             },
             withProgressBlock: nil
         )
         
-        self.waitForExpectationsWithTimeout(10, handler: { (error: NSError!) -> Void in
+        self.waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in
             KCSURLProtocol.unregisterClass(MockURLProtocol)
             
             XCTAssertNil(error)
@@ -108,7 +147,7 @@ class RequestConfigurationTests: XCTestCase {
                     "globalProperty" : "abc",
                     "requestProperty" : "123"
                     ] as Dictionary<String, String>
-                let data = NSJSONSerialization.dataWithJSONObject(KCSMutableSortedDictionary(dictionary: expectedResult),
+                let data = NSJSONSerialization.dataWithJSONObject(KCSMutableOrderedDictionary(dictionary: expectedResult),
                     options: nil,
                     error: &error)
                 XCTAssertNil(error)
@@ -134,13 +173,14 @@ class RequestConfigurationTests: XCTestCase {
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
                 XCTAssertEqual(results.count, 1)
+                XCTAssertEqual(results[0] as Dictionary, obj)
                 
                 expectationSave.fulfill()
             },
             withProgressBlock: nil
         )
         
-        self.waitForExpectationsWithTimeout(10, handler: { (error: NSError!) -> Void in
+        self.waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in
             KCSURLProtocol.unregisterClass(MockURLProtocol)
             
             XCTAssertNil(error)
