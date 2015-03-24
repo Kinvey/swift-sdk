@@ -19,12 +19,13 @@
 
 
 #import "KCSRequest2.h"
+#import "KCSRequest2+Private.h"
 #import "KinveyCoreInternal.h"
 
 #import "KCSNSURLRequestOperation.h"
 #import "KCSMockRequestOperation.h"
 #import "KCSNSURLSessionOperation.h"
-#import "KCSMutableSortedDictionary.h"
+#import "KCSMutableOrderedDictionary.h"
 
 #define kHeaderAuthorization           @"Authorization"
 #define kHeaderDate                    @"Date"
@@ -34,8 +35,6 @@
 #define kHeaderDeviceInfo              @"X-Kinvey-Device-Information"
 #define kHeaderResponseWrapper         @"X-Kinvey-ResponseWrapper"
 #define kHeaderBypassBL                @"x-kinvey-skip-business-logic"
-#define kHeaderClientAppVersion        @"X-Kinvey-Client-App-Version"
-#define kHeaderCustomRequestProperties @"X-Kinvey-Custom-Request-Properties"
 
 #define kHeaderValueJson @"application/json"
 
@@ -199,7 +198,24 @@ static NSOperationQueue* kcsRequestQueue;
     
     [customRequestProperties addEntriesFromDictionary:self.requestConfiguration.customRequestProperties];
     
-    return [KCSMutableSortedDictionary dictionaryWithDictionary:customRequestProperties];
+    return customRequestProperties;
+}
+
+-(NSString*)customRequestPropertiesJsonString
+{
+    NSDictionary* customRequestProperties = self.customRequestProperties;
+    if (customRequestProperties && customRequestProperties.count > 0) {
+        NSError *error = nil;
+        NSData *data = [NSJSONSerialization dataWithJSONObject:[KCSMutableOrderedDictionary dictionaryWithDictionary:customRequestProperties]
+                                                       options:0
+                                                         error:&error];
+        if (data && !error) {
+            return [[NSString alloc] initWithData:data
+                                         encoding:NSUTF8StringEncoding];
+        }
+    }
+    
+    return nil;
 }
 
 - (NSMutableURLRequest*)urlRequest
@@ -226,17 +242,8 @@ static NSOperationQueue* kcsRequestQueue;
     NSString* clientAppVersion = self.clientAppVersion;
     setIfValNotNil(headers[kHeaderClientAppVersion], clientAppVersion);
     
-    NSDictionary* customRequestProperties = self.customRequestProperties;
-    if (customRequestProperties && customRequestProperties.count > 0) {
-        NSError *error = nil;
-        NSData *data = [NSJSONSerialization dataWithJSONObject:customRequestProperties
-                                                       options:0
-                                                         error:&error];
-        if (data && !error) {
-            headers[kHeaderCustomRequestProperties] = [[NSString alloc] initWithData:data
-                                                                            encoding:NSUTF8StringEncoding];
-        }
-    }
+    NSString* customRequestPropertiesJsonString = self.customRequestPropertiesJsonString;
+    setIfValNotNil(headers[kHeaderCustomRequestProperties], customRequestPropertiesJsonString);
 
     [headers addEntriesFromDictionary:self.headers];
     

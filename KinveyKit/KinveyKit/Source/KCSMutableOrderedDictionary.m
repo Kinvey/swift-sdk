@@ -6,16 +6,16 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
-#import "KCSMutableSortedDictionary.h"
+#import "KCSMutableOrderedDictionary.h"
 
-@interface KCSMutableSortedDictionary ()
+@interface KCSMutableOrderedDictionary ()
 
 @property (nonatomic, strong) NSMutableDictionary* dictionary;
 @property (nonatomic, strong) NSMutableOrderedSet* keys;
 
 @end
 
-@implementation KCSMutableSortedDictionary
+@implementation KCSMutableOrderedDictionary
 
 -(instancetype)initWithCapacity:(NSUInteger)numItems
 {

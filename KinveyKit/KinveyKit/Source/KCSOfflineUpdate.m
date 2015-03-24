@@ -137,12 +137,17 @@
     DELEGATEMETHOD(shouldSaveObject:inCollection:lastAttemptedSaveTime:) {
         shouldSave = [_delegate shouldSaveObject:objId inCollection:collection lastAttemptedSaveTime:lastSaveTime];
     }
+    
+    NSDictionary* headers = saveInfo[@"headers"];
+    
     if (shouldSave == YES) {
         NSDictionary* entity = saveInfo[@"obj"];
-        NSDictionary* headers = saveInfo[@"headers"];
         [self save:objId entity:entity route:route collection:collection headers:headers method:method];
     } else {
-        [self.persitence removeUnsavedEntity:objId route:route collection:collection];
+        [self.persitence removeUnsavedEntity:objId
+                                       route:route
+                                  collection:collection
+                                     headers:headers];
     }
 }
 
@@ -174,7 +179,10 @@
     NSDictionary* options = [self optionsFromHeaders:headers];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (!error) {
-            [self.persitence removeUnsavedEntity:objId route:route collection:collection];
+            [self.persitence removeUnsavedEntity:objId
+                                           route:route
+                                      collection:collection
+                                         headers:headers];
             NSDictionary* updatedEntity = [response jsonObject];
             [self.cache updateCacheForObject:objId withEntity:updatedEntity atRoute:route collection:collection];
             DELEGATEMETHOD(didSaveObject:inCollection:) {
@@ -217,12 +225,17 @@
     DELEGATEMETHOD(shouldDeleteObject:inCollection:lastAttemptedDeleteTime:) {
         shouldDelete = [_delegate shouldDeleteObject:objId inCollection:collection lastAttemptedDeleteTime:lastSaveTime];
     }
+    
+    NSDictionary* headers = saveInfo[@"headers"];
+    
     if (shouldDelete == YES) {
         NSDictionary* entity = saveInfo[@"obj"];
-        NSDictionary* headers = saveInfo[@"headers"];
         [self delete:objId entity:entity route:route collection:collection headers:headers method:method];
     } else {
-        [self.persitence removeUnsavedEntity:objId route:route collection:collection];
+        [self.persitence removeUnsavedEntity:objId
+                                       route:route
+                                  collection:collection
+                                     headers:headers];
     }
 }
 
@@ -242,7 +255,10 @@
     NSDictionary* options = [self optionsFromHeaders:headers];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (!error) {
-            [self.persitence removeUnsavedEntity:objId route:route collection:collection];
+            [self.persitence removeUnsavedEntity:objId
+                                           route:route
+                                      collection:collection
+                                         headers:headers];
             [self.cache deleteObject:objId route:route collection:collection];
             DELEGATEMETHOD(didDeleteObject:inCollection:) {
                 [_delegate didDeleteObject:objId inCollection:collection];

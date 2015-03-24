@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KCSMutableSortedDictionary : NSMutableDictionary
+@interface KCSMutableOrderedDictionary : NSMutableDictionary
 
 -(instancetype)initWithDictionary:(NSDictionary *)otherDictionary;
 

@@ -822,11 +822,18 @@ NSError* createCacheError(NSString* message)
     //Step 3: save entity
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    __block KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             if ([self shouldEnqueue:error] == YES) {
                 //enqueue save
-                NSString* _id = [[KCSAppdataStore caches] addUnsavedObject:serializedObj.handleToOriginalObject entity:serializedObj.dataToSerialize route:[self.backingCollection route] collection:self.backingCollection.collectionName method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT) headers:@{KCSRequestLogMethod} error:error];
+                
+                NSString* _id = [[KCSAppdataStore caches] addUnsavedObject:serializedObj.handleToOriginalObject
+                                                                    entity:serializedObj.dataToSerialize
+                                                                     route:[self.backingCollection route]
+                                                                collection:self.backingCollection.collectionName
+                                                                    method:(isPostRequest ? KCSRESTMethodPOST : KCSRESTMethodPUT)
+                                                                   headers:request.urlRequest.allHTTPHeaderFields
+                                                                     error:error];
                 
                 if (_id != nil) {
                     error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[_id]}];
