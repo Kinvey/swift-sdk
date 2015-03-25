@@ -5,7 +5,8 @@
 
 **Release Date:** March 25, 2015
 
-* Add support for Client App Version and Custom Request Properties, in a global context (using the shared instance of KCSClient) or per request
+* Enhancement: Added support for setting client app version.
+* Enhancement: Added support for setting custom request properties.
 
 For example (Swift code snippet):
 
