@@ -20,6 +20,7 @@
 
 #import "KinveyHeaderInfo.h"
 #import "KCSNetworkDefs.h"
+#import "KCSRequestConfiguration.h"
 
 KCS_CONSTANT KCSRequestOptionUseMock;
 KCS_CONSTANT KCSRequestOptionClientMethod;
@@ -56,9 +57,20 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
 @property (nonatomic, copy) NSDictionary* body;
 @property (nonatomic, copy) NSString* queryString;
 @property (nonatomic, copy) KCSRequestProgressBlock progress;
+@property (nonatomic, strong) KCSRequestConfiguration* requestConfiguration;
 
 
-+ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion route:(NSString*)route options:(NSDictionary*)options credentials:(id)credentials;
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
+                                 route:(NSString*)route
+                               options:(NSDictionary*)options
+                           credentials:(id)credentials;
+
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
+                                 route:(NSString*)route
+                               options:(NSDictionary*)options
+                           credentials:(id)credentials
+                  requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
+
 - (id<KCSNetworkOperation>) start;
 
 BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op);

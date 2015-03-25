@@ -175,9 +175,25 @@
     self.configuration = configuration;
 }
 
-- (instancetype) initializeKinveyServiceForAppKey:(NSString *)appKey withAppSecret:(NSString *)appSecret usingOptions:(NSDictionary *)options
+- (instancetype) initializeKinveyServiceForAppKey:(NSString *)appKey
+                                    withAppSecret:(NSString *)appSecret
+                                     usingOptions:(NSDictionary *)options
 {
-    [self initializeWithConfiguration:[KCSClientConfiguration configurationWithAppKey:appKey secret:appSecret options:options]];
+    return [self initializeKinveyServiceForAppKey:appKey
+                                    withAppSecret:appSecret
+                                     usingOptions:options
+                             requestConfiguration:nil];
+}
+
+- (instancetype) initializeKinveyServiceForAppKey:(NSString *)appKey
+                                    withAppSecret:(NSString *)appSecret
+                                     usingOptions:(NSDictionary *)options
+                             requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+{
+    [self initializeWithConfiguration:[KCSClientConfiguration configurationWithAppKey:appKey
+                                                                               secret:appSecret
+                                                                              options:options
+                                                                 requestConfiguration:requestConfiguration]];
     return self;
 }
 
