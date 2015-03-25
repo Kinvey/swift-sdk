@@ -15,28 +15,28 @@
 {
     // Test empty String + empty string
     NSURL *emptyURL = [NSURL URLWithString:@""];
-    STAssertEqualObjects([emptyURL URLByAppendingQueryString:@""], emptyURL, @"");
+    XCTAssertEqualObjects([emptyURL URLByAppendingQueryString:@""], emptyURL, @"");
     
     
     // Test empty string + value
     NSURL *testURL = [NSURL URLWithString:@"?value"];
-    STAssertEqualObjects([emptyURL URLByAppendingQueryString:@"value"], testURL, @"");
+    XCTAssertEqualObjects([emptyURL URLByAppendingQueryString:@"value"], testURL, @"");
     
     // Test Value + empty string
     testURL = [NSURL URLWithString:@"http://www.kinvey.com/"];
-    STAssertEqualObjects([testURL URLByAppendingQueryString:@""], testURL, @"");
+    XCTAssertEqualObjects([testURL URLByAppendingQueryString:@""], testURL, @"");
 
     // Test nil
-    STAssertEqualObjects([testURL URLByAppendingQueryString:nil], testURL, @"");
+    XCTAssertEqualObjects([testURL URLByAppendingQueryString:nil], testURL, @"");
 
     // Test simple query
     NSURL *rootURL = [NSURL URLWithString:@"http://www.kinvey.com/"];
     testURL = [NSURL URLWithString:@"http://www.kinvey.com/?test"];
-    STAssertEqualObjects([rootURL URLByAppendingQueryString:@"test"], testURL, @"");
+    XCTAssertEqualObjects([rootURL URLByAppendingQueryString:@"test"], testURL, @"");
     
     // Test double append
     testURL = [NSURL URLWithString:@"http://www.kinvey.com/?one=1&two=2"];    
-    STAssertEqualObjects([[rootURL URLByAppendingQueryString:@"one=1"] URLByAppendingQueryString:@"two=2"], testURL, @"");
+    XCTAssertEqualObjects([[rootURL URLByAppendingQueryString:@"one=1"] URLByAppendingQueryString:@"two=2"], testURL, @"");
 }
 
 - (void)testURLWithUnencodedString
@@ -47,6 +47,6 @@
     NSURL *one = [NSURL URLWithString:encoded];
     NSURL *two = [NSURL URLWithUnencodedString:unEncoded];
     
-    STAssertEqualObjects(two, one, @"");
+    XCTAssertEqualObjects(two, one, @"");
 }
 @end

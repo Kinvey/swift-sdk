@@ -18,7 +18,7 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KCSMockServer.h"
 #import "KinveyCoreInternal.h"
@@ -43,7 +43,7 @@
 
 @end
 
-@interface KCSMockServerTest : SenTestCase
+@interface KCSMockServerTest : XCTestCase
 @property (nonatomic, strong) KCSMockServer* server;
 @end
 
@@ -79,7 +79,7 @@
     KCSNetworkResponse* r1 = [_server responseForURL:@"http://foo.bar.com/appdata/kid_test/collection/1"];
     KTAssertNotNil(r1);
     KTAssertEqualsInt(r1.code, 200);
-    STAssertEqualObjects([r1 jsonObject], data, @"data should match previous");
+    XCTAssertEqualObjects([r1 jsonObject], data, @"data should match previous");
 }
 
 - (void) testPing
@@ -95,7 +95,7 @@
     KCSNetworkResponse* x = [_server responseForURL:@"http://v3yk1n-kcs.kinvey.com/appdata/kid_fail"];
     KTAssertNotNil(x);
     KTAssertEqualsInt(x.code, 401);
-    STAssertEqualObjects(x.jsonObject[@"error"], @"InvalidCredentials", @"should be an invalid creds error");
+    XCTAssertEqualObjects(x.jsonObject[@"error"], @"InvalidCredentials", @"should be an invalid creds error");
 }
 
 - (void) testReflection
@@ -109,8 +109,8 @@
     KCSNetworkResponse* x = [_server responseForRequest:req];
     KTAssertNotNil(x);
     KTAssertEqualsInt(x.code, 200);
-    STAssertEqualObjects([x jsonObject], body, @"body must match");
-    STAssertEqualObjects(x.headers, headers, @"headers must match");
+    XCTAssertEqualObjects([x jsonObject], body, @"body must match");
+    XCTAssertEqualObjects(x.headers, headers, @"headers must match");
 }
 
 - (void) testError
@@ -119,7 +119,7 @@
     [_server setError:error forRoute:@"/appdata/kid_test/collection/1"];
     NSError* r1 = [_server errorForURL:@"http://foo.bar.com/appdata/kid_test/collection/1"];
     KTAssertNotNil(r1);
-    STAssertEqualObjects(r1.domain, NSURLErrorDomain, @"domains should match");
+    XCTAssertEqualObjects(r1.domain, NSURLErrorDomain, @"domains should match");
 }
 
 

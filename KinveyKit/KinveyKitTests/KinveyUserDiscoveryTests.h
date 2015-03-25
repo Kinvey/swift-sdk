@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 Kinvey. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface KinveyUserDiscoveryTests : SenTestCase
+@interface KinveyUserDiscoveryTests : XCTestCase
 
 @end

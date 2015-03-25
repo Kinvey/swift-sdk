@@ -21,7 +21,7 @@
 #import "KCSAppdataStore.h"
 
 /** Cache Policies. These constants determine the caching behavior when used with KCSChacedStore query. */
-typedef enum KCSCachePolicy {
+typedef NS_ENUM(NSUInteger, KCSCachePolicy) {
     /** No Caching - all queries are sent to the server */
     KCSCachePolicyNone,
     KCSCachePolicyLocalOnly,
@@ -29,7 +29,7 @@ typedef enum KCSCachePolicy {
     KCSCachePolicyNetworkFirst,
     KCSCachePolicyBoth,
     KCSCachePolicyReadOnceAndSaveLocal_Xperimental //for caching assests that change infrequently (e.g. ui assets, names of presidents, etc)
-} KCSCachePolicy;
+};
 
 #define KCSStoreKeyCachePolicy @"cachePolicy"
 

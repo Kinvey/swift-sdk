@@ -17,7 +17,7 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KinveyCoreInternal.h"
 #import "KinveyFileStoreInteral.h"
@@ -28,7 +28,7 @@
 #define kImageSize 3510397
 
 /* Test File loading irrespective of KCS blob service */
-@interface FileRequestTests : SenTestCase
+@interface FileRequestTests : XCTestCase
 
 @end
 
@@ -60,8 +60,8 @@
       long bytes = [returnInfo[@"bytesWritten"] longValue];
       NSDictionary* d = [[NSFileManager defaultManager] attributesOfItemAtPath:[file.localURL path] error:NULL];
       NSNumber* fileOnDiskSize = d[NSFileSize];
-      STAssertEquals(bytes, (long)kImageSize, @"bytes downloaded should match");
-      STAssertEquals(bytes, [fileOnDiskSize longValue], @"bytes should also match");
+      XCTAssertEqual(bytes, (long)kImageSize, @"bytes downloaded should match");
+      XCTAssertEqual(bytes, [fileOnDiskSize longValue], @"bytes should also match");
       KTPollDone
   } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
       

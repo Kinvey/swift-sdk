@@ -17,7 +17,7 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "TestUtils2.h"
 
@@ -110,7 +110,7 @@
 
 @end
 
-@interface OfflineTests : SenTestCase
+@interface OfflineTests : XCTestCase
 @property (nonatomic, strong) KCSOfflineUpdate* update;
 @property (nonatomic, strong) KCSEntityPersistence* persistence;
 @property (nonatomic, strong) OfflineDelegate* delegate;
@@ -152,7 +152,7 @@
     self.done = NO;
     [self poll];
     
-    STAssertEquals([self.persistence unsavedCount], (int)0, @"should be zero");
+    XCTAssertEqual([self.persistence unsavedCount], (int)0, @"should be zero");
 }
 
 - (void) testRestartNotConnected
@@ -166,10 +166,10 @@
     self.done = NO;
     [self poll];
     
-    STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
+    XCTAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
     KTAssertEqualsInt(self.delegate.didEnqueCalledCount, 2);
     
-    STAssertEquals([self.persistence unsavedCount], (int)1, @"should be one");
+    XCTAssertEqual([self.persistence unsavedCount], (int)1, @"should be one");
 }
 
 
@@ -185,10 +185,10 @@
     self.done = NO;
     [self.update start];
     [self poll];
-    STAssertTrue(self.delegate.shouldEnqueueCalled, @"should be called");
-    STAssertFalse(self.delegate.didDeleteCalled, @"shoul dnot calle delete");
-    STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
-    STAssertEquals([self.persistence unsavedCount], (int)1, @"should be one");
+    XCTAssertTrue(self.delegate.shouldEnqueueCalled, @"should be called");
+    XCTAssertFalse(self.delegate.didDeleteCalled, @"shoul dnot calle delete");
+    XCTAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
+    XCTAssertEqual([self.persistence unsavedCount], (int)1, @"should be one");
 
 
     self.done = NO;
@@ -196,8 +196,8 @@
     [KCSMockReachability changeReachability:YES];
     [self poll];
     
-    STAssertEquals([self.persistence unsavedCount], (int)0, @"should be zero");
-    STAssertTrue(self.delegate.didSaveCalled, @"should not have been saved");
+    XCTAssertEqual([self.persistence unsavedCount], (int)0, @"should be zero");
+    XCTAssertTrue(self.delegate.didSaveCalled, @"should not have been saved");
 }
 
 - (void) testKickoffEventSavesObjRemovesThatObjFromQueue
@@ -213,22 +213,22 @@
 
     self.done = NO;
     BOOL u = [self.update removeObject:@"X" objKey:@"X" route:@"r" collection:@"c" headers:@{KCSRequestLogMethod} method:@"DELETE" error:nil];
-    STAssertTrue(u, @"should be added");
+    XCTAssertTrue(u, @"should be added");
     
     [self.update start];
     [self poll];
-    STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
-    STAssertFalse(self.delegate.didDeleteCalled, @"should not have been saved");
-    STAssertEquals([self.persistence unsavedCount], (int)1, @"should be one");
+    XCTAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
+    XCTAssertFalse(self.delegate.didDeleteCalled, @"should not have been saved");
+    XCTAssertEqual([self.persistence unsavedCount], (int)1, @"should be one");
     
     self.done = NO;
     [KCSMockServer sharedServer].offline = NO;
     [KCSMockReachability changeReachability:YES];
     [self poll];
     
-    STAssertEquals([self.persistence unsavedCount], (int)0, @"should be zero");
-    STAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
-    STAssertTrue(self.delegate.didDeleteCalled, @"should not have been saved");
+    XCTAssertEqual([self.persistence unsavedCount], (int)0, @"should be zero");
+    XCTAssertFalse(self.delegate.didSaveCalled, @"should not have been saved");
+    XCTAssertTrue(self.delegate.didDeleteCalled, @"should not have been saved");
 
 }
 @end

@@ -18,14 +18,14 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <UIKit/UIKit.h>
 
 
 //! should not have any other dependencies
 #import "KCSPlatformUtils.h"
 
-@interface PlatformUtilsTest : SenTestCase
+@interface PlatformUtilsTest : XCTestCase
 
 @end
 
@@ -46,9 +46,9 @@
 - (void)testNSURLSessionSupport
 {
     if ([[UIDevice currentDevice].systemVersion floatValue] < 7.0) {
-        STAssertFalse([KCSPlatformUtils supportsNSURLSession], @"No support pre iOS7");
+        XCTAssertFalse([KCSPlatformUtils supportsNSURLSession], @"No support pre iOS7");
     } else {
-        STAssertTrue([KCSPlatformUtils supportsNSURLSession], @"Support iOS7 + ");
+        XCTAssertTrue([KCSPlatformUtils supportsNSURLSession], @"Support iOS7 + ");
     }
 }
 

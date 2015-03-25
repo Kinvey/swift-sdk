@@ -18,7 +18,7 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "TestUtils2.h"
 
@@ -33,9 +33,9 @@
 #undef ddLogLevel
 #define ddLogLevel LOG_FLAG_DEBUG
 
-#define KTAssertU STAssertTrue(u, @"pass");
+#define KTAssertU XCTAssertTrue(u, @"pass");
 
-@interface EntityCacheTests : SenTestCase
+@interface EntityCacheTests : XCTestCase
 
 @end
 
@@ -64,9 +64,9 @@
     BOOL u = [cache updateWithEntity:o route:@"r" collection:@"c"];
     KTAssertU
     NSDictionary* d = [cache entityForId:@"1" route:@"r" collection:@"c"];
-    STAssertNotNil(d, @"should get back value");
+    XCTAssertNotNil(d, @"should get back value");
     
-    STAssertEqualObjects(o, d, @"should be restored");
+    XCTAssertEqualObjects(o, d, @"should be restored");
 }
 
 - (void) testRemove
@@ -75,13 +75,13 @@
     NSDictionary* o = @{@"_id":@"1",@"foo":@"bar"};
     [cache updateWithEntity:o route:@"r" collection:@"c"];
     NSDictionary* d = [cache entityForId:@"1" route:@"r" collection:@"c"];
-    STAssertNotNil(d, @"should get back value");
+    XCTAssertNotNil(d, @"should get back value");
     
     BOOL u = [cache removeEntity:@"1" route:@"r" collection:@"c"];
     KTAssertU
 
     d = [cache entityForId:@"1" route:@"r" collection:@"c"];
-    STAssertNil(d, @"should get back no value");
+    XCTAssertNil(d, @"should get back no value");
 }
 
 - (void) testQueryRW
@@ -95,8 +95,8 @@
     KTAssertU
     
     NSArray* loadedIds = [cache idsForQuery:query route:route collection:cln];
-    STAssertNotNil(loadedIds, @"should have ids");
-    STAssertEqualObjects(loadedIds, ids, @"should match");
+    XCTAssertNotNil(loadedIds, @"should have ids");
+    XCTAssertEqualObjects(loadedIds, ids, @"should match");
 }
 
 - (void) testQueryReplacesOld
@@ -114,8 +114,8 @@
     KTAssertU
 
     NSArray* loadedIds = [cache idsForQuery:query route:route collection:cln];
-    STAssertNotNil(loadedIds, @"should have ids");
-    STAssertEqualObjects(loadedIds, secondSet, @"should match");
+    XCTAssertNotNil(loadedIds, @"should have ids");
+    XCTAssertEqualObjects(loadedIds, secondSet, @"should match");
 }
 
 - (void) testRemoveQueryFromPersistence
@@ -135,7 +135,7 @@
     KTAssertU
     
     objs = [cache idsForQuery:query route:route collection:cln];
-    STAssertNil(objs, @"should have no result");
+    XCTAssertNil(objs, @"should have no result");
 }
 
 - (NSArray*) jsonArray
@@ -143,7 +143,7 @@
     NSString* cdata = @"[{\"date\":\"ISODate(\\\"2013-06-21T12:51:38.969Z\\\")\",\"objCount\":10,\"objDescription\":\"one\",\"_acl\":{\"creator\":\"51c44c5982cd0ade36000012\"},\"_kmd\":{\"lmt\":\"2013-06-21T12:51:37.817Z\",\"ect\":\"2013-06-21T12:51:37.817Z\"},\"_id\":\"51c44c5982cd0ade36000013\"},{\"date\":\"ISODate(\\\"2013-06-21T12:51:38.969Z\\\")\",\"objCount\":10,\"objDescription\":\"two\",\"_acl\":{\"creator\":\"51c44c5982cd0ade36000012\"},\"_kmd\":{\"lmt\":\"2013-06-21T12:51:37.818Z\",\"ect\":\"2013-06-21T12:51:37.818Z\"},\"_id\":\"51c44c5982cd0ade36000014\"},{\"date\":\"ISODate(\\\"2013-06-21T12:51:38.969Z\\\")\",\"objCount\":10,\"objDescription\":\"two\",\"_acl\":{\"creator\":\"51c44c5982cd0ade36000012\"},\"_kmd\":{\"lmt\":\"2013-06-21T12:51:37.819Z\",\"ect\":\"2013-06-21T12:51:37.819Z\"},\"_id\":\"51c44c5982cd0ade36000015\"},{\"_acl\":{\"creator\":\"kid10005\"},\"_kmd\":{\"lmt\":\"2013-08-07T02:22:50.154Z\",\"ect\":\"2013-08-07T02:22:50.154Z\"},\"_id\":\"5201af7a3bb9501365000025\"},{\"_acl\":{\"creator\":\"506f3c35aa9734091d0000ee\"},\"_kmd\":{\"lmt\":\"2013-08-07T02:23:02.122Z\",\"ect\":\"2013-08-07T02:23:02.122Z\"},\"_id\":\"5201af863bb9501365000026\"},{\"_acl\":{\"creator\":\"kid10005\"},\"_kmd\":{\"lmt\":\"2013-09-24T19:14:55.984Z\",\"ect\":\"2013-09-24T19:14:55.984Z\"},\"_id\":\"5241e4af8daed3725400009c\"},{\"abc\":\"1\",\"_acl\":{\"creator\":\"kid10005\"},\"_kmd\":{\"lmt\":\"2013-09-24T19:15:02.536Z\",\"ect\":\"2013-09-24T19:15:02.536Z\"},\"_id\":\"5241e4b68daed3725400009d\"},{\"abc\":\"true\",\"_acl\":{\"creator\":\"kid10005\"},\"_kmd\":{\"lmt\":\"2013-09-24T19:15:11.263Z\",\"ect\":\"2013-09-24T19:15:11.263Z\"},\"_id\":\"5241e4bf8daed3725400009e\"}]";
     KCS_SBJsonParser* p = [[KCS_SBJsonParser alloc] init];
     NSArray* entities = [p objectWithString:cdata];
-    STAssertNotNil(entities, @"Should have data to import: %@", p.error);
+    XCTAssertNotNil(entities, @"Should have data to import: %@", p.error);
 
     return entities;
 }
@@ -161,7 +161,7 @@
     KTAssertU
     
     NSDictionary* entity = [cache entityForId:@"51c44c5982cd0ade36000013" route:route collection:cln];
-    STAssertNotNil(entity, @"should get back an entity");
+    XCTAssertNotNil(entity, @"should get back an entity");
 }
 
 
@@ -178,7 +178,7 @@
     
     NSArray* output = [cache export:route collection:cln];
     KTAssertCount(8, output);
-    STAssertEqualObjects(output, entities, @"should get back original");
+    XCTAssertEqualObjects(output, entities, @"should get back original");
     
     [cache clearCaches];
 }
@@ -191,7 +191,7 @@
     KTAssertU
     
     NSDictionary* recovered = [cache clientMetadata];
-    STAssertEqualObjects(recovered, meta, @"Should get the metadata back");
+    XCTAssertEqualObjects(recovered, meta, @"Should get the metadata back");
 }
 
 #pragma mark - Peristance Unsaveds
@@ -200,25 +200,25 @@
     KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
     
     NSString* newid = [cache addUnsavedEntity:@{@"a":@1,@"_id":@"1"} route:@"R" collection:@"C1" method:@"M1" headers:@{@"h1":@"v1"}];
-    STAssertNotNil(newid, @"should have an id");
+    XCTAssertNotNil(newid, @"should have an id");
     id d2 = @{@"a":@"b",@"_id":@"1"};
     newid = [cache addUnsavedEntity:d2 route:@"R" collection:@"C2" method:@"M2" headers:@{@"h1":@"v1",@"h2":@"v2"}];
-    STAssertNotNil(newid, @"should have an id");
+    XCTAssertNotNil(newid, @"should have an id");
     id d3 = @{@"a":@2,@"_id":@"1"};
     newid = [cache addUnsavedEntity:d3 route:@"R" collection:@"C1" method:@"M1" headers:@{@"h1":@"v1"}];
-    STAssertNotNil(newid, @"should have an id");
+    XCTAssertNotNil(newid, @"should have an id");
 
     int count = [cache unsavedCount];
-    STAssertEquals(count, (int)2, @"should have 2 objects");
+    XCTAssertEqual(count, (int)2, @"should have 2 objects");
     
     
     NSArray* unsaveds = [cache unsavedEntities];
     KTAssertCount(2, unsaveds);
-    STAssertEqualObjects(unsaveds[0][@"obj"], d2, @"");
-    STAssertEqualObjects(unsaveds[1][@"obj"], d3, @"should be the updated 2");
+    XCTAssertEqualObjects(unsaveds[0][@"obj"], d2, @"");
+    XCTAssertEqualObjects(unsaveds[1][@"obj"], d3, @"should be the updated 2");
     
     NSDate* saveDate = unsaveds[0][@"time"];
-    STAssertTrue([saveDate isKindOfClass:[NSDate class]], @"Should be a date");
+    XCTAssertTrue([saveDate isKindOfClass:[NSDate class]], @"Should be a date");
     
 }
 
@@ -242,11 +242,11 @@
     
     KCSObjectCache* ocache = [[KCSObjectCache alloc] init];
     NSArray* results = [ocache pullQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
-    STAssertNotNil(results, @"should have results");
+    XCTAssertNotNil(results, @"should have results");
     KTAssertCount(1, results);
     
     id obj = results[0];
-    STAssertTrue([obj isKindOfClass:[NSMutableDictionary class]], @"default should be nsmutable dictionary");
+    XCTAssertTrue([obj isKindOfClass:[NSMutableDictionary class]], @"default should be nsmutable dictionary");
 }
 
 - (void) testSetQuery
@@ -294,7 +294,7 @@
     KTAssertCount(4, pull2);
     
     for (id o in pull1) {
-        STAssertFalse([pull2 containsObject:o], @"should be different arrays");
+        XCTAssertFalse([pull2 containsObject:o], @"should be different arrays");
     }
 }
 
@@ -316,7 +316,7 @@
     KTAssertU
     
     NSArray* postResults = [ocache pullQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
-    STAssertNil(postResults, @"should have no result");
+    XCTAssertNil(postResults, @"should have no result");
 }
 
 - (void) testDelete
@@ -355,7 +355,7 @@
     NSString* collection = @"zfasdf";
     
     KCSQuery2* qAfter = [ocache addUnsavedDeleteQuery:q2 route:route collection:collection method:@"DELETE" headers:@{} error:nil];
-    STAssertNotNil(qAfter, @"");
+    XCTAssertNotNil(qAfter, @"");
 
     [ocache clear];
 }
@@ -374,7 +374,7 @@
     
     NSArray* allResults = [ocache pullQuery:[KCSQuery2 allQuery] route:route collection:cln];
     KTAssertCount(8, allResults);
-    STAssertEqualObjects(entities, allResults, @"should match original");
+    XCTAssertEqualObjects(entities, allResults, @"should match original");
     
     
     [ocache clear];
@@ -404,7 +404,7 @@
 //    NSArray* results = [cache pullQuery:q route:@"user" collection:@"_user"];
 //    NSLog(@"results = %@", results);
 
-    STFail(@"this should not work");
+    XCTFail(@"this should not work");
 }
 
 #pragma mark - Old Tests
@@ -420,9 +420,9 @@
     [cache cacheActiveUser:user];
     
     KCSUser2* restoredUser = [cache lastActiveUser];
-    STAssertEqualObjects(restoredUser.userId, user.userId, @"ids should match");
-    STAssertEqualObjects(restoredUser.username, user.username, @"usernames should match");
-    STAssertEqualObjects(restoredUser.email, user.email, @"emails should match");
+    XCTAssertEqualObjects(restoredUser.userId, user.userId, @"ids should match");
+    XCTAssertEqualObjects(restoredUser.username, user.username, @"usernames should match");
+    XCTAssertEqualObjects(restoredUser.email, user.email, @"emails should match");
 }
 
 
@@ -442,9 +442,9 @@
     [query2 addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"sortOrder" inDirection:kKCSAscending]];
     NSArray* results = [cache pullQuery:[KCSQuery2 queryWithQuery1:query2] route:@"A" collection:@"B"];
     
-    STAssertTrue(results.count == 2, @"should have both objects");
-    STAssertTrue([results containsObject:obj1], @"should have item 1");
-    STAssertTrue([results containsObject:obj2], @"should have item 2");
+    XCTAssertTrue(results.count == 2, @"should have both objects");
+    XCTAssertTrue([results containsObject:obj1], @"should have item 1");
+    XCTAssertTrue([results containsObject:obj2], @"should have item 2");
     
 }
 

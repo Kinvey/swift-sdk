@@ -18,7 +18,7 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KinveyKit.h"
 #import "KinveyDataStoreInternal.h"
@@ -77,7 +77,7 @@
 @implementation BRef
 @end
 
-@interface DataModelTests : SenTestCase
+@interface DataModelTests : XCTestCase
 
 @end
 
@@ -101,10 +101,10 @@ KK2(update tests with KCSPersistable2 objects)
 {
     TC* obj = [[TC alloc] init];
     KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:obj collection:@"c"];
-    STAssertNotNil(descr, @"Should have a description");
+    XCTAssertNotNil(descr, @"Should have a description");
     
     NSArray* refs = descr.references;
-    STAssertNotNil(refs, @"refs");
+    XCTAssertNotNil(refs, @"refs");
     KTAssertCount(7, refs);
 }
 
@@ -125,7 +125,7 @@ KK2(update tests with KCSPersistable2 objects)
     
     KTAssertCount(1, graph);
     id recoveredObj = [graph[@"c"] anyObject];
-    STAssertEqualObjects(recoveredObj, obj, @"should get back original");
+    XCTAssertEqualObjects(recoveredObj, obj, @"should get back original");
 }
 
 - (void) testGraphMultipleObj
@@ -141,9 +141,9 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* recoverdObjs = graph[@"c"];
     KTAssertCount(3, recoverdObjs);
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
 }
 
 - (void) testGraphMultipleObjOneToOneSameCollection
@@ -163,9 +163,9 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* recoverdObjs = graph[@"c"];
     KTAssertCount(3, recoverdObjs);
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
 }
 
 - (void) testGraphMultipleObjOneToManySameCollection
@@ -189,9 +189,9 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* recoverdObjs = graph[@"c"];
     KTAssertCount(3, recoverdObjs);
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
 }
 
 - (void) testGraphMultipleObjSelfRef
@@ -219,9 +219,9 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* recoverdObjs = graph[@"c"];
     KTAssertCount(3, recoverdObjs);
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
 }
 
 - (void) testRefInDictionary
@@ -255,11 +255,11 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* refObjs = graph[@"dc"];
     KTAssertCount(1, refObjs);
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
     
-    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
+    XCTAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
 }
 
 - (void) testRefInDictionaryTwoLevels
@@ -298,12 +298,12 @@ KK2(update tests with KCSPersistable2 objects)
     KTAssertCount(1, refObjs);
 
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
     
-    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
-    STAssertTrue([refObjs2 containsObject:innerRef], @"should have the ref in the third collection");
+    XCTAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
+    XCTAssertTrue([refObjs2 containsObject:innerRef], @"should have the ref in the third collection");
 }
 
 - (void) testRefInSet
@@ -346,14 +346,14 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* setObjs = graph[@"sc"];
     KTAssertCount(2, setObjs);
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
     
-    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
-    STAssertTrue([refObjs2 containsObject:innerRef], @"should have the ref in the third collection");
-    STAssertTrue([setObjs containsObject:ref], @"Should have ref in the set collection");
-    STAssertTrue([setObjs containsObject:innerRef], @"Should have ref in the set collection");
+    XCTAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
+    XCTAssertTrue([refObjs2 containsObject:innerRef], @"should have the ref in the third collection");
+    XCTAssertTrue([setObjs containsObject:ref], @"Should have ref in the set collection");
+    XCTAssertTrue([setObjs containsObject:innerRef], @"Should have ref in the set collection");
 }
 
 - (void) testRefInOrderedSet
@@ -397,18 +397,18 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* setObjs = graph[@"sc"];
     KTAssertCount(5, setObjs);
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
     
-    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
-    STAssertTrue([refObjs2 containsObject:innerRef], @"should have the ref in the third collection");
+    XCTAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
+    XCTAssertTrue([refObjs2 containsObject:innerRef], @"should have the ref in the third collection");
 
-    STAssertTrue([setObjs containsObject:ref], @"Should have ref in the set collection");
-    STAssertTrue([setObjs containsObject:innerRef], @"Should have ref in the set collection");
-    STAssertTrue([setObjs containsObject:obj1],  @"Should have ref in the set collection");
-    STAssertTrue([setObjs containsObject:obj2],  @"Should have ref in the set collection");
-    STAssertTrue([setObjs containsObject:obj3],  @"Should have ref in the set collection");
+    XCTAssertTrue([setObjs containsObject:ref], @"Should have ref in the set collection");
+    XCTAssertTrue([setObjs containsObject:innerRef], @"Should have ref in the set collection");
+    XCTAssertTrue([setObjs containsObject:obj1],  @"Should have ref in the set collection");
+    XCTAssertTrue([setObjs containsObject:obj2],  @"Should have ref in the set collection");
+    XCTAssertTrue([setObjs containsObject:obj3],  @"Should have ref in the set collection");
 }
 
 - (void) testRefInArrayInDictionary
@@ -446,13 +446,13 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* refObjs2 = graph[@"dc2"];
     KTAssertCount(2, refObjs2);
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
-    STAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj2], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj3], @"should get back original");
     
-    STAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
-    STAssertTrue([refObjs2 containsObject:a1], @"should have the ref in the dict array collection");
-    STAssertTrue([refObjs2 containsObject:a2], @"should have the ref in the dict array collection");
+    XCTAssertTrue([refObjs containsObject:ref], @"should have the ref in the second collection");
+    XCTAssertTrue([refObjs2 containsObject:a1], @"should have the ref in the dict array collection");
+    XCTAssertTrue([refObjs2 containsObject:a2], @"should have the ref in the dict array collection");
 }
 
 - (void) testRefDictionaryInArray
@@ -473,10 +473,10 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* refObjs = graph[@"dc"];
     KTAssertCount(2, refObjs);
     
-    STAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:obj1], @"should get back original");
     
-    STAssertTrue([refObjs containsObject:a1], @"should have the ref in the second collection");
-    STAssertTrue([refObjs containsObject:a2], @"should have the ref in the second collection");
+    XCTAssertTrue([refObjs containsObject:a1], @"should have the ref in the second collection");
+    XCTAssertTrue([refObjs containsObject:a2], @"should have the ref in the second collection");
 }
 
 - (void) testTwoLevelRef
@@ -501,10 +501,10 @@ KK2(update tests with KCSPersistable2 objects)
     NSSet* lvl2Objs = graph[@"BCollection"];
     KTAssertCount(1, lvl2Objs)
     
-    STAssertTrue([recoverdObjs containsObject:lvl1], @"should get back original");
+    XCTAssertTrue([recoverdObjs containsObject:lvl1], @"should get back original");
     
-    STAssertTrue([lvl1Objs containsObject:lvl2], @"should have the ref in the second collection");
-    STAssertTrue([lvl2Objs containsObject:lvl3], @"should have the ref in the third collection");
+    XCTAssertTrue([lvl1Objs containsObject:lvl2], @"should have the ref in the second collection");
+    XCTAssertTrue([lvl2Objs containsObject:lvl3], @"should have the ref in the third collection");
 }
 
 - (void) testRefToUserCollection

@@ -46,20 +46,20 @@
     NSDictionary* myDict = @{@"_id" : @"12345", @"keyA" : @"valA", @"keyB" : @10};
     KCSSerializedObject* so = [KCSObjectMapper makeKinveyDictionaryFromObject:myDict error:NULL];
     NSDictionary* outDict = [so dataToSerialize];
-    STAssertFalse(so.isPostRequest, @"Should not be a post because _id is specified");
-    STAssertEqualObjects(myDict, outDict, @"dicts should be the same");
+    XCTAssertFalse(so.isPostRequest, @"Should not be a post because _id is specified");
+    XCTAssertEqualObjects(myDict, outDict, @"dicts should be the same");
     
     myDict = @{@"keyA" : @"valA", @"keyB" : @10};
     so = [KCSObjectMapper makeKinveyDictionaryFromObject:myDict error:NULL];
     outDict = [so dataToSerialize];
-    STAssertTrue(so.isPostRequest, @"Should be true, no _id is specified");
-    STAssertEqualObjects(myDict, outDict, @"dicts should be the same");
+    XCTAssertTrue(so.isPostRequest, @"Should be true, no _id is specified");
+    XCTAssertEqualObjects(myDict, outDict, @"dicts should be the same");
 }
 
 - (void) testRoundtrip
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(setup, @"should be set up");
+    XCTAssertTrue(setup, @"should be set up");
     
     KCSCollection* testCollection = [TestUtils randomCollection:[NSDictionary class]];
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:testCollection options:nil];
@@ -72,7 +72,7 @@
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
-        STAssertEqualObjects(obj, retDict, @"dicts should match");
+        XCTAssertEqualObjects(obj, retDict, @"dicts should match");
         self.done = YES;
     } withProgressBlock:nil];;
     [self poll];
@@ -81,11 +81,11 @@
     [store queryWithQuery:[KCSQuery queryOnField:@"test" withExactMatchForValue:@"testRoundtrip"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
-        STAssertEqualObjects([obj objectForKey:@"test"], [retDict objectForKey:@"test"], @"dicts should match");
+        XCTAssertEqualObjects([obj objectForKey:@"test"], [retDict objectForKey:@"test"], @"dicts should match");
         NSDate* oDate = [obj objectForKey:@"timestamp"];
         NSDate* nDate = [retDict objectForKey:@"timestamp"];
-        STAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
-        STAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
+        XCTAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
+        XCTAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -94,7 +94,7 @@
 - (void) testRoundTripMutable
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(setup, @"should be set up");
+    XCTAssertTrue(setup, @"should be set up");
     
     KCSCollection* testCollection = [TestUtils randomCollection:[NSMutableDictionary class]];
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:testCollection options:nil];
@@ -107,11 +107,11 @@
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
-        STAssertEqualObjects([obj objectForKey:@"test"], [retDict objectForKey:@"test"], @"dicts should match");
+        XCTAssertEqualObjects([obj objectForKey:@"test"], [retDict objectForKey:@"test"], @"dicts should match");
         NSDate* oDate = [obj objectForKey:@"timestamp"];
         NSDate* nDate = [retDict objectForKey:@"timestamp"];
-        STAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
-        STAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
+        XCTAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
+        XCTAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
         self.done = YES;
     } withProgressBlock:nil];;
     [self poll];
@@ -120,11 +120,11 @@
     [store loadObjectWithID:[retDict objectForKey:@"_id"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
-        STAssertEqualObjects([obj objectForKey:@"test"], [retDict objectForKey:@"test"], @"dicts should match");
+        XCTAssertEqualObjects([obj objectForKey:@"test"], [retDict objectForKey:@"test"], @"dicts should match");
         NSDate* oDate = [obj objectForKey:@"timestamp"];
         NSDate* nDate = [retDict objectForKey:@"timestamp"];
-        STAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
-        STAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
+        XCTAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
+        XCTAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];

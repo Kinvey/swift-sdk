@@ -20,6 +20,7 @@
 #import <Foundation/Foundation.h>
 
 #import "KinveyHeaderInfo.h"
+#import "KCSRequestConfiguration.h"
 
 // Keys for options hash
 /** App Key plist key: "KCS_APP_KEY" */
@@ -94,6 +95,11 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
  */
 @property (nonatomic, copy) NSString* appSecret;
 
+/** The request configration
+ @since 1.29.0
+ */
+@property (nonatomic, strong) KCSRequestConfiguration* requestConfiguration;
+
 /** A dictionary of options. 
 
  - KCS_APP_KEY  -- The app key obtained from the console
@@ -140,7 +146,8 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
  @return a configuration with the default options
  @since 1.20.0
  */
-+ (instancetype) configurationWithAppKey:(NSString*)appKey secret:(NSString*)appSecret;
++ (instancetype) configurationWithAppKey:(NSString*)appKey
+                                  secret:(NSString*)appSecret;
 
 /** Basic configuration with an app key and secret and options.
  
@@ -158,7 +165,31 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
  @see options
  @since 1.20.0
  */
-+ (instancetype) configurationWithAppKey:(NSString*)appKey secret:(NSString*)appSecret options:(NSDictionary*)options;
++ (instancetype) configurationWithAppKey:(NSString*)appKey
+                                  secret:(NSString*)appSecret
+                                 options:(NSDictionary*)options;
+
+/** Basic configuration with an app key and secret and options.
+ 
+ Options can either be default overrides or additional configuration such as social network app keys.
+ 
+ Usage:
+ 
+ KCSClientConfiguration* config = [KCSClientConfiguration configurationWithAppKey:@"<#KEY#>" secret:@"<#SECRET#>" options:@{KCS_CONNECTION_TIMEOUT : @60} requestConfiguration:[KCSRequestConfiguration requestConfigurationWithClientAppVersion:@"" andCustomRequestProperties:@{@"lang" : @"fr"}]];
+ [[KCSClient sharedClient] initializeWithConfiguration:config];
+ 
+ @param appKey the App Key for a specific app's environment.
+ @param appSecret the matching App Secret for the environment.
+ @param options a dictionary of optional configuration.
+ @param requestConfiguration defines how the client requests should be set up by default
+ @return a configuration with the specified options
+ @see options
+ @since 1.20.0
+ */
++ (instancetype) configurationWithAppKey:(NSString*)appKey
+                                  secret:(NSString*)appSecret
+                                 options:(NSDictionary*)options
+                    requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
 
 /** Builds the configuration from the specified plist.
  

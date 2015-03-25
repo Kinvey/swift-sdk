@@ -18,23 +18,23 @@
 
 
 #import <Foundation/Foundation.h>
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <KinveyKit/KinveyKit.h>
 
-#define STAssertNoError STAssertNil(errorOrNil,@"Should not get error: %@", errorOrNil);
-#define STAssertNoError_ STAssertNil(error, @"Should not get error: %@", error);
-#define STAssertError(error, cd) STAssertNotNil(error, @"should have an error"); STAssertEquals((int)cd, (int)[error code], @"error codes should match.");
-#define STAssertObjects(cnt) STAssertNotNil(objectsOrNil,@"should get non-nil return objects"); \
-                               STAssertEquals((int)[objectsOrNil count], (int)cnt, @"Expecting %i items", cnt);
+#define STAssertNoError XCTAssertNil(errorOrNil,@"Should not get error: %@", errorOrNil);
+#define STAssertNoError_ XCTAssertNil(error, @"Should not get error: %@", error);
+#define STAssertError(error, cd) XCTAssertNotNil(error, @"should have an error"); XCTAssertEqual((int)cd, (int)[error code], @"error codes should match.");
+#define STAssertObjects(cnt) XCTAssertNotNil(objectsOrNil,@"should get non-nil return objects"); \
+                               XCTAssertEqual((int)[objectsOrNil count], (int)cnt, @"Expecting %i items", cnt);
 
-#define KTAssertEqualsInt(x,y, desc) STAssertEquals((int)x,(int)y, desc)
-#define KTAssertCount(c, obj) STAssertNotNil(obj, @"obj should be non-nil"); STAssertEquals((int)[obj count], (int)c, @"count did not match expectation")
-#define KTAssertCountAtLeast(c, obj) STAssertTrue( [obj count] >= c, @"count (%i) should be at least (%i)", [obj count], c);
-#define KTAssertEqualsDates(date1,date2) STAssertTrue([date1 isEqualToDate:date2], @"Dates should match.");
+#define KTAssertEqualsInt(x,y, desc) XCTAssertEqual((int)x,(int)y, desc)
+#define KTAssertCount(c, obj) XCTAssertNotNil(obj, @"obj should be non-nil"); XCTAssertEqual((int)[obj count], (int)c, @"count did not match expectation")
+#define KTAssertCountAtLeast(c, obj) XCTAssertTrue( [obj count] >= c, @"count (%i) should be at least (%i)", [obj count], c);
+#define KTAssertEqualsDates(date1,date2) XCTAssertTrue([date1 isEqualToDate:date2], @"Dates should match.");
 
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 
-@interface SenTestCase (TestUtils)
+@interface XCTestCase (TestUtils)
 @property (nonatomic) BOOL done;
 - (BOOL) poll;
 - (BOOL) poll:(NSTimeInterval)timeout;

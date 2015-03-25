@@ -25,6 +25,9 @@
 #import "KCS_FMDatabase.h"
 #import "KCS_FMDatabaseAdditions.h"
 #import "KCS_FMDatabaseQueue.h"
+#import "KCSMutableOrderedDictionary.h"
+
+#import "KCSRequest2+Private.h"
 
 #define KCS_CACHE_VERSION @"0.004"
 
@@ -135,7 +138,7 @@
             }
         }
         if (![db tableExists:@"savequeue"]) {
-            BOOL e = [db executeUpdate:@"CREATE TABLE savequeue (key VARCHAR(255) PRIMARY KEY, id VARCHAR(255), routeKey TEXT, method TEXT, headers TEXT, time VARCHAR(255), obj TEXT)"];
+            BOOL e = [db executeUpdate:@"CREATE TABLE savequeue (key TEXT PRIMARY KEY, id VARCHAR(255), routeKey TEXT, method TEXT, headers TEXT, time VARCHAR(255), obj TEXT)"];
             if (!e) {
                 KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [db lastErrorCode], [db lastErrorMessage]);
             }
@@ -159,6 +162,36 @@
 - (void)dealloc
 {
     [_db close];
+}
+
+-(NSString*)keyValueForKey:(NSString*)key
+                   headers:(NSDictionary*)headers
+{
+    NSDictionary* keyDictionary = @{
+        @"key" : key,
+        @"headers" : [KCSMutableOrderedDictionary dictionaryWithDictionary:@{
+            kHeaderClientAppVersion : headers[kHeaderClientAppVersion],
+            kHeaderCustomRequestProperties : headers[kHeaderCustomRequestProperties]
+        }]
+    };
+    
+    NSError* error = nil;
+    NSData* data = [NSJSONSerialization dataWithJSONObject:[KCSMutableOrderedDictionary dictionaryWithDictionary:keyDictionary]
+                                                   options:0
+                                                     error:&error];
+    
+    if (error) {
+        [[NSException exceptionWithName:error.domain
+                                 reason:error.localizedDescription ? error.localizedDescription : error.description
+                               userInfo:error.userInfo] raise];
+    }
+    
+    if (data) {
+        return [[NSString alloc] initWithData:data
+                                     encoding:NSUTF8StringEncoding];
+    }
+    
+    return nil;
 }
 
 #pragma mark - Metadata
@@ -227,9 +260,12 @@
     }
     
     NSString* routeKey = [self tableForRoute:route collection:collection];
+    
+    NSString *key = [self keyValueForKey:[routeKey stringByAppendingString:_id]
+                                 headers:headers];
 
     NSString* update = @"REPLACE INTO savequeue VALUES (:key, :id, :routeKey, :method, :headers, :time, :obj)";
-    NSDictionary* valDictionary = @{@"key":[routeKey stringByAppendingString:_id],
+    NSDictionary* valDictionary = @{@"key": key,
                                     @"id":_id,
                                     @"obj":entityStr,
                                     @"time":[NSDate date],
@@ -260,8 +296,11 @@
     
     NSString* routeKey = [self tableForRoute:route collection:collection];
     
+    key = [self keyValueForKey:[routeKey stringByAppendingString:key]
+                       headers:headers];
+    
     NSString* update = @"REPLACE INTO savequeue VALUES (:key, :id, :routeKey, :method, :headers, :time, :obj)";
-    NSDictionary* valDictionary = @{@"key":[routeKey stringByAppendingString:key],
+    NSDictionary* valDictionary = @{@"key":key,
                                     @"id":key,
                                     @"obj":key,
                                     @"time":[NSDate date],
@@ -339,12 +378,16 @@
     return result;
 }
 
-- (BOOL) removeUnsavedEntity:(NSString*)unsavedId route:(NSString*)route collection:(NSString*)collection
+- (BOOL) removeUnsavedEntity:(NSString*)unsavedId
+                       route:(NSString*)route
+                  collection:(NSString*)collection
+                     headers:(NSDictionary*)headers
 {
     KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Deleting obj %@ from unsaved queue", unsavedId);
     
     NSString* routeKey = [self tableForRoute:route collection:collection];
-    NSString* entityKey = [routeKey stringByAppendingString:unsavedId];
+    NSString* entityKey = [self keyValueForKey:[routeKey stringByAppendingString:unsavedId]
+                                       headers:headers];
     
     NSString* update = [NSString stringWithFormat:@"DELETE FROM savequeue WHERE key='%@'", entityKey];
 

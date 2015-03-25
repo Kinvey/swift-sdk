@@ -17,7 +17,7 @@
     NSString *string = @"Aladdin:open sesame";
     NSString *b64 = KCSbase64EncodedStringFromData([string dataUsingEncoding:NSUTF8StringEncoding]);
     
-    STAssertEqualObjects(b64, expectedString, @"");
+    XCTAssertEqualObjects(b64, expectedString, @"");
 }
 
 - (void)testBase64Dec
@@ -27,7 +27,7 @@
     NSData *b64 = KCSdataFromBase64String(string);
     NSString *actual = [NSString stringWithUTF8String:[b64 bytes]];
     
-    STAssertEqualObjects(actual, expectedString, @"");
+    XCTAssertEqualObjects(actual, expectedString, @"");
 }
 
 - (void)testStringsHaveNoBreaks
@@ -35,12 +35,12 @@
     NSString *expectedString = @"N0M5MUU2RTMtNDlFMy01RUNELUI2NjAtNUU5NDA0REVEMTUwOmIzOTI3MjM4LTViNTctNDQ5ZS1hMjdmLWZiNjM3ZDhhNWU4Yg==";
     NSString *string = @"7C91E6E3-49E3-5ECD-B660-5E9404DED150:b3927238-5b57-449e-a27f-fb637d8a5e8b";
     NSString *b64 = KCSbase64EncodedStringFromData([string dataUsingEncoding:NSUTF8StringEncoding]);
-    STAssertEqualObjects(b64, expectedString, @"");
+    XCTAssertEqualObjects(b64, expectedString, @"");
     
     // Round trip
     NSData *bd64 = KCSdataFromBase64String(expectedString);
     NSString *actual = [[NSString alloc] initWithData:bd64 encoding:NSUTF8StringEncoding];
-    STAssertEqualObjects(actual, string, @"");
+    XCTAssertEqualObjects(actual, string, @"");
 }
 
 @end
