@@ -517,8 +517,10 @@
 		27FEBF3017B26AEB006E7FBD /* KCSCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */; };
 		27FEBF3117B26AEB006E7FBD /* KCSCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */; };
 		571200EC1ABB203E002B148D /* RequestConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571200EB1ABB203E002B148D /* RequestConfigurationTests.swift */; };
+		5718273B1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5718273A1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift */; };
 		574FD5511AC1A8EF00CA26CD /* KCSRequest2+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 574FD54F1AC1A8EF00CA26CD /* KCSRequest2+Private.h */; };
 		574FD5531AC1A93400CA26CD /* KCSRequest2+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 574FD54F1AC1A8EF00CA26CD /* KCSRequest2+Private.h */; };
+		574FD5551AC1C0BB00CA26CD /* KCSKinveyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */; };
 		57728FE21ABF22480043E779 /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */; };
 		57728FE31ABF22480043E779 /* KCSMutableOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 57728FE11ABF22480043E779 /* KCSMutableOrderedDictionary.m */; };
 		57728FE41ABF22EB0043E779 /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */; };
@@ -1266,7 +1268,9 @@
 		27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCredentials.h; sourceTree = "<group>"; };
 		571200EA1ABB203D002B148D /* KinveyTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		571200EB1ABB203E002B148D /* RequestConfigurationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestConfigurationTests.swift; sourceTree = "<group>"; };
+		5718273A1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSMutableOrderedDictionaryTests.swift; sourceTree = "<group>"; };
 		574FD54F1AC1A8EF00CA26CD /* KCSRequest2+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSRequest2+Private.h"; sourceTree = "<group>"; };
+		574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSKinveyTest.m; sourceTree = "<group>"; };
 		57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMutableOrderedDictionary.h; sourceTree = "<group>"; };
 		57728FE11ABF22480043E779 /* KCSMutableOrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMutableOrderedDictionary.m; sourceTree = "<group>"; };
 		57C8DAF91AB8C968007F2E42 /* libKinvey.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libKinvey.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2026,6 +2030,8 @@
 				57C8DB081AB8C968007F2E42 /* Supporting Files */,
 				571200EA1ABB203D002B148D /* KinveyTests-Bridging-Header.h */,
 				571200EB1ABB203E002B148D /* RequestConfigurationTests.swift */,
+				574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */,
+				5718273A1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -3529,6 +3535,7 @@
 				5788342B1AB8D25500078CC5 /* KinveyAppdataStoreTests.m in Sources */,
 				5788343A1AB8D25500078CC5 /* KCSMetadataTests.m in Sources */,
 				5788344C1AB8D25500078CC5 /* FileUtilsTest.m in Sources */,
+				5718273B1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift in Sources */,
 				5788342F1AB8D25500078CC5 /* KCSOfflineStoreTests.m in Sources */,
 				5788344D1AB8D25500078CC5 /* KeychainTests.m in Sources */,
 				5788342C1AB8D25500078CC5 /* KCSCachedStoreTests.m in Sources */,
@@ -3551,6 +3558,7 @@
 				578834501AB8D25500078CC5 /* Query2Tests.m in Sources */,
 				578834391AB8D25500078CC5 /* KinveyKitEntityTests.m in Sources */,
 				578834341AB8D25500078CC5 /* KinveyUserDiscoveryTests.m in Sources */,
+				574FD5551AC1C0BB00CA26CD /* KCSKinveyTest.m in Sources */,
 				578834581AB8D25500078CC5 /* ThreadTests.m in Sources */,
 				578834541AB8D25500078CC5 /* DataModelTests.m in Sources */,
 				578834521AB8D25500078CC5 /* EntityCacheTests.m in Sources */,

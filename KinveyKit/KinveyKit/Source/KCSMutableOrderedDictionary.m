@@ -35,8 +35,22 @@
 
 -(void)setObject:(id)anObject forKey:(id<NSCopying>)aKey
 {
+    if (![(id)aKey isKindOfClass:[NSString class]]) {
+        [[NSException exceptionWithName:@"Invalid Key"
+                                 reason:@"Key needs to be a string"
+                               userInfo:@{ NSLocalizedDescriptionKey : @"Key needs to be a string" }] raise];
+    }
+    if ([anObject isKindOfClass:[NSDictionary class]] && ![anObject isKindOfClass:[KCSMutableOrderedDictionary class]]) {
+        anObject = [KCSMutableOrderedDictionary dictionaryWithDictionary:anObject];
+    }
     [self.dictionary setObject:anObject forKey:aKey];
     [self.keys addObject:aKey];
+}
+
+-(void)removeObjectForKey:(id)aKey
+{
+    [self.dictionary removeObjectForKey:aKey];
+    [self.keys removeObject:aKey];
 }
 
 -(NSUInteger)count
@@ -51,6 +65,12 @@
 
 -(NSEnumerator *)keyEnumerator
 {
+    [self.keys sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        if ([obj1 respondsToSelector:@selector(compare:)]) {
+            return [obj1 compare:obj2];
+        }
+        return NSOrderedSame;
+    }];
     return self.keys.objectEnumerator;
 }
 
