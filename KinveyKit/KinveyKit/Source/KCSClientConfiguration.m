@@ -99,16 +99,32 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
     c.appSecret = self.appSecret;
     c.options = self.options;
     c.serviceHostname = self.serviceHostname;
+    c.requestConfiguration = self.requestConfiguration.copy;
     
     return c;
 }
 
 + (instancetype)configurationWithAppKey:(NSString *)appKey secret:(NSString *)appSecret
 {
-    return [self configurationWithAppKey:appKey secret:appSecret options:@{}];
+    return [self configurationWithAppKey:appKey
+                                  secret:appSecret
+                                 options:@{}];
 }
 
-+ (instancetype)configurationWithAppKey:(NSString *)appKey secret:(NSString *)appSecret options:(NSDictionary *)optionsDictionary
++ (instancetype)configurationWithAppKey:(NSString *)appKey
+                                 secret:(NSString *)appSecret
+                                options:(NSDictionary *)optionsDictionary
+{
+    return [self configurationWithAppKey:appKey
+                                  secret:appSecret
+                                 options:optionsDictionary
+                    requestConfiguration:nil];
+}
+
++ (instancetype)configurationWithAppKey:(NSString *)appKey
+                                 secret:(NSString *)appSecret
+                                options:(NSDictionary *)optionsDictionary
+                   requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
 {
     KCSClientConfiguration* config = nil;
     
@@ -125,6 +141,8 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
     NSMutableDictionary* newOptions = [config.options mutableCopy];
     [newOptions addEntriesFromDictionary:optionsDictionary];
     config.options = newOptions;
+    
+    config.requestConfiguration = requestConfiguration;
     
     NSArray* loggers = config.options[KCS_LOG_ADDITIONAL_LOGGERS];
     for (id logger in loggers) {
