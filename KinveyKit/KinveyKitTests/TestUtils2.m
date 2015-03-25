@@ -55,13 +55,13 @@ id<KCSCredentials> mockCredentails()
     return [[MockCredentials alloc] init];
 }
 
-@implementation SenTestCase (TestUtils2)
+@implementation XCTestCase (TestUtils2)
 @dynamic done;
 
 - (BOOL) poll
 {
     int pollCount = 0;
-    while (self.done == NO && pollCount < MAX_POLL_COUNT) {
+    while (self.done == NO && pollCount < MAX_POLL_COUNT) @autoreleasepool {
         NSLog(@"polling... %4.2fs", pollCount * POLL_INTERVAL);
         NSRunLoop* loop = [NSRunLoop mainRunLoop];
         NSDate* until = [NSDate dateWithTimeIntervalSinceNow:POLL_INTERVAL];
@@ -91,11 +91,22 @@ id<KCSCredentials> mockCredentails()
     
 }
 - (void) setupProduction:(BOOL)initUser
+                 options:(NSDictionary*)_options
+    requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 {
+    NSMutableDictionary *options = [NSMutableDictionary dictionaryWithDictionary:@{
+        KCS_LOG_LEVEL : @255,
+        KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]
+    }];
+    
+    if (_options) {
+        [options addEntriesFromDictionary:_options];
+    }
+    
     (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1880"
                                                        withAppSecret:@"6414992408f04132bd467746f7ecbdcf"
-                                                        usingOptions:@{KCS_LOG_LEVEL              : @255,
-                                                                       KCS_LOG_ADDITIONAL_LOGGERS : @[[LogTester sharedInstance]]}];
+                                                        usingOptions:options
+                                                requestConfiguration:requestConfiguration];
     if (initUser) {
         [self useProductionUser];
     }
@@ -103,8 +114,19 @@ id<KCSCredentials> mockCredentails()
 
 - (void)setupKCS:(BOOL)initUser
 {
+    [self   setupKCS:initUser
+             options:nil
+requestConfiguration:nil];
+}
+
+- (void)    setupKCS:(BOOL)initUser
+             options:(NSDictionary*)options
+requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+{
     //    [self setupStaging];
-    [self setupProduction:initUser];
+    [self setupProduction:initUser
+                  options:options
+     requestConfiguration:requestConfiguration];
 }
 
 - (void) useMockUser

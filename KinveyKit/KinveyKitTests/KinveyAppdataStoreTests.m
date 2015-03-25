@@ -31,7 +31,7 @@
 - (void) setUp
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(setup, @"should be set-up");
+    XCTAssertTrue(setup, @"should be set-up");
     
     _collection = [[KCSCollection alloc] init];
     _collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
@@ -45,8 +45,8 @@
 {
     self.done = NO;
     [_store loadObjectWithID:@"testobj" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNil(objectsOrNil, @"expecting a nil objects");
-        STAssertNotNil(errorOrNil, @"expecting an error");
+        XCTAssertNil(objectsOrNil, @"expecting a nil objects");
+        XCTAssertNotNil(errorOrNil, @"expecting an error");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -61,9 +61,9 @@
     
     self.done = NO;
     [_store loadObjectWithID:@"testobj" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNotNil(objectsOrNil, @"expecting a non-nil objects");
-        STAssertEquals((int) [objectsOrNil count], 1, @"expecting one object of id 'testobj' to be found");
-        STAssertEquals((int) [[objectsOrNil objectAtIndex:0] objCount], -88, @"expecting save to have completed sucessfully");
+        XCTAssertNotNil(objectsOrNil, @"expecting a non-nil objects");
+        XCTAssertEqual((int) [objectsOrNil count], 1, @"expecting one object of id 'testobj' to be found");
+        XCTAssertEqual((int) [[objectsOrNil objectAtIndex:0] objCount], -88, @"expecting save to have completed sucessfully");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -81,8 +81,8 @@
     self.done = NO;
     [_store saveObject:baseObjs withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         self.done = YES;
-        STAssertNotNil(objectsOrNil, @"expecting a non-nil objects");
-        STAssertEquals((int) [objectsOrNil count], 5, @"expecting five objects returned for saving five objects");
+        XCTAssertNotNil(objectsOrNil, @"expecting a non-nil objects");
+        XCTAssertEqual((int) [objectsOrNil count], 5, @"expecting five objects returned for saving five objects");
     } withProgressBlock:nil];
     [self poll];
 }
@@ -175,8 +175,8 @@ NSArray* largeArray()
     self.done = NO;
     [_store loadObjectWithID:objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         NSLog(@"--- %@ -- %@", objectsOrNil, errorOrNil);
-        STAssertNotNil(errorOrNil, @"should have an error");
-        STAssertEquals((int)KCSNotFoundError, [errorOrNil code], @"should have been not found");
+        XCTAssertNotNil(errorOrNil, @"should have an error");
+        XCTAssertEqual((int)KCSNotFoundError, [errorOrNil code], @"should have been not found");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -210,7 +210,7 @@ NSArray* largeArray()
     
     self.done = NO;
     [_store countWithBlock:^(unsigned long count, NSError *errorOrNil) {
-        STAssertEquals((unsigned long) 0, count, @"should have deleted all");
+        XCTAssertEqual((unsigned long) 0, count, @"should have deleted all");
         self.done = YES;
     }];
     [self poll];
@@ -222,12 +222,12 @@ NSArray* largeArray()
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"bl-errors" ofClass:[NSMutableDictionary class]] options:@{}];
     self.done = NO;
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNotNil(errorOrNil, @"should have an error");
+        XCTAssertNotNil(errorOrNil, @"should have an error");
         KTAssertEqualsInt(errorOrNil.code, 550, @"should be a 550");
         
         NSDictionary* errorVals = errorOrNil.userInfo;
-        STAssertNotNil(errorVals[@"Kinvey.RequestId"], @"should have request id");
-        STAssertNotNil(errorVals[@"Kinvey.ExecutedHooks"], @"should have hooks");
+        XCTAssertNotNil(errorVals[@"Kinvey.RequestId"], @"should have request id");
+        XCTAssertNotNil(errorVals[@"Kinvey.ExecutedHooks"], @"should have hooks");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -262,13 +262,13 @@ NSArray* largeArray()
     
     self.done = NO;
     [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue], 1, @"expecting one objects of 'one'");
+        XCTAssertEqual([value intValue], 1, @"expecting one objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        STAssertEquals([value intValue], 2, @"expecting two objects of 'two'");
+        XCTAssertEqual([value intValue], 2, @"expecting two objects of 'two'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -276,13 +276,13 @@ NSArray* largeArray()
     
     self.done = NO;
     [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue],10, @"expecting one objects of 'one'");
+        XCTAssertEqual([value intValue],10, @"expecting one objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        STAssertEquals([value intValue], 20, @"expecting two objects of 'two'");
+        XCTAssertEqual([value intValue], 20, @"expecting two objects of 'two'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -304,13 +304,13 @@ NSArray* largeArray()
     self.done = NO;
     KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThan forValue:[NSNumber numberWithInt:10]];
     [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue], NSNotFound, @"expecting one objects of 'one'");
+        XCTAssertEqual([value intValue], NSNotFound, @"expecting one objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        STAssertEquals([value intValue], 2, @"expecting two objects of 'two'");
+        XCTAssertEqual([value intValue], 2, @"expecting two objects of 'two'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -318,13 +318,13 @@ NSArray* largeArray()
     
     self.done = NO;
     [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue], NSNotFound, @"expecting one objects of 'one'");
+        XCTAssertEqual([value intValue], NSNotFound, @"expecting one objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        STAssertEquals([value intValue], 100, @"expecting two objects of 'two'");
+        XCTAssertEqual([value intValue], 100, @"expecting two objects of 'two'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -348,13 +348,13 @@ NSArray* largeArray()
     
     self.done = NO;
     [_store group:[NSArray arrayWithObjects:@"objDescription", @"objCount", nil] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:@{@"objDescription":@"one", @"objCount" :@10}];
-        STAssertEquals([value intValue], 2, @"expecting two objects of 'one' & count == 0");
+        XCTAssertEqual([value intValue], 2, @"expecting two objects of 'one' & count == 0");
         
         value = [valuesOrNil reducedValueForFields:@{@"objDescription":@"two",@"objCount":@30}];
-        STAssertEquals([value intValue], 1, @"expecting just one object of 'two', because this should bail after finding the first match of two");
+        XCTAssertEqual([value intValue], 1, @"expecting just one object of 'two', because this should bail after finding the first match of two");
         
         self.done = YES;
     } progressBlock:nil];
@@ -363,13 +363,13 @@ NSArray* largeArray()
     self.done = NO;
     KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThanOrEqual forValue:@10];
     [_store group:@[@"objDescription", @"objCount"] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", [NSNumber numberWithInt:10], @"objCount", nil]];
-        STAssertEquals([value intValue], 20, @"expecting to have sumed objects of 'one' and count == 10");
+        XCTAssertEqual([value intValue], 20, @"expecting to have sumed objects of 'one' and count == 10");
         
         value = [valuesOrNil reducedValueForFields:@{@"objDescription" : @"two"}];
-        STAssertTrue([value intValue] == 30 || [value intValue] == 70, @"expecting just the first obj of 'two'");
+        XCTAssertTrue([value intValue] == 30 || [value intValue] == 70, @"expecting just the first obj of 'two'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -395,9 +395,9 @@ NSArray* largeArray()
     [_store loadObjectWithID:@"a6" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         objs = objectsOrNil;
-        STAssertNotNil(objs, @"expecting to load some objects");
-        STAssertEquals((int) [objs count], 1, @"should only load one object");
-        STAssertEquals((int) [[objs objectAtIndex:0] objCount], 5, @"expecting 6 from a6");
+        XCTAssertNotNil(objs, @"expecting to load some objects");
+        XCTAssertEqual((int) [objs count], 1, @"should only load one object");
+        XCTAssertEqual((int) [[objs objectAtIndex:0] objCount], 5, @"expecting 6 from a6");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -409,8 +409,8 @@ NSArray* largeArray()
     [_store loadObjectWithID:[NSArray arrayWithObjects:@"a1",@"a2",@"a3", nil] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         objs = objectsOrNil;
-        STAssertNotNil(objs, @"expecting to load some objects");
-        STAssertEquals((int) [objs count], 3, @"should only load one object");
+        XCTAssertNotNil(objs, @"expecting to load some objects");
+        XCTAssertEqual((int) [objs count], 3, @"should only load one object");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -423,7 +423,7 @@ NSArray* largeArray()
     self.done = NO;
     [_store queryWithQuery:[KCSQuery queryOnField:@"count" withExactMatchForValue:@"NEVER MATCH"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
-        STAssertEquals((NSUInteger)0, objectsOrNil.count, @"should be empty array");
+        XCTAssertEqual((NSUInteger)0, objectsOrNil.count, @"should be empty array");
         self.done = YES;
     } withProgressBlock:nil];
     [self poll];
@@ -448,18 +448,18 @@ NSArray* largeArray()
     [_store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         objs = objectsOrNil;
-        STAssertNotNil(objs, @"expecting to load some objects");
+        XCTAssertNotNil(objs, @"expecting to load some objects");
         self.done = YES;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testStreamingResults: percentcomplete:%f", percentComplete);
-        STAssertTrue(percentComplete > done, @"should be monotonically increasing");
-        STAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
+        XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
         done = percentComplete;
         
-        STAssertNotNil(objects, @"should have objects");
-        STAssertTrue(objects.count >=1, @"should have at least object");
+        XCTAssertNotNil(objects, @"should have objects");
+        XCTAssertTrue(objects.count >=1, @"should have at least object");
         id obj = objects[0];
-        STAssertTrue([obj isKindOfClass:[ASTTestClass class]], @"class should be test class type");
+        XCTAssertTrue([obj isKindOfClass:[ASTTestClass class]], @"class should be test class type");
     }];
     [self poll];
 }
@@ -532,7 +532,7 @@ NSArray* largeArray()
     [_store countWithQuery:q completion:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError
         unsigned long exp = 3;
-        STAssertEquals(exp, count, @"expeting count");
+        XCTAssertEqual(exp, count, @"expeting count");
         self.done = YES;
     }];
     [self poll];
@@ -542,7 +542,7 @@ NSArray* largeArray()
     [_store countWithQuery:q completion:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError
         unsigned long exp = 2;
-        STAssertEquals(exp, count, @"expeting count");
+        XCTAssertEqual(exp, count, @"expeting count");
         self.done = YES;
     }];
     [self poll];
@@ -566,7 +566,7 @@ NSArray* largeArray()
     
     
     for (KCSUser* u in objs) {
-        STAssertTrue([u isKindOfClass:[KCSUser class]], @"is not a user.");
+        XCTAssertTrue([u isKindOfClass:[KCSUser class]], @"is not a user.");
     }
     
 }

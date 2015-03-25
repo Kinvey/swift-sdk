@@ -17,7 +17,7 @@
     NSMutableDictionary* md = [d mutableCopy];
     [md append:@"X" ontoKeySet:k recursive:YES];
     
-    STAssertEqualObjects(md, ed, @"should be equal");
+    XCTAssertEqualObjects(md, ed, @"should be equal");
 }
 
 - (void) testEmpty
@@ -69,7 +69,7 @@
     NSDictionary* source = @{@"Ak":@"Av",@"Bk":@"Bv",@"Nk":@1,@"Nuk":[NSNull null],@"Ck":@"Cv"};
     NSDictionary* inverted = [source invert];
     NSDictionary* expected = @{@"Av":@"Ak",@"Bv":@"Bk",@"Cv":@"Ck"};
-    STAssertEqualObjects(inverted, expected, @"should be inverted, no non-strings");
+    XCTAssertEqualObjects(inverted, expected, @"should be inverted, no non-strings");
     
 }
 

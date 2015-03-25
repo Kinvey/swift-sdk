@@ -17,12 +17,12 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KinveyCoreInternal.h"
 #import "TestUtils2.h"
 
-@interface KCSRequest2Tests : SenTestCase
+@interface KCSRequest2Tests : XCTestCase
 
 @end
 
@@ -49,7 +49,7 @@
         
         dispatch_queue_t endQ = dispatch_get_current_queue();
 #pragma clang diagnostic pop
-        STAssertEquals(startQ, endQ, @"queues should match");
+        XCTAssertEqual(startQ, endQ, @"queues should match");
         
         KTPollDone
     } route:KCSRESTRouteAppdata options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
@@ -60,11 +60,11 @@
 - (void) testMethodAnayltics
 {
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-        STAssertNotNil(response, @"need response");
+        XCTAssertNotNil(response, @"need response");
         NSDictionary* headers = response.headers;
         NSString* method = headers[@"X-Kinvey-Client-Method"];
-        STAssertNotNil(method, @"should have the method");
-        STAssertEqualObjects(method, @"KCSRequest2Tests testMethodAnayltics", @"should be this method");
+        XCTAssertNotNil(method, @"should have the method");
+        XCTAssertEqualObjects(method, @"KCSRequest2Tests testMethodAnayltics", @"should be this method");
         
         KTPollDone
     } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
@@ -76,14 +76,14 @@
 {
     NSArray* path =  @[@"1",@"2"];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-        STAssertNotNil(response, @"need response");
+        XCTAssertNotNil(response, @"need response");
         NSURL* url = response.originalURL;
-        STAssertNotNil(url, @"needed url");
+        XCTAssertNotNil(url, @"needed url");
 
         NSArray* components = [url pathComponents];
         NSArray* lastComponents = [components subarrayWithRange:NSMakeRange(components.count - 2, 2)];
         KTAssertCount(2, lastComponents);
-        STAssertEqualObjects(lastComponents, path, @"should match");
+        XCTAssertEqualObjects(lastComponents, path, @"should match");
         
         KTPollDone
     } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
@@ -135,12 +135,12 @@
     KCSClient* client = [KCSClient sharedClient];
     NSString* expectedURL = [NSString stringWithFormat:@"https://%@.kinvey.com/rpc/%@/custom/endpoint", client.configuration.serviceHostname, client.appKey];
     
-    STAssertEqualObjects(expectedURL, url.absoluteString, @"should have a url match");
+    XCTAssertEqualObjects(expectedURL, url.absoluteString, @"should have a url match");
     
     NSData* bodyData = urlRequest.HTTPBody;
     NSDictionary* undidBody = [NSJSONSerialization JSONObjectWithData:bodyData options:0 error:NULL];
     NSDictionary* expBody = @{@"foo":@"bar",@"baz":@[@1,@2,@3]};
-    STAssertEqualObjects(expBody, undidBody, @"bodies should match");
+    XCTAssertEqualObjects(expBody, undidBody, @"bodies should match");
 }
 
 - (void) testDate
@@ -152,7 +152,7 @@
     NSURLRequest* urlRequest = [request urlRequest];
     NSDictionary* headers = [urlRequest allHTTPHeaderFields];
     NSString* d = headers[@"Date"];
-    STAssertNotNil(d, @"should have a header");
+    XCTAssertNotNil(d, @"should have a header");
 
 }
 

@@ -16,8 +16,8 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface KCSFileStoreTests : SenTestCase
+@interface KCSFileStoreTests : XCTestCase
 
 @end

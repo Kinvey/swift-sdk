@@ -35,9 +35,9 @@
     
     [KCSUser getAccessDictionaryFromTwitterFromPrimaryAccount:^(NSDictionary *accessBlockOrNil, NSError *errorOrNil) {
         STAssertNoError;
-        STAssertEquals((int)accessBlockOrNil.count, (int)2, @"should have two items");
-        STAssertNotNil([accessBlockOrNil objectForKey:@"access_token"], @"should have an access token");
-        STAssertNotNil([accessBlockOrNil objectForKey:@"access_token_secret"], @"should have an acess token secret");
+        XCTAssertEqual((int)accessBlockOrNil.count, (int)2, @"should have two items");
+        XCTAssertNotNil([accessBlockOrNil objectForKey:@"access_token"], @"should have an access token");
+        XCTAssertNotNil([accessBlockOrNil objectForKey:@"access_token_secret"], @"should have an acess token secret");
         self.done = YES;
     }];
     [self poll];

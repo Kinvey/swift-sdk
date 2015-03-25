@@ -65,7 +65,7 @@
 - (void) setUp
 {
     BOOL setup = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(setup, @"should be up and running");
+    XCTAssertTrue(setup, @"should be up and running");
     
     KCSCollection* collection = [[KCSCollection alloc] init];
     collection.collectionName = [NSString stringWithFormat:@"testObjects%i", arc4random()];
@@ -100,13 +100,13 @@
 {
     self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue], 1, @"expecting one objects of 'one'");
+        XCTAssertEqual([value intValue], 1, @"expecting one objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        STAssertEquals([value intValue], 2, @"expecting two objects of 'two'");
+        XCTAssertEqual([value intValue], 2, @"expecting two objects of 'two'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -117,13 +117,13 @@
 {
     self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue],10, @"expecting one objects of 'one'");
+        XCTAssertEqual([value intValue],10, @"expecting one objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        STAssertEquals([value intValue], 20, @"expecting two objects of 'two'");
+        XCTAssertEqual([value intValue], 20, @"expecting two objects of 'two'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -134,13 +134,13 @@
 {
     self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objDescription"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue],0, @"expecting 0 for a non-numeric");
+        XCTAssertEqual([value intValue],0, @"expecting 0 for a non-numeric");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        STAssertEquals([value intValue], 0, @"expecting 0 for a non-numeric");
+        XCTAssertEqual([value intValue], 0, @"expecting 0 for a non-numeric");
         
         self.done = YES;
     } progressBlock:nil];
@@ -151,13 +151,13 @@
 {
     self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction MIN:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue],10, @"expecting 10 as the min for objects of 'one'");
+        XCTAssertEqual([value intValue],10, @"expecting 10 as the min for objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
-        STAssertEquals([value intValue], -30, @"expecting 10 as the min for objects of 'math'");
+        XCTAssertEqual([value intValue], -30, @"expecting 10 as the min for objects of 'math'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -169,13 +169,13 @@
 {
     self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction MAX:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue],10, @"expecting 10 as the max for objects of 'one'");
+        XCTAssertEqual([value intValue],10, @"expecting 10 as the max for objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
-        STAssertEquals([value intValue], 100, @"expecting 100 as the max for objects of 'math'");
+        XCTAssertEqual([value intValue], 100, @"expecting 100 as the max for objects of 'math'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -186,13 +186,13 @@
 {
     self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction AVERAGE:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        STAssertEquals([value intValue],10, @"expecting 10 as the avg for objects of 'one'");
+        XCTAssertEqual([value intValue],10, @"expecting 10 as the avg for objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
-        STAssertEquals([value intValue], 24, @"expecting 24 as the avg for objects of 'math'");
+        XCTAssertEqual([value intValue], 24, @"expecting 24 as the avg for objects of 'math'");
         
         self.done = YES;
     } progressBlock:nil];
@@ -217,7 +217,7 @@
     [store group:@[@"objDict.food"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNoError;
         NSNumber* value = [valuesOrNil reducedValueForFields:@{@"objDict.food" : @"orange"}];
-        STAssertEquals([value intValue], 2, @"should be two oranges");
+        XCTAssertEqual([value intValue], 2, @"should be two oranges");
         self.done = YES;
     } progressBlock:nil];
     [self poll];
@@ -231,13 +231,13 @@
 {
     self.done = NO;
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction AGGREGATE] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        STAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
         NSArray* value = [valuesOrNil reducedValueForFields:@{@"objDescription" : @"one"}];
-        STAssertEquals([value[0] objectForKey:@""],10, @"expecting 10 as the min for objects of 'one'");
+        XCTAssertEqual([value[0] objectForKey:@""],10, @"expecting 10 as the min for objects of 'one'");
         
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
-        STAssertEquals([value[0] objCount], -30, @"expecting 10 as the min for objects of 'math'");
+        XCTAssertEqual([value[0] objCount], -30, @"expecting 10 as the min for objects of 'math'");
         
         self.done = YES;
     } progressBlock:nil];

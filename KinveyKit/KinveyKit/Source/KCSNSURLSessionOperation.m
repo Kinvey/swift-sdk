@@ -21,6 +21,7 @@
 #import "KCSNSURLSessionOperation.h"
 
 #import "KinveyCoreInternal.h"
+#import "KCSURLProtocol.h"
 
 @interface KCSNSURLSessionOperation () <NSURLSessionDelegate, NSURLSessionDataDelegate>
 @property (nonatomic, strong) NSMutableURLRequest* request;
@@ -42,6 +43,7 @@
     NSURLSession* session;
     
     NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    config.protocolClasses = [KCSURLProtocol protocolClasses];
     session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
     //    });
     return session;
@@ -88,6 +90,11 @@
 }
 
 - (BOOL)isReady
+{
+    return YES;
+}
+
+-(BOOL)isAsynchronous
 {
     return YES;
 }

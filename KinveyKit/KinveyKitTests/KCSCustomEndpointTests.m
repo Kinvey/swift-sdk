@@ -28,7 +28,7 @@
 - (void)setUp
 {
     BOOL loaded = [TestUtils setUpKinveyUnittestBackend];
-    STAssertTrue(loaded, @"should be loaded");
+    XCTAssertTrue(loaded, @"should be loaded");
 }
 
 - (void) testCustomEndpoint
@@ -37,7 +37,7 @@
     [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
         STAssertNoError;
         NSDictionary* expBody = @{@"a":@1,@"b":@2};
-        STAssertEqualObjects(expBody, results, @"bodies should match");
+        XCTAssertEqualObjects(expBody, results, @"bodies should match");
         self.done = YES;
     }];
     [self poll];
@@ -47,7 +47,7 @@
 {
     self.done = NO;
     [KCSCustomEndpoints callEndpoint:@"hs1468" params:@{@"email":@""} completionBlock:^(id results, NSError *error) {
-        STAssertNil(error, @"error should be nil");
+        XCTAssertNil(error, @"error should be nil");
         self.done= YES;
     }];
     [self poll];
@@ -56,25 +56,25 @@
 - (void) testHS1928_CallDoesNotInitCurrentUser
 {
     [[KCSUser activeUser] logout];
-    STAssertNil([KCSUser activeUser], @"user should be nil'd");
+    XCTAssertNil([KCSUser activeUser], @"user should be nil'd");
     dispatch_block_t call = ^{
         [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
-            STAssertNotNil(errorOrNil, @"should have an error");
+            XCTAssertNotNil(errorOrNil, @"should have an error");
             KTAssertEqualsInt(errorOrNil.code, 401, @"no auth error");
             self.done = YES;
         }];
     };
-    STAssertThrowsSpecificNamed(call(), NSException, NSInternalInconsistencyException, @"should be an exception");
+    XCTAssertThrowsSpecificNamed(call(), NSException, NSInternalInconsistencyException, @"should be an exception");
 }
 
 - (void) testCustomEndpointError
 {
     self.done = NO;
     [KCSCustomEndpoints callEndpoint:@"bltest-notexist" params:nil completionBlock:^(id results, NSError *errorOrNil) {
-        STAssertNotNil(errorOrNil, @"should have an error");
+        XCTAssertNotNil(errorOrNil, @"should have an error");
         //        STAssertEqualObjects(errorOrNil.domain, KCSBusinessLogicErrorDomain, @"Should be a bl error");
         NSString* url = errorOrNil.userInfo[NSURLErrorFailingURLErrorKey];
-        STAssertNotNil(url, @"should list the URL");
+        XCTAssertNotNil(url, @"should list the URL");
         KTAssertEqualsInt(errorOrNil.code, 404, @"should be a 400 Not Found");
         self.done = YES;
     }];
@@ -85,11 +85,11 @@
 {
     dispatch_block_t block = ^{
         [KCSCustomEndpoints callEndpoint:@"foo" params:@{@"A":[NSObject new]} completionBlock:^(id results, NSError *error) {
-            STFail(@"should not get here");
+            XCTFail(@"should not get here");
         }];
     };
     
-    STAssertThrowsSpecificNamed(block(), NSException, NSInvalidArgumentException, @"should be an exception");
+    XCTAssertThrowsSpecificNamed(block(), NSException, NSInvalidArgumentException, @"should be an exception");
 }
 
 @end

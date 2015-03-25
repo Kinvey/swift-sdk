@@ -17,11 +17,11 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KCSFileUtils.h"
 
-@interface FileUtilsTest : SenTestCase
+@interface FileUtilsTest : XCTestCase
 
 @end
 
@@ -45,24 +45,24 @@
     
     BOOL isDir;
     BOOL filesDirExists = [[NSFileManager defaultManager] fileExistsAtPath:[filesDir path] isDirectory:&isDir];
-    STAssertTrue(filesDirExists, @"Files dir should be there");
-    STAssertTrue(isDir, @"should be a dir");
+    XCTAssertTrue(filesDirExists, @"Files dir should be there");
+    XCTAssertTrue(isDir, @"should be a dir");
     
     NSData* d = [@"afasdfasfasdfasdfasfad" dataUsingEncoding:NSUTF16StringEncoding];
     NSString* dataFile = [[filesDir URLByAppendingPathComponent:@"abc.txt"] path];
     [d writeToFile:dataFile atomically:YES];
     
     BOOL dataExists = [[NSFileManager defaultManager] fileExistsAtPath:dataFile isDirectory:NO];
-    STAssertTrue(dataExists, @"file should be there");
+    XCTAssertTrue(dataExists, @"file should be there");
     
     BOOL deleted = [KCSFileUtils clearFiles];
-    STAssertTrue(deleted, @"should be cleared");
+    XCTAssertTrue(deleted, @"should be cleared");
     
     BOOL dataExists2 = [[NSFileManager defaultManager] fileExistsAtPath:dataFile isDirectory:NO];
-    STAssertFalse(dataExists2, @"file should be there");
+    XCTAssertFalse(dataExists2, @"file should be there");
 
     BOOL filesDirExists2 = [[NSFileManager defaultManager] fileExistsAtPath:[filesDir path] isDirectory:NO];
-    STAssertTrue(filesDirExists2, @"Files dir should be there");
+    XCTAssertTrue(filesDirExists2, @"Files dir should be there");
 }
 
 

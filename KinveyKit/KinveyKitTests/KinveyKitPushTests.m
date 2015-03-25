@@ -49,7 +49,7 @@ NSData* dataForTokenString(NSString* token)
 
 - (void)setUp
 {
-    STAssertTrue([TestUtils setUpKinveyUnittestBackend], @"should be set up");
+    XCTAssertTrue([TestUtils setUpKinveyUnittestBackend], @"should be set up");
     
     _token = [NSString stringWithFormat:@"d4011af80d8cc2623f361d074a3c0a63162cc524bd18c4c07fbe05ebd074c62%d", arc4random() % 10];
     _tokenData = [[NSMutableData alloc] init];
@@ -67,34 +67,34 @@ NSData* dataForTokenString(NSString* token)
 
 - (void)testSharedPushReturnsInitializedSingleton{
     KCSPush *push = [KCSPush sharedPush];
-    STAssertNotNil(push, @"should have a push value");
+    XCTAssertNotNil(push, @"should have a push value");
 }
 
 - (void) testAddTokenNormalFlow
 {
     KCSUser* myUser = [KCSUser activeUser];
-    STAssertNotNil(myUser, @"start with valid user");
+    XCTAssertNotNil(myUser, @"start with valid user");
     
     NSSet* tokens = myUser.deviceTokens;
-    STAssertNotNil(tokens, @"should have no token");
+    XCTAssertNotNil(tokens, @"should have no token");
     KTAssertCount(0, tokens);
     
     self.done = NO;
     [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
         STAssertNoError_;
-        STAssertTrue(success, @"should register new token");
+        XCTAssertTrue(success, @"should register new token");
         self.done = YES;
     }];
     [self poll];
     
     //Test that local user was updated
     
-    STAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
     NSSet* postTokens = myUser.deviceTokens;
-    STAssertNotNil(postTokens, @"should have no token");
+    XCTAssertNotNil(postTokens, @"should have no token");
     KTAssertCount(1, postTokens);
     NSString* setToken = [postTokens anyObject];
-    STAssertEqualObjects(setToken, _token, @"token was set");
+    XCTAssertEqualObjects(setToken, _token, @"token was set");
     
     //Test that server object was updated
     
@@ -106,10 +106,10 @@ NSData* dataForTokenString(NSString* token)
         KCSUser* loadedUser = objectsOrNil[0];
         
         NSSet* loadedTokens = loadedUser.deviceTokens;
-        STAssertNotNil(loadedTokens, @"should have no token");
+        XCTAssertNotNil(loadedTokens, @"should have no token");
         KTAssertCount(1, loadedTokens);
         NSString* loadedToken = [loadedTokens anyObject];
-        STAssertEqualObjects(loadedToken, _token, @"token was set");
+        XCTAssertEqualObjects(loadedToken, _token, @"token was set");
         
         self.done = YES;
     } withProgressBlock:nil];
@@ -123,7 +123,7 @@ NSData* dataForTokenString(NSString* token)
     self.done = NO;
     [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
         STAssertNoError_;
-        STAssertFalse(success, @"should not register new token");
+        XCTAssertFalse(success, @"should not register new token");
         self.done = YES;
     }];
     [self poll];
@@ -138,13 +138,13 @@ NSData* dataForTokenString(NSString* token)
     [self poll];
     
     KCSUser* myUser = [KCSUser activeUser];
-    STAssertNotNil(myUser, @"have a valid user");
+    XCTAssertNotNil(myUser, @"have a valid user");
     
     NSSet* tokens = myUser.deviceTokens;
-    STAssertNotNil(tokens, @"should have no token");
+    XCTAssertNotNil(tokens, @"should have no token");
     KTAssertCount(1, tokens);
     NSString* aToken = [tokens anyObject];
-    STAssertEqualObjects(aToken, _token, @"token was set proprely");
+    XCTAssertEqualObjects(aToken, _token, @"token was set proprely");
 
     //Test that server object was updated
     
@@ -156,10 +156,10 @@ NSData* dataForTokenString(NSString* token)
         KCSUser* loadedUser = objectsOrNil[0];
         
         NSSet* loadedTokens = loadedUser.deviceTokens;
-        STAssertNotNil(loadedTokens, @"should have no token");
+        XCTAssertNotNil(loadedTokens, @"should have no token");
         KTAssertCount(1, loadedTokens);
         NSString* loadedToken = [loadedTokens anyObject];
-        STAssertEqualObjects(loadedToken, _token, @"token was set");
+        XCTAssertEqualObjects(loadedToken, _token, @"token was set");
         
         self.done = YES;
     } withProgressBlock:nil];
@@ -170,43 +170,43 @@ NSData* dataForTokenString(NSString* token)
 - (void) testRemoveNormalFlow
 {
     KCSUser* myUser = [KCSUser activeUser];
-    STAssertNotNil(myUser, @"start with valid user");
+    XCTAssertNotNil(myUser, @"start with valid user");
     
     NSSet* tokens = myUser.deviceTokens;
-    STAssertNotNil(tokens, @"should have no token");
+    XCTAssertNotNil(tokens, @"should have no token");
     KTAssertCount(0, tokens);
     
     self.done = NO;
     [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
         STAssertNoError_;
-        STAssertTrue(success, @"should register new token");
+        XCTAssertTrue(success, @"should register new token");
         self.done = YES;
     }];
     [self poll];
     
     //Test that local user was updated
     
-    STAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
     NSSet* postTokens = myUser.deviceTokens;
-    STAssertNotNil(postTokens, @"should have no token");
+    XCTAssertNotNil(postTokens, @"should have no token");
     KTAssertCount(1, postTokens);
     NSString* setToken = [postTokens anyObject];
-    STAssertEqualObjects(setToken, _token, @"token was set");
+    XCTAssertEqualObjects(setToken, _token, @"token was set");
     
     // remove the token
     
     self.done = NO;
     [[KCSPush sharedPush] unRegisterDeviceToken:^(BOOL success, NSError *error) {
         STAssertNoError_
-        STAssertTrue(success, @"should remove the token");
+        XCTAssertTrue(success, @"should remove the token");
         
         self.done = YES;
     }];
     [self poll];
     
-    STAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
     NSSet* postRemoveTokens = myUser.deviceTokens;
-    STAssertNotNil(postRemoveTokens, @"should have no token");
+    XCTAssertNotNil(postRemoveTokens, @"should have no token");
     KTAssertCount(0, postRemoveTokens);
     
     //Test that server object was updated
@@ -219,7 +219,7 @@ NSData* dataForTokenString(NSString* token)
         KCSUser* loadedUser = objectsOrNil[0];
         
         NSSet* loadedTokens = loadedUser.deviceTokens;
-        STAssertNotNil(loadedTokens, @"should have no token");
+        XCTAssertNotNil(loadedTokens, @"should have no token");
         KTAssertCount(0, loadedTokens);
         
         self.done = YES;
@@ -230,28 +230,28 @@ NSData* dataForTokenString(NSString* token)
 - (void) testAddNewDoesntKillOld
 {
     KCSUser* myUser = [KCSUser activeUser];
-    STAssertNotNil(myUser, @"start with valid user");
+    XCTAssertNotNil(myUser, @"start with valid user");
     
     NSSet* tokens = myUser.deviceTokens;
-    STAssertNotNil(tokens, @"should have no token");
+    XCTAssertNotNil(tokens, @"should have no token");
     KTAssertCount(0, tokens);
     
     self.done = NO;
     [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
         STAssertNoError_;
-        STAssertTrue(success, @"should register new token");
+        XCTAssertTrue(success, @"should register new token");
         self.done = YES;
     }];
     [self poll];
     
     //Test that local user was updated
     
-    STAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
     NSSet* postTokens = myUser.deviceTokens;
-    STAssertNotNil(postTokens, @"should have no token");
+    XCTAssertNotNil(postTokens, @"should have no token");
     KTAssertCount(1, postTokens);
     NSString* setToken = [postTokens anyObject];
-    STAssertEqualObjects(setToken, _token, @"token was set");
+    XCTAssertEqualObjects(setToken, _token, @"token was set");
     
     //add a second token
     NSString* secondTokenString = [NSString stringWithFormat:@"c4011af80d8cc26aaa361d074a3c0a63162cc524bd18c4c07fbe05ebd074c62%d", arc4random() % 10];
@@ -260,19 +260,19 @@ NSData* dataForTokenString(NSString* token)
     self.done = NO;
     [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:secondTokenData completionBlock:^(BOOL success, NSError *error) {
         STAssertNoError_;
-        STAssertTrue(success, @"should register new token");
+        XCTAssertTrue(success, @"should register new token");
         self.done = YES;
     }];
     [self poll];
     
     //Test that local user was updated
     
-    STAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
     NSSet* postTokens2 = myUser.deviceTokens;
-    STAssertNotNil(postTokens2, @"should have no token");
+    XCTAssertNotNil(postTokens2, @"should have no token");
     KTAssertCount(2, postTokens2);
-    STAssertTrue([postTokens2.allObjects containsObject:[_token copy]], @"token was set");
-    STAssertTrue([postTokens2.allObjects containsObject:secondTokenString], @"token was set");
+    XCTAssertTrue([postTokens2.allObjects containsObject:[_token copy]], @"token was set");
+    XCTAssertTrue([postTokens2.allObjects containsObject:secondTokenString], @"token was set");
     
     
     //Test that server object was updated
@@ -285,10 +285,10 @@ NSData* dataForTokenString(NSString* token)
         KCSUser* loadedUser = objectsOrNil[0];
         
         NSSet* loadedTokens = loadedUser.deviceTokens;
-        STAssertNotNil(loadedTokens, @"should have no token");
+        XCTAssertNotNil(loadedTokens, @"should have no token");
         KTAssertCount(2, loadedTokens);
-        STAssertTrue([loadedTokens.allObjects containsObject:_token], @"token was set");
-        STAssertTrue([loadedTokens.allObjects containsObject:secondTokenString], @"token was set");
+        XCTAssertTrue([loadedTokens.allObjects containsObject:_token], @"token was set");
+        XCTAssertTrue([loadedTokens.allObjects containsObject:secondTokenString], @"token was set");
         
         self.done = YES;
     } withProgressBlock:nil];
@@ -298,10 +298,10 @@ NSData* dataForTokenString(NSString* token)
 - (void) testemoveDoesntKillOld
 {
     KCSUser* myUser = [KCSUser activeUser];
-    STAssertNotNil(myUser, @"start with valid user");
+    XCTAssertNotNil(myUser, @"start with valid user");
     
     NSSet* tokens = myUser.deviceTokens;
-    STAssertNotNil(tokens, @"should have no token");
+    XCTAssertNotNil(tokens, @"should have no token");
     KTAssertCount(0, tokens);
     
     //add a first token
@@ -309,7 +309,7 @@ NSData* dataForTokenString(NSString* token)
     self.done = NO;
     [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
         STAssertNoError_;
-        STAssertTrue(success, @"should register new token");
+        XCTAssertTrue(success, @"should register new token");
         self.done = YES;
     }];
     [self poll];
@@ -321,36 +321,36 @@ NSData* dataForTokenString(NSString* token)
     self.done = NO;
     [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:secondTokenData completionBlock:^(BOOL success, NSError *error) {
         STAssertNoError_;
-        STAssertTrue(success, @"should register new token");
+        XCTAssertTrue(success, @"should register new token");
         self.done = YES;
     }];
     [self poll];
     
     //Test that local user was updated
     
-    STAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
     NSSet* postTokens2 = myUser.deviceTokens;
-    STAssertNotNil(postTokens2, @"should have no token");
+    XCTAssertNotNil(postTokens2, @"should have no token");
     KTAssertCount(2, postTokens2);
-    STAssertTrue([postTokens2.allObjects containsObject:[_token copy]], @"token was set");
-    STAssertTrue([postTokens2.allObjects containsObject:secondTokenString], @"token was set");
+    XCTAssertTrue([postTokens2.allObjects containsObject:[_token copy]], @"token was set");
+    XCTAssertTrue([postTokens2.allObjects containsObject:secondTokenString], @"token was set");
     
     // Remove 2nd token
     self.done = NO;
     [[KCSPush sharedPush] unRegisterDeviceToken:^(BOOL success, NSError *error) {
         STAssertNoError_
-        STAssertTrue(success, @"should be true");
+        XCTAssertTrue(success, @"should be true");
         self.done = YES;
     }];
     [self poll];
     
-    STAssertNil([[KCSPush sharedPush] deviceToken], @"should clear the token");
+    XCTAssertNil([[KCSPush sharedPush] deviceToken], @"should clear the token");
     
     NSSet* tokensAfterReg = myUser.deviceTokens;
-    STAssertNotNil(tokensAfterReg, @"should have no token");
+    XCTAssertNotNil(tokensAfterReg, @"should have no token");
     KTAssertCount(1, tokensAfterReg);
     NSString* aToken = [tokensAfterReg anyObject];
-    STAssertEqualObjects(aToken, _token, @"token was set proprely");
+    XCTAssertEqualObjects(aToken, _token, @"token was set proprely");
     
     //Test that server object was updated
     
@@ -362,10 +362,10 @@ NSData* dataForTokenString(NSString* token)
         KCSUser* loadedUser = objectsOrNil[0];
         
         NSSet* loadedTokens = loadedUser.deviceTokens;
-        STAssertNotNil(loadedTokens, @"should have no token");
+        XCTAssertNotNil(loadedTokens, @"should have no token");
         KTAssertCount(1, loadedTokens);
         NSString* loadedToken = [loadedTokens anyObject];
-        STAssertEqualObjects(loadedToken, _token, @"token was set");
+        XCTAssertEqualObjects(loadedToken, _token, @"token was set");
         
         self.done = YES;
     } withProgressBlock:nil];
@@ -375,35 +375,35 @@ NSData* dataForTokenString(NSString* token)
 - (void) testExistingOneDoesntTransferToNew
 {
     NSString* myUser = [KCSUser activeUser].userId;
-    STAssertNotNil(myUser, @"start with valid user");
+    XCTAssertNotNil(myUser, @"start with valid user");
     
     NSSet* tokens = [KCSUser activeUser].deviceTokens;
-    STAssertNotNil(tokens, @"should have no token");
+    XCTAssertNotNil(tokens, @"should have no token");
     KTAssertCount(0, tokens);
     
     self.done = NO;
     [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
         STAssertNoError_;
-        STAssertTrue(success, @"should register new token");
+        XCTAssertTrue(success, @"should register new token");
         self.done = YES;
     }];
     [self poll];
     
     //Test that local user was updated
-    STAssertEqualObjects([KCSUser activeUser].userId, myUser, @"still have same user");
+    XCTAssertEqualObjects([KCSUser activeUser].userId, myUser, @"still have same user");
     NSSet* postTokens = [KCSUser activeUser].deviceTokens;
-    STAssertNotNil(postTokens, @"should have no token");
+    XCTAssertNotNil(postTokens, @"should have no token");
     KTAssertCount(1, postTokens);
     
     [[KCSUser activeUser] logout];
     
-    STAssertNil([KCSUser activeUser].userId, @"user should be cleared");
-    STAssertNil([[KCSPush sharedPush] deviceToken], @"Should be cleared");
+    XCTAssertNil([KCSUser activeUser].userId, @"user should be cleared");
+    XCTAssertNil([[KCSPush sharedPush] deviceToken], @"Should be cleared");
     
     self.done = NO;
     [KCSUser createAutogeneratedUser:nil completion:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError
-        STAssertNotNil([KCSUser activeUser], @"user is real");
+        XCTAssertNotNil([KCSUser activeUser], @"user is real");
         KTAssertCount(0, [KCSUser activeUser].deviceTokens);
         self.done = YES;
     }];
@@ -418,7 +418,7 @@ NSData* dataForTokenString(NSString* token)
         KCSUser* loadedUser = objectsOrNil[0];
         
         NSSet* loadedTokens = loadedUser.deviceTokens;
-        STAssertNotNil(loadedTokens, @"should have no token");
+        XCTAssertNotNil(loadedTokens, @"should have no token");
         KTAssertCount(0, loadedTokens);
         
         self.done = YES;

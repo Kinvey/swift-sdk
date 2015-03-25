@@ -1,5 +1,46 @@
 # KinveyKit Release History
 
+## 1.29
+### 1.29.0
+
+**Release Date:** March 25, 2015
+
+* Enhancement: Added support for setting client app version.
+* Enhancement: Added support for setting custom request properties.
+
+For example (Swift code snippet):
+
+    //global
+	let requestConfiguration = KCSRequestConfiguration(clientAppVersion: "2.0",
+        andCustomRequestProperties: [
+            "lang" : "fr",
+            "globalProperty" : "abc"
+        ]
+    )
+	let clientConfiguration = KCSClientConfiguration(
+        appKey: "<#Your App Key#>",
+        secret: "<#Your App Secret#>",
+        options: <#Your Options#>,
+        requestConfiguration: requestConfiguration
+    )
+    KCSClient.sharedClient().initializeWithConfiguration(clientConfiguration)
+	
+	//per request
+	let requestConfig = KCSRequestConfiguration(
+		clientAppVersion: "1.0",
+        andCustomRequestProperties: [
+            "lang" : "pt",
+            "requestProperty" : "123"
+        ]
+    )
+	store.saveObject(obj,
+	    requestConfiguration: requestConfig,
+	    withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+			//do something awesome here!
+	    },
+	    withProgressBlock: nil
+	)
+
 ## 1.28
 ### 1.28.0
 

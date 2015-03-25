@@ -18,12 +18,12 @@
 //
 
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "KinveyDataStoreInternal.h"
 #import "TestUtils2.h"
 
-@interface DataStoreTests : SenTestCase
+@interface DataStoreTests : XCTestCase
 @property (nonatomic, retain) NSString* collection;
 @end
 
@@ -72,7 +72,7 @@
     } withProgressBlock:nil];
     [self poll];
     
-    STAssertNotNil(_id, @"should have an id");
+    XCTAssertNotNil(_id, @"should have an id");
     return _id;
 }
 
@@ -91,7 +91,7 @@
         } else {
             KTAssertNotNil(error);
             KTAssertEqualsInt(error.code, 404);
-            STAssertNil(objectsOrNil, @"should have no objects");
+            XCTAssertNil(objectsOrNil, @"should have no objects");
         }
         self.done = YES;
     } withProgressBlock:nil];
@@ -115,7 +115,7 @@
     [self poll];
     
     id obj = [self getEntity:_id shouldExist:NO];
-    STAssertNil(obj, @"object should be gone");
+    XCTAssertNil(obj, @"object should be gone");
 }
 
 - (void) testDeleteByQuery
@@ -135,7 +135,7 @@
     [self poll];
     
     id obj = [self getEntity:_id shouldExist:NO];
-    STAssertNil(obj, @"object should be gone");
+    XCTAssertNil(obj, @"object should be gone");
 }
 
 @end

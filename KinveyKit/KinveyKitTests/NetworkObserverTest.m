@@ -17,11 +17,11 @@
 // contents is a violation of applicable laws.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "KinveyCoreInternal.h"
 #import "TestUtils2.h"
 
-@interface NetworkObserverTest : SenTestCase
+@interface NetworkObserverTest : XCTestCase
 @property (atomic) NSInteger count;
 @end
 
@@ -58,8 +58,8 @@
     });
 
     KTPollStart
-    STAssertTrue(startHappened, @"should get start");
-    STAssertTrue(endHappened, @"should get end");
+    XCTAssertTrue(startHappened, @"should get start");
+    XCTAssertTrue(endHappened, @"should get end");
 }
 
 @end

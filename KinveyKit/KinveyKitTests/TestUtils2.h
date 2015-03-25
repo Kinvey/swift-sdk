@@ -19,37 +19,46 @@
 
 
 #import <Foundation/Foundation.h>
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 #import "LogTester.h"
 #import "KCSMockServer.h"
 #import "KCSMockReachability.h"
+#import "KCSRequestConfiguration.h"
 
-#define KTAssertNoError STAssertNil(error, @"Should not get an error: %@", error);
+#define KTAssertNoError XCTAssertNil(error, @"Should not get an error: %@", error);
 
-#define KTAssertNotNil(x) STAssertNotNil(x, @#x" should not be nil.");
-#define KTAssertEqualsInt(x,y) STAssertEquals((int)x,(int)y, @#x" != "#y);
-#define KTAssertCount(c, obj) STAssertNotNil(obj, @#obj" should be non-nil"); STAssertEquals((int)[obj count], (int)c, @"count did not match expectation");
-#define KTAssertCountAtLeast(c, obj) STAssertTrue( [obj count] >= c, @"count (%i) should be at least (%i)", [obj count], c);
-#define KTAssertLengthAtLeast(obj, c) STAssertTrue( [obj length] >= c, @"count (%i) should be at least (%i)", [obj length], c);
-#define KTAssertEqualsDates(date1,date2) STAssertTrue([date1 isEqualToDate:date2], @"Dates should match.");
+#define KTAssertNotNil(x) XCTAssertNotNil(x, @#x" should not be nil.");
+#define KTAssertEqualsInt(x,y) XCTAssertEqual((int)x,(int)y, @#x" != "#y);
+#define KTAssertCount(c, obj) XCTAssertNotNil(obj, @#obj" should be non-nil"); XCTAssertEqual((int)[obj count], (int)c, @"count did not match expectation");
+#define KTAssertCountAtLeast(c, obj) XCTAssertTrue( [obj count] >= c, @"count (%i) should be at least (%i)", [obj count], c);
+#define KTAssertLengthAtLeast(obj, c) XCTAssertTrue( [obj length] >= c, @"count (%i) should be at least (%i)", [obj length], c);
+#define KTAssertEqualsDates(date1,date2) XCTAssertTrue([date1 isEqualToDate:date2], @"Dates should match.");
 
-#define KTNIY STFail(@"'%s' Not Implemented Yet.", __PRETTY_FUNCTION__);
+#define KTNIY XCTFail(@"'%s' Not Implemented Yet.", __PRETTY_FUNCTION__);
 
 
 #define KTPollDone self.done = YES;
-#define KTPollStart self.done = NO; STAssertTrue([self poll], @"polling timed out");
+#define KTPollStart self.done = NO; XCTAssertTrue([self poll], @"polling timed out");
 #define KTPollNoAssert self.done = NO; [self poll];
 
 
 @protocol KCSCredentials;
 id<KCSCredentials> mockCredentails();
 
-@interface SenTestCase (TestUtils2)
+@interface XCTestCase (TestUtils2)
 @property (nonatomic) BOOL done;
+
 - (BOOL) poll;
+
 - (void)setupKCS:(BOOL)initUser;
+
+- (void)    setupKCS:(BOOL)initUser
+             options:(NSDictionary*)options
+requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
+
 - (void) useMockUser;
+
 @end
 
 @interface TestUtils2 : NSObject
