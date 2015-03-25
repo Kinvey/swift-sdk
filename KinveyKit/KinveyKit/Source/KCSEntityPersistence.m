@@ -179,10 +179,18 @@
     NSData* data = [NSJSONSerialization dataWithJSONObject:[KCSMutableOrderedDictionary dictionaryWithDictionary:keyDictionary]
                                                    options:0
                                                      error:&error];
-    if (!error && data) {
+    
+    if (error) {
+        [[NSException exceptionWithName:error.domain
+                                 reason:error.localizedDescription ? error.localizedDescription : error.description
+                               userInfo:error.userInfo] raise];
+    }
+    
+    if (data) {
         return [[NSString alloc] initWithData:data
                                      encoding:NSUTF8StringEncoding];
     }
+    
     return nil;
 }
 

@@ -187,4 +187,75 @@ class RequestConfigurationTests: XCTestCase {
         })
     }
     
+    func testComplexHttpRequestHeaders() {
+        var obj = [
+            "_id" : "Boston",
+            "name" : "Boston",
+            "state" : "MA"
+        ]
+        let expectationSave = self.expectationWithDescription("save")
+        
+        class MockURLProtocol: NSURLProtocol {
+            
+            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                let headers = request.allHTTPHeaderFields!
+                
+                XCTAssertEqual(headers["X-Kinvey-Client-App-Version"] as NSString!, "1.0")
+                
+                var error: NSError?
+                let expectedResult = [
+                    "lang" : "pt",
+                    "globalProperty" : "abc",
+                    "requestProperty" : "123",
+                    "location" : [
+                        "city" : "Vancouver",
+                        "province" : "BC",
+                        "country" : "Canada"
+                    ]
+                ] as Dictionary<String, AnyObject>
+                let data = NSJSONSerialization.dataWithJSONObject(KCSMutableOrderedDictionary(dictionary: expectedResult),
+                    options: nil,
+                    error: &error)
+                XCTAssertNil(error)
+                let json = NSString(data: data!, encoding: NSUTF8StringEncoding)!
+                XCTAssertEqual(headers["X-Kinvey-Custom-Request-Properties"] as NSString!, json)
+                
+                return false
+            }
+            
+        }
+        
+        XCTAssertTrue(KCSURLProtocol.registerClass(MockURLProtocol))
+        
+        let requestConfig = KCSRequestConfiguration(clientAppVersion: "1.0",
+            andCustomRequestProperties: [
+                "lang" : "pt",
+                "requestProperty" : "123",
+                "location" : [
+                    "city" : "Vancouver",
+                    "province" : "BC",
+                    "country" : "Canada"
+                ]
+            ]
+        )
+        self.store.saveObject(obj,
+            requestConfiguration: requestConfig,
+            withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                XCTAssertNil(error)
+                XCTAssertNotNil(results)
+                XCTAssertEqual(results.count, 1)
+                XCTAssertEqual(results[0] as Dictionary, obj)
+                
+                expectationSave.fulfill()
+            },
+            withProgressBlock: nil
+        )
+        
+        self.waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in
+            KCSURLProtocol.unregisterClass(MockURLProtocol)
+            
+            XCTAssertNil(error)
+        })
+    }
+    
 }
