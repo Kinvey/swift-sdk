@@ -8,7 +8,7 @@
 * Update TAG-ME in KinveyVersion.h
 * Commit changes to develop branch
 * Double-check with an app that the lib works
-* Create Release Branch following the git-flow pattern witch the version number as suffix, for example: release/1.29.0
+* Create Release Branch following the git-flow pattern witch the version number as suffix, for example: release/1.29.x
 * Merge the develop branch to master following the git-flow pattern
 * Update documentation in devcenter
 * Upload the binaries to S3 Updating The Downloads
