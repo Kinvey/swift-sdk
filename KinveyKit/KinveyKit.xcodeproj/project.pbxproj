@@ -3257,7 +3257,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -e /usr/local/bin/appledoc ];\nthen\n    echo \"Appledoc binary not found! Can't generate documentation!\"\n    exit 127\nfi\n\necho \"Starting...\"\n\n${PROJECT_DIR}/../Tools/build-kinvey ${PROJECT_DIR}\n# /usr/local/bin/appledoc --project-name KinveyKit --project-company \"Kinvey\" --company-id com.kinvey --ignore \"3rdParty\" --exit-threshold 2 --logformat xcode .\n\necho \"done...\"";
+			shellScript = "if [ ! -e /usr/local/bin/appledoc ];\nthen\n    echo \"Appledoc binary not found! Can't generate documentation!\"\n    exit 127\nfi\n\necho \"Starting...\"\n\ncd ${PROJECT_DIR}/../Tools;\nPATH=$PATH:/Applications/Xcode.app/Contents/Developer/usr/bin \\\n    ./build-doc \\\n    ${PROJECT_DIR}\n\necho \"done...\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -33,7 +33,7 @@ echo ${HTMLFOOTER} >> ${KINVEYKITLOC}/LICENSES.html
 
 echo "Building docs for ${KINVEYKITLOC}..."
 
-APPLEDOC=${HOME}/bin/appledoc
+APPLEDOC=$PWD/appledoc/appledoc
 #/Users/mike/Library/Developer/Xcode/DerivedData/appledoc-dbpuscstfpupnxfbevymysrpdquv/Build/Products/Debug/appledoc
 #${HOME}/bin/appledoc
 COMPANY=Kinvey
@@ -54,8 +54,10 @@ INDEX="--index-desc ${KINVEYKITLOC}/README.md"
 LICENSES="--include ${KINVEYKITLOC}/LICENSES.html"
 CHANGES="--include ${KINVEYKITLOC}/KinveyKit-History-template.md"
 SETTINGS="${KINVEYKITLOC}/AppledocSettings.plist"
+VERBOSE="--verbose 6"
 
-UTILPATH="--docsetutil-path /Applications/Xcode.app/Contents/Developer/usr/bin/docsetutil"
+UTILPATH=""
+#"--docsetutil-path /Applications/Xcode.app/Contents/Developer/usr/bin/docsetutil"
 
 if [ ! -d $OUTPUTLOC ]
 then
@@ -80,10 +82,10 @@ then
 fi
 
 
-#COMMAND="${APPLEDOC} ${UTILPATH} ${OUTPUTARGS} ${WARNINGS} ${INDEX} -o ${TEXTOUT} --docset-install-path ${DOCOUT} ${LICENSES} ${CHANGES} ${SETTINGS} ${KINVEYKITLOC}/KinveyKit ${KINVEYKITLOC}/KinveyKitExtras"
-COMMAND="${APPLEDOC} ${SETTINGS} ${KINVEYKITLOC}/KinveyKit ${KINVEYKITLOC}/KinveyKitExtras"
+COMMAND="${APPLEDOC} ${VERBOSE} ${UTILPATH} ${OUTPUTARGS} ${WARNINGS} ${INDEX} -o ${TEXTOUT} --docset-install-path ${DOCOUT} ${LICENSES} ${CHANGES} ${SETTINGS} ${KINVEYKITLOC}/KinveyKit ${KINVEYKITLOC}/KinveyKitExtras"
+#COMMAND="${APPLEDOC} ${SETTINGS} ${KINVEYKITLOC}/KinveyKit ${KINVEYKITLOC}/KinveyKitExtras"
 
-
+echo $COMMAND
 $COMMAND
 
 
