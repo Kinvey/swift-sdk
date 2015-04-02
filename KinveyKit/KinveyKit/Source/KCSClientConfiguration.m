@@ -47,6 +47,7 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 #define KCS_HOST_PROTOCOL @"KCS_HOST_PROTOCOL"
 #define KCS_HOST_DOMAIN   @"KCS_HOST_DOMAIN"
 
+#define KCS_DEFAULT_AUTH_HOSTNAME     @"auth"
 #define KCS_DEFAULT_HOSTNAME          @"baas"
 #define KCS_DEFAULT_HOST_PORT         @""
 #define KCS_DEFAULT_HOST_PROTOCOL     @"https"
@@ -77,6 +78,7 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
                      KCS_USER_CLASS            : [KCSUser class]
                      };
         _serviceHostname = KCS_DEFAULT_HOSTNAME;
+        _authHostname = KCS_DEFAULT_AUTH_HOSTNAME;
         
         
         KCSLogFormatter* formatter = [[KCSLogFormatter alloc] init];
@@ -99,6 +101,7 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
     c.appSecret = self.appSecret;
     c.options = self.options;
     c.serviceHostname = self.serviceHostname;
+    c.authHostname = self.authHostname;
     c.requestConfiguration = self.requestConfiguration.copy;
     
     return c;
