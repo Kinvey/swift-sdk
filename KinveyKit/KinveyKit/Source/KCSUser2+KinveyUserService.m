@@ -31,6 +31,8 @@ KK2(Cleanup!)
 #import "NSString+KinveyAdditions.h"
 #import "NSURL+KinveyAdditions.h"
 
+#import "KCSURLConnectionDelegateAdapter.h"
+
 #define KCSEntityKeyKMD @"_kmd"
 #define KCSEntityKeyAuthtoken @"authtoken"
 #define KCSEntityKeyEmailVerification @"emailVerification"
@@ -239,15 +241,7 @@ KK2(Cleanup!)
                         if (error) {
                             if (completionBlock) completionBlock(nil, error);
                         } else {
-                            NSURL* url = [NSURL URLWithString:jsonResponse[@"temp_login_uri"]];
-                            
-                            //TODO workaround to solve a bug on iOS
-//                            NSString* path = [url.path stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
-//                            url = [[NSURL alloc] initWithScheme:url.scheme
-//                                                           host:url.host
-//                                                           path:path];
-                            
-                            [self oAuthAuthenticateWithURL:url
+                            [self oAuthAuthenticateWithURL:[NSURL URLWithString:jsonResponse[@"temp_login_uri"]]
                                                redirectURI:redirectURI
                                                    options:optons
                                                 completion:completionBlock];
@@ -302,22 +296,31 @@ KK2(Cleanup!)
     [request setValue:@"application/x-www-form-urlencoded"
    forHTTPHeaderField:@"Content-Type"];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[KCSRequest2 requestQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-    {
+    __block NSURLRequest* redirectRequest = nil;
+    KCSURLConnectionDelegateAdapter* connectionDelegateAdapter = [[KCSURLConnectionDelegateAdapter alloc] init];
+    [connectionDelegateAdapter setConnectionWillSendRequestRedirectResponse:^NSURLRequest *(NSURLConnection *connection, NSURLRequest *request, NSURLResponse *response) {
+        if (response) {
+            redirectRequest = request;
+            return nil;
+        }
+        
+        return request;
+    }];
+    [connectionDelegateAdapter setCompletionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
         if (error) {
             if (completionBlock) completionBlock(nil, error);
         } else if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
             NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*) response;
-            if (httpResponse.statusCode == 200 && data) {
-                NSDictionary* jsonResponse = [NSJSONSerialization JSONObjectWithData:data
-                                                                             options:0
-                                                                               error:&error];
+            if (httpResponse.statusCode == 302) { //redirect
                 if (error) {
                     if (completionBlock) completionBlock(nil, error);
                 } else {
-                    [self oAuthTokenWithCode:@""
+                    NSArray* queryParamsParts = [redirectRequest.URL.query componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"?="]];
+                    NSMutableDictionary* queryParams = [NSMutableDictionary dictionary];
+                    for (NSUInteger i = 0; i < queryParamsParts.count; i += 2) {
+                        queryParams[queryParamsParts[i]] = queryParamsParts[i + 1];
+                    }
+                    [self oAuthTokenWithCode:queryParams[@"code"]
                                  redirectURI:redirectURI
                                   completion:completionBlock];
                 }
@@ -334,6 +337,12 @@ KK2(Cleanup!)
                                                  userInfo:@{}]);
         }
     }];
+    
+    NSURLConnection* connection = [[NSURLConnection alloc] initWithRequest:request
+                                                                  delegate:connectionDelegateAdapter
+                                                          startImmediately:NO];
+    [connection setDelegateQueue:[KCSRequest2 requestQueue]];
+    [connection start];
 }
 
 +(void)oAuthTokenWithCode:(NSString*)code
@@ -395,10 +404,6 @@ KK2(Cleanup!)
     [request setValue:[NSString stringWithFormat:@"Basic %@", basicAuthHash]
    forHTTPHeaderField:@"Authorization"];
     
-    NSLog(@"%@", request.allHTTPHeaderFields);
-    NSLog(@"%@", [[NSString alloc] initWithData:request.HTTPBody
-                                       encoding:NSUTF8StringEncoding]);
-    
     [NSURLConnection sendAsynchronousRequest:request
                                        queue:[KCSRequest2 requestQueue]
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
@@ -415,7 +420,7 @@ KK2(Cleanup!)
                      if (completionBlock) completionBlock(nil, error);
                  } else {
                      NSString* accessToken = jsonResponse[@"access_token"];
-                     NSString* expiresIn = jsonResponse[@"expires_in"];
+                     NSNumber* expiresIn = jsonResponse[@"expires_in"];
                      NSString* refreshToken = jsonResponse[@"refresh_token"];
                      NSString* tokenType = jsonResponse[@"token_type"];
                  }

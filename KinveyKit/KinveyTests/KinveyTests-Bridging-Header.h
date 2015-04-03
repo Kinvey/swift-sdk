@@ -6,13 +6,3 @@
 #import "KinveyKit.h"
 #import "TestUtils2.h"
 #import "KCSMutableOrderedDictionary.h"
-
-#import "KCSUser2+KinveyUserService.h"
-
-@interface KCSUser2 ()
-
-+(void)oAuthTokenWithCode:(NSString*)code
-              redirectURI:(NSString *)redirectURI
-               completion:(KCSUser2CompletionBlock)completionBlock;
-
-@end
