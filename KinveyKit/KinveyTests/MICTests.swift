@@ -18,7 +18,40 @@ class MICTests: XCTestCase {
         )
     }
     
-    func testAuthLoginPage() {
+    func testValidURL() {
+        XCTAssertTrue(KCSUser.isValidMICRedirectURI(
+            "kinveyAuthDemo://",
+            forURL: NSURL(string: "kinveyAuthDemo://?code=123")
+        ))
+    }
+    
+    func testValidURLDifferentURI() {
+        XCTAssertFalse(KCSUser.isValidMICRedirectURI(
+            "kinveyAuthDemo://",
+            forURL: NSURL(string: "facebook://?code=123")
+        ))
+    }
+    
+    func testValidURLMutipleParams() {
+        XCTAssertTrue(KCSUser.isValidMICRedirectURI(
+            "kinveyAuthDemo://",
+            forURL: NSURL(string: "kinveyAuthDemo://?type=kinvey_mic&code=123")
+        ))
+    }
+    
+    func testParseURLParams() {
+        var params: NSDictionary?
+        KCSUser2.isValidMICRedirectURI(
+            "kinveyAuthDemo://",
+            forURL: NSURL(string: "kinveyAuthDemo://?type=kinvey_mic&code=123"),
+            params: &params
+        )
+        XCTAssertEqual(params!.count, 2)
+        XCTAssertEqual(params!["code"] as String, "123")
+        XCTAssertEqual(params!["type"] as String, "kinvey_mic")
+    }
+    
+    func testAuthCodeApi() {
         let expectation = expectationWithDescription("login")
         
         KCSUser.loginWithMICRedirectURI(
@@ -30,6 +63,9 @@ class MICTests: XCTestCase {
             ]
         ) { (user: KCSUser!, error: NSError!, userActionResult: KCSUserActionResult) -> Void in
             XCTAssertNil(error)
+            XCTAssertNotNil(user)
+            XCTAssertNotNil(user.userId)
+            XCTAssertNotNil(user.username)
             
             expectation.fulfill()
         }

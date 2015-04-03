@@ -38,6 +38,8 @@ KK2(Cleanup!)
 #define KCSEntityKeyEmailVerification @"emailVerification"
 #define KCSUserAttributePassword @"password"
 
+#define DISPATCH_ASYNC_MAIN_QUEUE(block) dispatch_async(dispatch_get_main_queue(), ^{ block; })
+
 @implementation KCSUser2 (KinveyUserService)
 
 #pragma mark - Credential Management
@@ -231,7 +233,7 @@ KK2(Cleanup!)
                                    completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
             {
                 if (error) {
-                    if (completionBlock) completionBlock(nil, error);
+                    if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
                 } else if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                     NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*) response;
                     if (httpResponse.statusCode == 200 && data) {
@@ -239,7 +241,7 @@ KK2(Cleanup!)
                                                                                      options:0
                                                                                        error:&error];
                         if (error) {
-                            if (completionBlock) completionBlock(nil, error);
+                            if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
                         } else {
                             [self oAuthAuthenticateWithURL:[NSURL URLWithString:jsonResponse[@"temp_login_uri"]]
                                                redirectURI:redirectURI
@@ -248,15 +250,25 @@ KK2(Cleanup!)
                         }
                     } else {
                         if (completionBlock) {
-                            completionBlock(nil, [NSError errorWithDomain:[NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]
-                                                                     code:httpResponse.statusCode
-                                                                 userInfo:@{}]);
+                            DISPATCH_ASYNC_MAIN_QUEUE(
+                                completionBlock(
+                                    nil,
+                                    [NSError errorWithDomain:[NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]
+                                                        code:httpResponse.statusCode
+                                                    userInfo:@{}]
+                                )
+                            );
                         }
                     }
                 } else if (completionBlock) {
-                    completionBlock(nil, [NSError errorWithDomain:@"Bad Request"
-                                                             code:400
-                                                         userInfo:@{}]);
+                    DISPATCH_ASYNC_MAIN_QUEUE(
+                        completionBlock(
+                            nil,
+                            [NSError errorWithDomain:@"Bad Request"
+                                                code:400
+                                            userInfo:@{}]
+                        )
+                    );
                 }
             }];
         }
@@ -308,33 +320,35 @@ KK2(Cleanup!)
     }];
     [connectionDelegateAdapter setCompletionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
         if (error) {
-            if (completionBlock) completionBlock(nil, error);
+            if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         } else if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
             NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*) response;
             if (httpResponse.statusCode == 302) { //redirect
                 if (error) {
-                    if (completionBlock) completionBlock(nil, error);
+                    if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
                 } else {
-                    NSArray* queryParamsParts = [redirectRequest.URL.query componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"?="]];
-                    NSMutableDictionary* queryParams = [NSMutableDictionary dictionary];
-                    for (NSUInteger i = 0; i < queryParamsParts.count; i += 2) {
-                        queryParams[queryParamsParts[i]] = queryParamsParts[i + 1];
+                    if ([self isValidMICRedirectURI:redirectURI
+                                              forURL:redirectRequest.URL]) {
+                        [self parseMICRedirectURI:redirectURI
+                                           forURL:redirectRequest.URL
+                              withCompletionBlock:completionBlock];
+                    } else {
+                        DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, [NSError errorWithDomain:@"Invalid MIC Redirect URL"
+                                                                                           code:400
+                                                                                       userInfo:@{}]));
                     }
-                    [self oAuthTokenWithCode:queryParams[@"code"]
-                                 redirectURI:redirectURI
-                                  completion:completionBlock];
                 }
             } else {
                 if (completionBlock) {
-                    completionBlock(nil, [NSError errorWithDomain:[NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]
-                                                             code:httpResponse.statusCode
-                                                         userInfo:@{}]);
+                    DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, [NSError errorWithDomain:[NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]
+                                                                                       code:httpResponse.statusCode
+                                                                                   userInfo:@{}]));
                 }
             }
         } else if (completionBlock) {
-            completionBlock(nil, [NSError errorWithDomain:@"Bad Request"
-                                                     code:400
-                                                 userInfo:@{}]);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, [NSError errorWithDomain:@"Bad Request"
+                                                                               code:400
+                                                                           userInfo:@{}]));
         }
     }];
     
@@ -343,6 +357,55 @@ KK2(Cleanup!)
                                                           startImmediately:NO];
     [connection setDelegateQueue:[KCSRequest2 requestQueue]];
     [connection start];
+}
+
++(BOOL)isValidMICRedirectURI:(NSString *)redirectURI
+                      forURL:(NSURL *)url
+{
+    return [self isValidMICRedirectURI:redirectURI
+                                forURL:url
+                                params:nil];
+}
+
++(BOOL)isValidMICRedirectURI:(NSString *)redirectURI
+                      forURL:(NSURL *)url
+                      params:(NSDictionary**)params
+{
+    if (![url.absoluteString hasPrefix:redirectURI]) {
+        return NO;
+    }
+    
+    NSArray* queryParamsParts = [url.query componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"?&"]];
+    NSMutableDictionary* queryParams = [NSMutableDictionary dictionary];
+    NSArray* keyValue;
+    for (NSUInteger i = 0; i < queryParamsParts.count; i++) {
+        keyValue = [queryParamsParts[i] componentsSeparatedByString:@"="];
+        if (keyValue.count > 0) {
+            queryParams[keyValue[0]] = keyValue.count > 1 ? keyValue[1] : @"";
+        }
+    }
+    
+    if (params) {
+        *params = queryParams;
+    }
+    
+    NSString* code = queryParams[@"code"];
+    
+    return code != nil && code.length > 0;
+}
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+       withCompletionBlock:(KCSUser2CompletionBlock)completionBlock
+{
+    NSDictionary* queryParams = nil;
+    if ([self isValidMICRedirectURI:redirectURI
+                             forURL:url
+                             params:&queryParams]) {
+        [self oAuthTokenWithCode:queryParams[@"code"]
+                     redirectURI:redirectURI
+                      completion:completionBlock];
+    }
 }
 
 +(void)oAuthTokenWithCode:(NSString*)code
@@ -409,7 +472,7 @@ KK2(Cleanup!)
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error) {
-             if (completionBlock) completionBlock(nil, error);
+             if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
          } else if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
              NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*) response;
              if (httpResponse.statusCode == 200 && data) {
@@ -417,24 +480,23 @@ KK2(Cleanup!)
                                                                               options:0
                                                                                 error:&error];
                  if (error) {
-                     if (completionBlock) completionBlock(nil, error);
+                     if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
                  } else {
-                     NSString* accessToken = jsonResponse[@"access_token"];
-                     NSNumber* expiresIn = jsonResponse[@"expires_in"];
-                     NSString* refreshToken = jsonResponse[@"refresh_token"];
-                     NSString* tokenType = jsonResponse[@"token_type"];
+                     [self connectWithAuthProvider:KCSSocialIDKinvey
+                                  accessDictionary:jsonResponse
+                                        completion:completionBlock];
                  }
              } else {
                  if (completionBlock) {
-                     completionBlock(nil, [NSError errorWithDomain:[NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]
-                                                              code:httpResponse.statusCode
-                                                          userInfo:@{}]);
+                     DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, [NSError errorWithDomain:[NSHTTPURLResponse localizedStringForStatusCode:httpResponse.statusCode]
+                                                                                        code:httpResponse.statusCode
+                                                                                    userInfo:@{}]));
                  }
              }
          } else if (completionBlock) {
-             completionBlock(nil, [NSError errorWithDomain:@"Bad Request"
-                                                      code:400
-                                                  userInfo:@{}]);
+             DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, [NSError errorWithDomain:@"Bad Request"
+                                                                                code:400
+                                                                            userInfo:@{}]));
          }
      }];
 }
