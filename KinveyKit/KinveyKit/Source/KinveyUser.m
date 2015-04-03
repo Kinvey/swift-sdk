@@ -185,6 +185,27 @@ void setActive(KCSUser* user)
     return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI];
 }
 
++(BOOL)isValidMICRedirectURI:(NSString *)redirectURI
+                      forURL:(NSURL *)url
+{
+    return [KCSUser2 isValidMICRedirectURI:redirectURI
+                                    forURL:url];
+}
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+       withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    [KCSUser2 parseMICRedirectURI:redirectURI
+                           forURL:url
+              withCompletionBlock:^(id<KCSUser2> user, NSError *error)
+    {
+        if (completionBlock) {
+            completionBlock(user, error, KCSUserNoInformation);
+        }
+    }];
+}
+
 - (void)logout
 {
     if (![self isEqual:[KCSUser activeUser]]){

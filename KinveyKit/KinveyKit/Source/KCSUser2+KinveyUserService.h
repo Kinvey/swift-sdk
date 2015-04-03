@@ -41,6 +41,13 @@ typedef void (^KCSUser2CompletionBlock)(id<KCSUser2>user, NSError* error);
 
 + (NSURL*)URLforLoginWithMICRedirectURI:(NSString*)redirectURI;
 
++ (BOOL)isValidMICRedirectURI:(NSString*)redirectURI
+                       forURL:(NSURL*)url;
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+       withCompletionBlock:(KCSUser2CompletionBlock)completionBlock;
+
 + (void) logoutUser:(id<KCSUser2>)user;
 
 

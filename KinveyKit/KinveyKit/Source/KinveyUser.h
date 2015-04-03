@@ -333,6 +333,29 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
             withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 /**
+ Check if the URL matches with the redirectURI and contains the authorization code for MIC.
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
+ @param url URL to be tested if matches if the redirectURI
+ @return YES if the URL matches with the redirectURI
+ @since 1.30.0
+ */
++ (BOOL)isValidMICRedirectURI:(NSString*)redirectURI
+                       forURL:(NSURL*)url;
+
+/**
+ Parse the URL that contains the authorization code for MIC.
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
+ @param url URL to be tested if matches if the redirectURI
+ @param completionBlock The block to be called when the operation completes or fails
+ @since 1.30.0
+ */
++ (void)parseMICRedirectURI:(NSString *)redirectURI
+                     forURL:(NSURL *)url
+        withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
+/**
  Returns the URL to be opened by the WebView or Safari Mobile for KCSMICAuthorizationGrantTypeAuthCodeLoginPage.
  
  @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
