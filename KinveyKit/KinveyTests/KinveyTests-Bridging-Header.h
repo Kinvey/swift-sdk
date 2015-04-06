@@ -15,3 +15,9 @@
                       params:(NSDictionary**)params;
 
 @end
+
+@interface KCSUser()
+
+@property (nonatomic, strong) NSMutableDictionary *userAttributes;
+
+@end
