@@ -46,3 +46,4 @@
 #define KK2(x)
 #endif
 
+#define DISPATCH_ASYNC_MAIN_QUEUE(block) dispatch_async(dispatch_get_main_queue(), ^{ block; })
