@@ -38,8 +38,6 @@ KK2(Cleanup!)
 #define KCSEntityKeyEmailVerification @"emailVerification"
 #define KCSUserAttributePassword @"password"
 
-#define DISPATCH_ASYNC_MAIN_QUEUE(block) dispatch_async(dispatch_get_main_queue(), ^{ block; })
-
 @implementation KCSUser2 (KinveyUserService)
 
 #pragma mark - Credential Management
