@@ -29,13 +29,13 @@
 @class KCSUser;
 @class KCSUserResult;
 
-typedef enum KCSUserActionResult : NSInteger {
+typedef NS_ENUM(NSInteger, KCSUserActionResult) {
     KCSUserNoInformation = -1,
     KCSUserCreated = 1,
     KCSUserDeleted = 2,
     KCSUserFound = 3,
     KCSUSerNotFound = 4
-} KCSUserActionResult;
+};
 
 typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result);
 typedef void (^KCSUserSendEmailBlock)(BOOL emailSent, NSError* errorOrNil);
@@ -56,6 +56,20 @@ typedef NS_ENUM(NSInteger, KCSUserSocialIdentifyProvider)  {
     KCSSocialIDKinvey,
     KCSSocialIDOther,
 };
+
+/** Authorization grant types for MIC */
+typedef NS_ENUM(NSUInteger, KCSMICAuthorizationGrantType) {
+    /** Authentication flow that opens a login page in a WebView or in an external browser such as Safari Mobile. */
+    KCSMICAuthorizationGrantTypeAuthCodeLoginPage,
+    /** Authentication flow that requires username and password. No user interaction needed. */
+    KCSMICAuthorizationGrantTypeAuthCodeAPI
+};
+
+/** Username key for KCSMICAuthorizationGrantTypeAuthCodeAPI options. */
+KCS_CONSTANT KCSUsername;
+
+/** Password key for KCSMICAuthorizationGrantTypeAuthCodeAPI options. */
+KCS_CONSTANT KCSPassword;
 
 /** Access Dictionary key for the token: both Facebook & Twitter */
 KCS_CONSTANT KCSUserAccessTokenKey;
@@ -301,6 +315,55 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  @since 1.9.0
  */
 + (void)loginWithSocialIdentity:(KCSUserSocialIdentifyProvider)provider accessDictionary:(NSDictionary*)accessDictionary withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
+#pragma mark - MIC helper methods
+
+/**
+ Login a user using MIC.
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
+ @param authorizationGrantType Defines which flow will be used for authentication. Note: Open the default external browser for KCSMICAuthorizationGrantTypeAuthCodeLoginPage.
+ @param options Dictionary with options to be used during the authentication process, such as username (KCSUsername) and password (KCSPassword) for KCSMICAuthorizationGrantTypeAuthCodeAPI.
+ @param completionBlock The block to be called when the operation completes or fails
+ @since 1.30.0
+ */
++ (void)loginWithMICRedirectURI:(NSString*)redirectURI
+         authorizationGrantType:(KCSMICAuthorizationGrantType)authorizationGrantType
+                        options:(NSDictionary*)options
+            withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
+/**
+ Check if the URL matches with the redirectURI and contains the authorization code for MIC.
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
+ @param url URL to be tested if matches if the redirectURI
+ @return YES if the URL matches with the redirectURI
+ @since 1.30.0
+ */
++ (BOOL)isValidMICRedirectURI:(NSString*)redirectURI
+                       forURL:(NSURL*)url;
+
+/**
+ Parse the URL that contains the authorization code for MIC.
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
+ @param url URL to be tested if matches if the redirectURI
+ @param completionBlock The block to be called when the operation completes or fails
+ @since 1.30.0
+ */
++ (void)parseMICRedirectURI:(NSString *)redirectURI
+                     forURL:(NSURL *)url
+        withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
+/**
+ Returns the URL to be opened by the WebView or Safari Mobile for KCSMICAuthorizationGrantTypeAuthCodeLoginPage.
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
+ @return the URL to be opened by the WebView or Safari Mobile for KCSMICAuthorizationGrantTypeAuthCodeLoginPage.
+ */
++ (NSURL*)URLforLoginWithMICRedirectURI:(NSString*)redirectURI;
+
+#pragma mark -
 
 /*! Removes a user and their data from Kinvey
  * @param completionBlock The block that is called when operation is complete or fails.

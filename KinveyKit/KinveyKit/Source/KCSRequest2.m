@@ -19,7 +19,6 @@
 
 
 #import "KCSRequest2.h"
-#import "KCSRequest2+Private.h"
 #import "KinveyCoreInternal.h"
 
 #import "KCSNSURLRequestOperation.h"
@@ -168,17 +167,13 @@ static NSOperationQueue* kcsRequestQueue;
     return endpoint;
 }
 
--(NSString*)clientAppVersion
++(NSString*)clientAppVersion
 {
     NSString* clientAppVersion;
     
-    if (self.requestConfiguration &&
-        self.requestConfiguration.clientAppVersion)
-    {
-        clientAppVersion = self.requestConfiguration.clientAppVersion;
-    } else if ([KCSClient2 sharedClient].configuration &&
-               [KCSClient2 sharedClient].configuration.requestConfiguration &&
-               [KCSClient2 sharedClient].configuration.requestConfiguration.clientAppVersion)
+    if ([KCSClient2 sharedClient].configuration &&
+        [KCSClient2 sharedClient].configuration.requestConfiguration &&
+        [KCSClient2 sharedClient].configuration.requestConfiguration.clientAppVersion)
     {
         clientAppVersion = [KCSClient2 sharedClient].configuration.requestConfiguration.clientAppVersion;
     } else {
@@ -188,7 +183,22 @@ static NSOperationQueue* kcsRequestQueue;
     return clientAppVersion;
 }
 
--(NSDictionary*)customRequestProperties
+-(NSString*)clientAppVersion
+{
+    NSString* clientAppVersion;
+    
+    if (self.requestConfiguration &&
+        self.requestConfiguration.clientAppVersion)
+    {
+        clientAppVersion = self.requestConfiguration.clientAppVersion;
+    } else {
+        clientAppVersion = [self.class clientAppVersion];
+    }
+    
+    return clientAppVersion;
+}
+
++(NSMutableDictionary*)customRequestProperties
 {
     NSMutableDictionary* customRequestProperties = [NSMutableDictionary dictionary];
     
@@ -196,65 +206,92 @@ static NSOperationQueue* kcsRequestQueue;
     
     [customRequestProperties addEntriesFromDictionary:[KCSClient2 sharedClient].configuration.requestConfiguration.customRequestProperties];
     
+    return customRequestProperties;
+}
+
+-(NSDictionary*)customRequestProperties
+{
+    NSMutableDictionary* customRequestProperties = [self.class customRequestProperties];
+    
     [customRequestProperties addEntriesFromDictionary:self.requestConfiguration.customRequestProperties];
     
     return customRequestProperties;
 }
 
--(NSString*)customRequestPropertiesJsonString
++(NSMutableURLRequest *)requestForURL:(NSURL *)url
 {
-    NSDictionary* customRequestProperties = self.customRequestProperties;
-    if (customRequestProperties && customRequestProperties.count > 0) {
-        NSError *error = nil;
-        NSData *data = [NSJSONSerialization dataWithJSONObject:[KCSMutableOrderedDictionary dictionaryWithDictionary:customRequestProperties]
-                                                       options:0
-                                                         error:&error];
-        
-        if (error) {
-            [[NSException exceptionWithName:error.domain
-                                    reason:error.localizedDescription ? error.localizedDescription : error.description
-                                  userInfo:error.userInfo] raise];
-        }
-        
-        if (data) {
-            return [[NSString alloc] initWithData:data
-                                         encoding:NSUTF8StringEncoding];
-        }
+    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
+                                                           cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
+                                                       timeoutInterval:[config.options[KCS_CONNECTION_TIMEOUT] doubleValue]];
+    
+    if (url.host) {
+        [request setValue:url.host
+       forHTTPHeaderField:@"Host"];
     }
     
-    return nil;
+    [request setValue:KCS_VERSION
+   forHTTPHeaderField:kHeaderApiVersion];
+    
+    [request setValue:[NSString stringWithFormat:@"ios-kinvey-http/%@ kcs/%@", __KINVEYKIT_VERSION__, MINIMUM_KCS_VERSION_SUPPORTED]
+   forHTTPHeaderField:kHeaderUserAgent];
+    
+    [request setValue:[KCSPlatformUtils platformString]
+   forHTTPHeaderField:kHeaderDeviceInfo];
+    
+    NSString* clientAppVersion = self.clientAppVersion;
+    if (clientAppVersion) {
+        [request setValue:clientAppVersion
+       forHTTPHeaderField:kHeaderClientAppVersion];
+    }
+    
+    NSString* customRequestPropertiesJsonString = self.customRequestProperties && self.customRequestProperties.count > 0 ? self.customRequestProperties.jsonString : nil;
+    if (customRequestPropertiesJsonString) {
+        [request setValue:customRequestPropertiesJsonString
+       forHTTPHeaderField:kHeaderCustomRequestProperties];
+    }
+    
+    [request setValue:getLogDate3() //always update date
+   forHTTPHeaderField:kHeaderDate];
+    
+    return request;
+}
+
+-(NSMutableURLRequest *)requestForURL:(NSURL *)url
+{
+    NSMutableURLRequest* request = [self.class requestForURL:url];
+    
+    NSString* clientAppVersion = self.clientAppVersion;
+    if (clientAppVersion) {
+        [request setValue:clientAppVersion forHTTPHeaderField:kHeaderClientAppVersion];
+    }
+    
+    NSString* customRequestPropertiesJsonString = self.customRequestProperties && self.customRequestProperties.count > 0 ? self.customRequestProperties.jsonString : nil;
+    if (customRequestPropertiesJsonString) {
+        [request setValue:customRequestPropertiesJsonString forHTTPHeaderField:kHeaderCustomRequestProperties];
+    }
+    
+    return request;
 }
 
 - (NSMutableURLRequest*)urlRequest
 {
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
     NSString* endpoint = [self finalURL];
     
     NSURL* url = [NSURL URLWithString:endpoint];
     DBAssert(url, @"Should have a valid url");
 
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
-                                                           cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
-                                                       timeoutInterval:[config.options[KCS_CONNECTION_TIMEOUT] doubleValue]];
+    NSMutableURLRequest* request = [self requestForURL:url];
     request.HTTPMethod = self.method;
     
-    NSMutableDictionary* headers = [NSMutableDictionary dictionary];
+    NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithDictionary:request.allHTTPHeaderFields];
     headers[kHeaderAuthorization] = [self.credentials authString];
-    headers[kHeaderApiVersion] = KCS_VERSION;
-    headers[kHeaderUserAgent] = [NSString stringWithFormat:@"ios-kinvey-http/%@ kcs/%@", __KINVEYKIT_VERSION__, MINIMUM_KCS_VERSION_SUPPORTED];
-    headers[kHeaderDeviceInfo] = [KCSPlatformUtils platformString];
+    
     headers[kHeaderResponseWrapper] = @"true";
     setIfValNotNil(headers[kHeaderClientMethod], self.options[KCSRequestOptionClientMethod]);
-    
-    NSString* clientAppVersion = self.clientAppVersion;
-    setIfValNotNil(headers[kHeaderClientAppVersion], clientAppVersion);
-    
-    NSString* customRequestPropertiesJsonString = self.customRequestPropertiesJsonString;
-    setIfValNotNil(headers[kHeaderCustomRequestProperties], customRequestPropertiesJsonString);
 
     [headers addEntriesFromDictionary:self.headers];
     
-    headers[kHeaderDate] = getLogDate3(); //always update date
     [request setAllHTTPHeaderFields:headers];
     
     [request setHTTPShouldUsePipelining:YES];

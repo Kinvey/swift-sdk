@@ -29,6 +29,9 @@
 
 #pragma mark - Constants
 
+NSString* const KCSUsername = @"username";
+NSString* const KCSPassword = @"password";
+
 NSString* const KCSUserAccessTokenKey = @"access_token";
 NSString* const KCSUserAccessTokenSecretKey = @"access_token_secret";
 NSString* const KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
@@ -158,6 +161,48 @@ void setActive(KCSUser* user)
 {
     [KCSUser2 connectWithAuthProvider:provider accessDictionary:accessDictionary completion:^(id<KCSUser2> user, NSError *error) {
         completionBlock(user, error, KCSUserNoInformation);
+    }];
+}
+
++(void)loginWithMICRedirectURI:(NSString *)redirectURI
+        authorizationGrantType:(KCSMICAuthorizationGrantType)authorizationGrantType
+                       options:(NSDictionary *)options
+           withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    [KCSUser2 loginWithMICRedirectURI:redirectURI
+               authorizationGrantType:authorizationGrantType
+                              options:options
+                           completion:^(id<KCSUser2> user, NSError *error)
+    {
+        if (completionBlock) {
+            completionBlock(user, error, KCSUserNoInformation);
+        }
+    }];
+}
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+{
+    return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI];
+}
+
++(BOOL)isValidMICRedirectURI:(NSString *)redirectURI
+                      forURL:(NSURL *)url
+{
+    return [KCSUser2 isValidMICRedirectURI:redirectURI
+                                    forURL:url];
+}
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+       withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    [KCSUser2 parseMICRedirectURI:redirectURI
+                           forURL:url
+              withCompletionBlock:^(id<KCSUser2> user, NSError *error)
+    {
+        if (completionBlock) {
+            completionBlock(user, error, KCSUserNoInformation);
+        }
     }];
 }
 
