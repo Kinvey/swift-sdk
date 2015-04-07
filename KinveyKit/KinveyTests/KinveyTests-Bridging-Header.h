@@ -7,17 +7,12 @@
 #import "TestUtils2.h"
 #import "KCSMutableOrderedDictionary.h"
 #import "KCSUser2+KinveyUserService.h"
+#import "KinveyUser+Private.h"
 
 @interface KCSUser2 ()
 
 +(BOOL)isValidMICRedirectURI:(NSString *)redirectURI
                       forURL:(NSURL *)url
                       params:(NSDictionary**)params;
-
-@end
-
-@interface KCSUser()
-
-@property (nonatomic, strong) NSMutableDictionary *userAttributes;
 
 @end

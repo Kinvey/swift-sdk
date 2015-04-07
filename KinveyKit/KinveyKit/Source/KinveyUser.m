@@ -26,6 +26,7 @@
 #import "KCSKeychain.h"
 #import "KCSNetworkResponse.h"
 #import "KCSPush.h"
+#import "KinveyUser+Private.h"
 
 #pragma mark - Constants
 
@@ -55,8 +56,9 @@ void setActive(KCSUser* user)
 }
 
 @interface KCSUser()
-@property (nonatomic, strong) NSMutableDictionary *userAttributes;
+
 @property (nonatomic, strong) NSMutableDictionary* push;
+
 @end
 
 @implementation KCSUser
