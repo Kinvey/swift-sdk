@@ -25,6 +25,8 @@
 #import "KCSMockRequestOperation.h"
 #import "KCSNSURLSessionOperation.h"
 #import "KCSMutableOrderedDictionary.h"
+#import "KinveyUser+Private.h"
+#import "KCSUser2+KinveyUserService+Private.h"
 
 #define kHeaderAuthorization           @"Authorization"
 #define kHeaderDate                    @"Date"
@@ -444,6 +446,27 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         error = [op.error errorByAddingCommonInfo];
         KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Network Client Error %@ [KinveyKit id: '%@']", error, op.clientRequestId);
     } else if ([op.response isKCSError]) {
+        KCSUser* user = [KCSUser activeUser];
+        NSDictionary* kinveyAuth = user.userAttributes[@"_socialIdentity"][@"kinveyAuth"];
+        if (op.response.code == KCSDeniedError && kinveyAuth[kKCSMICRefreshTokenKey] && kinveyAuth[kKCSMICRedirectURIKey]) {
+            KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Refresh Token (%@)", kinveyAuth[kKCSMICRefreshTokenKey]);
+            __block id<KCSUser2> user = nil;
+            __block NSError *error = nil;
+            [KCSUser2 oAuthTokenWithRefreshToken:kinveyAuth[kKCSMICRefreshTokenKey]
+                                     redirectURI:kinveyAuth[kKCSMICRedirectURIKey]
+                                            sync:YES
+                                      completion:^(id<KCSUser2> _user, NSError* _error)
+            {
+                user = _user;
+                error = _error;
+            }];
+            if (!error && user) {
+                [self retryOp:op
+                      request:request];
+                return;
+            }
+        }
+        
         KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@ [KinveyKit id: '%@' %@]", (long)op.response.code, op.response.jsonObject, op.clientRequestId, op.response.headers);
         [self.credentials handleErrorResponse:op.response];
         error = [op.response errorObject];
