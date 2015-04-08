@@ -124,7 +124,7 @@
 
 - (void) testAscendingDecending
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"Backend should be good to go");
     
     KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
@@ -185,7 +185,7 @@
 #define AssertQuery STAssertEqualObjects([query JSONStringRepresentation], expectedJSON, @"should match");
 - (void) testMetadatQueryDate
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"Backend should be good to go");
     
     KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
@@ -235,7 +235,7 @@
 
 - (void) testMetadataQueryCreator
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"Backend should be good to go");
     
     //setup a test user

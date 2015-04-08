@@ -46,7 +46,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 
 @interface TestUtils : NSObject
 
-+ (BOOL) setUpKinveyUnittestBackend;
++ (BOOL) setUpKinveyUnittestBackend:(XCTestCase*)testCase;
 + (void) justInitServer;
 + (NSURL*) randomFileUrl:(NSString*)extension;
 

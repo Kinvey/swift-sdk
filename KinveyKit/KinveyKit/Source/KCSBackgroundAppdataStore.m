@@ -400,7 +400,7 @@ return; \
                 request.progress = ^(id data, double progress){
                     if (progressBlock != nil) {
                         NSArray* partialResults = [partialParser parseData:data hasArray:NO];
-                        progressBlock(partialResults, progress);
+                        DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(partialResults, progress));
                     }
                 };
                 [request start];
@@ -511,7 +511,7 @@ return; \
         if (progressBlock != nil) {
             @strongify(partialParser)
             NSArray* partialResults = [partialParser parseData:data hasArray:YES];
-            progressBlock(partialResults, progress);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(partialResults, progress));
         }
     };
     
@@ -878,7 +878,7 @@ NSError* createCacheError(NSString* message)
     request.progress = ^(id data, double progress){
         [objKey setPc:progress];
         if (progressBlock != nil) {
-            progressBlock(@[], progress);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(@[], progress));
         }
     };
     [request start];

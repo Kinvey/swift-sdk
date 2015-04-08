@@ -43,7 +43,7 @@
 
 - (void)setUp
 {
-    BOOL up = [TestUtils setUpKinveyUnittestBackend];
+    BOOL up = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(up, @"should be setup");
     
     _shouldSaveCalled = NO;

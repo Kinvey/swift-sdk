@@ -100,7 +100,7 @@ static NSOperationQueue* queue;
     @weakify(op);
     op.completionBlock = ^() {
         @strongify(op);
-        completionBlock(YES, op.returnVals, op.error);
+        DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(YES, op.returnVals, op.error));
     };
     op.progressBlock = ^(NSArray *objects, double percentComplete, NSDictionary* additionalContext) {
         if (progressBlock) {

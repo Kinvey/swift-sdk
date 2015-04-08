@@ -329,7 +329,7 @@
 - (void) testHS1789
 {
     
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"Should be set-up");
 
     
