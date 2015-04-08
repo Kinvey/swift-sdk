@@ -64,7 +64,7 @@
 
 - (void) setUp
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"should be up and running");
     
     KCSCollection* collection = [[KCSCollection alloc] init];

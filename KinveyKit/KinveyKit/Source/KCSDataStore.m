@@ -72,13 +72,13 @@
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
-            completion(nil, error);
+            DISPATCH_ASYNC_MAIN_QUEUE(completion(nil, error));
         } else {
             NSArray* elements = [response jsonObject];
             if ([elements count] == kKCSMaxReturnSize) {
                 KCSLogForcedWarn(KCS_LOG_CONTEXT_DATA, @"Results returned exactly %d items. This is the server limit, so there may more entities that match the query. Try again with a more specific query or use limit and skip modifiers to get all the data.", kKCSMaxReturnSize);
             }
-            completion(elements, nil);
+            DISPATCH_ASYNC_MAIN_QUEUE(completion(elements, nil));
         }
     }
                                                         route:KCSRESTRouteAppdata
@@ -112,7 +112,7 @@
             NSDictionary* responseDict = [response jsonObject];
             count = [responseDict[@"count"] unsignedIntegerValue];
         }
-        completion(count, error);
+        DISPATCH_ASYNC_MAIN_QUEUE(completion(count, error));
     }
                                                         route:self.route
                                                       options:@{KCSRequestLogMethod}
@@ -133,7 +133,7 @@
             NSDictionary* responseDict = [response jsonObject];
             count = [responseDict[@"count"] unsignedIntegerValue];
         }
-        completion(count, error);
+        DISPATCH_ASYNC_MAIN_QUEUE(completion(count, error));
     }
                                                         route:self.route
                                                       options:@{KCSRequestLogMethod}

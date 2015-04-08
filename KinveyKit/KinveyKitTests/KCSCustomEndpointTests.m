@@ -27,7 +27,7 @@
 
 - (void)setUp
 {
-    BOOL loaded = [TestUtils setUpKinveyUnittestBackend];
+    BOOL loaded = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(loaded, @"should be loaded");
 }
 

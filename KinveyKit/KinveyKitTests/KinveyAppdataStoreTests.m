@@ -30,7 +30,7 @@
 
 - (void) setUp
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"should be set-up");
     
     _collection = [[KCSCollection alloc] init];

@@ -946,10 +946,10 @@ KCSFile* fileFromResults(NSDictionary* results)
                                             domain:KCSFileStoreErrorDomain
                                          requestId:nil
                                        sourceError:error];
-            completionBlock(0, error);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(0, error));
         } else {
             NSDictionary* results = [response jsonObject];
-            completionBlock([results[@"count"] unsignedLongValue], nil);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock([results[@"count"] unsignedLongValue], nil));
         }
     }
                                                         route:KCSRESTRouteBlob

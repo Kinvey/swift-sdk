@@ -30,7 +30,7 @@
 
 - (void) setUp
 {
-    [TestUtils setUpKinveyUnittestBackend];
+    [TestUtils setUpKinveyUnittestBackend:self];
     
 }
 

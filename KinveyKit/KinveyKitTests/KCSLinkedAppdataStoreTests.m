@@ -216,7 +216,7 @@ static NSString* _collectionName;
 
 - (void) setUp
 {
-    BOOL loaded = [TestUtils setUpKinveyUnittestBackend];
+    BOOL loaded = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(loaded, @"should be loaded");
     
     _collection = [[KCSCollection alloc] init];
@@ -242,7 +242,7 @@ static NSString* _collectionName;
     obj.objDescription = @"Yaaay!";
     obj.resource = [self makeImage];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -252,9 +252,12 @@ static NSString* _collectionName;
         XCTAssertNotNil(obj, @"should not be nil obj");
         XCTAssertNotNil(obj.resource, @"should still have an image");
         XCTAssertTrue([obj.resource isKindOfClass:[UIImage class]], @"Should still be an image");
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testTwoFiles //TODO: check file name matches object
@@ -268,19 +271,22 @@ static NSString* _collectionName;
     obj2.resource = [self makeImage];
     
     NSMutableArray* progArray = [NSMutableArray array];
-    self.done = NO;
+    
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
     [store saveObject:[NSArray arrayWithObjects:obj1, obj2,  nil] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         XCTAssertEqual(2, (int) [objectsOrNil count], @"Should have saved two objects");
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"-- %f",percentComplete);
         [progArray addObject:[NSNumber numberWithDouble:percentComplete]];
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     for (int i = 1; i< progArray.count; i++) {
         XCTAssertTrue([progArray[i] doubleValue] >= [progArray[i-1] doubleValue], @"progress should be monotonically increasing");
@@ -294,7 +300,7 @@ static NSString* _collectionName;
     obj.objDescription = @"test load";
     obj.resource = [self makeImage];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -303,12 +309,14 @@ static NSString* _collectionName;
         LinkedTestClass* savedObj = [objectsOrNil objectAtIndex:0];
         XCTAssertNotNil(savedObj.resource, @"need a resource filled out");
         XCTAssertTrue([savedObj.resource isKindOfClass:[UIImage class]], @"expecting an UIImage out");
+        XCTAssertTrue([NSThread isMainThread]);
         obj = [objectsOrNil objectAtIndex:0];
-        self.done = YES;
+        
+        [expectationSave fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     [store loadObjectWithID:obj.objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -316,11 +324,14 @@ static NSString* _collectionName;
         LinkedTestClass* loaded = [objectsOrNil objectAtIndex:0];
         XCTAssertNotNil(loaded.resource, @"need a resource filled out");
         XCTAssertTrue([loaded.resource isKindOfClass:[UIImage class]], @"expecting an UIImage out");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testLinkedFilePreservesObjectMetadata
@@ -331,22 +342,27 @@ static NSString* _collectionName;
     obj.meta = [[KCSMetadata alloc] init];
     [obj.meta setGloballyReadable:YES];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        XCTAssertTrue([NSThread isMainThread]);
         
         obj = [objectsOrNil objectAtIndex:0];
-        self.done = YES;
+        
+        [expectationSave fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     KCSAppdataStore* metaStore = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
     //NOTE: this is highly tied to the implmentation!, not necessary for this test
     NSString* fileId = [NSString stringWithFormat:@"%@-%@-%@",_collectionName,obj.objId,@"resource"];
-    self.done = NO;
+    
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    
     [metaStore loadObjectWithID:fileId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         KTAssertCount(1, objectsOrNil);
@@ -354,9 +370,12 @@ static NSString* _collectionName;
         KCSMetadata* filesMetadata = thefile.metadata;
         XCTAssertNotNil(filesMetadata, @"Should have metadata");
         XCTAssertTrue(filesMetadata.isGloballyReadable, @"Should have inherited global write");
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 
@@ -366,19 +385,21 @@ static NSString* _collectionName;
     obj.objDescription = @"test load";
     obj.resource = [self makeImage];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        XCTAssertTrue([NSThread isMainThread]);
         
         obj = [objectsOrNil objectAtIndex:0];
-        self.done = YES;
+        
+        [expectationSave fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:[KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:obj.kinveyObjectId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"should not be any errors, %@", errorOrNil);
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -386,10 +407,13 @@ static NSString* _collectionName;
         LinkedTestClass* loaded = [objectsOrNil objectAtIndex:0];
         XCTAssertNotNil(loaded.resource, @"need a resource filled out");
         XCTAssertTrue([loaded.resource isKindOfClass:[UIImage class]], @"expecting an UIImage out");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
 }
 //TODO: TEST1000, TEST MAGNITUTDE DIFFERENCE
@@ -412,7 +436,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj.objDescription = @"Yaaay!";
     obj.other = ref;
 
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -423,16 +447,22 @@ LinkedTestClass* randomTestClass(NSString* description)
         LinkedTestClass* newRef = ret.other;
         XCTAssertNotNil(newRef, @"should be a valid object");
         XCTAssertEqual(newRef.objCount, ref.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     done = -1;
     
     [store loadObjectWithID:[obj kinveyObjectId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -441,14 +471,20 @@ LinkedTestClass* randomTestClass(NSString* description)
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
         LinkedTestClass* newRef = ret.other;
         XCTAssertEqual(newRef.objCount, ref.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testSavingWithArrayOfKivneyRef
@@ -460,7 +496,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj.objDescription = @"Save array of References";
     obj.arrayOfOthers = @[ref1, ref2];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -472,16 +508,22 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertEqual(newRef.objCount, ref1.objCount, @"Should be the same object back");
         newRef = [ret.arrayOfOthers objectAtIndex:1];
         XCTAssertEqual(newRef.objCount, ref2.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithArrayOfKivneyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     done = -1;
     
     [store loadObjectWithID:[obj kinveyObjectId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -493,14 +535,20 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertEqual(newRef.objCount, ref1.objCount, @"Should be the same object back");
         newRef = [ret.arrayOfOthers objectAtIndex:1];
         XCTAssertEqual(newRef.objCount, ref2.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testSavingArrayOfTopRefs
@@ -522,7 +570,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj2.objCount = 2;
 
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -538,16 +586,22 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertEqual(newRef.objCount, ref2.objCount, @"Should be the same object back");
         newRef = [ret.arrayOfOthers objectAtIndex:1];
         XCTAssertEqual(newRef.objCount, ref3.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     done = -1;
     
     [store loadObjectWithID:@[[obj1 kinveyObjectId],[obj2 kinveyObjectId]] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -559,14 +613,20 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertEqual(newRef.objCount, ref2.objCount, @"Should be the same object back");
         newRef = [ret.arrayOfOthers objectAtIndex:1];
         XCTAssertEqual(newRef.objCount, ref3.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 
 }
 
@@ -579,7 +639,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj.objDescription = @"Save array of References";
     obj.setOfOthers = [NSSet setWithArray:@[ref1, ref2]];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -591,16 +651,22 @@ LinkedTestClass* randomTestClass(NSString* description)
         LinkedTestClass* newRef = [ret.setOfOthers anyObject];
         XCTAssertTrue([newRef isKindOfClass:[LinkedTestClass class]], @"Should get a TestClass back");
         XCTAssertTrue([newRef.objDescription hasPrefix:prefix], @"Should get our testclass back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithArrayOfKivneyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     done = -1;
     
     [store loadObjectWithID:[obj kinveyObjectId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -610,14 +676,20 @@ LinkedTestClass* randomTestClass(NSString* description)
         LinkedTestClass* newRef = [ret.setOfOthers anyObject];
         XCTAssertTrue([newRef isKindOfClass:[LinkedTestClass class]], @"Should get a TestClass back");
         XCTAssertTrue([newRef.objDescription hasPrefix:prefix], @"Should get our testclass back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testRefsWithQuery
@@ -636,7 +708,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj2.other = ref1;
     obj2.arrayOfOthers = @[ref2, ref3];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -647,16 +719,21 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([objectsOrNil containsObject:obj1], @"should get our object back");
         XCTAssertTrue([objectsOrNil containsObject:obj2], @"should get our object back");
         
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     done = -1;
     
     KCSQuery* query = [KCSQuery queryOnField:@"objDescription" withRegex:@"^Test with.*1"];
@@ -664,15 +741,20 @@ LinkedTestClass* randomTestClass(NSString* description)
         STAssertNoError
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         XCTAssertEqual((int) [objectsOrNil count], (int) 1, @"should have loaded just one objects");
+        
+        XCTAssertTrue([NSThread isMainThread]);
 
-        self.done = YES;
+        [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 };
 
 - (void) testTwoAtSameLevel
@@ -684,7 +766,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj2.objDescription = @"Test with intradependence - 2";
     obj2.thisOther = obj1;
 
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -695,17 +777,22 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([objectsOrNil containsObject:obj1], @"should get our object back");
         XCTAssertTrue([objectsOrNil containsObject:obj2], @"should get our object back");
         
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
  
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     done = -1;
     
     KCSQuery* query = [KCSQuery query];
@@ -720,14 +807,20 @@ LinkedTestClass* randomTestClass(NSString* description)
             XCTAssertTrue(inArray, @"%@ should be in the return: %@",thisId, arr);
         }];
         XCTAssertEqualObjects(obj2.thisOther.objId, obj1.objId, @"Should get back the original reference object");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 
 }
 
@@ -741,7 +834,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj2.objDescription = @"Test with intradependence,rev - 2";
     obj2.thisOther = obj1;
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -752,17 +845,22 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([objectsOrNil containsObject:obj1], @"should get our object back");
         XCTAssertTrue([objectsOrNil containsObject:obj2], @"should get our object back");
         
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     done = -1;
     
     KCSLinkedAppdataStore* store2 = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -776,14 +874,20 @@ LinkedTestClass* randomTestClass(NSString* description)
         ReffedTestClass* ref = newObj.thisOther;
         XCTAssertTrue([ref isKindOfClass:[ReffedTestClass class]], @"Should be a ref class");
         XCTAssertEqualObjects(ref.objId, obj1.objId, @"should get back the right object");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
 }
 
@@ -799,7 +903,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj1.thisOther = obj2;
     obj2.objCount = 2;
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -808,17 +912,23 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         XCTAssertEqual((int) [objectsOrNil count], (int) 1, @"should have saved two objects");
         XCTAssertTrue([objectsOrNil containsObject:obj1], @"should get our object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     done = -1;
     
     KCSQuery* query = [KCSQuery query];
@@ -828,19 +938,32 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertEqual((int) [objectsOrNil count], (int) 2, @"should have loaded just one objects");
         [objectsOrNil enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             NSString* thisId = [obj objId];
-            NSArray* arr = @[obj1.objId, obj2.objId];
+            XCTAssertNotNil(obj1.objId);
+            XCTAssertNotNil(obj2.objId);
+            NSArray* arr;
+            if (obj1.objId && obj2.objId) {
+                arr = @[obj1.objId, obj2.objId];
+            } else {
+                arr = nil;
+            }
             BOOL inArray = [arr containsObject:thisId];
             XCTAssertTrue(inArray, @"%@ should be in the return: %@",thisId, arr);
         }];
         XCTAssertEqualObjects(obj2.thisOther.objId, obj1.objId, @"Should get back the original reference object");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testCircularRefArray
@@ -855,7 +978,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj1.thisOther = obj2;
     obj2.objCount = 2;
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -865,17 +988,23 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertEqual((int) [objectsOrNil count], (int) 2, @"should have saved two objects");
         XCTAssertTrue([objectsOrNil containsObject:obj1], @"should get our object back");
         XCTAssertTrue([objectsOrNil containsObject:obj2], @"should get our other object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     done = -1;
     
     KCSQuery* query = [KCSQuery query];
@@ -891,14 +1020,20 @@ LinkedTestClass* randomTestClass(NSString* description)
             //TODO: 1->A, 2->A ==> 1->A, 2->A, not 1->A',2->A''obj1.thisOther = obj2, obj2.thisOther = obj1
         }];
         XCTAssertEqualObjects(obj2.thisOther.objId, obj1.objId, @"Should get back the original reference object");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testCircularRefArrayNoPost
@@ -915,7 +1050,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj2.objCount = 2;
     obj2.objId = @"OBJECT2";
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -925,17 +1060,23 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertEqual((int) [objectsOrNil count], (int) 2, @"should have saved two objects");
         XCTAssertTrue([objectsOrNil containsObject:obj1], @"should get our object back");
         XCTAssertTrue([objectsOrNil containsObject:obj2], @"should get our other object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete >= done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     done = -1;
     
     KCSQuery* query = [KCSQuery query];
@@ -951,14 +1092,20 @@ LinkedTestClass* randomTestClass(NSString* description)
             //TODO: 1->A, 2->A ==> 1->A, 2->A, not 1->A',2->A''obj1.thisOther = obj2, obj2.thisOther = obj1
         }];
         XCTAssertEqualObjects(obj2.thisOther.objId, obj1.objId, @"Should get back the original reference object");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testCircularChain
@@ -985,7 +1132,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj4.thisOther = obj1;
 
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -994,17 +1141,23 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         XCTAssertEqual((int) [objectsOrNil count], (int) 1, @"should have saved two objects");
         XCTAssertTrue([objectsOrNil containsObject:obj1], @"should get our object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     done = -1;
     
     KCSQuery* query = [KCSQuery query];
@@ -1013,22 +1166,28 @@ LinkedTestClass* randomTestClass(NSString* description)
         STAssertNoError
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         XCTAssertEqual((int) [objectsOrNil count], (int) 4, @"should have loaded all four objects");
-        ReffedTestClass* prime1 = objectsOrNil[0];
-        ReffedTestClass* prime2 = objectsOrNil[1];
-        ReffedTestClass* prime3 = objectsOrNil[2];
-        ReffedTestClass* prime4 = objectsOrNil[3];
+        ReffedTestClass* prime1 = objectsOrNil.count > 0 ? objectsOrNil[0] : nil;
+        ReffedTestClass* prime2 = objectsOrNil.count > 1 ? objectsOrNil[1] : nil;
+        ReffedTestClass* prime3 = objectsOrNil.count > 2 ? objectsOrNil[2] : nil;
+        ReffedTestClass* prime4 = objectsOrNil.count > 3 ? objectsOrNil[3] : nil;
         XCTAssertEqualObjects(prime1.thisOther.objId, prime2.objId, @"Should get back the original reference object");
         XCTAssertEqualObjects(prime2.thisOther.objId, prime3.objId, @"Should get back the original reference object");
         XCTAssertEqualObjects(prime3.thisOther.objId, prime4.objId, @"Should get back the original reference object");
         XCTAssertEqualObjects(prime4.thisOther.objId, prime1.objId, @"Should get back the original reference object");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingArrayOfTopRefs: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testNestedReferences
@@ -1047,7 +1206,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj3.objDescription = @"testNestedReferences : Bottom Object";
     obj2.other = obj3;
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[NestingRefClass class]] options:nil];
@@ -1057,16 +1216,22 @@ LinkedTestClass* randomTestClass(NSString* description)
         NestingRefClass* ret = [objectsOrNil objectAtIndex:0];
         ReffedTestClass* newRef = ret.relatedObject;
         XCTAssertEqual(newRef.objCount, obj2.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     done = -1;
 
     [store loadObjectWithID:[obj1 kinveyObjectId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -1075,16 +1240,23 @@ LinkedTestClass* randomTestClass(NSString* description)
         NestingRefClass* ret = [objectsOrNil objectAtIndex:0];
         ReffedTestClass* newRef = ret.relatedObject;
         XCTAssertEqual(newRef.objCount, obj2.objCount, @"Should be the same object back");
-        LinkedTestClass* bottomRef = newRef.other;
+        XCTAssertNotEqual((id) newRef, (id) [NSNull null]);
+        LinkedTestClass* bottomRef = newRef != [NSNull null] ? newRef.other : nil;
         XCTAssertEqual(bottomRef.objCount, obj3.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 
     
 }
@@ -1100,7 +1272,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj2.objDescription = @"testNestedReferences : Middle Object";
     obj1.relatedObject = obj2;
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[NestingRefClass class]] options:nil];
@@ -1110,16 +1282,22 @@ LinkedTestClass* randomTestClass(NSString* description)
         NestingRefClass* ret = objectsOrNil[0];
         ReffedTestClass* newRef = ret.relatedObject;
         XCTAssertEqual(newRef.objCount, obj2.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     done = -1;
 
     KCSQuery *query = [KCSQuery queryOnField:@"relatedObject._id" withExactMatchForValue:obj2];
@@ -1130,9 +1308,12 @@ LinkedTestClass* randomTestClass(NSString* description)
         NestingRefClass* ret = objectsOrNil[0];
         ReffedTestClass* newRef = ret.relatedObject;
         XCTAssertEqual(newRef.objCount, obj2.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 //TODO: note different objs
 //TODO: 1->A, 2->A ==> 1->A, 2->A, not 1->A',2->A''
@@ -1147,7 +1328,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     XCTAssertNotNil(obj.auser, @"should have a nonnull user");
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[UserRefTestClass class]] options:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
@@ -1156,9 +1337,11 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([retUser isKindOfClass:[KCSUser class]], @"should be a user");
         XCTAssertEqualObjects([retUser username],[KCSUser activeUser].username, @"usernames should match");
         
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 #pragma mark graph
@@ -1175,7 +1358,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     t.relatedObject = r;
     
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[NoSaveTestClass class]] options:nil];
@@ -1183,14 +1366,20 @@ LinkedTestClass* randomTestClass(NSString* description)
         STAssertObjects(0);
         XCTAssertNotNil(errorOrNil, @"should have an error");
         XCTAssertEqual((int)errorOrNil.code, (int)KCSReferenceNoIdSetError, @"expecting no id error");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testThatNonRecursiveGoodWithIdDoesNotSave
@@ -1216,17 +1405,20 @@ LinkedTestClass* randomTestClass(NSString* description)
     NSString* refClass = @"NestedOtherCollection";
     KCSCollection* refCollection = [KCSCollection collectionFromString:refClass ofClass:[ReffedTestClass class]];
     KCSLinkedAppdataStore* refStore = [KCSLinkedAppdataStore storeWithCollection:refCollection options:nil];
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [refStore saveObject:r2 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
     
     //now test the save doesn't error but also doesn't save
-    self.done = NO;
+    XCTestExpectation* expectationSave2 = [self expectationWithDescription:@"save2"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[NoSaveTestClass class]] options:nil];
@@ -1238,14 +1430,19 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertNotNil(rb, @"good object");
         XCTAssertEqual((int)rb.objCount, (int)710, @"should match orig value, not saved");
         
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave2 fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testBrokenReference
@@ -1256,7 +1453,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj.objDescription = @"Yaaay!";
     obj.other = ref;
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
@@ -1266,41 +1463,56 @@ LinkedTestClass* randomTestClass(NSString* description)
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
         LinkedTestClass* newRef = ret.other;
         XCTAssertEqual(newRef.objCount, ref.objCount, @"Should be the same object back");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
     done = -1;
     
     KCSAppdataStore* otherStore = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"OtherCollection" ofClass:[LinkedTestClass class]] options:nil];
     [otherStore removeObject:ref withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationRemove fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     [store loadObjectWithID:[obj kinveyObjectId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
         LinkedTestClass* newRef = ret.other;
         XCTAssertNil(newRef, @"should be nil");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         NSLog(@"testSavingWithOneKinveyRef: percentcomplete:%f", percentComplete);
         XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
         XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         done = percentComplete;
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testBrokenFile
@@ -1309,7 +1521,7 @@ LinkedTestClass* randomTestClass(NSString* description)
     obj.objDescription = @"Yaaay!";
     obj.resource = [self makeImage];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -1319,11 +1531,14 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertNotNil(obj, @"should not be nil obj");
         XCTAssertNotNil(obj.resource, @"should still have an image");
         XCTAssertTrue([obj.resource isKindOfClass:[UIImage class]], @"Should still be an image");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     __block NSString* imageId = nil;
     KCSAppdataStore* noRefStore = [KCSAppdataStore storeWithCollection:_collection options:nil];
     [noRefStore loadObjectWithID:obj.objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -1332,21 +1547,27 @@ LinkedTestClass* randomTestClass(NSString* description)
         LinkedTestClass* foo = objectsOrNil[0];
         NSDictionary* resourceDict = foo.resource;
         imageId = resourceDict[@"_id"];
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
     } withProgressBlock: nil];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 
     XCTAssertNotNil(imageId, @"Should have an image id");
     
-    self.done = NO;
+    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:imageId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         KTAssertEqualsInt(count, 1, @"Should be one deletion");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationDelete fulfill];
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad2 = [self expectationWithDescription:@"load2"];
     [store loadObjectWithID:obj.objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNotNil(errorOrNil, @"should be an error");
         KTAssertEqualsInt(errorOrNil.code, 404, @"file not found");
@@ -1354,9 +1575,12 @@ LinkedTestClass* randomTestClass(NSString* description)
         STAssertObjects(1);
         LinkedTestClass* o = objectsOrNil[0];
         XCTAssertNil(o.resource, @"should be nilled");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad2 fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 // *** TODO: *** reminder to check why this test case is causing crashes

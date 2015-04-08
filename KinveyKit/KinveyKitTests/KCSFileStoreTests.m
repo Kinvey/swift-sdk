@@ -141,7 +141,7 @@ NSData* testData2()
 {
     [super setUp];
     
-    XCTAssertTrue([TestUtils setUpKinveyUnittestBackend], @"Should be set up.");
+    XCTAssertTrue([TestUtils setUpKinveyUnittestBackend:self], @"Should be set up.");
     
     self.done = NO;
     [self setUpTestFile];

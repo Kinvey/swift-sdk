@@ -58,7 +58,7 @@
 
 - (void) testRoundtrip
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"should be set up");
     
     KCSCollection* testCollection = [TestUtils randomCollection:[NSDictionary class]];
@@ -93,7 +93,7 @@
 
 - (void) testRoundTripMutable
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"should be set up");
     
     KCSCollection* testCollection = [TestUtils randomCollection:[NSMutableDictionary class]];
