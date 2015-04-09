@@ -48,13 +48,12 @@
      {
          user = _user;
          
+         XCTAssertTrue([NSThread isMainThread]);
+         
          [expectationSave fulfill];
      }];
     
-    [self waitForExpectationsWithTimeout:30
-                                 handler:^(NSError *error)
-    {
-    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     XCTAssertNotNil(user);
     
@@ -67,19 +66,21 @@
     for (XCTestExpectation* expectationLoad in expectationsLoad) {
         [self.store loadObjectWithID:user.userId
                  withCompletionBlock:^(NSArray *users, NSError *errorOrNil)
-         {
-             XCTAssertNotNil(users);
-             XCTAssertEqual(users.count, 1);
-             
-             [expectationLoad fulfill];
-         }
-                   withProgressBlock:nil];
+        {
+            XCTAssertNotNil(users);
+            XCTAssertEqual(users.count, 1);
+            
+            XCTAssertTrue([NSThread isMainThread]);
+            
+            [expectationLoad fulfill];
+        }
+                   withProgressBlock:^(NSArray *objects, double percentComplete)
+        {
+            XCTAssertTrue([NSThread isMainThread]);
+        }];
     }
     
-    [self waitForExpectationsWithTimeout:300
-                                 handler:^(NSError *error)
-    {
-    }];
+    [self waitForExpectationsWithTimeout:300 handler:nil];
 }
 
 - (void)testPerformanceLoad {
@@ -94,13 +95,12 @@
      {
          user = _user;
          
+         XCTAssertTrue([NSThread isMainThread]);
+         
          [expectationSave fulfill];
      }];
     
-    [self waitForExpectationsWithTimeout:30
-                                 handler:^(NSError *error)
-     {
-     }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     XCTAssertNotNil(user);
     
@@ -109,18 +109,20 @@
         
         [self.store loadObjectWithID:user.userId
                  withCompletionBlock:^(NSArray *users, NSError *errorOrNil)
-         {
-             XCTAssertNotNil(users);
-             XCTAssertEqual(users.count, 1);
-             
-             [expectationLoad fulfill];
-         }
-                   withProgressBlock:nil];
-        
-        [self waitForExpectationsWithTimeout:30
-                                     handler:^(NSError *error)
         {
+            XCTAssertNotNil(users);
+            XCTAssertEqual(users.count, 1);
+            
+            XCTAssertTrue([NSThread isMainThread]);
+            
+            [expectationLoad fulfill];
+        }
+                   withProgressBlock:^(NSArray *objects, double percentComplete)
+        {
+            XCTAssertTrue([NSThread isMainThread]);
         }];
+        
+        [self waitForExpectationsWithTimeout:30 handler:nil];
     }];
 }
 

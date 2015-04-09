@@ -67,6 +67,8 @@ static float pollTime;
     __block XCTestExpectation* expectationQueryServer = [self expectationWithDescription:@"queryServer"];
     
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        XCTAssertTrue([NSThread isMainThread]);
+        
         NSLog(@"completion block: %@", query);
         _callbackCount++;
         newcount = self.requestArray.count;
@@ -76,6 +78,8 @@ static float pollTime;
             expectationQueryServer = nil;
         }
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+        
         NSLog(@"progress block");
         //DO nothing on progress
     }];
@@ -102,9 +106,12 @@ static float pollTime;
     
     [store saveObject:@[t1,t2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
+        XCTAssertTrue([NSThread isMainThread]);
         
         [expectationSave fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
@@ -300,7 +307,9 @@ static float pollTime;
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationQuery fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
@@ -324,7 +333,9 @@ static float pollTime;
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationSave fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     
     [self waitForExpectationsWithTimeout:30 handler:nil];
 
@@ -335,7 +346,9 @@ static float pollTime;
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationQuery fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
@@ -345,7 +358,9 @@ static float pollTime;
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationRemove fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     //the pay-off the object should no longer be in the cache
@@ -356,7 +371,9 @@ static float pollTime;
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationQuery2 fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 

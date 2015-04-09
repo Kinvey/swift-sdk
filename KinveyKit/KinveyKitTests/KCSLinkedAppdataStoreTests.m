@@ -254,8 +254,12 @@ static NSString* _collectionName;
         XCTAssertTrue([obj.resource isKindOfClass:[UIImage class]], @"Should still be an image");
         XCTAssertTrue([NSThread isMainThread]);
         
+        XCTAssertTrue([NSThread isMainThread]);
+        
         [expectationSave fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
@@ -281,8 +285,12 @@ static NSString* _collectionName;
         XCTAssertEqual(2, (int) [objectsOrNil count], @"Should have saved two objects");
         XCTAssertTrue([NSThread isMainThread]);
         
+        XCTAssertTrue([NSThread isMainThread]);
+        
         [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+        
         NSLog(@"-- %f",percentComplete);
         [progArray addObject:[NSNumber numberWithDouble:percentComplete]];
     }];
@@ -312,8 +320,12 @@ static NSString* _collectionName;
         XCTAssertTrue([NSThread isMainThread]);
         obj = [objectsOrNil objectAtIndex:0];
         
+        XCTAssertTrue([NSThread isMainThread]);
+        
         [expectationSave fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
@@ -329,7 +341,7 @@ static NSString* _collectionName;
         
         [expectationLoad fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        
+        XCTAssertTrue([NSThread isMainThread]);
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
@@ -353,7 +365,9 @@ static NSString* _collectionName;
         obj = [objectsOrNil objectAtIndex:0];
         
         [expectationSave fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
@@ -373,7 +387,9 @@ static NSString* _collectionName;
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationLoad fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
@@ -396,7 +412,9 @@ static NSString* _collectionName;
         obj = [objectsOrNil objectAtIndex:0];
         
         [expectationSave fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
@@ -412,6 +430,7 @@ static NSString* _collectionName;
         
         [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
@@ -869,7 +888,7 @@ LinkedTestClass* randomTestClass(NSString* description)
         STAssertNoError
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
         XCTAssertEqual((int) [objectsOrNil count], (int) 1, @"should have loaded just one object");
-        ReffedTestClass* newObj = objectsOrNil[0];
+        ReffedTestClass* newObj = objectsOrNil.count > 0 ? objectsOrNil[0] : nil;
         XCTAssertEqualObjects(newObj.objId, obj2.objId, @"Should get back the right id");
         ReffedTestClass* ref = newObj.thisOther;
         XCTAssertTrue([ref isKindOfClass:[ReffedTestClass class]], @"Should be a ref class");
@@ -1312,7 +1331,9 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationQuery fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 //TODO: note different objs
@@ -1340,7 +1361,9 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationSave fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
@@ -1412,7 +1435,9 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationSave fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
@@ -1488,7 +1513,9 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationRemove fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
@@ -1535,7 +1562,9 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationSave fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
@@ -1551,7 +1580,9 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationLoad fulfill];
-    } withProgressBlock: nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 
     XCTAssertNotNil(imageId, @"Should have an image id");
@@ -1579,7 +1610,9 @@ LinkedTestClass* randomTestClass(NSString* description)
         XCTAssertTrue([NSThread isMainThread]);
         
         [expectationLoad2 fulfill];
-    } withProgressBlock:nil];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 

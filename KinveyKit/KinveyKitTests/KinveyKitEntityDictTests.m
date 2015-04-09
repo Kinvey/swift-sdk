@@ -68,16 +68,21 @@
     
     __block NSDictionary* retDict = nil;
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
         XCTAssertEqualObjects(obj, retDict, @"dicts should match");
-        self.done = YES;
-    } withProgressBlock:nil];;
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];;
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:[KCSQuery queryOnField:@"test" withExactMatchForValue:@"testRoundtrip"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
@@ -86,9 +91,14 @@
         NSDate* nDate = [retDict objectForKey:@"timestamp"];
         XCTAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
         XCTAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testRoundTripMutable
@@ -103,7 +113,7 @@
     
     __block NSDictionary* retDict = nil;
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
@@ -112,11 +122,16 @@
         NSDate* nDate = [retDict objectForKey:@"timestamp"];
         XCTAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
         XCTAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
-        self.done = YES;
-    } withProgressBlock:nil];;
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     [store loadObjectWithID:[retDict objectForKey:@"_id"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
@@ -125,9 +140,14 @@
         NSDate* nDate = [retDict objectForKey:@"timestamp"];
         XCTAssertTrue([oDate timeIntervalSinceDate:nDate] < 1000, @"dicts should match");
         XCTAssertNotNil([retDict objectForKey:@"_id"], @"should have id specified");
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLoad fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 @end

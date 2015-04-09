@@ -188,25 +188,35 @@ static NSOperationQueue* queue;
     [[KCSClient sharedClient] initializeWithConfiguration:config];
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     
-    self.done = NO;
+    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     [KCSUser loginWithUsername:@"roger" password:@"roger" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         XCTAssertNil(errorOrNil, @"error should be nil");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLogin fulfill];
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
 
     NSArray* toFetch = @[@"523a0b3fd4af557103001771",@"523a0b3fd4af557103001771",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac"];
     for (NSString* anId in toFetch){
         [store loadObjectWithID:anId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
             XCTAssertNil(errorOrNil, @"no error");
-            self.done = ++_count == toFetch.count;
-        } withProgressBlock:nil];
+            
+            XCTAssertTrue([NSThread isMainThread]);
+            
+            if (++_count == toFetch.count) {
+                [expectationLoad fulfill];
+            }
+        } withProgressBlock:^(NSArray *objects, double percentComplete) {
+            XCTAssertTrue([NSThread isMainThread]);
+        }];
     }
     
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 @end

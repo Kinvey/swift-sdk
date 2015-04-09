@@ -147,6 +147,8 @@
     NSOperationQueue* q = [[NSOperationQueue alloc] init];
     [q addOperationWithBlock:^{
         [KCSPing pingKinveyWithBlock:^(KCSPingResult *result){
+            XCTAssertTrue([NSThread isMainThread]);
+            
             NSLog(@"Kinvey ping performed. Success? %d. Result: %@", result.pingWasSuccessful, result.description);
             NSString *username = [[KCSUser activeUser] username];
             

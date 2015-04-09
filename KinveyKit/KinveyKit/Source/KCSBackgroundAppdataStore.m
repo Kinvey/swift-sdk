@@ -716,7 +716,7 @@ NSError* createCacheError(NSString* message)
     request.method = KCSRESTMethodPOST;
     request.progress = ^(id data, double progress){
         if (progressBlock != nil) {
-            progressBlock(nil, progress);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(nil, progress));
         }
     };
     [request start];
@@ -1123,7 +1123,7 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
     }
     if (progressBlock) {
         op.progressBlock = ^(id data, double progress) {
-            progressBlock(nil, progress);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(nil, progress));
         };
     }
     
