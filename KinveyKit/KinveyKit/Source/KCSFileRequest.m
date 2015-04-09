@@ -154,11 +154,11 @@ static NSOperationQueue* queue;
         if (![@(bytesWritten) isEqualToNumber:@(length)]) {
             KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"Only %lld bytes written", bytesWritten);
         }
-        completionBlock(YES, op.returnVals, op.error);
+        DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(YES, op.returnVals, op.error));
     };
     op.progressBlock = ^(NSArray *objects, double percentComplete, NSDictionary* additionalContext) {
         if (progressBlock) {
-            progressBlock(@[], percentComplete, additionalContext);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(@[], percentComplete, additionalContext));
         }
     };
     

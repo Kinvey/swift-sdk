@@ -70,17 +70,21 @@
 
 //    [store setReachable:NO];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertError(errorOrNil, KCSKinveyUnreachableError);
         NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
         XCTAssertEqual((NSUInteger)1, (NSUInteger) objs.count, @"should have one unsaved obj, from above");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
         NSLog(@"%f", percentComplete);
     }];
     
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testWillSaveWhenGoBackOnline
@@ -94,23 +98,27 @@
     
 //    [store setReachable:NO];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertError(errorOrNil, KCSKinveyUnreachableError);
         NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
         XCTAssertEqual((int)1, (int)objs.count, @"should have one unsaved obj, from above");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
         NSLog(@"%f", percentComplete);
     }];
     
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     self.done = NO;
     _testShouldSave = YES;
 //    [store setReachable:YES];
     
-    [self poll];
+//    [self poll];
     
     XCTAssertTrue(_shouldSaveCalled, @"shouldsave: should have been called");
     XCTAssertTrue(_willSaveCalled, @"willsave: should have been called");
@@ -137,22 +145,26 @@
     
 //    [store setReachable:NO];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:@[obj1,obj2,obj3] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertError(errorOrNil, KCSKinveyUnreachableError);
         NSArray* objs = [[errorOrNil userInfo] objectForKey:KCS_ERROR_UNSAVED_OBJECT_IDS_KEY];
         XCTAssertEqual((int)3, (int)objs.count, @"should have one unsaved obj, from above");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
         NSLog(@"%f", percentComplete);
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:20 handler:nil];
     
     self.done = NO;
     _expSaveCount = 3;
 //    [store setReachable:YES];
     
-    [self poll];
+//    [self poll];
     XCTAssertEqual((int)3, (int)_didSaveCount, @"Should have been called for each item");
 }
 

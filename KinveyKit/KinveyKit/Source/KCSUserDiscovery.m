@@ -56,7 +56,7 @@
     request.body = fieldMatchDictionary;
     request.progress = ^(id intermediateData, double progress) {
         if (progressBlock != nil) {
-            progressBlock(@[], progress);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(@[], progress));
         }
     };
     [request start];

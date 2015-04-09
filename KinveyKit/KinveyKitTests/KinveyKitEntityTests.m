@@ -336,13 +336,18 @@
     HS1789* newFlat = [[HS1789 alloc] init];
     newFlat.name = @"Roberto";
     KCSAppdataStore* store = [KCSLinkedAppdataStore storeWithOptions:@{ KCSStoreKeyCollectionName : @"HS1789", KCSStoreKeyCollectionTemplateClass : [HS1789 class]}];
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:newFlat withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(1);
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testNoEmptyIds_HS2676

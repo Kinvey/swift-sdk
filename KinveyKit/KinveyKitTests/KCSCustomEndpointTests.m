@@ -33,24 +33,30 @@
 
 - (void) testCustomEndpoint
 {
-    self.done = NO;
+    XCTestExpectation* expectationCallEndpoint = [self expectationWithDescription:@"callEndpoint"];
     [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
         STAssertNoError;
         NSDictionary* expBody = @{@"a":@1,@"b":@2};
         XCTAssertEqualObjects(expBody, results, @"bodies should match");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationCallEndpoint fulfill];
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testHS1468
 {
-    self.done = NO;
+    XCTestExpectation* expectationCallEndpoint = [self expectationWithDescription:@"callEndpoint"];
     [KCSCustomEndpoints callEndpoint:@"hs1468" params:@{@"email":@""} completionBlock:^(id results, NSError *error) {
         XCTAssertNil(error, @"error should be nil");
-        self.done= YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationCallEndpoint fulfill];
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testHS1928_CallDoesNotInitCurrentUser
@@ -61,6 +67,9 @@
         [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
             XCTAssertNotNil(errorOrNil, @"should have an error");
             KTAssertEqualsInt(errorOrNil.code, 401, @"no auth error");
+            
+            XCTAssertTrue([NSThread isMainThread]);
+            
             self.done = YES;
         }];
     };
@@ -69,16 +78,19 @@
 
 - (void) testCustomEndpointError
 {
-    self.done = NO;
+    XCTestExpectation* expectationCallEndpoint = [self expectationWithDescription:@"callEndpoint"];
     [KCSCustomEndpoints callEndpoint:@"bltest-notexist" params:nil completionBlock:^(id results, NSError *errorOrNil) {
         XCTAssertNotNil(errorOrNil, @"should have an error");
         //        STAssertEqualObjects(errorOrNil.domain, KCSBusinessLogicErrorDomain, @"Should be a bl error");
         NSString* url = errorOrNil.userInfo[NSURLErrorFailingURLErrorKey];
         XCTAssertNotNil(url, @"should list the URL");
         KTAssertEqualsInt(errorOrNil.code, 404, @"should be a 400 Not Found");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationCallEndpoint fulfill];
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testChecksBadInputs
@@ -86,6 +98,7 @@
     dispatch_block_t block = ^{
         [KCSCustomEndpoints callEndpoint:@"foo" params:@{@"A":[NSObject new]} completionBlock:^(id results, NSError *error) {
             XCTFail(@"should not get here");
+            XCTAssertTrue([NSThread isMainThread]);
         }];
     };
     
