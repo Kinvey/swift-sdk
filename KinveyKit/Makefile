@@ -4,7 +4,7 @@ PRODUCT_NAME=$(TARGET)Kit
 FRAMEWORK=$(PRODUCT_NAME).framework
 STATIC_LIB=libKinvey.a
 
-all: clean build
+all: build
 	
 build:
 	xcodebuild -configuration $(CONFIGURATION) -target $(TARGET) -sdk iphoneos

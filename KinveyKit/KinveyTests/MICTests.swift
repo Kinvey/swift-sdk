@@ -54,9 +54,8 @@ class MICTests: XCTestCase {
     func testAuthCodeApi() {
         let expectation = expectationWithDescription("login")
         
-        KCSUser.loginWithMICRedirectURI(
+        KCSUser.loginWithAuthorizationCodeAPI(
             "kinveyAuthDemo://",
-            authorizationGrantType: .AuthCodeAPI,
             options: [
                 KCSUsername : "mjs",
                 KCSPassword : "demo"
@@ -96,9 +95,8 @@ class MICTests: XCTestCase {
     func testRefreshToken() {
         let expectationLogin = expectationWithDescription("login")
         
-        KCSUser.loginWithMICRedirectURI(
+        KCSUser.loginWithAuthorizationCodeAPI(
             "kinveyAuthDemo://",
-            authorizationGrantType: .AuthCodeAPI,
             options: [
                 KCSUsername : "mjs",
                 KCSPassword : "demo"

@@ -57,14 +57,6 @@ typedef NS_ENUM(NSInteger, KCSUserSocialIdentifyProvider)  {
     KCSSocialIDOther,
 };
 
-/** Authorization grant types for MIC */
-typedef NS_ENUM(NSUInteger, KCSMICAuthorizationGrantType) {
-    /** Authentication flow that opens a login page in a WebView or in an external browser such as Safari Mobile. */
-    KCSMICAuthorizationGrantTypeAuthCodeLoginPage,
-    /** Authentication flow that requires username and password. No user interaction needed. */
-    KCSMICAuthorizationGrantTypeAuthCodeAPI
-};
-
 /** Username key for KCSMICAuthorizationGrantTypeAuthCodeAPI options. */
 KCS_CONSTANT KCSUsername;
 
@@ -319,18 +311,23 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 #pragma mark - MIC helper methods
 
 /**
- Login a user using MIC.
+ Opens the default web browser to login a user using MIC.
  
  @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
- @param authorizationGrantType Defines which flow will be used for authentication. Note: Open the default external browser for KCSMICAuthorizationGrantTypeAuthCodeLoginPage.
+ */
++ (void)loginWithAuthorizationCodeLoginPage:(NSString*)redirectURI;
+
+/**
+ Login a user using MIC code API workflow.
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
  @param options Dictionary with options to be used during the authentication process, such as username (KCSUsername) and password (KCSPassword) for KCSMICAuthorizationGrantTypeAuthCodeAPI.
  @param completionBlock The block to be called when the operation completes or fails
  @since 1.30.0
  */
-+ (void)loginWithMICRedirectURI:(NSString*)redirectURI
-         authorizationGrantType:(KCSMICAuthorizationGrantType)authorizationGrantType
-                        options:(NSDictionary*)options
-            withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
++ (void)loginWithAuthorizationCodeAPI:(NSString*)redirectURI
+                              options:(NSDictionary*)options
+                  withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 /**
  Check if the URL matches with the redirectURI and contains the authorization code for MIC.

@@ -78,11 +78,10 @@ static BOOL canHandleRequest = YES;
 - (void)testRefreshToken {
     XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     
-    [KCSUser loginWithMICRedirectURI:@"kinveyAuthDemo://"
-              authorizationGrantType:KCSMICAuthorizationGrantTypeAuthCodeAPI
-                             options:@{ KCSUsername : @"mjs",
+    [KCSUser loginWithAuthorizationCodeAPI:@"kinveyAuthDemo://"
+                                   options:@{ KCSUsername : @"mjs",
                                         KCSPassword : @"demo" }
-                 withCompletionBlock:^(KCSUser *user, NSError *error, KCSUserActionResult result)
+                       withCompletionBlock:^(KCSUser *user, NSError *error, KCSUserActionResult result)
     {
         XCTAssertNil(error);
         XCTAssertNotNil(user);
