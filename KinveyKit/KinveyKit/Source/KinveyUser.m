@@ -166,15 +166,18 @@ void setActive(KCSUser* user)
     }];
 }
 
-+(void)loginWithMICRedirectURI:(NSString *)redirectURI
-        authorizationGrantType:(KCSMICAuthorizationGrantType)authorizationGrantType
-                       options:(NSDictionary *)options
-           withCompletionBlock:(KCSUserCompletionBlock)completionBlock
++(void)loginWithAuthorizationCodeLoginPage:(NSString *)redirectURI
 {
-    [KCSUser2 loginWithMICRedirectURI:redirectURI
-               authorizationGrantType:authorizationGrantType
-                              options:options
-                           completion:^(id<KCSUser2> user, NSError *error)
+    [KCSUser2 loginWithAuthorizationCodeLoginPage:redirectURI];
+}
+
++(void)loginWithAuthorizationCodeAPI:(NSString *)redirectURI
+                             options:(NSDictionary *)options
+                 withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    [KCSUser2 loginWithAuthorizationCodeAPI:redirectURI
+                                    options:options
+                                 completion:^(id<KCSUser2> user, NSError *error)
     {
         if (completionBlock) {
             completionBlock(user, error, KCSUserNoInformation);

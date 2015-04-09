@@ -48,6 +48,9 @@ class MICLoginPageViewController: UIViewController, UIWebViewDelegate {
                 withCompletionBlock: { (user: KCSUser!, error: NSError!, actionResult: KCSUserActionResult) -> Void in
                     self.user = user
                     self.error = error
+                    
+                    NSLog("\(user)")
+                    NSLog("\(error)")
                 }
             )
         }
