@@ -64,23 +64,26 @@ class MICTests: XCTestCase {
         ) { (user: KCSUser!, error: NSError!, userActionResult: KCSUserActionResult) -> Void in
             XCTAssertNil(error)
             XCTAssertNotNil(user)
-            XCTAssertNotNil(user.userId)
-            XCTAssertNotNil(user.username)
-            XCTAssertNotNil(user.userAttributes)
             
-            let socialIdentity = user.userAttributes["_socialIdentity"] as! NSDictionary
-            
-            XCTAssertNotNil(socialIdentity)
-            
-            let kinveyAuth = socialIdentity["kinveyAuth"] as! NSDictionary
-            
-            XCTAssertNotNil(kinveyAuth)
-            XCTAssertNotNil(kinveyAuth["access_token"])
-            XCTAssertNotNil(kinveyAuth["audience"])
-            XCTAssertNotNil(kinveyAuth["client_token"])
-            XCTAssertNotNil(kinveyAuth["refresh_token"])
-            XCTAssertNotNil(kinveyAuth["id"])
-            XCTAssertEqual(kinveyAuth["id"] as! String, "mjs")
+            if user != nil {
+                XCTAssertNotNil(user.userId)
+                XCTAssertNotNil(user.username)
+                XCTAssertNotNil(user.userAttributes)
+                
+                let socialIdentity = user.userAttributes["_socialIdentity"] as! NSDictionary
+                
+                XCTAssertNotNil(socialIdentity)
+                
+                let kinveyAuth = socialIdentity["kinveyAuth"] as! NSDictionary
+                
+                XCTAssertNotNil(kinveyAuth)
+                XCTAssertNotNil(kinveyAuth["access_token"])
+                XCTAssertNotNil(kinveyAuth["audience"])
+                XCTAssertNotNil(kinveyAuth["client_token"])
+                XCTAssertNotNil(kinveyAuth["refresh_token"])
+                XCTAssertNotNil(kinveyAuth["id"])
+                XCTAssertEqual(kinveyAuth["id"] as! String, "mjs")
+            }
             
             XCTAssertTrue(NSThread.isMainThread())
             
