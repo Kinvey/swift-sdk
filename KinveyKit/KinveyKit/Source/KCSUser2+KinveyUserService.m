@@ -380,7 +380,10 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                       forURL:(NSURL *)url
                       params:(NSDictionary**)params
 {
-    if (![url.absoluteString hasPrefix:redirectURI]) {
+    NSURL* redirectURL = [NSURL URLWithString:redirectURI];
+    if ([url.scheme compare:redirectURL.scheme options:NSCaseInsensitiveSearch] != NSOrderedSame ||
+        (url.host && redirectURL.host && ![url.host isEqualToString:redirectURL.host]))
+    {
         return NO;
     }
     
