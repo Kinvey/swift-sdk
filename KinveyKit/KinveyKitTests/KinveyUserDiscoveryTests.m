@@ -27,18 +27,21 @@
 
 - (void) setUp
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"need to be set-up");    
 }
 
 - (void) createUser:(NSString*)username email:(NSString*)email fname:(NSString*)fname lname:(NSString*)lname
 {
-    self.done = NO;
+    XCTestExpectation* expectationUser = [self expectationWithDescription:@"user"];
     [KCSUser userWithUsername:username password:@"hero" fieldsAndValues:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         if (errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSUserErrorDomain] && [errorOrNil code] == KCSConflictError) {
             [KCSUser loginWithUsername:username password:@"hero" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
                 STAssertNoError
-                self.done = YES;
+                
+                XCTAssertTrue([NSThread isMainThread]);
+                
+                [expectationUser fulfill];
             }];
         } else {
             STAssertNoError
@@ -47,11 +50,16 @@
             user.givenName = fname;
             [user saveWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
                 STAssertNoError
-                self.done = YES;
+                
+                XCTAssertTrue([NSThread isMainThread]);
+                
+                [expectationUser fulfill];
             }];
         }
+        
+        XCTAssertTrue([NSThread isMainThread]);
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     XCTAssertEqualObjects(fname,[[KCSUser activeUser] givenName], @"names should match");
 
 }
@@ -64,15 +72,20 @@
     [self createUser:@"flash" email:@"flash@justiceleague.com" fname:@"Wally" lname:@"West"];
     [self createUser:@"greenLantern" email:@"greeny@justiceleague.com" fname:@"John" lname:@"Stewart"];
     
-    self.done = NO;
+    XCTestExpectation* expectationLookup = [self expectationWithDescription:@"lookup"];
     [KCSUserDiscovery lookupUsersForFieldsAndValues:[NSDictionary dictionaryWithObjectsAndKeys:@"batman", @"username", nil] completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         STAssertObjects(1)
         KCSUser* obj = objectsOrNil[0];
         XCTAssertEqualObjects(@"Wayne", obj.surname, @"expecting a match");
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLookup fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 @end

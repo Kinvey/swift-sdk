@@ -42,7 +42,8 @@
 }
 
 - (void) testPing
-{    
+{
+    XCTestExpectation* expectationPing = [self expectationWithDescription:@"ping"];
     [KCSPing2 pingKinveyWithBlock:^(NSDictionary *appInfo, NSError *error) {
         KTAssertNoError
         XCTAssertNotNil(appInfo, @"should be a valid value");
@@ -52,9 +53,11 @@
         XCTAssertEqualObjects(appname, @"0 iOS Tests", @"Should be test app name");
         KTAssertLengthAtLeast(version, 1); //don't hardcode backend version
         
-        KTPollDone
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationPing fulfill];
     }];
-    KTPollStart
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 @end

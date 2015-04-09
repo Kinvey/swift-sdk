@@ -46,7 +46,7 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
                 }
             }
         }
-        completion(appInfo, error);
+        DISPATCH_ASYNC_MAIN_QUEUE(completion(appInfo, error));
     }
                             
                                                         route:KCSRESTRouteAppdata

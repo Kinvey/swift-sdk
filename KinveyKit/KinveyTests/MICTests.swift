@@ -47,8 +47,8 @@ class MICTests: XCTestCase {
             params: &params
         )
         XCTAssertEqual(params!.count, 2)
-        XCTAssertEqual(params!["code"] as String, "123")
-        XCTAssertEqual(params!["type"] as String, "kinvey_mic")
+        XCTAssertEqual(params!["code"] as! String, "123")
+        XCTAssertEqual(params!["type"] as! String, "kinvey_mic")
     }
     
     func testAuthCodeApi() {
@@ -68,11 +68,11 @@ class MICTests: XCTestCase {
             XCTAssertNotNil(user.username)
             XCTAssertNotNil(user.userAttributes)
             
-            let socialIdentity = user.userAttributes["_socialIdentity"] as NSDictionary
+            let socialIdentity = user.userAttributes["_socialIdentity"] as! NSDictionary
             
             XCTAssertNotNil(socialIdentity)
             
-            let kinveyAuth = socialIdentity["kinveyAuth"] as NSDictionary
+            let kinveyAuth = socialIdentity["kinveyAuth"] as! NSDictionary
             
             XCTAssertNotNil(kinveyAuth)
             XCTAssertNotNil(kinveyAuth["access_token"])
@@ -80,7 +80,9 @@ class MICTests: XCTestCase {
             XCTAssertNotNil(kinveyAuth["client_token"])
             XCTAssertNotNil(kinveyAuth["refresh_token"])
             XCTAssertNotNil(kinveyAuth["id"])
-            XCTAssertEqual(kinveyAuth["id"] as String, "mjs")
+            XCTAssertEqual(kinveyAuth["id"] as! String, "mjs")
+            
+            XCTAssertTrue(NSThread.isMainThread())
             
             expectation.fulfill()
         }
@@ -102,6 +104,8 @@ class MICTests: XCTestCase {
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)
                 
+                XCTAssertTrue(NSThread.isMainThread())
+                
                 expectationLogin.fulfill()
         }
         
@@ -109,14 +113,9 @@ class MICTests: XCTestCase {
         
         class MockURLProtocol: NSURLProtocol {
             
-            struct Static {
-                
-                static var canHandleRequest = true
-                
-            }
+            static var canHandleRequest = true
             
             override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                let canHandleRequest = Static.canHandleRequest
                 return canHandleRequest
             }
             
@@ -131,7 +130,7 @@ class MICTests: XCTestCase {
                     "Content-Length" : String(data.length),
                     "X-Powered-By" : "Express"
                 ];
-                let response = NSHTTPURLResponse(URL: request.URL, statusCode: 401, HTTPVersion: "1.1", headerFields: headers)!
+                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 401, HTTPVersion: "1.1", headerFields: headers)!
                 
                 client!.URLProtocol(
                     self,
@@ -146,7 +145,7 @@ class MICTests: XCTestCase {
                 
                 client!.URLProtocolDidFinishLoading(self)
                 
-                Static.canHandleRequest = false
+                MockURLProtocol.canHandleRequest = false
             }
             
         }
@@ -167,9 +166,13 @@ class MICTests: XCTestCase {
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
                 
+                XCTAssertTrue(NSThread.isMainThread())
+                
                 expectationSave.fulfill()
             },
-            withProgressBlock: nil
+            withProgressBlock: { (results: [AnyObject]!, percentage: Double) -> Void in
+                XCTAssertTrue(NSThread.isMainThread())
+            }
         )
         
         waitForExpectationsWithTimeout(60, handler: { (error: NSError!) -> Void in

@@ -33,6 +33,8 @@ class KCSQueryTests: XCTestCase {
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
                 
+                XCTAssertTrue(NSThread.isMainThread())
+                
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     let query = KCSQuery(onField: "name", withExactMatchForValue: "Vancouver")
                     store.removeObject(

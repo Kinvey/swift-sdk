@@ -31,16 +31,19 @@
     
     // Ensure user is logged out
     [[KCSUser activeUser] logout];
-    self.done = NO;
+    XCTestExpectation* expectationUser = [self expectationWithDescription:@"user"];
     
     [KCSUser getAccessDictionaryFromTwitterFromPrimaryAccount:^(NSDictionary *accessBlockOrNil, NSError *errorOrNil) {
         STAssertNoError;
         XCTAssertEqual((int)accessBlockOrNil.count, (int)2, @"should have two items");
         XCTAssertNotNil([accessBlockOrNil objectForKey:@"access_token"], @"should have an access token");
         XCTAssertNotNil([accessBlockOrNil objectForKey:@"access_token_secret"], @"should have an acess token secret");
-        self.done = YES;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationUser fulfill];
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 @end

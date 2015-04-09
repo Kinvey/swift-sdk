@@ -124,7 +124,7 @@
 
 - (void) testAscendingDecending
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"Backend should be good to go");
     
     KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
@@ -137,19 +137,24 @@
     }
     
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:arr withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"not expecting error: %@");
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     KCSQuery* query = [KCSQuery query];
     query.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:10];
     
     [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"objCount" inDirection:kKCSAscending]];
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"not expecting error: %@");
         XCTAssertEqual((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
@@ -158,16 +163,21 @@
             count += a.objCount;
         }
         XCTAssertEqual(count, (int) 45, @"count should match");
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     query = [KCSQuery query];
     query.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:10];
     
     [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"objCount" inDirection:kKCSDescending]];
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery2 = [self expectationWithDescription:@"query2"];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"not expecting error: %@");
         XCTAssertEqual((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
@@ -176,16 +186,21 @@
             count += a.objCount;
         }
         XCTAssertEqual(count, (int) 145, @"count should match");
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery2 fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 
 #define AssertQuery STAssertEqualObjects([query JSONStringRepresentation], expectedJSON, @"should match");
 - (void) testMetadatQueryDate
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"Backend should be good to go");
     
     KCSCollection* collection = [TestUtils randomCollection:[TestClass class]];
@@ -200,42 +215,57 @@
 
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:@[t1,t2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     KCSQuery* query = [KCSQuery queryOnField:KCSMetadataFieldLastModifiedTime usingConditional:kKCSLessThan forValue:[NSDate date]];
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(2);
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) loginWithUser:(NSString*)username password:(NSString*)password
 {
-    self.done = NO;
+    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     [KCSUser userWithUsername:username password:password fieldsAndValues:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         if (errorOrNil) {
             [KCSUser loginWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
                 STAssertNoError
-                self.done = YES;
+                
+                XCTAssertTrue([NSThread isMainThread]);
+                
+                [expectationLogin fulfill];
             }];
         } else {
             self.done = YES;
         }
+        
+        XCTAssertTrue([NSThread isMainThread]);
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testMetadataQueryCreator
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"Backend should be good to go");
     
     //setup a test user
@@ -257,48 +287,73 @@
     
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:t1 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     //create t2 as second user
     [self loginWithUser:@"testMetadataQueryCreator2" password:@"b"];    
     NSString* secondId = [[KCSUser activeUser] kinveyObjectId];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave2 = [self expectationWithDescription:@"save2"];
     [store saveObject:t2 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave2 fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 
     //do the queries
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator withExactMatchForValue:origId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(1);
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery2 = [self expectationWithDescription:@"query2"];
     [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator withExactMatchForValue:[KCSUser activeUser]] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(1);
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery2 fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationQuery3 = [self expectationWithDescription:@"query3"];
     [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator usingConditional:kKCSIn forValue:@[origId, secondId]] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(2);
-        self.done = YES;
-    } withProgressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationQuery3 fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testAnd
