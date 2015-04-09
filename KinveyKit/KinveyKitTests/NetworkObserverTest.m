@@ -44,20 +44,24 @@
     __block BOOL startHappened = NO;
     __block BOOL endHappened = NO;
     
+    XCTestExpectation* expectationNotification = [self expectationWithDescription:@"notification"];
+    
     [[NSNotificationCenter defaultCenter] addObserverForName:KCSNetworkConnectionDidStart object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         startHappened = YES;
     }];
     [[NSNotificationCenter defaultCenter] addObserverForName:KCSNetworkConnectionDidEnd object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         endHappened = YES;
-        KTPollDone
+        
+        [expectationNotification fulfill];
     }];
     dispatch_async(dispatch_queue_create("testq", 0), ^{
         KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+            XCTAssertTrue([NSThread isMainThread]);
         } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
         [request start];
     });
 
-    KTPollStart
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     XCTAssertTrue(startHappened, @"should get start");
     XCTAssertTrue(endHappened, @"should get end");
 }

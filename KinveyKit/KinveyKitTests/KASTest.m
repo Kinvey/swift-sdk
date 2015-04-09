@@ -44,12 +44,17 @@
     config.serviceHostname = @"v3yk1n-kcs";
     [[KCSClient sharedClient] initializeWithConfiguration:config];
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
-    self.done = NO;
+    
+    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+
     [KCSUser loginWithSocialIdentity:KCSSocialIDKinvey accessDictionary:@{@"access_token":@"abc"} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError
-        self.done = YES;
+        XCTAssertTrue([NSThread mainThread]);
+        
+        [expectationLogin fulfill];
     }];
-    [self poll];
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 

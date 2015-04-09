@@ -44,27 +44,42 @@
 - (void) clearAll
 {
     __block NSMutableArray* allObjs = [NSMutableArray array];
-    self.done = NO;
+    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
         if (objectsOrNil != nil) {
             [allObjs addObjectsFromArray:objectsOrNil];
         }
-        self.done = YES;
+        
+        [expectationQuery fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
         NSLog(@"clear all query all = %f",percentComplete);
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    [store removeObject:allObjs withCompletionBlock:[self pollBlockCount] withProgressBlock:^(NSArray *objects, double percentComplete) {
+    XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
+    [store removeObject:allObjs
+    withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
+        XCTAssertNil(errorOrNil);
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationRemove fulfill];
+    }
+      withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
         NSLog(@"clear all delete = %f",percentComplete);
     }];
-    [self poll];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) setUp
 {
-    BOOL setup = [TestUtils setUpKinveyUnittestBackend];
+    BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"should be up and running");
     
     KCSCollection* collection = [[KCSCollection alloc] init];
@@ -82,8 +97,19 @@
     [baseObjs addObject:[self makeObject:@"math" count:2]];
     [baseObjs addObject:[self makeObject:@"math" count:100]];
     [baseObjs addObject:[self makeObject:@"math" count:-30]];
-    [store saveObject:baseObjs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
-    [self poll];
+    
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    [store saveObject:baseObjs
+  withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+      XCTAssertNil(errorOrNil);
+      
+      XCTAssertTrue([NSThread isMainThread]);
+      
+      [expectationSave fulfill];
+  } withProgressBlock:^(NSArray *objects, double percentComplete) {
+      XCTAssertTrue([NSThread isMainThread]);
+  }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 
 }
 
@@ -98,7 +124,7 @@
 
 - (void) testGroupByCOUNT
 {
-    self.done = NO;
+    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -108,14 +134,18 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
         XCTAssertEqual([value intValue], 2, @"expecting two objects of 'two'");
         
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGroup fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testGroupBySUM
 {
-    self.done = NO;
+    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -125,14 +155,18 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
         XCTAssertEqual([value intValue], 20, @"expecting two objects of 'two'");
         
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGroup fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testGroupBySUMNonNumeric
 {
-    self.done = NO;
+    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objDescription"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -142,14 +176,18 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
         XCTAssertEqual([value intValue], 0, @"expecting 0 for a non-numeric");
         
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGroup fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testGroupByMIN
 {
-    self.done = NO;
+    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction MIN:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -159,15 +197,19 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
         XCTAssertEqual([value intValue], -30, @"expecting 10 as the min for objects of 'math'");
         
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGroup fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 
 - (void) testGroupByMAX
 {
-    self.done = NO;
+    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction MAX:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -177,14 +219,18 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
         XCTAssertEqual([value intValue], 100, @"expecting 100 as the max for objects of 'math'");
         
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGroup fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testGroupByAverage
 {
-    self.done = NO;
+    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction AVERAGE:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -194,9 +240,13 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
         XCTAssertEqual([value intValue], 24, @"expecting 24 as the avg for objects of 'math'");
         
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGroup fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testGroupByObjectField
@@ -209,18 +259,32 @@
     t3.objDict = @{@"food" : @"orange", @"drink" : @"coffee"};
 
     NSArray* objs = @[t1,t2,t3];
-    self.done = NO;
-    [store saveObject:objs withCompletionBlock:[self pollBlock] withProgressBlock:nil];
-    [self poll];
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    [store saveObject:objs
+  withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+      XCTAssertNil(errorOrNil);
+      
+      XCTAssertTrue([NSThread isMainThread]);
+      
+      [expectationSave fulfill];
+  } withProgressBlock:^(NSArray *objects, double percentComplete) {
+      XCTAssertTrue([NSThread isMainThread]);
+  }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    self.done = NO;
+    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:@[@"objDict.food"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNoError;
         NSNumber* value = [valuesOrNil reducedValueForFields:@{@"objDict.food" : @"orange"}];
         XCTAssertEqual([value intValue], 2, @"should be two oranges");
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGroup fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 //TODO: try sum for various types, string, etc
@@ -229,7 +293,7 @@
 //TODO: fix this - need to build objects instead of dictionaries
 - (void) noTestGroupObjByField
 {
-    self.done = NO;
+    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction AGGREGATE] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -239,9 +303,13 @@
         value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"math", @"objDescription", nil]];
         XCTAssertEqual([value[0] objCount], -30, @"expecting 10 as the min for objects of 'math'");
         
-        self.done = YES;
-    } progressBlock:nil];
-    [self poll];
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGroup fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 BOOL dosomething()

@@ -45,7 +45,7 @@
     [super tearDown];
 }
 
-- (void)testExample
+- (void)testDownloadStream
 {
     KCSFileRequest* f = [[KCSFileRequest alloc] init];
     KCSFile* file = [[KCSFile alloc] init];
@@ -53,20 +53,26 @@
     file.localURL = [KCSFileUtils fileURLForName:fileStr];
     [[NSFileManager defaultManager] removeItemAtURL:file.localURL error:NULL];
     
+    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    
     [f downloadStream:file
               fromURL:[NSURL URLWithString:publicFileURL]
-  alreadyWrittenBytes:@0 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
-      KTAssertNoError
-      long bytes = [returnInfo[@"bytesWritten"] longValue];
-      NSDictionary* d = [[NSFileManager defaultManager] attributesOfItemAtPath:[file.localURL path] error:NULL];
-      NSNumber* fileOnDiskSize = d[NSFileSize];
-      XCTAssertEqual(bytes, (long)kImageSize, @"bytes downloaded should match");
-      XCTAssertEqual(bytes, [fileOnDiskSize longValue], @"bytes should also match");
-      KTPollDone
-  } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
-      
-  }];
-    KTPollStart
+  alreadyWrittenBytes:@0 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
+     {
+         KTAssertNoError
+         long bytes = [returnInfo[@"bytesWritten"] longValue];
+         NSDictionary* d = [[NSFileManager defaultManager] attributesOfItemAtPath:[file.localURL path] error:NULL];
+         NSNumber* fileOnDiskSize = d[NSFileSize];
+         XCTAssertEqual(bytes, (long)kImageSize, @"bytes downloaded should match");
+         XCTAssertEqual(bytes, [fileOnDiskSize longValue], @"bytes should also match");
+         XCTAssertTrue([NSThread isMainThread]);
+         
+         [expectationDownload fulfill];
+     } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext)
+     {
+     }];
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 @end
