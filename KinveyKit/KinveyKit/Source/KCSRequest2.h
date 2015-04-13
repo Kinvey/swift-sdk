@@ -44,6 +44,9 @@ KCS_CONSTANT KCSRESTMethodPUT;
 #define kHeaderContentType   @"Content-Type"
 #define kHeaderContentLength @"Content-Length"
 
+#define kHeaderClientAppVersion        @"X-Kinvey-Client-App-Version"
+#define kHeaderCustomRequestProperties @"X-Kinvey-Custom-Request-Properties"
+
 @class KCSNetworkResponse;
 @protocol KCSCredentials;
 @protocol KCSNetworkOperation;
@@ -75,6 +78,8 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
 
 BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op);
 + (NSOperationQueue*) requestQueue;
+
++(NSMutableURLRequest*)requestForURL:(NSURL*)url;
 
 //for testing
 - (NSMutableURLRequest*)urlRequest;

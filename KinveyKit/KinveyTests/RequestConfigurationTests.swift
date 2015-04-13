@@ -83,7 +83,7 @@ class RequestConfigurationTests: XCTestCase {
             override class func canInitWithRequest(request: NSURLRequest) -> Bool {
                 let headers = request.allHTTPHeaderFields!
                 
-                XCTAssertEqual(headers["X-Kinvey-Client-App-Version"] as NSString!, "2.0")
+                XCTAssertEqual(headers["X-Kinvey-Client-App-Version"] as! NSString!, "2.0")
                 
                 var error: NSError?
                 let expectedResult = [
@@ -95,7 +95,7 @@ class RequestConfigurationTests: XCTestCase {
                     error: &error)
                 XCTAssertNil(error)
                 let json = NSString(data: data!, encoding: NSUTF8StringEncoding)!
-                XCTAssertEqual(headers["X-Kinvey-Custom-Request-Properties"] as NSString!, json)
+                XCTAssertEqual(headers["X-Kinvey-Custom-Request-Properties"] as! NSString!, json)
                 
                 return false
             }
@@ -111,12 +111,16 @@ class RequestConfigurationTests: XCTestCase {
                 XCTAssertEqual(results.count, 1)
                 
                 if results.count > 0 {
-                    XCTAssertEqual(results[0] as Dictionary, obj)
+                    XCTAssertEqual(results[0] as! Dictionary, obj)
                 }
+                
+                XCTAssertTrue(NSThread.isMainThread())
                 
                 expectationSave.fulfill()
             },
-            withProgressBlock: nil
+            withProgressBlock: { (results: [AnyObject]!, percentage: Double) -> Void in
+                XCTAssertTrue(NSThread.isMainThread())
+            }
         )
         
         self.waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in
@@ -139,7 +143,7 @@ class RequestConfigurationTests: XCTestCase {
             override class func canInitWithRequest(request: NSURLRequest) -> Bool {
                 let headers = request.allHTTPHeaderFields!
                 
-                XCTAssertEqual(headers["X-Kinvey-Client-App-Version"] as NSString!, "1.0")
+                XCTAssertEqual(headers["X-Kinvey-Client-App-Version"] as! NSString!, "1.0")
                 
                 var error: NSError?
                 let expectedResult = [
@@ -152,7 +156,7 @@ class RequestConfigurationTests: XCTestCase {
                     error: &error)
                 XCTAssertNil(error)
                 let json = NSString(data: data!, encoding: NSUTF8StringEncoding)!
-                XCTAssertEqual(headers["X-Kinvey-Custom-Request-Properties"] as NSString!, json)
+                XCTAssertEqual(headers["X-Kinvey-Custom-Request-Properties"] as! NSString!, json)
                 
                 return false
             }
@@ -173,11 +177,15 @@ class RequestConfigurationTests: XCTestCase {
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
                 XCTAssertEqual(results.count, 1)
-                XCTAssertEqual(results[0] as Dictionary, obj)
+                XCTAssertEqual(results[0] as! Dictionary, obj)
+                
+                XCTAssertTrue(NSThread.isMainThread())
                 
                 expectationSave.fulfill()
             },
-            withProgressBlock: nil
+            withProgressBlock: { (results: [AnyObject]!, percentage: Double) -> Void in
+                XCTAssertTrue(NSThread.isMainThread())
+            }
         )
         
         self.waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in
@@ -200,7 +208,7 @@ class RequestConfigurationTests: XCTestCase {
             override class func canInitWithRequest(request: NSURLRequest) -> Bool {
                 let headers = request.allHTTPHeaderFields!
                 
-                XCTAssertEqual(headers["X-Kinvey-Client-App-Version"] as NSString!, "1.0")
+                XCTAssertEqual(headers["X-Kinvey-Client-App-Version"] as! NSString!, "1.0")
                 
                 var error: NSError?
                 let expectedResult = [
@@ -218,7 +226,7 @@ class RequestConfigurationTests: XCTestCase {
                     error: &error)
                 XCTAssertNil(error)
                 let json = NSString(data: data!, encoding: NSUTF8StringEncoding)!
-                XCTAssertEqual(headers["X-Kinvey-Custom-Request-Properties"] as NSString!, json)
+                XCTAssertEqual(headers["X-Kinvey-Custom-Request-Properties"] as! NSString!, json)
                 
                 return false
             }
@@ -244,11 +252,15 @@ class RequestConfigurationTests: XCTestCase {
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
                 XCTAssertEqual(results.count, 1)
-                XCTAssertEqual(results[0] as Dictionary, obj)
+                XCTAssertEqual(results[0] as! Dictionary, obj)
+                
+                XCTAssertTrue(NSThread.isMainThread())
                 
                 expectationSave.fulfill()
             },
-            withProgressBlock: nil
+            withProgressBlock: { (results: [AnyObject]!, percentage: Double) -> Void in
+                XCTAssertTrue(NSThread.isMainThread())
+            }
         )
         
         self.waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in

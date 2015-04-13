@@ -20,6 +20,7 @@
 
 #import "NSDictionary+KinveyAdditions.h"
 #import "KinveyCoreInternal.h"
+#import "KCSMutableOrderedDictionary.h"
 
 @implementation NSDictionary (KinveyAdditions)
 
@@ -45,6 +46,27 @@
 {
     NSString* jsonStr = [self JSONRepresentation];
     return [NSString stringByPercentEncodingString:jsonStr];
+}
+
+-(NSString *)jsonString
+{
+    NSError *error = nil;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:[KCSMutableOrderedDictionary dictionaryWithDictionary:self]
+                                                   options:0
+                                                     error:&error];
+    
+    if (error) {
+        [[NSException exceptionWithName:error.domain
+                                 reason:error.localizedDescription ? error.localizedDescription : error.description
+                               userInfo:error.userInfo] raise];
+    }
+    
+    if (data) {
+        return [[NSString alloc] initWithData:data
+                                     encoding:NSUTF8StringEncoding];
+    }
+    
+    return nil;
 }
 
 - (NSDictionary*) invert

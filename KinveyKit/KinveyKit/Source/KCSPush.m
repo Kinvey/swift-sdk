@@ -231,7 +231,7 @@
                 [[KCSUser activeUser].deviceTokens addObject:[self deviceTokenString]];
             }
             if (completionBlock) {
-                completionBlock(error == nil, error);
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(error == nil, error));
             }
 
         }
@@ -247,7 +247,7 @@
         [request start];
     } else {
         if (completionBlock) {
-            completionBlock(NO, nil);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(NO, nil));
         }
     }
 }

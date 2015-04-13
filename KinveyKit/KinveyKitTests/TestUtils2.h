@@ -31,7 +31,7 @@
 #define KTAssertNotNil(x) XCTAssertNotNil(x, @#x" should not be nil.");
 #define KTAssertEqualsInt(x,y) XCTAssertEqual((int)x,(int)y, @#x" != "#y);
 #define KTAssertCount(c, obj) XCTAssertNotNil(obj, @#obj" should be non-nil"); XCTAssertEqual((int)[obj count], (int)c, @"count did not match expectation");
-#define KTAssertCountAtLeast(c, obj) XCTAssertTrue( [obj count] >= c, @"count (%i) should be at least (%i)", [obj count], c);
+#define KTAssertCountAtLeast(c, obj) XCTAssertTrue( [obj count] >= c, @"count (%lul) should be at least (%lul)", (unsigned long) [obj count], (unsigned long) c);
 #define KTAssertLengthAtLeast(obj, c) XCTAssertTrue( [obj length] >= c, @"count (%i) should be at least (%i)", [obj length], c);
 #define KTAssertEqualsDates(date1,date2) XCTAssertTrue([date1 isEqualToDate:date2], @"Dates should match.");
 

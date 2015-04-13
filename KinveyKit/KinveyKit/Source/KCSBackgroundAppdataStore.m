@@ -400,7 +400,7 @@ return; \
                 request.progress = ^(id data, double progress){
                     if (progressBlock != nil) {
                         NSArray* partialResults = [partialParser parseData:data hasArray:NO];
-                        progressBlock(partialResults, progress);
+                        DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(partialResults, progress));
                     }
                 };
                 [request start];
@@ -511,7 +511,7 @@ return; \
         if (progressBlock != nil) {
             @strongify(partialParser)
             NSArray* partialResults = [partialParser parseData:data hasArray:YES];
-            progressBlock(partialResults, progress);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(partialResults, progress));
         }
     };
     
@@ -591,8 +591,13 @@ NSError* createCacheError(NSString* message)
     completionBlock(objs, error);
 }
 
-- (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
+- (void)queryWithQuery:(id)query
+  requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+   withCompletionBlock:(KCSCompletionBlock)completionBlock
+     withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    KCSCachePolicy cachePolicy = self.cachePolicy;
+    
     //Hold on the to the object first, in case the cache is cleared during this process
     id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy]) {
@@ -616,7 +621,10 @@ NSError* createCacheError(NSString* message)
 
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    [self queryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:progressBlock cachePolicy:self.cachePolicy];
+    [self queryWithQuery:query
+    requestConfiguration:nil
+     withCompletionBlock:completionBlock
+       withProgressBlock:progressBlock];
 }
 
 #pragma mark - grouping
@@ -708,7 +716,7 @@ NSError* createCacheError(NSString* message)
     request.method = KCSRESTMethodPOST;
     request.progress = ^(id data, double progress){
         if (progressBlock != nil) {
-            progressBlock(nil, progress);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(nil, progress));
         }
     };
     [request start];
@@ -870,7 +878,7 @@ NSError* createCacheError(NSString* message)
     request.progress = ^(id data, double progress){
         [objKey setPc:progress];
         if (progressBlock != nil) {
-            progressBlock(@[], progress);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(@[], progress));
         }
     };
     [request start];
@@ -1015,7 +1023,20 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 }
 
 #pragma mark - Removing
-- (void) removeObject:(id)object withCompletionBlock:(KCSCountBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+- (void) removeObject:(id)object
+  withCompletionBlock:(KCSCountBlock)completionBlock
+    withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    [self removeObject:object
+  requestConfiguration:nil
+   withCompletionBlock:completionBlock
+     withProgressBlock:progressBlock];
+}
+
+-(void) removeObject:(id)object
+requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+ withCompletionBlock:(KCSCountBlock)completionBlock
+   withProgressBlock:(KCSProgressBlock)progressBlock
 {
     BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:^(id objs, NSError *error) {
         completionBlock(0, error);
@@ -1046,6 +1067,19 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
     } else if ([object isKindOfClass:[NSString class]]) {
         //do this since all objs are KCSPersistables
         object = object;
+    } else if ([object isKindOfClass:[KCSQuery class]]) {
+        [self queryWithQuery:object
+        requestConfiguration:requestConfiguration
+         withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+             if (errorOrNil) {
+                 DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(0, errorOrNil));
+             } else {
+                 [self removeObject:objectsOrNil
+               requestConfiguration:requestConfiguration
+                withCompletionBlock:completionBlock
+                  withProgressBlock:progressBlock];
+             }
+         } withProgressBlock:nil];
     } else if ([object conformsToProtocol:@protocol(KCSPersistable)]) {
         //if its just a single object get the _id
         object = [object kinveyObjectId];
@@ -1089,7 +1123,7 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
     }
     if (progressBlock) {
         op.progressBlock = ^(id data, double progress) {
-            progressBlock(nil, progress);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(nil, progress));
         };
     }
     

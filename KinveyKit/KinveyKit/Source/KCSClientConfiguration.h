@@ -134,6 +134,8 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
 // internal use
 @property (nonatomic, copy) NSString* serviceHostname;
 
+@property (nonatomic, copy) NSString* authHostname;
+
 /** Basic configuration with an app key and secret, no options. Uses the default options.
  
  Usage:
