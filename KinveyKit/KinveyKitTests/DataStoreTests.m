@@ -47,13 +47,21 @@
 
 - (void) testBasic
 {
-    KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:@"GetAll"];
+    NSString* _id = [self createEntity];
+    XCTAssertNotNil(_id);
+    
+    XCTestExpectation* expectationGetAll = [self expectationWithDescription:@"getAll"];
+    
+    KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     [store getAll:^(NSArray *objects, NSError *error) {
         KTAssertNoError
-        KTAssertCountAtLeast(1, objects);
-        KTPollDone
+        XCTAssertGreaterThanOrEqual(objects.count, 1);
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGetAll fulfill];
     }];
-    KTPollStart
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (NSString*) createEntity
@@ -61,16 +69,19 @@
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:self.collection ofClass:[NSMutableDictionary class]] options:nil];
     NSDictionary* entity = [@{@"number":@(arc4random())} mutableCopy];
     
-    self.done = NO;
+    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    
     __block NSString* _id = nil;
     [store saveObject:entity withCompletionBlock:^(NSArray *objectsOrNil, NSError *error) {
         KTAssertNoError;
         KTAssertCount(1, objectsOrNil);
+        XCTAssertTrue([NSThread isMainThread]);
         _id = objectsOrNil[0][KCSEntityKeyId];
         
-        self.done = YES;
+        [expectationSave fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     XCTAssertNotNil(_id, @"should have an id");
     return _id;
@@ -82,7 +93,8 @@
     
     __block NSDictionary* obj = nil;
     
-    self.done = NO;
+    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    
     [store loadObjectWithID:_id withCompletionBlock:^(NSArray *objectsOrNil, NSError *error) {
         if (shouldExist) {
             KTAssertNoError
@@ -93,9 +105,12 @@
             KTAssertEqualsInt(error.code, 404);
             XCTAssertNil(objectsOrNil, @"should have no objects");
         }
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+
+        [expectationLoad fulfill];
     } withProgressBlock:nil];
-    [self poll];
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     return obj;
 }
@@ -106,13 +121,17 @@
     
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     
-    self.done = NO;
+    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    
     [store deleteEntity:_id completion:^(NSUInteger count, NSError *error) {
         KTAssertNoError;
         KTAssertEqualsInt(count, 1);
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationDelete fulfill];
     }];
-    [self poll];
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     id obj = [self getEntity:_id shouldExist:NO];
     XCTAssertNil(obj, @"object should be gone");
@@ -125,14 +144,17 @@
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:_id];
     
+    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     
-    self.done = NO;
     [store deleteByQuery:[KCSQuery2 queryWithQuery1:query] completion:^(NSUInteger count, NSError *error) {
         KTAssertNoError;
         KTAssertEqualsInt(count, 1);
-        self.done = YES;
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationDelete fulfill];
     }];
-    [self poll];
+    
+    [self waitForExpectationsWithTimeout:30 handler:nil];
     
     id obj = [self getEntity:_id shouldExist:NO];
     XCTAssertNil(obj, @"object should be gone");

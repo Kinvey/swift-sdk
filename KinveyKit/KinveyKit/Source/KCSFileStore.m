@@ -413,7 +413,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                     completionBlock(@[intermediateFile], error);
                 } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
                     if (progressBlock != nil) {
-                        progressBlock(objects, percentComplete);
+                        DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(objects, percentComplete));
                     }
                 }];
     
@@ -477,7 +477,7 @@ KCSFile* fileFromResults(NSDictionary* results)
         }
     } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext) {
         if (progressBlock) {
-            progressBlock(objects, percentComplete);
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlock(objects, percentComplete));
         }
     }];
 }
@@ -765,7 +765,11 @@ KCSFile* fileFromResults(NSDictionary* results)
                     } progressBlock:^(NSArray *objects, double percentComplete) {
                         if (progressBlock != nil) {
                             DBAssert(objects.count == 1, @"should only get 1 per download");
-                            files[idx] = objects[0];
+                            if (idx < files.count) {
+                                files[idx] = objects[0];
+                            } else {
+                                [files addObject:objects[0]];
+                            }
                             double progress = 0;
                             for (KCSFile* progFile in objects) {
                                 progress += percentComplete * ((double) thisFile.length / (double) totalBytes);
@@ -946,10 +950,10 @@ KCSFile* fileFromResults(NSDictionary* results)
                                             domain:KCSFileStoreErrorDomain
                                          requestId:nil
                                        sourceError:error];
-            completionBlock(0, error);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(0, error));
         } else {
             NSDictionary* results = [response jsonObject];
-            completionBlock([results[@"count"] unsignedLongValue], nil);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock([results[@"count"] unsignedLongValue], nil));
         }
     }
                                                         route:KCSRESTRouteBlob

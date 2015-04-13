@@ -45,20 +45,24 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     dispatch_queue_t startQ = dispatch_get_current_queue();
+    XCTestExpectation* expectationRequest = [self expectationWithDescription:@"request"];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         
         dispatch_queue_t endQ = dispatch_get_current_queue();
 #pragma clang diagnostic pop
         XCTAssertEqual(startQ, endQ, @"queues should match");
         
-        KTPollDone
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationRequest fulfill];
     } route:KCSRESTRouteAppdata options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
     [request start];
-    KTPollStart
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testMethodAnayltics
 {
+    XCTestExpectation* expectationRequest = [self expectationWithDescription:@"request"];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         XCTAssertNotNil(response, @"need response");
         NSDictionary* headers = response.headers;
@@ -66,15 +70,18 @@
         XCTAssertNotNil(method, @"should have the method");
         XCTAssertEqualObjects(method, @"KCSRequest2Tests testMethodAnayltics", @"should be this method");
         
-        KTPollDone
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationRequest fulfill];
     } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
     [request start];
-    KTPollStart
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testPath
 {
     NSArray* path =  @[@"1",@"2"];
+    XCTestExpectation* expectationRequest = [self expectationWithDescription:@"request"];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         XCTAssertNotNil(response, @"need response");
         NSURL* url = response.originalURL;
@@ -85,11 +92,13 @@
         KTAssertCount(2, lastComponents);
         XCTAssertEqualObjects(lastComponents, path, @"should match");
         
-        KTPollDone
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationRequest fulfill];
     } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
     request.path = path;
     [request start];
-    KTPollStart
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testRetryKCS
@@ -101,17 +110,21 @@
     [tester clearLogs];
     
     NSArray* path =  @[@"foo"];
+    XCTestExpectation* expectationRequest = [self expectationWithDescription:@"request"];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSArray* logs = tester.logs;
         NSArray* retries = [logs filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
             return [evaluatedObject hasPrefix:@"Retrying"];
         }]];
         KTAssertCount(5, retries);
-        KTPollDone
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationRequest fulfill];
     } route:KCSRESTRouteAppdata options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
     request.path = path;
     [request start];
-    KTPollNoAssert
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void) testRetryCFNetwork
@@ -121,7 +134,10 @@
 
 - (void) testCreateCustomURLRquest
 {
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {}
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error)
+    {
+        XCTAssertTrue([NSThread isMainThread]);
+    }
                                                         route:KCSRESTRouteRPC
                                                       options:@{}
                                                   credentials:mockCredentails()];

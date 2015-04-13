@@ -23,6 +23,7 @@
 - (instancetype) dictionaryByAddingDictionary:(NSDictionary*)dictionary;
 
 - (NSString*) escapedJSON;
+- (NSString*)jsonString;
 - (NSDictionary*) invert;
 
 @end

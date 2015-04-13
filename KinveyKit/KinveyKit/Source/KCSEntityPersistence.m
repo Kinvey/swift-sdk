@@ -27,7 +27,7 @@
 #import "KCS_FMDatabaseQueue.h"
 #import "KCSMutableOrderedDictionary.h"
 
-#import "KCSRequest2+Private.h"
+#import "KCSRequest2.h"
 
 #define KCS_CACHE_VERSION @"0.004"
 

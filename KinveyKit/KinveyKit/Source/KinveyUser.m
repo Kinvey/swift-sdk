@@ -26,8 +26,12 @@
 #import "KCSKeychain.h"
 #import "KCSNetworkResponse.h"
 #import "KCSPush.h"
+#import "KinveyUser+Private.h"
 
 #pragma mark - Constants
+
+NSString* const KCSUsername = @"username";
+NSString* const KCSPassword = @"password";
 
 NSString* const KCSUserAccessTokenKey = @"access_token";
 NSString* const KCSUserAccessTokenSecretKey = @"access_token_secret";
@@ -52,8 +56,9 @@ void setActive(KCSUser* user)
 }
 
 @interface KCSUser()
-@property (nonatomic, strong) NSMutableDictionary *userAttributes;
+
 @property (nonatomic, strong) NSMutableDictionary* push;
+
 @end
 
 @implementation KCSUser
@@ -158,6 +163,51 @@ void setActive(KCSUser* user)
 {
     [KCSUser2 connectWithAuthProvider:provider accessDictionary:accessDictionary completion:^(id<KCSUser2> user, NSError *error) {
         completionBlock(user, error, KCSUserNoInformation);
+    }];
+}
+
++(void)loginWithAuthorizationCodeLoginPage:(NSString *)redirectURI
+{
+    [KCSUser2 loginWithAuthorizationCodeLoginPage:redirectURI];
+}
+
++(void)loginWithAuthorizationCodeAPI:(NSString *)redirectURI
+                             options:(NSDictionary *)options
+                 withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    [KCSUser2 loginWithAuthorizationCodeAPI:redirectURI
+                                    options:options
+                                 completion:^(id<KCSUser2> user, NSError *error)
+    {
+        if (completionBlock) {
+            completionBlock(user, error, KCSUserNoInformation);
+        }
+    }];
+}
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+{
+    return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI];
+}
+
++(BOOL)isValidMICRedirectURI:(NSString *)redirectURI
+                      forURL:(NSURL *)url
+{
+    return [KCSUser2 isValidMICRedirectURI:redirectURI
+                                    forURL:url];
+}
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+       withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    [KCSUser2 parseMICRedirectURI:redirectURI
+                           forURL:url
+              withCompletionBlock:^(id<KCSUser2> user, NSError *error)
+    {
+        if (completionBlock) {
+            completionBlock(user, error, KCSUserNoInformation);
+        }
     }];
 }
 
