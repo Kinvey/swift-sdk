@@ -35,6 +35,9 @@ NSString* const KCSPassword = @"password";
 
 NSString* const KCSUserAccessTokenKey = @"access_token";
 NSString* const KCSUserAccessTokenSecretKey = @"access_token_secret";
+NSString* const KCSUserAccessRefreshTokenKey = @"refresh_token";
+NSString* const KCSUserAccessExpiresInKey = @"expires_in";
+
 NSString* const KCSActiveUserChangedNotification = @"Kinvey.ActiveUser.Changed";
 
 NSString* const KCSUserAttributeUsername = @"username";

@@ -48,6 +48,8 @@ typedef NS_ENUM(NSInteger, KCSUserSocialIdentifyProvider)  {
     KCSSocialIDFacebook,
     /** Twitter */
     KCSSocialIDTwitter,
+    /** Google+ */
+    KCSSocialIDGooglePlus,
     /** LinkedIn */
     KCSSocialIDLinkedIn,
     /** Salesforce */
@@ -63,10 +65,14 @@ KCS_CONSTANT KCSUsername;
 /** Password key for KCSMICAuthorizationGrantTypeAuthCodeAPI options. */
 KCS_CONSTANT KCSPassword;
 
-/** Access Dictionary key for the token: both Facebook & Twitter */
+/** Access Dictionary key for the token: both Facebook, Twitter and Google+ */
 KCS_CONSTANT KCSUserAccessTokenKey;
 /** Access Dictionary key for the token secret: just Twitter */
 KCS_CONSTANT KCSUserAccessTokenSecretKey;
+/** Access Dictionary key for the refresh token: Google+ */
+KCS_CONSTANT KCSUserAccessRefreshTokenKey;
+/** Access Dictionary key for the expiration token: Google+ */
+KCS_CONSTANT KCSUserAccessExpiresInKey;
 
 /** Notification type. This is called when a user is logged in or logged out. `userInfo` and `object` are nil. Query `+[KCSUser activeUser] to get the new value. */
 KCS_CONSTANT KCSActiveUserChangedNotification;

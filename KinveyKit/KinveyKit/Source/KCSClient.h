@@ -37,6 +37,9 @@
 #define KCS_SALESFORCE_REFRESH_TOKEN @"refresh_token"
 #define KCS_SALESFORCE_CLIENT_ID @"client_id"
 
+#define KCS_GOOGLE_PLUS_CLIENT_ID @"googlePlusClientID"
+#define KCS_GOOGLE_PLUS_CLIENT_SECRET @"googlePlusClientSecret"
+
 /** Notification for when a network operation starts 
  @since 1.26.0
  */
