@@ -468,11 +468,24 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 
 + (KCSQuery *)queryOnField:(NSString *)field usingConditionalsForValues:(KCSQueryConditional)firstConditional, ...
 {
-    NSMutableArray *args = [NSMutableArray array];
     va_list items;
     va_start(items, firstConditional);
+    KCSQuery* query = [self queryOnField:field usingConditionalsForValuesArgs:items firstArg:firstConditional];
+    va_end(items);
     
-    KCSQueryConditional currentCondition = firstConditional;
+    return query;
+}
+
++(KCSQuery *)queryOnField:(NSString *)field usingConditionalsForValuesArgs:(va_list)items
+{
+    return [self queryOnField:field usingConditionalsForValuesArgs:items firstArg:va_arg(items, KCSQueryConditional)];
+}
+
++(KCSQuery *)queryOnField:(NSString *)field usingConditionalsForValuesArgs:(va_list)items firstArg:(KCSQueryConditional)firstArg
+{
+    NSMutableArray *args = [NSMutableArray array];
+    
+    KCSQueryConditional currentCondition = firstArg;
     
     while (currentCondition) {
         NSObject *currentQuery = va_arg(items, id);
@@ -481,14 +494,12 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
         //do it this way b/c for last condition currentCondition == 0 and the next one will be undefined
         currentCondition = va_arg(items, KCSQueryConditional);
     }
-    va_end(items);
     
     KCSQuery *query = [self query];
     
     query.query = [[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:args useQueriesForOps:YES] mutableCopy];
     
     return query;
-    
 }
 
 + (KCSQuery *)queryForJoiningOperator:(KCSQueryConditional)joiningOperator onQueries: (KCSQuery *)firstQuery, ...
