@@ -43,12 +43,12 @@ KCS_CONSTANT KCS_LOG_SINK;
 /** 
  @since 1.24.0
 */
-typedef enum KCSDataProtectionLevel : NSInteger {
+typedef NS_ENUM(NSInteger, KCSDataProtectionLevel) {
     KCSDataNoProtection, //no encryption
     KCSDataComplete, //data is inaccessible when device locked
     KCSDataCompleteUnlessOpen, //data is locked at first, but remains accessible while the file is open
     KCSDataCompleteUntilFirstLogin, //data is locked until the device has been unlocked once after boot
-} KCSDataProtectionLevel;
+};
 
 /** Set this to a KCSDataProtectionLevel combined with data protection entitlements and the appropriate app delegate methods allows your app to lock files managed by the file store, offline caches, and keychain. 
  
