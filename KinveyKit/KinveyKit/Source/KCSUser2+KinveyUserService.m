@@ -663,7 +663,13 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         }
             break;
         case KCSSocialIDKinvey: {
-            dict = @{@"_socialIdentity" : @{@"kinveyAuth" : accessDictionary}};
+            dict = @{
+                @"_socialIdentity" : @{
+                    @"kinveyAuth" : @{
+                        KCSUserAccessTokenKey : accessDictionary[KCSUserAccessTokenKey]
+                    }
+                }
+            };
         }
             break;
         default:
