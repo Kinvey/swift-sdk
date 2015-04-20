@@ -579,7 +579,9 @@ NSError* createCacheError(NSString* message)
             id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
             [self completeQuery:obj withCompletionBlock:completionBlock];
         } else {
-            [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+            if (cachePolicy != KCSCachePolicyNone) {
+                [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+            }
             completionBlock(objectsOrNil, errorOrNil);
         }
     } withProgressBlock:progressBlock];
@@ -598,8 +600,14 @@ NSError* createCacheError(NSString* message)
            cachePolicy:(KCSCachePolicy)cachePolicy
 {
     //Hold on the to the object first, in case the cache is cleared during this process
-    id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
-    if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy]) {
+    id obj;
+    BOOL noneCachePolicy = cachePolicy == KCSCachePolicyNone;
+    if (noneCachePolicy) {
+        obj = nil;
+    } else {
+        obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+    }
+    if (noneCachePolicy || [self shouldCallNetworkFirst:obj cachePolicy:cachePolicy]) {
         [self queryNetwork:query withCompletionBlock:completionBlock withProgressBlock:progressBlock policy:cachePolicy];
     } else {
         [self completeQuery:obj withCompletionBlock:completionBlock];
