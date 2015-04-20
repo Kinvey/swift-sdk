@@ -8,6 +8,7 @@
 #import "KCSMutableOrderedDictionary.h"
 #import "KCSUser2+KinveyUserService.h"
 #import "KinveyUser+Private.h"
+#import "MLIBZ_239_DataHelper.h"
 
 @interface KCSUser2 ()
 

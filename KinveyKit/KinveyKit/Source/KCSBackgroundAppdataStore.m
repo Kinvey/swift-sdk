@@ -595,9 +595,8 @@ NSError* createCacheError(NSString* message)
   requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
    withCompletionBlock:(KCSCompletionBlock)completionBlock
      withProgressBlock:(KCSProgressBlock)progressBlock
+           cachePolicy:(KCSCachePolicy)cachePolicy
 {
-    KCSCachePolicy cachePolicy = self.cachePolicy;
-    
     //Hold on the to the object first, in case the cache is cleared during this process
     id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     if ([self shouldCallNetworkFirst:obj cachePolicy:cachePolicy]) {
@@ -619,12 +618,25 @@ NSError* createCacheError(NSString* message)
     }
 }
 
+- (void)queryWithQuery:(id)query
+   withCompletionBlock:(KCSCompletionBlock)completionBlock
+     withProgressBlock:(KCSProgressBlock)progressBlock
+           cachePolicy:(KCSCachePolicy)cachePolicy
+{
+    [self queryWithQuery:query
+    requestConfiguration:nil
+     withCompletionBlock:completionBlock
+       withProgressBlock:progressBlock
+             cachePolicy:cachePolicy];
+}
+
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
     [self queryWithQuery:query
     requestConfiguration:nil
      withCompletionBlock:completionBlock
-       withProgressBlock:progressBlock];
+       withProgressBlock:progressBlock
+             cachePolicy:self.cachePolicy];
 }
 
 #pragma mark - grouping
