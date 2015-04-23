@@ -79,7 +79,6 @@ class MICTests: XCTestCase {
                 XCTAssertNotNil(kinveyAuth["access_token"])
                 XCTAssertNotNil(kinveyAuth["audience"])
                 XCTAssertNotNil(kinveyAuth["client_token"])
-                XCTAssertNotNil(kinveyAuth["refresh_token"])
                 XCTAssertNotNil(kinveyAuth["id"])
                 XCTAssertEqual(kinveyAuth["id"] as! String, "mjs")
             }

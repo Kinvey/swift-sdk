@@ -614,6 +614,25 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             }
         }
             break;
+        case KCSSocialIDGooglePlus: {
+            NSString* clientID = [KCSClient sharedClient].options[KCS_GOOGLE_PLUS_CLIENT_ID];
+            NSString* clientSecret = [KCSClient sharedClient].options[KCS_GOOGLE_PLUS_CLIENT_SECRET];
+            NSString* refreshToken = accessDictionary[KCSUserAccessRefreshTokenKey];
+            NSNumber* expiresIn = accessDictionary[KCSUserAccessExpiresInKey];
+            
+            dict = @{
+                @"_socialIdentity" : @{
+                    @"google" : @{
+                        @"client_id" : clientID != nil ? clientID : [NSNull null],
+                        @"client_secret" : clientSecret != nil ? clientSecret : [NSNull null],
+                        KCSUserAccessTokenKey : accessToken,
+                        KCSUserAccessRefreshTokenKey : refreshToken != nil ? refreshToken : [NSNull null],
+                        KCSUserAccessExpiresInKey : expiresIn != nil ? expiresIn : [NSNull null]
+                    }
+                }
+            };
+        }
+            break;
         case KCSSocialIDLinkedIn: {
             NSString* linkedInKey = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_API_KEY];
             NSString* linkedInSecret = [[KCSClient sharedClient].options objectForKey:KCS_LINKEDIN_SECRET_KEY];
@@ -644,7 +663,13 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         }
             break;
         case KCSSocialIDKinvey: {
-            dict = @{@"_socialIdentity" : @{@"kinveyAuth" : accessDictionary}};
+            dict = @{
+                @"_socialIdentity" : @{
+                    @"kinveyAuth" : @{
+                        KCSUserAccessTokenKey : accessDictionary[KCSUserAccessTokenKey]
+                    }
+                }
+            };
         }
             break;
         default:
