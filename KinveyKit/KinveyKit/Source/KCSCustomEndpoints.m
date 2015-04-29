@@ -42,7 +42,6 @@
         if (error) {
             jsonObject = nil;
         } else {
-            response.skipValidation = YES;
             jsonObject = [response jsonObjectError:&error];
         }
         DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(jsonObject, error));
