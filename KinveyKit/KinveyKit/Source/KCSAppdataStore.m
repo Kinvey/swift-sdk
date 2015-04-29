@@ -181,9 +181,7 @@ static NSOperationQueue* queue;
     @weakify(op);
     op.block = ^{
         [super saveObject:object withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(objectsOrNil, errorOrNil);
-            });
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(objectsOrNil, errorOrNil));
             @strongify(op);
             op.finished = YES;
         } withProgressBlock:progressBlock];

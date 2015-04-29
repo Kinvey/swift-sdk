@@ -9,6 +9,7 @@
 #import "KCSUser2+KinveyUserService.h"
 #import "KinveyUser+Private.h"
 #import "MLIBZ_239_DataHelper.h"
+#import "KCSTryCatch.h"
 
 @interface KCSUser2 ()
 

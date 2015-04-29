@@ -24,13 +24,15 @@
 @property (nonatomic, copy) NSData* jsonData;
 @property (nonatomic, copy) NSDictionary* headers;
 @property (nonatomic, copy) NSURL* originalURL;
+@property (nonatomic, assign) BOOL skipValidation;
 
 + (instancetype) MockResponseWith:(NSInteger)code data:(id)data;
 
 - (BOOL) isKCSError;
 - (NSError*) errorObject;
 - (NSString*) stringValue;
-- (id) jsonObject;
+- (id) jsonObject KCS_DEPRECATED(--use jsonObjectError: instead, 1.31.1);
+- (id) jsonObjectError:(NSError**)error;
 - (NSString*) requestId;
 
 @end
