@@ -181,6 +181,10 @@
                 if (error) {
                     *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"KCSPersistable objects requires the `%@` property", KCSEntityKeyId]];
                 }
+            } else if (![jsonObj[KCSEntityKeyId] isKindOfClass:[NSString class]]) {
+                if (error) {
+                    *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"`%@` property needs to be string", KCSEntityKeyId]];
+                }
             } else if (!jsonObj[KCSEntityKeyMetadata]) {
                 if (error) {
                     *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"KCSPersistable objects requires the `%@` property", KCSEntityKeyMetadata]];
