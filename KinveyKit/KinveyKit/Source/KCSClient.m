@@ -65,6 +65,13 @@
 
 @implementation KCSClient
 
++(void)initialize
+{
+    [super initialize];
+    
+    NSLog(@"Kinvey iOS Library Version %@", __KINVEYKIT_VERSION__);
+}
+
 + (KCSClient *)sharedClient
 {
     static KCSClient *sKCSClient;
