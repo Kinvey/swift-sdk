@@ -33,19 +33,23 @@
         if (error) {
             completionBlock(nil, error);
         } else {
-            id responseObj = [response jsonObject];
-            NSArray* jsonArray = [NSArray wrapIfNotArray:responseObj];
-            NSUInteger itemCount = jsonArray.count;
-
-            NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:itemCount];
-            for (NSDictionary* jsonDict in jsonArray) {
-                id newobj = [[KCSAppdataStore caches].dataModel objectFromCollection:KCSUserCollectionName data:jsonDict];
-                if (newobj) {
-                    [returnObjects addObject:newobj];
+            id responseObj = [response jsonObjectError:&error];
+            if (error) {
+                completionBlock(nil, error);
+            } else {
+                NSArray* jsonArray = [NSArray wrapIfNotArray:responseObj];
+                NSUInteger itemCount = jsonArray.count;
+                
+                NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:itemCount];
+                for (NSDictionary* jsonDict in jsonArray) {
+                    id newobj = [[KCSAppdataStore caches].dataModel objectFromCollection:KCSUserCollectionName data:jsonDict];
+                    if (newobj) {
+                        [returnObjects addObject:newobj];
+                    }
                 }
+                
+                completionBlock(returnObjects, nil);
             }
-            
-            completionBlock(returnObjects, nil);
         }
     }
                                                         route:KCSRESTRouteUser
