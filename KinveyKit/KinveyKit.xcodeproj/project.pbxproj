@@ -522,6 +522,7 @@
 		5710CFE21ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5710CFDE1ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.m */; };
 		571200EC1ABB203E002B148D /* RequestConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571200EB1ABB203E002B148D /* RequestConfigurationTests.swift */; };
 		5718273B1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5718273A1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift */; };
+		571BFF731AF1948C00E91732 /* MLIBZ_260_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571BFF721AF1948C00E91732 /* MLIBZ_260_Tests.swift */; };
 		5725E6EA1AD6E29F00B506BB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5725E6E91AD6E29F00B506BB /* AppDelegate.swift */; };
 		5725E6F11AD6E29F00B506BB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5725E6EF1AD6E29F00B506BB /* Main.storyboard */; };
 		5725E6F31AD6E29F00B506BB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5725E6F21AD6E29F00B506BB /* Images.xcassets */; };
@@ -1304,6 +1305,7 @@
 		571200EA1ABB203D002B148D /* KinveyTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		571200EB1ABB203E002B148D /* RequestConfigurationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestConfigurationTests.swift; sourceTree = "<group>"; };
 		5718273A1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSMutableOrderedDictionaryTests.swift; sourceTree = "<group>"; };
+		571BFF721AF1948C00E91732 /* MLIBZ_260_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_260_Tests.swift; sourceTree = "<group>"; };
 		5725E6E51AD6E29F00B506BB /* KinveyPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinveyPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5725E6E81AD6E29F00B506BB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5725E6E91AD6E29F00B506BB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -2149,6 +2151,7 @@
 				579CFC071AC9C05100CC1EDE /* MICTests.swift */,
 				57F4256B1AD47B4C00773606 /* MICTestsObjC.m */,
 				5760B6DF1AD3159D00216DA6 /* KCSQueryTests.swift */,
+				571BFF721AF1948C00E91732 /* MLIBZ_260_Tests.swift */,
 				573654701AE1851B00E3982B /* MLIBZ_239_Tests.swift */,
 				5736546D1AE17F3B00E3982B /* MLIBZ_239_DataHelper.h */,
 				5736546E1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m */,
@@ -3758,6 +3761,7 @@
 				578834331AB8D25500078CC5 /* KinveyKitUserTests.m in Sources */,
 				5788344A1AB8D25500078CC5 /* KCSPingTests.m in Sources */,
 				578834561AB8D25500078CC5 /* KASTest.m in Sources */,
+				571BFF731AF1948C00E91732 /* MLIBZ_260_Tests.swift in Sources */,
 				578834511AB8D25500078CC5 /* DataStoreTests.m in Sources */,
 				5788344B1AB8D25500078CC5 /* LogTests.m in Sources */,
 				57F4256C1AD47B4C00773606 /* MICTestsObjC.m in Sources */,

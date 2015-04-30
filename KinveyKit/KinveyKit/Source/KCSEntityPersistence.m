@@ -167,12 +167,17 @@
 -(NSString*)keyValueForKey:(NSString*)key
                    headers:(NSDictionary*)headers
 {
+    KCSMutableOrderedDictionary* _headers = [KCSMutableOrderedDictionary dictionary];
+    if (headers[kHeaderClientAppVersion]) {
+        _headers[kHeaderClientAppVersion] = headers[kHeaderClientAppVersion];
+    }
+    if (headers[kHeaderCustomRequestProperties]) {
+        _headers[kHeaderCustomRequestProperties] = headers[kHeaderCustomRequestProperties];
+    }
+    
     NSDictionary* keyDictionary = @{
         @"key" : key,
-        @"headers" : [KCSMutableOrderedDictionary dictionaryWithDictionary:@{
-            kHeaderClientAppVersion : headers[kHeaderClientAppVersion],
-            kHeaderCustomRequestProperties : headers[kHeaderCustomRequestProperties]
-        }]
+        @"headers" : _headers
     };
     
     NSError* error = nil;
