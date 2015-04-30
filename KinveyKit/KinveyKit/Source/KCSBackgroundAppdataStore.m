@@ -281,8 +281,10 @@ return; \
     if (error) {
         completionBlock(nil, error);
     } else {
-        NSDictionary* jsonResponse = [response jsonObject];
-        if (jsonResponse) {
+        NSDictionary* jsonResponse = [response jsonObjectError:&error];
+        if (error) {
+            completionBlock(nil, error);
+        } else {
             NSArray* jsonArray = [NSArray wrapIfNotArray:jsonResponse];
             NSUInteger itemCount = jsonArray.count;
             if (itemCount == 0) {
@@ -334,8 +336,6 @@ return; \
                     }
                 }
             }
-        } else {
-            completionBlock(nil, nil);
         }
     }
 }
@@ -651,40 +651,44 @@ NSError* createCacheError(NSString* message)
 
 - (void) handleGroupResponse:(KCSNetworkResponse*)response key:(NSString*)key fields:(NSArray*)fields buildsObjects:(BOOL)buildsObjects completionBlock:(KCSGroupCompletionBlock)completionBlock
 {
-    NSObject* jsonData = [response jsonObject];
-    
-    NSArray *jsonArray = nil;
-    
-    if ([jsonData isKindOfClass:[NSArray class]]){
-        jsonArray = (NSArray *)jsonData;
+    NSError* error = nil;
+    NSObject* jsonData = [response jsonObjectError:&error];
+    if (error) {
+        completionBlock(nil, error);
     } else {
-        if ([(NSDictionary *)jsonData count] == 0){
-            jsonArray = [NSArray array];
+        NSArray *jsonArray = nil;
+        
+        if ([jsonData isKindOfClass:[NSArray class]]){
+            jsonArray = (NSArray *)jsonData;
         } else {
-            jsonArray = @[jsonData];
-        }
-    }
-    
-    if (buildsObjects == YES) {
-        NSMutableArray* newArray = [NSMutableArray arrayWithCapacity:jsonArray.count];
-        for (NSDictionary* d in jsonArray) {
-            NSMutableDictionary* newDictionary = [d mutableCopy];
-            NSArray* objectDicts = [d objectForKey:key];
-            NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:objectDicts.count];
-            for (NSDictionary* objDict in objectDicts) {
-                NSMutableDictionary* resources = [NSMutableDictionary dictionary];
-                id newobj = [self manufactureNewObject:objDict resourcesOrNil:resources];
-                [returnObjects addObject:newobj];
+            if ([(NSDictionary *)jsonData count] == 0){
+                jsonArray = [NSArray array];
+            } else {
+                jsonArray = @[jsonData];
             }
-            [newDictionary setObject:returnObjects forKey:key];
-            [newArray addObject:newDictionary];
         }
-        jsonArray = [NSArray arrayWithArray:newArray];
+        
+        if (buildsObjects == YES) {
+            NSMutableArray* newArray = [NSMutableArray arrayWithCapacity:jsonArray.count];
+            for (NSDictionary* d in jsonArray) {
+                NSMutableDictionary* newDictionary = [d mutableCopy];
+                NSArray* objectDicts = [d objectForKey:key];
+                NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:objectDicts.count];
+                for (NSDictionary* objDict in objectDicts) {
+                    NSMutableDictionary* resources = [NSMutableDictionary dictionary];
+                    id newobj = [self manufactureNewObject:objDict resourcesOrNil:resources];
+                    [returnObjects addObject:newobj];
+                }
+                [newDictionary setObject:returnObjects forKey:key];
+                [newArray addObject:newDictionary];
+            }
+            jsonArray = [NSArray arrayWithArray:newArray];
+        }
+        
+        KCSGroup* group = [[KCSGroup alloc] initWithJsonArray:jsonArray valueKey:key queriedFields:fields];
+        
+        completionBlock(group, nil);
     }
-    
-    KCSGroup* group = [[KCSGroup alloc] initWithJsonArray:jsonArray valueKey:key queriedFields:fields];
-    
-    completionBlock(group, nil);
 }
 
 - (void)doGroup:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
@@ -869,13 +873,17 @@ NSError* createCacheError(NSString* message)
             }
             completionBlock(nil, error);
         } else {
-            NSDictionary* jsonResponse = [response jsonObject];
-            NSArray* arr = nil;
-            if (jsonResponse != nil && serializedObj != nil) {
-                id newObj = [KCSObjectMapper populateExistingObject:serializedObj withNewData:jsonResponse];
-                arr = @[newObj];
+            NSDictionary* jsonResponse = [response jsonObjectError:&error];
+            if (error) {
+                completionBlock(nil, error);
+            } else {
+                NSArray* arr = nil;
+                if (jsonResponse != nil && serializedObj != nil) {
+                    id newObj = [KCSObjectMapper populateExistingObject:serializedObj withNewData:jsonResponse];
+                    arr = @[newObj];
+                }
+                completionBlock(arr, nil);
             }
-            completionBlock(arr, nil);
         }
     }
                                                         route:route
@@ -1022,7 +1030,7 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                  BOOL shouldStop = errorOrNil != nil && self.treatSingleFailureAsGroupFailure;
                  if (completedItemCount == totalItemCount || shouldStop) {
                      done = YES;
-                     completionBlock(completedObjects, topError);
+                     completionBlock(topError ? nil : completedObjects, topError);
                  }
                  
              }
@@ -1170,9 +1178,14 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
         if (error) {
             countBlock(0, error);
         } else {
-            NSDictionary *jsonResponse = [response jsonObject];
-            NSNumber* val = jsonResponse[@"count"];
-            countBlock([val unsignedLongValue], nil);
+            response.skipValidation = YES;
+            NSDictionary *jsonResponse = [response jsonObjectError:&error];
+            if (error) {
+                countBlock(0, error);
+            } else {
+                NSNumber* val = jsonResponse[@"count"];
+                countBlock([val unsignedLongValue], nil);
+            }
         }
     }
                                                         route:route

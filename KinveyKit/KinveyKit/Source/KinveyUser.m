@@ -409,9 +409,10 @@ void setActive(KCSUser* user)
 
 - (void)handleErrorResponse:(KCSNetworkResponse *)response
 {
-    NSDictionary* jsonObj = [response jsonObject];
-    if (jsonObj != nil && [jsonObj isKindOfClass:[NSDictionary class]]) {
-        NSString* errorCode = [response jsonObject][@"error"];
+    NSError* error = nil;
+    NSDictionary* jsonObj = [response jsonObjectError:&error];
+    if (!error && jsonObj != nil && [jsonObj isKindOfClass:[NSDictionary class]]) {
+        NSString* errorCode = jsonObj[@"error"];
         if (response.code == KCSDeniedError) {
             BOOL shouldLogout = NO;
             if ([errorCode isEqualToString:@"UserLockedDown"]) {

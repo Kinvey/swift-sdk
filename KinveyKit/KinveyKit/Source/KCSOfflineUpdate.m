@@ -179,16 +179,20 @@
     NSDictionary* options = [self optionsFromHeaders:headers];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (!error) {
-            [self.persitence removeUnsavedEntity:objId
-                                           route:route
-                                      collection:collection
-                                         headers:headers];
-            NSDictionary* updatedEntity = [response jsonObject];
-            [self.cache updateCacheForObject:objId withEntity:updatedEntity atRoute:route collection:collection];
-            DELEGATEMETHOD(didSaveObject:inCollection:) {
-                [_delegate didSaveObject:objId inCollection:collection];
+            NSDictionary* updatedEntity = [response jsonObjectError:&error];
+            if (error) {
+                [self addObject:entity route:route collection:collection headers:headers method:method error:error];
+            } else {
+                [self.persitence removeUnsavedEntity:objId
+                                               route:route
+                                          collection:collection
+                                             headers:headers];
+                
+                [self.cache updateCacheForObject:objId withEntity:updatedEntity atRoute:route collection:collection];
+                DELEGATEMETHOD(didSaveObject:inCollection:) {
+                    [_delegate didSaveObject:objId inCollection:collection];
+                }
             }
-            
         } else {
             [self addObject:entity route:route collection:collection headers:headers method:method error:error];
         }

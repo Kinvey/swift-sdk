@@ -63,7 +63,11 @@
 
 - (NSError*) errorObject
 {
-    NSDictionary* kcsErrorDict = [self jsonObject];
+    NSError* error = nil;
+    NSDictionary* kcsErrorDict = [self jsonObjectError:&error];
+    if (error) {
+        return error;
+    }
 
     NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithCapacity:5];
     if (kcsErrorDict) {
@@ -81,7 +85,7 @@
     
     setIfValNotNil(userInfo[kKCSExecutedBL], self.headers[kHeaderExecutedHooks]);
 
-    NSError* error = [NSError createKCSError:KCSServerErrorDomain code:self.code userInfo:userInfo];
+    error = [NSError createKCSError:KCSServerErrorDomain code:self.code userInfo:userInfo];
     return error;
 }
 
@@ -126,7 +130,11 @@
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
     NSDictionary *jsonResponse = [[parser objectWithData:self.jsonData] copy];
     NSObject* jsonObj = nil;
-    if (parser.error) {
+    if (![jsonResponse isKindOfClass:[NSDictionary class]]) {
+        if (anError) {
+            *anError = [NSError createKCSErrorWithReason:@"Kinvey requires a JSON Object as response body"];
+        }
+    } else if (parser.error) {
         KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"JSON Serialization failed: %@", parser.error);
         if ([parser.error isEqualToString:@"Broken Unicode encoding"]) {
             NSObject* reevaluatedObject = [self jsonResponseValue:anError format:NSASCIIStringEncoding];
@@ -158,6 +166,43 @@
             return @{@"debug" : [self stringValue]};
         }
     }
+}
+
+- (id)jsonObjectError:(NSError**)error
+{
+    NSString* cytpe = self.headers[kHeaderContentType];
+    cytpe = cytpe.lowercaseString;
+    
+    id jsonObj;
+    if ([cytpe isEqualToString:@"application/json"] || [cytpe hasPrefix:@"application/json;"]) {
+        jsonObj = [self jsonResponseValue:error];
+        if ([jsonObj isKindOfClass:[NSDictionary class]] && !self.skipValidation && !jsonObj[@"error"]) {
+            if (!jsonObj[KCSEntityKeyId]) {
+                if (error) {
+                    *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"KCSPersistable objects requires the `%@` property", KCSEntityKeyId]];
+                }
+            } else if (![jsonObj[KCSEntityKeyId] isKindOfClass:[NSString class]]) {
+                if (error) {
+                    *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"`%@` property needs to be string", KCSEntityKeyId]];
+                }
+            } else if (!jsonObj[KCSEntityKeyMetadata]) {
+                if (error) {
+                    *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"KCSPersistable objects requires the `%@` property", KCSEntityKeyMetadata]];
+                }
+            } else if (!jsonObj[KCSEntityKeyMetadata][KCSEntityKeyMetadataLastModificationTime]) {
+                if (error) {
+                    *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"KCSPersistable objects requires the `%@.%@` property", KCSEntityKeyMetadata, KCSEntityKeyMetadataLastModificationTime]];
+                }
+            }
+        }
+    } else {
+        jsonObj = nil;
+        if (error) {
+            *error = [NSError createKCSErrorWithReason:@"Kinvey requires `application/json` as the Content-Type of the response"];
+        }
+    }
+    
+    return jsonObj;
 }
 
 @end
