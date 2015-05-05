@@ -544,6 +544,8 @@
 		57728FE41ABF22EB0043E779 /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */; };
 		57728FE51ABF22EF0043E779 /* KCSMutableOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 57728FE11ABF22480043E779 /* KCSMutableOrderedDictionary.m */; };
 		577ACE061AEAB559006C2469 /* KCSProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577ACE051AEAB559006C2469 /* KCSProtocolTests.swift */; };
+		578076741AF7F2CF00C220C4 /* MemoryLeakTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578076731AF7F2CF00C220C4 /* MemoryLeakTests.swift */; };
+		578076771AF7FCD500C220C4 /* KCSMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 578076761AF7FCD500C220C4 /* KCSMemory.m */; };
 		578833C41AB8CF5400078CC5 /* KCS_DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 278BAB9A17B28EC40035B3D6 /* KCS_DDAbstractDatabaseLogger.m */; };
 		578833C51AB8CF5400078CC5 /* KCS_DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 278BAB9C17B28EC40035B3D6 /* KCS_DDASLLogger.m */; };
 		578833C61AB8CF5400078CC5 /* KCS_DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 278BAB9E17B28EC40035B3D6 /* KCS_DDFileLogger.m */; };
@@ -1335,6 +1337,9 @@
 		57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMutableOrderedDictionary.h; sourceTree = "<group>"; };
 		57728FE11ABF22480043E779 /* KCSMutableOrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMutableOrderedDictionary.m; sourceTree = "<group>"; };
 		577ACE051AEAB559006C2469 /* KCSProtocolTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSProtocolTests.swift; sourceTree = "<group>"; };
+		578076731AF7F2CF00C220C4 /* MemoryLeakTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryLeakTests.swift; sourceTree = "<group>"; };
+		578076751AF7FCD500C220C4 /* KCSMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMemory.h; sourceTree = "<group>"; };
+		578076761AF7FCD500C220C4 /* KCSMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMemory.m; sourceTree = "<group>"; };
 		579CFC031AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCodeSnippetTestsObjC.m; sourceTree = "<group>"; };
 		579CFC051AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSCodeSnippetTestsSwift.swift; sourceTree = "<group>"; };
 		579CFC071AC9C05100CC1EDE /* MICTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MICTests.swift; sourceTree = "<group>"; };
@@ -2172,6 +2177,9 @@
 				5743915F1AEE9AD200D55AAF /* KCSTryCatch.m */,
 				575675021AF2ACE300A7C0DB /* MLIBZ_248_Tests.swift */,
 				575675041AF2E70400A7C0DB /* MLIBZ_256_Tests.swift */,
+				578076731AF7F2CF00C220C4 /* MemoryLeakTests.swift */,
+				578076751AF7FCD500C220C4 /* KCSMemory.h */,
+				578076761AF7FCD500C220C4 /* KCSMemory.m */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -3761,6 +3769,7 @@
 				5736546F1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m in Sources */,
 				579419141AD35A28001CFF5A /* KeychainTests.m in Sources */,
 				578834321AB8D25500078CC5 /* KinveyKitKeyChainTests.m in Sources */,
+				578076771AF7FCD500C220C4 /* KCSMemory.m in Sources */,
 				5788343F1AB8D25500078CC5 /* KinveyKitNSDateTests.m in Sources */,
 				5788342B1AB8D25500078CC5 /* KinveyAppdataStoreTests.m in Sources */,
 				5788343A1AB8D25500078CC5 /* KCSMetadataTests.m in Sources */,
@@ -3814,6 +3823,7 @@
 				578834461AB8D25500078CC5 /* LogTester.m in Sources */,
 				578834441AB8D25500078CC5 /* TestUtils2.m in Sources */,
 				578834371AB8D25500078CC5 /* KCSClientConfigurationTests.m in Sources */,
+				578076741AF7F2CF00C220C4 /* MemoryLeakTests.swift in Sources */,
 				5788343B1AB8D25500078CC5 /* KCSFileStoreTests.m in Sources */,
 				573654711AE1851B00E3982B /* MLIBZ_239_Tests.swift in Sources */,
 				578834401AB8D25500078CC5 /* KinveyKitBase64Tests.m in Sources */,
