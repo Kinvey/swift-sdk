@@ -23,32 +23,16 @@
 #import "KinveyCoreInternal.h"
 #import "KCSURLProtocol.h"
 
-@interface KCSNSURLSessionOperation () <NSURLSessionDelegate, NSURLSessionDataDelegate>
+@interface KCSNSURLSessionOperation () <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
 @property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, strong) NSMutableData* downloadedData;
-@property (nonatomic, strong) NSURLSessionDataTask* dataTask;
 @property (nonatomic) long long expectedLength;
-@property (nonatomic) BOOL done;
 @property (nonatomic, strong) KCSNetworkResponse* response;
 @property (nonatomic, strong) NSError* error;
+@property (nonatomic, strong) NSURLConnection* connection;
 @end
 
 @implementation KCSNSURLSessionOperation
-
-- (NSURLSession*) session
-{
-    //    static NSURLSession* session;
-    //    static dispatch_once_t onceToken;
-    //    dispatch_once(&onceToken, ^{
-    NSURLSession* session;
-    
-    NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    config.protocolClasses = [KCSURLProtocol protocolClasses];
-    session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-    //    });
-    return session;
-}
-
 
 - (instancetype) initWithRequest:(NSMutableURLRequest*) request
 {
@@ -60,104 +44,46 @@
     return self;
 }
 
--(void)start {
-    @autoreleasepool {
-        [super start];
-        
-        self.downloadedData = [NSMutableData data];
+-(void)main
+{
+    self.connection = [NSURLConnection connectionWithRequest:self.request
+                                                    delegate:self];
+    
+    CFRunLoopRun();
+}
+
+-(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    self.error = error;
+    CFRunLoopStop(CFRunLoopGetCurrent());
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    if (response && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*) response;
         self.response = [[KCSNetworkResponse alloc] init];
-        self.dataTask = [[self session] dataTaskWithRequest:self.request];
-        [self.dataTask setTaskDescription:self.clientRequestId];
-        [self.dataTask resume];
+        self.response.code = httpResponse.statusCode;
+        self.response.headers = httpResponse.allHeaderFields;
+        
+        self.expectedLength = httpResponse.expectedContentLength;
+        self.downloadedData = [NSMutableData dataWithCapacity:MAX(0, (NSUInteger) httpResponse.expectedContentLength)];
     }
 }
 
-- (void)setFinished:(BOOL)isFinished
-{
-    [self willChangeValueForKey:@"isFinished"];
-    _done = isFinished;
-    [self didChangeValueForKey:@"isFinished"];
-}
-
-- (BOOL)isFinished
-{
-    return ([self isCancelled] ? YES : _done);
-}
-
--(BOOL)isExecuting
-{
-    return YES;
-}
-
-- (BOOL)isReady
-{
-    return YES;
-}
-
--(BOOL)isAsynchronous
-{
-    return YES;
-}
-
-- (void) complete:(NSError*) error
-{
-    self.response.jsonData = self.downloadedData;
-    self.error = error;
-    self.finished = YES;
-}
-
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask
-{
-    
-}
-
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
+-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
     [self.downloadedData appendData:data];
     if (self.progressBlock) {
         id partial = self.response.code <= 300 ? data : nil;
-        self.progressBlock(partial, self.downloadedData.length / (double) _expectedLength);
+        self.progressBlock(partial, self.downloadedData.length / (double) self.expectedLength);
     }
-
 }
 
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    NSHTTPURLResponse* hresponse = (NSHTTPURLResponse*) response;
-    //TODO strip headers?
-    KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"received response: %ld %@ (KinveyKit ID %@)", (long)hresponse.statusCode, hresponse.allHeaderFields, self.clientRequestId);
-    
-    self.response.code = hresponse.statusCode;
-    self.response.headers = hresponse.allHeaderFields;
-    
-    _expectedLength = response.expectedContentLength;
-    completionHandler(NSURLSessionResponseAllow);
+    self.response.jsonData = self.downloadedData;
+    CFRunLoopStop(CFRunLoopGetCurrent());
 }
 
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask willCacheResponse:(NSCachedURLResponse *)proposedResponse completionHandler:(void (^)(NSCachedURLResponse *))completionHandler
-{
-    completionHandler(NULL);
-}
-
-- (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error
-{
-    self.error = error;
-    [self complete:error];
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
-{
-    [self complete:error];
-}
-
-- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session
-{
-}
-
-#pragma mark - completion
-
-- (void)dealloc
-{
-    NSAssert(NO,@"No way, man");
-}
 @end
