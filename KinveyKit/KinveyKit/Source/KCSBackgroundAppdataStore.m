@@ -627,6 +627,18 @@ NSError* createCacheError(NSString* message)
 }
 
 - (void)queryWithQuery:(id)query
+  requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+   withCompletionBlock:(KCSCompletionBlock)completionBlock
+     withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    [self queryWithQuery:query
+    requestConfiguration:requestConfiguration
+     withCompletionBlock:completionBlock
+       withProgressBlock:progressBlock
+             cachePolicy:self.cachePolicy];
+}
+
+- (void)queryWithQuery:(id)query
    withCompletionBlock:(KCSCompletionBlock)completionBlock
      withProgressBlock:(KCSProgressBlock)progressBlock
            cachePolicy:(KCSCachePolicy)cachePolicy
@@ -1078,11 +1090,12 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
         NSArray* objects = object;
         if (objects.count == 0) {
             completionBlock(0, nil);
+            return;
         }
-        if ([object[0] isKindOfClass:[NSString class]]) {
+        if ([objects.firstObject isKindOfClass:[NSString class]]) {
             //input is _id array
             object = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objects];
-        } else if ([object[0] conformsToProtocol:@protocol(KCSPersistable)] == YES) {
+        } else if ([objects.firstObject conformsToProtocol:@protocol(KCSPersistable)] == YES) {
             //input is object array?
             NSMutableArray* ids = [NSMutableArray arrayWithCapacity:objects.count];
             for (NSObject<KCSPersistable>* obj in objects) {
@@ -1108,6 +1121,7 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
                   withProgressBlock:progressBlock];
              }
          } withProgressBlock:nil];
+        return;
     } else if ([object conformsToProtocol:@protocol(KCSPersistable)]) {
         //if its just a single object get the _id
         object = [object kinveyObjectId];
