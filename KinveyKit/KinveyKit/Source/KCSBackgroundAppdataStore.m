@@ -572,15 +572,36 @@ NSError* createCacheError(NSString* message)
     }
 }
 
-- (void) queryNetwork:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
+- (void) queryNetwork:(id)query
+  withCompletionBlock:(KCSCompletionBlock)completionBlock
+    withProgressBlock:(KCSProgressBlock)progressBlock
+               policy:(KCSCachePolicy)cachePolicy
+{
+    [self queryNetwork:query
+   withCompletionBlock:completionBlock
+     withProgressBlock:progressBlock
+                policy:cachePolicy
+            cacheBlock:^(KCSQuery *query, NSArray *objectsOrNil, NSError *errorOrNil)
+    {
+        if (cachePolicy != KCSCachePolicyNone) {
+            [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+        }
+    }];
+}
+
+- (void) queryNetwork:(id)query
+  withCompletionBlock:(KCSCompletionBlock)completionBlock
+    withProgressBlock:(KCSProgressBlock)progressBlock
+               policy:(KCSCachePolicy)cachePolicy
+           cacheBlock:(void(^)(KCSQuery* query, NSArray *objectsOrNil, NSError *errorOrNil))cacheBlock
 {
     [self doQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain] && cachePolicy == KCSCachePolicyNetworkFirst) {
             id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
             [self completeQuery:obj withCompletionBlock:completionBlock];
         } else {
-            if (cachePolicy != KCSCachePolicyNone) {
-                [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+            if (cacheBlock) {
+                cacheBlock(query, objectsOrNil, errorOrNil);
             }
             completionBlock(objectsOrNil, errorOrNil);
         }
@@ -616,11 +637,21 @@ NSError* createCacheError(NSString* message)
                 //TODO: this is to keep this operation alive now that this method is called on a background thread.
                 KK2(use a series of dependent operation blocks)
                 KK2(should this use silent bg updates ever? - maybe everything should have a notification that the client can ignore)
-                [self queryNetwork:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                [self queryNetwork:query
+               withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+                {
                     if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy]) {
                         completionBlock(objectsOrNil, errorOrNil);
                     }
-                } withProgressBlock:nil policy:cachePolicy];
+                }
+                 withProgressBlock:nil
+                            policy:cachePolicy
+                        cacheBlock:^(KCSQuery *query, NSArray *objectsOrNil, NSError *errorOrNil)
+                {
+                    if (cachePolicy != KCSCachePolicyNone && ![errorOrNil.domain isEqualToString:NSURLErrorDomain]) {
+                        [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+                    }
+                }];
             });
         }
     }
