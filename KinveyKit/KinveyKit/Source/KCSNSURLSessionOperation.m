@@ -31,22 +31,23 @@
 @property (nonatomic) BOOL done;
 @property (nonatomic, strong) KCSNetworkResponse* response;
 @property (nonatomic, strong) NSError* error;
+@property (nonatomic, strong) NSURLSession* session;
+@property (nonatomic, assign) dispatch_once_t sessionOnceToken;
 @end
 
 @implementation KCSNSURLSessionOperation
 
 - (NSURLSession*) session
 {
-    //    static NSURLSession* session;
-    //    static dispatch_once_t onceToken;
-    //    dispatch_once(&onceToken, ^{
-    NSURLSession* session;
-    
-    NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    config.protocolClasses = [KCSURLProtocol protocolClasses];
-    session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-    //    });
-    return session;
+    dispatch_once(&_sessionOnceToken, ^{
+        NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
+        config.protocolClasses = [KCSURLProtocol protocolClasses];
+        config.URLCache = [[NSURLCache alloc] initWithMemoryCapacity:0
+                                                        diskCapacity:0
+                                                            diskPath:nil];
+        self.session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
+    });
+    return _session;
 }
 
 
@@ -147,6 +148,8 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
+    [session finishTasksAndInvalidate];
+    
     [self complete:error];
 }
 
@@ -154,10 +157,4 @@
 {
 }
 
-#pragma mark - completion
-
-- (void)dealloc
-{
-    NSAssert(NO,@"No way, man");
-}
 @end

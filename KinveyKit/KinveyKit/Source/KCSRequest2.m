@@ -282,6 +282,17 @@ static NSOperationQueue* kcsRequestQueue;
     
     NSURL* url = [NSURL URLWithString:endpoint];
     DBAssert(url, @"Should have a valid url");
+    
+    if (![url.scheme isEqualToString:@"https"]) {
+        NSString* reason = [NSString stringWithFormat:@"Kinvey requires `https` as the protocol when setting a base URL, instead found: %@ in baseURL: %@://%@%@", url.scheme, url.scheme, url.host, url.port ? [NSString stringWithFormat:@":%@", url.port] : @""];
+        NSDictionary* userInfo = @{
+            NSLocalizedDescriptionKey : reason,
+            NSLocalizedFailureReasonErrorKey : reason
+        };
+        @throw [NSException exceptionWithName:@"KinveyException"
+                                       reason:reason
+                                     userInfo:userInfo];
+    }
 
     NSMutableURLRequest* request = [self requestForURL:url];
     request.HTTPMethod = self.method;
@@ -370,7 +381,7 @@ static NSOperationQueue* kcsRequestQueue;
             KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request (%@). Network error: %ld.", op.clientRequestId, (long)op.error.code);
             [self retryOp:op request:request];
         } else if (opIsRetryableKCSError(op)) {
-            KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request (%@). Kinvey server error: %@", op.clientRequestId, [op.response jsonObject]);
+            KCSLogNotice(KCS_LOG_CONTEXT_NETWORK, @"Retrying request (%@). Kinvey server error: %@", op.clientRequestId, [op.response jsonObjectError:nil]);
             [self retryOp:op request:request];
         } else {
             //status OK or is a non-retryable error
@@ -410,7 +421,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
     
     return [op.response isKCSError] &&
     ((op.response.code == 500 &&
-      [[op.response jsonObject][@"error"] isEqualToString:@"KinveyInternalErrorRetry"]) ||
+      [[op.response jsonObjectError:nil][@"error"] isEqualToString:@"KinveyInternalErrorRetry"]) ||
      op.response.code == 429);
 }
 
@@ -467,7 +478,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
             }
         }
         
-        KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@ [KinveyKit id: '%@' %@]", (long)op.response.code, op.response.jsonObject, op.clientRequestId, op.response.headers);
+        KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Server Error (%ld) %@ [KinveyKit id: '%@' %@]", (long)op.response.code, [op.response jsonObjectError:nil], op.clientRequestId, op.response.headers);
         [self.credentials handleErrorResponse:op.response];
         error = [op.response errorObject];
     } else {

@@ -281,8 +281,10 @@ return; \
     if (error) {
         completionBlock(nil, error);
     } else {
-        NSDictionary* jsonResponse = [response jsonObject];
-        if (jsonResponse) {
+        NSDictionary* jsonResponse = [response jsonObjectError:&error];
+        if (error) {
+            completionBlock(nil, error);
+        } else {
             NSArray* jsonArray = [NSArray wrapIfNotArray:jsonResponse];
             NSUInteger itemCount = jsonArray.count;
             if (itemCount == 0) {
@@ -334,8 +336,6 @@ return; \
                     }
                 }
             }
-        } else {
-            completionBlock(nil, nil);
         }
     }
 }
@@ -572,15 +572,36 @@ NSError* createCacheError(NSString* message)
     }
 }
 
-- (void) queryNetwork:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock policy:(KCSCachePolicy)cachePolicy
+- (void) queryNetwork:(id)query
+  withCompletionBlock:(KCSCompletionBlock)completionBlock
+    withProgressBlock:(KCSProgressBlock)progressBlock
+               policy:(KCSCachePolicy)cachePolicy
+{
+    [self queryNetwork:query
+   withCompletionBlock:completionBlock
+     withProgressBlock:progressBlock
+                policy:cachePolicy
+            cacheBlock:^(KCSQuery *query, NSArray *objectsOrNil, NSError *errorOrNil)
+    {
+        if (cachePolicy != KCSCachePolicyNone) {
+            [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+        }
+    }];
+}
+
+- (void) queryNetwork:(id)query
+  withCompletionBlock:(KCSCompletionBlock)completionBlock
+    withProgressBlock:(KCSProgressBlock)progressBlock
+               policy:(KCSCachePolicy)cachePolicy
+           cacheBlock:(void(^)(KCSQuery* query, NSArray *objectsOrNil, NSError *errorOrNil))cacheBlock
 {
     [self doQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain] && cachePolicy == KCSCachePolicyNetworkFirst) {
             id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
             [self completeQuery:obj withCompletionBlock:completionBlock];
         } else {
-            if (cachePolicy != KCSCachePolicyNone) {
-                [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+            if (cacheBlock) {
+                cacheBlock(query, objectsOrNil, errorOrNil);
             }
             completionBlock(objectsOrNil, errorOrNil);
         }
@@ -616,14 +637,36 @@ NSError* createCacheError(NSString* message)
                 //TODO: this is to keep this operation alive now that this method is called on a background thread.
                 KK2(use a series of dependent operation blocks)
                 KK2(should this use silent bg updates ever? - maybe everything should have a notification that the client can ignore)
-                [self queryNetwork:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+                [self queryNetwork:query
+               withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+                {
                     if ([self shouldIssueCallbackOnBackgroundQuery:cachePolicy]) {
                         completionBlock(objectsOrNil, errorOrNil);
                     }
-                } withProgressBlock:nil policy:cachePolicy];
+                }
+                 withProgressBlock:nil
+                            policy:cachePolicy
+                        cacheBlock:^(KCSQuery *query, NSArray *objectsOrNil, NSError *errorOrNil)
+                {
+                    if (cachePolicy != KCSCachePolicyNone && ![errorOrNil.domain isEqualToString:NSURLErrorDomain]) {
+                        [self cacheQuery:query value:objectsOrNil error:errorOrNil policy:cachePolicy];
+                    }
+                }];
             });
         }
     }
+}
+
+- (void)queryWithQuery:(id)query
+  requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+   withCompletionBlock:(KCSCompletionBlock)completionBlock
+     withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    [self queryWithQuery:query
+    requestConfiguration:requestConfiguration
+     withCompletionBlock:completionBlock
+       withProgressBlock:progressBlock
+             cachePolicy:self.cachePolicy];
 }
 
 - (void)queryWithQuery:(id)query
@@ -651,40 +694,44 @@ NSError* createCacheError(NSString* message)
 
 - (void) handleGroupResponse:(KCSNetworkResponse*)response key:(NSString*)key fields:(NSArray*)fields buildsObjects:(BOOL)buildsObjects completionBlock:(KCSGroupCompletionBlock)completionBlock
 {
-    NSObject* jsonData = [response jsonObject];
-    
-    NSArray *jsonArray = nil;
-    
-    if ([jsonData isKindOfClass:[NSArray class]]){
-        jsonArray = (NSArray *)jsonData;
+    NSError* error = nil;
+    NSObject* jsonData = [response jsonObjectError:&error];
+    if (error) {
+        completionBlock(nil, error);
     } else {
-        if ([(NSDictionary *)jsonData count] == 0){
-            jsonArray = [NSArray array];
+        NSArray *jsonArray = nil;
+        
+        if ([jsonData isKindOfClass:[NSArray class]]){
+            jsonArray = (NSArray *)jsonData;
         } else {
-            jsonArray = @[jsonData];
-        }
-    }
-    
-    if (buildsObjects == YES) {
-        NSMutableArray* newArray = [NSMutableArray arrayWithCapacity:jsonArray.count];
-        for (NSDictionary* d in jsonArray) {
-            NSMutableDictionary* newDictionary = [d mutableCopy];
-            NSArray* objectDicts = [d objectForKey:key];
-            NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:objectDicts.count];
-            for (NSDictionary* objDict in objectDicts) {
-                NSMutableDictionary* resources = [NSMutableDictionary dictionary];
-                id newobj = [self manufactureNewObject:objDict resourcesOrNil:resources];
-                [returnObjects addObject:newobj];
+            if ([(NSDictionary *)jsonData count] == 0){
+                jsonArray = [NSArray array];
+            } else {
+                jsonArray = @[jsonData];
             }
-            [newDictionary setObject:returnObjects forKey:key];
-            [newArray addObject:newDictionary];
         }
-        jsonArray = [NSArray arrayWithArray:newArray];
+        
+        if (buildsObjects == YES) {
+            NSMutableArray* newArray = [NSMutableArray arrayWithCapacity:jsonArray.count];
+            for (NSDictionary* d in jsonArray) {
+                NSMutableDictionary* newDictionary = [d mutableCopy];
+                NSArray* objectDicts = [d objectForKey:key];
+                NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:objectDicts.count];
+                for (NSDictionary* objDict in objectDicts) {
+                    NSMutableDictionary* resources = [NSMutableDictionary dictionary];
+                    id newobj = [self manufactureNewObject:objDict resourcesOrNil:resources];
+                    [returnObjects addObject:newobj];
+                }
+                [newDictionary setObject:returnObjects forKey:key];
+                [newArray addObject:newDictionary];
+            }
+            jsonArray = [NSArray arrayWithArray:newArray];
+        }
+        
+        KCSGroup* group = [[KCSGroup alloc] initWithJsonArray:jsonArray valueKey:key queriedFields:fields];
+        
+        completionBlock(group, nil);
     }
-    
-    KCSGroup* group = [[KCSGroup alloc] initWithJsonArray:jsonArray valueKey:key queriedFields:fields];
-    
-    completionBlock(group, nil);
 }
 
 - (void)doGroup:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
@@ -869,13 +916,17 @@ NSError* createCacheError(NSString* message)
             }
             completionBlock(nil, error);
         } else {
-            NSDictionary* jsonResponse = [response jsonObject];
-            NSArray* arr = nil;
-            if (jsonResponse != nil && serializedObj != nil) {
-                id newObj = [KCSObjectMapper populateExistingObject:serializedObj withNewData:jsonResponse];
-                arr = @[newObj];
+            NSDictionary* jsonResponse = [response jsonObjectError:&error];
+            if (error) {
+                completionBlock(nil, error);
+            } else {
+                NSArray* arr = nil;
+                if (jsonResponse != nil && serializedObj != nil) {
+                    id newObj = [KCSObjectMapper populateExistingObject:serializedObj withNewData:jsonResponse];
+                    arr = @[newObj];
+                }
+                completionBlock(arr, nil);
             }
-            completionBlock(arr, nil);
         }
     }
                                                         route:route
@@ -1022,7 +1073,7 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                  BOOL shouldStop = errorOrNil != nil && self.treatSingleFailureAsGroupFailure;
                  if (completedItemCount == totalItemCount || shouldStop) {
                      done = YES;
-                     completionBlock(completedObjects, topError);
+                     completionBlock(topError ? nil : completedObjects, topError);
                  }
                  
              }
@@ -1070,11 +1121,12 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
         NSArray* objects = object;
         if (objects.count == 0) {
             completionBlock(0, nil);
+            return;
         }
-        if ([object[0] isKindOfClass:[NSString class]]) {
+        if ([objects.firstObject isKindOfClass:[NSString class]]) {
             //input is _id array
             object = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objects];
-        } else if ([object[0] conformsToProtocol:@protocol(KCSPersistable)] == YES) {
+        } else if ([objects.firstObject conformsToProtocol:@protocol(KCSPersistable)] == YES) {
             //input is object array?
             NSMutableArray* ids = [NSMutableArray arrayWithCapacity:objects.count];
             for (NSObject<KCSPersistable>* obj in objects) {
@@ -1100,6 +1152,7 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
                   withProgressBlock:progressBlock];
              }
          } withProgressBlock:nil];
+        return;
     } else if ([object conformsToProtocol:@protocol(KCSPersistable)]) {
         //if its just a single object get the _id
         object = [object kinveyObjectId];
@@ -1170,9 +1223,14 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
         if (error) {
             countBlock(0, error);
         } else {
-            NSDictionary *jsonResponse = [response jsonObject];
-            NSNumber* val = jsonResponse[@"count"];
-            countBlock([val unsignedLongValue], nil);
+            response.skipValidation = YES;
+            NSDictionary *jsonResponse = [response jsonObjectError:&error];
+            if (error) {
+                countBlock(0, error);
+            } else {
+                NSNumber* val = jsonResponse[@"count"];
+                countBlock([val unsignedLongValue], nil);
+            }
         }
     }
                                                         route:route

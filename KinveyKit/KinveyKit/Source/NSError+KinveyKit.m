@@ -41,6 +41,17 @@
     return [NSError errorWithDomain:domain code:code userInfo:userInfo];
 }
 
++(instancetype)createKCSErrorWithReason:(NSString *)reason
+{
+    NSDictionary* userInfo = @{
+        NSLocalizedDescriptionKey : reason,
+        NSLocalizedFailureReasonErrorKey : reason
+    };
+    return [NSError createKCSError:@"KinveyError"
+                              code:406
+                          userInfo:userInfo];
+}
+
 - (instancetype) updateWithInfo:(NSDictionary*)extraInfo
 {
     NSMutableDictionary* info = [self.userInfo mutableCopy];
