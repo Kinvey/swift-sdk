@@ -20,6 +20,8 @@ class MLIBZ_256_Tests: XCTestCase {
     
     class MockURLProtocol: NSURLProtocol {
         
+        static var urlError: NSError!
+        
         override class func canInitWithRequest(request: NSURLRequest) -> Bool {
             return request.URL!.absoluteString! != "https://baas.kinvey.com/user/\(appId)/login"
         }
@@ -31,16 +33,8 @@ class MLIBZ_256_Tests: XCTestCase {
         override func startLoading() {
             client!.URLProtocol(
                 self,
-                didFailWithError: NSError(
-                    domain: NSURLErrorDomain,
-                    code: Int(CFNetworkErrors.CFURLErrorTimedOut.rawValue),
-                    userInfo: [
-                        NSLocalizedDescriptionKey : NSURLErrorDomain,
-                        NSLocalizedFailureReasonErrorKey : NSURLErrorDomain
-                    ]
-                )
+                didFailWithError: MockURLProtocol.urlError
             )
-            client!.URLProtocolDidFinishLoading(self)
         }
         
     }
@@ -53,10 +47,7 @@ class MLIBZ_256_Tests: XCTestCase {
         KCSClient.sharedClient().initializeKinveyServiceForAppKey(
             clazz.appId,
             withAppSecret: clazz.appSecret,
-            usingOptions: [
-                KCSStoreKeyCachePolicy : KCSCachePolicy.LocalFirst.rawValue,
-                KCSStoreKeyOfflineUpdateEnabled : true
-            ]
+            usingOptions: nil
         )
         
         class OfflineSaveDelegate: NSObject, KCSOfflineUpdateDelegate {
@@ -95,18 +86,18 @@ class MLIBZ_256_Tests: XCTestCase {
         class Object : NSObject, KCSPersistable {
             
             dynamic var objectId: String?
-            dynamic var hey: String?
+            dynamic var policyId: String?
             
             private override func hostToKinveyPropertyMapping() -> [NSObject : AnyObject]! {
                 return [
                     "objectId" : KCSEntityKeyId,
-                    "hey" : "hey"
+                    "policyId" : "policyId"
                 ]
             }
             
         }
         
-        let collection = KCSCollection(fromString: "MyCollection", ofClass: NSMutableDictionary.self)
+        let collection = KCSCollection(fromString: "vehicles", ofClass: NSMutableDictionary.self)
         store = KCSCachedStore(
             collection: collection,
             options: [
@@ -116,7 +107,7 @@ class MLIBZ_256_Tests: XCTestCase {
         )
         
         var obj = Object()
-        obj.hey = "there"
+        obj.policyId = "5"
         
         store.saveObject(
             obj,
@@ -135,7 +126,7 @@ class MLIBZ_256_Tests: XCTestCase {
         
         //Caching the results
         store.queryWithQuery(
-            KCSQuery(),
+            KCSQuery(onField: "policyId", withExactMatchForValue: "5"),
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
@@ -144,39 +135,42 @@ class MLIBZ_256_Tests: XCTestCase {
                 
                 expectationQuery.fulfill()
             },
-            withProgressBlock: nil
+            withProgressBlock: nil,
+            cachePolicy: KCSCachePolicy.NetworkFirst
         )
         
-        waitForExpectationsWithTimeout(60, handler: nil)
+        waitForExpectationsWithTimeout(90, handler: nil)
         
         KCSURLProtocol.registerClass(MockURLProtocol.self)
     }
     
     override func tearDown() {
         KCSURLProtocol.unregisterClass(MockURLProtocol.self)
-        
-        super.tearDown()
     }
     
-    func test() {
+    func runTest() {
         let expectationQuery1 = expectationWithDescription("query1")
         
+        var firstTime = true;
         store.queryWithQuery(
-            KCSQuery(),
+            KCSQuery(onField: "policyId", withExactMatchForValue: "5"),
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
-                XCTAssertNil(error)
-                XCTAssertNotNil(results)
-                
-                if (self.resultsCache != nil) {
-                    XCTAssertEqual(results.count, self.resultsCache!.count)
-                    XCTAssertEqual(results as! [NSObject], self.resultsCache as! [NSObject])
-                }
-                
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(60 * NSEC_PER_SEC)), dispatch_get_main_queue(), { () -> Void in
+                if (firstTime) {
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(results)
+                    
+                    if (results != nil) {
+                        XCTAssertEqual(results.count, self.resultsCache!.count)
+                        XCTAssertEqual(results as! [NSObject], self.resultsCache as! [NSObject])
+                    }
+                    
+                    firstTime = false
+                } else {
                     expectationQuery1.fulfill()
-                })
+                }
             },
-            withProgressBlock: nil
+            withProgressBlock: nil,
+            cachePolicy: KCSCachePolicy.Both
         )
         
         waitForExpectationsWithTimeout(90, handler: nil)
@@ -184,22 +178,89 @@ class MLIBZ_256_Tests: XCTestCase {
         let expectationQuery2 = expectationWithDescription("query2")
         
         store.queryWithQuery(
-            KCSQuery(),
+            KCSQuery(onField: "policyId", withExactMatchForValue: "5"),
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
                 
-                if (self.resultsCache != nil) {
+                if (results != nil) {
                     XCTAssertEqual(results.count, self.resultsCache!.count)
                     XCTAssertEqual(results as! [NSObject], self.resultsCache as! [NSObject])
                 }
                 
                 expectationQuery2.fulfill()
             },
-            withProgressBlock: nil
+            withProgressBlock: nil,
+            cachePolicy: KCSCachePolicy.LocalOnly
         )
         
         waitForExpectationsWithTimeout(60, handler: nil)
+    }
+    
+    func testTimedOut() {
+        MockURLProtocol.urlError = NSError(
+            domain: NSURLErrorDomain,
+            code: NSURLErrorTimedOut,
+            userInfo: [
+                NSLocalizedDescriptionKey : "The connection timed out."
+            ]
+        )
+        runTest()
+    }
+    
+    func testCannotFindHost() {
+        MockURLProtocol.urlError = NSError(
+            domain: NSURLErrorDomain,
+            code: NSURLErrorCannotFindHost,
+            userInfo: [
+                NSLocalizedDescriptionKey : "A server with the specified hostname could not be found."
+            ]
+        )
+        runTest()
+    }
+    
+    func testCannotConnectToHost() {
+        MockURLProtocol.urlError = NSError(
+            domain: NSURLErrorDomain,
+            code: NSURLErrorCannotConnectToHost,
+            userInfo: [
+                NSLocalizedDescriptionKey : "The connection failed because a connection cannot be made to the host."
+            ]
+        )
+        runTest()
+    }
+    
+    func testNetworkConnectionLost() {
+        MockURLProtocol.urlError = NSError(
+            domain: NSURLErrorDomain,
+            code: NSURLErrorNetworkConnectionLost,
+            userInfo: [
+                NSLocalizedDescriptionKey : "The connection failed because the network connection was lost."
+            ]
+        )
+        runTest()
+    }
+
+    func testDNSLookupFailed() {
+        MockURLProtocol.urlError = NSError(
+            domain: NSURLErrorDomain,
+            code: NSURLErrorDNSLookupFailed,
+            userInfo: [
+                NSLocalizedDescriptionKey : "The connection failed because the DNS lookup failed."
+            ]
+        )
+        runTest()
+    }
+    
+    func testNotConnectedToInternet() {
+        MockURLProtocol.urlError = NSError(
+            domain: NSURLErrorDomain,
+            code: NSURLErrorNotConnectedToInternet,
+            userInfo: [
+                NSLocalizedDescriptionKey : "The connection failed because the device is not connected to the internet."
+            ]
+        )
+        runTest()
     }
 
 }
