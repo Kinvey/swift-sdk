@@ -249,15 +249,19 @@ KCSFile* fileFromResults(NSDictionary* results)
         if (error != nil){
             completionBlock(nil, error);
         } else {
-            NSDictionary* results = [response jsonObject];
-            NSString* url = results[@"_uploadURL"];
-            if (url) {
-                KCSFile* uploadFile = fileFromResults(results);
-                NSDictionary* requiredHeaders = results[kRequiredHeaders];
-                [self _uploadData:data toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
-            } else {
-                NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:response.requestId];
+            NSDictionary* results = [response jsonObjectError:&error];
+            if (error) {
                 completionBlock(nil, error);
+            } else {
+                NSString* url = results[@"_uploadURL"];
+                if (url) {
+                    KCSFile* uploadFile = fileFromResults(results);
+                    NSDictionary* requiredHeaders = results[kRequiredHeaders];
+                    [self _uploadData:data toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
+                } else {
+                    NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:response.requestId];
+                    completionBlock(nil, error);
+                }
             }
         }
     } apiMethod:KCSRequestMethodString];
@@ -299,17 +303,21 @@ KCSFile* fileFromResults(NSDictionary* results)
         if (error != nil){
             completionBlock(nil, error);
         } else {
-            NSDictionary* results = [response jsonObject];
-            NSString* url = results[@"_uploadURL"];
-            if (url) {
-                KCSFile* uploadFile = fileFromResults(results);
-                uploadFile.localURL = fileURL;
-                NSDictionary* requiredHeaders = results[kRequiredHeaders];
-                
-                [self _uploadFile:fileURL toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
-            } else {
-                NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:response.requestId];
+            NSDictionary* results = [response jsonObjectError:&error];
+            if (error) {
                 completionBlock(nil, error);
+            } else {
+                NSString* url = results[@"_uploadURL"];
+                if (url) {
+                    KCSFile* uploadFile = fileFromResults(results);
+                    uploadFile.localURL = fileURL;
+                    NSDictionary* requiredHeaders = results[kRequiredHeaders];
+                    
+                    [self _uploadFile:fileURL toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
+                } else {
+                    NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:response.requestId];
+                    completionBlock(nil, error);
+                }
             }
         }
     } apiMethod:KCSRequestMethodString];
@@ -952,8 +960,13 @@ KCSFile* fileFromResults(NSDictionary* results)
                                        sourceError:error];
             DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(0, error));
         } else {
-            NSDictionary* results = [response jsonObject];
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock([results[@"count"] unsignedLongValue], nil));
+            response.skipValidation = YES;
+            NSDictionary* results = [response jsonObjectError:&error];
+            if (error) {
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(0, error));
+            } else {
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock([results[@"count"] unsignedLongValue], nil));
+            }
         }
     }
                                                         route:KCSRESTRouteBlob

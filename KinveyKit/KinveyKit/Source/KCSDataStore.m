@@ -74,11 +74,15 @@
         if (error) {
             DISPATCH_ASYNC_MAIN_QUEUE(completion(nil, error));
         } else {
-            NSArray* elements = [response jsonObject];
-            if ([elements count] == kKCSMaxReturnSize) {
-                KCSLogForcedWarn(KCS_LOG_CONTEXT_DATA, @"Results returned exactly %d items. This is the server limit, so there may more entities that match the query. Try again with a more specific query or use limit and skip modifiers to get all the data.", kKCSMaxReturnSize);
+            NSArray* elements = [response jsonObjectError:&error];
+            if (error) {
+                DISPATCH_ASYNC_MAIN_QUEUE(completion(nil, error));
+            } else {
+                if ([elements count] == kKCSMaxReturnSize) {
+                    KCSLogForcedWarn(KCS_LOG_CONTEXT_DATA, @"Results returned exactly %d items. This is the server limit, so there may more entities that match the query. Try again with a more specific query or use limit and skip modifiers to get all the data.", kKCSMaxReturnSize);
+                }
+                DISPATCH_ASYNC_MAIN_QUEUE(completion(elements, nil));
             }
-            DISPATCH_ASYNC_MAIN_QUEUE(completion(elements, nil));
         }
     }
                                                         route:KCSRESTRouteAppdata
@@ -104,13 +108,20 @@
 #pragma mark - Deletion
 - (id<KCSNetworkOperation>) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
 {
-    if (!_id) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"_id is nil" userInfo:nil] raise];
+    if (!_id) {
+        NSError* error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"%@ is nil", KCSEntityKeyId]];
+        DISPATCH_ASYNC_MAIN_QUEUE(completion(0, error));
+        return nil;
+    }
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSUInteger count = 0;
         if (!error) {
-            NSDictionary* responseDict = [response jsonObject];
-            count = [responseDict[@"count"] unsignedIntegerValue];
+            response.skipValidation = YES;
+            NSDictionary* responseDict = [response jsonObjectError:&error];
+            if (!error) {
+                count = [responseDict[@"count"] unsignedIntegerValue];
+            }
         }
         DISPATCH_ASYNC_MAIN_QUEUE(completion(count, error));
     }
@@ -130,8 +141,11 @@
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSUInteger count = 0;
         if (!error) {
-            NSDictionary* responseDict = [response jsonObject];
-            count = [responseDict[@"count"] unsignedIntegerValue];
+            response.skipValidation = YES;
+            NSDictionary* responseDict = [response jsonObjectError:&error];
+            if (!error) {
+                count = [responseDict[@"count"] unsignedIntegerValue];
+            }
         }
         DISPATCH_ASYNC_MAIN_QUEUE(completion(count, error));
     }

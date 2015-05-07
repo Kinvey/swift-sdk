@@ -97,13 +97,16 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         if (error) {
             KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
             [self setActive:nil];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(nil, error);
-            });
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         } else {
             // Ok, we're really auth'd
-            NSDictionary* userBody = [response jsonObject];
-            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+            NSError* error = nil;
+            NSDictionary* userBody = [response jsonObjectError:&error];
+            if (error) {
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+            } else {
+                [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+            }
         }
     }
                                                         route:KCSRESTRouteUser
@@ -120,13 +123,15 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         if (error) {
             KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
             [self setActive:nil];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(nil, error);
-            });
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         } else {
             // Ok, we're really auth'd
-            NSDictionary* userBody = [response jsonObject];
-            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+            NSDictionary* userBody = [response jsonObjectError:&error];
+            if (error) {
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+            } else {
+                [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+            }
         }
     }
                                                         route:KCSRESTRouteUser
@@ -148,13 +153,15 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         if (error) {
             KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
             [self setActive:nil];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(nil, error);
-            });
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         } else {
             // Ok, we're really auth'd
-            NSDictionary* userBody = [response jsonObject];
-            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+            NSDictionary* userBody = [response jsonObjectError:&error];
+            if (error) {
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+            } else {
+                [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+            }
         }
     }
                                                         route:KCSRESTRouteUser
@@ -180,19 +187,21 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             } else {
                 KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
                 [self setActive:nil];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completionBlock(nil, error);
-                });
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
             }
         } else {
             // Ok, we're really auth'd
-            NSMutableDictionary* userBody = [NSMutableDictionary dictionaryWithDictionary:[response jsonObject]];
-            if (provider == KCSSocialIDKinvey) {
-                NSMutableDictionary* kinveyAuth = [NSMutableDictionary dictionaryWithDictionary:userBody[@"_socialIdentity"][@"kinveyAuth"]];
-                kinveyAuth[kKCSMICRedirectURIKey] = accessDictionary[kKCSMICRedirectURIKey];
-                userBody[@"_socialIdentity"][@"kinveyAuth"] = kinveyAuth;
+            NSMutableDictionary* userBody = [NSMutableDictionary dictionaryWithDictionary:[response jsonObjectError:&error]];
+            if (error) {
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+            } else {
+                if (provider == KCSSocialIDKinvey) {
+                    NSMutableDictionary* kinveyAuth = [NSMutableDictionary dictionaryWithDictionary:userBody[@"_socialIdentity"][@"kinveyAuth"]];
+                    kinveyAuth[kKCSMICRedirectURIKey] = accessDictionary[kKCSMICRedirectURIKey];
+                    userBody[@"_socialIdentity"][@"kinveyAuth"] = kinveyAuth;
+                }
+                [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
             }
-            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
         }
     }
                                                         route:KCSRESTRouteUser
@@ -805,8 +814,12 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                 completionBlock(nil, error);
             } else {
                 // Ok, we're really auth'd
-                NSDictionary* userBody = [response jsonObject];
-                [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+                NSDictionary* userBody = [response jsonObjectError:&error];
+                if (error) {
+                    completionBlock(nil, error);
+                } else {
+                    [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+                }
             }
             
         }
@@ -841,9 +854,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             KCSLogError(KCS_LOG_CONTEXT_USER, @"Error Updating user: %@", error);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(user, error);
-            });
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
         } else {
             if ([KCSUser activeUser] != user) { // still have to check here because active user can be reset while loading request
                 KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KinveyKit Active User!");
@@ -853,8 +864,12 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                     completionBlock(user, userError);
                 });
             } else {
-                NSDictionary* userBody = [response jsonObject];
-                [self setupActiveUser:userBody completion:completionBlock checkAuth:NO];
+                NSDictionary* userBody = [response jsonObjectError:&error];
+                if (error) {
+                    DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
+                } else {
+                    [self setupActiveUser:userBody completion:completionBlock checkAuth:NO];
+                }
             }
         }
     }
@@ -889,12 +904,14 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             KCSLogError(KCS_LOG_CONTEXT_USER, @"Error Updating user: %@", error);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(user, error);
-            });
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
         } else {
-            NSDictionary* userBody = [response jsonObject];
-            [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+            NSDictionary* userBody = [response jsonObjectError:&error];
+            if (error) {
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
+            } else {
+                [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
+            }
         }
     }
                                                         route:KCSRESTRouteUser
@@ -1021,8 +1038,12 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
         if (!error) {
-            NSDictionary* dict = [response jsonObject];
-            completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error);
+            NSDictionary* dict = [response jsonObjectError:&error];
+            if (error) {
+                completionBlock(potentialUsername, NO, error);
+            } else {
+                completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error);
+            }
         } else {
             completionBlock(potentialUsername, NO, error);
         }
