@@ -9,6 +9,7 @@
 #import "KCS_FMDatabase.h"
 #import "KCS_FMDatabaseAdditions.h"
 #import "TargetConditionals.h"
+#import "KCSLogManager.h"
 
 @interface KCS_FMDatabase (PrivateStuff)
 - (KCS_FMResultSet *)executeQuery:(NSString *)sql withArgumentsInArray:(NSArray*)arrayArgs orDictionary:(NSDictionary *)dictionaryArgs orVAList:(va_list)args;
@@ -160,7 +161,7 @@ return ret;
 - (void)setApplicationIDString:(NSString*)s {
     
     if ([s length] != 4) {
-        NSLog(@"setApplicationIDString: string passed is not exactly 4 chars long. (was %ld)", [s length]);
+        KCSLogDebug(@"setApplicationIDString: string passed is not exactly 4 chars long. (was %ld)", [s length]);
     }
     
     [self setApplicationID:NSHFSTypeCodeFromFileType([NSString stringWithFormat:@"'%@'", s])];
