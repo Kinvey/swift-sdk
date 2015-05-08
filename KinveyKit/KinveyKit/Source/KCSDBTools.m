@@ -22,6 +22,8 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
+#define KCSMongoTemporaryObjectId @"temp_"
+
 static uint counter;
 
 void md5(NSString* s, unsigned char* result)
@@ -39,6 +41,11 @@ void md5(NSString* s, unsigned char* result)
     counter = arc4random();
 }
 
++(BOOL)isKCSMongoObjectId:(NSString*)objectId
+{
+    return [objectId hasPrefix:KCSMongoTemporaryObjectId];
+}
+
 #if TARGET_OS_IPHONE
 
 + (NSString*) KCSMongoObjectId
@@ -48,11 +55,12 @@ void md5(NSString* s, unsigned char* result)
     unsigned char hostbytes[16];
     md5(hostName, hostbytes);
     int pid = getpid();
-#warning MAKE THIS ATOMIC
-    counter = (counter + 1) % 16777216;
+    @synchronized (self) {
+        counter = (counter + 1) % 16777216;
+    }
     NSString* s = [NSString stringWithFormat:
-                   @"%08lx%02x%02x%02x%04x%06x",
-                   timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
+                   @"%@%08lx%02x%02x%02x%04x%06x",
+                   KCSMongoTemporaryObjectId, timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
                    pid, counter];
     return s;
 }
@@ -68,11 +76,12 @@ void md5(NSString* s, unsigned char* result)
     int pid = getpid();
     counter = (counter + 1) % 16777216;
     NSString* s = [NSString stringWithFormat:
-                   @"%08x%02x%02x%02x%04x%06x",
-                   timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
+                   @"%@%08x%02x%02x%02x%04x%06x",
+                   KCSMongoTemporaryObjectId, timestamp, hostbytes[0], hostbytes[1], hostbytes[2],
                    pid, counter];
     return s;
 }
+
 #endif
 
 @end
