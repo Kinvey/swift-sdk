@@ -25,6 +25,8 @@
 
 #import "KCSEntityPersistence.h"
 
+#import "KCSDBTools.h"
+
 #define DELEGATEMETHOD(m) if (_delegate != nil && [_delegate respondsToSelector:@selector(m)])
 
 @interface KCSOfflineUpdate ()
@@ -205,7 +207,7 @@
         request.path = @[collection];
     } else {
         if (isPost) {
-            method = KCSRESTMethodPUT;
+            method = [KCSDBTools isKCSMongoObjectId:objId] ? KCSRESTMethodPOST : KCSRESTMethodPUT;
         }
         request.path = @[collection, objId];
     }
