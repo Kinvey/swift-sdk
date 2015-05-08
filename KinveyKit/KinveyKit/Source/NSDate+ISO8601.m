@@ -87,7 +87,7 @@
     
     (void) strptime_l([string cStringUsingEncoding:NSUTF8StringEncoding], "%Y-%m-%dT%H:%M:%S%z", &tm, NULL);
     time_t t = mktime(&tm);
-    NSLog(@"NSDate is %@", [NSDate dateWithTimeIntervalSince1970:t]);
+    KCSLogDebug(@"NSDate is %@", [NSDate dateWithTimeIntervalSince1970:t]);
     NSDate* date = nil;
     if (t >= 0) {
         date = [NSDate dateWithTimeIntervalSince1970:t + [[NSTimeZone localTimeZone] secondsFromGMT]];
