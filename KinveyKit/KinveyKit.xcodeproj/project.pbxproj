@@ -713,6 +713,8 @@
 		57ED03E31ABC63F300D22BBF /* KCSRequestConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 57ED03DF1ABC63F300D22BBF /* KCSRequestConfiguration.m */; };
 		57F4256C1AD47B4C00773606 /* MICTestsObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F4256B1AD47B4C00773606 /* MICTestsObjC.m */; };
 		57F556841AFC26B8008CB244 /* KCSLogTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F556831AFC26B8008CB244 /* KCSLogTests.m */; };
+		57F556881AFD6044008CB244 /* MLIBZ_290_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F556871AFD6044008CB244 /* MLIBZ_290_Tests.swift */; };
+		57F5568A1AFD62C3008CB244 /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F556891AFD62C3008CB244 /* City.swift */; };
 		57FF3D8F1AB9BD4700128BC7 /* KinveyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D32A612114716F5200F77A3F /* KinveyKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57FF3D901AB9BD4700128BC7 /* KinveyBlocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EA226F148543D600666259 /* KinveyBlocks.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57FF3D911AB9BD4700128BC7 /* KinveyErrorCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D3F340FB14BD2A8100DB6C37 /* KinveyErrorCodes.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1355,6 +1357,8 @@
 		57ED03DF1ABC63F300D22BBF /* KCSRequestConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRequestConfiguration.m; sourceTree = "<group>"; };
 		57F4256B1AD47B4C00773606 /* MICTestsObjC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MICTestsObjC.m; sourceTree = "<group>"; };
 		57F556831AFC26B8008CB244 /* KCSLogTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLogTests.m; sourceTree = "<group>"; };
+		57F556871AFD6044008CB244 /* MLIBZ_290_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_290_Tests.swift; sourceTree = "<group>"; };
+		57F556891AFD62C3008CB244 /* City.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = City.swift; sourceTree = "<group>"; };
 		D306B58D154F847C00A52CB8 /* KCSStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSStore.h; sourceTree = "<group>"; };
 		D306B5A1155095A800A52CB8 /* KinveyAppdataStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyAppdataStoreTests.h; sourceTree = "<group>"; };
 		D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyAppdataStoreTests.m; sourceTree = "<group>"; };
@@ -2183,6 +2187,8 @@
 				578076751AF7FCD500C220C4 /* KCSMemory.h */,
 				578076761AF7FCD500C220C4 /* KCSMemory.m */,
 				57F556831AFC26B8008CB244 /* KCSLogTests.m */,
+				57F556871AFD6044008CB244 /* MLIBZ_290_Tests.swift */,
+				57F556891AFD62C3008CB244 /* City.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -3794,6 +3800,7 @@
 				578834561AB8D25500078CC5 /* KASTest.m in Sources */,
 				571BFF731AF1948C00E91732 /* MLIBZ_260_Tests.swift in Sources */,
 				578834511AB8D25500078CC5 /* DataStoreTests.m in Sources */,
+				57F5568A1AFD62C3008CB244 /* City.swift in Sources */,
 				5788344B1AB8D25500078CC5 /* LogTests.m in Sources */,
 				57F4256C1AD47B4C00773606 /* MICTestsObjC.m in Sources */,
 				578834431AB8D25500078CC5 /* KCSClientShimTests.m in Sources */,
@@ -3812,6 +3819,7 @@
 				578834541AB8D25500078CC5 /* DataModelTests.m in Sources */,
 				575675051AF2E70400A7C0DB /* MLIBZ_256_Tests.swift in Sources */,
 				578834521AB8D25500078CC5 /* EntityCacheTests.m in Sources */,
+				57F556881AFD6044008CB244 /* MLIBZ_290_Tests.swift in Sources */,
 				5788344E1AB8D25500078CC5 /* NetworkObserverTest.m in Sources */,
 				577ACE061AEAB559006C2469 /* KCSProtocolTests.swift in Sources */,
 				5788342E1AB8D25500078CC5 /* KCSLinkedAppdataStoreTests.m in Sources */,
