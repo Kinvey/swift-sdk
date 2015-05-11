@@ -143,8 +143,16 @@
     NSDictionary* headers = saveInfo[@"headers"];
     
     if (shouldSave == YES) {
-        NSDictionary* entity = saveInfo[@"obj"];
-        [self save:objId entity:entity route:route collection:collection headers:headers method:method];
+        NSMutableDictionary* entity = [NSMutableDictionary dictionaryWithDictionary:saveInfo[@"obj"]];
+        if ([KCSDBTools isKCSMongoObjectId:objId]) {
+            [entity removeObjectForKey:KCSEntityKeyId];
+        }
+        [self save:objId
+            entity:entity
+             route:route
+        collection:collection
+           headers:headers
+            method:method];
     } else {
         [self.persitence removeUnsavedEntity:objId
                                        route:route
@@ -203,11 +211,12 @@
                                                       options:options
                                                   credentials:credentials];
     BOOL isPost = [method isEqualToString:KCSRESTMethodPOST];
-    if (isPost && objId == nil) {
+    BOOL isTempObjId = [KCSDBTools isKCSMongoObjectId:objId];
+    if (isPost && (objId == nil || isTempObjId)) {
         request.path = @[collection];
     } else {
         if (isPost) {
-            method = [KCSDBTools isKCSMongoObjectId:objId] ? KCSRESTMethodPOST : KCSRESTMethodPUT;
+            method = KCSRESTMethodPUT;
         }
         request.path = @[collection, objId];
     }
