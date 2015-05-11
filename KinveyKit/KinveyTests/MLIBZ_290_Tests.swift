@@ -51,32 +51,66 @@ class MLIBZ_290_Tests: XCTestCase {
                 return true
             }
             
+            private func didSaveObject(objectId: String!, inCollection collectionName: String!) {
+                expectationLogin.fulfill()
+            }
+            
         }
         
         let delegate = OfflineUpdateDelegate()
         KCSClient.sharedClient().setOfflineDelegate(delegate)
         
-        let collection = KCSCollection(fromString: "city", ofClass: City.self)
-        let store = KCSLinkedAppdataStore(
-            collection: collection,
-            options: [
-                KCSStoreKeyOfflineUpdateEnabled : true
-            ]
-        )
+        let store = KCSCachedStore.storeWithOptions([
+            KCSStoreKeyCollectionName : "city",
+            KCSStoreKeyCollectionTemplateClass : City.self,
+            KCSStoreKeyCachePolicy : KCSCachePolicy.None.rawValue,
+            KCSStoreKeyOfflineUpdateEnabled : true
+        ])
         
         class MockURLProtocol : NSURLProtocol {
             
             static var putRequests: [NSURLRequest] = []
+            static var postRequests: [NSURLRequest] = []
             
             override class func canInitWithRequest(request: NSURLRequest) -> Bool {
                 NSLog("%@ %@", request.HTTPMethod!, request.URL!)
                 if request.HTTPMethod == "PUT" {
                     putRequests.append(request)
+                } else if request.HTTPMethod == "POST" {
+                    postRequests.append(request)
                 }
                 return request.HTTPMethod == "POST"
             }
             
             override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                if (request.URL!.lastPathComponent!.hasPrefix("temp_")) {
+                    let mutableRequest = request.mutableCopy() as! NSMutableURLRequest
+                    if let stream = request.HTTPBodyStream {
+                        stream.open()
+                        
+                        let data = NSMutableData()
+                        var buffer = [UInt8](count: 4096, repeatedValue: 0)
+                        var read = 0
+                        while (stream.hasBytesAvailable) {
+                            read = stream.read(&buffer, maxLength: 4096)
+                            data.appendBytes(buffer, length: read)
+                        }
+                        
+                        stream.close()
+                        
+                        mutableRequest.HTTPBodyStream = nil
+                        mutableRequest.HTTPBody = data
+                        
+                        let object = NSJSONSerialization.JSONObjectWithData(
+                            data,
+                            options: NSJSONReadingOptions.allZeros,
+                            error: nil
+                        ) as! NSDictionary
+                        
+                        XCTAssertNil(object[KCSEntityKeyId])
+                    }
+                    return mutableRequest
+                }
                 return request
             }
             
@@ -101,7 +135,7 @@ class MLIBZ_290_Tests: XCTestCase {
             City(name: "Boston"),
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 dispatch_after(
-                    dispatch_time(DISPATCH_TIME_NOW, Int64(30 * NSEC_PER_SEC)),
+                    dispatch_time(DISPATCH_TIME_NOW, Int64(60 * NSEC_PER_SEC)),
                     dispatch_get_main_queue(),
                     { () -> Void in
                         expectationSave.fulfill()
@@ -111,11 +145,12 @@ class MLIBZ_290_Tests: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(90, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(3600, handler: { (error: NSError!) -> Void in
             KCSURLProtocol.unregisterClass(MockURLProtocol.self)
         })
         
         XCTAssertEqual(MockURLProtocol.putRequests.count, 0)
+        XCTAssertGreaterThan(MockURLProtocol.postRequests.count, 10)
     }
 
 }
