@@ -39,19 +39,19 @@ class MLIBZ_290_Tests: XCTestCase {
         
         class OfflineUpdateDelegate : NSObject, KCSOfflineUpdateDelegate {
             
-            private func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
+            func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
                 return true
             }
             
-            private func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
+            func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
                 return true
             }
             
-            private func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
+            func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
                 return true
             }
             
-            private func didSaveObject(objectId: String!, inCollection collectionName: String!) {
+            func didSaveObject(objectId: String!, inCollection collectionName: String!) {
                 expectationLogin.fulfill()
             }
             
