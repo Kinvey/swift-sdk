@@ -216,23 +216,27 @@ enum {
     @([[KCSLogManager kCacheChannel] channelID]) : @(traceIsEnabled)
     };
     
-    int newlevel = 0;
-    if (networkIsEnabled) {
-        newlevel = MAX(newlevel, 4);
+    static dispatch_once_t onceToken;
+    if (onceToken) {
+        int newlevel = 0;
+        if (networkIsEnabled) {
+            newlevel = MAX(newlevel, 4);
+        }
+        if (debugIsEnabled) {
+            newlevel = MAX(newlevel, 5);
+        }
+        if (traceIsEnabled) {
+            newlevel = MAX(newlevel, 5);
+        }
+        if (warningIsEnabled) {
+            newlevel = MAX(newlevel, 2);
+        }
+        if (errorIsEnabled) {
+            newlevel = MAX(newlevel, 1);
+        }
+        [[KCSClient sharedClient].configuration setLoglevel:newlevel];
     }
-    if (debugIsEnabled) {
-        newlevel = MAX(newlevel, 5);
-    }
-    if (traceIsEnabled) {
-        newlevel = MAX(newlevel, 5);
-    }
-    if (warningIsEnabled) {
-        newlevel = MAX(newlevel, 2);
-    }
-    if (errorIsEnabled) {
-        newlevel = MAX(newlevel, 1);
-    }
-    [[KCSClient sharedClient].configuration setLoglevel:newlevel];
+    dispatch_once(&onceToken, ^{});
 }
 
 - (BOOL)networkLogging
