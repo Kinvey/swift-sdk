@@ -65,13 +65,6 @@
 
 @implementation KCSClient
 
-+(void)initialize
-{
-    [super initialize];
-    
-    NSLog(@"Kinvey iOS Library Version %@", __KINVEYKIT_VERSION__);
-}
-
 + (KCSClient *)sharedClient
 {
     static KCSClient *sKCSClient;
@@ -89,7 +82,9 @@
 {
     self = [super init];
     
-    if (self){
+    if (self) {
+        KCSLogDebug(@"Kinvey iOS Library Version %@", __KINVEYKIT_VERSION__);
+        
         _libraryVersion = __KINVEYKIT_VERSION__;
         _userAgent = [[NSString alloc] initWithFormat:@"ios-kinvey-http/%@ kcs/%@", self.libraryVersion, MINIMUM_KCS_VERSION_SUPPORTED];
         

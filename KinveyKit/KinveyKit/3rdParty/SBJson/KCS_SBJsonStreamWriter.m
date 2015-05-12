@@ -34,6 +34,7 @@
 #import "KCS_SBJsonStreamWriterState.h"
 
 #import "NSDate+ISO8601.h"
+#import "KCSLogManager.h"
 
 static NSNumber *kNotANumber;
 static NSNumber *kTrue;
@@ -283,7 +284,7 @@ static const char *strForChar(int c) {
 		case 34: return "\\\""; break;
 		case 92: return "\\\\"; break;
 	}
-	NSLog(@"FUTFUTFUT: -->'%c'<---", c);
+	KCSLogDebug(@"FUTFUTFUT: -->'%c'<---", c);
 	return "FUTFUTFUT";
 }
 
