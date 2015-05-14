@@ -63,22 +63,22 @@
     
 }
 
-- (void) testManualVerify
-{
-    [self setupKCS:NO];
-
-    NSString* infoStr = [NSString UUID];
-    NSString* warnStr = [NSString UUID];
-    
-    
-    KCSLogInfo(KCS_LOG_CONTEXT_TEST, @"%@", infoStr);
-    KCSLogWarn(KCS_LOG_CONTEXT_TEST, @"%@", warnStr);
-    
-    LogTester* logger = [LogTester sharedInstance];
-    NSArray* logs = logger.logs;
-    XCTAssertEqualObjects(logs[0], infoStr, @"");
-    XCTAssertEqualObjects(logs[1], warnStr, @"");
-
-}
+//- (void) testManualVerify
+//{
+//    [self setupKCS:NO];
+//
+//    NSString* infoStr = [NSString UUID];
+//    NSString* warnStr = [NSString UUID];
+//    
+//    
+//    KCSLogInfo(KCS_LOG_CONTEXT_TEST, @"%@", infoStr);
+//    KCSLogWarn(KCS_LOG_CONTEXT_TEST, @"%@", warnStr);
+//    
+//    LogTester* logger = [LogTester sharedInstance];
+//    NSArray* logs = logger.logs;
+//    XCTAssertEqualObjects(logs[0], infoStr, @"");
+//    XCTAssertEqualObjects(logs[1], warnStr, @"");
+//
+//}
 
 @end

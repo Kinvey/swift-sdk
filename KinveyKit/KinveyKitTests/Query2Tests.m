@@ -79,9 +79,9 @@
     XCTAssertEqualObjects([query queryString:NO], @"?query={\"foo\":\"X\"}&sort={\"foo\":-1}", @"basic");
 }
 
-- (void) testConversion
-{
-    KTNIY
-}
+//- (void) testConversion
+//{
+//    KTNIY
+//}
 
 @end

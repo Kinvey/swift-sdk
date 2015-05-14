@@ -41,6 +41,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 @implementation XCTestCase (TestUtils)
 @dynamic done;
+@dynamic expectations;
 #define POLL_INTERVAL 0.05
 #define MAX_POLL_SECONDS 30
 
@@ -72,6 +73,16 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 - (void)setDone:(BOOL)newDone {
     objc_setAssociatedObject(self, @"doneval", [NSNumber numberWithBool:newDone], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+-(NSMutableArray *)expectations
+{
+    return objc_getAssociatedObject(self, @"expectationsval");
+}
+
+-(void)setExpectations:(NSMutableArray *)expectations
+{
+    objc_setAssociatedObject(self, @"expectationsval", expectations, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (KCSCompletionBlock) pollBlock

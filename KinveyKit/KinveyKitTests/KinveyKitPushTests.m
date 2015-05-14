@@ -70,119 +70,119 @@ NSData* dataForTokenString(NSString* token)
     XCTAssertNotNil(push, @"should have a push value");
 }
 
-- (void) testAddTokenNormalFlow
-{
-    KCSUser* myUser = [KCSUser activeUser];
-    XCTAssertNotNil(myUser, @"start with valid user");
-    
-    NSSet* tokens = myUser.deviceTokens;
-    XCTAssertNotNil(tokens, @"should have no token");
-    KTAssertCount(0, tokens);
-    
-    XCTestExpectation* expectationRegister = [self expectationWithDescription:@"register"];
-    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
-        STAssertNoError_;
-        XCTAssertTrue(success, @"should register new token");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationRegister fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    //Test that local user was updated
-    
-    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
-    NSSet* postTokens = myUser.deviceTokens;
-    XCTAssertNotNil(postTokens, @"should have no token");
-    KTAssertCount(1, postTokens);
-    NSString* setToken = [postTokens anyObject];
-    XCTAssertEqualObjects(setToken, _token, @"token was set");
-    
-    //Test that server object was updated
-    
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
-    [store loadObjectWithID:[KCSUser activeUser].userId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        STAssertObjects(1)
-        KCSUser* loadedUser = objectsOrNil[0];
-        
-        NSSet* loadedTokens = loadedUser.deviceTokens;
-        XCTAssertNotNil(loadedTokens, @"should have no token");
-        KTAssertCount(1, loadedTokens);
-        NSString* loadedToken = [loadedTokens anyObject];
-        XCTAssertEqualObjects(loadedToken, _token, @"token was set");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationLoad fulfill];
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testAddTokenNormalFlow
+//{
+//    KCSUser* myUser = [KCSUser activeUser];
+//    XCTAssertNotNil(myUser, @"start with valid user");
+//    
+//    NSSet* tokens = myUser.deviceTokens;
+//    XCTAssertNotNil(tokens, @"should have no token");
+//    KTAssertCount(0, tokens);
+//    
+//    XCTestExpectation* expectationRegister = [self expectationWithDescription:@"register"];
+//    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
+//        STAssertNoError_;
+//        XCTAssertTrue(success, @"should register new token");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationRegister fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    //Test that local user was updated
+//    
+//    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+//    NSSet* postTokens = myUser.deviceTokens;
+//    XCTAssertNotNil(postTokens, @"should have no token");
+//    KTAssertCount(1, postTokens);
+//    NSString* setToken = [postTokens anyObject];
+//    XCTAssertEqualObjects(setToken, _token, @"token was set");
+//    
+//    //Test that server object was updated
+//    
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
+//    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+//    [store loadObjectWithID:[KCSUser activeUser].userId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        STAssertObjects(1)
+//        KCSUser* loadedUser = objectsOrNil[0];
+//        
+//        NSSet* loadedTokens = loadedUser.deviceTokens;
+//        XCTAssertNotNil(loadedTokens, @"should have no token");
+//        KTAssertCount(1, loadedTokens);
+//        NSString* loadedToken = [loadedTokens anyObject];
+//        XCTAssertEqualObjects(loadedToken, _token, @"token was set");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationLoad fulfill];
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
-- (void) testUserGetsTokenIfPreRegistered
-{
-    [[KCSUser activeUser] logout];
-
-    XCTestExpectation* expectationRegister = [self expectationWithDescription:@"register"];
-    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
-        STAssertNoError_;
-        XCTAssertFalse(success, @"should not register new token");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationRegister fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    //create new user after setting the token
-    
-    XCTestExpectation* expectationCreateAutogeneratedUser = [self expectationWithDescription:@"createAutogeneratedUser"];
-    [KCSUser createAutogeneratedUser:nil completion:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        STAssertNoError
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationCreateAutogeneratedUser fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    KCSUser* myUser = [KCSUser activeUser];
-    XCTAssertNotNil(myUser, @"have a valid user");
-    
-    NSSet* tokens = myUser.deviceTokens;
-    XCTAssertNotNil(tokens, @"should have no token");
-    KTAssertCount(1, tokens);
-    NSString* aToken = [tokens anyObject];
-    XCTAssertEqualObjects(aToken, _token, @"token was set proprely");
-
-    //Test that server object was updated
-    
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
-    [store loadObjectWithID:[KCSUser activeUser].userId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        STAssertObjects(1)
-        KCSUser* loadedUser = objectsOrNil[0];
-        
-        NSSet* loadedTokens = loadedUser.deviceTokens;
-        XCTAssertNotNil(loadedTokens, @"should have no token");
-        KTAssertCount(1, loadedTokens);
-        NSString* loadedToken = [loadedTokens anyObject];
-        XCTAssertEqualObjects(loadedToken, _token, @"token was set");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationLoad fulfill];
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-
-}
+//- (void) testUserGetsTokenIfPreRegistered
+//{
+//    [[KCSUser activeUser] logout];
+//
+//    XCTestExpectation* expectationRegister = [self expectationWithDescription:@"register"];
+//    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
+//        STAssertNoError_;
+//        XCTAssertFalse(success, @"should not register new token");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationRegister fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    //create new user after setting the token
+//    
+//    XCTestExpectation* expectationCreateAutogeneratedUser = [self expectationWithDescription:@"createAutogeneratedUser"];
+//    [KCSUser createAutogeneratedUser:nil completion:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+//        STAssertNoError
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationCreateAutogeneratedUser fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    KCSUser* myUser = [KCSUser activeUser];
+//    XCTAssertNotNil(myUser, @"have a valid user");
+//    
+//    NSSet* tokens = myUser.deviceTokens;
+//    XCTAssertNotNil(tokens, @"should have no token");
+//    KTAssertCount(1, tokens);
+//    NSString* aToken = [tokens anyObject];
+//    XCTAssertEqualObjects(aToken, _token, @"token was set proprely");
+//
+//    //Test that server object was updated
+//    
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
+//    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+//    [store loadObjectWithID:[KCSUser activeUser].userId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        STAssertObjects(1)
+//        KCSUser* loadedUser = objectsOrNil[0];
+//        
+//        NSSet* loadedTokens = loadedUser.deviceTokens;
+//        XCTAssertNotNil(loadedTokens, @"should have no token");
+//        KTAssertCount(1, loadedTokens);
+//        NSString* loadedToken = [loadedTokens anyObject];
+//        XCTAssertEqualObjects(loadedToken, _token, @"token was set");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationLoad fulfill];
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//
+//}
 
 - (void) testRemoveNormalFlow
 {
@@ -253,173 +253,173 @@ NSData* dataForTokenString(NSString* token)
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
-- (void) testAddNewDoesntKillOld
-{
-    KCSUser* myUser = [KCSUser activeUser];
-    XCTAssertNotNil(myUser, @"start with valid user");
-    
-    NSSet* tokens = myUser.deviceTokens;
-    XCTAssertNotNil(tokens, @"should have no token");
-    KTAssertCount(0, tokens);
-    
-    XCTestExpectation* expectationRegister = [self expectationWithDescription:@"register"];
-    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
-        STAssertNoError_;
-        XCTAssertTrue(success, @"should register new token");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationRegister fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    //Test that local user was updated
-    
-    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
-    NSSet* postTokens = myUser.deviceTokens;
-    XCTAssertNotNil(postTokens, @"should have no token");
-    KTAssertCount(1, postTokens);
-    NSString* setToken = [postTokens anyObject];
-    XCTAssertEqualObjects(setToken, _token, @"token was set");
-    
-    //add a second token
-    NSString* secondTokenString = [NSString stringWithFormat:@"c4011af80d8cc26aaa361d074a3c0a63162cc524bd18c4c07fbe05ebd074c62%d", arc4random() % 10];
-    NSData* secondTokenData = dataForTokenString(secondTokenString);
-
-    XCTestExpectation* expectationRegister2 = [self expectationWithDescription:@"register2"];
-    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:secondTokenData completionBlock:^(BOOL success, NSError *error) {
-        STAssertNoError_;
-        XCTAssertTrue(success, @"should register new token");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationRegister2 fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    //Test that local user was updated
-    
-    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
-    NSSet* postTokens2 = myUser.deviceTokens;
-    XCTAssertNotNil(postTokens2, @"should have no token");
-    KTAssertCount(2, postTokens2);
-    XCTAssertTrue([postTokens2.allObjects containsObject:[_token copy]], @"token was set");
-    XCTAssertTrue([postTokens2.allObjects containsObject:secondTokenString], @"token was set");
-    
-    
-    //Test that server object was updated
-    
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
-    [store loadObjectWithID:[KCSUser activeUser].userId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        STAssertObjects(1)
-        KCSUser* loadedUser = objectsOrNil[0];
-        
-        NSSet* loadedTokens = loadedUser.deviceTokens;
-        XCTAssertNotNil(loadedTokens, @"should have no token");
-        KTAssertCount(2, loadedTokens);
-        XCTAssertTrue([loadedTokens.allObjects containsObject:_token], @"token was set");
-        XCTAssertTrue([loadedTokens.allObjects containsObject:secondTokenString], @"token was set");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationLoad fulfill];
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
-
-- (void) testemoveDoesntKillOld
-{
-    KCSUser* myUser = [KCSUser activeUser];
-    XCTAssertNotNil(myUser, @"start with valid user");
-    
-    NSSet* tokens = myUser.deviceTokens;
-    XCTAssertNotNil(tokens, @"should have no token");
-    KTAssertCount(0, tokens);
-    
-    //add a first token
-    
-    XCTestExpectation* expectationRegister = [self expectationWithDescription:@"register"];
-    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
-        STAssertNoError_;
-        XCTAssertTrue(success, @"should register new token");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationRegister fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    //add a second token
-    NSString* secondTokenString = [NSString stringWithFormat:@"c4011af80d8cc26aaa361d074a3c0a63162cc524bd18c4c07fbe05ebd074c62%d", arc4random() % 10];
-    NSData* secondTokenData = dataForTokenString(secondTokenString);
-    
-    XCTestExpectation* expectationRegister2 = [self expectationWithDescription:@"register2"];
-    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:secondTokenData completionBlock:^(BOOL success, NSError *error) {
-        STAssertNoError_;
-        XCTAssertTrue(success, @"should register new token");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationRegister2 fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    //Test that local user was updated
-    
-    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
-    NSSet* postTokens2 = myUser.deviceTokens;
-    XCTAssertNotNil(postTokens2, @"should have no token");
-    KTAssertCount(2, postTokens2);
-    XCTAssertTrue([postTokens2.allObjects containsObject:[_token copy]], @"token was set");
-    XCTAssertTrue([postTokens2.allObjects containsObject:secondTokenString], @"token was set");
-    
-    // Remove 2nd token
-    XCTestExpectation* expectationUnRegister = [self expectationWithDescription:@"unRegister"];
-    [[KCSPush sharedPush] unRegisterDeviceToken:^(BOOL success, NSError *error) {
-        STAssertNoError_
-        XCTAssertTrue(success, @"should be true");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationUnRegister fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    XCTAssertNil([[KCSPush sharedPush] deviceToken], @"should clear the token");
-    
-    NSSet* tokensAfterReg = myUser.deviceTokens;
-    XCTAssertNotNil(tokensAfterReg, @"should have no token");
-    KTAssertCount(1, tokensAfterReg);
-    NSString* aToken = [tokensAfterReg anyObject];
-    XCTAssertEqualObjects(aToken, _token, @"token was set proprely");
-    
-    //Test that server object was updated
-    
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
-    [store loadObjectWithID:[KCSUser activeUser].userId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        STAssertObjects(1)
-        KCSUser* loadedUser = objectsOrNil[0];
-        
-        NSSet* loadedTokens = loadedUser.deviceTokens;
-        XCTAssertNotNil(loadedTokens, @"should have no token");
-        KTAssertCount(1, loadedTokens);
-        NSString* loadedToken = [loadedTokens anyObject];
-        XCTAssertEqualObjects(loadedToken, _token, @"token was set");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationLoad fulfill];
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testAddNewDoesntKillOld
+//{
+//    KCSUser* myUser = [KCSUser activeUser];
+//    XCTAssertNotNil(myUser, @"start with valid user");
+//    
+//    NSSet* tokens = myUser.deviceTokens;
+//    XCTAssertNotNil(tokens, @"should have no token");
+//    KTAssertCount(0, tokens);
+//    
+//    XCTestExpectation* expectationRegister = [self expectationWithDescription:@"register"];
+//    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
+//        STAssertNoError_;
+//        XCTAssertTrue(success, @"should register new token");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationRegister fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    //Test that local user was updated
+//    
+//    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+//    NSSet* postTokens = myUser.deviceTokens;
+//    XCTAssertNotNil(postTokens, @"should have no token");
+//    KTAssertCount(1, postTokens);
+//    NSString* setToken = [postTokens anyObject];
+//    XCTAssertEqualObjects(setToken, _token, @"token was set");
+//    
+//    //add a second token
+//    NSString* secondTokenString = [NSString stringWithFormat:@"c4011af80d8cc26aaa361d074a3c0a63162cc524bd18c4c07fbe05ebd074c62%d", arc4random() % 10];
+//    NSData* secondTokenData = dataForTokenString(secondTokenString);
+//
+//    XCTestExpectation* expectationRegister2 = [self expectationWithDescription:@"register2"];
+//    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:secondTokenData completionBlock:^(BOOL success, NSError *error) {
+//        STAssertNoError_;
+//        XCTAssertTrue(success, @"should register new token");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationRegister2 fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    //Test that local user was updated
+//    
+//    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+//    NSSet* postTokens2 = myUser.deviceTokens;
+//    XCTAssertNotNil(postTokens2, @"should have no token");
+//    KTAssertCount(2, postTokens2);
+//    XCTAssertTrue([postTokens2.allObjects containsObject:[_token copy]], @"token was set");
+//    XCTAssertTrue([postTokens2.allObjects containsObject:secondTokenString], @"token was set");
+//    
+//    
+//    //Test that server object was updated
+//    
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
+//    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+//    [store loadObjectWithID:[KCSUser activeUser].userId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        STAssertObjects(1)
+//        KCSUser* loadedUser = objectsOrNil[0];
+//        
+//        NSSet* loadedTokens = loadedUser.deviceTokens;
+//        XCTAssertNotNil(loadedTokens, @"should have no token");
+//        KTAssertCount(2, loadedTokens);
+//        XCTAssertTrue([loadedTokens.allObjects containsObject:_token], @"token was set");
+//        XCTAssertTrue([loadedTokens.allObjects containsObject:secondTokenString], @"token was set");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationLoad fulfill];
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
+//
+//- (void) testemoveDoesntKillOld
+//{
+//    KCSUser* myUser = [KCSUser activeUser];
+//    XCTAssertNotNil(myUser, @"start with valid user");
+//    
+//    NSSet* tokens = myUser.deviceTokens;
+//    XCTAssertNotNil(tokens, @"should have no token");
+//    KTAssertCount(0, tokens);
+//    
+//    //add a first token
+//    
+//    XCTestExpectation* expectationRegister = [self expectationWithDescription:@"register"];
+//    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:_tokenData completionBlock:^(BOOL success, NSError *error) {
+//        STAssertNoError_;
+//        XCTAssertTrue(success, @"should register new token");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationRegister fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    //add a second token
+//    NSString* secondTokenString = [NSString stringWithFormat:@"c4011af80d8cc26aaa361d074a3c0a63162cc524bd18c4c07fbe05ebd074c62%d", arc4random() % 10];
+//    NSData* secondTokenData = dataForTokenString(secondTokenString);
+//    
+//    XCTestExpectation* expectationRegister2 = [self expectationWithDescription:@"register2"];
+//    [[KCSPush sharedPush] application:nil didRegisterForRemoteNotificationsWithDeviceToken:secondTokenData completionBlock:^(BOOL success, NSError *error) {
+//        STAssertNoError_;
+//        XCTAssertTrue(success, @"should register new token");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationRegister2 fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    //Test that local user was updated
+//    
+//    XCTAssertEqualObjects([KCSUser activeUser], myUser, @"still have same user");
+//    NSSet* postTokens2 = myUser.deviceTokens;
+//    XCTAssertNotNil(postTokens2, @"should have no token");
+//    KTAssertCount(2, postTokens2);
+//    XCTAssertTrue([postTokens2.allObjects containsObject:[_token copy]], @"token was set");
+//    XCTAssertTrue([postTokens2.allObjects containsObject:secondTokenString], @"token was set");
+//    
+//    // Remove 2nd token
+//    XCTestExpectation* expectationUnRegister = [self expectationWithDescription:@"unRegister"];
+//    [[KCSPush sharedPush] unRegisterDeviceToken:^(BOOL success, NSError *error) {
+//        STAssertNoError_
+//        XCTAssertTrue(success, @"should be true");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationUnRegister fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    XCTAssertNil([[KCSPush sharedPush] deviceToken], @"should clear the token");
+//    
+//    NSSet* tokensAfterReg = myUser.deviceTokens;
+//    XCTAssertNotNil(tokensAfterReg, @"should have no token");
+//    KTAssertCount(1, tokensAfterReg);
+//    NSString* aToken = [tokensAfterReg anyObject];
+//    XCTAssertEqualObjects(aToken, _token, @"token was set proprely");
+//    
+//    //Test that server object was updated
+//    
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
+//    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+//    [store loadObjectWithID:[KCSUser activeUser].userId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        STAssertObjects(1)
+//        KCSUser* loadedUser = objectsOrNil[0];
+//        
+//        NSSet* loadedTokens = loadedUser.deviceTokens;
+//        XCTAssertNotNil(loadedTokens, @"should have no token");
+//        KTAssertCount(1, loadedTokens);
+//        NSString* loadedToken = [loadedTokens anyObject];
+//        XCTAssertEqualObjects(loadedToken, _token, @"token was set");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationLoad fulfill];
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 - (void) testExistingOneDoesntTransferToNew
 {
