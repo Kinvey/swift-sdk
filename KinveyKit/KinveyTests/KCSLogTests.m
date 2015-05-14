@@ -15,7 +15,15 @@
 
 @property (nonatomic, strong) NSPipe* pipe;
 @property (nonatomic, strong) NSMutableArray* logs;
+@property (nonatomic) int stdoutCopy;
+@property (nonatomic) int stderrCopy;
 
+@end
+
+@interface KCSLogTestsAllEnabled : KCSLogTests
+@end
+
+@interface KCSLogTestsAllDisabled : KCSLogTests
 @end
 
 @implementation KCSLogTests
@@ -24,6 +32,12 @@
     [super setUp];
     
     self.logs = [NSMutableArray array];
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        self.stdoutCopy = dup(STDOUT_FILENO);
+        self.stderrCopy = dup(STDERR_FILENO);
+    });
     
     self.pipe = [NSPipe pipe];
     dup2(self.pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO);
@@ -43,11 +57,26 @@
 }
 
 - (void)tearDown {
-    dup2(STDOUT_FILENO, self.pipe.fileHandleForWriting.fileDescriptor);
-    dup2(STDERR_FILENO, self.pipe.fileHandleForWriting.fileDescriptor);
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleReadCompletionNotification object:self.pipe.fileHandleForReading];
+    
+    dup2(self.stdoutCopy, STDOUT_FILENO);
+    dup2(self.stderrCopy, STDERR_FILENO);
+    
+    [self.pipe.fileHandleForWriting closeFile];
+    [self.pipe.fileHandleForReading closeFile];
+    
+    [self.logs removeAllObjects];
+    
+    [[KCSUser activeUser] logout];
+    
+    NSLog(@"Test");
     
     [super tearDown];
 }
+
+@end
+
+@implementation KCSLogTestsAllEnabled
 
 - (void)testAllEnabled {
     [KCSClient configureLoggingWithNetworkEnabled:YES
@@ -84,6 +113,10 @@
     [self waitForExpectationsWithTimeout:60 handler:nil];
     expectationLogVersion = nil;
 }
+
+@end
+
+@implementation KCSLogTestsAllDisabled
 
 - (void)testAllDisabled {
     [KCSClient configureLoggingWithNetworkEnabled:NO

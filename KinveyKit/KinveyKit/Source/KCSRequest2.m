@@ -152,7 +152,7 @@ static NSOperationQueue* kcsRequestQueue;
 
     if (_useMock && kid == nil) {
         kid = @"mock";
-        baseURL = baseURL ? baseURL : @"http://localhost:2110/";
+        baseURL = baseURL ? baseURL : @"https://localhost:2110/";
     }
     
     NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];

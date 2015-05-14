@@ -58,6 +58,11 @@ static KCSCachePolicy sDefaultCachePolicy = KCSCachePolicyNone;
 
 - (void) import:(NSArray*)jsonObjects
 {
+    [self importCache:jsonObjects];
+}
+
+-(void)importCache:(NSArray *)jsonObjects
+{
     [[KCSAppdataStore caches] jsonImport:jsonObjects route:[self.backingCollection route] collection:self.backingCollection.collectionName];
 }
 
