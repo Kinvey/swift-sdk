@@ -319,7 +319,7 @@ static NSOperationQueue* kcsRequestQueue;
         NSData* bodyData = [writer dataWithObject:_body];
         DBAssert(bodyData != nil, @"should be able to parse body");
         [request setHTTPBody:bodyData];
-        [request addValue:_contentType forHTTPHeaderField:kHeaderContentType];
+        [request setValue:_contentType forHTTPHeaderField:kHeaderContentType];
     } else if ([self.method isEqualToString:KCSRESTMethodDELETE]) {
         // [request setHTTPBody:bodyData]; no need for body b/c of no content type
     }
