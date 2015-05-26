@@ -237,7 +237,7 @@ BOOL kcsIsContainerClass(Class aClass)
 
 - (void) doAdds:(NSArray*)objects graph:(NSMutableDictionary*)graph description:(KCSPersistableDescription*)desc
 {
-    NSString* collection = desc.collection;
+    NSString* const collection = desc.collection;
     for (id<KCSPersistable2> obj in objects) {
         BOOL shouldWalk = [self addObjToTree:graph obj:obj collection:collection];
         if (shouldWalk) {
@@ -258,8 +258,6 @@ BOOL kcsIsContainerClass(Class aClass)
     if (objects.count == 0) {
         return @{};
     }
-    
-    NSString* collection = self.collection;
     
     NSMutableDictionary* graph = [NSMutableDictionary dictionary];
     [self doAdds:objects graph:graph description:self];

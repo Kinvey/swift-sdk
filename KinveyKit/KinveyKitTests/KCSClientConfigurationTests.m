@@ -47,21 +47,21 @@
 
 // Still need tests for push and initializing via plist
 
-- (void) testEnvironmentVariable
-{
-    //Tests that we get a configuration from environment in hidden cases
-    NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
-    XCTAssertEqualObjects(appKey, @"TEST_KEY", @"test keys should match");
-    NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_SECRET"];
-    XCTAssertEqualObjects(appSecret, @"TEST_SECRET", @"test keys should match");
-    NSString* appHost = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_SERVICE_HOST"];
-    XCTAssertEqualObjects(appHost, @"TEST_HOST", @"test keys should match");
-    
-    KCSClientConfiguration* config = [KCSClientConfiguration configurationWithAppKey:@"<#KEY#>" secret:@"<#SECRET#>"];
-    XCTAssertEqualObjects(config.appKey, @"TEST_KEY", @"test keys should match");
-    XCTAssertEqualObjects(config.appSecret, @"TEST_SECRET", @"test keys should match");
-    XCTAssertEqualObjects(config.serviceHostname, @"TEST_HOST", @"test keys should match");
-}
+//- (void) testEnvironmentVariable
+//{
+//    //Tests that we get a configuration from environment in hidden cases
+//    NSString* appKey = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_KEY"];
+//    XCTAssertEqualObjects(appKey, @"TEST_KEY", @"test keys should match");
+//    NSString* appSecret = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_APP_SECRET"];
+//    XCTAssertEqualObjects(appSecret, @"TEST_SECRET", @"test keys should match");
+//    NSString* appHost = [[[NSProcessInfo processInfo] environment] objectForKey:@"KCS_SERVICE_HOST"];
+//    XCTAssertEqualObjects(appHost, @"TEST_HOST", @"test keys should match");
+//    
+//    KCSClientConfiguration* config = [KCSClientConfiguration configurationWithAppKey:@"<#KEY#>" secret:@"<#SECRET#>"];
+//    XCTAssertEqualObjects(config.appKey, @"TEST_KEY", @"test keys should match");
+//    XCTAssertEqualObjects(config.appSecret, @"TEST_SECRET", @"test keys should match");
+//    XCTAssertEqualObjects(config.serviceHostname, @"TEST_HOST", @"test keys should match");
+//}
 
 - (void) testPlist
 {

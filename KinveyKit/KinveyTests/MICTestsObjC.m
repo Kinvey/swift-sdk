@@ -12,6 +12,7 @@
 #import "KCSMutableOrderedDictionary.h"
 #import "KCSUser2+KinveyUserService.h"
 #import "KinveyUser+Private.h"
+#import "NSString+KinveyAdditions.h"
 
 @interface MICTestsObjC : XCTestCase
 
@@ -75,47 +76,51 @@ static BOOL canHandleRequest = YES;
                                                   usingOptions:nil];
 }
 
-- (void)testRefreshToken {
-    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
-    
-    [KCSUser loginWithAuthorizationCodeAPI:@"kinveyAuthDemo://"
-                                   options:@{ KCSUsername : @"mjs",
-                                        KCSPassword : @"demo" }
-                       withCompletionBlock:^(KCSUser *user, NSError *error, KCSUserActionResult result)
-    {
-        XCTAssertNil(error);
-        XCTAssertNotNil(user);
-        
-        [expectationLogin fulfill];
-    }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    [KCSURLProtocol registerClass:[MockURLProtocol class]];
-    
-    KCSCollection* collection = [KCSCollection collectionFromString:@"person"
-                                                            ofClass:[NSMutableDictionary class]];
-    KCSCachedStore* store = [KCSCachedStore storeWithCollection:collection
-                                                        options:@{ KCSStoreKeyCachePolicy : @(KCSCachePolicyLocalFirst),
-                                                                   KCSStoreKeyOfflineUpdateEnabled : @(YES) }];
-    
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
-    
-    [store saveObject:@{ @"name" : @"Victor" }
-  withCompletionBlock:^(NSArray *results, NSError *error)
-    {
-        XCTAssertNil(error);
-        XCTAssertNotNil(results);
-        
-        [expectationSave fulfill];
-    }
-    withProgressBlock:nil];
-    
-    [self waitForExpectationsWithTimeout:60
-                                 handler:^(NSError *error)
-    {
-        [KCSURLProtocol unregisterClass:[MockURLProtocol class]];
-    }];
+-(void)testEncodeRedirectURI {
+    XCTAssertEqualObjects([NSString stringByPercentEncodingString:@"blah://"], @"blah%3A%2F%2F");
 }
+
+//- (void)testRefreshToken {
+//    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+//    
+//    [KCSUser loginWithAuthorizationCodeAPI:@"kinveyAuthDemo://"
+//                                   options:@{ KCSUsername : @"mjs",
+//                                        KCSPassword : @"demo" }
+//                       withCompletionBlock:^(KCSUser *user, NSError *error, KCSUserActionResult result)
+//    {
+//        XCTAssertNil(error);
+//        XCTAssertNotNil(user);
+//        
+//        [expectationLogin fulfill];
+//    }];
+//    
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    [KCSURLProtocol registerClass:[MockURLProtocol class]];
+//    
+//    KCSCollection* collection = [KCSCollection collectionFromString:@"person"
+//                                                            ofClass:[NSMutableDictionary class]];
+//    KCSCachedStore* store = [KCSCachedStore storeWithCollection:collection
+//                                                        options:@{ KCSStoreKeyCachePolicy : @(KCSCachePolicyLocalFirst),
+//                                                                   KCSStoreKeyOfflineUpdateEnabled : @(YES) }];
+//    
+//    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+//    
+//    [store saveObject:@{ @"name" : @"Victor" }
+//  withCompletionBlock:^(NSArray *results, NSError *error)
+//    {
+//        XCTAssertNil(error);
+//        XCTAssertNotNil(results);
+//        
+//        [expectationSave fulfill];
+//    }
+//    withProgressBlock:nil];
+//    
+//    [self waitForExpectationsWithTimeout:60
+//                                 handler:^(NSError *error)
+//    {
+//        [KCSURLProtocol unregisterClass:[MockURLProtocol class]];
+//    }];
+//}
 
 @end

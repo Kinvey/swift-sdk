@@ -356,26 +356,26 @@
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
-- (void) testAnd
-{
-    //method 1
-    KCSQuery *q1 = [KCSQuery queryOnField:@"eventId" withExactMatchForValue:@"eventId:"];
-    KCSQuery *q2 = [KCSQuery queryOnField:@"isRevoked" withExactMatchForValue:@NO];
-    KCSQuery *query = [KCSQuery queryForJoiningOperator:kKCSAnd onQueries:q1, q2, nil];
-    
-    NSString* exp = @"{\"$and\":[{\"eventId\":\"eventId:\"},{\"isRevoked\":false}]}";
-    NSString* act = [query JSONStringRepresentation];
-    XCTAssertEqualObjects(act, exp, @"queries should match");
-    
-    //method 2
-    KCSQuery *query_2 = [KCSQuery queryOnField:@"eventId" withExactMatchForValue:@"eventId"];
-    KCSQuery *q2_2 = [KCSQuery queryOnField:@"isRevoked" withExactMatchForValue:@NO];
-    [query_2 addQueryForJoiningOperator:kKCSAnd onQueries:q2_2, nil];
-    exp = @"{\"$and\":[{\"isRevoked\":false}],\"eventId\":\"eventId\"}";
-    act = [query_2 JSONStringRepresentation];
-    XCTAssertEqualObjects(act, exp, @"queries should match");
-    
-}
+//- (void) testAnd
+//{
+//    //method 1
+//    KCSQuery *q1 = [KCSQuery queryOnField:@"eventId" withExactMatchForValue:@"eventId:"];
+//    KCSQuery *q2 = [KCSQuery queryOnField:@"isRevoked" withExactMatchForValue:@NO];
+//    KCSQuery *query = [KCSQuery queryForJoiningOperator:kKCSAnd onQueries:q1, q2, nil];
+//    
+//    NSString* exp = @"{\"$and\":[{\"eventId\":\"eventId:\"},{\"isRevoked\":false}]}";
+//    NSString* act = [query JSONStringRepresentation];
+//    XCTAssertEqualObjects(act, exp, @"queries should match");
+//    
+//    //method 2
+//    KCSQuery *query_2 = [KCSQuery queryOnField:@"eventId" withExactMatchForValue:@"eventId"];
+//    KCSQuery *q2_2 = [KCSQuery queryOnField:@"isRevoked" withExactMatchForValue:@NO];
+//    [query_2 addQueryForJoiningOperator:kKCSAnd onQueries:q2_2, nil];
+//    exp = @"{\"$and\":[{\"isRevoked\":false}],\"eventId\":\"eventId\"}";
+//    act = [query_2 JSONStringRepresentation];
+//    XCTAssertEqualObjects(act, exp, @"queries should match");
+//    
+//}
 
 - (void) testNegate
 {

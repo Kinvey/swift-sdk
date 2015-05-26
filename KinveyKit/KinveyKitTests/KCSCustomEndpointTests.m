@@ -31,33 +31,33 @@
     XCTAssertTrue(loaded, @"should be loaded");
 }
 
-- (void) testCustomEndpoint
-{
-    XCTestExpectation* expectationCallEndpoint = [self expectationWithDescription:@"callEndpoint"];
-    [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
-        STAssertNoError;
-        NSDictionary* expBody = @{@"a":@1,@"b":@2};
-        XCTAssertEqualObjects(expBody, results, @"bodies should match");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationCallEndpoint fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testCustomEndpoint
+//{
+//    XCTestExpectation* expectationCallEndpoint = [self expectationWithDescription:@"callEndpoint"];
+//    [KCSCustomEndpoints callEndpoint:@"bltest" params:nil completionBlock:^(id results, NSError *errorOrNil) {
+//        STAssertNoError;
+//        NSDictionary* expBody = @{@"a":@1,@"b":@2};
+//        XCTAssertEqualObjects(expBody, results, @"bodies should match");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationCallEndpoint fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
-- (void) testHS1468
-{
-    XCTestExpectation* expectationCallEndpoint = [self expectationWithDescription:@"callEndpoint"];
-    [KCSCustomEndpoints callEndpoint:@"hs1468" params:@{@"email":@""} completionBlock:^(id results, NSError *error) {
-        XCTAssertNil(error, @"error should be nil");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationCallEndpoint fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testHS1468
+//{
+//    XCTestExpectation* expectationCallEndpoint = [self expectationWithDescription:@"callEndpoint"];
+//    [KCSCustomEndpoints callEndpoint:@"hs1468" params:@{@"email":@""} completionBlock:^(id results, NSError *error) {
+//        XCTAssertNil(error, @"error should be nil");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationCallEndpoint fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 - (void) testHS1928_CallDoesNotInitCurrentUser
 {

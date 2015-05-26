@@ -36,6 +36,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
 
 @interface XCTestCase (TestUtils)
 @property (nonatomic) BOOL done;
+@property (nonatomic, strong) NSMutableArray* expectations;
 - (BOOL) poll;
 - (BOOL) poll:(NSTimeInterval)timeout;
 - (KCSCompletionBlock) pollBlock;

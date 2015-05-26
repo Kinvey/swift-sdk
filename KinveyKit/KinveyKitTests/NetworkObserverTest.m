@@ -44,20 +44,19 @@
     __block BOOL startHappened = NO;
     __block BOOL endHappened = NO;
     
-    XCTestExpectation* expectationNotification = [self expectationWithDescription:@"notification"];
+    [self expectationForNotification:KCSNetworkConnectionDidStart object:nil handler:^BOOL(NSNotification *notification) {
+        return startHappened = YES;
+    }];
+    [self expectationForNotification:KCSNetworkConnectionDidEnd object:nil handler:^BOOL(NSNotification *notification) {
+        return endHappened = YES;
+    }];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:KCSNetworkConnectionDidStart object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        startHappened = YES;
-    }];
-    [[NSNotificationCenter defaultCenter] addObserverForName:KCSNetworkConnectionDidEnd object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        endHappened = YES;
-        
-        [expectationNotification fulfill];
-    }];
+    id<KCSCredentials> credentails = mockCredentails();
+    
     dispatch_async(dispatch_queue_create("testq", 0), ^{
         KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             XCTAssertTrue([NSThread isMainThread]);
-        } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:mockCredentails()];
+        } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:credentails];
         [request start];
     });
 

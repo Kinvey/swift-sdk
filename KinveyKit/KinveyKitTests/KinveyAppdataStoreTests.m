@@ -275,26 +275,26 @@ NSArray* largeArray()
 
 }
 
-- (void) testBlErrors
-{
-    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"bl-errors" ofClass:[NSMutableDictionary class]] options:@{}];
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
-    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        XCTAssertNotNil(errorOrNil, @"should have an error");
-        KTAssertEqualsInt(errorOrNil.code, 550, @"should be a 550");
-        
-        NSDictionary* errorVals = errorOrNil.userInfo;
-        XCTAssertNotNil(errorVals[@"Kinvey.RequestId"], @"should have request id");
-        XCTAssertNotNil(errorVals[@"Kinvey.ExecutedHooks"], @"should have hooks");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationQuery fulfill];
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testBlErrors
+//{
+//    KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:@"bl-errors" ofClass:[NSMutableDictionary class]] options:@{}];
+//    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+//    [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        XCTAssertNotNil(errorOrNil, @"should have an error");
+//        KTAssertEqualsInt(errorOrNil.code, 550, @"should be a 550");
+//        
+//        NSDictionary* errorVals = errorOrNil.userInfo;
+//        XCTAssertNotNil(errorVals[@"Kinvey.RequestId"], @"should have request id");
+//        XCTAssertNotNil(errorVals[@"Kinvey.ExecutedHooks"], @"should have hooks");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationQuery fulfill];
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 - (ASTTestClass*)makeObject:(NSString*)desc count:(int)count
 {
@@ -313,124 +313,124 @@ NSArray* largeArray()
     return obj;
 }
 
-- (void) testGroupBy
-{
-    NSMutableArray* baseObjs = [NSMutableArray array];
-    [baseObjs addObject:[self makeObject:@"one" count:10]];
-    [baseObjs addObject:[self makeObject:@"two" count:10]];
-    [baseObjs addObject:[self makeObject:@"two" count:10]];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
-    [_store saveObject:baseObjs
-   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-       XCTAssertNil(errorOrNil);
-       
-       XCTAssertTrue([NSThread isMainThread]);
-       
-       [expectationSave fulfill];
-   } withProgressBlock:^(NSArray *objects, double percentComplete) {
-       XCTAssertTrue([NSThread isMainThread]);
-   }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
-    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
-        
-        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        XCTAssertEqual([value intValue], 1, @"expecting one objects of 'one'");
-        
-        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        XCTAssertEqual([value intValue], 2, @"expecting two objects of 'two'");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationGroup fulfill];
-    } progressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    XCTestExpectation* expectationGroup2 = [self expectationWithDescription:@"group2"];
-    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
-        
-        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        XCTAssertEqual([value intValue],10, @"expecting one objects of 'one'");
-        
-        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        XCTAssertEqual([value intValue], 20, @"expecting two objects of 'two'");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationGroup2 fulfill];
-    } progressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testGroupBy
+//{
+//    NSMutableArray* baseObjs = [NSMutableArray array];
+//    [baseObjs addObject:[self makeObject:@"one" count:10]];
+//    [baseObjs addObject:[self makeObject:@"two" count:10]];
+//    [baseObjs addObject:[self makeObject:@"two" count:10]];
+//    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+//    [_store saveObject:baseObjs
+//   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//       XCTAssertNil(errorOrNil);
+//       
+//       XCTAssertTrue([NSThread isMainThread]);
+//       
+//       [expectationSave fulfill];
+//   } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//       XCTAssertTrue([NSThread isMainThread]);
+//   }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    
+//    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+//    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+//        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+//        
+//        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
+//        XCTAssertEqual([value intValue], 1, @"expecting one objects of 'one'");
+//        
+//        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
+//        XCTAssertEqual([value intValue], 2, @"expecting two objects of 'two'");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationGroup fulfill];
+//    } progressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    XCTestExpectation* expectationGroup2 = [self expectationWithDescription:@"group2"];
+//    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+//        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+//        
+//        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
+//        XCTAssertEqual([value intValue],10, @"expecting one objects of 'one'");
+//        
+//        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
+//        XCTAssertEqual([value intValue], 20, @"expecting two objects of 'two'");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationGroup2 fulfill];
+//    } progressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
-- (void) testGroupByWithCondition
-{
-    NSMutableArray* baseObjs = [NSMutableArray array];
-    [baseObjs addObject:[self makeObject:@"one" count:10]];
-    [baseObjs addObject:[self makeObject:@"two" count:10]];
-    [baseObjs addObject:[self makeObject:@"two" count:30]];
-    [baseObjs addObject:[self makeObject:@"two" count:70]];
-    [baseObjs addObject:[self makeObject:@"one" count:5]];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
-    [_store saveObject:baseObjs
-   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-       XCTAssertNil(errorOrNil);
-       
-       XCTAssertTrue([NSThread isMainThread]);
-       
-       [expectationSave fulfill];
-   }
-     withProgressBlock:^(NSArray *objects, double percentComplete) {
-         XCTAssertTrue([NSThread isMainThread]);
-     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
-    KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThan forValue:[NSNumber numberWithInt:10]];
-    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
-        
-        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        XCTAssertEqual([value intValue], NSNotFound, @"expecting one objects of 'one'");
-        
-        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        XCTAssertEqual([value intValue], 2, @"expecting two objects of 'two'");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationGroup fulfill];
-    } progressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    XCTestExpectation* expectationGroup2 = [self expectationWithDescription:@"group2"];
-    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
-        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
-        
-        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
-        XCTAssertEqual([value intValue], NSNotFound, @"expecting one objects of 'one'");
-        
-        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
-        XCTAssertEqual([value intValue], 100, @"expecting two objects of 'two'");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationGroup2 fulfill];
-    } progressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-}
+//- (void) testGroupByWithCondition
+//{
+//    NSMutableArray* baseObjs = [NSMutableArray array];
+//    [baseObjs addObject:[self makeObject:@"one" count:10]];
+//    [baseObjs addObject:[self makeObject:@"two" count:10]];
+//    [baseObjs addObject:[self makeObject:@"two" count:30]];
+//    [baseObjs addObject:[self makeObject:@"two" count:70]];
+//    [baseObjs addObject:[self makeObject:@"one" count:5]];
+//    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+//    [_store saveObject:baseObjs
+//   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//       XCTAssertNil(errorOrNil);
+//       
+//       XCTAssertTrue([NSThread isMainThread]);
+//       
+//       [expectationSave fulfill];
+//   }
+//     withProgressBlock:^(NSArray *objects, double percentComplete) {
+//         XCTAssertTrue([NSThread isMainThread]);
+//     }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    
+//    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+//    KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThan forValue:[NSNumber numberWithInt:10]];
+//    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+//        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+//        
+//        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
+//        XCTAssertEqual([value intValue], NSNotFound, @"expecting one objects of 'one'");
+//        
+//        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
+//        XCTAssertEqual([value intValue], 2, @"expecting two objects of 'two'");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationGroup fulfill];
+//    } progressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    XCTestExpectation* expectationGroup2 = [self expectationWithDescription:@"group2"];
+//    [_store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
+//        XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
+//        
+//        NSNumber* value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"one", @"objDescription", nil]];
+//        XCTAssertEqual([value intValue], NSNotFound, @"expecting one objects of 'one'");
+//        
+//        value = [valuesOrNil reducedValueForFields:[NSDictionary dictionaryWithObjectsAndKeys:@"two", @"objDescription", nil]];
+//        XCTAssertEqual([value intValue], 100, @"expecting two objects of 'two'");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationGroup2 fulfill];
+//    } progressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//}
 
 - (void) testGroupByMultipleFields
 {
@@ -495,64 +495,64 @@ NSArray* largeArray()
     
 }
 
-- (void) testLoadById
-{
-    NSMutableArray* baseObjs = [NSMutableArray array];
-    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a1"]];
-    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a2"]];
-    [baseObjs addObject:[self makeObject:@"two" count:10 objId:@"a3"]];
-    [baseObjs addObject:[self makeObject:@"two" count:30 objId:@"a4"]];
-    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a5"]];
-    [baseObjs addObject:[self makeObject:@"one" count:5  objId:@"a6"]];
-    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a7"]];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
-    [_store saveObject:baseObjs
-   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-       XCTAssertNil(errorOrNil);
-       
-       XCTAssertTrue([NSThread isMainThread]);
-       
-       [expectationSave fulfill];
-   } withProgressBlock:^(NSArray *objects, double percentComplete) {
-       XCTAssertTrue([NSThread isMainThread]);
-   }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
-    __block NSArray* objs = nil;
-    [_store loadObjectWithID:@"a6" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError;
-        objs = objectsOrNil;
-        XCTAssertNotNil(objs, @"expecting to load some objects");
-        XCTAssertEqual((int) [objs count], 1, @"should only load one object");
-        XCTAssertEqual((int) [[objs objectAtIndex:0] objCount], 5, @"expecting 6 from a6");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationLoad fulfill];
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-
-   
-    
-    XCTestExpectation* expectationLoad2 = [self expectationWithDescription:@"load2"];
-    objs = nil;
-    [_store loadObjectWithID:[NSArray arrayWithObjects:@"a1",@"a2",@"a3", nil] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        objs = objectsOrNil;
-        XCTAssertNotNil(objs, @"expecting to load some objects");
-        XCTAssertEqual((int) [objs count], 3, @"should only load one object");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationLoad2 fulfill];
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testLoadById
+//{
+//    NSMutableArray* baseObjs = [NSMutableArray array];
+//    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a1"]];
+//    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a2"]];
+//    [baseObjs addObject:[self makeObject:@"two" count:10 objId:@"a3"]];
+//    [baseObjs addObject:[self makeObject:@"two" count:30 objId:@"a4"]];
+//    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a5"]];
+//    [baseObjs addObject:[self makeObject:@"one" count:5  objId:@"a6"]];
+//    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a7"]];
+//    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+//    [_store saveObject:baseObjs
+//   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//       XCTAssertNil(errorOrNil);
+//       
+//       XCTAssertTrue([NSThread isMainThread]);
+//       
+//       [expectationSave fulfill];
+//   } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//       XCTAssertTrue([NSThread isMainThread]);
+//   }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+//    __block NSArray* objs = nil;
+//    [_store loadObjectWithID:@"a6" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError;
+//        objs = objectsOrNil;
+//        XCTAssertNotNil(objs, @"expecting to load some objects");
+//        XCTAssertEqual((int) [objs count], 1, @"should only load one object");
+//        XCTAssertEqual((int) [[objs objectAtIndex:0] objCount], 5, @"expecting 6 from a6");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationLoad fulfill];
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//
+//   
+//    
+//    XCTestExpectation* expectationLoad2 = [self expectationWithDescription:@"load2"];
+//    objs = nil;
+//    [_store loadObjectWithID:[NSArray arrayWithObjects:@"a1",@"a2",@"a3", nil] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        objs = objectsOrNil;
+//        XCTAssertNotNil(objs, @"expecting to load some objects");
+//        XCTAssertEqual((int) [objs count], 3, @"should only load one object");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationLoad2 fulfill];
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 //TODO: test progress as failure completion blocks;
 
@@ -572,55 +572,55 @@ NSArray* largeArray()
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
-- (void) testStreamingResults
-{
-    NSMutableArray* baseObjs = [NSMutableArray array];
-    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a1"]];
-    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a2"]];
-    [baseObjs addObject:[self makeObject:@"two" count:10 objId:@"a3"]];
-    [baseObjs addObject:[self makeObject:@"two" count:30 objId:@"a4"]];
-    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a5"]];
-    [baseObjs addObject:[self makeObject:@"one" count:5  objId:@"a6"]];
-    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a7"]];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
-    [_store saveObject:baseObjs
-   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-       XCTAssertNil(errorOrNil);
-       
-       XCTAssertTrue([NSThread isMainThread]);
-       
-       [expectationSave fulfill];
-   } withProgressBlock:^(NSArray *objects, double percentComplete) {
-       XCTAssertTrue([NSThread isMainThread]);
-   }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
-    __block float done = -1;
-    __block NSArray* objs = nil;
-    [_store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        objs = objectsOrNil;
-        XCTAssertNotNil(objs, @"expecting to load some objects");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationQuery fulfill];
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        NSLog(@"testStreamingResults: percentcomplete:%f", percentComplete);
-        XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
-        XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
-        done = percentComplete;
-        
-        XCTAssertNotNil(objects, @"should have objects");
-        XCTAssertTrue(objects.count >=1, @"should have at least object");
-        id obj = objects[0];
-        XCTAssertTrue([obj isKindOfClass:[ASTTestClass class]], @"class should be test class type");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testStreamingResults
+//{
+//    NSMutableArray* baseObjs = [NSMutableArray array];
+//    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a1"]];
+//    [baseObjs addObject:[self makeObject:@"one" count:10 objId:@"a2"]];
+//    [baseObjs addObject:[self makeObject:@"two" count:10 objId:@"a3"]];
+//    [baseObjs addObject:[self makeObject:@"two" count:30 objId:@"a4"]];
+//    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a5"]];
+//    [baseObjs addObject:[self makeObject:@"one" count:5  objId:@"a6"]];
+//    [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a7"]];
+//    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+//    [_store saveObject:baseObjs
+//   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//       XCTAssertNil(errorOrNil);
+//       
+//       XCTAssertTrue([NSThread isMainThread]);
+//       
+//       [expectationSave fulfill];
+//   } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//       XCTAssertTrue([NSThread isMainThread]);
+//   }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+//    __block float done = -1;
+//    __block NSArray* objs = nil;
+//    [_store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        objs = objectsOrNil;
+//        XCTAssertNotNil(objs, @"expecting to load some objects");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationQuery fulfill];
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        NSLog(@"testStreamingResults: percentcomplete:%f", percentComplete);
+//        XCTAssertTrue(percentComplete > done, @"should be monotonically increasing");
+//        XCTAssertTrue(percentComplete <= 1.0, @"should be less than equal 1");
+//        done = percentComplete;
+//        
+//        XCTAssertNotNil(objects, @"should have objects");
+//        XCTAssertTrue(objects.count >=1, @"should have at least object");
+//        id obj = objects[0];
+//        XCTAssertTrue([obj isKindOfClass:[ASTTestClass class]], @"class should be test class type");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 - (void) testProgressPerformance
 {
