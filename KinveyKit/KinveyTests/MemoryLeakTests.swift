@@ -125,34 +125,34 @@ class MemoryLeakTests: XCTestCase {
         //do nothing
     }
 
-    func test() {
-        let memory1 = Double(usedMemory())
-        
-        setupKCS(false)
-        
-        collection = KCSCollection(fromString: "language", ofClass: NSMutableDictionary.self)
-        store = KCSLinkedAppdataStore(collection: collection, options: nil)
-        
-        login()
-        
-        let operations = ["C", "R", "U", "D"]
-        for index in 0...100 {
-            switch Int(arc4random()) % operations.count {
-            case 0:
-                save()
-            case 1:
-                query()
-            case 2:
-                update()
-            case 3:
-                delete()
-            default:
-                doNothing()
-            }
-        }
-    
-        let memory2 = Double(usedMemory())
-        XCTAssertEqualWithAccuracy(memory1, memory2, Double(22 * 1024 * 1024)) //22 MB
-    }
+//    func test() {
+//        let memory1 = Double(usedMemory())
+//        
+//        setupKCS(false)
+//        
+//        collection = KCSCollection(fromString: "language", ofClass: NSMutableDictionary.self)
+//        store = KCSLinkedAppdataStore(collection: collection, options: nil)
+//        
+//        login()
+//        
+//        let operations = ["C", "R", "U", "D"]
+//        for index in 0...100 {
+//            switch Int(arc4random()) % operations.count {
+//            case 0:
+//                save()
+//            case 1:
+//                query()
+//            case 2:
+//                update()
+//            case 3:
+//                delete()
+//            default:
+//                doNothing()
+//            }
+//        }
+//    
+//        let memory2 = Double(usedMemory())
+//        XCTAssertEqualWithAccuracy(memory1, memory2, Double(22 * 1024 * 1024)) //22 MB
+//    }
 
 }

@@ -25,25 +25,25 @@
 
 @implementation KCSUserSocialExtrasTest
 
-- (void) testTwitterReverseAuth
-{
-    [TestUtils justInitServer];
-    
-    // Ensure user is logged out
-    [[KCSUser activeUser] logout];
-    XCTestExpectation* expectationUser = [self expectationWithDescription:@"user"];
-    
-    [KCSUser getAccessDictionaryFromTwitterFromPrimaryAccount:^(NSDictionary *accessBlockOrNil, NSError *errorOrNil) {
-        STAssertNoError;
-        XCTAssertEqual((int)accessBlockOrNil.count, (int)2, @"should have two items");
-        XCTAssertNotNil([accessBlockOrNil objectForKey:@"access_token"], @"should have an access token");
-        XCTAssertNotNil([accessBlockOrNil objectForKey:@"access_token_secret"], @"should have an acess token secret");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationUser fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testTwitterReverseAuth
+//{
+//    [TestUtils justInitServer];
+//    
+//    // Ensure user is logged out
+//    [[KCSUser activeUser] logout];
+//    XCTestExpectation* expectationUser = [self expectationWithDescription:@"user"];
+//    
+//    [KCSUser getAccessDictionaryFromTwitterFromPrimaryAccount:^(NSDictionary *accessBlockOrNil, NSError *errorOrNil) {
+//        STAssertNoError;
+//        XCTAssertEqual((int)accessBlockOrNil.count, (int)2, @"should have two items");
+//        XCTAssertNotNil([accessBlockOrNil objectForKey:@"access_token"], @"should have an access token");
+//        XCTAssertNotNil([accessBlockOrNil objectForKey:@"access_token_secret"], @"should have an acess token secret");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationUser fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 @end

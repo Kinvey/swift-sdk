@@ -42,7 +42,7 @@
         if (error) {
             jsonObject = nil;
         } else {
-            jsonObject = [response jsonObjectError:&error];
+            jsonObject = [response jsonObjectError:nil];
         }
         DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(jsonObject, error));
     }
