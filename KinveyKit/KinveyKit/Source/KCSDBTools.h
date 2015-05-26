@@ -19,6 +19,8 @@
 #import <Foundation/Foundation.h>
 
 @interface KCSDBTools : NSObject
+
++(BOOL)isKCSMongoObjectId:(NSString*)objectId;
 + (NSString*) KCSMongoObjectId;
 
 @end
