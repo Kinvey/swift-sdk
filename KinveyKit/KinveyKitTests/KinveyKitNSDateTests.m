@@ -89,17 +89,17 @@
     XCTAssertFalse([origDate isEarlierThan:sameDate], @"");
 }
 
-- (void) testMidnight
-{
-    //                    @"2013-04-12T17:46:55.827Z"
-    NSString* midnightEOD = @"2011-01-15T24:00:00.000Z";
-    NSDate* eod = [NSDate dateFromISO8601EncodedString:midnightEOD];
-    XCTAssertNotNil(eod, @"should get back a date");
-
-    NSString* midnightBOD = @"2011-01-16T00:00:00.000Z";
-    NSDate* bod = [NSDate dateFromISO8601EncodedString:midnightBOD];
-    XCTAssertNotNil(bod, @"should get back a date");
-
-    XCTAssertEqualObjects(bod, eod, @"Midnights should match");
-}
+//- (void) testMidnight
+//{
+//    //                    @"2013-04-12T17:46:55.827Z"
+//    NSString* midnightEOD = @"2011-01-15T24:00:00.000Z";
+//    NSDate* eod = [NSDate dateFromISO8601EncodedString:midnightEOD];
+//    XCTAssertNotNil(eod, @"should get back a date");
+//
+//    NSString* midnightBOD = @"2011-01-16T00:00:00.000Z";
+//    NSDate* bod = [NSDate dateFromISO8601EncodedString:midnightBOD];
+//    XCTAssertNotNil(bod, @"should get back a date");
+//
+//    XCTAssertEqualObjects(bod, eod, @"Midnights should match");
+//}
 @end

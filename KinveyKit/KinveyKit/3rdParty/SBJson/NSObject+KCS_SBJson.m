@@ -30,6 +30,7 @@
 #import "NSObject+KCS_SBJson.h"
 #import "KCS_SBJsonWriter.h"
 #import "KCS_SBJsonParser.h"
+#import "KCSLogManager.h"
 
 @implementation NSObject (NSObject_KCS_SBJsonWriting)
 
@@ -37,7 +38,7 @@
     KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];    
     NSString *json = [writer stringWithObject:self];
     if (!json)
-        NSLog(@"-JSONRepresentation failed. Error is: %@", writer.error);
+        KCSLogError(@"-JSONRepresentation failed. Error is: %@", writer.error);
     return json;
 }
 
@@ -51,7 +52,7 @@
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
     id repr = [parser objectWithString:self];
     if (!repr)
-        NSLog(@"-JSONValue failed. Error is: %@", parser.error);
+        KCSLogError(@"-JSONValue failed. Error is: %@", parser.error);
     return repr;
 }
 
@@ -65,7 +66,7 @@
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
     id repr = [parser objectWithData:self];
     if (!repr)
-        NSLog(@"-JSONValue failed. Error is: %@", parser.error);
+        KCSLogError(@"-JSONValue failed. Error is: %@", parser.error);
     return repr;
 }
 

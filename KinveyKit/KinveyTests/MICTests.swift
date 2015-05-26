@@ -91,93 +91,93 @@ class MICTests: XCTestCase {
         waitForExpectationsWithTimeout(30, handler: nil)
     }
     
-    func testRefreshToken() {
-        let expectationLogin = expectationWithDescription("login")
-        
-        KCSUser.loginWithAuthorizationCodeAPI(
-            "kinveyAuthDemo://",
-            options: [
-                KCSUsername : "mjs",
-                KCSPassword : "demo"
-            ]
-            ) { (user: KCSUser!, error: NSError!, userActionResult: KCSUserActionResult) -> Void in
-                XCTAssertNil(error)
-                XCTAssertNotNil(user)
-                
-                XCTAssertTrue(NSThread.isMainThread())
-                
-                expectationLogin.fulfill()
-        }
-        
-        waitForExpectationsWithTimeout(30, handler: nil)
-        
-        class MockURLProtocol: NSURLProtocol {
-            
-            static var canHandleRequest = true
-            
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                return canHandleRequest
-            }
-            
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
-                return request
-            }
-            
-            private override func startLoading() {
-                let data = NSJSONSerialization.dataWithJSONObject([ "error" : "ExpiredToken" ], options: NSJSONWritingOptions.allZeros, error: nil)!
-                let headers = [
-                    "Content-Type" : "application/json; charset=utf-8",
-                    "Content-Length" : String(data.length),
-                    "X-Powered-By" : "Express"
-                ];
-                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 401, HTTPVersion: "1.1", headerFields: headers)!
-                
-                client!.URLProtocol(
-                    self,
-                    didReceiveResponse: response,
-                    cacheStoragePolicy: .NotAllowed
-                )
-                
-                client!.URLProtocol(
-                    self,
-                    didLoadData: data
-                )
-                
-                client!.URLProtocolDidFinishLoading(self)
-                
-                MockURLProtocol.canHandleRequest = false
-            }
-            
-        }
-        
-        KCSURLProtocol.registerClass(MockURLProtocol)
-        
-        let collection = KCSCollection(fromString: "person", ofClass: NSMutableDictionary.self)
-        let store = KCSCachedStore(collection: collection, options: [
-            KCSStoreKeyCachePolicy : KCSCachePolicy.LocalFirst.rawValue,
-            KCSStoreKeyOfflineUpdateEnabled : true
-        ])
-        
-        let expectationSave = expectationWithDescription("save")
-        
-        store.saveObject(
-            [ "name" : "Victor" ],
-            withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
-                XCTAssertNil(error)
-                XCTAssertNotNil(results)
-                
-                XCTAssertTrue(NSThread.isMainThread())
-                
-                expectationSave.fulfill()
-            },
-            withProgressBlock: { (results: [AnyObject]!, percentage: Double) -> Void in
-                XCTAssertTrue(NSThread.isMainThread())
-            }
-        )
-        
-        waitForExpectationsWithTimeout(60, handler: { (error: NSError!) -> Void in
-            KCSURLProtocol.unregisterClass(MockURLProtocol)
-        })
-    }
+//    func testRefreshToken() {
+//        let expectationLogin = expectationWithDescription("login")
+//        
+//        KCSUser.loginWithAuthorizationCodeAPI(
+//            "kinveyAuthDemo://",
+//            options: [
+//                KCSUsername : "mjs",
+//                KCSPassword : "demo"
+//            ]
+//            ) { (user: KCSUser!, error: NSError!, userActionResult: KCSUserActionResult) -> Void in
+//                XCTAssertNil(error)
+//                XCTAssertNotNil(user)
+//                
+//                XCTAssertTrue(NSThread.isMainThread())
+//                
+//                expectationLogin.fulfill()
+//        }
+//        
+//        waitForExpectationsWithTimeout(30, handler: nil)
+//        
+//        class MockURLProtocol: NSURLProtocol {
+//            
+//            static var canHandleRequest = true
+//            
+//            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+//                return canHandleRequest
+//            }
+//            
+//            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+//                return request
+//            }
+//            
+//            private override func startLoading() {
+//                let data = NSJSONSerialization.dataWithJSONObject([ "error" : "ExpiredToken" ], options: NSJSONWritingOptions.allZeros, error: nil)!
+//                let headers = [
+//                    "Content-Type" : "application/json; charset=utf-8",
+//                    "Content-Length" : String(data.length),
+//                    "X-Powered-By" : "Express"
+//                ];
+//                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 401, HTTPVersion: "1.1", headerFields: headers)!
+//                
+//                client!.URLProtocol(
+//                    self,
+//                    didReceiveResponse: response,
+//                    cacheStoragePolicy: .NotAllowed
+//                )
+//                
+//                client!.URLProtocol(
+//                    self,
+//                    didLoadData: data
+//                )
+//                
+//                client!.URLProtocolDidFinishLoading(self)
+//                
+//                MockURLProtocol.canHandleRequest = false
+//            }
+//            
+//        }
+//        
+//        KCSURLProtocol.registerClass(MockURLProtocol)
+//        
+//        let collection = KCSCollection(fromString: "person", ofClass: NSMutableDictionary.self)
+//        let store = KCSCachedStore(collection: collection, options: [
+//            KCSStoreKeyCachePolicy : KCSCachePolicy.LocalFirst.rawValue,
+//            KCSStoreKeyOfflineUpdateEnabled : true
+//        ])
+//        
+//        let expectationSave = expectationWithDescription("save")
+//        
+//        store.saveObject(
+//            [ "name" : "Victor" ],
+//            withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+//                XCTAssertNil(error)
+//                XCTAssertNotNil(results)
+//                
+//                XCTAssertTrue(NSThread.isMainThread())
+//                
+//                expectationSave.fulfill()
+//            },
+//            withProgressBlock: { (results: [AnyObject]!, percentage: Double) -> Void in
+//                XCTAssertTrue(NSThread.isMainThread())
+//            }
+//        )
+//        
+//        waitForExpectationsWithTimeout(60, handler: { (error: NSError!) -> Void in
+//            KCSURLProtocol.unregisterClass(MockURLProtocol)
+//        })
+//    }
     
 }

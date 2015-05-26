@@ -20,6 +20,7 @@
 #import "KCSQuery2.h"
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
+#import "NSDate+ISO8601.h"
 
 #define BadPredicate()  if (error != NULL) { \
                              *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSqueryPredicateNotSupportedError userInfo:nil]; \
@@ -252,6 +253,16 @@ id kcsConvertMongoValToPredicate(id val)
                     id fVal = kcsConvertMongoValToPredicate(val);
                     
                     if (kcsQueryIsComparisonS(op) && ![val isKindOfClass:[NSNumber class]]) {
+                        if ([val isKindOfClass:[NSString class]]) {
+                            NSRange range = [((NSString*)val) rangeOfString:@"^ISODate\\(\"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z\"\\)$" options:NSRegularExpressionSearch];
+                            if (range.location != NSNotFound) {
+                                range = [val rangeOfString:@"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z" options:NSRegularExpressionSearch];
+                                NSString* dateStr = [val substringWithRange:range];
+                                NSDate* date = [NSDate dateFromISO8601EncodedString:dateStr];
+                                NSString* format = [NSString stringWithFormat:@"%@ %@ %%@", key, fOp];
+                                predicate = [NSPredicate predicateWithFormat:format, date];
+                            }
+                        }
 //                        predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
 //                            NSComparisonResult* c = [evaluatedObject compare:<#(NSNumber *)#>]
 //                        }];

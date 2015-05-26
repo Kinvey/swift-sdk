@@ -48,6 +48,7 @@ id<KCSCredentials> mockCredentails();
 
 @interface XCTestCase (TestUtils2)
 @property (nonatomic) BOOL done;
+@property (nonatomic, strong) NSMutableArray* expectations;
 
 - (BOOL) poll;
 

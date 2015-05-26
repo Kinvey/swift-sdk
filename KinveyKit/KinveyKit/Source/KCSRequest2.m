@@ -152,7 +152,7 @@ static NSOperationQueue* kcsRequestQueue;
 
     if (_useMock && kid == nil) {
         kid = @"mock";
-        baseURL = baseURL ? baseURL : @"http://localhost:2110/";
+        baseURL = baseURL ? baseURL : @"https://localhost:2110/";
     }
     
     NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
@@ -319,7 +319,7 @@ static NSOperationQueue* kcsRequestQueue;
         NSData* bodyData = [writer dataWithObject:_body];
         DBAssert(bodyData != nil, @"should be able to parse body");
         [request setHTTPBody:bodyData];
-        [request addValue:_contentType forHTTPHeaderField:kHeaderContentType];
+        [request setValue:_contentType forHTTPHeaderField:kHeaderContentType];
     } else if ([self.method isEqualToString:KCSRESTMethodDELETE]) {
         // [request setHTTPBody:bodyData]; no need for body b/c of no content type
     }
