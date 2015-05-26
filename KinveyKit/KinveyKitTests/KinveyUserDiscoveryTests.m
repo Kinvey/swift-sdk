@@ -64,28 +64,28 @@
 
 }
 
-- (void) testDiscovery
-{
-    [self createUser:@"superman" email:@"superman@justiceleague.com" fname:@"Clark" lname:@"Kent"];
-    [self createUser:@"batman" email:@"batman@justiceleague.com" fname:@"Bruce" lname:@"Wayne"];
-    [self createUser:@"wonderwoman" email:@"wonderwoman@justiceleague.com" fname:@"Diana" lname:@"Prince"];
-    [self createUser:@"flash" email:@"flash@justiceleague.com" fname:@"Wally" lname:@"West"];
-    [self createUser:@"greenLantern" email:@"greeny@justiceleague.com" fname:@"John" lname:@"Stewart"];
-    
-    XCTestExpectation* expectationLookup = [self expectationWithDescription:@"lookup"];
-    [KCSUserDiscovery lookupUsersForFieldsAndValues:[NSDictionary dictionaryWithObjectsAndKeys:@"batman", @"username", nil] completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        STAssertObjects(1)
-        KCSUser* obj = objectsOrNil[0];
-        XCTAssertEqualObjects(@"Wayne", obj.surname, @"expecting a match");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationLookup fulfill];
-    } progressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testDiscovery
+//{
+//    [self createUser:@"superman" email:@"superman@justiceleague.com" fname:@"Clark" lname:@"Kent"];
+//    [self createUser:@"batman" email:@"batman@justiceleague.com" fname:@"Bruce" lname:@"Wayne"];
+//    [self createUser:@"wonderwoman" email:@"wonderwoman@justiceleague.com" fname:@"Diana" lname:@"Prince"];
+//    [self createUser:@"flash" email:@"flash@justiceleague.com" fname:@"Wally" lname:@"West"];
+//    [self createUser:@"greenLantern" email:@"greeny@justiceleague.com" fname:@"John" lname:@"Stewart"];
+//    
+//    XCTestExpectation* expectationLookup = [self expectationWithDescription:@"lookup"];
+//    [KCSUserDiscovery lookupUsersForFieldsAndValues:[NSDictionary dictionaryWithObjectsAndKeys:@"batman", @"username", nil] completionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        STAssertObjects(1)
+//        KCSUser* obj = objectsOrNil[0];
+//        XCTAssertEqualObjects(@"Wayne", obj.surname, @"expecting a match");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationLookup fulfill];
+//    } progressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 @end

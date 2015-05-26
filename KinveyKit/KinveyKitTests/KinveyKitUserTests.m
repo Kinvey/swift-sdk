@@ -270,21 +270,21 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
                             
 }
 
-- (void) testAutogenUser
-{
-    [[KCSUser activeUser] logout];
-    XCTAssertNil([KCSUser activeUser], @"start with no user");
-    
-    KCSUser* u = [self currentOrAutogen];
-    XCTAssertNotNil(u, @"should be active user");
-    XCTAssertNotNil(u.userId, @"should be active user");
-    XCTAssertNotNil(u.username, @"should be active user");
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-    XCTAssertNil(u.password, @"should be active user");
-    XCTAssertNil(u.sessionAuth, @"should be active user");
-#pragma clang diagnostic pop
-}
+//- (void) testAutogenUser
+//{
+//    [[KCSUser activeUser] logout];
+//    XCTAssertNil([KCSUser activeUser], @"start with no user");
+//    
+//    KCSUser* u = [self currentOrAutogen];
+//    XCTAssertNotNil(u, @"should be active user");
+//    XCTAssertNotNil(u.userId, @"should be active user");
+//    XCTAssertNotNil(u.username, @"should be active user");
+//#pragma clang diagnostic push
+//#pragma clang diagnostic ignored "-Wdeprecated"
+//    XCTAssertNil(u.password, @"should be active user");
+//    XCTAssertNil(u.sessionAuth, @"should be active user");
+//#pragma clang diagnostic pop
+//}
 
 - (void) setupUserCache
 {
@@ -368,59 +368,59 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 
 static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdAXkjAjb9G4yQNgtMZC3ZAUOkuNgwY1I01ZBw1rZBaJRpxoQaacPJiDSVfZCB7l2BZBZBDxP164mw0EqQb5wmyV6gGzW0RgjeG4R57nbb9DtEw04UDt31gaAUWatIs8aznZCDzZCIPZAPaVFN9ZCM0icWMVEZD";
 
-- (void) testLoginWithFacebookOld
-{
-    [TestUtils justInitServer];
-    // Ensure user is logged out
-    [[KCSUser activeUser] logout];
-    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
-    [KCSUser loginWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : access_token} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        STAssertNoError;
-        XCTAssertNotNil(user, @"user should not be nil");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationLogin fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    XCTestExpectation* expectationPing = [self expectationWithDescription:@"ping"];
-    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
-        XCTAssertTrue(result.pingWasSuccessful, @"should have been a success.");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationPing fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testLoginWithFacebookOld
+//{
+//    [TestUtils justInitServer];
+//    // Ensure user is logged out
+//    [[KCSUser activeUser] logout];
+//    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+//    [KCSUser loginWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : access_token} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+//        STAssertNoError;
+//        XCTAssertNotNil(user, @"user should not be nil");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationLogin fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    XCTestExpectation* expectationPing = [self expectationWithDescription:@"ping"];
+//    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
+//        XCTAssertTrue(result.pingWasSuccessful, @"should have been a success.");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationPing fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
-- (void) testLoginWithFacebookNew
-{
-    [TestUtils justInitServer];
-    // Ensure user is logged out
-    [[KCSUser activeUser] logout];
-    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
-    [KCSUser loginWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : access_token} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        STAssertNoError;
-        XCTAssertNotNil(user, @"user should not be nil");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationLogin fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    XCTestExpectation* expectationPing = [self expectationWithDescription:@"ping"];
-    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
-        XCTAssertTrue(result.pingWasSuccessful, @"should have been a success.");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationPing fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testLoginWithFacebookNew
+//{
+//    [TestUtils justInitServer];
+//    // Ensure user is logged out
+//    [[KCSUser activeUser] logout];
+//    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+//    [KCSUser loginWithSocialIdentity:KCSSocialIDFacebook accessDictionary:@{KCSUserAccessTokenKey : access_token} withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+//        STAssertNoError;
+//        XCTAssertNotNil(user, @"user should not be nil");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationLogin fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    XCTestExpectation* expectationPing = [self expectationWithDescription:@"ping"];
+//    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
+//        XCTAssertTrue(result.pingWasSuccessful, @"should have been a success.");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationPing fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 /* function named this way to follow the login with FB */
 //TODO: get this to work in the simulator
@@ -443,34 +443,34 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
 }
 #endif
 
-- (void) testLoginWithTwitter
-{
-    [TestUtils justInitServer];
-    // Ensure user is logged out
-    [[KCSUser activeUser] logout];
-
-    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
-    [KCSUser loginWithSocialIdentity:KCSSocialIDTwitter accessDictionary:@{@"access_token" : @"823982046-Z0OrwAWQO3Ys2jtGM1k7hDnD6Ty9f54T1JRaDHHi",         @"access_token_secret" : @"3yIDGXVZV67m3G480stFgYk5eHZ7UCOSlOVHxh5RQ3g"}
-     withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-         XCTAssertNotNil(user, @"user should not be nil");
-         
-         XCTAssertTrue([NSThread isMainThread]);
-         
-         [expectationLogin fulfill];
-     }];
-    
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    XCTestExpectation* expectationPing = [self expectationWithDescription:@"ping"];
-    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
-        XCTAssertTrue(result.pingWasSuccessful, @"should have been a success.");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationPing fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testLoginWithTwitter
+//{
+//    [TestUtils justInitServer];
+//    // Ensure user is logged out
+//    [[KCSUser activeUser] logout];
+//
+//    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+//    [KCSUser loginWithSocialIdentity:KCSSocialIDTwitter accessDictionary:@{@"access_token" : @"823982046-Z0OrwAWQO3Ys2jtGM1k7hDnD6Ty9f54T1JRaDHHi",         @"access_token_secret" : @"3yIDGXVZV67m3G480stFgYk5eHZ7UCOSlOVHxh5RQ3g"}
+//     withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+//         XCTAssertNotNil(user, @"user should not be nil");
+//         
+//         XCTAssertTrue([NSThread isMainThread]);
+//         
+//         [expectationLogin fulfill];
+//     }];
+//    
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    XCTestExpectation* expectationPing = [self expectationWithDescription:@"ping"];
+//    [KCSPing pingKinveyWithBlock:^(KCSPingResult *result) {
+//        XCTAssertTrue(result.pingWasSuccessful, @"should have been a success.");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationPing fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 - (void) testUserCollection
 {
@@ -503,60 +503,60 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
 }
 
 #pragma mark - User lifecycle
-- (void) testUser
-{
-    [[KCSUser activeUser] logout];
-    
-    __block KCSUser* bUser = nil;
-    XCTestExpectation* expectationCreateAutogeneratedUser = [self expectationWithDescription:@"createAutogeneratedUser"];
-    [KCSUser createAutogeneratedUser:nil completion:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        STAssertNoError
-        XCTAssertNotNil(user, @"shuld have a user");
-        bUser = user;
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationCreateAutogeneratedUser fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    KCSCollection* aC = [KCSCollection userCollection];
-    aC.objectTemplate = [NSMutableDictionary class];
-    KCSAppdataStore* us = [KCSAppdataStore storeWithCollection:aC options:nil];
-    
-    NSMutableDictionary* ur = [@{KCSEntityKeyId : bUser.userId, @"username" : bUser.username} mutableCopy];
-    ur[@"TEST_PROP"] = @"TEST_VALUE";
-    
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
-    [us saveObject:ur withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationSave fulfill];
-    } withProgressBlock:^(NSArray *objects, double percentComplete) {
-        XCTAssertTrue([NSThread isMainThread]);
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    NSString* savedProp = [[KCSUser activeUser] getValueForAttribute:@"TEST_PROP"];
-    XCTAssertNil(savedProp, @"should not have updated the user");
-    
-    XCTestExpectation* expectationRefresh = [self expectationWithDescription:@"refresh"];
-    [[KCSUser activeUser] refreshFromServer:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        XCTAssertEqualObjects(objectsOrNil[0], [KCSUser activeUser], @"should get back activeUser");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationRefresh fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-
-    NSString* loadedProp = [[KCSUser activeUser] getValueForAttribute:@"TEST_PROP"];
-    XCTAssertNotNil(loadedProp, @"should have updated the user");
-
-}
+//- (void) testUser
+//{
+//    [[KCSUser activeUser] logout];
+//    
+//    __block KCSUser* bUser = nil;
+//    XCTestExpectation* expectationCreateAutogeneratedUser = [self expectationWithDescription:@"createAutogeneratedUser"];
+//    [KCSUser createAutogeneratedUser:nil completion:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+//        STAssertNoError
+//        XCTAssertNotNil(user, @"shuld have a user");
+//        bUser = user;
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationCreateAutogeneratedUser fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    KCSCollection* aC = [KCSCollection userCollection];
+//    aC.objectTemplate = [NSMutableDictionary class];
+//    KCSAppdataStore* us = [KCSAppdataStore storeWithCollection:aC options:nil];
+//    
+//    NSMutableDictionary* ur = [@{KCSEntityKeyId : bUser.userId, @"username" : bUser.username} mutableCopy];
+//    ur[@"TEST_PROP"] = @"TEST_VALUE";
+//    
+//    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+//    [us saveObject:ur withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationSave fulfill];
+//    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+//        XCTAssertTrue([NSThread isMainThread]);
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    NSString* savedProp = [[KCSUser activeUser] getValueForAttribute:@"TEST_PROP"];
+//    XCTAssertNil(savedProp, @"should not have updated the user");
+//    
+//    XCTestExpectation* expectationRefresh = [self expectationWithDescription:@"refresh"];
+//    [[KCSUser activeUser] refreshFromServer:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        XCTAssertEqualObjects(objectsOrNil[0], [KCSUser activeUser], @"should get back activeUser");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationRefresh fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//
+//    NSString* loadedProp = [[KCSUser activeUser] getValueForAttribute:@"TEST_PROP"];
+//    XCTAssertNotNil(loadedProp, @"should have updated the user");
+//
+//}
 
 #pragma mark - Password reset
 
@@ -724,83 +724,83 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
 #pragma mark - test custom items
 //Assembla #3125
 #warning todo-test check taht createAuto returns same object as [KCSUser activeUser]
-- (void) testCustomAttributeIsPersisted
-{
-    //kk2: use dedicated user
-    
-    __block KCSUser* _user = nil;
-    XCTestExpectation* expectationCreateAutogeneratedUser = [self expectationWithDescription:@"createAutogeneratedUser"];
-    [KCSUser createAutogeneratedUser:nil completion:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
-        STAssertNoError
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        _user = user;
-        
-        [expectationCreateAutogeneratedUser fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    NSString* val = [NSString UUID];
-    [_user setValue:val forAttribute:@"custom"];
-    
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
-    [_user saveWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationSave fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    [[KCSUser activeUser] logout];
-    
-    KCSUser* newUser = [KCSUser activeUser];
-    XCTAssertNotNil(newUser, @"a user");
-    XCTAssertEqual(newUser, _user, @"should get back user");
-    
-    XCTAssertEqualObjects([newUser getValueForAttribute:@"custom"], val, @"should get the val back");
-}
-
-#pragma mark - check username
-- (void) testCheckUsername
-{
-    XCTestExpectation* expectationCheckUsername = [self expectationWithDescription:@"checkUsername"];
-    [KCSUser checkUsername:@"not exist" withCompletionBlock:^(NSString *username, BOOL usernameAlreadyTaken, NSError *errorOrNil) {
-        STAssertNoError;
-        XCTAssertFalse(usernameAlreadyTaken, @"should not have the user");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationCheckUsername fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-    
-    KCSUser* active = [self currentOrAutogen];
-    XCTAssertNotNil(active, @"Should have a user");
-    
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
-    [active saveWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        STAssertNoError;
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationSave fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-
-    XCTestExpectation* expectationCheckUsername2 = [self expectationWithDescription:@"checkUsername2"];
-    [KCSUser checkUsername:active.username withCompletionBlock:^(NSString *username, BOOL usernameAlreadyTaken, NSError *errorOrNil) {
-        STAssertNoError;
-        XCTAssertTrue(usernameAlreadyTaken, @"should have the user");
-        
-        XCTAssertTrue([NSThread isMainThread]);
-        
-        [expectationCheckUsername2 fulfill];
-    }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
+//- (void) testCustomAttributeIsPersisted
+//{
+//    //kk2: use dedicated user
+//    
+//    __block KCSUser* _user = nil;
+//    XCTestExpectation* expectationCreateAutogeneratedUser = [self expectationWithDescription:@"createAutogeneratedUser"];
+//    [KCSUser createAutogeneratedUser:nil completion:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+//        STAssertNoError
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        _user = user;
+//        
+//        [expectationCreateAutogeneratedUser fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    NSString* val = [NSString UUID];
+//    [_user setValue:val forAttribute:@"custom"];
+//    
+//    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+//    [_user saveWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationSave fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    [[KCSUser activeUser] logout];
+//    
+//    KCSUser* newUser = [KCSUser activeUser];
+//    XCTAssertNotNil(newUser, @"a user");
+//    XCTAssertEqual(newUser, _user, @"should get back user");
+//    
+//    XCTAssertEqualObjects([newUser getValueForAttribute:@"custom"], val, @"should get the val back");
+//}
+//
+//#pragma mark - check username
+//- (void) testCheckUsername
+//{
+//    XCTestExpectation* expectationCheckUsername = [self expectationWithDescription:@"checkUsername"];
+//    [KCSUser checkUsername:@"not exist" withCompletionBlock:^(NSString *username, BOOL usernameAlreadyTaken, NSError *errorOrNil) {
+//        STAssertNoError;
+//        XCTAssertFalse(usernameAlreadyTaken, @"should not have the user");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationCheckUsername fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//    
+//    KCSUser* active = [self currentOrAutogen];
+//    XCTAssertNotNil(active, @"Should have a user");
+//    
+//    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+//    [active saveWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+//        STAssertNoError;
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationSave fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//
+//    XCTestExpectation* expectationCheckUsername2 = [self expectationWithDescription:@"checkUsername2"];
+//    [KCSUser checkUsername:active.username withCompletionBlock:^(NSString *username, BOOL usernameAlreadyTaken, NSError *errorOrNil) {
+//        STAssertNoError;
+//        XCTAssertTrue(usernameAlreadyTaken, @"should have the user");
+//        
+//        XCTAssertTrue([NSThread isMainThread]);
+//        
+//        [expectationCheckUsername2 fulfill];
+//    }];
+//    [self waitForExpectationsWithTimeout:30 handler:nil];
+//}
 
 #pragma mark - Others
 - (void) testUsesSessionAuthCredentials

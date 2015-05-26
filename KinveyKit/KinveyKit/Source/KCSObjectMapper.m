@@ -663,7 +663,11 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
         //serialize the fields to a dictionary
         if ([jsonName isEqualToString:KCSEntityKeyMetadata]) {
             //hijack metadata & only save ACLs (kmd can't be overwritten yet)
-            dictionaryToMap[kACLKey] = [(KCSMetadata*)value aclValue];
+            if ([value isKindOfClass:[KCSMetadata class]]) {
+                dictionaryToMap[kACLKey] = [(KCSMetadata*)value aclValue];
+            } else if ([value isKindOfClass:[NSDictionary class]] && value[kACLKey]) {
+                dictionaryToMap[kACLKey] = value[kACLKey];
+            }
         } else {
             value = valueForProperty(jsonName, //jsonName
                                      value, //value
