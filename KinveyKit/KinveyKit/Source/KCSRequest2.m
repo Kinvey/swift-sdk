@@ -27,6 +27,7 @@
 #import "KCSMutableOrderedDictionary.h"
 #import "KinveyUser+Private.h"
 #import "KCSUser2+KinveyUserService+Private.h"
+#import "KCSLogManager.h"
 
 #define kHeaderAuthorization           @"Authorization"
 #define kHeaderDate                    @"Date"
@@ -298,7 +299,13 @@ static NSOperationQueue* kcsRequestQueue;
     request.HTTPMethod = self.method;
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithDictionary:request.allHTTPHeaderFields];
-    headers[kHeaderAuthorization] = [self.credentials authString];
+    @try {
+        headers[kHeaderAuthorization] = [self.credentials authString];
+    }
+    @catch (NSException *exception) {
+        KCSLogError(@"Error setting the authorization header: %@", exception);
+        [headers removeObjectForKey:kHeaderAuthorization];
+    }
     
     headers[kHeaderResponseWrapper] = @"true";
     setIfValNotNil(headers[kHeaderClientMethod], self.options[KCSRequestOptionClientMethod]);
