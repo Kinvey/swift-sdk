@@ -64,7 +64,7 @@ KCS_CONST_IMPL KCSMetadataFieldCreationTime = @"_kmd.ect";
     self = [self init];
     if (self) {
         NSString* lmt = [kmd objectForKey:kKMDLMTKey];
-        _lastModifiedTime = [NSDate dateFromISO8601EncodedString:lmt];
+        _lastModifiedTime = lmt != nil ? [NSDate dateFromISO8601EncodedString:lmt] : nil;
         NSString* ect = [kmd objectForKey:kKMDECTKey];
         _creationTime = ect != nil ? [NSDate dateFromISO8601EncodedString:ect] : nil;
         _acl = [NSMutableDictionary dictionaryWithDictionary:pACL];
