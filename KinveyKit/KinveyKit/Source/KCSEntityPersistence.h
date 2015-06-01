@@ -17,6 +17,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "KCSQuery2.h"
 
 @interface KCSEntityPersistence : NSObject 
 @property (nonatomic, strong) NSDictionary* saveContext;
@@ -24,10 +25,10 @@
 
 - (instancetype) initWithPersistenceId:(NSString*)key;
 
-- (NSArray*)idsForQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection;
+- (NSArray*)idsForQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 - (NSArray*)allIds:(NSString*)route collection:(NSString*)collection;
-- (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection;
-- (BOOL) removeQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection;
+- (BOOL) setIds:(NSArray*)theseIds forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
+- (BOOL) removeQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 
 - (BOOL) updateWithEntity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection;
 - (NSDictionary*) entityForId:(NSString*)_id route:(NSString*)route collection:(NSString*)collection;

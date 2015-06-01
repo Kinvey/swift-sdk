@@ -29,6 +29,9 @@
 
 #import "KCSRequest2.h"
 
+#import "KCSMutableOrderedDictionary.h"
+#import "KCSQuery2+KCSInternal.h"
+
 #define KCS_CACHE_VERSION @"0.004"
 
 @interface KCSEntityPersistence ()
@@ -410,8 +413,16 @@
 #pragma mark - Updates
 - (NSString*) tableForRoute:(NSString*)route collection:(NSString*)collection
 {
-//    collection = [collection stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
-    return [NSString stringWithFormat:@"%@_%@",route,collection];
+    NSDictionary* dict = [KCSMutableOrderedDictionary dictionaryWithDictionary:@{
+        @"route" : route != nil ? route : [NSNull null],
+        @"collection" : collection != nil ? collection : [NSNull null]
+    }];
+    NSError* error = nil;
+    NSData* data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+    if (error) {
+        @throw [NSException exceptionWithName:error.domain reason:error.localizedFailureReason userInfo:error.userInfo];
+    }
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
 - (BOOL) tableExists:(NSString*)tableString
@@ -526,12 +537,22 @@
 }
 
 #pragma mark - queries
-- (NSString*)queryKey:(NSString*)query routeKey:(NSString*)routeKey
+- (NSString*)queryKey:(KCSQuery2*)query routeKey:(NSString*)route collectionKey:(NSString*)collection
 {
-    return [@([[NSString stringWithFormat:@"[%@]_%@", routeKey, query] hash]) stringValue];
+    NSDictionary* dict = [KCSMutableOrderedDictionary dictionaryWithDictionary:@{
+        @"query" : query != nil && query.internalRepresentation != nil ? query.internalRepresentation : [NSNull null],
+        @"route" : route != nil ? route : [NSNull null],
+        @"collection" : collection != nil ? collection : [NSNull null]
+    }];
+    NSError* error = nil;
+    NSData* data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+    if (error) {
+        @throw [NSException exceptionWithName:error.domain reason:error.localizedFailureReason userInfo:error.userInfo];
+    }
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
-- (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection
+- (BOOL) setIds:(NSArray*)theseIds forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
     KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"update query: '%@'", query);
     
@@ -548,12 +569,11 @@
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", theseIds);
     }
     
-    NSString* routeKey = [self tableForRoute:route collection:collection];
-    NSString* queryKey = [self queryKey:query routeKey:routeKey];
+    NSString* queryKey = [self queryKey:query routeKey:route collectionKey:collection];
 
     __block BOOL updated;
     [_db inDatabase:^(KCS_FMDatabase *db) {
-        updated = [db executeUpdate:@"REPLACE INTO queries VALUES (:id, :ids, :routeKey)" withArgumentsInArray:@[queryKey, jsonStr, routeKey]];
+        updated = [db executeUpdate:@"REPLACE INTO queries VALUES (:id, :ids, :routeKey)" withArgumentsInArray:@[queryKey, jsonStr, route]];
         if (updated == NO) {
             KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [db lastErrorCode], [db lastErrorMessage]);
         }
@@ -561,10 +581,9 @@
     return updated;
 }
 
-- (NSArray*)idsForQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection
+- (NSArray*)idsForQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
-    NSString* routeKey = [self tableForRoute:route collection:collection];
-    NSString* queryKey = [self queryKey:query routeKey:routeKey];
+    NSString* queryKey = [self queryKey:query routeKey:route collectionKey:collection];
 
     NSString* q = [NSString stringWithFormat:@"SELECT ids FROM queries WHERE id='%@'", queryKey];
     __block NSString* result = nil;
@@ -625,13 +644,12 @@
     return count;
 }
 
-- (BOOL) removeQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection
+- (BOOL) removeQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
     KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"remove query: '%@'", query);
     //TODO: deal with cleaning up unneeded entities - this just removes the query - not the associated objects
     
-    NSString* routeKey = [self tableForRoute:route collection:collection];
-    NSString* queryKey = [self queryKey:query routeKey:routeKey];
+    NSString* queryKey = [self queryKey:query routeKey:route collectionKey:collection];
 
     __block BOOL updated;
     [_db inDatabase:^(KCS_FMDatabase *db) {

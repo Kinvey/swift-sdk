@@ -88,7 +88,7 @@
 {
     KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
     NSArray* ids = @[@"1",@"2",@"3"];
-    NSString* query = [NSString UUID];
+    KCSQuery2* query = [KCSQuery2 queryWithQuery1:[KCSQuery query]];
     NSString* route = @"r";
     NSString* cln = @"c";
     BOOL u = [cache setIds:ids forQuery:query route:route collection:cln];
@@ -103,7 +103,7 @@
 {
     KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
     NSArray* ids = @[@"1",@"2",@"3"];
-    NSString* query = [NSString UUID];
+    KCSQuery2* query = [KCSQuery2 queryWithQuery1:[KCSQuery query]];
     NSString* route = @"r";
     NSString* cln = @"c";
     BOOL u = [cache setIds:ids forQuery:query route:route collection:cln];
@@ -122,7 +122,7 @@
 {
     KCSEntityPersistence* cache = [[KCSEntityPersistence alloc] initWithPersistenceId:@"x"];
     NSArray* ids = @[@"1",@"2",@"3"];
-    NSString* query = [NSString UUID];
+    KCSQuery2* query = [KCSQuery2 queryWithQuery1:[KCSQuery query]];
     NSString* route = @"r";
     NSString* cln = @"c";
     BOOL u = [cache setIds:ids forQuery:query route:route collection:cln];
@@ -236,7 +236,7 @@
 
     NSString* _id = @"51c44c5982cd0ade36000013";
     KCSQuery* q = [KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:_id];
-    u = [cache setIds:@[_id] forQuery:[[KCSQuery2 queryWithQuery1:q] keyString] route:route collection:cln];
+    u = [cache setIds:@[_id] forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
     KTAssertU
     
     
