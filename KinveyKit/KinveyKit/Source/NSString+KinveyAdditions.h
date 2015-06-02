@@ -73,4 +73,7 @@
  */
 + (instancetype) UUID;
 
+/** sha1 hash */
+@property (readonly) NSString* sha1;
+
 @end
