@@ -21,7 +21,7 @@
 
 @interface KCSNetworkResponse : NSObject
 @property (nonatomic) NSInteger code;
-@property (nonatomic, copy) NSData* jsonData;
+@property (atomic, copy) NSData* jsonData;
 @property (nonatomic, copy) NSDictionary* headers;
 @property (nonatomic, copy) NSURL* originalURL;
 @property (nonatomic, assign) BOOL skipValidation;
