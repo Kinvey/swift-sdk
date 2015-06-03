@@ -38,13 +38,15 @@
     }
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-        id jsonObject;
-        if (error) {
-            jsonObject = nil;
-        } else {
-            jsonObject = [response jsonObjectError:nil];
-        }
-        DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(jsonObject, error));
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            id jsonObject;
+            if (error) {
+                jsonObject = nil;
+            } else {
+                jsonObject = [response jsonObjectError:nil];
+            }
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(jsonObject, error));
+        });
     }
                                                         route:KCSRESTRouteRPC
                                                       options:@{KCSRequestLogMethod}
