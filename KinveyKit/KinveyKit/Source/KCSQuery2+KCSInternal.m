@@ -19,6 +19,7 @@
 
 
 #import "KCSQuery2+KCSInternal.h"
+#import "NSString+KinveyAdditions.h"
 
 @interface KCSQuery2 ()
 - (NSString*) queryString:(BOOL)escape;
@@ -30,7 +31,7 @@
 - (NSString*) keyString
 {
     NSString* ir = [self queryString:NO];
-    return [@([ir hash]) stringValue];
+    return ir.sha1;
 }
 
 //TODO: cleanup
