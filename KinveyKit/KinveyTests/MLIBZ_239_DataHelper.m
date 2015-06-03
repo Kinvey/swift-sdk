@@ -16,9 +16,6 @@
 
 #import "MLIBZ_239_DataHelper.h"
 
-//#define KINVEY_APP_KEY @"<#App Id#>"
-//#define KINVEY_APP_SECRET @"<#App Secret#>"
-
 #define KINVEY_APP_KEY @"kid_-1WAs8Rh2"
 #define KINVEY_APP_SECRET @"2f355bfaa8cb4f7299e914e8e85d8c98"
 
@@ -38,7 +35,7 @@
 
 +(NSArray *)textFieldsName
 {
-    return @[ @"reference" ];
+    return @[ @"reference", @"activeUsers" ];
 }
 
 -(NSDictionary *)hostToKinveyPropertyMapping
@@ -46,9 +43,27 @@
     return @{
         @"objectId" : KCSEntityKeyId,
         @"reference" : @"reference",
-        @"originator" : @"originator"
+        @"originator" : @"originator",
+        @"activeUsers" : @"activeUsers"
     };
 }
+
++ (NSDictionary *)kinveyPropertyToCollectionMapping{
+    //    backend field name:collection name
+    //----------------------:---------------------------
+    return @{ @"originator" : KCSUserCollectionName};             //product link to Products
+}
+
+-(NSString *)description
+{
+    return @{
+        @"objectId" : self.objectId != nil ? self.objectId : [NSNull null],
+        @"reference" : self.reference != nil ? self.reference : [NSNull null],
+        @"originator" : self.originator != nil ? self.originator : [NSNull null],
+        @"activeUsers" : self.activeUsers != nil ? self.activeUsers : [NSNull null]
+    }.description;
+}
+
 
 @end
 
@@ -215,7 +230,7 @@
     //Add originator query
     [query addQueryForJoiningOperator:kKCSAnd
                             onQueries:[self queryForOriginatorEqualsActiveUser], nil];
-    
+        
     //Kinvey: Load entity from Quote collection which correspond query
 	[self.quotesStore queryWithQuery:query
                  withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {

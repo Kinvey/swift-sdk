@@ -15,7 +15,8 @@ typedef void(^MLIBZ_239_STErrorBlock)(NSError *errorOrNil);
 
 @property (nonatomic, strong) NSString* objectId;
 @property (nonatomic, strong) NSString* reference;
-@property (nonatomic, strong) NSMutableDictionary* originator;
+@property (nonatomic, strong) KCSUser* originator;
+@property (nonatomic, retain) NSString *activeUsers;
 
 +(NSArray*)textFieldsName;
 
