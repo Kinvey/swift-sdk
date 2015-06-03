@@ -488,7 +488,22 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     KCSQueryConditional currentCondition = firstArg;
     
     while (currentCondition) {
-        NSObject *currentQuery = va_arg(items, id);
+        id currentQuery = nil;
+        switch (currentCondition) {
+            case kKCSMaxDistance:
+            {
+                double distance = va_arg(items, double);
+                if (distance) {
+                    currentQuery = @(distance);
+                } else {
+                    currentQuery = @(va_arg(items, int));
+                }
+                break;
+            }
+            default:
+                currentQuery = va_arg(items, id);
+                break;
+        }
         NSDictionary *pair = @{ @"op" : @(currentCondition), @"query" : currentQuery};
         [args addObject:pair];
         //do it this way b/c for last condition currentCondition == 0 and the next one will be undefined
