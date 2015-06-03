@@ -1,16 +1,19 @@
 //
 //  MLIBZ_239_Tests.swift
-//  KinveyKit
+//  MLIBZ_239_Tests
 //
-//  Created by Victor Barros on 2015-04-17.
-//  Copyright (c) 2015 Kinvey. All rights reserved.
+//  Created by Vilbik Pavel on 22.4.15.
+//  Copyright (c) 2015 Softteco. All rights reserved.
 //
 
 import UIKit
+import XCTest
 
 class MLIBZ_239_Tests: XCTestCase {
     
     override func setUp() {
+        super.setUp()
+        
         MLIBZ_239_DataHelper.instance()
         
         let expectationLogin = expectationWithDescription("login")
@@ -26,46 +29,134 @@ class MLIBZ_239_Tests: XCTestCase {
         waitForExpectationsWithTimeout(30, handler: nil)
     }
     
+    func testSha1() {
+        XCTAssertEqual("Kinvey".sha1, "7bd8481c648273da35231314f69b97145851e05a")
+    }
+    
     func test() {
-        let expectationSave = expectationWithDescription("save")
-        let quote = MLIBZ_239_Quote()
-        var error: NSError? = nil
-        quote.originator = [ "_id" : KCSUser.activeUser().userId ]
-        quote.reference = "Q524"
+        let expectationSave1 = expectationWithDescription("save1")
+        let quote1 = MLIBZ_239_Quote()
+        quote1.originator = KCSUser.activeUser()
+        quote1.reference = "Q524"
+        quote1.activeUsers = "1"
         MLIBZ_239_DataHelper.instance().saveQuote(
-            quote,
+            quote1,
             onSuccess: { (results: [AnyObject]!) -> Void in
                 XCTAssertNotNil(results)
-                
-                expectationSave.fulfill()
+
+                expectationSave1.fulfill()
             },
             onFailure: { (error: NSError!) -> Void in
                 XCTFail()
-                
-                expectationSave.fulfill()
+
+                expectationSave1.fulfill()
             }
         )
         waitForExpectationsWithTimeout(30, handler: nil)
         
-        for index in 1...500 {
-            let expectationQuery = expectationWithDescription("query")
-            MLIBZ_239_DataHelper.instance().loadQuotesUseCache(
-                true,
-                containtSubstinrg: "Q524",
-                onSuccess: { (results: [AnyObject]!) -> Void in
-                    XCTAssertNotNil(results)
-                    XCTAssertEqual(results.count, 1)
-                    
-                    expectationQuery.fulfill()
-                },
-                onFailure: { (error: NSError!) -> Void in
-                    XCTFail()
-                    
-                    expectationQuery.fulfill()
-                }
-            )
-            waitForExpectationsWithTimeout(30, handler: nil)
-        }
+        let expectationSave2 = expectationWithDescription("save2")
+        let quote2 = MLIBZ_239_Quote()
+        quote2.originator = KCSUser.activeUser()
+        quote2.reference = "Q525"
+        quote2.activeUsers = "1"
+        MLIBZ_239_DataHelper.instance().saveQuote(
+            quote2,
+            onSuccess: { (results: [AnyObject]!) -> Void in
+                XCTAssertNotNil(results)
+
+                expectationSave2.fulfill()
+            },
+            onFailure: { (error: NSError!) -> Void in
+                XCTFail()
+
+                expectationSave2.fulfill()
+            }
+        )
+        waitForExpectationsWithTimeout(30, handler: nil)
+        
+        let expectationSave3 = expectationWithDescription("save3")
+        let quote3 = MLIBZ_239_Quote()
+        quote3.originator = KCSUser.activeUser()
+        quote3.reference = "Q624"
+        quote3.activeUsers = "1"
+        MLIBZ_239_DataHelper.instance().saveQuote(
+            quote3,
+            onSuccess: { (results: [AnyObject]!) -> Void in
+                XCTAssertNotNil(results)
+                
+                expectationSave3.fulfill()
+            },
+            onFailure: { (error: NSError!) -> Void in
+                XCTFail()
+                
+                expectationSave3.fulfill()
+            }
+        )
+        waitForExpectationsWithTimeout(30, handler: nil)
+        
+        let expectationQuery1 = expectationWithDescription("query1")
+        MLIBZ_239_DataHelper.instance().loadQuotesUseCache(
+            true,
+            containtSubstinrg: "Q52",
+            onSuccess: { (results: [AnyObject]!) -> Void in
+                XCTAssertNotNil(results)
+                XCTAssertEqual(results.count, 2)
+                let result1:MLIBZ_239_Quote = results.first as! MLIBZ_239_Quote
+                XCTAssertEqual(result1.reference, "Q524")
+                let result2:MLIBZ_239_Quote = results.last as! MLIBZ_239_Quote
+                XCTAssertEqual(result2.reference, "Q525")
+                
+                expectationQuery1.fulfill()
+            },
+            onFailure: { (error: NSError!) -> Void in
+                XCTFail()
+                
+                expectationQuery1.fulfill()
+            }
+        )
+        waitForExpectationsWithTimeout(30, handler: nil)
+        
+        let expectationQuery2 = expectationWithDescription("query2")
+        MLIBZ_239_DataHelper.instance().loadQuotesUseCache(
+            true,
+            containtSubstinrg: "Q62",
+            onSuccess: { (results: [AnyObject]!) -> Void in
+                XCTAssertNotNil(results)
+                XCTAssertEqual(results.count, 1)
+                let result:MLIBZ_239_Quote = results.first as! MLIBZ_239_Quote
+                XCTAssertEqual(result.reference, "Q624")
+
+                expectationQuery2.fulfill()
+            },
+            onFailure: { (error: NSError!) -> Void in
+                XCTFail()
+                
+                expectationQuery2.fulfill()
+            }
+        )
+        waitForExpectationsWithTimeout(30, handler: nil)
+        
+        NSThread.sleepForTimeInterval(2) //Wait until query2 finished background update
+        
+        let expectationQuery3 = expectationWithDescription("query3")
+        MLIBZ_239_DataHelper.instance().loadQuotesUseCache(
+            true,
+            containtSubstinrg: "Q62",
+            onSuccess: { (results: [AnyObject]!) -> Void in
+                XCTAssertNotNil(results)
+                XCTAssertEqual(results.count, 1)
+                let result:MLIBZ_239_Quote = results.first as! MLIBZ_239_Quote
+                XCTAssertEqual(result.reference, "Q624")
+                
+                expectationQuery3.fulfill()
+            },
+            onFailure: { (error: NSError!) -> Void in
+                XCTFail()
+                
+                expectationQuery3.fulfill()
+            }
+        )
+        waitForExpectationsWithTimeout(30, handler: nil)
     }
-   
+    
 }

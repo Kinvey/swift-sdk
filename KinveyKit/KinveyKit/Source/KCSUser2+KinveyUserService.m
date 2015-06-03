@@ -1038,6 +1038,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
         if (!error) {
+            response.skipValidation = YES;
             NSDictionary* dict = [response jsonObjectError:&error];
             if (error) {
                 completionBlock(potentialUsername, NO, error);

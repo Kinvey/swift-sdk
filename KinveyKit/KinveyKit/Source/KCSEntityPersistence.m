@@ -528,7 +528,7 @@
 #pragma mark - queries
 - (NSString*)queryKey:(NSString*)query routeKey:(NSString*)routeKey
 {
-    return [@([[NSString stringWithFormat:@"[%@]_%@", routeKey, query] hash]) stringValue];
+    return [NSString stringWithFormat:@"[%@]_%@", routeKey, query].sha1;
 }
 
 - (BOOL) setIds:(NSArray*)theseIds forQuery:(NSString*)query route:(NSString*)route collection:(NSString*)collection

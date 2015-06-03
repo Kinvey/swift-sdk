@@ -19,3 +19,9 @@
                       params:(NSDictionary**)params;
 
 @end
+
+@interface NSString (KinveyAdditions)
+
+@property (readonly) NSString* sha1;
+
+@end
