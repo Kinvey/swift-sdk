@@ -397,7 +397,7 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
                     id builtValue = [builder objectForJSONObject:value];
                     [object setValue:builtValue forKey:hostKey];
                 } else {
-                    if ([jsonKey isEqualToString:KCSEntityKeyId] && [object kinveyObjectId] != nil && [[object kinveyObjectId] isEqualToString:value] == NO) {
+                    if ([jsonKey isEqualToString:KCSEntityKeyId] && [object kinveyObjectId] != nil && [[object kinveyObjectId] isKindOfClass:[NSString class]] && [[object kinveyObjectId] isEqualToString:value] == NO) {
                         KCSLogWarning(@"%@ is having it's id overwritten.", object);
                     }
                     if ([object respondsToSelector:@selector(setValue:forKey:)]) {
@@ -432,6 +432,9 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
 + (id)populateExistingObject:(KCSSerializedObject*)serializedObject withNewData:(NSDictionary*)data
 {
     id object = serializedObject.handleToOriginalObject;
+    if ([object isKindOfClass:[NSDictionary class]] && ![object isKindOfClass:[NSMutableDictionary class]]) {
+        object = ((NSObject*) object).mutableCopy;
+    }
     populate(object, nil, data, nil, serializedObject);
     return object;
 }
@@ -654,7 +657,7 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
             //don't map nils
             continue;
         }
-        if ([jsonName isEqualToString:KCSEntityKeyId] && [value isEqualToString:@""]) {
+        if ([jsonName isEqualToString:KCSEntityKeyId] && (value == [NSNull null] || ([value isKindOfClass:[NSString class]] && [value isEqualToString:@""]))) {
             //treat @"" as nil for the _id case; assembla #2676
             objectId = nil;
             continue;
