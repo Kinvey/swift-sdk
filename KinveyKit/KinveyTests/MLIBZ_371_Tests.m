@@ -19,17 +19,27 @@
 - (void)setUp {
     [super setUp];
     
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_-1WAs8Rh2"
-                                                 withAppSecret:@"2f355bfaa8cb4f7299e914e8e85d8c98"
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_Z1nKQD1KT"
+                                                 withAppSecret:@"f01e4f4f81bf4c919e83bee54fe945bd"
                                                   usingOptions:nil];
     
     XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     
-    [KCSUser loginWithUsername:@"4a51dbe2-cbfe-42c2-837b-0c81f533ac19" password:@"fb882daa-9168-4e00-a49c-57e35a9e74e4" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result)
+//    [KCSUser loginWithUsername:@"4a51dbe2-cbfe-42c2-837b-0c81f533ac19" password:@"fb882daa-9168-4e00-a49c-57e35a9e74e4" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result)
+//    {
+//        XCTAssertNotNil(user);
+//        XCTAssertNil(errorOrNil);
+//        
+//        [expectationLogin fulfill];
+//    }];
+    
+    [KCSUser loginWithAuthorizationCodeAPI:@"http://us-staging.merial.com/kinvey/api/Authenticate"
+                                   options:@{@"username" : @"MerialKinveyjeppe6", @"password" : @"12345678"}
+                       withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result)
     {
         XCTAssertNotNil(user);
         XCTAssertNil(errorOrNil);
-        
+
         [expectationLogin fulfill];
     }];
     
@@ -46,27 +56,7 @@
     KCSCollection *collection = [KCSCollection collectionFromString:@"Pet" ofClass:[NSMutableDictionary class]];
     KCSCachedStore *store =[KCSCachedStore storeWithCollection:collection options:nil];
     
-    __block NSString *petID = nil;
-    
-    XCTestExpectation* expectationCreate = [self expectationWithDescription:@"Create"];
-    
-    [store saveObject:@{@"name" : @"test"}
-  withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
-    {
-        XCTAssertNotNil(objectsOrNil);
-        XCTAssertNil(errorOrNil);
-        
-        if (objectsOrNil.count > 0) {
-            XCTAssertNotNil(objectsOrNil[0][@"_id"]);
-        }
-        
-        petID = objectsOrNil[0][@"_id"];
-        
-        [expectationCreate fulfill];
-    }
-    withProgressBlock:nil];
-    
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    __block NSString *petID = @"2c4f04d3-9c09-e511-9477-005056a51cd0";
     
     XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
