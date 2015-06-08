@@ -339,7 +339,7 @@ static NSOperationQueue* kcsRequestQueue;
     NSAssert(_route, @"should have route");
     if (!self.credentials) {
         NSError* error = [NSError errorWithDomain:KCSNetworkErrorDomain code:KCSDeniedError userInfo:@{NSLocalizedDescriptionKey : @"No Authorization Found", NSLocalizedFailureReasonErrorKey : @"There is no active user/client and this request requires credentials.", NSURLErrorFailingURLStringErrorKey : [self finalURL]}];
-        DISPATCH_ASYNC_MAIN_QUEUE(self.completionBlock(nil, error));
+        self.completionBlock(nil, error);
         return nil;
     }
     NSAssert(self.credentials, @"should have credentials");
@@ -492,7 +492,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"Kinvey Success (%ld) [KinveyKit id: '%@'] %@", (long)op.response.code, op.clientRequestId, op.response.headers);
     }
     error = [error updateWithInfo:@{kErrorKeyMethod : request.HTTPMethod}];
-    DISPATCH_ASYNC_MAIN_QUEUE(self.completionBlock(op.response, error));
+    self.completionBlock(op.response, error);
 }
 
 

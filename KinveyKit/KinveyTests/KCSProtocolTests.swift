@@ -229,7 +229,7 @@ class KCSProtocolTestsIdNotString: XCTestCase {
         
         KCSURLProtocol.registerClass(MockURLProtocol.self)
         
-        let expectationSave = expectationWithDescription("save")
+        weak var expectationSave = expectationWithDescription("save")
         
         store.saveObject(
             [
@@ -240,7 +240,7 @@ class KCSProtocolTestsIdNotString: XCTestCase {
                 XCTAssertNotNil(error)
                 XCTAssertEqual(error.localizedDescription, "`\(KCSEntityKeyId)` property needs to be string")
                 
-                expectationSave.fulfill()
+                expectationSave?.fulfill()
             },
             withProgressBlock: nil
         )
