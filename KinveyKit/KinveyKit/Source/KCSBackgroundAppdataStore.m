@@ -59,6 +59,7 @@ return; \
 @property (nonatomic) BOOL offlineUpdateEnabled;
 @property (nonatomic, readwrite) KCSCachePolicy cachePolicy;
 @property (nonatomic, strong) KCSCollection *backingCollection;
+@property (nonatomic, strong) dispatch_queue_t queue;
 
 - (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources;
 
@@ -132,6 +133,7 @@ return; \
         _treatSingleFailureAsGroupFailure = YES;
         _cachePolicy = [KCSCachedStore defaultCachePolicy];
         _title = nil;
+        _queue = dispatch_queue_create("com.kinvey.KCSBackgroundAppdataStore", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -278,6 +280,7 @@ return; \
 
 - (void) handleLoadResponse:(KCSNetworkResponse*)response error:(NSError*)error completionBlock:(KCSCompletionBlock)completionBlock
 {
+    NSAssert(![NSThread isMainThread], @"%s should not run in the main thread", __FUNCTION__);
     if (error) {
         completionBlock(nil, error);
     } else {
@@ -454,7 +457,7 @@ return; \
     } else {
         [self completeLoad:objs withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy] == YES) {
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(self.queue, ^{
                 //TODO: this is to keep this operation alive now that this method is called on a background thread.
                 KK2(use a series of dependent operation blocks)
                 KK2(should this use silent bg updates ever? - maybe everything should have a notification that the client can ignore)
@@ -633,10 +636,11 @@ NSError* createCacheError(NSString* message)
     } else {
         [self completeQuery:obj withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(self.queue, ^{
                 //TODO: this is to keep this operation alive now that this method is called on a background thread.
                 KK2(use a series of dependent operation blocks)
                 KK2(should this use silent bg updates ever? - maybe everything should have a notification that the client can ignore)
+                
                 [self queryNetwork:query
                withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
                 {
@@ -832,7 +836,7 @@ NSError* createCacheError(NSString* message)
     } else {
         [self completeGroup:obj withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy] == YES) {
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(self.queue, ^{
                 //TODO: this is to keep this operation alive now that this method is called on a background thread.
                 KK2(use a series of dependent operation blocks)
                 KK2(should this use silent bg updates ever? - maybe everything should have a notification that the client can ignore)
