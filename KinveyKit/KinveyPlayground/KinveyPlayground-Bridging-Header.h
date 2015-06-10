@@ -3,3 +3,4 @@
 //
 
 #import <KinveyKit/KinveyKit.h>
+#import "KCSTryCatch.h"
