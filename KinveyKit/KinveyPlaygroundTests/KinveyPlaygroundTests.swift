@@ -11,26 +11,45 @@ import XCTest
 
 class KinveyPlaygroundTests: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
+    let n = 10000
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-    
-    func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
+    func testKCSKeychain2() {
+        let token = NSUUID().UUIDString
+        let userId = NSUUID().UUIDString
+        
+        KCSKeychain2.setKinveyToken(token, user: userId)
+        
+        let backgroundOperationQueue = NSOperationQueue()
+        backgroundOperationQueue.qualityOfService = NSQualityOfService.UserInteractive
+        backgroundOperationQueue.maxConcurrentOperationCount = 8
+        
+        for index in 1...n {
+            autoreleasepool {
+                let mainExpectation = expectationWithDescription("main expectation \(index)")
+                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), { () -> Void in
+                    NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                        XCTAssertEqual(token, KCSKeychain2.kinveyTokenForUserId(userId))
+                        
+                        mainExpectation.fulfill()
+                    })
+                })
+            }
         }
+        
+        for index in 1...n {
+            autoreleasepool {
+                let backgroundExpectation = expectationWithDescription("background expectation \(index)")
+                
+                backgroundOperationQueue.addOperationWithBlock { () -> Void in
+                    XCTAssertEqual(token, KCSKeychain2.kinveyTokenForUserId(userId))
+                    
+                    backgroundExpectation.fulfill()
+                }
+            }
+        }
+        
+        waitForExpectationsWithTimeout(NSTimeInterval(60 * (n / 1000)), handler: nil)
     }
     
 }
