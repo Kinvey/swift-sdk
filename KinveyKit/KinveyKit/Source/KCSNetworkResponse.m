@@ -185,14 +185,6 @@
                 if (error) {
                     *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"`%@` property needs to be string", KCSEntityKeyId]];
                 }
-            } else if (!jsonObj[KCSEntityKeyMetadata]) {
-                if (error) {
-                    *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"KCSPersistable objects requires the `%@` property", KCSEntityKeyMetadata]];
-                }
-            } else if (!jsonObj[KCSEntityKeyMetadata][KCSEntityKeyMetadataLastModificationTime]) {
-                if (error) {
-                    *error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"KCSPersistable objects requires the `%@.%@` property", KCSEntityKeyMetadata, KCSEntityKeyMetadataLastModificationTime]];
-                }
             }
         }
     } else {
