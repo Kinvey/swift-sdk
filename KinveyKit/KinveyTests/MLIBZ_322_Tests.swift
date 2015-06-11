@@ -15,10 +15,10 @@ class MLIBZ_322_Tests: XCTestCase {
         // Find all entites within .5 miles of the sphere centered at [-71.05, 42.35]
         let q2 = KCSQuery(
             onField: KCSEntityKeyGeolocation,
-            usingConditionalsForValuesArgs: getVaList([
+            usingConditionalPairs: [
                 KCSQueryConditional.KCSNearSphere.rawValue, [-71.05, 42.35],
                 KCSQueryConditional.KCSMaxDistance.rawValue, 0.5
-            ])
+            ]
         )
     }
     
@@ -26,10 +26,10 @@ class MLIBZ_322_Tests: XCTestCase {
         // Find all entites within .5 miles of the sphere centered at [-71.05, 42.35]
         let q2 = KCSQuery(
             onField: KCSEntityKeyGeolocation,
-            usingConditionalsForValuesArgs: getVaList([
+            usingConditionalPairs: [
                 KCSQueryConditional.KCSNearSphere.rawValue, [-71.05, 42.35],
                 KCSQueryConditional.KCSMaxDistance.rawValue, 5
-            ])
+            ]
         )
     }
 
