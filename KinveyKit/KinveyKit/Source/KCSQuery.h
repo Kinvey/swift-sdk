@@ -253,7 +253,21 @@ typedef NS_ENUM(NSInteger, KCSSortDirection) {
  */
 + (KCSQuery *)queryOnField:(NSString *)field usingConditionalsForValues:(KCSQueryConditional)firstConditional, ... NS_REQUIRES_NIL_TERMINATION;
 
-+ (KCSQuery *)queryOnField:(NSString *)field usingConditionalsForValuesArgs:(va_list)args;
+/*! DEPRECATED method, please use queryOnField:usingConditionalPairs: method instead. */
++ (KCSQuery *)queryOnField:(NSString *)field usingConditionalsForValuesArgs:(va_list)args KCS_DEPRECATED(Please use queryOnField:usingConditionalPairs: method instead, 1.32.0);
+
+/*! Query a field for multiple values (AND).
+ 
+ This takes multiple query pairs and adds them all to the query, can be called like (assuming `low` and `high` are NSNumbers)
+ `KCSQuery *q = [KCSQuery queryOnField:@"age" usingConditionalPairs:@[@(kKCSGreaterThan), low, @(kKCSLessThan), high]];`
+ 
+ @param field The field in Kinvey to query on.
+ @param firstConditional The Query Operator (see Overview) that we use to filter
+ @param ... A nil terminated list of pairs of conditionals and values.
+ 
+ @return The new KCSQuery object (autoreleased).
+ */
++ (KCSQuery *)queryOnField:(NSString *)field usingConditionalPairs:(NSArray*)conditionalPairs;
 
 /*! Create a new query joining multiple existing queries.
 

@@ -488,26 +488,72 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
     KCSQueryConditional currentCondition = firstArg;
     
     while (currentCondition) {
-        id currentQuery = nil;
-        switch (currentCondition) {
-            case kKCSMaxDistance:
-            {
-                double distance = va_arg(items, double);
-                if (distance) {
-                    currentQuery = @(distance);
-                } else {
-                    currentQuery = @(va_arg(items, int));
-                }
-                break;
-            }
-            default:
-                currentQuery = va_arg(items, id);
-                break;
-        }
+        id currentQuery = va_arg(items, id);
         NSDictionary *pair = @{ @"op" : @(currentCondition), @"query" : currentQuery};
         [args addObject:pair];
         //do it this way b/c for last condition currentCondition == 0 and the next one will be undefined
         currentCondition = va_arg(items, KCSQueryConditional);
+    }
+    
+    KCSQuery *query = [self query];
+    
+    query.query = [[KCSQuery queryDictionaryWithFieldname:field operation:kKCSNOOP forQueries:args useQueriesForOps:YES] mutableCopy];
+    
+    return query;
+}
+
++(BOOL)numberIsKCSQueryConditional:(NSNumber*)queryConditional
+{
+    switch ((KCSQueryConditional) queryConditional.integerValue) {
+        case kKCSNOOP:
+        case kKCSLessThan:
+        case kKCSLessThanOrEqual:
+        case kKCSGreaterThan:
+        case kKCSGreaterThanOrEqual:
+        case kKCSNotEqual:
+        case kKCSNearSphere:
+        case kKCSWithinBox:
+        case kKCSWithinCenterSphere:
+        case kKCSWithinPolygon:
+        case kKCSNotIn:
+        case kKCSIn:
+        case kKCSMaxDistance:
+        case kKCSRegex:
+        case kKCSOr:
+        case kKCSAnd:
+        case kKCSAll:
+        case kKCSSize:
+        case kKCSWithin:
+        case kKCSMulti:
+        case kKCSOptions:
+        case kKCSExists:
+        case kKCSType:
+            return true;
+        default:
+            return false;
+    }
+}
+
++(KCSQuery *)queryOnField:(NSString *)field usingConditionalPairs:(NSArray *)conditionalPairs
+{
+    NSMutableArray *args = [NSMutableArray array];
+    
+    KCSQueryConditional currentCondition;
+    id currentConditionPtr = nil, currentQuery = nil;
+    for (NSUInteger i = 0; i < conditionalPairs.count; i += 2) {
+        currentConditionPtr = conditionalPairs[i];
+        if (![currentConditionPtr isKindOfClass:[NSNumber class]] || ![self numberIsKCSQueryConditional:(NSNumber*) currentConditionPtr]) {
+            @throw [NSException exceptionWithName:@"Invalid Parameter" reason:[NSString stringWithFormat:@"Index %@ is not a KCSQueryConditional.", @(i)] userInfo:nil];
+        }
+        currentCondition = (KCSQueryConditional) ((NSNumber*) currentConditionPtr).integerValue;
+        
+        if (i + 1 >= conditionalPairs.count) {
+            @throw [NSException exceptionWithName:@"Invalid Parameter" reason:[NSString stringWithFormat:@"The conditionalPairs argument must be pairs of KCSQueryConditional and values. Index %@ does not have a value associated.", @(i)] userInfo:nil];
+        }
+        currentQuery = conditionalPairs[i + 1];
+        
+        NSDictionary *pair = @{ @"op" : @(currentCondition), @"query" : currentQuery};
+        [args addObject:pair];
     }
     
     KCSQuery *query = [self query];
