@@ -534,6 +534,7 @@
 		5736546F1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5736546E1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m */; };
 		573654711AE1851B00E3982B /* MLIBZ_239_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573654701AE1851B00E3982B /* MLIBZ_239_Tests.swift */; };
 		5739EC4D1B1F849E00B6BA91 /* MLIBZ_364_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5739EC4C1B1F849E00B6BA91 /* MLIBZ_364_Tests.swift */; };
+		573C7F261B2B467400B4A774 /* KCSCallbacksInMainThreadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573C7F251B2B467400B4A774 /* KCSCallbacksInMainThreadTests.swift */; };
 		574391601AEE9AD200D55AAF /* KCSTryCatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 5743915F1AEE9AD200D55AAF /* KCSTryCatch.m */; };
 		574D8BA31B1641BB00C114A9 /* MLIBZ_322_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574D8BA21B1641BB00C114A9 /* MLIBZ_322_Tests.swift */; };
 		574FD5551AC1C0BB00CA26CD /* KCSKinveyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */; };
@@ -1344,6 +1345,7 @@
 		5736546E1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLIBZ_239_DataHelper.m; sourceTree = "<group>"; };
 		573654701AE1851B00E3982B /* MLIBZ_239_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_239_Tests.swift; sourceTree = "<group>"; };
 		5739EC4C1B1F849E00B6BA91 /* MLIBZ_364_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_364_Tests.swift; sourceTree = "<group>"; };
+		573C7F251B2B467400B4A774 /* KCSCallbacksInMainThreadTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSCallbacksInMainThreadTests.swift; sourceTree = "<group>"; };
 		5743915E1AEE9AD200D55AAF /* KCSTryCatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSTryCatch.h; sourceTree = "<group>"; };
 		5743915F1AEE9AD200D55AAF /* KCSTryCatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSTryCatch.m; sourceTree = "<group>"; };
 		574D8BA21B1641BB00C114A9 /* MLIBZ_322_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_322_Tests.swift; sourceTree = "<group>"; };
@@ -2217,6 +2219,7 @@
 				57E4F1101B28E97D0002342E /* MLIBZ_322_ObjC_Tests.m */,
 				5739EC4C1B1F849E00B6BA91 /* MLIBZ_364_Tests.swift */,
 				57E40BC91B20E95C00C37317 /* MLIBZ_371_Tests.m */,
+				573C7F251B2B467400B4A774 /* KCSCallbacksInMainThreadTests.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -3863,6 +3866,7 @@
 				578834381AB8D25500078CC5 /* KinveyKitEntityDictTests.m in Sources */,
 				5760B6E01AD3159D00216DA6 /* KCSQueryTests.swift in Sources */,
 				574391601AEE9AD200D55AAF /* KCSTryCatch.m in Sources */,
+				573C7F261B2B467400B4A774 /* KCSCallbacksInMainThreadTests.swift in Sources */,
 				5788342D1AB8D25500078CC5 /* ASTTestClass.m in Sources */,
 				578834311AB8D25500078CC5 /* KCSReduceFunctionTests.m in Sources */,
 				5788343D1AB8D25500078CC5 /* KinveyKitNSDictionaryTests.m in Sources */,
