@@ -429,7 +429,7 @@ return; \
             [self completeLoad:objs withCompletionBlock:completionBlock];
         } else {
             [self cacheObjects:objectIDs results:objectsOrNil error:errorOrNil policy:cachePolicy];
-            completionBlock(objectsOrNil, errorOrNil);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(objectsOrNil, errorOrNil));
         }
     } withProgressBlock:progressBlock];
 }
@@ -437,7 +437,7 @@ return; \
 - (void) completeLoad:(id)obj withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     NSError* error = (obj == nil) ? createCacheError(@"Load query not in cache" ) : nil;
-    completionBlock(obj, error);
+    DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(obj, error));
 }
 
 - (void)loadObjectWithID:(id)objectID
