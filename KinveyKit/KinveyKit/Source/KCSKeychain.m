@@ -23,6 +23,29 @@
 
 @implementation KCSKeychain2
 
++(void)initialize
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationProtectedDataDidBecomeAvailable:)
+                                                 name:UIApplicationProtectedDataDidBecomeAvailable
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationProtectedDataWillBecomeUnavailable:)
+                                                 name:UIApplicationProtectedDataWillBecomeUnavailable
+                                               object:nil];
+}
+
++(void)applicationProtectedDataDidBecomeAvailable:(NSNotification*)notification
+{
+    NSLog(@"applicationProtectedDataDidBecomeAvailable");
+}
+
++(void)applicationProtectedDataWillBecomeUnavailable:(NSNotification*)notification
+{
+    NSLog(@"applicationProtectedDataWillBecomeUnavailable");
+}
+
 + (CFTypeRef) accessKey
 {
     KCSDataProtectionLevel level = [[KCSClient2 sharedClient].configuration.options[KCS_DATA_PROTECTION_LEVEL] integerValue];

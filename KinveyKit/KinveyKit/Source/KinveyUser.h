@@ -367,6 +367,16 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  */
 + (NSURL*)URLforLoginWithMICRedirectURI:(NSString*)redirectURI;
 
+/**
+ Presents a modal view controller with a web view and loads the URL returned by the method URLforLoginWithMICRedirectURI:
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
+ @param completionBlock The block to be called when the operation completes or fails
+ @since 1.33.0
+ */
++(void)presentMICViewControllerWithMICRedirectURI:(NSString*)redirectURI
+                              withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
 #pragma mark -
 
 /*! Removes a user and their data from Kinvey

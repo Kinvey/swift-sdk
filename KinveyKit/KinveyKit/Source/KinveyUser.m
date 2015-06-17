@@ -27,6 +27,7 @@
 #import "KCSNetworkResponse.h"
 #import "KCSPush.h"
 #import "KinveyUser+Private.h"
+#import "KCSMICViewController.h"
 
 #pragma mark - Constants
 
@@ -191,6 +192,18 @@ void setActive(KCSUser* user)
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
 {
     return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI];
+}
+
++(void)presentMICViewControllerWithMICRedirectURI:(NSString *)redirectURI
+                              withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    KCSMICViewController* micVC = [[KCSMICViewController alloc] initWithRedirectURI:redirectURI
+                                                                withCompletionBlock:completionBlock];
+    UINavigationController* navigationVC = [[UINavigationController alloc] initWithRootViewController:micVC];
+    
+    [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:navigationVC
+                                                                                       animated:YES
+                                                                                     completion:nil];
 }
 
 +(BOOL)isValidMICRedirectURI:(NSString *)redirectURI
