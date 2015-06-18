@@ -124,6 +124,8 @@
 {
     if ([self.webView isKindOfClass:[UIWebView class]]) {
         [(UIWebView*)self.webView reload];
+    } else {
+        [(WKWebView*)self.webView reload];
     }
 }
 
