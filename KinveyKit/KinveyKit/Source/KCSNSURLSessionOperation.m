@@ -32,22 +32,26 @@
 @property (nonatomic, strong) KCSNetworkResponse* response;
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSURLSession* session;
-@property (nonatomic, assign) dispatch_once_t sessionOnceToken;
 @end
 
 @implementation KCSNSURLSessionOperation
 
 - (NSURLSession*) session
 {
-    dispatch_once(&_sessionOnceToken, ^{
-        NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
-        config.protocolClasses = [KCSURLProtocol protocolClasses];
+    static dispatch_once_t sessionOnceToken;
+    static NSURLSessionConfiguration* config = nil;
+    static NSURLSession* session = nil;
+    dispatch_once(&sessionOnceToken, ^{
+        config = [NSURLSessionConfiguration defaultSessionConfiguration];
         config.URLCache = [[NSURLCache alloc] initWithMemoryCapacity:0
                                                         diskCapacity:0
                                                             diskPath:nil];
-        self.session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
+        config.HTTPShouldSetCookies = NO;
+        config.HTTPShouldUsePipelining = YES;
+        session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
     });
-    return _session;
+    config.protocolClasses = [KCSURLProtocol protocolClasses];
+    return session;
 }
 
 
@@ -153,8 +157,6 @@
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
     NSTHREAD_IS_NOT_MAIN_THREAD;
-    [session finishTasksAndInvalidate];
-    
     [self complete:error];
 }
 
