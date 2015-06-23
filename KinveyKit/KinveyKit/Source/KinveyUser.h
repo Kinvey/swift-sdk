@@ -34,7 +34,8 @@ typedef NS_ENUM(NSInteger, KCSUserActionResult) {
     KCSUserCreated = 1,
     KCSUserDeleted = 2,
     KCSUserFound = 3,
-    KCSUSerNotFound = 4
+    KCSUSerNotFound = 4,
+    KCSUserInteractionCancel = 5
 };
 
 typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result);
@@ -374,8 +375,8 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  @param completionBlock The block to be called when the operation completes or fails
  @since 1.33.0
  */
-+(void)presentMICViewControllerWithMICRedirectURI:(NSString*)redirectURI
-                              withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
++(void)presentMICLoginViewControllerWithRedirectURI:(NSString*)redirectURI
+                                withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 #pragma mark -
 

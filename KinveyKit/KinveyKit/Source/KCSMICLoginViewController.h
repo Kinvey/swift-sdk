@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "KinveyUser.h"
 
-@interface KCSMICViewController : UIViewController
+@interface KCSMICLoginViewController : UIViewController
 
 -(instancetype)initWithRedirectURI:(NSString*)redirectURI
                withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
