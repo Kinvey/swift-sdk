@@ -6,10 +6,10 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
-#import "KCSMICViewController.h"
+#import "KCSMICLoginViewController.h"
 #import <WebKit/WebKit.h>
 
-@interface KCSMICViewController () <UIWebViewDelegate, WKNavigationDelegate>
+@interface KCSMICLoginViewController () <UIWebViewDelegate, WKNavigationDelegate>
 
 @property (nonatomic, copy) NSString* redirectURI;
 @property (nonatomic, copy) KCSUserCompletionBlock completionBlock;
@@ -19,7 +19,7 @@
 
 @end
 
-@implementation KCSMICViewController
+@implementation KCSMICLoginViewController
 
 -(instancetype)initWithRedirectURI:(NSString *)redirectURI
                withCompletionBlock:(KCSUserCompletionBlock)completionBlock
@@ -116,8 +116,20 @@
 
 -(void)closeViewController:(id)sender
 {
+    [self closeViewController:sender
+                   completion:^
+    {
+        if (self.completionBlock) {
+            self.completionBlock(nil, nil, KCSUserInteractionCancel);
+        }
+    }];
+}
+
+-(void)closeViewController:(id)sender
+                completion:(void(^)(void))completion
+{
     [self dismissViewControllerAnimated:YES
-                             completion:nil];
+                             completion:completion];
 }
 
 -(void)refreshPage:(id)sender
@@ -154,7 +166,7 @@
          [self.activityIndicatorView stopAnimating];
          
          if (user) {
-             [self closeViewController:nil];
+             [self closeViewController:nil completion:nil];
          }
          
          if (self.completionBlock) {

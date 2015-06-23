@@ -19,7 +19,7 @@ class MICViewController: UITableViewController {
                     usingOptions: nil
                 )
                 
-                KCSUser.presentMICViewControllerWithMICRedirectURI(
+                KCSUser.presentMICLoginViewControllerWithRedirectURI(
                     "kinveyAuthDemo://",
                     withCompletionBlock: { (user: KCSUser!, error: NSError!, actionResult: KCSUserActionResult) -> Void in
                         if (user != nil) {
