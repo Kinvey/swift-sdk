@@ -48,4 +48,7 @@
 
 #define DISPATCH_ASYNC_MAIN_QUEUE(block) dispatch_async(dispatch_get_main_queue(), ^{ block; })
 
+#define NSTHREAD_IS_MAIN_THREAD NSParameterAssert([NSThread isMainThread])
+#define NSTHREAD_IS_NOT_MAIN_THREAD NSParameterAssert(![NSThread isMainThread])
+
 #import "KinveyHeaderInfo.h"
