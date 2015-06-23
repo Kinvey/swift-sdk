@@ -13,9 +13,12 @@
 
 @property (nonatomic, copy) NSString* redirectURI;
 @property (nonatomic, copy) KCSUserCompletionBlock completionBlock;
+@property (nonatomic, assign) NSTimeInterval timeout;
 
 @property (nonatomic, weak) id webView;
 @property (nonatomic, weak) UIActivityIndicatorView* activityIndicatorView;
+
+@property (nonatomic, strong) NSTimer *timer;
 
 @end
 
@@ -24,9 +27,20 @@
 -(instancetype)initWithRedirectURI:(NSString *)redirectURI
                withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
+    self = [self initWithRedirectURI:redirectURI
+                             timeout:-1
+                 withCompletionBlock:completionBlock];
+    return self;
+}
+
+-(instancetype)initWithRedirectURI:(NSString*)redirectURI
+                           timeout:(NSTimeInterval)timeout
+               withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
     self = [super init];
     if (self) {
         _redirectURI = redirectURI;
+        _timeout = timeout;
         _completionBlock = completionBlock;
     }
     return self;
@@ -53,7 +67,7 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" X "
                                                                              style:UIBarButtonItemStylePlain
                                                                             target:self
-                                                                            action:@selector(closeViewController:)];
+                                                                            action:@selector(closeViewControllerUserInteractionCancel:)];
     
     UIBarButtonItem* refreshPageBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
                                                                                           target:self
@@ -114,13 +128,26 @@
                                                            constant:0.f]];
 }
 
+-(void)closeViewControllerUserInteractionCancel:(id)sender
+{
+    [self closeViewController:sender
+              userInteraction:KCSUserInteractionCancel];
+}
+
+-(void)closeViewControllerUserInteractionTimeout:(id)sender
+{
+    [self closeViewController:sender
+              userInteraction:KCSUserInteractionTimeout];
+}
+
 -(void)closeViewController:(id)sender
+           userInteraction:(KCSUserActionResult)userActionResult
 {
     [self closeViewController:sender
                    completion:^
     {
         if (self.completionBlock) {
-            self.completionBlock(nil, nil, KCSUserInteractionCancel);
+            self.completionBlock(nil, nil, userActionResult);
         }
     }];
 }
@@ -128,6 +155,9 @@
 -(void)closeViewController:(id)sender
                 completion:(void(^)(void))completion
 {
+    if (self.timer && self.timer.isValid) {
+        [self.timer invalidate];
+    }
     [self dismissViewControllerAnimated:YES
                              completion:completion];
 }
@@ -152,6 +182,17 @@
         [(UIWebView*)self.webView loadRequest:request];
     } else {
         [(WKWebView*)self.webView loadRequest:request];
+    }
+
+    if (self.timeout > 0) {
+        if (self.timer && self.timer.isValid) {
+            [self.timer invalidate];
+        }
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:self.timeout
+                                                      target:self
+                                                    selector:@selector(closeViewControllerUserInteractionTimeout:)
+                                                    userInfo:nil
+                                                     repeats:NO];
     }
 }
 

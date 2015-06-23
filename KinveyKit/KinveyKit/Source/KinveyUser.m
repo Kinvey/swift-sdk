@@ -199,6 +199,21 @@ void setActive(KCSUser* user)
 {
     KCSMICLoginViewController* micVC = [[KCSMICLoginViewController alloc] initWithRedirectURI:redirectURI
                                                                           withCompletionBlock:completionBlock];
+    [self presentMICLoginViewController:micVC];
+}
+
++(void)presentMICLoginViewControllerWithRedirectURI:(NSString*)redirectURI
+                                            timeout:(NSTimeInterval)timeout
+                                withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
+    KCSMICLoginViewController* micVC = [[KCSMICLoginViewController alloc] initWithRedirectURI:redirectURI
+                                                                                      timeout:timeout
+                                                                          withCompletionBlock:completionBlock];
+    [self presentMICLoginViewController:micVC];
+}
+
++(void)presentMICLoginViewController:(KCSMICLoginViewController*)micVC
+{
     UINavigationController* navigationVC = [[UINavigationController alloc] initWithRootViewController:micVC];
     
     [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:navigationVC

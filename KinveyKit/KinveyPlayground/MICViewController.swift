@@ -21,6 +21,7 @@ class MICViewController: UITableViewController {
                 
                 KCSUser.presentMICLoginViewControllerWithRedirectURI(
                     "kinveyAuthDemo://",
+                    timeout: 60 * 5,
                     withCompletionBlock: { (user: KCSUser!, error: NSError!, actionResult: KCSUserActionResult) -> Void in
                         if (user != nil) {
                             NSLog("KCSUser: \(user.username) (\(user.userId))")

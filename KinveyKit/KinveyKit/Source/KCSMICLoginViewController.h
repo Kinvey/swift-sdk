@@ -14,4 +14,8 @@
 -(instancetype)initWithRedirectURI:(NSString*)redirectURI
                withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
+-(instancetype)initWithRedirectURI:(NSString*)redirectURI
+                           timeout:(NSTimeInterval)timeout
+               withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
 @end
