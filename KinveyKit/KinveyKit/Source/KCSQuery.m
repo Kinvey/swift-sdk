@@ -30,6 +30,7 @@
 #import "NSMutableDictionary+KinveyAdditions.h"
 #import "KCSMetadata.h"
 #import "NSDate+ISO8601.h"
+#import "KCSMutableOrderedDictionary.h"
 
 //http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24type
 typedef enum KCSQueryType : NSUInteger {
@@ -776,7 +777,6 @@ BOOL kcsIsOperator(NSString* queryField)
         for (NSString *key in self.query) {
             [tmp setObject:[self.query objectForKey:key] forKey:key];
         }
-        KCSQuery *q = [KCSQuery query];
         q.query = [tmp mutableCopy];
     }
     return q;
@@ -819,7 +819,7 @@ BOOL kcsIsOperator(NSString* queryField)
     if ([self hasReferences]) {
         [_query append:@"._id" ontoKeySet:self.referenceFieldsToResolve recursive:YES];
     }
-    return [d JSONRepresentation];
+    return [[KCSMutableOrderedDictionary dictionaryWithDictionary:d] JSONRepresentation];
 }
 
 - (NSData *)UTF8JSONStringRepresentation
