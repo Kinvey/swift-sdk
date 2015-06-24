@@ -163,11 +163,13 @@
 
 - (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     [self complete:error];
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     if (error) {
         self.error = error;
     }
@@ -176,6 +178,7 @@
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     NSInteger responseCode = [(NSHTTPURLResponse*)downloadTask.response statusCode];
     NSError* error = nil;
     
@@ -202,6 +205,7 @@
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     NSInteger responseCode = [(NSHTTPURLResponse*)downloadTask.response statusCode];    
     if (responseCode < 400) {
         KCSLogDebug(KCS_LOG_CONTEXT_NETWORK, @"downloaded %lld bytes from file service", bytesWritten);
@@ -227,11 +231,13 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task needNewBodyStream:(void (^)(NSInputStream *))completionHandler
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     completionHandler(_request.HTTPBodyStream);
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     if (!_isUpload) {
         return;
     }

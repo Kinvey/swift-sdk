@@ -114,6 +114,7 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     [self.downloadedData appendData:data];
     if (self.progressBlock) {
         id partial = self.response.code <= 300 ? data : nil;
@@ -124,6 +125,7 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     NSHTTPURLResponse* hresponse = (NSHTTPURLResponse*) response;
     //TODO strip headers?
     KCSLogInfo(KCS_LOG_CONTEXT_NETWORK, @"received response: %ld %@ (KinveyKit ID %@)", (long)hresponse.statusCode, hresponse.allHeaderFields, self.clientRequestId);
@@ -137,17 +139,20 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask willCacheResponse:(NSCachedURLResponse *)proposedResponse completionHandler:(void (^)(NSCachedURLResponse *))completionHandler
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     completionHandler(NULL);
 }
 
 - (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     self.error = error;
     [self complete:error];
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
+    NSTHREAD_IS_NOT_MAIN_THREAD;
     [session finishTasksAndInvalidate];
     
     [self complete:error];
