@@ -3276,4 +3276,33 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
+- (NSURL*) largeVideoURL
+{
+    return [[NSBundle bundleForClass:[self class]] URLForResource:@"video" withExtension:@"mp4"];
+}
+
+/**
+ Test for MLIBZ-431
+ */
+- (void) testUploadLargeFile
+{
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+
+    [KCSFileStore uploadFile:[self largeVideoURL]
+                     options:nil
+             completionBlock:^(KCSFile *uploadInfo, NSError *error)
+    {
+        STAssertNoError_;
+        XCTAssertNotNil(uploadInfo);
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationUpload fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    
+    [self waitForExpectationsWithTimeout:60 * 5 handler:nil];
+}
+
 @end
