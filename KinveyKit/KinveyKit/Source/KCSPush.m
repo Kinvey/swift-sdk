@@ -222,18 +222,22 @@
 - (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock
 {
     if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == NO) {
-        
+        NSString *deviceTokenString = [self deviceTokenString];
         KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-            if (error) {
+            if (error || deviceTokenString == nil) {
                 KCSLogError(@"Device token did not register");
+                
+                if (completionBlock) {
+                    DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(NO, error));
+                }
             } else {
                 KCSLogDebug(@"Device token registered");
-                [[KCSUser activeUser].deviceTokens addObject:[self deviceTokenString]];
+                [[KCSUser activeUser].deviceTokens addObject:deviceTokenString];
+                
+                if (completionBlock) {
+                    DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(YES, nil));
+                }
             }
-            if (completionBlock) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(error == nil, error));
-            }
-
         }
                                                             route:KCSRESTRoutePush
                                                           options:@{KCSRequestLogMethod}
@@ -241,7 +245,7 @@
         request.method = KCSRESTMethodPOST;
         request.path = @[@"register-device"];
         request.body = @{@"userId"   : [KCSUser activeUser].userId,
-                         @"deviceId" : [self deviceTokenString],
+                         @"deviceId" : deviceTokenString,
                          @"platform" : @"ios"};
 //        TODO: request.errorDomain = KCSUserErrorDomain;
         [request start];
@@ -261,11 +265,14 @@
                 KCSLogError(@"Device token did not un-register");
             } else {
                 KCSLogDebug(@"Device token un-registered");
-                [[KCSUser activeUser].deviceTokens removeObject:[self deviceTokenString]];
+                NSString* deviceTokenString = [self deviceTokenString];
+                if (deviceTokenString) {
+                    [[KCSUser activeUser].deviceTokens removeObject:deviceTokenString];
+                }
                 self.deviceToken = nil;
             }
             if (completionBlock) {
-                completionBlock(error == nil, error);
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(error == nil, error));
             }
 
         }
@@ -282,7 +289,7 @@
         
     } else {
         self.deviceToken = nil;
-        completionBlock(NO, nil);
+        DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(NO, nil));
     }
 }
 
