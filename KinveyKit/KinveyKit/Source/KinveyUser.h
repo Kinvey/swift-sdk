@@ -34,7 +34,9 @@ typedef NS_ENUM(NSInteger, KCSUserActionResult) {
     KCSUserCreated = 1,
     KCSUserDeleted = 2,
     KCSUserFound = 3,
-    KCSUSerNotFound = 4
+    KCSUSerNotFound = 4,
+    KCSUserInteractionCancel = 5,
+    KCSUserInteractionTimeout = 6
 };
 
 typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result);
@@ -366,6 +368,28 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  @return the URL to be opened by the WebView or Safari Mobile for KCSMICAuthorizationGrantTypeAuthCodeLoginPage.
  */
 + (NSURL*)URLforLoginWithMICRedirectURI:(NSString*)redirectURI;
+
+/**
+ Presents a modal view controller with a web view and loads the URL returned by the method URLforLoginWithMICRedirectURI:
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
+ @param timeout Time to wait for some user interaction, otherwise the view controller will be automatically dismissed.
+ @param completionBlock The block to be called when the operation completes or fails.
+ @since 1.33.0
+ */
++(void)presentMICLoginViewControllerWithRedirectURI:(NSString*)redirectURI
+                                            timeout:(NSTimeInterval)timeout
+                                withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
+/**
+ Presents a modal view controller with a web view and loads the URL returned by the method URLforLoginWithMICRedirectURI:
+ 
+ @param redirectURI The URI that the grant will redirect to on authentication, as set in the console. Note: this must exactly match one of the redirect URIs configured in the console.
+ @param completionBlock The block to be called when the operation completes or fails
+ @since 1.33.0
+ */
++(void)presentMICLoginViewControllerWithRedirectURI:(NSString*)redirectURI
+                                withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 #pragma mark -
 
