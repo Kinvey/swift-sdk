@@ -1,5 +1,13 @@
 # KinveyKit Release History
 
+## 1.33
+### 1.33.1
+
+**Release Date:** June 30, 2015
+
+* Bug fix(es):
+    * Fix crash that could occur when registering/unregistering a device token if the device token was `nil`.
+
 ## 1.29
 ### 1.29.0
 
