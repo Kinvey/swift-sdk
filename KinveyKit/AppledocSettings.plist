@@ -40,7 +40,7 @@
 	<key>--create-html</key>
 	<true/>
 	<key>--project-version</key>
-	<string>1.29.0</string>
+	<string>1.33.1</string>
 	<key>--clean-output</key>
 	<true/>
 	<key>--merge-categories</key>
