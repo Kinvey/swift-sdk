@@ -21,6 +21,8 @@
 #import "KCSKeychain.h"
 #import "KinveyCoreInternal.h"
 
+#define KCS_KEYCHAIN_BUG_ERROR_CODE -34018
+
 @implementation KCSKeychain2
 
 + (CFTypeRef) accessKey
@@ -68,6 +70,15 @@
     return message;
 }
 
+static NSMutableDictionary* lastValidTokenMap = nil;
+
++(void)initialize
+{
+    [super initialize];
+    
+    lastValidTokenMap = [NSMutableDictionary dictionary];
+}
+
 + (BOOL) setKinveyToken:(NSString*)token user:(NSString*)userId
 {
     NSData *tokenData = [token dataUsingEncoding:NSUTF8StringEncoding];
@@ -91,6 +102,12 @@
     BOOL success = status == errSecSuccess;
     if (!success) {
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not write token to keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+    } else {
+        if (token) {
+            lastValidTokenMap[userId] = token;
+        } else {
+            [lastValidTokenMap removeObjectForKey:userId];
+        }
     }
     return success;
 }
@@ -108,13 +125,32 @@
     
     NSString* token = nil;
     if (!success) {
-        if (status != errSecItemNotFound) {
-            //only log if error is something other than not found
-            KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not read token from keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+        /*
+         TODO! FIXME!
+         MLIBZ-381: SDK Keychain bug preventing login
+         This is a workaround for MLIBZ-381 until Apple fix the bug in their API.
+         
+         Description of the workaround solution:
+         Try to get the value from the keychain, if it fails with the error code that we know that causes the issue (-34018), we return the last valid value (in memory) that we have
+         */
+        if (status == KCS_KEYCHAIN_BUG_ERROR_CODE) {
+            token = lastValidTokenMap[userId];
+        } else {
+            //if it's not the error code that we know that causes the issue (-34018), update the last valid value variable
+            [lastValidTokenMap removeObjectForKey:userId];
+            
+            if (status != errSecItemNotFound) {
+                //only log if error is something other than not found
+                KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not read token from keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+            }
         }
     } else {
-        if (result != nil)
+        if (result != nil) {
             token = [[NSString alloc] initWithData:(NSData*)CFBridgingRelease(result) encoding:NSUTF8StringEncoding];
+            if (token) {
+                lastValidTokenMap[userId] = token;
+            }
+        }
     }
     
     return token;
@@ -129,9 +165,13 @@
     
     BOOL success = status == errSecSuccess;
     if (!success) {
-        if (status != errSecItemNotFound) {
-            //only log if error is something other than not found (not founds are expected since this method is used to also check existence)
-            KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not query token in the keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+        if (status == KCS_KEYCHAIN_BUG_ERROR_CODE) {
+            success = lastValidTokenMap.count > 0;
+        } else {
+            if (status != errSecItemNotFound) {
+                //only log if error is something other than not found (not founds are expected since this method is used to also check existence)
+                KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not query token in the keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+            }
         }
     }
     
@@ -155,6 +195,8 @@
             KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not delete token from keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
         }
     }
+    
+    [lastValidTokenMap removeAllObjects];
     
     return success;
 
