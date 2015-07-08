@@ -53,7 +53,7 @@
     file.localURL = [KCSFileUtils fileURLForName:fileStr];
     [[NSFileManager defaultManager] removeItemAtURL:file.localURL error:NULL];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     
     [f downloadStream:file
               fromURL:[NSURL URLWithString:publicFileURL]

@@ -43,7 +43,7 @@
 
 -(void)testSaveOne
 {
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     [_store loadObjectWithID:@"testobj" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNil(objectsOrNil, @"expecting a nil objects");
         XCTAssertNotNil(errorOrNil, @"expecting an error");
@@ -58,7 +58,7 @@
     
     ASTTestClass *obj = [self makeObject:@"description" count:-88 objId:@"testobj"];
     
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [_store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertTrue([NSThread isMainThread]);
         
@@ -68,7 +68,7 @@
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationLoad2 = [self expectationWithDescription:@"load2"];
+    __weak XCTestExpectation* expectationLoad2 = [self expectationWithDescription:@"load2"];
     [_store loadObjectWithID:@"testobj" withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNotNil(objectsOrNil, @"expecting a non-nil objects");
         XCTAssertEqual((int) [objectsOrNil count], 1, @"expecting one object of id 'testobj' to be found");
@@ -92,7 +92,7 @@
     [baseObjs addObject:[self makeObject:@"two" count:70]];
     [baseObjs addObject:[self makeObject:@"one" count:5]];
     
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [_store saveObject:baseObjs withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertNotNil(objectsOrNil, @"expecting a non-nil objects");
         XCTAssertEqual((int) [objectsOrNil count], 5, @"expecting five objects returned for saving five objects");
@@ -134,7 +134,7 @@ NSString* largeString()
 {
     [self upTimeout];
     
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     KCSQuery* query = [KCSQuery queryOnField:@"foo" withExactMatchForValue:largeString()];
     [_store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
@@ -164,7 +164,7 @@ NSArray* largeArray()
     [self upTimeout];
     self.done = NO;
     KCSQuery* query = [KCSQuery queryOnField:@"foo" usingConditional:kKCSIn forValue:largeArray()];
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [_store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         
@@ -182,7 +182,7 @@ NSArray* largeArray()
 {
     self.done = NO;
     __block ASTTestClass* obj = [self makeObject:@"abc" count:100];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [_store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -199,7 +199,7 @@ NSArray* largeArray()
     NSString* objId = obj.objId;
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:4]];
     
-    XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
+    __weak XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
     [_store removeObject:obj withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         KTAssertEqualsInt(count, 1, @"should delete one object");
@@ -212,7 +212,7 @@ NSArray* largeArray()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     [_store loadObjectWithID:objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         NSLog(@"--- %@ -- %@", objectsOrNil, errorOrNil);
         XCTAssertNotNil(errorOrNil, @"should have an error");
@@ -229,7 +229,7 @@ NSArray* largeArray()
 
 - (void)testRemoveXAll
 {
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     NSMutableArray* all = [NSMutableArray arrayWithCapacity:10];
     for (int i=0; i < 10; i++) {
         ASTTestClass* obj = [self makeObject:@"testRemoveAll" count:i];
@@ -250,7 +250,7 @@ NSArray* largeArray()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
-    XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
+    __weak XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
     [_store removeObject:vals withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         KTAssertEqualsInt(count, 10, @"should delete one object");
@@ -263,7 +263,7 @@ NSArray* largeArray()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationCount = [self expectationWithDescription:@"count"];
+    __weak XCTestExpectation* expectationCount = [self expectationWithDescription:@"count"];
     [_store countWithBlock:^(unsigned long count, NSError *errorOrNil) {
         XCTAssertEqual((unsigned long) 0, count, @"should have deleted all");
         
@@ -442,7 +442,7 @@ NSArray* largeArray()
     //    [baseObjs addObject:[self makeObject:@"two" count:70]];
     [baseObjs addObject:[self makeObject:@"one" count:5]];
     [baseObjs addObject:[self makeObject:@"two" count:70]];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [_store saveObject:baseObjs
    withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
        XCTAssertNil(errorOrNil);
@@ -456,7 +456,7 @@ NSArray* largeArray()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+    __weak XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [_store group:[NSArray arrayWithObjects:@"objDescription", @"objCount", nil] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -474,7 +474,7 @@ NSArray* largeArray()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationGroup2 = [self expectationWithDescription:@"group2"];
+    __weak XCTestExpectation* expectationGroup2 = [self expectationWithDescription:@"group2"];
     KCSQuery* condition = [KCSQuery queryOnField:@"objCount" usingConditional:kKCSGreaterThanOrEqual forValue:@10];
     [_store group:@[@"objDescription", @"objCount"] reduce:[KCSReduceFunction SUM:@"objCount"] condition:condition completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
@@ -558,7 +558,7 @@ NSArray* largeArray()
 
 - (void) testEmptyResponse
 {
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [_store queryWithQuery:[KCSQuery queryOnField:@"count" withExactMatchForValue:@"NEVER MATCH"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         XCTAssertEqual((NSUInteger)0, objectsOrNil.count, @"should be empty array");
@@ -634,7 +634,7 @@ NSArray* largeArray()
     
     KCSAppdataStore *planRoomStore = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
     
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [planRoomStore queryWithQuery:planRoomQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         
@@ -681,7 +681,7 @@ NSArray* largeArray()
     [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a5"]];
     [baseObjs addObject:[self makeObject:@"one" count:5  objId:@"a6"]];
     [baseObjs addObject:[self makeObject:@"two" count:70 objId:@"a7"]];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [_store saveObject:baseObjs
    withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
        XCTAssertNil(errorOrNil);
@@ -694,7 +694,7 @@ NSArray* largeArray()
    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationCount = [self expectationWithDescription:@"count"];
+    __weak XCTestExpectation* expectationCount = [self expectationWithDescription:@"count"];
     KCSQuery* q = [KCSQuery queryOnField:@"objDescription" withExactMatchForValue:@"one"];
     [_store countWithQuery:q completion:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError
@@ -707,7 +707,7 @@ NSArray* largeArray()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 
-    XCTestExpectation* expectationCount2 = [self expectationWithDescription:@"count2"];
+    __weak XCTestExpectation* expectationCount2 = [self expectationWithDescription:@"count2"];
     [q addQueryOnField:@"objCount" withExactMatchForValue:@(10)];
     [_store countWithQuery:q completion:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError
@@ -727,7 +727,7 @@ NSArray* largeArray()
 - (void) testUserCollectionMakesUsers
 {
     __block NSArray* objs = nil;
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError

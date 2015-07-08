@@ -50,7 +50,7 @@
     NSString* _id = [self createEntity];
     XCTAssertNotNil(_id);
     
-    XCTestExpectation* expectationGetAll = [self expectationWithDescription:@"getAll"];
+    __weak XCTestExpectation* expectationGetAll = [self expectationWithDescription:@"getAll"];
     
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     [store getAll:^(NSArray *objects, NSError *error) {
@@ -69,7 +69,7 @@
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection collectionFromString:self.collection ofClass:[NSMutableDictionary class]] options:nil];
     NSDictionary* entity = [@{@"number":@(arc4random())} mutableCopy];
     
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     __block NSString* _id = nil;
     [store saveObject:entity withCompletionBlock:^(NSArray *objectsOrNil, NSError *error) {
@@ -93,7 +93,7 @@
     
     __block NSDictionary* obj = nil;
     
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     
     [store loadObjectWithID:_id withCompletionBlock:^(NSArray *objectsOrNil, NSError *error) {
         if (shouldExist) {
@@ -121,7 +121,7 @@
     
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     
     [store deleteEntity:_id completion:^(NSUInteger count, NSError *error) {
         KTAssertNoError;
@@ -144,7 +144,7 @@
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:_id];
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     
     [store deleteByQuery:[KCSQuery2 queryWithQuery1:query] completion:^(NSUInteger count, NSError *error) {
         KTAssertNoError;

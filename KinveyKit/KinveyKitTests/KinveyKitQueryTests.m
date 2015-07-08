@@ -137,9 +137,9 @@
     }
     
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:arr withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        XCTAssertNil(errorOrNil, @"not expecting error: %@");
+        XCTAssertNil(errorOrNil);
         
         XCTAssertTrue([NSThread isMainThread]);
         
@@ -154,9 +154,9 @@
     
     [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"objCount" inDirection:kKCSAscending]];
     
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        XCTAssertNil(errorOrNil, @"not expecting error: %@");
+        XCTAssertNil(errorOrNil);
         XCTAssertEqual((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
         int count = 0;
         for (TestClass* a in objectsOrNil) {
@@ -177,9 +177,9 @@
     
     [query addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"objCount" inDirection:kKCSDescending]];
     
-    XCTestExpectation* expectationQuery2 = [self expectationWithDescription:@"query2"];
+    __weak XCTestExpectation* expectationQuery2 = [self expectationWithDescription:@"query2"];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-        XCTAssertNil(errorOrNil, @"not expecting error: %@");
+        XCTAssertNil(errorOrNil);
         XCTAssertEqual((int)[objectsOrNil count], (int) 10, @"should have 10 objects");
         int count = 0;
         for (TestClass* a in objectsOrNil) {
@@ -215,7 +215,7 @@
 
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
     
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:@[t1,t2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -228,7 +228,7 @@
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     KCSQuery* query = [KCSQuery queryOnField:KCSMetadataFieldLastModifiedTime usingConditional:kKCSLessThan forValue:[NSDate date]];
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(2);
@@ -244,7 +244,7 @@
 
 - (void) loginWithUser:(NSString*)username password:(NSString*)password
 {
-    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+    __weak XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     [KCSUser userWithUsername:username password:password fieldsAndValues:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         if (errorOrNil) {
             [KCSUser loginWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
@@ -287,7 +287,7 @@
     
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:collection options:nil];
     
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:t1 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -303,7 +303,7 @@
     [self loginWithUser:@"testMetadataQueryCreator2" password:@"b"];    
     NSString* secondId = [[KCSUser activeUser] kinveyObjectId];
     
-    XCTestExpectation* expectationSave2 = [self expectationWithDescription:@"save2"];
+    __weak XCTestExpectation* expectationSave2 = [self expectationWithDescription:@"save2"];
     [store saveObject:t2 withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -316,7 +316,7 @@
     [self waitForExpectationsWithTimeout:30 handler:nil];
 
     //do the queries
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator withExactMatchForValue:origId] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(1);
@@ -329,7 +329,7 @@
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationQuery2 = [self expectationWithDescription:@"query2"];
+    __weak XCTestExpectation* expectationQuery2 = [self expectationWithDescription:@"query2"];
     [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator withExactMatchForValue:[KCSUser activeUser]] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(1);
@@ -342,7 +342,7 @@
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationQuery3 = [self expectationWithDescription:@"query3"];
+    __weak XCTestExpectation* expectationQuery3 = [self expectationWithDescription:@"query3"];
     [store queryWithQuery:[KCSQuery queryOnField:KCSMetadataFieldCreator usingConditional:kKCSIn forValue:@[origId, secondId]] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(2);
@@ -386,7 +386,7 @@
     XCTAssertEqualObjects(q1.query, @{@"field" : @{@"$not" : @{@"$gt" : @1}}}, @"should properly construct the gt query");
     
     KCSQuery* q2 = [KCSQuery queryOnField:@"field" withExactMatchForValue:@1];
-    XCTAssertThrows([q2 negateQuery], @"InvalidArguments", @"Should throw an error");
+    XCTAssertThrows([q2 negateQuery], @"InvalidArguments. Should throw an error");
 
 }
 
