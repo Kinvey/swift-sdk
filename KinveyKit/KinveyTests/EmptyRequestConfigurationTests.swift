@@ -16,6 +16,19 @@ class EmptyRequestConfigurationTests: XCTestCase {
     var offlineUpdateDelegate: KCSOfflineUpdateDelegate!
     let timeout = NSTimeInterval(30)
     
+    private class MockURLProtocol: NSURLProtocol {
+        
+        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            let headers = request.allHTTPHeaderFields!
+            
+            XCTAssertNil(headers["X-Kinvey-Client-App-Version"])
+            XCTAssertNil(headers["X-Kinvey-Custom-Request-Properties"])
+            
+            return false
+        }
+        
+    }
+    
     override func setUp() {
         super.setUp()
         
@@ -62,7 +75,8 @@ class EmptyRequestConfigurationTests: XCTestCase {
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        KCSURLProtocol.unregisterClass(MockURLProtocol)
+        
         super.tearDown()
     }
 
@@ -72,20 +86,7 @@ class EmptyRequestConfigurationTests: XCTestCase {
             "name" : "Boston",
             "state" : "MA"
         ]
-        let expectationSave = self.expectationWithDescription("save")
-        
-        class MockURLProtocol: NSURLProtocol {
-            
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                let headers = request.allHTTPHeaderFields!
-                
-                XCTAssertNil(headers["X-Kinvey-Client-App-Version"])
-                XCTAssertNil(headers["X-Kinvey-Custom-Request-Properties"])
-                
-                return false
-            }
-            
-        }
+        weak var expectationSave = self.expectationWithDescription("save")
         
         XCTAssertTrue(KCSURLProtocol.registerClass(MockURLProtocol))
         
@@ -96,23 +97,21 @@ class EmptyRequestConfigurationTests: XCTestCase {
                 XCTAssertEqual(results.count, 1)
                 
                 if results.count > 0 {
-                    XCTAssertEqual(results[0] as! Dictionary, obj)
+                    var result = results[0].mutableCopy() as! NSMutableDictionary
+                    result.removeObjectForKey(KCSEntityKeyMetadata)
+                    XCTAssertEqual(result, obj)
                 }
                 
                 XCTAssertTrue(NSThread.isMainThread())
                 
-                expectationSave.fulfill()
+                expectationSave?.fulfill()
             },
             withProgressBlock: { (results: [AnyObject]!, percentage: Double) -> Void in
                 XCTAssertTrue(NSThread.isMainThread())
             }
         )
         
-        self.waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in
-            KCSURLProtocol.unregisterClass(MockURLProtocol)
-            
-            XCTAssertNil(error)
-        })
+        self.waitForExpectationsWithTimeout(timeout, handler: nil)
     }
 
 }

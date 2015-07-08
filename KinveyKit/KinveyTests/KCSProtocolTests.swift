@@ -14,19 +14,19 @@ class KCSProtocolTestsBaseURLProtocol: XCTestCase {
     var request: NSURLRequest?
     var exception: NSException?
     
-    func testBaseURLProtocol() {
+    private class MockURLProtocol : NSURLProtocol {
         
-        class MockURLProtocol : NSURLProtocol {
+        static var testCase: KCSProtocolTestsBaseURLProtocol!
+        
+        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            testCase.request = request
             
-            static var testCase: KCSProtocolTestsBaseURLProtocol!
-            
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                testCase.request = request
-                
-                return false
-            }
-            
+            return false
         }
+        
+    }
+    
+    func testBaseURLProtocol() {
         
         MockURLProtocol.testCase = self
         KCSURLProtocol.registerClass(MockURLProtocol.self)
@@ -40,7 +40,7 @@ class KCSProtocolTestsBaseURLProtocol: XCTestCase {
         )
         KCSClient.sharedClient().initializeWithConfiguration(config)
         
-        let expectationCreateUser = expectationWithDescription("createUser")
+        weak var expectationCreateUser = expectationWithDescription("createUser")
         
         KCSTryCatch.try(
             { () -> Void in
@@ -49,7 +49,7 @@ class KCSProtocolTestsBaseURLProtocol: XCTestCase {
                     completion: { (user: KCSUser!, error: NSError!, actionResult: KCSUserActionResult) -> Void in
                         XCTFail()
                         
-                        expectationCreateUser.fulfill()
+                        expectationCreateUser?.fulfill()
                     }
                 )
                 XCTFail()
@@ -58,61 +58,64 @@ class KCSProtocolTestsBaseURLProtocol: XCTestCase {
                 self.exception = exception
                 XCTAssertNotNil(exception)
                 
-                expectationCreateUser.fulfill()
+                expectationCreateUser?.fulfill()
             },
             finally: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
-            KCSURLProtocol.unregisterClass(MockURLProtocol.self)
-        })
+        waitForExpectationsWithTimeout(30, handler: nil)
         
         XCTAssertNil(request)
         XCTAssertNotNil(exception)
+    }
+    
+    override func tearDown() {
+        KCSURLProtocol.unregisterClass(MockURLProtocol.self)
+        
+        super.tearDown()
     }
     
 }
 
 class KCSProtocolTestsIdMissing: XCTestCase {
     
-    func testIdMissing() {
+    private class MockURLProtocol : NSURLProtocol {
         
-        class MockURLProtocol : NSURLProtocol {
-            
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
-                return request
-            }
-            
-            private override func startLoading() {
-                let user = [
-                    "name" : "Kinvey2"
-                ]
-                let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
-                
-                let response = NSHTTPURLResponse(
-                    URL: request.URL!,
-                    statusCode: 200,
-                    HTTPVersion: "1.1",
-                    headerFields: [
-                        "Content-Type" : "application/json",
-                        "Content-Length" : String(data.length)
-                    ]
-                    )!
-                client!.URLProtocol(
-                    self,
-                    didReceiveResponse: response,
-                    cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
-                )
-                client!.URLProtocol(self, didLoadData: data)
-                client!.URLProtocolDidFinishLoading(self)
-            }
-            
+        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            return true
         }
         
+        override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            return request
+        }
+        
+        private override func startLoading() {
+            let user = [
+                "name" : "Kinvey2"
+            ]
+            let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
+            
+            let response = NSHTTPURLResponse(
+                URL: request.URL!,
+                statusCode: 200,
+                HTTPVersion: "1.1",
+                headerFields: [
+                    "Content-Type" : "application/json",
+                    "Content-Length" : String(data.length)
+                ]
+                )!
+            client!.URLProtocol(
+                self,
+                didReceiveResponse: response,
+                cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
+            )
+            client!.URLProtocol(self, didLoadData: data)
+            client!.URLProtocolDidFinishLoading(self)
+        }
+        
+    }
+    
+    func testIdMissing() {
         let config = KCSClientConfiguration(
             appKey: "kid_-1WAs8Rh2",
             secret: "2f355bfaa8cb4f7299e914e8e85d8c98",
@@ -123,7 +126,7 @@ class KCSProtocolTestsIdMissing: XCTestCase {
         let collection = KCSCollection(fromString: "company", ofClass: NSMutableDictionary.self)
         let store = KCSLinkedAppdataStore(collection: collection, options: nil)
         
-        let expectationCreateUser = expectationWithDescription("createUser")
+        weak var expectationCreateUser = expectationWithDescription("createUser")
         
         KCSUser.createAutogeneratedUser(
             nil,
@@ -131,7 +134,7 @@ class KCSProtocolTestsIdMissing: XCTestCase {
                 XCTAssertNotNil(user)
                 XCTAssertNil(error)
                 
-                expectationCreateUser.fulfill()
+                expectationCreateUser?.fulfill()
             }
         )
         
@@ -139,7 +142,7 @@ class KCSProtocolTestsIdMissing: XCTestCase {
         
         KCSURLProtocol.registerClass(MockURLProtocol.self)
         
-        let expectationSave = expectationWithDescription("save")
+        weak var expectationSave = expectationWithDescription("save")
         
         store.saveObject(
             [
@@ -150,58 +153,62 @@ class KCSProtocolTestsIdMissing: XCTestCase {
                 XCTAssertNotNil(error)
                 XCTAssertEqual(error.localizedDescription, "KCSPersistable objects requires the `\(KCSEntityKeyId)` property")
                 
-                expectationSave.fulfill()
+                expectationSave?.fulfill()
             },
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
-            KCSURLProtocol.unregisterClass(MockURLProtocol.self)
-        })
+        waitForExpectationsWithTimeout(30, handler: nil)
+    }
+    
+    override func tearDown() {
+        KCSURLProtocol.unregisterClass(MockURLProtocol.self)
+        
+        super.tearDown()
     }
     
 }
 
 class KCSProtocolTestsIdNotString: XCTestCase {
     
-    func testIdNotString() {
+    private class MockURLProtocol : NSURLProtocol {
         
-        class MockURLProtocol : NSURLProtocol {
-            
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
-                return request
-            }
-            
-            private override func startLoading() {
-                let user = [
-                    KCSEntityKeyId : 123,
-                    "name" : "Kinvey2"
-                ]
-                let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
-                
-                let response = NSHTTPURLResponse(
-                    URL: request.URL!,
-                    statusCode: 200,
-                    HTTPVersion: "1.1",
-                    headerFields: [
-                        "Content-Type" : "application/json",
-                        "Content-Length" : String(data.length)
-                    ]
-                    )!
-                client!.URLProtocol(
-                    self,
-                    didReceiveResponse: response,
-                    cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
-                )
-                client!.URLProtocol(self, didLoadData: data)
-                client!.URLProtocolDidFinishLoading(self)
-            }
-            
+        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            return true
         }
+        
+        override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            return request
+        }
+        
+        private override func startLoading() {
+            let user = [
+                KCSEntityKeyId : 123,
+                "name" : "Kinvey2"
+            ]
+            let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
+            
+            let response = NSHTTPURLResponse(
+                URL: request.URL!,
+                statusCode: 200,
+                HTTPVersion: "1.1",
+                headerFields: [
+                    "Content-Type" : "application/json",
+                    "Content-Length" : String(data.length)
+                ]
+                )!
+            client!.URLProtocol(
+                self,
+                didReceiveResponse: response,
+                cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
+            )
+            client!.URLProtocol(self, didLoadData: data)
+            client!.URLProtocolDidFinishLoading(self)
+        }
+        
+    }
+    
+    func testIdNotString() {
         
         let config = KCSClientConfiguration(
             appKey: "kid_-1WAs8Rh2",
@@ -213,7 +220,7 @@ class KCSProtocolTestsIdNotString: XCTestCase {
         let collection = KCSCollection(fromString: "company", ofClass: NSMutableDictionary.self)
         let store = KCSLinkedAppdataStore(collection: collection, options: nil)
         
-        let expectationCreateUser = expectationWithDescription("createUser")
+        weak var expectationCreateUser = expectationWithDescription("createUser")
         
         KCSUser.createAutogeneratedUser(
             nil,
@@ -221,7 +228,7 @@ class KCSProtocolTestsIdNotString: XCTestCase {
                 XCTAssertNotNil(user)
                 XCTAssertNil(error)
                 
-                expectationCreateUser.fulfill()
+                expectationCreateUser?.fulfill()
             }
         )
         
@@ -245,56 +252,60 @@ class KCSProtocolTestsIdNotString: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
-            KCSURLProtocol.unregisterClass(MockURLProtocol.self)
-        })
+        waitForExpectationsWithTimeout(30, handler: nil)
+    }
+    
+    override func tearDown() {
+        KCSURLProtocol.unregisterClass(MockURLProtocol.self)
+        
+        super.tearDown()
     }
     
 }
 
 class KCSProtocolTestsKmdLmtMissing: XCTestCase {
     
-    func testKmdLmtMissing() {
+    private class MockURLProtocol : NSURLProtocol {
         
-        class MockURLProtocol : NSURLProtocol {
-            
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
-                return request
-            }
-            
-            private override func startLoading() {
-                let user = [
-                    KCSEntityKeyId : "123",
-                    KCSEntityKeyMetadata : [
-                        "ect": "2013-03-14T15:55:00.329Z"
-                    ],
-                    "name" : "Kinvey2"
-                ]
-                let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
-                
-                let response = NSHTTPURLResponse(
-                    URL: request.URL!,
-                    statusCode: 200,
-                    HTTPVersion: "1.1",
-                    headerFields: [
-                        "Content-Type" : "application/json",
-                        "Content-Length" : String(data.length)
-                    ]
-                    )!
-                client!.URLProtocol(
-                    self,
-                    didReceiveResponse: response,
-                    cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
-                )
-                client!.URLProtocol(self, didLoadData: data)
-                client!.URLProtocolDidFinishLoading(self)
-            }
-            
+        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            return true
         }
+        
+        override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            return request
+        }
+        
+        private override func startLoading() {
+            let user = [
+                KCSEntityKeyId : "123",
+                KCSEntityKeyMetadata : [
+                    "ect": "2013-03-14T15:55:00.329Z"
+                ],
+                "name" : "Kinvey2"
+            ]
+            let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
+            
+            let response = NSHTTPURLResponse(
+                URL: request.URL!,
+                statusCode: 200,
+                HTTPVersion: "1.1",
+                headerFields: [
+                    "Content-Type" : "application/json",
+                    "Content-Length" : String(data.length)
+                ]
+                )!
+            client!.URLProtocol(
+                self,
+                didReceiveResponse: response,
+                cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
+            )
+            client!.URLProtocol(self, didLoadData: data)
+            client!.URLProtocolDidFinishLoading(self)
+        }
+        
+    }
+    
+    func testKmdLmtMissing() {
         
         let config = KCSClientConfiguration(
             appKey: "kid_-1WAs8Rh2",
@@ -306,7 +317,7 @@ class KCSProtocolTestsKmdLmtMissing: XCTestCase {
         let collection = KCSCollection(fromString: "company", ofClass: NSMutableDictionary.self)
         let store = KCSLinkedAppdataStore(collection: collection, options: nil)
         
-        let expectationCreateUser = expectationWithDescription("createUser")
+        weak var expectationCreateUser = expectationWithDescription("createUser")
         
         KCSUser.createAutogeneratedUser(
             nil,
@@ -314,7 +325,7 @@ class KCSProtocolTestsKmdLmtMissing: XCTestCase {
                 XCTAssertNotNil(user)
                 XCTAssertNil(error)
                 
-                expectationCreateUser.fulfill()
+                expectationCreateUser?.fulfill()
             }
         )
         
@@ -322,7 +333,7 @@ class KCSProtocolTestsKmdLmtMissing: XCTestCase {
         
         KCSURLProtocol.registerClass(MockURLProtocol.self)
         
-        let expectationSave = expectationWithDescription("save")
+        weak var expectationSave = expectationWithDescription("save")
         
         store.saveObject(
             [
@@ -333,59 +344,62 @@ class KCSProtocolTestsKmdLmtMissing: XCTestCase {
                 XCTAssertNotNil(error)
                 XCTAssertEqual(error.localizedDescription, "KCSPersistable objects requires the `\(KCSEntityKeyMetadata).\(KCSEntityKeyMetadataLastModificationTime)` property")
                 
-                expectationSave.fulfill()
+                expectationSave?.fulfill()
             },
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
-            KCSURLProtocol.unregisterClass(MockURLProtocol.self)
-        })
+        waitForExpectationsWithTimeout(30, handler: nil)
+    }
+    
+    override func tearDown() {
+        KCSURLProtocol.unregisterClass(MockURLProtocol.self)
+        
+        super.tearDown()
     }
     
 }
 
 class KCSProtocolTestsKmdMissing: XCTestCase {
     
-    func testKmdMissing() {
+    private class MockURLProtocol : NSURLProtocol {
         
-        class MockURLProtocol : NSURLProtocol {
-            
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
-                return request
-            }
-            
-            private override func startLoading() {
-                let user = [
-                    KCSEntityKeyId : "123",
-                    "name" : "Kinvey2"
-                ]
-                let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
-                
-                let response = NSHTTPURLResponse(
-                    URL: request.URL!,
-                    statusCode: 200,
-                    HTTPVersion: "1.1",
-                    headerFields: [
-                        "Content-Type" : "application/json",
-                        "Content-Length" : String(data.length)
-                    ]
-                    )!
-                client!.URLProtocol(
-                    self,
-                    didReceiveResponse: response,
-                    cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
-                )
-                client!.URLProtocol(self, didLoadData: data)
-                client!.URLProtocolDidFinishLoading(self)
-            }
-            
+        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            return true
         }
         
+        override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            return request
+        }
+        
+        private override func startLoading() {
+            let user = [
+                KCSEntityKeyId : "123",
+                "name" : "Kinvey2"
+            ]
+            let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
+            
+            let response = NSHTTPURLResponse(
+                URL: request.URL!,
+                statusCode: 200,
+                HTTPVersion: "1.1",
+                headerFields: [
+                    "Content-Type" : "application/json",
+                    "Content-Length" : String(data.length)
+                ]
+                )!
+            client!.URLProtocol(
+                self,
+                didReceiveResponse: response,
+                cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
+            )
+            client!.URLProtocol(self, didLoadData: data)
+            client!.URLProtocolDidFinishLoading(self)
+        }
+        
+    }
+    
+    func testKmdMissing() {
         let config = KCSClientConfiguration(
             appKey: "kid_-1WAs8Rh2",
             secret: "2f355bfaa8cb4f7299e914e8e85d8c98",
@@ -396,7 +410,7 @@ class KCSProtocolTestsKmdMissing: XCTestCase {
         let collection = KCSCollection(fromString: "company", ofClass: NSMutableDictionary.self)
         let store = KCSLinkedAppdataStore(collection: collection, options: nil)
         
-        let expectationCreateUser = expectationWithDescription("createUser")
+        weak var expectationCreateUser = expectationWithDescription("createUser")
         
         KCSUser.createAutogeneratedUser(
             nil,
@@ -404,7 +418,7 @@ class KCSProtocolTestsKmdMissing: XCTestCase {
                 XCTAssertNotNil(user)
                 XCTAssertNil(error)
                 
-                expectationCreateUser.fulfill()
+                expectationCreateUser?.fulfill()
             }
         )
         
@@ -412,7 +426,7 @@ class KCSProtocolTestsKmdMissing: XCTestCase {
         
         KCSURLProtocol.registerClass(MockURLProtocol.self)
         
-        let expectationSave = expectationWithDescription("save")
+        weak var expectationSave = expectationWithDescription("save")
         
         store.saveObject(
             [
@@ -423,54 +437,61 @@ class KCSProtocolTestsKmdMissing: XCTestCase {
                 XCTAssertNotNil(error)
                 XCTAssertEqual(error.localizedDescription, "KCSPersistable objects requires the `\(KCSEntityKeyMetadata)` property")
                 
-                expectationSave.fulfill()
+                expectationSave?.fulfill()
             },
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
-            KCSURLProtocol.unregisterClass(MockURLProtocol.self)
-        })
+        waitForExpectationsWithTimeout(30, handler: nil)
+    }
+    
+    override func tearDown() {
+        KCSURLProtocol.unregisterClass(MockURLProtocol.self)
+        
+        super.tearDown()
     }
     
 }
 
 class KCSProtocolTestsResponseContentType: XCTestCase {
-
-    func testResponseContentType() {
+    
+    private class MockURLProtocol : NSURLProtocol {
         
-        class MockURLProtocol : NSURLProtocol {
-            
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
-                return request
-            }
-            
-            private override func startLoading() {
-                let response = NSHTTPURLResponse(
-                    URL: request.URL!,
-                    statusCode: 200,
-                    HTTPVersion: "1.1",
-                    headerFields: [
-                        "Content-Type" : "text/plain"
-                    ]
-                )!
-                client!.URLProtocol(
-                    self,
-                    didReceiveResponse: response,
-                    cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
-                )
-                client!.URLProtocol(self, didLoadData: "test".dataUsingEncoding(NSUTF8StringEncoding)!)
-                client!.URLProtocolDidFinishLoading(self)
-            }
-            
+        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            return true
         }
         
-        KCSURLProtocol.registerClass(MockURLProtocol.self)
+        override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            return request
+        }
         
+        private override func startLoading() {
+            let response = NSHTTPURLResponse(
+                URL: request.URL!,
+                statusCode: 200,
+                HTTPVersion: "1.1",
+                headerFields: [
+                    "Content-Type" : "text/plain"
+                ]
+                )!
+            client!.URLProtocol(
+                self,
+                didReceiveResponse: response,
+                cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
+            )
+            client!.URLProtocol(self, didLoadData: "test".dataUsingEncoding(NSUTF8StringEncoding)!)
+            client!.URLProtocolDidFinishLoading(self)
+        }
+        
+    }
+    
+    override func setUp() {
+        super.setUp()
+        
+        KCSURLProtocol.registerClass(MockURLProtocol.self)
+    }
+
+    func testResponseContentType() {
         let config = KCSClientConfiguration(
             appKey: "kid_-1WAs8Rh2",
             secret: "2f355bfaa8cb4f7299e914e8e85d8c98",
@@ -478,7 +499,7 @@ class KCSProtocolTestsResponseContentType: XCTestCase {
         )
         KCSClient.sharedClient().initializeWithConfiguration(config)
         
-        let expectationCreateUser = expectationWithDescription("createUser")
+        weak var expectationCreateUser = expectationWithDescription("createUser")
         
         KCSUser.createAutogeneratedUser(
             nil,
@@ -486,53 +507,60 @@ class KCSProtocolTestsResponseContentType: XCTestCase {
                 XCTAssertNil(user)
                 XCTAssertNotNil(error)
                 
-                expectationCreateUser.fulfill()
+                expectationCreateUser?.fulfill()
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
-            KCSURLProtocol.unregisterClass(MockURLProtocol.self)
-        })
+        waitForExpectationsWithTimeout(30, handler: nil)
+    }
+    
+    override func tearDown() {
+        KCSURLProtocol.unregisterClass(MockURLProtocol.self)
+        
+        super.tearDown()
     }
     
 }
 
 class KCSProtocolTestsWrongJsonRootType: XCTestCase {
-
-    func testWrongJsonRootType() {
+    
+    private class MockURLProtocol : NSURLProtocol {
         
-        class MockURLProtocol : NSURLProtocol {
-            
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-                return true
-            }
-            
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
-                return request
-            }
-            
-            private override func startLoading() {
-                let response = NSHTTPURLResponse(
-                    URL: request.URL!,
-                    statusCode: 200,
-                    HTTPVersion: "1.1",
-                    headerFields: [
-                        "Content-Type" : "application/json"
-                    ]
-                )!
-                client!.URLProtocol(
-                    self,
-                    didReceiveResponse: response,
-                    cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
-                )
-                client!.URLProtocol(self, didLoadData: "[]".dataUsingEncoding(NSUTF8StringEncoding)!)
-                client!.URLProtocolDidFinishLoading(self)
-            }
-            
+        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            return true
         }
         
-        KCSURLProtocol.registerClass(MockURLProtocol.self)
+        override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            return request
+        }
         
+        private override func startLoading() {
+            let response = NSHTTPURLResponse(
+                URL: request.URL!,
+                statusCode: 200,
+                HTTPVersion: "1.1",
+                headerFields: [
+                    "Content-Type" : "application/json"
+                ]
+                )!
+            client!.URLProtocol(
+                self,
+                didReceiveResponse: response,
+                cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
+            )
+            client!.URLProtocol(self, didLoadData: "[]".dataUsingEncoding(NSUTF8StringEncoding)!)
+            client!.URLProtocolDidFinishLoading(self)
+        }
+        
+    }
+    
+    override func setUp() {
+        super.setUp()
+        
+        KCSURLProtocol.registerClass(MockURLProtocol.self)
+    }
+
+    func testWrongJsonRootType() {
         let config = KCSClientConfiguration(
             appKey: "kid_-1WAs8Rh2",
             secret: "2f355bfaa8cb4f7299e914e8e85d8c98",
@@ -540,7 +568,7 @@ class KCSProtocolTestsWrongJsonRootType: XCTestCase {
         )
         KCSClient.sharedClient().initializeWithConfiguration(config)
         
-        let expectationCreateUser = expectationWithDescription("createUser")
+        weak var expectationCreateUser = expectationWithDescription("createUser")
         
         KCSUser.createAutogeneratedUser(
             nil,
@@ -548,13 +576,17 @@ class KCSProtocolTestsWrongJsonRootType: XCTestCase {
                 XCTAssertNil(user)
                 XCTAssertNotNil(error)
                 
-                expectationCreateUser.fulfill()
+                expectationCreateUser?.fulfill()
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
-            KCSURLProtocol.unregisterClass(MockURLProtocol.self)
-        })
+        waitForExpectationsWithTimeout(30, handler: nil)
+    }
+    
+    override func tearDown() {
+        KCSURLProtocol.unregisterClass(MockURLProtocol.self)
+        
+        super.tearDown()
     }
 
 }

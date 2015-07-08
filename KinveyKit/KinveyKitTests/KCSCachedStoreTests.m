@@ -64,7 +64,7 @@ static float pollTime;
     NSUInteger previouscount = self.requestArray.count;
     __block NSUInteger newcount;
     
-    __block XCTestExpectation* expectationQueryServer = [self expectationWithDescription:@"queryServer"];
+    __weak XCTestExpectation* expectationQueryServer = [self expectationWithDescription:@"queryServer"];
     
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertTrue([NSThread isMainThread]);
@@ -73,10 +73,7 @@ static float pollTime;
         _callbackCount++;
         newcount = self.requestArray.count;
         
-        if (expectationQueryServer) {
-            [expectationQueryServer fulfill];
-            expectationQueryServer = nil;
-        }
+        [expectationQueryServer fulfill];
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         XCTAssertTrue([NSThread isMainThread]);
         
@@ -102,7 +99,7 @@ static float pollTime;
     TestEntity* t2 = [[TestEntity alloc] init];
     t2.key = [NSString UUID];
     
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     [store saveObject:@[t1,t2] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
@@ -179,6 +176,7 @@ static float pollTime;
     if (pollCount == maxPollCount) {
         XCTFail(@"polling timed out");
     }
+    
     return YES;
 }
 
@@ -299,7 +297,7 @@ static float pollTime;
     [store importCache:array];
     
     //2. do a query all and get the objs back
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
 
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
@@ -327,7 +325,7 @@ static float pollTime;
     
     NSMutableDictionary* obj = [@{@"foo":@"bar"} mutableCopy];
 
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         XCTAssertTrue([NSThread isMainThread]);
@@ -339,7 +337,7 @@ static float pollTime;
     
     [self waitForExpectationsWithTimeout:30 handler:nil];
 
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         KTAssertCount(1, objectsOrNil);
@@ -351,7 +349,7 @@ static float pollTime;
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
+    __weak XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
     [store removeObject:obj[KCSEntityKeyId] withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError
         KTAssertEqualsInt(count, 1, @"Should delete one");
@@ -364,7 +362,7 @@ static float pollTime;
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     //the pay-off the object should no longer be in the cache
-    XCTestExpectation* expectationQuery2 = [self expectationWithDescription:@"query2"];
+    __weak XCTestExpectation* expectationQuery2 = [self expectationWithDescription:@"query2"];
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         KTAssertCount(0, objectsOrNil);
