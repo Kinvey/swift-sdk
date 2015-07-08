@@ -101,7 +101,11 @@ static NSMutableDictionary* lastValidTokenMap = nil;
     if (!success) {
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not write token to keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
     } else {
-        lastValidTokenMap[userId] = token;
+        if (token) {
+            lastValidTokenMap[userId] = token;
+        } else {
+            [lastValidTokenMap removeObjectForKey:userId];
+        }
     }
     return success;
 }
