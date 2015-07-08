@@ -68,6 +68,15 @@
     return message;
 }
 
+static NSMutableDictionary* lastValidTokenMap = nil;
+
++(void)initialize
+{
+    [super initialize];
+    
+    lastValidTokenMap = [NSMutableDictionary dictionary];
+}
+
 + (BOOL) setKinveyToken:(NSString*)token user:(NSString*)userId
 {
     NSData *tokenData = [token dataUsingEncoding:NSUTF8StringEncoding];
@@ -91,6 +100,8 @@
     BOOL success = status == errSecSuccess;
     if (!success) {
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not write token to keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+    } else {
+        lastValidTokenMap[userId] = token;
     }
     return success;
 }
@@ -107,34 +118,32 @@
     BOOL success = status == errSecSuccess;
     
     NSString* token = nil;
-    static NSString* lastValidToken = nil;
     if (!success) {
-        if (status != errSecItemNotFound) {
-            /*
-             TODO! FIXME!
-             MLIBZ-381: SDK Keychain bug preventing login
-             This is a workaround for MLIBZ-381 until Apple fix the bug in their API.
-             
-             Description of the workaround solution:
-             Try to get the value from the keychain, if it fails with the error code that we know that causes the issue (-34018), we return the last valid value (in memory) that we have
-             */
-            if (status == -34018) {
-                token = lastValidToken;
-            } else {
-                //if it's not the error code that we know that causes the issue (-34018), update the last valid value variable
-                lastValidToken = token;
-            }
-            
-            //only log if error is something other than not found
-            KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not read token from keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+        /*
+         TODO! FIXME!
+         MLIBZ-381: SDK Keychain bug preventing login
+         This is a workaround for MLIBZ-381 until Apple fix the bug in their API.
+         
+         Description of the workaround solution:
+         Try to get the value from the keychain, if it fails with the error code that we know that causes the issue (-34018), we return the last valid value (in memory) that we have
+         */
+        if (status == -34018) {
+            token = lastValidTokenMap[userId];
         } else {
-            //if it's not found, update the last valid value variable
-            lastValidToken = token;
+            //if it's not the error code that we know that causes the issue (-34018), update the last valid value variable
+            [lastValidTokenMap removeObjectForKey:userId];
+            
+            if (status != errSecItemNotFound) {
+                //only log if error is something other than not found
+                KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not read token from keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+            }
         }
     } else {
         if (result != nil) {
             token = [[NSString alloc] initWithData:(NSData*)CFBridgingRelease(result) encoding:NSUTF8StringEncoding];
-            lastValidToken = token;
+            if (token) {
+                lastValidTokenMap[userId] = token;
+            }
         }
     }
     
