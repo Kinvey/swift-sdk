@@ -37,7 +37,7 @@
 
 - (void)testLoadUser100Times
 {
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     __block KCSUser* user = nil;
     
@@ -84,7 +84,7 @@
 }
 
 - (void)testPerformanceLoad {
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     __block KCSUser* user = nil;
     
@@ -105,7 +105,7 @@
     XCTAssertNotNil(user);
     
     [self measureBlock:^{
-        XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+        __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
         
         [self.store loadObjectWithID:user.userId
                  withCompletionBlock:^(NSArray *users, NSError *errorOrNil)

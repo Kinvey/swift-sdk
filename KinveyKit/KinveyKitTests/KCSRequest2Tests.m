@@ -45,7 +45,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     dispatch_queue_t startQ = dispatch_get_current_queue();
-    XCTestExpectation* expectationRequest = [self expectationWithDescription:@"request"];
+    __weak XCTestExpectation* expectationRequest = [self expectationWithDescription:@"request"];
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         
         dispatch_queue_t endQ = dispatch_get_current_queue();

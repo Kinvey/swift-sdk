@@ -143,7 +143,7 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
     static NSString* username = @"Big Bob";
     static NSString* password = @"BrianWilson'sBeard";
     if ([KCSUser activeUser] == nil || [[KCSUser activeUser].username isEqualToString:username] == NO) {
-        XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+        __weak XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
         [KCSUser loginWithUsername:username password:password withCompletionBlock:^(KCSUser *user, NSError *error, KCSUserActionResult result) {
             KTAssertNoError
             
