@@ -127,6 +127,9 @@
             
             //only log if error is something other than not found
             KCSLogError(KCS_LOG_CONTEXT_USER, @"Could not read token from keychain. Err %@ (%@)", [self stringForSecErrorCode:status], @(status));
+        } else {
+            //if it's not found, update the last valid value variable
+            lastValidToken = token;
         }
     } else {
         if (result != nil) {
