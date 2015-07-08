@@ -26,6 +26,8 @@ class MLIBZ_364_Tests: XCTestCase {
                 XCTAssertEqual(username, _username)
             }
             
+            XCTAssertTrue(NSThread.isMainThread())
+            
             expectationCheckUsername?.fulfill()
         })
         
