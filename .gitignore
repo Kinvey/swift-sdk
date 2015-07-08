@@ -3,3 +3,7 @@ KinveyKit/build
 KinveyKit/doc
 KinveyKit/LICENSES.html
 .DS_Store
+devtools
+DocTemplates
+Kinvey.xcworkspace
+KinveyKit/Documents

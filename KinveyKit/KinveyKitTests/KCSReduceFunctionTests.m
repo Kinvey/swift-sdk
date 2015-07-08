@@ -44,7 +44,7 @@
 - (void) clearAll
 {
     __block NSMutableArray* allObjs = [NSMutableArray array];
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:[KCSQuery query] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         
@@ -61,7 +61,7 @@
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
+    __weak XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
     [store removeObject:allObjs
     withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil);
@@ -98,7 +98,7 @@
     [baseObjs addObject:[self makeObject:@"math" count:100]];
     [baseObjs addObject:[self makeObject:@"math" count:-30]];
     
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:baseObjs
   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
       XCTAssertNil(errorOrNil);
@@ -124,7 +124,7 @@
 
 - (void) testGroupByCOUNT
 {
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+    __weak XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -145,7 +145,7 @@
 
 - (void) testGroupBySUM
 {
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+    __weak XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -166,7 +166,7 @@
 
 - (void) testGroupBySUMNonNumeric
 {
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+    __weak XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction SUM:@"objDescription"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -187,7 +187,7 @@
 
 - (void) testGroupByMIN
 {
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+    __weak XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction MIN:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -209,7 +209,7 @@
 
 - (void) testGroupByMAX
 {
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+    __weak XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction MAX:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -230,7 +230,7 @@
 
 - (void) testGroupByAverage
 {
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+    __weak XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction AVERAGE:@"objCount"] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
@@ -259,7 +259,7 @@
     t3.objDict = @{@"food" : @"orange", @"drink" : @"coffee"};
 
     NSArray* objs = @[t1,t2,t3];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:objs
   withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
       XCTAssertNil(errorOrNil);
@@ -272,7 +272,7 @@
   }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+    __weak XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:@[@"objDict.food"] reduce:[KCSReduceFunction COUNT] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         STAssertNoError;
         NSNumber* value = [valuesOrNil reducedValueForFields:@{@"objDict.food" : @"orange"}];
@@ -293,7 +293,7 @@
 //TODO: fix this - need to build objects instead of dictionaries
 - (void) noTestGroupObjByField
 {
-    XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
+    __weak XCTestExpectation* expectationGroup = [self expectationWithDescription:@"group"];
     [store group:[NSArray arrayWithObject:@"objDescription"] reduce:[KCSReduceFunction AGGREGATE] completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil) {
         XCTAssertNil(errorOrNil, @"got error: %@", errorOrNil);
         
