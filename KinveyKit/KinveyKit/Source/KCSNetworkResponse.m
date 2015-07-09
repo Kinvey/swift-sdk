@@ -124,7 +124,7 @@
         return nil;
     }
     if (self.jsonData.length == 0) {
-        return [NSData data];
+        return nil;
     }
     //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
     KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];

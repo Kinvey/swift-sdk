@@ -52,7 +52,7 @@ class MICTests: XCTestCase {
     }
     
     func testAuthCodeApi() {
-        let expectation = expectationWithDescription("login")
+        weak var expectation = expectationWithDescription("login")
         
         KCSUser.loginWithAuthorizationCodeAPI(
             "kinveyAuthDemo://",
@@ -85,14 +85,14 @@ class MICTests: XCTestCase {
             
             XCTAssertTrue(NSThread.isMainThread())
             
-            expectation.fulfill()
+            expectation?.fulfill()
         }
         
         waitForExpectationsWithTimeout(30, handler: nil)
     }
     
 //    func testRefreshToken() {
-//        let expectationLogin = expectationWithDescription("login")
+//        weak var expectationLogin = expectationWithDescription("login")
 //        
 //        KCSUser.loginWithAuthorizationCodeAPI(
 //            "kinveyAuthDemo://",
@@ -158,7 +158,7 @@ class MICTests: XCTestCase {
 //            KCSStoreKeyOfflineUpdateEnabled : true
 //        ])
 //        
-//        let expectationSave = expectationWithDescription("save")
+//        weak var expectationSave = expectationWithDescription("save")
 //        
 //        store.saveObject(
 //            [ "name" : "Victor" ],

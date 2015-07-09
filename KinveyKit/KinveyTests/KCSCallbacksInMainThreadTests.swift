@@ -137,7 +137,7 @@ class KCSCallbacksInMainThreadTests: XCTestCase {
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertTrue(NSThread.isMainThread())
                 
-                self.objectId = (results.first as! NSDictionary)["_id"] as? String
+                self.objectId = (results?.first as! NSDictionary)["_id"] as? String
                 
                 expectationCallback?.fulfill()
             },

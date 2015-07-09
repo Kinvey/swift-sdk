@@ -105,7 +105,7 @@ NSData* testData2()
     [metadata setGloballyWritable:YES];
     [metadata setGloballyReadable:YES];
     
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:@{ KCSFileId : kTestId, KCSFileACL : metadata, KCSFileMimeType : kTestMimeType, KCSFileFileName : kTestFilename} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         
@@ -122,7 +122,7 @@ NSData* testData2()
 {
     KCSAppdataStore* metaStore = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
     
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     __block KCSFile* info = nil;
     [metaStore loadObjectWithID:fileId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
@@ -161,7 +161,7 @@ NSData* testData2()
 
 - (void)tearDown
 {
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:kTestId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         if (errorOrNil != nil && errorOrNil.code == KCSNotFoundError) {
             //was hopefully removed by a test
@@ -183,7 +183,7 @@ NSData* testData2()
 
 - (void)testDownloadBasic
 {
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadData:kTestId completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -213,7 +213,7 @@ NSData* testData2()
 - (void) testDownloadDataError
 {
     //step 1. download data that doesn't exist
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadData:@"BAD-ID" completionBlock:^(NSArray *downloadedResources, NSError *error) {
         XCTAssertNil(downloadedResources, @"no resources");
@@ -232,7 +232,7 @@ NSData* testData2()
 
 - (void) testDownloadToFile
 {
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadFile:kTestId options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -274,7 +274,7 @@ NSData* testData2()
 {
     NSString* filename = @"hookemsnivy.rtf";
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadFile:kTestId options:@{KCSFileFileName : filename} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
@@ -308,7 +308,7 @@ NSData* testData2()
     //2. download two files
     //3. check there are two valid files
     __block NSString* file2Id = nil;
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         file2Id = uploadInfo.fileId;
@@ -322,7 +322,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSArray* downloads;
     [KCSFileStore downloadFile:@[kTestId, file2Id] options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -365,7 +365,7 @@ NSData* testData2()
     //2. download two dats
     //3. check there are two datas files
     __block NSString* file2Id = nil;
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         file2Id = uploadInfo.fileId;
@@ -379,7 +379,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSArray* downloads;
     [KCSFileStore downloadData:@[kTestId, file2Id] completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -418,7 +418,7 @@ NSData* testData2()
     //2. try to redownload that file and see the short-circuit
     
     __block NSDate* firstDate = nil;
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -457,7 +457,7 @@ NSData* testData2()
     
     [progresses removeAllObjects];
     [datas removeAllObjects];
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
     [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         //assert one KCSFile & its data is the right data
@@ -509,7 +509,7 @@ NSData* testData2()
     //3. try to redownload that file and see the short-circuit
     
     __block NSDate* firstDate = nil;
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -546,7 +546,7 @@ NSData* testData2()
     
     PAUSE;
     
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:@{KCSFileId : kTestId, KCSFileMimeType : kTestMimeType} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         
@@ -563,7 +563,7 @@ NSData* testData2()
     
     [progresses removeAllObjects];
     [datas removeAllObjects];
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         //assert one KCSFile & its data is the right data
@@ -608,7 +608,7 @@ NSData* testData2()
     //2. delete the file
     //3. try to redownload that file and see the short-circuit
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     __block KCSFile* file;
     [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -648,7 +648,7 @@ NSData* testData2()
     
     [progresses removeAllObjects];
     [datas removeAllObjects];
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
     [KCSFileStore downloadFile:kTestId options:@{KCSFileOnlyIfNewer : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         //assert one KCSFile & its data is the right data
@@ -691,7 +691,7 @@ NSData* testData2()
     //[NSURL URLWithString:filename relativeToURL:downloadsDir];
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL path]], @"Should start with a fresh file");
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS;
     __block KCSFile* file;
     [KCSFileStore downloadFile:kTestId options:@{KCSFileFileName : filename} completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -722,7 +722,7 @@ NSData* testData2()
     //2. download two files with names
     //3. check there are two valid files & have specified names
     __block NSString* file2Id = nil;
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData2() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         file2Id = uploadInfo.fileId;
@@ -744,7 +744,7 @@ NSData* testData2()
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL1 path]], @"Should start with a fresh file");
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL2 path]], @"Should start with a fresh file");
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSArray* downloads;
     [KCSFileStore downloadFile:@[kTestId, file2Id] options:@{KCSFileFileName : @[filename1, filename2]} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -807,7 +807,7 @@ NSData* testData2()
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL1 path]], @"Should start with a fresh file");
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:[destinationURL2 path]], @"Should start with a fresh file");
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSArray* downloads;
     [KCSFileStore downloadFile:@[kTestId, file2Id] options:@{KCSFileFileName : @[filename1, filename2]} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -849,7 +849,7 @@ NSData* testData2()
     //step 2. query and expect the file back
     //step 3. cleanup
     
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     __block KCSFile* uploadedFile = nil;
     NSString* umt = [NSString stringWithFormat:@"test/%@", [NSString UUID]];
     [KCSFileStore uploadData:testData2() options:@{KCSFileMimeType : umt} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
@@ -868,7 +868,7 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     XCTAssertNotNil(uploadedFile, @"file should be ready");
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS;
     KCSQuery* query = [KCSQuery queryOnField:KCSFileMimeType withExactMatchForValue:umt];
     [KCSFileStore downloadFileByQuery:query completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -899,7 +899,7 @@ NSData* testData2()
     //step 2. query and expect the file back
     //step 3. cleanup
     
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     __block KCSFile* uploadedFile = nil;
     NSString* umt = [NSString stringWithFormat:@"test/%@", [NSString UUID]];
     [KCSFileStore uploadData:testData2() options:@{KCSFileMimeType : umt} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
@@ -918,7 +918,7 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     XCTAssertNotNil(uploadedFile, @"file should be ready");
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS;
     KCSQuery* query = [KCSQuery queryOnField:KCSFileMimeType withExactMatchForValue:umt];
     [KCSFileStore downloadDataByQuery:query completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -950,7 +950,7 @@ NSData* testData2()
     //step 1. query and expect nothing back (e.g. weird mimetype
     //step 2. cleanup
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS;
     KCSQuery* query = [KCSQuery queryOnField:KCSFileMimeType withExactMatchForValue:@"test/NO-VALUE"];
     [KCSFileStore downloadDataByQuery:query completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -1017,7 +1017,7 @@ NSData* testData2()
     //2. download two files
     //3. check there are two valid files
     __block NSString* file2name = nil;
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         file2name = uploadInfo.filename;
@@ -1031,7 +1031,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSArray* downloads;
     NSArray* names = @[kTestFilename, file2name];
     [KCSFileStore downloadFileByName:names completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -1072,7 +1072,7 @@ NSData* testData2()
 
 - (void) testDownloadByFileByFilenameError
 {
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadFileByName:@"NO-NAME" completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -1090,7 +1090,7 @@ NSData* testData2()
 
 - (void) testGetFileIsNotThere
 {
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadFile:@"NOSUCHFILE" options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
         XCTAssertNotNil(error, @"should get an error");
@@ -1114,7 +1114,7 @@ NSData* testData2()
     //2. download two files
     //3. check there are two valid files
     __block NSString* file2Id = nil;
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         file2Id = uploadInfo.fileId;
@@ -1128,7 +1128,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSArray* downloads;
     [KCSFileStore downloadData:@[kTestId, file2Id] completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -1166,7 +1166,7 @@ NSData* testData2()
 
 - (void) testDownloadDataByName
 {
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadDataByName:kTestFilename completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -1198,7 +1198,7 @@ NSData* testData2()
 
 - (void) testDownloadByNameError
 {
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadDataByName:@"NO-SUCH-FILE" completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -1220,7 +1220,7 @@ NSData* testData2()
     //2. download two files
     //3. check there are two valid files
     __block NSString* file2name = nil;
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         file2name = uploadInfo.filename;
@@ -1234,7 +1234,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     NSArray* names = @[kTestFilename, file2name];
     [KCSFileStore downloadDataByName:names completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
@@ -1273,7 +1273,7 @@ NSData* testData2()
 {
     NSURL* downloadURL = [self getDownloadURLForId:kTestId];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
@@ -1304,7 +1304,7 @@ NSData* testData2()
     NSString* filename = @"hookemsnivy.rtf";
     NSURL* downloadURL = [self getDownloadURLForId:kTestId];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileFileName : filename} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
@@ -1335,7 +1335,7 @@ NSData* testData2()
 {
     //start by downloading file
     __block NSDate* firsDate = nil;
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadFile:kTestId options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
@@ -1356,7 +1356,7 @@ NSData* testData2()
     
     NSURL* downloadURL = [self getDownloadURLForId:kTestId];
     
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileOnlyIfNewer : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
@@ -1396,7 +1396,7 @@ NSData* testData2()
     //start by downloading file
     
     __block NSDate* firstDate = nil;
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadFile:kTestId options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
@@ -1419,7 +1419,7 @@ NSData* testData2()
     PAUSE
     
     //then re-upload file
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:@{KCSFileId : kTestId} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_
         
@@ -1433,7 +1433,7 @@ NSData* testData2()
     
     NSURL* downloadURL = [self getDownloadURLForId:kTestId];
     
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileOnlyIfNewer : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
@@ -1472,7 +1472,7 @@ NSData* testData2()
     
     //start by downloading file
     __block NSDate* firsDate = nil;
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadFile:kTestId options:@{KCSFileFileName : filename} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
@@ -1494,7 +1494,7 @@ NSData* testData2()
     
     NSURL* downloadURL = [self getDownloadURLForId:kTestId];
     
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileFileName : filename, KCSFileOnlyIfNewer : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
@@ -1533,7 +1533,7 @@ NSData* testData2()
 
 - (void) testDownloadWithResolvedURLStopAndResume
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     __block NSString* fileId;
     [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
@@ -1549,7 +1549,7 @@ NSData* testData2()
     
     NSURL* downloadURL = [self getDownloadURLForId:fileId];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSDate* localLMT = nil;
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -1587,7 +1587,7 @@ NSData* testData2()
     unsigned long long firstWritten = [lastRequest bytesWritten];
     
     [NSThread sleepForTimeInterval:1];
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileResume : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
@@ -1626,7 +1626,7 @@ NSData* testData2()
 
 - (void) testDownloadWithResolvedURLStopAndResumeFromBeginningIfNewer
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     __block NSString* fileId;
     [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
@@ -1643,7 +1643,7 @@ NSData* testData2()
     NSURL* downloadURL = [self getDownloadURLForId:fileId];
     
     //start a download and then abort it
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSDate* localLMT = nil;
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -1681,7 +1681,7 @@ NSData* testData2()
     
     //update the file
     PAUSE
-    XCTestExpectation* expectationUpload2 = [self expectationWithDescription:@"upload2"];
+    __weak XCTestExpectation* expectationUpload2 = [self expectationWithDescription:@"upload2"];
     [KCSFileStore uploadFile:[self largeImageURL] options:@{KCSFileId : fileId} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         fileId = uploadInfo.fileId;
@@ -1695,7 +1695,7 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     //restart the download and make sure it starts over from the beginning
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileResume : @(YES), KCSFileOnlyIfNewer : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
@@ -1733,7 +1733,7 @@ NSData* testData2()
 {
     NSURL* downloadURL = [self getDownloadURLForId:kTestId];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
     [KCSFileStore downloadDataWithResolvedURL:downloadURL completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
@@ -1758,7 +1758,7 @@ NSData* testData2()
 - (void) testResume
 {
     //1. Upload Image
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     __block NSString* fileId;
     [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
@@ -1775,7 +1775,7 @@ NSData* testData2()
     //2. Start Download
     NSURL* downloadURL = [self getDownloadURLForId:fileId];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSDate* localLMT = nil;
     __block NSURL* startedURL = nil;
     SETUP_PROGRESS
@@ -1819,7 +1819,7 @@ NSData* testData2()
     [NSThread sleepForTimeInterval:1];
     
     //4. Resume Download
-    XCTestExpectation* expectationResumeDownload = [self expectationWithDescription:@"resumeDownload"];
+    __weak XCTestExpectation* expectationResumeDownload = [self expectationWithDescription:@"resumeDownload"];
     [KCSFileStore resumeDownload:startedURL from:downloadURL completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
@@ -1861,7 +1861,7 @@ NSData* testData2()
     //1. Set a low ttl
     //2. Upload a large file w/pause
     
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     NSURL* fileURL = [self largeImageURL];
@@ -1889,7 +1889,7 @@ NSData* testData2()
     ASSERT_PROGESS
     XCTAssertNotNil(newFileId, @"Should get a file id");
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadFile:newFileId options:@{KCSFileLinkExpirationTimeInterval : @0.7} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         //TODO
 //        STAssertNoError_
@@ -1917,7 +1917,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -1930,7 +1930,7 @@ NSData* testData2()
 
 - (void) testTTLExpires
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     __block NSString* fileId = nil;
     [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_
@@ -1947,7 +1947,7 @@ NSData* testData2()
     XCTAssertNotNil(fileId, @"should have valid file");
     
     SETUP_PROGRESS;
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadFile:fileId options:@{KCSFileStoreTestExpries : @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         XCTAssertNotNil(error, @"Should have an error");
         //TODO
@@ -1966,7 +1966,7 @@ NSData* testData2()
 
 - (void) testStreamingBasic
 {
-    XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
+    __weak XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
     [KCSFileStore getStreamingURL:kTestId completionBlock:^(KCSFile *streamingResource, NSError *error) {
         STAssertNoError_;
         XCTAssertNil(streamingResource.localURL, @"should have no local url for data");
@@ -1989,7 +1989,7 @@ NSData* testData2()
 
 - (void) testStreamingError
 {
-    XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
+    __weak XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
     [KCSFileStore getStreamingURL:@"NO-FILE" completionBlock:^(KCSFile *streamingResource, NSError *error) {
         XCTAssertNotNil(error, @"should get an error");
         XCTAssertNil(streamingResource, @"no resources");
@@ -2007,7 +2007,7 @@ NSData* testData2()
 
 - (void) testStreamingByName
 {
-    XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
+    __weak XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
     __block NSURL* streamURL = nil;
     [KCSFileStore getStreamingURLByName:kTestFilename completionBlock:^(KCSFile *streamingResource, NSError *error) {
         STAssertNoError_;
@@ -2029,7 +2029,7 @@ NSData* testData2()
 
 - (void) testStreamingByNameError
 {
-    XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
+    __weak XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
     [KCSFileStore getStreamingURLByName:@"NO-FILE" completionBlock:^(KCSFile *streamingResource, NSError *error) {
         XCTAssertNotNil(error, @"should get an error");
         XCTAssertNil(streamingResource, @"no resources");
@@ -2047,7 +2047,7 @@ NSData* testData2()
 
 - (void) testGetUIImageWithURL
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     NSURL* fileURL = [self largeImageURL];
@@ -2076,7 +2076,7 @@ NSData* testData2()
     XCTAssertNotNil(newFileId, @"Should get a file id");
     
     __block KCSFile* streamingFile = nil;
-    XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
+    __weak XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
     [KCSFileStore getStreamingURL:newFileId completionBlock:^(KCSFile *streamingResource, NSError *error) {
         STAssertNoError_
         XCTAssertNotNil(streamingResource, @"should be not nil");
@@ -2101,7 +2101,7 @@ NSData* testData2()
 
 - (void) testSaveLocalResource
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
@@ -2122,7 +2122,7 @@ NSData* testData2()
     ASSERT_PROGESS
     
     if (newFileId) {
-        XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+        __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -2136,7 +2136,7 @@ NSData* testData2()
 
 - (void) testUploadLFOptions
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     NSString* fileId = [NSString UUID];
@@ -2170,7 +2170,7 @@ NSData* testData2()
     KTAssertEqualsInt(metaFile.length, kImageSize, @"sizes shoukld match");
     
     if (newFileId) {
-        XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+        __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -2199,7 +2199,7 @@ NSData* testData2()
 
 - (void) testMimeTypeGuessForSpecifiedFilename
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     [KCSFileStore uploadData:testData()
@@ -2222,7 +2222,7 @@ NSData* testData2()
     ASSERT_PROGESS
     
     if (newFileId) {
-        XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+        __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -2233,7 +2233,7 @@ NSData* testData2()
         [self waitForExpectationsWithTimeout:30 handler:nil];
     }
     
-    XCTestExpectation* expectationUpload2 = [self expectationWithDescription:@"upload2"];
+    __weak XCTestExpectation* expectationUpload2 = [self expectationWithDescription:@"upload2"];
     [KCSFileStore uploadData:testData()
                      options:@{KCSFileFileName: @"jazz.wav"}
              completionBlock:^(KCSFile *uploadInfo, NSError *error) {
@@ -2255,7 +2255,7 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     if (newFileId) {
-        XCTestExpectation* expectationDelete2 = [self expectationWithDescription:@"delete2"];
+        __weak XCTestExpectation* expectationDelete2 = [self expectationWithDescription:@"delete2"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -2266,7 +2266,7 @@ NSData* testData2()
         [self waitForExpectationsWithTimeout:30 handler:nil];
     }
     
-    XCTestExpectation* expectationUpload3 = [self expectationWithDescription:@"upload3"];
+    __weak XCTestExpectation* expectationUpload3 = [self expectationWithDescription:@"upload3"];
     [KCSFileStore uploadData:testData()
                      options:nil
              completionBlock:^(KCSFile *uploadInfo, NSError *error) {
@@ -2288,7 +2288,7 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     if (newFileId) {
-        XCTestExpectation* expectationDelete3 = [self expectationWithDescription:@"delete3"];
+        __weak XCTestExpectation* expectationDelete3 = [self expectationWithDescription:@"delete3"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -2303,7 +2303,7 @@ NSData* testData2()
 
 - (void) testUploadLFPublic
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     NSURL* fileURL = [self largeImageURL];
@@ -2333,7 +2333,7 @@ NSData* testData2()
     ASSERT_PROGESS
     XCTAssertNotNil(newFileId, @"Should get a file id");
     
-    XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
+    __weak XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
     [KCSFileStore getStreamingURL:newFileId options:@{KCSFileLinkExpirationTimeInterval : @1} completionBlock:^(KCSFile *streamingResource, NSError *error) {
         STAssertNoError_;
         NSURL* remoteURL = streamingResource.remoteURL;
@@ -2352,7 +2352,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -2366,7 +2366,7 @@ NSData* testData2()
 
 - (void) testUploadLFACL
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     KCSMetadata* metadata =[[KCSMetadata alloc] init];
@@ -2403,7 +2403,7 @@ NSData* testData2()
     ASSERT_PROGESS
     XCTAssertNotNil(newFileId, @"Should get a file id");
     
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     KCSAppdataStore* fileStore = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
     [fileStore loadObjectWithID:newFileId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
@@ -2422,7 +2422,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -2435,7 +2435,7 @@ NSData* testData2()
 
 - (void) testLMTGetsUpdatedEvenIfNoMetadataChange
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     __block KCSFile* origFile = nil;
@@ -2465,7 +2465,7 @@ NSData* testData2()
     
     [NSThread sleepForTimeInterval:2];
     
-    XCTestExpectation* expectationUpload2 = [self expectationWithDescription:@"upload2"];
+    __weak XCTestExpectation* expectationUpload2 = [self expectationWithDescription:@"upload2"];
     [KCSFileStore uploadData:testData() options:@{KCSFileId : newFileId} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         
@@ -2484,7 +2484,7 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     if (newFileId) {
-        XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+        __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -2498,7 +2498,7 @@ NSData* testData2()
 
 - (void) testSaveDataBasic
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
@@ -2525,7 +2525,7 @@ NSData* testData2()
     ASSERT_PROGESS
     
     if (newFileId) {
-        XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+        __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -2539,7 +2539,7 @@ NSData* testData2()
 
 - (void) testUploadDataPublic
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     [KCSFileStore uploadData:testData() options:@{KCSFilePublic : @YES} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
@@ -2568,7 +2568,7 @@ NSData* testData2()
     ASSERT_PROGESS
     XCTAssertNotNil(newFileId, @"Should get a file id");
     
-    XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
+    __weak XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
     [KCSFileStore getStreamingURL:newFileId options:@{KCSFileLinkExpirationTimeInterval : @1} completionBlock:^(KCSFile *streamingResource, NSError *error) {
         STAssertNoError_;
         NSURL* remoteURL = streamingResource.remoteURL;
@@ -2587,7 +2587,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -2600,7 +2600,7 @@ NSData* testData2()
 
 - (void) testUploadDataACL
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     KCSMetadata* metadata =[[KCSMetadata alloc] init];
@@ -2636,7 +2636,7 @@ NSData* testData2()
     ASSERT_PROGESS
     XCTAssertNotNil(newFileId, @"Should get a file id");
     
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     KCSAppdataStore* fileStore = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
     [fileStore loadObjectWithID:newFileId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
@@ -2655,7 +2655,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -2674,7 +2674,7 @@ NSData* testData2()
     NSString* myID = [NSString stringWithFormat:@"BED__ R/fsda.faめセレクションse‱🌇e/SCHME’-%@", [NSString UUID]];
     
     SETUP_PROGRESS;
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:@{KCSFileFileName : myFilename, KCSFileId : myID} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         XCTAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
@@ -2692,7 +2692,7 @@ NSData* testData2()
     
     
     CLEAR_PROGRESS;
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadData:myID completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         //assert one KCSFile & its data is the right data
@@ -2717,7 +2717,7 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     ASSERT_PROGESS
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:myID completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -2736,7 +2736,7 @@ NSData* testData2()
     NSString* myID = [NSString stringWithFormat:@"BED__ R/fsda.faめセレクションse‱🌇e/SCHME’-%@", [NSString UUID]];
     
     SETUP_PROGRESS;
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:@{KCSFileFileName : myFilename, KCSFileId : myID} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         XCTAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
@@ -2754,7 +2754,7 @@ NSData* testData2()
     
     
     CLEAR_PROGRESS;
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadData:@[myID, @"🎡♝Forsyth xe/mme.afoo"] completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         //assert one KCSFile & its data is the right data
@@ -2782,7 +2782,7 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     ASSERT_PROGESS
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:myID completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         
@@ -2889,7 +2889,7 @@ NSData* testData2()
 
 - (void) testDelete
 {
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:kTestId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         KTAssertEqualsInt(count, 1, @"should have deleted one file");
@@ -2900,7 +2900,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadData:kTestId completionBlock:^(NSArray *downloadedResources, NSError *error) {
         XCTAssertNotNil(error, @"should get an error");
         XCTAssertEqualObjects(error.domain, KCSFileStoreErrorDomain, @"Should be a file error");
@@ -2921,7 +2921,7 @@ NSData* testData2()
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
     KCSQuery* nameQuery = [KCSQuery queryOnField:KCSFileFileName withExactMatchForValue:kTestFilename];
     
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     __block NSString* fileId = nil;
     [store queryWithQuery:nameQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
@@ -2942,7 +2942,7 @@ NSData* testData2()
     
     XCTAssertNotNil(fileId, @"should have a valid file");
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:fileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         KTAssertEqualsInt(count, 1, @"should have deleted one file");
@@ -2953,7 +2953,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadData:fileId completionBlock:^(NSArray *downloadedResources, NSError *error) {
         XCTAssertNotNil(error, @"should get an error");
         XCTAssertEqualObjects(error.domain, KCSFileStoreErrorDomain, @"Should be a file error");
@@ -2970,7 +2970,7 @@ NSData* testData2()
 
 - (void) testDeleteError
 {
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:@"NO_FILE" completionBlock:^(unsigned long count, NSError *errorOrNil) {
         XCTAssertNotNil(errorOrNil, @"should get an error");
         KTAssertEqualsInt(errorOrNil.code, 404, @"should be no file found");
@@ -2988,7 +2988,7 @@ NSData* testData2()
 
 - (void) testHolderCrash
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     __block NSString* fileId = nil;
     [KCSFileStore uploadData:testData() options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_
@@ -3005,7 +3005,7 @@ NSData* testData2()
     
     //no logout and use a new user
     [[KCSUser activeUser] logout];
-    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+    __weak XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     [KCSUser loginWithUsername:@"foo" password:@"bar" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError
         
@@ -3017,7 +3017,7 @@ NSData* testData2()
     
     
     KCSQuery *fileQuery = [KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:fileId];
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadFileByQuery:fileQuery completionBlock:^(NSArray *downloadedResources, NSError *error)
      {
          STAssertNoError_
@@ -3048,7 +3048,7 @@ NSData* testData2()
     
     //second test
     
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
     [KCSFileStore downloadFile:fileId options:@{KCSFileOnlyIfNewer: @YES} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         //TODO
@@ -3066,7 +3066,7 @@ NSData* testData2()
 //hs20413
 - (void) testMultipleSimultaneousDownloads
 {
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     NSString* filename = [NSString UUID];
@@ -3090,7 +3090,7 @@ NSData* testData2()
     
 
     __block int count = 0;
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
         NSLog(@"$$$$ COUNT = %d", count);
         if (count == 0) {
@@ -3195,7 +3195,7 @@ NSData* testData2()
     
     //make sure state is cleared and redownload when done
 
-    XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"downlod2"];
+    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"downlod2"];
     [KCSFileStore downloadDataByName:filename completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         //TODO
@@ -3210,7 +3210,7 @@ NSData* testData2()
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     if (newFileId) {
-        XCTestExpectation* expectationDownload3 = [self expectationWithDescription:@"downlod3"];
+        __weak XCTestExpectation* expectationDownload3 = [self expectationWithDescription:@"downlod3"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -3237,7 +3237,7 @@ NSData* testData2()
 {
     NSString* filename = @"Porto rotondo.jpg";
     __block NSString* fileid = nil;
-    XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:@{KCSFileFileName : filename} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         
@@ -3253,7 +3253,7 @@ NSData* testData2()
     
     XCTAssertNotNil(fileid, @"file id should be set");
     
-    XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadFile:fileid options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         
@@ -3265,7 +3265,7 @@ NSData* testData2()
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:fileid completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError
         

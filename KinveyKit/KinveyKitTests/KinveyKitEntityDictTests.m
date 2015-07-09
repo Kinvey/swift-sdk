@@ -68,7 +68,7 @@
     
     __block NSDictionary* retDict = nil;
     
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
@@ -82,7 +82,7 @@
     }];;
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     [store queryWithQuery:[KCSQuery queryOnField:@"test" withExactMatchForValue:@"testRoundtrip"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
@@ -113,7 +113,7 @@
     
     __block NSDictionary* retDict = nil;
     
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];
@@ -131,7 +131,7 @@
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     [store loadObjectWithID:[retDict objectForKey:@"_id"] withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         retDict = [objectsOrNil objectAtIndex:0];

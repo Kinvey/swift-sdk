@@ -43,7 +43,7 @@
 
 - (void) testPing
 {
-    XCTestExpectation* expectationPing = [self expectationWithDescription:@"ping"];
+    __weak XCTestExpectation* expectationPing = [self expectationWithDescription:@"ping"];
     [KCSPing2 pingKinveyWithBlock:^(NSDictionary *appInfo, NSError *error) {
         KTAssertNoError
         XCTAssertNotNil(appInfo, @"should be a valid value");

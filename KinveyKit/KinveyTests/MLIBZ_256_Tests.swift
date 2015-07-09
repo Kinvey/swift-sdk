@@ -146,10 +146,12 @@ class MLIBZ_256_Tests: XCTestCase {
     
     override func tearDown() {
         KCSURLProtocol.unregisterClass(MockURLProtocol.self)
+        
+        super.tearDown()
     }
     
     func runTest() {
-        let expectationQuery1 = expectationWithDescription("query1")
+        weak var expectationQuery1 = expectationWithDescription("query1")
         
         var firstTime = true;
         store.queryWithQuery(
@@ -166,7 +168,7 @@ class MLIBZ_256_Tests: XCTestCase {
                     
                     firstTime = false
                 } else {
-                    expectationQuery1.fulfill()
+                    expectationQuery1?.fulfill()
                 }
             },
             withProgressBlock: nil,
@@ -175,7 +177,7 @@ class MLIBZ_256_Tests: XCTestCase {
         
         waitForExpectationsWithTimeout(90, handler: nil)
         
-        let expectationQuery2 = expectationWithDescription("query2")
+        weak var expectationQuery2 = expectationWithDescription("query2")
         
         store.queryWithQuery(
             KCSQuery(onField: "policyId", withExactMatchForValue: "5"),
@@ -188,7 +190,7 @@ class MLIBZ_256_Tests: XCTestCase {
                     XCTAssertEqual(results as! [NSObject], self.resultsCache as! [NSObject])
                 }
                 
-                expectationQuery2.fulfill()
+                expectationQuery2?.fulfill()
             },
             withProgressBlock: nil,
             cachePolicy: KCSCachePolicy.LocalOnly
