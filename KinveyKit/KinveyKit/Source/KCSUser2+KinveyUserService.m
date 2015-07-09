@@ -1041,12 +1041,12 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             response.skipValidation = YES;
             NSDictionary* dict = [response jsonObjectError:&error];
             if (error) {
-                completionBlock(potentialUsername, NO, error);
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, NO, error));
             } else {
-                completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error);
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error));
             }
         } else {
-            completionBlock(potentialUsername, NO, error);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, NO, error));
         }
     }
                                                         route:KCSRESTRouteRPC
