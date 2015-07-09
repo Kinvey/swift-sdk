@@ -445,7 +445,7 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
     return object;
 }
 
-+ (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withResourceDictionary:(NSMutableDictionary*)resources;
++ (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withResourceDictionary:(NSMutableDictionary*)resources
 {
     
     // Check for special options to building this class
