@@ -16,7 +16,7 @@ class MLIBZ_364_Tests: XCTestCase {
     }
 
     func test() {
-        let expectationCheckUsername = expectationWithDescription("CheckUsername")
+        weak var expectationCheckUsername = expectationWithDescription("CheckUsername")
         
         let username = "chicksabcs@gmail.com"
         KCSUser.checkUsername(username, withCompletionBlock: { (_username: String!, usernameAlreadyTaken: Bool, error: NSError!) -> Void in
@@ -26,7 +26,9 @@ class MLIBZ_364_Tests: XCTestCase {
                 XCTAssertEqual(username, _username)
             }
             
-            expectationCheckUsername.fulfill()
+            XCTAssertTrue(NSThread.isMainThread())
+            
+            expectationCheckUsername?.fulfill()
         })
         
         waitForExpectationsWithTimeout(30, handler: nil)

@@ -23,7 +23,7 @@
                                                  withAppSecret:@"f01e4f4f81bf4c919e83bee54fe945bd"
                                                   usingOptions:nil];
     
-    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+    __weak XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     
 //    [KCSUser loginWithUsername:@"4a51dbe2-cbfe-42c2-837b-0c81f533ac19" password:@"fb882daa-9168-4e00-a49c-57e35a9e74e4" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result)
 //    {
@@ -58,8 +58,8 @@
     
     __block NSString *petID = @"2c4f04d3-9c09-e511-9477-005056a51cd0";
     
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     [store loadObjectWithID:petID withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         NSLog(@"Loaded pet %@", petID);

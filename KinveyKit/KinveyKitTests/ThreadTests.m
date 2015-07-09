@@ -123,7 +123,9 @@ static NSOperationQueue* queue;
             NSURLSession* session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:q];
             //            session.delegate = self;
             NSURLSessionDataTask* task = [session dataTaskWithURL:[NSURL URLWithString:@"http://localhost:3000/locations"]];
-            _d[task] = op;
+            if (op) {
+                _d[task] = op;
+            }
             [task resume];
              
 //            [[session dataTaskWithURL:[NSURL URLWithString:@"http://localhost:3000/locations"]
@@ -153,10 +155,9 @@ static NSOperationQueue* queue;
 - (void) makeAndRunOp
 {
     TestOperation* op = [[TestOperation alloc] init];
-    @weakify(op);
+    __weak TestOperation* opWeak = op;
     op.block = ^{
-        @strongify(op);
-        [self runOp:op];
+        [self runOp:opWeak];
     };
     [queue addOperation:op];
 }
@@ -188,7 +189,7 @@ static NSOperationQueue* queue;
     [[KCSClient sharedClient] initializeWithConfiguration:config];
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
     
-    XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+    __weak XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     [KCSUser loginWithUsername:@"roger" password:@"roger" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
 //        XCTAssertNil(errorOrNil, @"error should be nil");
         
@@ -198,7 +199,7 @@ static NSOperationQueue* queue;
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection userCollection] options:nil];
 
     NSArray* toFetch = @[@"523a0b3fd4af557103001771",@"523a0b3fd4af557103001771",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac",@"523c4c2371037d725e007dac"];

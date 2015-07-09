@@ -81,8 +81,8 @@ class MLIBZ_260_Tests: XCTestCase {
         let delegate = OfflineSaveDelegate()
         KCSClient.sharedClient().setOfflineDelegate(delegate)
         
-        let expectationLogin = expectationWithDescription("login")
-        let expectationSave = expectationWithDescription("save")
+        weak var expectationLogin = expectationWithDescription("login")
+        weak var expectationSave = expectationWithDescription("save")
         
         KCSUser.loginWithUsername(
             "jeppe",
@@ -127,13 +127,13 @@ class MLIBZ_260_Tests: XCTestCase {
                             XCTAssertNil(objectsOrNil)
                             XCTAssertNotNil(errorOrNil)
                             
-                            expectationSave.fulfill()
+                            expectationSave?.fulfill()
                         },
                         withProgressBlock: nil
                     )
                 }
                 
-                expectationLogin.fulfill()
+                expectationLogin?.fulfill()
             }
         )
         

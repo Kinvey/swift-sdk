@@ -336,7 +336,7 @@
     HS1789* newFlat = [[HS1789 alloc] init];
     newFlat.name = @"Roberto";
     KCSAppdataStore* store = [KCSLinkedAppdataStore storeWithOptions:@{ KCSStoreKeyCollectionName : @"HS1789", KCSStoreKeyCollectionTemplateClass : [HS1789 class]}];
-    XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     [store saveObject:newFlat withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         STAssertObjects(1);

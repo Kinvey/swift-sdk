@@ -540,6 +540,7 @@
 		574640291B3E0FA100D17CA0 /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 574640281B3E0FA100D17CA0 /* video.mp4 */; };
 		5746402A1B3E0FA100D17CA0 /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 574640281B3E0FA100D17CA0 /* video.mp4 */; };
 		5746402B1B3E0FA100D17CA0 /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 574640281B3E0FA100D17CA0 /* video.mp4 */; };
+		574ABF151B4D817500632B3B /* EmptyResponseDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574ABF141B4D817500632B3B /* EmptyResponseDataTests.swift */; };
 		574D8BA31B1641BB00C114A9 /* MLIBZ_322_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574D8BA21B1641BB00C114A9 /* MLIBZ_322_Tests.swift */; };
 		574FD5551AC1C0BB00CA26CD /* KCSKinveyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */; };
 		575675011AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575675001AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift */; };
@@ -1359,6 +1360,7 @@
 		5743915E1AEE9AD200D55AAF /* KCSTryCatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSTryCatch.h; sourceTree = "<group>"; };
 		5743915F1AEE9AD200D55AAF /* KCSTryCatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSTryCatch.m; sourceTree = "<group>"; };
 		574640281B3E0FA100D17CA0 /* video.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video.mp4; sourceTree = "<group>"; };
+		574ABF141B4D817500632B3B /* EmptyResponseDataTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyResponseDataTests.swift; sourceTree = "<group>"; };
 		574D8BA21B1641BB00C114A9 /* MLIBZ_322_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_322_Tests.swift; sourceTree = "<group>"; };
 		574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSKinveyTest.m; sourceTree = "<group>"; };
 		575675001AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyRequestConfigurationTests.swift; sourceTree = "<group>"; };
@@ -2238,6 +2240,7 @@
 				57E40BC91B20E95C00C37317 /* MLIBZ_371_Tests.m */,
 				573C7F251B2B467400B4A774 /* KCSCallbacksInMainThreadTests.swift */,
 				57405C751B2B9AB600238187 /* MLIBZ_326_Tests.m */,
+				574ABF141B4D817500632B3B /* EmptyResponseDataTests.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -3918,6 +3921,7 @@
 				578834401AB8D25500078CC5 /* KinveyKitBase64Tests.m in Sources */,
 				578834551AB8D25500078CC5 /* FileRequestTests.m in Sources */,
 				578834531AB8D25500078CC5 /* OfflineTests.m in Sources */,
+				574ABF151B4D817500632B3B /* EmptyResponseDataTests.swift in Sources */,
 				571200EC1ABB203E002B148D /* RequestConfigurationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

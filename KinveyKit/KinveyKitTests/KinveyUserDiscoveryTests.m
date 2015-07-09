@@ -33,7 +33,7 @@
 
 - (void) createUser:(NSString*)username email:(NSString*)email fname:(NSString*)fname lname:(NSString*)lname
 {
-    XCTestExpectation* expectationUser = [self expectationWithDescription:@"user"];
+    __weak XCTestExpectation* expectationUser = [self expectationWithDescription:@"user"];
     [KCSUser userWithUsername:username password:@"hero" fieldsAndValues:nil withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         if (errorOrNil != nil && [[errorOrNil domain] isEqualToString:KCSUserErrorDomain] && [errorOrNil code] == KCSConflictError) {
             [KCSUser loginWithUsername:username password:@"hero" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
