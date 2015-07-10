@@ -242,6 +242,16 @@ void setActive(KCSUser* user)
     }];
 }
 
++(void)setMICApiVersion:(NSString *)micApiVersion
+{
+    [KCSUser2 setMICApiVersion:micApiVersion];
+}
+
++(NSString *)micApiVersion
+{
+    return [KCSUser2 micApiVersion];
+}
+
 - (void)logout
 {
     if (![self isEqual:[KCSUser activeUser]]){
