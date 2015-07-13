@@ -392,7 +392,8 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
                                 withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 /*!
- Setter to specify the MIC API Version
+ Setter to specify the MIC API Version.
+ It might be necessary specify a version for the MIC API if you are not using the default version, for example if you are trying a beta version.
  */
 +(void)setMICApiVersion:(NSString*)micApiVersion;
 
