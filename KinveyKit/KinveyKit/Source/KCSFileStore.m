@@ -209,6 +209,8 @@ static NSMutableSet* _ongoingDownloads;
     
     request.body = body;
     request.headers = @{@"x-Kinvey-content-type" : body[@"mimeType"]};
+    
+    request.queryString = @"?tls=true";
 
     return request;
 }
@@ -279,7 +281,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]];
     if (!exists) {
         NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"fileURL does not exist '%@'", fileURL] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:nil];
-        completionBlock(nil, error);
+        DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         return;
     }
     
@@ -287,7 +289,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[fileURL path] error:&error];
     if (error != nil) {
          error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Trouble loading attributes at '%@'", fileURL] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:nil sourceError:error];
-        completionBlock(nil, error);
+        DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         return;
     }
     
@@ -301,11 +303,11 @@ KCSFile* fileFromResults(NSDictionary* results)
 
     KCSRequest2 * request = [self _getUploadLoc:opts completion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
-            completionBlock(nil, error);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         } else {
             NSDictionary* results = [response jsonObjectError:&error];
             if (error) {
-                completionBlock(nil, error);
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
             } else {
                 NSString* url = results[@"_uploadURL"];
                 if (url) {
@@ -316,7 +318,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                     [self _uploadFile:fileURL toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
                 } else {
                     NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:response.requestId];
-                    completionBlock(nil, error);
+                    DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
                 }
             }
         }
