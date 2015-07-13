@@ -19,6 +19,8 @@ class MICViewController: UITableViewController {
                     usingOptions: nil
                 )
                 
+                KCSUser.setMICApiVersion("v2")
+                
                 KCSUser.presentMICLoginViewControllerWithRedirectURI(
                     "kinveyAuthDemo://",
                     timeout: 60 * 5,

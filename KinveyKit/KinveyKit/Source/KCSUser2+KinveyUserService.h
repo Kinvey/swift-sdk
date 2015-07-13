@@ -49,6 +49,9 @@ typedef void (^KCSUser2CompletionBlock)(id<KCSUser2>user, NSError* error);
                     forURL:(NSURL *)url
        withCompletionBlock:(KCSUser2CompletionBlock)completionBlock;
 
++(void)setMICApiVersion:(NSString*)micApiVersion;
++(NSString*)micApiVersion;
+
 + (void) logoutUser:(id<KCSUser2>)user;
 
 
