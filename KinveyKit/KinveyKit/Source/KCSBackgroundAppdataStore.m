@@ -503,7 +503,18 @@ return; \
     } else {
         request.path = @[];
     }
-    request.queryString = [[self modifyQuery:query] parameterStringRepresentation];
+    
+    NSMutableString* queryString = [NSMutableString stringWithString:[[self modifyQuery:query] parameterStringRepresentation]];
+    
+    if (queryString.length > 0) {
+        [queryString appendString:@"&"];
+    } else {
+        [queryString appendString:@"?"];
+    }
+    [queryString appendString:@"tls=true"];
+    
+    request.queryString = queryString;
+    
     KCSPartialDataParser* partialParser = nil;
     if (progressBlock!= nil) {
         partialParser = [[KCSPartialDataParser alloc] init];
