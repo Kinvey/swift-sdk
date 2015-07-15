@@ -10,6 +10,8 @@ import UIKit
 import XCTest
 
 class KCSFileStoreTestsSwift: XCTestCase {
+    
+    var file: KCSFile? = nil
 
     override func setUp() {
         super.setUp()
@@ -35,31 +37,148 @@ class KCSFileStoreTestsSwift: XCTestCase {
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        KCSUser.activeUser()?.logout()
+        
         super.tearDown()
     }
-
-    func testUpload2Https() {
+    
+    func upload() {
         weak var expectationUpload = expectationWithDescription("upload")
-        var file: KCSFile? = nil
         
         let url = NSBundle(forClass: self.dynamicType).URLForResource("mavericks", withExtension: "jpg")
         KCSFileStore.uploadFile(
             url,
             options: nil,
-            completionBlock: { (_file: KCSFile!, error: NSError!) -> Void in
-                file = _file
+            completionBlock: { (file: KCSFile!, error: NSError!) -> Void in
+                self.file = file
                 
                 XCTAssertNil(error)
-                XCTAssertNotNil(_file)
+                XCTAssertNotNil(file)
                 
-                if let file = _file {
+                if let file = file {
                     XCTAssertEqual("https", file.remoteURL.scheme!)
                 }
                 
                 XCTAssertTrue(NSThread.isMainThread())
                 
                 expectationUpload?.fulfill()
+            },
+            progressBlock: nil
+        )
+        
+        waitForExpectationsWithTimeout(60, handler: nil)
+    }
+
+    func testUpload() {
+        upload()
+    }
+    
+    func testDownloadByQuery() {
+        upload()
+        
+        weak var expectationDownload = expectationWithDescription("download")
+        
+        KCSFileStore.downloadFileByQuery(
+            KCSQuery(),
+            completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                XCTAssertNil(error)
+                XCTAssertNotNil(results)
+                XCTAssertGreaterThan(results.count, 0)
+                
+                if let results = results {
+                    for file in results as! [KCSFile] {
+                        XCTAssertEqual("https", file.remoteURL.scheme!)
+                    }
+                }
+                
+                XCTAssertTrue(NSThread.isMainThread())
+                
+                expectationDownload?.fulfill()
+            },
+            progressBlock: nil
+        )
+        
+        waitForExpectationsWithTimeout(60, handler: nil)
+    }
+    
+    func testDownloadByQuery2() {
+        upload()
+        
+        weak var expectationDownload = expectationWithDescription("download")
+        
+        KCSFileStore.downloadFileByQuery(
+            KCSQuery(onField: "_filename", withExactMatchForValue: "mavericks.jpg"),
+            completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                XCTAssertNil(error)
+                XCTAssertNotNil(results)
+                XCTAssertGreaterThan(results.count, 0)
+                
+                if let results = results {
+                    for file in results as! [KCSFile] {
+                        XCTAssertEqual("https", file.remoteURL.scheme!)
+                    }
+                }
+                
+                XCTAssertTrue(NSThread.isMainThread())
+                
+                expectationDownload?.fulfill()
+            },
+            progressBlock: nil
+        )
+        
+        waitForExpectationsWithTimeout(60, handler: nil)
+    }
+    
+    func testDownloadByName() {
+        upload()
+        
+        weak var expectationDownload = expectationWithDescription("download")
+        
+        KCSFileStore.downloadFileByName(
+            "mavericks.jpg",
+            completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                XCTAssertNil(error)
+                XCTAssertNotNil(results)
+                XCTAssertGreaterThan(results.count, 0)
+                
+                if let results = results {
+                    for file in results as! [KCSFile] {
+                        XCTAssertEqual("https", file.remoteURL.scheme!)
+                    }
+                }
+                
+                XCTAssertTrue(NSThread.isMainThread())
+                
+                expectationDownload?.fulfill()
+            },
+            progressBlock: nil
+        )
+        
+        waitForExpectationsWithTimeout(60, handler: nil)
+    }
+    
+    func testDownloadFile() {
+        upload()
+        
+        weak var expectationDownload = expectationWithDescription("download")
+        
+        KCSFileStore.downloadFile(
+            file!.fileId,
+            options: [KCSFileOnlyIfNewer : true],
+            completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                XCTAssertNil(error)
+                XCTAssertNotNil(results)
+                if let results = results {
+                    XCTAssertGreaterThan(results.count, 0)
+                    
+                    for file in results as! [KCSFile] {
+                        XCTAssertEqual("https", file.remoteURL.scheme!)
+                    }
+                }
+                
+                XCTAssertTrue(NSThread.isMainThread())
+                
+                expectationDownload?.fulfill()
             },
             progressBlock: nil
         )

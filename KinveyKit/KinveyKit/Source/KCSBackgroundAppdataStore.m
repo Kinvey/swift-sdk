@@ -42,6 +42,7 @@
 #import "KCSAppdataStore.h"
 #import "KCSDataModel.h"
 #import "EXTScope.h"
+#import "NSString+KinveyAdditions.h"
 
 #define KCSSTORE_VALIDATE_PRECONDITION BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:completionBlock]; \
 if (okayToProceed == NO) { \
@@ -503,7 +504,10 @@ return; \
     } else {
         request.path = @[];
     }
-    request.queryString = [[self modifyQuery:query] parameterStringRepresentation];
+    
+    NSString* queryString = [[self modifyQuery:query] parameterStringRepresentation];
+    request.queryString = [queryString stringByAppendingQueryString:@"tls=true"];
+    
     KCSPartialDataParser* partialParser = nil;
     if (progressBlock!= nil) {
         partialParser = [[KCSPartialDataParser alloc] init];
