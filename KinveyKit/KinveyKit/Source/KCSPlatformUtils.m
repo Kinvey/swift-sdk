@@ -60,10 +60,13 @@
 + (NSString *) platform {
     size_t size;
     sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    NSString *platform = @"unknown";
     char *machine = malloc(size);
-    sysctlbyname("hw.machine", machine, &size, NULL, 0);
-    NSString *platform = [NSString stringWithCString:machine encoding:NSASCIIStringEncoding];
-    free(machine);
+    if (machine) {
+        sysctlbyname("hw.machine", machine, &size, NULL, 0);
+        platform = [NSString stringWithCString:machine encoding:NSASCIIStringEncoding];
+        free(machine);
+    }
     return platform;
 }
 
