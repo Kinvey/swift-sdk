@@ -26,6 +26,7 @@ class MICLoginPageViewController: UIViewController, UIWebViewDelegate {
             usingOptions: nil
         )
 
+        KCSUser.setMICApiVersion("v2")
         let url = KCSUser.URLforLoginWithMICRedirectURI(redirectURI)
         let request = NSURLRequest(URL: url)
         webView.loadRequest(request)
