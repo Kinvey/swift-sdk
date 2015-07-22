@@ -471,7 +471,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                       sync:(BOOL)sync
                 completion:(KCSUser2CompletionBlock)completionBlock
 {
-    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@.kinvey.com/oauth/token", [self clientConfiguration].authHostname]];
+    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/token", [self baseMicURL]]];
     NSMutableURLRequest* request = [KCSRequest2 requestForURL:url];
     request.HTTPMethod = @"POST";
     
@@ -552,6 +552,18 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     }
 }
 
+static NSString* micApiVersion = nil;
+
++(void)setMICApiVersion:(NSString *)_micApiVersion
+{
+    micApiVersion = _micApiVersion;
+}
+
++(NSString *)micApiVersion
+{
+    return micApiVersion;
+}
+
 +(NSString*)stringFromDictionaryURLEncode:(NSDictionary*)dictionary
 {
     NSMutableString* result = [NSMutableString string];
@@ -564,6 +576,17 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     return result;
 }
 
++(NSMutableString*)baseMicURL
+{
+    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
+    NSMutableString* baseURL = [NSMutableString stringWithFormat:@"https://%@.kinvey.com", config.authHostname];
+    if (micApiVersion && micApiVersion.length > 0) {
+        [baseURL appendFormat:@"/%@", micApiVersion];
+    }
+    [baseURL appendString:@"/oauth"];
+    return baseURL;
+}
+
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
 {
     return [self URLforLoginWithMICRedirectURI:redirectURI
@@ -574,7 +597,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                             isLoginPage:(BOOL)isLoginPage
 {
     KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-    NSMutableString *url = [NSMutableString stringWithFormat:@"https://%@.kinvey.com/oauth/auth", config.authHostname];
+    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/auth", [self baseMicURL]];
     if (isLoginPage) {
         NSString* query = [self stringFromDictionaryURLEncode:@{
                                                                 @"client_id" : config.appKey,
@@ -1041,12 +1064,12 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             response.skipValidation = YES;
             NSDictionary* dict = [response jsonObjectError:&error];
             if (error) {
-                completionBlock(potentialUsername, NO, error);
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, NO, error));
             } else {
-                completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error);
+                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error));
             }
         } else {
-            completionBlock(potentialUsername, NO, error);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, NO, error));
         }
     }
                                                         route:KCSRESTRouteRPC

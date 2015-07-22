@@ -391,6 +391,17 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 +(void)presentMICLoginViewControllerWithRedirectURI:(NSString*)redirectURI
                                 withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
+/*!
+ Setter to specify the MIC API Version.
+ It might be necessary specify a version for the MIC API if you are not using the default version, for example if you are trying a beta version.
+ */
++(void)setMICApiVersion:(NSString*)micApiVersion;
+
+/*!
+ Getter that returns the MIC API Version
+ */
++(NSString*)micApiVersion;
+
 #pragma mark -
 
 /*! Removes a user and their data from Kinvey
