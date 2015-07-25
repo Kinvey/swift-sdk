@@ -37,6 +37,10 @@
 
 @implementation KCSNSURLSessionFileOperation
 
+#if BUILD_FOR_UNIT_TEST
+    KCS_OBJECT_REFERENCE_COUNTER
+#endif
+
 - (instancetype) initWithRequest:(NSMutableURLRequest*)request output:(NSURL*)fileHandle  context:(id)context
 {
     self = [super init];
@@ -170,6 +174,8 @@
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
     NSTHREAD_IS_NOT_MAIN_THREAD;
+    [session finishTasksAndInvalidate];
+    
     if (error) {
         self.error = error;
     }

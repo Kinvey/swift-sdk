@@ -73,6 +73,46 @@ class KCSFileStoreTestsSwift: XCTestCase {
         upload()
     }
     
+    func testUploadMemoryLeak() {
+        weak var expectationUpload = expectationWithDescription("upload")
+        
+        XCTAssertEqual(0, KCSFile.referenceCount())
+        XCTAssertEqual(0, KCSNSURLSessionFileOperation.referenceCount())
+        
+        let url = NSBundle(forClass: self.dynamicType).URLForResource("mavericks", withExtension: "jpg")
+        KCSFileStore.uploadFile(
+            url,
+            options: nil,
+            completionBlock: { (file: KCSFile!, error: NSError!) -> Void in
+                XCTAssertEqual(1, KCSFile.referenceCount())
+                XCTAssertEqual(1, KCSNSURLSessionFileOperation.referenceCount())
+                
+                expectationUpload?.fulfill()
+            },
+            progressBlock: nil
+        )
+        
+        waitForExpectationsWithTimeout(60, handler: nil)
+        
+        weak var expectationMemory = expectationWithDescription("memory")
+        
+        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)
+        var block: (() -> ())! = nil
+        block = { () -> Void in
+            if (KCSFile.referenceCount() == 0 && KCSNSURLSessionFileOperation.referenceCount() == 0) {
+                expectationMemory?.fulfill()
+            } else {
+                dispatch_async(queue, block)
+            }
+        }
+        dispatch_async(queue, block)
+        
+        waitForExpectationsWithTimeout(10, handler: nil)
+        
+        XCTAssertEqual(0, KCSFile.referenceCount())
+        XCTAssertEqual(0, KCSNSURLSessionFileOperation.referenceCount())
+    }
+    
     func testDownloadByQuery() {
         upload()
         

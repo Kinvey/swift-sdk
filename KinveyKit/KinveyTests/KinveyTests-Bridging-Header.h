@@ -3,6 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "KinveyKit-Prefix.pch"
 #import "KinveyKit.h"
 #import "TestUtils2.h"
 #import "KCSMutableOrderedDictionary.h"
@@ -11,6 +12,7 @@
 #import "MLIBZ_239_DataHelper.h"
 #import "KCSTryCatch.h"
 #import "KCSMemory.h"
+#import "KCSNSURLSessionFileOperation.h"
 
 @interface KCSUser2 ()
 
@@ -23,5 +25,17 @@
 @interface NSString (KinveyAdditions)
 
 @property (readonly) NSString* sha1;
+
+@end
+
+@interface KCSFile (KCSObject)
+
++(NSInteger)referenceCount;
+
+@end
+
+@interface KCSNSURLSessionFileOperation (KCSObject)
+
++(NSInteger)referenceCount;
 
 @end
