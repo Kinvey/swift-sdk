@@ -41,6 +41,10 @@
 
 @implementation KCSFile
 
+#if BUILD_FOR_UNIT_TEST
+    KCS_OBJECT_REFERENCE_COUNTER
+#endif
+
 #pragma mark -
 
 - (instancetype)initWithData:(NSData *)data fileId:(NSString*)fileId filename:(NSString*)filename mimeType:(NSString*)mimeType
