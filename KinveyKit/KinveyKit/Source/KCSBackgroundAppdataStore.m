@@ -1144,23 +1144,9 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
         } else {
             [[NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil] raise];
         }
-    } else if ([object isKindOfClass:[NSString class]]) {
+    } else if ([object isKindOfClass:[NSString class]] || [object isKindOfClass:[KCSQuery class]]) {
         //do this since all objs are KCSPersistables
         object = object;
-    } else if ([object isKindOfClass:[KCSQuery class]]) {
-        [self queryWithQuery:object
-        requestConfiguration:requestConfiguration
-         withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-             if (errorOrNil) {
-                 DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(0, errorOrNil));
-             } else {
-                 [self removeObject:objectsOrNil
-               requestConfiguration:requestConfiguration
-                withCompletionBlock:completionBlock
-                  withProgressBlock:progressBlock];
-             }
-         } withProgressBlock:nil];
-        return;
     } else if ([object conformsToProtocol:@protocol(KCSPersistable)]) {
         //if its just a single object get the _id
         object = [object kinveyObjectId];

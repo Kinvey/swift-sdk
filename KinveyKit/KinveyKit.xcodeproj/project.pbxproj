@@ -517,6 +517,8 @@
 		27FEBF3017B26AEB006E7FBD /* KCSCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */; };
 		27FEBF3117B26AEB006E7FBD /* KCSCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */; };
 		5708914E1B28F32000F0D51A /* MLIBZ_322_Ext_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5708914D1B28F32000F0D51A /* MLIBZ_322_Ext_Tests.swift */; };
+		57097EAD1B62ABE500D06461 /* mavericks.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 271DE7B917728815003541D4 /* mavericks.jpg */; };
+		57097EAF1B62AC7A00D06461 /* FileUploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57097EAE1B62AC7A00D06461 /* FileUploadViewController.swift */; };
 		5710CFDF1ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5710CFDD1ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.h */; };
 		5710CFE01ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5710CFDD1ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.h */; };
 		5710CFE11ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5710CFDE1ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.m */; };
@@ -1335,6 +1337,7 @@
 		27FB2A7616FCEC7400CD7D5C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Accounts.framework; sourceTree = DEVELOPER_DIR; };
 		27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCredentials.h; sourceTree = "<group>"; };
 		5708914D1B28F32000F0D51A /* MLIBZ_322_Ext_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_322_Ext_Tests.swift; sourceTree = "<group>"; };
+		57097EAE1B62AC7A00D06461 /* FileUploadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileUploadViewController.swift; sourceTree = "<group>"; };
 		5710CFDD1ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSURLConnectionDelegateAdapter.h; sourceTree = "<group>"; };
 		5710CFDE1ACDD09D00FFDCF7 /* KCSURLConnectionDelegateAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSURLConnectionDelegateAdapter.m; sourceTree = "<group>"; };
 		571200EA1ABB203D002B148D /* KinveyTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyTests-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -2169,6 +2172,7 @@
 				5725E70D1AD6E3F100B506BB /* MICLoginPageViewController.swift */,
 				5725E70F1AD6E48A00B506BB /* KinveyPlayground-Bridging-Header.h */,
 				57F62A8E1B30D89C00779A5B /* MICViewController.swift */,
+				57097EAE1B62AC7A00D06461 /* FileUploadViewController.swift */,
 			);
 			path = KinveyPlayground;
 			sourceTree = "<group>";
@@ -3392,6 +3396,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5725E6F11AD6E29F00B506BB /* Main.storyboard in Resources */,
+				57097EAD1B62ABE500D06461 /* mavericks.jpg in Resources */,
 				5725E6F61AD6E29F00B506BB /* LaunchScreen.xib in Resources */,
 				5725E6F31AD6E29F00B506BB /* Images.xcassets in Resources */,
 			);
@@ -3714,6 +3719,7 @@
 				57F62A8F1B30D89C00779A5B /* MICViewController.swift in Sources */,
 				5725E70E1AD6E3F100B506BB /* MICLoginPageViewController.swift in Sources */,
 				5725E6EA1AD6E29F00B506BB /* AppDelegate.swift in Sources */,
+				57097EAF1B62AC7A00D06461 /* FileUploadViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4790,6 +4796,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -4823,6 +4830,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -4856,6 +4864,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -4891,6 +4900,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
