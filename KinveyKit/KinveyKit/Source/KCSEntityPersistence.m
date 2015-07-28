@@ -30,6 +30,7 @@
 #import "KCSRequest2.h"
 
 //IMPORTANT NOTE: please, always increase this number, never decrease to avoid clear your cache!
+//IMPORTANT NOTE: if you changed the version, make sure that you have implemented a method that looks like -(void)upgradeDatabaseSchemaFromVersion5toVersion6:(KCS_FMDatabase*)db
 #define KCS_CACHE_VERSION 5
 
 #define KCSLogLastDatabaseError(db) KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [db lastErrorCode], [db lastErrorMessage])
