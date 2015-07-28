@@ -29,7 +29,11 @@
 
 #import "KCSRequest2.h"
 
-#define KCS_CACHE_VERSION @"0.004"
+//IMPORTANT NOTE: please, always increase this number, never decrease to avoid clear your cache!
+//IMPORTANT NOTE: if you changed the version, make sure that you have implemented a method that looks like -(void)upgradeDatabaseSchemaFromVersion5toVersion6:(KCS_FMDatabase*)db
+#define KCS_CACHE_VERSION 5
+
+#define KCSLogLastDatabaseError(db) KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [db lastErrorCode], [db lastErrorMessage])
 
 @interface KCSEntityPersistence ()
 @property (nonatomic, strong) KCS_FMDatabaseQueue* db;
@@ -89,9 +93,9 @@
 - (void) createMetadata
 {
     [_db inDatabase:^(KCS_FMDatabase *db) {
-        BOOL e = [db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version VARCHAR(255), time TEXT)"];
+        BOOL e = [db executeUpdate:@"CREATE TABLE metadata (id VARCHAR(255) PRIMARY KEY, version INTEGER not null, time TEXT)"];
         if (!e || [db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [db lastErrorCode], [db lastErrorMessage]);}
-        e = [db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", KCS_CACHE_VERSION, @"2"]];
+        e = [db executeUpdate:@"INSERT INTO metadata VALUES (:id, :version, :time)" withArgumentsInArray:@[@"1", @(KCS_CACHE_VERSION), @"2"]];
         if (!e || [db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [db lastErrorCode], [db lastErrorMessage]);}
     }];
 }
@@ -113,7 +117,7 @@
         KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Creating New Cache %@", path);
         [self createMetadata];
     } else {
-        __block NSString* version = nil;
+        __block id version = nil;
         [_db inDatabase:^(KCS_FMDatabase *db) {
             KCS_FMResultSet *rs = [db executeQuery:@"SELECT version FROM metadata"];
             if ([db hadError]) { KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Err %d: %@", [db lastErrorCode], [db lastErrorMessage]);}
@@ -124,9 +128,58 @@
             [rs close];
             
         }];
-        if ([version isEqualToString:KCS_CACHE_VERSION] == NO) {
-            [self clearCaches];
-            return;
+        if ([version isKindOfClass:[NSString class]]) {
+            if ([version isEqualToString:@"0.004"]) { //last version value before the 'version' column becomes an integer
+                [_db inDatabase:^(KCS_FMDatabase *db) {
+                    [db beginTransaction];
+                    [self upgradeDatabaseSchema:db
+                                      toVersion:5]; //first version value after the 'version' column becomes an integer
+                    BOOL result = [db commit];
+                    if (!result) {
+                        KCSLogLastDatabaseError(db);
+                    }
+                }];
+            } else {
+                [self clearCaches];
+            }
+        } else if ([version isKindOfClass:[NSNumber class]]) {
+            NSNumber* versionNumber = version;
+            __block long versionNumberLong = versionNumber.longValue;
+            if (versionNumberLong < KCS_CACHE_VERSION) {
+                [_db inDatabase:^(KCS_FMDatabase *db) {
+                    SEL selector = nil;
+                    while (versionNumberLong < KCS_CACHE_VERSION) {
+                        [db beginTransaction];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                        long toVersionNumber = KCS_CACHE_VERSION;
+                        while (toVersionNumber > versionNumberLong) {
+                            selector = NSSelectorFromString([NSString stringWithFormat:@"upgradeDatabaseSchemaFromVersion%@toVersion%@:", @(versionNumberLong), @(toVersionNumber)]);
+                            if ([self respondsToSelector:selector]) {
+                                break;
+                            } else {
+                                if (toVersionNumber > versionNumberLong) {
+                                    toVersionNumber--;
+                                }
+                            }
+                        }
+                        [self performSelector:selector
+                                   withObject:db];
+#pragma clang diagnostic pop
+                        [self upgradeDatabaseSchema:db
+                                          toVersion:toVersionNumber];
+                        BOOL result = [db commit];
+                        if (!result) {
+                            KCSLogLastDatabaseError(db);
+                        } else {
+                            versionNumberLong++;
+                        }
+                    }
+                }];
+            } else if (versionNumberLong > KCS_CACHE_VERSION) {
+                //clear the cache if the stored version is greater than the runtime version since we don't know how to handle this case nicely
+                [self clearCaches];
+            }
         }
     }
     
@@ -705,5 +758,22 @@
     
     [self initDB];
 }
- 
+
+#pragma mark - Upgrade Schema Version methods. IMPORTANT NOTE: any method in this section MUST NOT be changed or removed after released for the public. Please, always add methods, never change or remove.
+
+-(void)upgradeDatabaseSchema:(KCS_FMDatabase*)db
+                   toVersion:(long)toVersion
+{
+    [db executeUpdate:@"REPLACE INTO metadata VALUES (:version)" withArgumentsInArray:@[@(toVersion)]];
+}
+
+//IMPORTANT NOTE: here's a sample example how to implement an upgrade database schema method
+//-(void)upgradeDatabaseSchemaFromVersion5toVersion6:(KCS_FMDatabase*)db
+//{
+//}
+//
+//-(void)upgradeDatabaseSchemaFromVersion5toVersion7:(KCS_FMDatabase*)db
+//{
+//}
+
 @end
