@@ -166,7 +166,7 @@
                                    withObject:db];
 #pragma clang diagnostic pop
                         [self upgradeDatabaseSchema:db
-                                          toVersion:versionNumberLong + 1];
+                                          toVersion:toVersionNumber];
                         BOOL result = [db commit];
                         if (!result) {
                             KCSLogLastDatabaseError(db);
