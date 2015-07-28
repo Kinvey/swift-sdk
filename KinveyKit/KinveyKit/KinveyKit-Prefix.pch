@@ -51,4 +51,30 @@
 #define NSTHREAD_IS_MAIN_THREAD NSParameterAssert([NSThread isMainThread])
 #define NSTHREAD_IS_NOT_MAIN_THREAD NSParameterAssert(![NSThread isMainThread])
 
+#define KCS_OBJECT_REFERENCE_COUNTER \
+static NSInteger referenceCount = 0; \
+\
++(instancetype)allocWithZone:(struct _NSZone *)zone \
+{ \
+    id instance = [super allocWithZone:zone]; \
+    if (instance) { \
+        @synchronized(self) { \
+            referenceCount++; \
+        } \
+    } \
+    return instance; \
+} \
+\
++(NSInteger)referenceCount \
+{ \
+    return referenceCount; \
+} \
+\
+-(void)dealloc \
+{ \
+    @synchronized(self.class) { \
+        referenceCount--; \
+    } \
+}
+
 #import "KinveyHeaderInfo.h"
