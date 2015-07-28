@@ -141,7 +141,6 @@
             } else {
                 [self clearCaches];
             }
-            return;
         } else if ([version isKindOfClass:[NSNumber class]]) {
             NSNumber* versionNumber = version;
             __block long versionNumberLong = versionNumber.longValue;
