@@ -176,8 +176,10 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 + (void) initStaging:(NSDictionary*)opts
 {
-    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid10005" withAppSecret:@"8cce9613ecb7431ab580d20863a91e20" usingOptions:opts];
-    [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_-1WAs8Rh2"
+                                                 withAppSecret:@"2f355bfaa8cb4f7299e914e8e85d8c98"
+                                                  usingOptions:opts];
+//    [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
     
 }
 
