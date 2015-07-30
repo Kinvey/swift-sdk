@@ -133,10 +133,6 @@
     
     [[KCSAppdataStore caches] cacheAppKey:configuration.appKey];
     
-//    if (self.options[KCS_CONNECTION_TIMEOUT]) {
-//        _connectionTimeout = [self.options[KCS_CONNECTION_TIMEOUT] doubleValue];
-//    }
-    
     KK2(move this over)
     if (self.options[KCS_LOG_SINK] != nil) {
         [KCSLogManager setLogSink:self.options[KCS_LOG_SINK]];

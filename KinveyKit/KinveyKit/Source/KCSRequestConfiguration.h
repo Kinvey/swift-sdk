@@ -39,7 +39,8 @@
 
 /**
  The network timeout to use for the request (in seconds).
- When specified, this value overrides the KCS_CONNECTION_TIMEOUT set on the KCSClient.
+ When specified, this value overrides the global KCS_CONNECTION_TIMEOUT configuration option.
+ @since 1.35.0
  */
 @property (nonatomic) double timeout;
 
