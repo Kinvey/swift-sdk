@@ -38,6 +38,12 @@
 @property (nonatomic, strong) NSDictionary *customRequestProperties;
 
 /**
+ The network timeout to use for the request (in seconds).
+ When specified, this value overrides the KCS_CONNECTION_TIMEOUT set on the KCSClient.
+ */
+@property (nonatomic) double timeout;
+
+/**
  Creates and initializes a new request configuration to be used in Kinvey request.
  
  @param clientAppVersion client application version that will be send in each Kinvey request.

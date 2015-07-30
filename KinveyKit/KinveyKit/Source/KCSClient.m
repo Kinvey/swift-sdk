@@ -133,9 +133,9 @@
     
     [[KCSAppdataStore caches] cacheAppKey:configuration.appKey];
     
-    if (self.options[KCS_CONNECTION_TIMEOUT]) {
-        _connectionTimeout = [self.options[KCS_CONNECTION_TIMEOUT] doubleValue];
-    }
+//    if (self.options[KCS_CONNECTION_TIMEOUT]) {
+//        _connectionTimeout = [self.options[KCS_CONNECTION_TIMEOUT] doubleValue];
+//    }
     
     KK2(move this over)
     if (self.options[KCS_LOG_SINK] != nil) {
@@ -168,6 +168,10 @@
 - (NSString *)dateStorageFormatString
 {
     return self.configuration.options[KCS_DATE_FORMAT];
+}
+- (double) connectionTimeout
+{
+    return [self.configuration.options[KCS_CONNECTION_TIMEOUT] doubleValue];
 }
 
 #pragma mark INITS
