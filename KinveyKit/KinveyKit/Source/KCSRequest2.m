@@ -224,10 +224,10 @@ static NSOperationQueue* kcsRequestQueue;
 +(NSMutableURLRequest *)requestForURL:(NSURL *)url
 {
     KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
+    
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
                                                        timeoutInterval:[config.options[KCS_CONNECTION_TIMEOUT] doubleValue]];
-    
     if (url.host) {
         [request setValue:url.host
        forHTTPHeaderField:@"Host"];
@@ -272,6 +272,10 @@ static NSOperationQueue* kcsRequestQueue;
     NSString* customRequestPropertiesJsonString = self.customRequestProperties && self.customRequestProperties.count > 0 ? self.customRequestProperties.jsonString : nil;
     if (customRequestPropertiesJsonString) {
         [request setValue:customRequestPropertiesJsonString forHTTPHeaderField:kHeaderCustomRequestProperties];
+    }
+    
+    if (self.requestConfiguration && self.requestConfiguration.timeout > 0){
+        request.timeoutInterval = self.requestConfiguration.timeout;
     }
     
     return request;
