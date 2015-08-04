@@ -42,7 +42,7 @@
  When specified, this value overrides the global KCS_CONNECTION_TIMEOUT configuration option.
  @since 1.35.0
  */
-@property (nonatomic) double timeout;
+@property (nonatomic) NSTimeInterval timeout;
 
 /**
  Creates and initializes a new request configuration to be used in Kinvey request.
