@@ -123,9 +123,9 @@ class KCSFileStoreTestsSwift: XCTestCase {
             completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
-                XCTAssertGreaterThan(results.count, 0)
                 
                 if let results = results {
+                    XCTAssertGreaterThan(results.count, 0)
                     for file in results as! [KCSFile] {
                         XCTAssertEqual("https", file.remoteURL.scheme!)
                     }
@@ -151,9 +151,9 @@ class KCSFileStoreTestsSwift: XCTestCase {
             completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
-                XCTAssertGreaterThan(results.count, 0)
                 
                 if let results = results {
+                    XCTAssertGreaterThan(results.count, 0)
                     for file in results as! [KCSFile] {
                         XCTAssertEqual("https", file.remoteURL.scheme!)
                     }
@@ -179,9 +179,9 @@ class KCSFileStoreTestsSwift: XCTestCase {
             completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
-                XCTAssertGreaterThan(results.count, 0)
                 
                 if let results = results {
+                    XCTAssertGreaterThan(results.count, 0)
                     for file in results as! [KCSFile] {
                         XCTAssertEqual("https", file.remoteURL.scheme!)
                     }
