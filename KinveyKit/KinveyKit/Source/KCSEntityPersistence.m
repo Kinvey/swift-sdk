@@ -745,18 +745,20 @@
 #pragma mark - Management
 - (void) clearCaches
 {
-    KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Clearing Caches");
-    [_db close];
-    
-    NSError* error = nil;
-    
-    NSURL* url = [NSURL fileURLWithPath:[self dbPath]];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
-        [[NSFileManager defaultManager] removeItemAtURL:url error:&error];
+    @synchronized (self) {
+        KCSLogDebug(KCS_LOG_CONTEXT_FILESYSTEM, @"Clearing Caches");
+        [_db close];
+        
+        NSError* error = nil;
+        
+        NSURL* url = [NSURL fileURLWithPath:[self dbPath]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+            [[NSFileManager defaultManager] removeItemAtURL:url error:&error];
+        }
+        DBAssert(!error, @"error clearing cache: %@", error);
+        
+        [self initDB];
     }
-    DBAssert(!error, @"error clearing cache: %@", error);
-    
-    [self initDB];
 }
 
 #pragma mark - Upgrade Schema Version methods. IMPORTANT NOTE: any method in this section MUST NOT be changed or removed after released for the public. Please, always add methods, never change or remove.
