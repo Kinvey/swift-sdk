@@ -10,6 +10,12 @@
 
 @interface KCSMutableOrderedDictionary : NSMutableDictionary
 
++(instancetype)dictionaryWithDictionary:(NSDictionary *)dict
+                          andIgnoreKeys:(NSArray *)ignoreKeys;
+
 -(instancetype)initWithDictionary:(NSDictionary *)otherDictionary;
+
+-(instancetype)initWithDictionary:(NSDictionary *)otherDictionary
+                    andIgnoreKeys:(NSArray *)ignoreKeys;
 
 @end

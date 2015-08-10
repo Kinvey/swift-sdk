@@ -819,7 +819,8 @@ BOOL kcsIsOperator(NSString* queryField)
     if ([self hasReferences]) {
         [_query append:@"._id" ontoKeySet:self.referenceFieldsToResolve recursive:YES];
     }
-    return [[KCSMutableOrderedDictionary dictionaryWithDictionary:d] JSONRepresentation];
+    return [[KCSMutableOrderedDictionary dictionaryWithDictionary:d
+                                                    andIgnoreKeys:@[KCSEntityKeyGeolocation]] JSONRepresentation];
 }
 
 - (NSData *)UTF8JSONStringRepresentation
