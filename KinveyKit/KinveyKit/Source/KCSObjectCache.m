@@ -431,17 +431,19 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 #pragma mark - management
 - (void)clear
 {
-    [_persistenceLayer clearCaches];
-    for (NSMutableDictionary* routeCache in [_caches allValues]) {
-        for (NSCache* collectionCache in [routeCache allValues]) {
-            collectionCache.delegate = nil;
-            [collectionCache removeAllObjects];
+    @synchronized (self) {
+        [_persistenceLayer clearCaches];
+        for (NSMutableDictionary* routeCache in [_caches allValues]) {
+            for (NSCache* collectionCache in [routeCache allValues]) {
+                collectionCache.delegate = nil;
+                [collectionCache removeAllObjects];
+            }
+            [routeCache removeAllObjects];
         }
-        [routeCache removeAllObjects];
-    }
-    [_caches removeAllObjects];
+        [_caches removeAllObjects];
 
-    [_queryCache removeAllObjects];
+        [_queryCache removeAllObjects];
+    }
 }
 
 - (void)jsonImport:(NSArray*)entities route:(NSString*)route collection:(NSString*)collection
