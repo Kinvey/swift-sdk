@@ -55,4 +55,37 @@
     XCTAssertEqualObjects(c2.configuration.serviceHostname, @"ch", @"match");
 }
 
+-(void)testClearCacheMultipleThreads
+{
+    KCSClient* client = [KCSClient sharedClient];
+    
+    NSMutableArray* threads = [NSMutableArray array];
+    
+    for (NSUInteger i = 0; i < 1000; i++) {
+        NSString* name = [NSString stringWithFormat:@"ClearCache Thread %@", @(i)];
+        __weak XCTestExpectation* expectationThread = [self expectationWithDescription:name];
+        NSThread* thread = [[NSThread alloc] initWithTarget:self selector:@selector(KCSClient_clearCache:) object:@[client, expectationThread]];
+        thread.name = name;
+        [threads addObject:thread];
+    }
+    
+    for (NSThread* thread in threads) {
+        thread.qualityOfService = NSQualityOfServiceBackground;
+    }
+    
+    for (NSThread* thread in threads) {
+        [thread start];
+    }
+    
+    [self waitForExpectationsWithTimeout:60 handler:nil];
+}
+
+-(void)KCSClient_clearCache:(NSArray*)args
+{
+    @autoreleasepool {
+        [(KCSClient*) args[0] clearCache];
+        [(XCTestExpectation*) args[1] fulfill];
+    }
+}
+
 @end
