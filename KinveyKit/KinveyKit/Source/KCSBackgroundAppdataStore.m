@@ -610,7 +610,7 @@ NSError* createCacheError(NSString* message)
             if (cacheBlock) {
                 cacheBlock(query, objectsOrNil, errorOrNil);
             }
-            completionBlock(objectsOrNil, errorOrNil);
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(objectsOrNil, errorOrNil));
         }
     } withProgressBlock:progressBlock];
 }
