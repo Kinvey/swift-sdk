@@ -226,6 +226,33 @@ class KCSQueryTests: XCTestCase {
         )
         
         waitForExpectationsWithTimeout(30, handler: nil)
+        
+        weak var expectationQuery2 = expectationWithDescription("query2")
+        
+        let query2 = KCSQuery(
+            onField: KCSEntityKeyGeolocation,
+            usingConditionalPairs: [
+                KCSQueryConditional.KCSMaxDistance.rawValue, 500,
+                KCSQueryConditional.KCSNearSphere.rawValue, [-125, 54]
+            ]
+        )
+        query2.addQueryOnField("_acl.creator", withExactMatchForValue: KCSUser.activeUser()?.userId)
+        store.queryWithQuery(
+            query2,
+            withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 3)
+                }
+                
+                expectationQuery2?.fulfill()
+            },
+            withProgressBlock: nil
+        )
+        
+        waitForExpectationsWithTimeout(30, handler: nil)
     }
 
 }

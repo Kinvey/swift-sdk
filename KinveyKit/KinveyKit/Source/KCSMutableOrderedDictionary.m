@@ -12,18 +12,10 @@
 
 @property (nonatomic, strong) NSMutableDictionary* dictionary;
 @property (nonatomic, strong) NSMutableOrderedSet* keys;
-@property (nonatomic, strong) NSArray* ignoreKeys;
 
 @end
 
 @implementation KCSMutableOrderedDictionary
-
-+(instancetype)dictionaryWithDictionary:(NSDictionary *)dict
-                          andIgnoreKeys:(NSArray *)ignoreKeys
-{
-    return [[[self class] alloc] initWithDictionary:dict
-                                      andIgnoreKeys:ignoreKeys];
-}
 
 -(instancetype)initWithCapacity:(NSUInteger)numItems
 {
@@ -41,13 +33,6 @@
     return self;
 }
 
--(instancetype)initWithDictionary:(NSDictionary *)otherDictionary andIgnoreKeys:(NSArray *)ignoreKeys
-{
-    self.ignoreKeys = ignoreKeys;
-    self = [super initWithDictionary:otherDictionary];
-    return self;
-}
-
 -(void)setObject:(id)anObject forKey:(id<NSCopying>)aKey
 {
     if (![(id)aKey isKindOfClass:[NSString class]]) {
@@ -55,7 +40,7 @@
                                  reason:@"Key needs to be a string"
                                userInfo:@{ NSLocalizedDescriptionKey : @"Key needs to be a string" }] raise];
     }
-    if (![self.ignoreKeys containsObject:aKey] && [anObject isKindOfClass:[NSDictionary class]] && ![anObject isKindOfClass:[KCSMutableOrderedDictionary class]]) {
+    if ([anObject isKindOfClass:[NSDictionary class]] && ![anObject isKindOfClass:[KCSMutableOrderedDictionary class]]) {
         anObject = [KCSMutableOrderedDictionary dictionaryWithDictionary:anObject];
     }
     [self.dictionary setObject:anObject forKey:aKey];
