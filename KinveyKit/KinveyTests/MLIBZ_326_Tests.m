@@ -30,8 +30,8 @@
     KCSQuery *queryANDThatWorks = [KCSQuery queryWithQuery:queryName];
     [queryANDThatWorks addQuery:queryAddress];
     
-    XCTAssertEqualObjects(queryANDThatDoesNotWork.debugDescription, queryANDThatWorks.debugDescription);
-    XCTAssertEqualObjects(queryANDThatDoesNotWork.debugDescription, @"{\"address\":\"address1\",\"name\":\"name1\"}");
+    XCTAssertEqualObjects(queryANDThatDoesNotWork.query, queryANDThatWorks.query);
+    XCTAssertEqualObjects(queryANDThatDoesNotWork.query, (@{@"address":@"address1",@"name":@"name1"}));
 }
 
 @end
