@@ -68,7 +68,9 @@ class KCSQueryTests: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationSave = nil
+        })
         
         weak var expectationRemove = expectationWithDescription("Remove")
         
@@ -86,7 +88,9 @@ class KCSQueryTests: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationRemove = nil
+        })
     }
     
     func testQueryByDate() {
@@ -101,7 +105,9 @@ class KCSQueryTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationLogin = nil
+        })
         
         let collection = KCSCollection(
             fromString: "city",
@@ -130,12 +136,16 @@ class KCSQueryTests: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationSave = nil
+        })
         
         weak var expectationQuery = expectationWithDescription("query")
         
         let query = KCSQuery(onField: "info.settled", usingConditional: KCSQueryConditional.KCSLessThanOrEqual, forValue: NSDate(timeIntervalSince1970: -10697788.800))
-        query.addQueryOnField("_acl.creator", withExactMatchForValue: KCSUser.activeUser()?.userId)
+        if let userId = KCSUser.activeUser()?.userId {
+            query.addQueryOnField("_acl.creator", withExactMatchForValue: userId)
+        }
         store.queryWithQuery(
             query,
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
@@ -148,7 +158,9 @@ class KCSQueryTests: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationQuery = nil
+        })
     }
     
     func testQueryByLocation() {
@@ -166,7 +178,9 @@ class KCSQueryTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationLogin = nil
+        })
         
         let collection = KCSCollection(
             fromString: "city",
@@ -203,7 +217,9 @@ class KCSQueryTests: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationSave = nil
+        })
         
         weak var expectationQuery = expectationWithDescription("query")
         
@@ -232,7 +248,9 @@ class KCSQueryTests: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationQuery = nil
+        })
         
         weak var expectationQuery2 = expectationWithDescription("query2")
         
@@ -261,7 +279,9 @@ class KCSQueryTests: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationQuery2 = nil
+        })
     }
 
 }
