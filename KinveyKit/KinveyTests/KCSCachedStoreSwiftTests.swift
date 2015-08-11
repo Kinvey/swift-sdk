@@ -28,7 +28,7 @@ class KCSCachedStoreSwiftTests: XCTestCase {
             //            KCSStoreKeyCollectionTemplateClass : Entry.self,
             KCSStoreKeyCachePolicy : KCSCachePolicy.NetworkFirst.rawValue,
             KCSStoreKeyOfflineUpdateEnabled : true
-            ])
+        ])
         
         weak var expectationLogin = expectationWithDescription("login")
         
@@ -42,7 +42,9 @@ class KCSCachedStoreSwiftTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationLogin = nil
+        })
     }
     
     override func tearDown() {
