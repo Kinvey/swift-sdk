@@ -32,7 +32,9 @@ class KCSQueryTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationLogin = nil
+        })
     }
     
     override func tearDown() {
