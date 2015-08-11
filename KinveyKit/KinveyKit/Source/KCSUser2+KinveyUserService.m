@@ -97,13 +97,13 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         if (error) {
             KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
             [self setActive:nil];
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+            if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         } else {
             // Ok, we're really auth'd
             NSError* error = nil;
             NSDictionary* userBody = [response jsonObjectError:&error];
             if (error) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
             } else {
                 [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
             }
@@ -123,12 +123,12 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         if (error) {
             KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
             [self setActive:nil];
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+            if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         } else {
             // Ok, we're really auth'd
             NSDictionary* userBody = [response jsonObjectError:&error];
             if (error) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
             } else {
                 [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
             }
@@ -153,12 +153,12 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         if (error) {
             KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
             [self setActive:nil];
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+            if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         } else {
             // Ok, we're really auth'd
             NSDictionary* userBody = [response jsonObjectError:&error];
             if (error) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
             } else {
                 [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
             }
@@ -187,13 +187,13 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             } else {
                 KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
                 [self setActive:nil];
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
             }
         } else {
             // Ok, we're really auth'd
             NSMutableDictionary* userBody = [NSMutableDictionary dictionaryWithDictionary:[response jsonObjectError:&error]];
             if (error) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
             } else {
                 if (provider == KCSSocialIDKinvey) {
                     NSMutableDictionary* kinveyAuth = [NSMutableDictionary dictionaryWithDictionary:userBody[@"_socialIdentity"][@"kinveyAuth"]];
@@ -350,7 +350,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                                            forURL:redirectRequest.URL
                               withCompletionBlock:completionBlock];
                     } else {
-                        DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, [NSError errorWithDomain:@"Invalid MIC Redirect URL"
+                        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, [NSError errorWithDomain:@"Invalid MIC Redirect URL"
                                                                                            code:400
                                                                                        userInfo:@{}]));
                     }
@@ -753,7 +753,7 @@ static NSString* micApiVersion = nil;
     if (![body isKindOfClass:[NSDictionary class]]) {
         //check data type in case server is corrupted, yes this has happened
         NSError* error = [NSError createKCSError:@"Entity dictionary not returned for user" code:401 userInfo:@{@"body":body}];
-        completionBlock(nil, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         return;
     }
     
@@ -762,7 +762,7 @@ static NSString* micApiVersion = nil;
     if (userId == nil || username == nil) {
         //prevent that weird assertion that Colden was seeing
         NSError* error = [NSError createKCSError:@"Entity dictionary does not have username or user id" code:401 userInfo:@{@"body":body}];
-        completionBlock(nil, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         return;
     }
     
@@ -778,7 +778,7 @@ static NSString* micApiVersion = nil;
         
         if (authToken == nil) {
             NSError* error = [NSError createKCSError:@"Entity dictionary does not contain an auth token" code:401 userInfo:@{@"body":body}];
-            completionBlock(nil, error);
+            if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
             return;
         }
     }
@@ -798,7 +798,7 @@ static NSString* micApiVersion = nil;
     if (user.userId == nil || user.username == nil) {
         //prevent that weird assertion that Colden was seeing
         NSError* error = [NSError createKCSError:@"User object not properly configured with _id and username" code:401 userInfo:@{@"body":body}];
-        completionBlock(nil, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         return;
     }
     
@@ -809,9 +809,7 @@ static NSString* micApiVersion = nil;
     [[KCSAppdataStore caches] cacheActiveUser:user];
     
     [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completionBlock(user, error);
-        });
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
     }];
 }
 
@@ -825,7 +823,7 @@ static NSString* micApiVersion = nil;
                                    NSLocalizedFailureReasonErrorKey: @"An operation only applicable to the current user was tried on a different user.",
                                    NSLocalizedRecoverySuggestionErrorKey:@"Only perform this action on the active user"};
         NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        completionBlock(nil, userError);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, userError));
     } else {
         KCSCollection* userCollection = [KCSCollection userCollection];
         NSDictionary* entity = [[KCSAppdataStore caches].dataModel jsonEntityForObject:user route:[userCollection route] collection:userCollection.collectionName];
@@ -834,12 +832,12 @@ static NSString* micApiVersion = nil;
         KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             if (error) {
                 KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
-                completionBlock(nil, error);
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
             } else {
                 // Ok, we're really auth'd
                 NSDictionary* userBody = [response jsonObjectError:&error];
                 if (error) {
-                    completionBlock(nil, error);
+                    if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
                 } else {
                     [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
                 }
@@ -863,33 +861,31 @@ static NSString* micApiVersion = nil;
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KinveyKit Active User!");
         NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"User refresh is not on active user"};
         NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        completionBlock(nil, userError);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, userError));
         return;
     }
     if (user.userId == nil) {
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Error refreshing user, no user id.");
         NSDictionary* errorInfo =  @{NSLocalizedDescriptionKey:@"User has no _id."};
         NSError* error = [NSError createKCSError:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
-        completionBlock(nil, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         return;
     }
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             KCSLogError(KCS_LOG_CONTEXT_USER, @"Error Updating user: %@", error);
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
+            if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
         } else {
             if ([KCSUser activeUser] != user) { // still have to check here because active user can be reset while loading request
                 KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to refresh a user who is not the KinveyKit Active User!");
                 NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"User refresh is not on active user"};
                 NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completionBlock(user, userError);
-                });
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, userError));
             } else {
                 NSDictionary* userBody = [response jsonObjectError:&error];
                 if (error) {
-                    DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
+                    if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
                 } else {
                     [self setupActiveUser:userBody completion:completionBlock checkAuth:NO];
                 }
@@ -911,14 +907,14 @@ static NSString* micApiVersion = nil;
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to save a user who is not the KinveyKit Active User!");
         NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Receiver is not current user"};
         NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        completionBlock(nil, userError);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, userError));
         return;
     }
     if (user.userId == nil) {
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Error save user, no user id.");
         NSDictionary* errorInfo =  @{NSLocalizedDescriptionKey:@"User object save needs and established user."};
         NSError* error = [NSError createKCSError:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
-        completionBlock(nil, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(nil, error));
         return;
     }
     
@@ -927,11 +923,11 @@ static NSString* micApiVersion = nil;
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             KCSLogError(KCS_LOG_CONTEXT_USER, @"Error Updating user: %@", error);
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
+            if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
         } else {
             NSDictionary* userBody = [response jsonObjectError:&error];
             if (error) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(user, error));
             } else {
                 [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
             }
@@ -952,14 +948,14 @@ static NSString* micApiVersion = nil;
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Attempted to delete a user who is not the KinveyKit Active User!");
         NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Receiver is not current user"};
         NSError *userError = [NSError createKCSError:KCSUserErrorDomain code:KCSOperationRequiresCurrentUserError userInfo:userInfo];
-        completionBlock(0, userError);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(0, userError));
         return;
     }
     if (user.userId == nil) {
         KCSLogError(KCS_LOG_CONTEXT_USER, @"Error delete user, no user id.");
         NSDictionary* errorInfo =  @{NSLocalizedDescriptionKey:@"User object delete needs and established user."};
         NSError* error = [NSError createKCSError:KCSUserErrorDomain code:KCSUserObjectNotActiveError userInfo:errorInfo];
-        completionBlock(0, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(0, error));
         return;
     }
     
@@ -967,7 +963,7 @@ static NSString* micApiVersion = nil;
         if (error != nil) {
             [self logoutUser:user];
         }
-        completionBlock(error != nil, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(error != nil, error));
     }
                                                         route:KCSRESTRouteUser
                                                       options:@{KCSRequestLogMethod}
@@ -986,7 +982,7 @@ static NSString* micApiVersion = nil;
     }
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
-        completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error));
     }
                                                         route:KCSRESTRouteRPC
                                                       options:@{KCSRequestLogMethod}
@@ -1004,7 +1000,7 @@ static NSString* micApiVersion = nil;
     }
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
-        completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error));
     }
                                                         route:KCSRESTRouteRPC
                                                       options:@{KCSRequestLogMethod}
@@ -1022,7 +1018,7 @@ static NSString* micApiVersion = nil;
     }
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
-        completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error));
     }
                                                         route:KCSRESTRouteRPC
                                                       options:@{KCSRequestLogMethod}
@@ -1040,7 +1036,7 @@ static NSString* micApiVersion = nil;
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
-        completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
+        if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error));
     }
                                                         route:KCSRESTRouteRPC
                                                       options:@{KCSRequestLogMethod}
@@ -1064,12 +1060,12 @@ static NSString* micApiVersion = nil;
             response.skipValidation = YES;
             NSDictionary* dict = [response jsonObjectError:&error];
             if (error) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, NO, error));
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, NO, error));
             } else {
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error));
+                if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, [dict[@"usernameExists"] boolValue], error));
             }
         } else {
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, NO, error));
+            if (completionBlock) DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(potentialUsername, NO, error));
         }
     }
                                                         route:KCSRESTRouteRPC
