@@ -86,7 +86,7 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
 @interface KCSClientConfiguration : NSObject <NSCopying>
 
 /** The application identifier 
- @since 1.20.0
+ @since 1.20.0 
  */
 @property (nonatomic, copy) NSString* appKey;
 

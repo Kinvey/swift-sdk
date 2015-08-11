@@ -105,7 +105,7 @@ NSData* testData2()
     [metadata setGloballyWritable:YES];
     [metadata setGloballyReadable:YES];
     
-    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak __block XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     [KCSFileStore uploadData:testData() options:@{ KCSFileId : kTestId, KCSFileACL : metadata, KCSFileMimeType : kTestMimeType, KCSFileFileName : kTestFilename} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         
@@ -115,7 +115,9 @@ NSData* testData2()
     } progressBlock:^(NSArray *objects, double percentComplete) {
         XCTAssertTrue([NSThread isMainThread]);
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationUpload = nil;
+    }];
 }
 
 - (KCSFile*) getMetadataForId:(NSString*)fileId

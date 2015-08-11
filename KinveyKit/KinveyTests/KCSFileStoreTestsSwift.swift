@@ -123,9 +123,9 @@ class KCSFileStoreTestsSwift: XCTestCase {
             completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
-                XCTAssertGreaterThan(results.count, 0)
                 
                 if let results = results {
+                    XCTAssertGreaterThan(results.count, 0)
                     for file in results as! [KCSFile] {
                         XCTAssertEqual("https", file.remoteURL.scheme!)
                     }
@@ -151,9 +151,9 @@ class KCSFileStoreTestsSwift: XCTestCase {
             completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
-                XCTAssertGreaterThan(results.count, 0)
                 
                 if let results = results {
+                    XCTAssertGreaterThan(results.count, 0)
                     for file in results as! [KCSFile] {
                         XCTAssertEqual("https", file.remoteURL.scheme!)
                     }
@@ -179,9 +179,9 @@ class KCSFileStoreTestsSwift: XCTestCase {
             completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
-                XCTAssertGreaterThan(results.count, 0)
                 
                 if let results = results {
+                    XCTAssertGreaterThan(results.count, 0)
                     for file in results as! [KCSFile] {
                         XCTAssertEqual("https", file.remoteURL.scheme!)
                     }
@@ -200,30 +200,34 @@ class KCSFileStoreTestsSwift: XCTestCase {
     func testDownloadFile() {
         upload()
         
-        weak var expectationDownload = expectationWithDescription("download")
+        XCTAssertNotNil(file)
         
-        KCSFileStore.downloadFile(
-            file!.fileId,
-            options: [KCSFileOnlyIfNewer : true],
-            completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
-                XCTAssertNil(error)
-                XCTAssertNotNil(results)
-                if let results = results {
-                    XCTAssertGreaterThan(results.count, 0)
-                    
-                    for file in results as! [KCSFile] {
-                        XCTAssertEqual("https", file.remoteURL.scheme!)
+        if let file = file {
+            weak var expectationDownload = expectationWithDescription("download")
+            
+            KCSFileStore.downloadFile(
+                file.fileId,
+                options: [KCSFileOnlyIfNewer : true],
+                completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(results)
+                    if let results = results {
+                        XCTAssertGreaterThan(results.count, 0)
+                        
+                        for file in results as! [KCSFile] {
+                            XCTAssertEqual("https", file.remoteURL.scheme!)
+                        }
                     }
-                }
-                
-                XCTAssertTrue(NSThread.isMainThread())
-                
-                expectationDownload?.fulfill()
-            },
-            progressBlock: nil
-        )
-        
-        waitForExpectationsWithTimeout(60, handler: nil)
+                    
+                    XCTAssertTrue(NSThread.isMainThread())
+                    
+                    expectationDownload?.fulfill()
+                },
+                progressBlock: nil
+            )
+            
+            waitForExpectationsWithTimeout(60, handler: nil)
+        }
     }
 
 }

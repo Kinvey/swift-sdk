@@ -708,6 +708,9 @@
 		5788345B1AB8D39300078CC5 /* KCSUserSocialExtrasTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD0874160A038B009473A3 /* KCSUserSocialExtrasTest.m */; };
 		579419141AD35A28001CFF5A /* KeychainTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B75A601858C0BC0093144E /* KeychainTests.m */; };
 		579419151AD35A67001CFF5A /* FileUtilsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E342961850D6BB0056EA54 /* FileUtilsTest.m */; };
+		579BE41B1B79112F00938988 /* KCSCachedStoreSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579BE41A1B79112F00938988 /* KCSCachedStoreSwiftTests.swift */; };
+		579BE41D1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579BE41C1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift */; };
+		579BE41F1B7950A000938988 /* KCSUserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579BE41E1B7950A000938988 /* KCSUserTests.swift */; };
 		579CFC041AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 579CFC031AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m */; };
 		579CFC061AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579CFC051AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift */; };
 		579CFC081AC9C05100CC1EDE /* MICTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579CFC071AC9C05100CC1EDE /* MICTests.swift */; };
@@ -1378,6 +1381,9 @@
 		578076731AF7F2CF00C220C4 /* MemoryLeakTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryLeakTests.swift; sourceTree = "<group>"; };
 		578076751AF7FCD500C220C4 /* KCSMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMemory.h; sourceTree = "<group>"; };
 		578076761AF7FCD500C220C4 /* KCSMemory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMemory.m; sourceTree = "<group>"; };
+		579BE41A1B79112F00938988 /* KCSCachedStoreSwiftTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSCachedStoreSwiftTests.swift; sourceTree = "<group>"; };
+		579BE41C1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSLinkedAppdataStoreSwiftTests.swift; sourceTree = "<group>"; };
+		579BE41E1B7950A000938988 /* KCSUserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSUserTests.swift; sourceTree = "<group>"; };
 		579CFC031AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCodeSnippetTestsObjC.m; sourceTree = "<group>"; };
 		579CFC051AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSCodeSnippetTestsSwift.swift; sourceTree = "<group>"; };
 		579CFC071AC9C05100CC1EDE /* MICTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MICTests.swift; sourceTree = "<group>"; };
@@ -2248,6 +2254,9 @@
 				57405C751B2B9AB600238187 /* MLIBZ_326_Tests.m */,
 				574ABF141B4D817500632B3B /* EmptyResponseDataTests.swift */,
 				572ACA4F1B5027F000C098F7 /* KCSFileStoreTestsSwift.swift */,
+				579BE41A1B79112F00938988 /* KCSCachedStoreSwiftTests.swift */,
+				579BE41C1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift */,
+				579BE41E1B7950A000938988 /* KCSUserTests.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -3858,6 +3867,7 @@
 			files = (
 				57F556841AFC26B8008CB244 /* KCSLogTests.m in Sources */,
 				578834491AB8D25500078CC5 /* KCSRequest2Tests.m in Sources */,
+				579BE41F1B7950A000938988 /* KCSUserTests.swift in Sources */,
 				5739EC4D1B1F849E00B6BA91 /* MLIBZ_364_Tests.swift in Sources */,
 				5736546F1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m in Sources */,
 				579419141AD35A28001CFF5A /* KeychainTests.m in Sources */,
@@ -3871,6 +3881,7 @@
 				5788342F1AB8D25500078CC5 /* KCSOfflineStoreTests.m in Sources */,
 				5788342C1AB8D25500078CC5 /* KCSCachedStoreTests.m in Sources */,
 				578834471AB8D25500078CC5 /* PlatformUtilsTest.m in Sources */,
+				579BE41B1B79112F00938988 /* KCSCachedStoreSwiftTests.swift in Sources */,
 				578834351AB8D25500078CC5 /* KinveyKitPushTests.m in Sources */,
 				579419151AD35A67001CFF5A /* FileUtilsTest.m in Sources */,
 				579CFC061AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift in Sources */,
@@ -3933,6 +3944,7 @@
 				578834531AB8D25500078CC5 /* OfflineTests.m in Sources */,
 				574ABF151B4D817500632B3B /* EmptyResponseDataTests.swift in Sources */,
 				571200EC1ABB203E002B148D /* RequestConfigurationTests.swift in Sources */,
+				579BE41D1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

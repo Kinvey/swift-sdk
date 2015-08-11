@@ -64,7 +64,7 @@ static float pollTime;
     NSUInteger previouscount = self.requestArray.count;
     __block NSUInteger newcount;
     
-    __weak XCTestExpectation* expectationQueryServer = [self expectationWithDescription:@"queryServer"];
+    __weak __block XCTestExpectation* expectationQueryServer = [self expectationWithDescription:@"queryServer"];
     
     [store queryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         XCTAssertTrue([NSThread isMainThread]);
@@ -81,7 +81,9 @@ static float pollTime;
         //DO nothing on progress
     }];
     
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationQueryServer = nil;
+    }];
     
     NSLog(@"done");
     return newcount > previouscount;
