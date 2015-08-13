@@ -2925,16 +2925,18 @@ NSData* testData2()
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
     KCSQuery* nameQuery = [KCSQuery queryOnField:KCSFileFileName withExactMatchForValue:kTestFilename];
     
-    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak __block XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     __block NSString* fileId = nil;
     [store queryWithQuery:nameQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError;
         KTAssertCount(1, objectsOrNil);
-        KCSFile* file = objectsOrNil[0];
-        fileId = file.fileId;
-        
-        XCTAssertNotNil(fileId, @"should have a valid file");
-        XCTAssertEqualObjects(fileId, kTestId, @"should be the test id");
+        if (objectsOrNil.count > 0) {
+            KCSFile* file = objectsOrNil[0];
+            fileId = file.fileId;
+            
+            XCTAssertNotNil(fileId, @"should have a valid file");
+            XCTAssertEqualObjects(fileId, kTestId, @"should be the test id");
+        }
         
         XCTAssertTrue([NSThread isMainThread]);
         
@@ -2942,11 +2944,13 @@ NSData* testData2()
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         XCTAssertTrue([NSThread isMainThread]);
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationQuery = nil;
+    }];
     
     XCTAssertNotNil(fileId, @"should have a valid file");
     
-    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     [KCSFileStore deleteFile:fileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError;
         KTAssertEqualsInt(count, 1, @"should have deleted one file");
@@ -2955,9 +2959,11 @@ NSData* testData2()
         
         [expectationDelete fulfill];
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDelete = nil;
+    }];
     
-    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     [KCSFileStore downloadData:fileId completionBlock:^(NSArray *downloadedResources, NSError *error) {
         XCTAssertNotNil(error, @"should get an error");
         XCTAssertEqualObjects(error.domain, KCSFileStoreErrorDomain, @"Should be a file error");
@@ -2969,7 +2975,9 @@ NSData* testData2()
     } progressBlock:^(NSArray *objects, double percentComplete) {
         XCTAssertTrue([NSThread isMainThread]);
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDownload = nil;
+    }];
 }
 
 - (void) testDeleteError
