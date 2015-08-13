@@ -29,6 +29,13 @@
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSRequest2.h"
+#import "KCS_DDLog.h"
+
+@interface KCSAppdataStore (Queue)
+
++(void)waitUntilAllOperationsAreFinished;
+
+@end
 
 @interface TestEntity : NSObject
 @property (nonatomic, retain) NSString* key;
@@ -62,7 +69,7 @@ static float pollTime;
     id query = [KCSQuery query];
  
     NSUInteger previouscount = self.requestArray.count;
-    __block NSUInteger newcount;
+    __block NSUInteger newcount = 0;
     
     __weak __block XCTestExpectation* expectationQueryServer = [self expectationWithDescription:@"queryServer"];
     
@@ -137,6 +144,12 @@ static float pollTime;
 
 - (void) tearDown
 {
+    [[KCSUser activeUser] logout];
+    
+    [KCSAppdataStore waitUntilAllOperationsAreFinished];
+    [KCS_DDLog flushLog];
+    
+    [super tearDown];
 }
 
 - (void) testCachedStoreNoCache
