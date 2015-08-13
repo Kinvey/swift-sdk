@@ -619,23 +619,25 @@ NSData* testData2()
         XCTAssertNotNil(downloadedResources, @"should have a resource");
         KTAssertCount(1, downloadedResources);
         
-        file = downloadedResources[0];
-        XCTAssertNil(file.data, @"should have no local data");
-        XCTAssertEqualObjects(file.fileId, kTestId, @"file ids should match");
-        XCTAssertEqualObjects(file.filename, kTestFilename, @"should have a filename");
-        XCTAssertEqualObjects(file.mimeType, kTestMimeType, @"should have a mime type");
-        
-        NSURL* localURL = file.localURL;
-        XCTAssertNotNil(file, @"should have a URL");
-        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
-        XCTAssertTrue(exists, @"file should exist");
-        
-        error = nil;
-        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
-        XCTAssertNil(error, @"%@",error);
-        
-        NSData* origData = testData();
-        KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
+        if (downloadedResources.count > 0) {
+            file = downloadedResources[0];
+            XCTAssertNil(file.data, @"should have no local data");
+            XCTAssertEqualObjects(file.fileId, kTestId, @"file ids should match");
+            XCTAssertEqualObjects(file.filename, kTestFilename, @"should have a filename");
+            XCTAssertEqualObjects(file.mimeType, kTestMimeType, @"should have a mime type");
+            
+            NSURL* localURL = file.localURL;
+            XCTAssertNotNil(file, @"should have a URL");
+            BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
+            XCTAssertTrue(exists, @"file should exist");
+            
+            error = nil;
+            NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
+            XCTAssertNil(error, @"%@",error);
+            
+            NSData* origData = testData();
+            KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
+        }
         
         XCTAssertTrue([NSThread isMainThread]);
         
