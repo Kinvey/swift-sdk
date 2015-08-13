@@ -33,7 +33,9 @@ class KCSFileStoreTestsSwift: XCTestCase {
                 expectationLogin?.fulfill()
         })
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationLogin = nil
+        })
     }
     
     override func tearDown() {
@@ -66,7 +68,9 @@ class KCSFileStoreTestsSwift: XCTestCase {
             progressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(60, handler: nil)
+        waitForExpectationsWithTimeout(60, handler: { (error: NSError!) -> Void in
+            expectationUpload = nil
+        })
     }
 
     func testUpload() {
@@ -92,22 +96,28 @@ class KCSFileStoreTestsSwift: XCTestCase {
             progressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(60, handler: nil)
+        waitForExpectationsWithTimeout(60, handler: { (error: NSError!) -> Void in
+            expectationUpload = nil
+        })
         
         weak var expectationMemory = expectationWithDescription("memory")
         
-        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)
-        var block: (() -> ())! = nil
-        block = { () -> Void in
-            if (KCSFile.referenceCount() == 0 && KCSNSURLSessionFileOperation.referenceCount() == 0) {
-                expectationMemory?.fulfill()
-            } else {
-                dispatch_async(queue, block)
-            }
-        }
-        dispatch_async(queue, block)
+        var running = true
         
-        waitForExpectationsWithTimeout(10, handler: nil)
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { () -> Void in
+            while (running) {
+                dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+                    if (KCSFile.referenceCount() == 0 && KCSNSURLSessionFileOperation.referenceCount() == 0) {
+                        expectationMemory?.fulfill()
+                    }
+                })
+            }
+        })
+        
+        waitForExpectationsWithTimeout(10, handler: { (error: NSError!) -> Void in
+            running = false
+            expectationMemory = nil
+        })
         
         XCTAssertEqual(0, KCSFile.referenceCount())
         XCTAssertEqual(0, KCSNSURLSessionFileOperation.referenceCount())
@@ -118,8 +128,15 @@ class KCSFileStoreTestsSwift: XCTestCase {
         
         weak var expectationDownload = expectationWithDescription("download")
         
+        var query: KCSQuery! = nil
+        if let userId = KCSUser.activeUser()?.userId {
+            query = KCSQuery(onField: "_acl.creator", withExactMatchForValue: userId)
+        } else {
+            query = KCSQuery()
+        }
+        
         KCSFileStore.downloadFileByQuery(
-            KCSQuery(),
+            query,
             completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
@@ -146,8 +163,13 @@ class KCSFileStoreTestsSwift: XCTestCase {
         
         weak var expectationDownload = expectationWithDescription("download")
         
+        let query = KCSQuery(onField: "_filename", withExactMatchForValue: "mavericks.jpg")
+        if let userId = KCSUser.activeUser()?.userId {
+            query.addQueryOnField("_acl.creator", withExactMatchForValue: userId)
+        }
+        
         KCSFileStore.downloadFileByQuery(
-            KCSQuery(onField: "_filename", withExactMatchForValue: "mavericks.jpg"),
+            query,
             completionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)

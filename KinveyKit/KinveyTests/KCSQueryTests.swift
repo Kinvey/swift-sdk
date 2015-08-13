@@ -151,7 +151,9 @@ class KCSQueryTests: XCTestCase {
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
-                XCTAssertEqual(results.count, 1)
+                if let results = results {
+                    XCTAssertEqual(results.count, 1)
+                }
                 
                 expectationQuery?.fulfill()
             },

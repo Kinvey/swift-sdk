@@ -268,7 +268,7 @@
     KCSNetworkResponse* response = [KCSNetworkResponse MockResponseWith:401 data:@{@"error":errorCode}];
     [server setResponse:response forRoute:@"/appdata/kid_test/R"];
     
-    __weak XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
+    __weak __block XCTestExpectation* expectationQuery = [self expectationWithDescription:@"query"];
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:@"R"];
     [store query:nil options:@{KCSRequestOptionUseMock : @YES} completion:^(NSArray* objects, NSError* error) {
         XCTAssertNotNil(error, @"should have an error");
@@ -277,7 +277,9 @@
         
         [expectationQuery fulfill];
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:60 handler:^(NSError *error) {
+        expectationQuery = nil;
+    }];
 }
 
 - (void) test401Logout
