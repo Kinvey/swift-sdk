@@ -297,6 +297,9 @@
         
         [expectationQuery fulfill];
     }];
+    
+    [KCS_DDLog flushLog];
+    
     [self waitForExpectationsWithTimeout:60 handler:^(NSError *error) {
         expectationQuery = nil;
     }];
