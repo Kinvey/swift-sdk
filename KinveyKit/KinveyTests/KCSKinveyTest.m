@@ -37,7 +37,7 @@
 
 - (void)testLoadUser100Times
 {
-    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    __weak __block XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
     
     __block KCSUser* user = nil;
     
@@ -53,7 +53,9 @@
          [expectationSave fulfill];
      }];
     
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationSave = nil;
+    }];
     
     XCTAssertNotNil(user);
     
@@ -80,7 +82,9 @@
         }];
     }
     
-    [self waitForExpectationsWithTimeout:300 handler:nil];
+    [self waitForExpectationsWithTimeout:300 handler:^(NSError *error) {
+        [expectationsLoad removeAllObjects];
+    }];
 }
 
 - (void)testPerformanceLoad {
