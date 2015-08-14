@@ -519,25 +519,27 @@ NSData* testData2()
         XCTAssertNotNil(downloadedResources, @"should have a resource");
         KTAssertCount(1, downloadedResources);
         
-        KCSFile* resource = downloadedResources[0];
-        XCTAssertNil(resource.data, @"should have no local data");
-        XCTAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
-        XCTAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
-        XCTAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
-        
-        NSURL* localURL = resource.localURL;
-        XCTAssertNotNil(localURL, @"should have a URL");
-        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
-        XCTAssertTrue(exists, @"file should exist");
-        
-        error = nil;
-        NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
-        XCTAssertNil(error, @"%@",error);
-        
-        NSData* origData = testData();
-        KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
-        
-        firstDate = [attr fileModificationDate];
+        if (downloadedResources.count > 0) {
+            KCSFile* resource = downloadedResources[0];
+            XCTAssertNil(resource.data, @"should have no local data");
+            XCTAssertEqualObjects(resource.fileId, kTestId, @"file ids should match");
+            XCTAssertEqualObjects(resource.filename, kTestFilename, @"should have a filename");
+            XCTAssertEqualObjects(resource.mimeType, kTestMimeType, @"should have a mime type");
+            
+            NSURL* localURL = resource.localURL;
+            XCTAssertNotNil(localURL, @"should have a URL");
+            BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[localURL path]];
+            XCTAssertTrue(exists, @"file should exist");
+            
+            error = nil;
+            NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:[localURL path] error:&error];
+            XCTAssertNil(error, @"%@",error);
+            
+            NSData* origData = testData();
+            KTAssertEqualsInt([attr[NSFileSize] intValue], origData.length, @"should have matching data");
+            
+            firstDate = [attr fileModificationDate];
+        }
         
         XCTAssertTrue([NSThread isMainThread]);
         
