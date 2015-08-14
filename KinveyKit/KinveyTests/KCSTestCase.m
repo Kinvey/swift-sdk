@@ -14,6 +14,8 @@
 
 -(void)tearDown
 {
+    [KCSRequest2 waitUntilAllOperationsAreFinished];
+    [KCSFileRequest waitUntilAllOperationsAreFinished];
     [KCSAppdataStore waitUntilAllOperationsAreFinished];
     [KCS_DDLog flushLog];
     

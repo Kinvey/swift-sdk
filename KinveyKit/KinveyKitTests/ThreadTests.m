@@ -106,9 +106,10 @@ static NSOperationQueue* queue;
     // Put setup code here; it will be run once, before the first test case.
 }
 
-- (void)tearDown
++ (void)tearDown
 {
-    // Put teardown code here; it will be run once, after the last test case.
+    [queue waitUntilAllOperationsAreFinished];
+    
     [super tearDown];
 }
 

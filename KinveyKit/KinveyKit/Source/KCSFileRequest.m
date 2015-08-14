@@ -166,4 +166,9 @@ static NSOperationQueue* queue;
     return op;
 }
 
++(void)waitUntilAllOperationsAreFinished
+{
+    [queue waitUntilAllOperationsAreFinished];
+}
+
 @end

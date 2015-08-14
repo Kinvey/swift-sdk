@@ -30,6 +30,8 @@
 #import "KCSFile.h"
 #import "KCSClientConfiguration.h"
 #import "KCSObjectCache.h"
+#import "KCSFileRequest.h"
+#import "KCSRequest2.h"
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
@@ -75,6 +77,14 @@ NSDictionary* defaultBuilders();
 
 @interface KCSAppdataStore (KCSHiddenMethods)
 + (KCSObjectCache*) caches;
++(void)waitUntilAllOperationsAreFinished;
+@end
+
+@interface KCSFileRequest (KCSHiddenMethods)
++(void)waitUntilAllOperationsAreFinished;
+@end
+
+@interface KCSRequest2 (KCSHiddenMethods)
 +(void)waitUntilAllOperationsAreFinished;
 @end
 

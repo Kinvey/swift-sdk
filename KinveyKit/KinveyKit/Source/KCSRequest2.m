@@ -520,4 +520,9 @@ static NSMutableArray* _sRequestArray;
 }
 #endif
 
++(void)waitUntilAllOperationsAreFinished
+{
+    [kcsRequestQueue waitUntilAllOperationsAreFinished];
+}
+
 @end
