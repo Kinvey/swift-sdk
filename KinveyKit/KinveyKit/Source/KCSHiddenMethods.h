@@ -75,6 +75,7 @@ NSDictionary* defaultBuilders();
 
 @interface KCSAppdataStore (KCSHiddenMethods)
 + (KCSObjectCache*) caches;
++(void)waitUntilAllOperationsAreFinished;
 @end
 
 @interface KCSUser (KCSHiddenMethods)
@@ -88,8 +89,6 @@ NSDictionary* defaultBuilders();
 @interface KCSFileStore (KCSHiddenMethods)
 + (void) uploadKCSFile:(KCSFile*)file options:(NSDictionary*)options completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 + (void)downloadKCSFile:(KCSFile*) file completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock) progressBlock;
-
-+ (id) lastRequest;
 @end
 
 
