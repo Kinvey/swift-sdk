@@ -114,19 +114,21 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 
 - (NSCache*) cacheForRoute:(NSString*)route collection:(NSString*)collection
 {
-    NSMutableDictionary* routeCaches = _caches[route];
-    if (!routeCaches) {
-        routeCaches = [NSMutableDictionary dictionary];
-        _caches[route] = routeCaches;
+    @synchronized (self) {
+        NSMutableDictionary* routeCaches = _caches[route];
+        if (!routeCaches) {
+            routeCaches = [NSMutableDictionary dictionary];
+            _caches[route] = routeCaches;
+        }
+        NSCache* cache = routeCaches[collection];
+        if (!cache) {
+            cache = [[NSCache alloc] init];
+            cache.name = [NSString stringWithFormat:@"%@/%@", route, collection];
+            cache.delegate = self;
+            routeCaches[collection] = cache;
+        }
+        return cache;
     }
-    NSCache* cache = routeCaches[collection];
-    if (!cache) {
-        cache = [[NSCache alloc] init];
-        cache.name = [NSString stringWithFormat:@"%@/%@", route, collection];
-        cache.delegate = self;
-        routeCaches[collection] = cache;
-    }
-    return cache;
 }
 
 #pragma mark - Fetch Query
