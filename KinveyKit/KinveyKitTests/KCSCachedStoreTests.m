@@ -31,12 +31,6 @@
 #import "KCSRequest2.h"
 #import "KCS_DDLog.h"
 
-@interface KCSAppdataStore (Queue)
-
-+(void)waitUntilAllOperationsAreFinished;
-
-@end
-
 @interface TestEntity : NSObject
 @property (nonatomic, retain) NSString* key;
 @property (nonatomic, retain) NSString* objId;
