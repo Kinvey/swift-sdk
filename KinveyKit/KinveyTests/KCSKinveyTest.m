@@ -30,12 +30,6 @@
                                              options:nil];
 }
 
-- (void)tearDown {
-    [KCS_DDLog flushLog];
-    
-    [super tearDown];
-}
-
 - (void)testLoadUser100Times
 {
     __weak __block XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];

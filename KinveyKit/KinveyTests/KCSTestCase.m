@@ -8,11 +8,13 @@
 
 #import "KCSTestCase.h"
 #import "KCS_DDLog.h"
+#import "KCSHiddenMethods.h"
 
 @implementation KCSTestCase
 
 -(void)tearDown
 {
+    [KCSAppdataStore waitUntilAllOperationsAreFinished];
     [KCS_DDLog flushLog];
     
     [super tearDown];
