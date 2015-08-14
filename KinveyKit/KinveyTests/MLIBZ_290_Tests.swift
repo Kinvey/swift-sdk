@@ -8,7 +8,7 @@
 
 import XCTest
 
-class MLIBZ_290_Tests: XCTestCase {
+class MLIBZ_290_Tests: KCSTestCase {
     
     private class MockURLProtocol : NSURLProtocol {
         

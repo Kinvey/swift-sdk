@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class MLIBZ_239_Tests: XCTestCase {
+class MLIBZ_239_Tests: KCSTestCase {
     
     override func setUp() {
         super.setUp()

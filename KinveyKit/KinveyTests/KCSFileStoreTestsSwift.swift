@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class KCSFileStoreTestsSwift: XCTestCase {
+class KCSFileStoreTestsSwift: KCSTestCase {
     
     var file: KCSFile? = nil
 

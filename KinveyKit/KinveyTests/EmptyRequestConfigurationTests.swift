@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class EmptyRequestConfigurationTests: XCTestCase {
+class EmptyRequestConfigurationTests: KCSTestCase {
 
     var collection: KCSCollection!
     var store: KCSStore!

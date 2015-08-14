@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class KCSUserTests: XCTestCase {
+class KCSUserTests: KCSTestCase {
 
     override func setUp() {
         super.setUp()

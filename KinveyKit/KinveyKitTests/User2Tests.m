@@ -28,7 +28,7 @@
 #import "KCSHiddenMethods.h"
 #import "KCSDataStore.h"
 
-@interface User2Tests : XCTestCase
+@interface User2Tests : KCSTestCase
 
 @end
 

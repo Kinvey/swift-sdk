@@ -18,7 +18,7 @@
 
 
 #import <Foundation/Foundation.h>
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 #import <KinveyKit/KinveyKit.h>
 
 #define STAssertNoError XCTAssertNil(errorOrNil,@"Should not get error: %@", errorOrNil);

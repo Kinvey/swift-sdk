@@ -6,10 +6,10 @@
 //  Copyright (c) 2012-2013 Kinvey. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
 
-@interface KinveyKitUserTests : XCTestCase
+@interface KinveyKitUserTests : KCSTestCase
 
 
 @end

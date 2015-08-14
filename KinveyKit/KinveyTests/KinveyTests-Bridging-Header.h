@@ -13,6 +13,7 @@
 #import "KCSTryCatch.h"
 #import "KCSMemory.h"
 #import "KCSNSURLSessionFileOperation.h"
+#import "KCSTestCase.h"
 
 @interface KCSUser2 ()
 

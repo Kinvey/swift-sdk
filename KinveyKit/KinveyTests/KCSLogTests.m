@@ -11,7 +11,7 @@
 #import <KinveyKit/KinveyKit.h>
 #import "KinveyTests-Swift.h"
 
-@interface KCSLogTests : XCTestCase
+@interface KCSLogTests : KCSTestCase
 
 @property (nonatomic, strong) NSPipe* pipe;
 @property (nonatomic, strong) NSMutableArray* logs;

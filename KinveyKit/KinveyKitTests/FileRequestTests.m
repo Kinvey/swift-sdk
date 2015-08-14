@@ -28,7 +28,7 @@
 #define kImageSize 3510397
 
 /* Test File loading irrespective of KCS blob service */
-@interface FileRequestTests : XCTestCase
+@interface FileRequestTests : KCSTestCase
 
 @end
 

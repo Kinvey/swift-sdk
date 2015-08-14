@@ -11,7 +11,7 @@
 #import "KinveyKit.h"
 #import "TestUtils2.h"
 
-@interface KCSKinveyTest : XCTestCase
+@interface KCSKinveyTest : KCSTestCase
 
 @property (nonatomic, strong) KCSCollection* collection;
 @property (nonatomic, strong) KCSCachedStore* store;
@@ -31,7 +31,8 @@
 }
 
 - (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
+    [KCS_DDLog flushLog];
+    
     [super tearDown];
 }
 

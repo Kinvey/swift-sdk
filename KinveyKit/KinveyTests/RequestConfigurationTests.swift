@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RequestConfigurationTests: XCTestCase {
+class RequestConfigurationTests: KCSTestCase {
     
     var collection: KCSCollection!
     var store: KCSStore!

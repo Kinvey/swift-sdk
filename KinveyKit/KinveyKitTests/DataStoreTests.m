@@ -18,12 +18,12 @@
 //
 
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
 #import "KinveyDataStoreInternal.h"
 #import "TestUtils2.h"
 
-@interface DataStoreTests : XCTestCase
+@interface DataStoreTests : KCSTestCase
 @property (nonatomic, retain) NSString* collection;
 @end
 

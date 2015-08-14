@@ -17,9 +17,9 @@
 //
 
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 #import "KCSOfflineUpdateDelegate.h"
 
-@interface KCSOfflineStoreTests : XCTestCase 
+@interface KCSOfflineStoreTests : KCSTestCase
 
 @end

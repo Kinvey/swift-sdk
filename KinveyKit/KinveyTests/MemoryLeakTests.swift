@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class MemoryLeakTests: XCTestCase {
+class MemoryLeakTests: KCSTestCase {
     
     let languages = ["Swift", "C", "C++", "C#", "Objective-C", "Java", "JavaScript", "Scala", "Erlang", "Go"]
     

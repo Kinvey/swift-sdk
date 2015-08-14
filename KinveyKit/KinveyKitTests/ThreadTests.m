@@ -82,7 +82,7 @@
 @end
 
 
-@interface ThreadTests : XCTestCase <NSURLSessionDataDelegate>
+@interface ThreadTests : KCSTestCase <NSURLSessionDataDelegate>
 @property (nonatomic) int count;
 @property (nonatomic, retain) NSMutableDictionary* d;
 @end

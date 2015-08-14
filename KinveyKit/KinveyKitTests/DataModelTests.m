@@ -18,7 +18,7 @@
 //
 
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
 #import "KinveyKit.h"
 #import "KinveyDataStoreInternal.h"
@@ -77,7 +77,7 @@
 @implementation BRef
 @end
 
-@interface DataModelTests : XCTestCase
+@interface DataModelTests : KCSTestCase
 
 @end
 
