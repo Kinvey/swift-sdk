@@ -40,13 +40,6 @@
     [self setupKCS:NO];
 }
 
-- (void)tearDown
-{
-    [KCS_DDLog flushLog];
-    
-    [super tearDown];
-}
-
 - (void) testAutoBasic
 {
     __weak __block XCTestExpectation* expectationGenerateUser = [self expectationWithDescription:@"generateUser"];
@@ -297,8 +290,6 @@
         
         [expectationQuery fulfill];
     }];
-    
-    [KCS_DDLog flushLog];
     
     [self waitForExpectationsWithTimeout:60 handler:^(NSError *error) {
         expectationQuery = nil;

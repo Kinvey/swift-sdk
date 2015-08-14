@@ -140,9 +140,6 @@ static float pollTime;
 {
     [[KCSUser activeUser] logout];
     
-    [KCSAppdataStore waitUntilAllOperationsAreFinished];
-    [KCS_DDLog flushLog];
-    
     [super tearDown];
 }
 
