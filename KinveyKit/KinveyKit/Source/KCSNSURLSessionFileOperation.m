@@ -90,6 +90,9 @@
                 _task = [_session downloadTaskWithRequest:_request];
             } else {
                 _task = [_session downloadTaskWithResumeData:resumeData];
+                if (!_task) {
+                    _task = [_session downloadTaskWithRequest:_request];
+                }
             }
         } else {
             _isUpload = YES;
