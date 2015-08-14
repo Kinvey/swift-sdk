@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class KinveyPlaygroundTests: XCTestCase {
+class KinveyPlaygroundTests: KCSTestCase {
     
     let n = 10000
     

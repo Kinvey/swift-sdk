@@ -8,7 +8,7 @@
 
 import XCTest
 
-class KCSCallbacksInMainThreadTests: XCTestCase {
+class KCSCallbacksInMainThreadTests: KCSTestCase {
     
     var collection: KCSCollection!
     var store: KCSCachedStore!

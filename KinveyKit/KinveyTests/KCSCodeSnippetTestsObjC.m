@@ -10,7 +10,7 @@
 //#import <XCTest/XCTest.h>
 //#import "KinveyKit.h"
 //
-//@interface KCSCodeSnippetTestsObjC : XCTestCase
+//@interface KCSCodeSnippetTestsObjC : KCSTestCase
 //
 //@property (nonatomic, strong) id<KCSStore> store;
 //@property (nonatomic, strong) NSDictionary* obj;

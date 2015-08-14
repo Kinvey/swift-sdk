@@ -19,7 +19,7 @@
 //
 
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
 #import "KCSClientConfiguration.h"
 #import "KCSClient.h"
@@ -27,7 +27,7 @@
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
 
-@interface KCSClientConfigurationTests : XCTestCase
+@interface KCSClientConfigurationTests : KCSTestCase
 
 @end
 

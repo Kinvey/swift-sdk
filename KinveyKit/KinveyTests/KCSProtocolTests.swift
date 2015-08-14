@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class KCSProtocolTestsBaseURLProtocol: XCTestCase {
+class KCSProtocolTestsBaseURLProtocol: KCSTestCase {
     
     var request: NSURLRequest?
     var exception: NSException?
@@ -77,7 +77,7 @@ class KCSProtocolTestsBaseURLProtocol: XCTestCase {
     
 }
 
-class KCSProtocolTestsIdMissing: XCTestCase {
+class KCSProtocolTestsIdMissing: KCSTestCase {
     
     private class MockURLProtocol : NSURLProtocol {
         
@@ -169,7 +169,7 @@ class KCSProtocolTestsIdMissing: XCTestCase {
     
 }
 
-class KCSProtocolTestsIdNotString: XCTestCase {
+class KCSProtocolTestsIdNotString: KCSTestCase {
     
     private class MockURLProtocol : NSURLProtocol {
         
@@ -263,7 +263,7 @@ class KCSProtocolTestsIdNotString: XCTestCase {
     
 }
 
-class KCSProtocolTestsKmdLmtMissing: XCTestCase {
+class KCSProtocolTestsKmdLmtMissing: KCSTestCase {
     
     private class MockURLProtocol : NSURLProtocol {
         
@@ -360,7 +360,7 @@ class KCSProtocolTestsKmdLmtMissing: XCTestCase {
     
 }
 
-class KCSProtocolTestsKmdMissing: XCTestCase {
+class KCSProtocolTestsKmdMissing: KCSTestCase {
     
     private class MockURLProtocol : NSURLProtocol {
         
@@ -453,7 +453,7 @@ class KCSProtocolTestsKmdMissing: XCTestCase {
     
 }
 
-class KCSProtocolTestsResponseContentType: XCTestCase {
+class KCSProtocolTestsResponseContentType: KCSTestCase {
     
     private class MockURLProtocol : NSURLProtocol {
         
@@ -522,7 +522,7 @@ class KCSProtocolTestsResponseContentType: XCTestCase {
     
 }
 
-class KCSProtocolTestsWrongJsonRootType: XCTestCase {
+class KCSProtocolTestsWrongJsonRootType: KCSTestCase {
     
     private class MockURLProtocol : NSURLProtocol {
         

@@ -17,8 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
-@interface TestThreads : XCTestCase
+@interface TestThreads : KCSTestCase
 
 @end

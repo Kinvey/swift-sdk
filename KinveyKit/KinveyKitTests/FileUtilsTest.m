@@ -17,11 +17,11 @@
 // contents is a violation of applicable laws.
 //
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
 #import "KCSFileUtils.h"
 
-@interface FileUtilsTest : XCTestCase
+@interface FileUtilsTest : KCSTestCase
 
 @end
 

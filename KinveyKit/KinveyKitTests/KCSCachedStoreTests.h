@@ -18,9 +18,9 @@
 //
 
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
-@interface KCSCachedStoreTests : XCTestCase
+@interface KCSCachedStoreTests : KCSTestCase
 {
 }
 

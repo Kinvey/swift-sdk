@@ -19,7 +19,7 @@
 
 
 #import <Foundation/Foundation.h>
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
 #import "LogTester.h"
 #import "KCSMockServer.h"

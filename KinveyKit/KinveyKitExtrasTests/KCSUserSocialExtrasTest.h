@@ -17,8 +17,8 @@
 //
 
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
-@interface KCSUserSocialExtrasTest : XCTestCase
+@interface KCSUserSocialExtrasTest : KCSTestCase
 
 @end

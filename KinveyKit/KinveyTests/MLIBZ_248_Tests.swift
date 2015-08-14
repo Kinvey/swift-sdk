@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class MLIBZ_248_Tests: XCTestCase {
+class MLIBZ_248_Tests: KCSTestCase {
     
     class MockURLProtocol: NSURLProtocol {
         

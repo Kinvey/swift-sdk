@@ -35,7 +35,7 @@
 
 #define KTAssertU XCTAssertTrue(u, @"pass");
 
-@interface EntityCacheTests : XCTestCase
+@interface EntityCacheTests : KCSTestCase
 
 @end
 

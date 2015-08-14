@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class KCSMutableOrderedDictionaryTests: XCTestCase {
+class KCSMutableOrderedDictionaryTests: KCSTestCase {
 
     override func setUp() {
         super.setUp()

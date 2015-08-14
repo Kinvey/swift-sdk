@@ -12,7 +12,7 @@ import XCTest
 /*!
     Unit Test for MLIBZ-408: iOS SDK 1.32.1 KCSObjectMapper crash
 */
-class EmptyResponseDataTests: XCTestCase {
+class EmptyResponseDataTests: KCSTestCase {
     
     private class MockProtocol : NSURLProtocol {
         

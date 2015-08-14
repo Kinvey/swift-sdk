@@ -8,7 +8,7 @@
 //
 //import Foundation
 //
-//class KCSCodeSnippetTests: XCTestCase {
+//class KCSCodeSnippetTests: KCSTestCase {
 //    
 //    var store: KCSStore!
 //    var obj = [:]

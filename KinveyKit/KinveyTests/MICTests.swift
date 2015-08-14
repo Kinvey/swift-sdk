@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MICTests: XCTestCase {
+class MICTests: KCSTestCase {
     
     override func setUp() {
         KCSClient.sharedClient().initializeKinveyServiceForAppKey(

@@ -18,14 +18,14 @@
 //
 
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 #import <UIKit/UIKit.h>
 
 
 //! should not have any other dependencies
 #import "KCSPlatformUtils.h"
 
-@interface PlatformUtilsTest : XCTestCase
+@interface PlatformUtilsTest : KCSTestCase
 
 @end
 
