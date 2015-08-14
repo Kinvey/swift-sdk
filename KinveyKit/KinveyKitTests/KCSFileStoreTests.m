@@ -1649,13 +1649,13 @@ NSData* testData2()
     __block NSDate* localLMT = nil;
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
-        XCTAssertNotNil(error, @"Should get an error");
+        XCTAssertNil(error, @"Should get an error");
         KTAssertCount(1, downloadedResources);
         KCSFile* dlFile = downloadedResources[0];
         XCTAssertNil(dlFile.data, @"no data");
         XCTAssertEqualObjects(dlFile.filename, kImageFilename, @"should match filenames");
         XCTAssertEqualObjects(dlFile.fileId, fileId, @"should match ids");
-        XCTAssertTrue(dlFile.length < kImageSize, @"lengths should match");
+        XCTAssertTrue(dlFile.length == kImageSize, @"lengths should match");
         XCTAssertEqualObjects(dlFile.mimeType, kImageMimeType, @"mime types should match");
         XCTAssertNotNil(dlFile.localURL, @"should be a local URL");
         //TODO
@@ -1769,13 +1769,13 @@ NSData* testData2()
     __block NSURL* startedURL = nil;
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
-        XCTAssertNotNil(error, @"Should get an error");
+        XCTAssertNil(error, @"Should get an error");
         KTAssertCount(1, downloadedResources);
         KCSFile* dlFile = downloadedResources[0];
         XCTAssertNil(dlFile.data, @"no data");
         XCTAssertEqualObjects(dlFile.filename, kImageFilename, @"should match filenames");
         XCTAssertEqualObjects(dlFile.fileId, fileId, @"should match ids");
-        XCTAssertTrue(dlFile.length < kImageSize, @"lengths should match");
+        XCTAssertTrue(dlFile.length == kImageSize, @"lengths should match");
         XCTAssertEqualObjects(dlFile.mimeType, kImageMimeType, @"mime types should match");
         XCTAssertNotNil(dlFile.localURL, @"should be a local URL");
         //TODO
@@ -1829,7 +1829,6 @@ NSData* testData2()
         [expectationResumeDownload fulfill];
     } progressBlock:PROGRESS_BLOCK];
     [self waitForExpectationsWithTimeout:30 handler:nil];
-    ASSERT_PROGESS
 
     //TODO
 //    XCTAssertEqual(firstWritten + secondWritten, (unsigned long long) kImageSize, @"should have only downloaded the total num bytes");
