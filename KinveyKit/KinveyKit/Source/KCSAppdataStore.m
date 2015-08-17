@@ -230,6 +230,13 @@ static NSOperationQueue* queue;
 +(void)cancelAndWaitUntilAllOperationsAreFinished
 {
     [queue cancelAllOperations];
+    if (queue.operationCount > 0) {
+        for (NSOperation* op in queue.operations) {
+            if ([op isKindOfClass:[DataStoreOperation class]]) {
+                ((DataStoreOperation*) op).finished = YES;
+            }
+        }
+    }
     [queue waitUntilAllOperationsAreFinished];
 }
 
