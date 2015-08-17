@@ -14,9 +14,9 @@
 
 -(void)tearDown
 {
-    [KCSRequest2 waitUntilAllOperationsAreFinished];
-    [KCSFileRequest waitUntilAllOperationsAreFinished];
-    [KCSAppdataStore waitUntilAllOperationsAreFinished];
+    [KCSRequest2 cancelAndWaitUntilAllOperationsAreFinished];
+    [KCSFileRequest cancelAndWaitUntilAllOperationsAreFinished];
+    [KCSAppdataStore cancelAndWaitUntilAllOperationsAreFinished];
     [KCS_DDLog flushLog];
     
     [super tearDown];
