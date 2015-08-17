@@ -77,15 +77,15 @@ NSDictionary* defaultBuilders();
 
 @interface KCSAppdataStore (KCSHiddenMethods)
 + (KCSObjectCache*) caches;
-+(void)waitUntilAllOperationsAreFinished;
++(void)cancelAndWaitUntilAllOperationsAreFinished;
 @end
 
 @interface KCSFileRequest (KCSHiddenMethods)
-+(void)waitUntilAllOperationsAreFinished;
++(void)cancelAndWaitUntilAllOperationsAreFinished;
 @end
 
 @interface KCSRequest2 (KCSHiddenMethods)
-+(void)waitUntilAllOperationsAreFinished;
++(void)cancelAndWaitUntilAllOperationsAreFinished;
 @end
 
 @interface KCSUser (KCSHiddenMethods)
