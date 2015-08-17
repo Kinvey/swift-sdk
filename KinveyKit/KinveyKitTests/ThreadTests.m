@@ -108,6 +108,14 @@ static NSOperationQueue* queue;
 
 + (void)tearDown
 {
+    [queue cancelAllOperations];
+    if (queue.operationCount > 0) {
+        for (NSOperation* op in queue.operations) {
+            if ([op isKindOfClass:[TestOperation class]]) {
+                ((TestOperation*) op).finished = YES;
+            }
+        }
+    }
     [queue waitUntilAllOperationsAreFinished];
     
     [super tearDown];
