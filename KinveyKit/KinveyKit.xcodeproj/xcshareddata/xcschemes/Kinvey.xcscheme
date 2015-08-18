@@ -56,9 +56,6 @@
                   Identifier = "EmptyResponseDataTests">
                </Test>
                <Test
-                  Identifier = "EntityCacheTests">
-               </Test>
-               <Test
                   Identifier = "FileRequestTests">
                </Test>
                <Test
