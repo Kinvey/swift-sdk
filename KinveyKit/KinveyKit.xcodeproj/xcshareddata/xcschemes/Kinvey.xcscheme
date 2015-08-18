@@ -62,9 +62,6 @@
                   Identifier = "KCSCachedStoreTests">
                </Test>
                <Test
-                  Identifier = "KCSClientShimTests">
-               </Test>
-               <Test
                   Identifier = "KCSCustomEndpointTests">
                </Test>
                <Test
