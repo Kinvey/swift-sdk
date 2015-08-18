@@ -68,9 +68,6 @@
                   Identifier = "KCSFileStoreTestsSwift">
                </Test>
                <Test
-                  Identifier = "KCSLinkedAppdataStoreSwiftTests">
-               </Test>
-               <Test
                   Identifier = "KCSLinkedAppdataStoreTests">
                </Test>
                <Test
