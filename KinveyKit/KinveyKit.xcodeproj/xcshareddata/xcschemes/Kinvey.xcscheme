@@ -128,9 +128,6 @@
                   Identifier = "KinveyUserDiscoveryTests">
                </Test>
                <Test
-                  Identifier = "LogTests">
-               </Test>
-               <Test
                   Identifier = "MICTests">
                </Test>
                <Test
