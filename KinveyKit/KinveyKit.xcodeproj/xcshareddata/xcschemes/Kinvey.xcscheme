@@ -56,9 +56,6 @@
                   Identifier = "EmptyResponseDataTests">
                </Test>
                <Test
-                  Identifier = "FileRequestTests">
-               </Test>
-               <Test
                   Identifier = "FileUtilsTest">
                </Test>
                <Test
