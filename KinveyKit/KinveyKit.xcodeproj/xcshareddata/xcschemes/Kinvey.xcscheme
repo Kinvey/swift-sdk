@@ -116,9 +116,6 @@
                   Identifier = "KinveyAppdataStoreTests">
                </Test>
                <Test
-                  Identifier = "KinveyKitClientTests">
-               </Test>
-               <Test
                   Identifier = "KinveyKitEntityDictTests">
                </Test>
                <Test
