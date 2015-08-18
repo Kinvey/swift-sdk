@@ -84,8 +84,10 @@ class KCSProtocolTestsIdMissing: KCSTestCase {
     
     private class MockURLProtocol : NSURLProtocol {
         
+        static var enabled = false
+        
         override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-            return true
+            return enabled
         }
         
         override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
@@ -142,6 +144,8 @@ class KCSProtocolTestsIdMissing: KCSTestCase {
         )
         
         waitForExpectationsWithTimeout(30, handler: nil)
+        
+        MockURLProtocol.enabled = true
         
         weak var expectationSave = expectationWithDescription("save")
         
