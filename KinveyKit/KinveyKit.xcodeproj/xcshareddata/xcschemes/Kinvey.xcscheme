@@ -56,18 +56,6 @@
                   Identifier = "EmptyResponseDataTests">
                </Test>
                <Test
-                  Identifier = "KCSCallbacksInMainThreadTests">
-               </Test>
-               <Test
-                  Identifier = "KCSClientConfigurationTests">
-               </Test>
-               <Test
-                  Identifier = "KCSClientShimTests">
-               </Test>
-               <Test
-                  Identifier = "KCSCustomEndpointTests">
-               </Test>
-               <Test
                   Identifier = "KCSFileStoreTests">
                </Test>
                <Test
