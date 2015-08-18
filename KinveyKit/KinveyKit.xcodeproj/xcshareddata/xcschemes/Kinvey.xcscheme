@@ -80,9 +80,6 @@
                   Identifier = "KCSLogTestsAllEnabled">
                </Test>
                <Test
-                  Identifier = "KCSMutableOrderedDictionaryTests">
-               </Test>
-               <Test
                   Identifier = "KCSOfflineStoreTests">
                </Test>
                <Test
