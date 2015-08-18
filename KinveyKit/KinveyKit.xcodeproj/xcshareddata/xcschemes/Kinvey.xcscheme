@@ -80,9 +80,6 @@
                   Identifier = "KCSLogTestsAllEnabled">
                </Test>
                <Test
-                  Identifier = "KCSMetadataTests">
-               </Test>
-               <Test
                   Identifier = "KCSMockServerTest">
                </Test>
                <Test
