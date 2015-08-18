@@ -27,10 +27,6 @@ class KCSProtocolTestsBaseURLProtocol: KCSTestCase {
     }
     
     func testBaseURLProtocol() {
-        
-        MockURLProtocol.testCase = self
-        KCSURLProtocol.registerClass(MockURLProtocol.self)
-        
         let config = KCSClientConfiguration(
             appKey: "kid_-1WAs8Rh2",
             secret: "2f355bfaa8cb4f7299e914e8e85d8c98",
@@ -67,6 +63,13 @@ class KCSProtocolTestsBaseURLProtocol: KCSTestCase {
         
         XCTAssertNil(request)
         XCTAssertNotNil(exception)
+    }
+    
+    override func setUp() {
+        super.setUp()
+        
+        MockURLProtocol.testCase = self
+        KCSURLProtocol.registerClass(MockURLProtocol.self)
     }
     
     override func tearDown() {
