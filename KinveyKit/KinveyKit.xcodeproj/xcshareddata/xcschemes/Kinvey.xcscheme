@@ -53,7 +53,43 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "DataStoreTests">
+               </Test>
+               <Test
+                  Identifier = "EmptyRequestConfigurationTests">
+               </Test>
+               <Test
                   Identifier = "EmptyResponseDataTests">
+               </Test>
+               <Test
+                  Identifier = "EntityCacheTests">
+               </Test>
+               <Test
+                  Identifier = "FileRequestTests">
+               </Test>
+               <Test
+                  Identifier = "FileUtilsTest">
+               </Test>
+               <Test
+                  Identifier = "KASTest">
+               </Test>
+               <Test
+                  Identifier = "KCSCachedStoreSwiftTests">
+               </Test>
+               <Test
+                  Identifier = "KCSCachedStoreTests">
+               </Test>
+               <Test
+                  Identifier = "KCSCallbacksInMainThreadTests">
+               </Test>
+               <Test
+                  Identifier = "KCSClientConfigurationTests">
+               </Test>
+               <Test
+                  Identifier = "KCSClientShimTests">
+               </Test>
+               <Test
+                  Identifier = "KCSCustomEndpointTests">
                </Test>
                <Test
                   Identifier = "KCSFileStoreTests">
