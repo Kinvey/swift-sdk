@@ -14,6 +14,7 @@
 #import "KCSMemory.h"
 #import "KCSNSURLSessionFileOperation.h"
 #import "KCSTestCase.h"
+#import "KCSNetworkResponse.h"
 
 @interface KCSUser2 ()
 

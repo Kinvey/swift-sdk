@@ -72,10 +72,12 @@ class EmptyRequestConfigurationTests: KCSTestCase {
             KCSStoreKeyCachePolicy : KCSCachePolicy.LocalFirst.rawValue,
             KCSStoreKeyOfflineUpdateEnabled : true
         ])
+        
+        XCTAssertTrue(KCSURLProtocol.registerClass(MockURLProtocol.self))
     }
     
     override func tearDown() {
-        KCSURLProtocol.unregisterClass(MockURLProtocol)
+        KCSURLProtocol.unregisterClass(MockURLProtocol.self)
         
         super.tearDown()
     }
@@ -87,8 +89,6 @@ class EmptyRequestConfigurationTests: KCSTestCase {
             "state" : "MA"
         ]
         weak var expectationSave = self.expectationWithDescription("save")
-        
-        XCTAssertTrue(KCSURLProtocol.registerClass(MockURLProtocol))
         
         self.store.saveObject(obj,
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
