@@ -143,8 +143,6 @@ class KCSProtocolTestsIdMissing: KCSTestCase {
         
         waitForExpectationsWithTimeout(30, handler: nil)
         
-        KCSURLProtocol.registerClass(MockURLProtocol.self)
-        
         weak var expectationSave = expectationWithDescription("save")
         
         store.saveObject(
@@ -162,6 +160,12 @@ class KCSProtocolTestsIdMissing: KCSTestCase {
         )
         
         waitForExpectationsWithTimeout(30, handler: nil)
+    }
+    
+    override func setUp() {
+        super.setUp()
+        
+        KCSURLProtocol.registerClass(MockURLProtocol.self)
     }
     
     override func tearDown() {
