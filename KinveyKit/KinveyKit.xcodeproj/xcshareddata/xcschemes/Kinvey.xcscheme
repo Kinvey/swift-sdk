@@ -119,9 +119,6 @@
                   Identifier = "KinveyKitEntityDictTests">
                </Test>
                <Test
-                  Identifier = "KinveyKitPushTests">
-               </Test>
-               <Test
                   Identifier = "KinveyKitQueryTests">
                </Test>
                <Test
