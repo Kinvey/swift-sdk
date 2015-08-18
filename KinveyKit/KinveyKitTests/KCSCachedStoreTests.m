@@ -121,6 +121,10 @@ static float pollTime;
 
 - (void) setUp
 {
+    [super setUp];
+    
+    NSLog(@"%@ %@", [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion);
+    
     pollTime = 0.1;
     _callbackCount = 0;
     
