@@ -53,9 +53,6 @@
             </BuildableReference>
             <SkippedTests>
                <Test
-                  Identifier = "DataStoreTests">
-               </Test>
-               <Test
                   Identifier = "EmptyRequestConfigurationTests">
                </Test>
                <Test
