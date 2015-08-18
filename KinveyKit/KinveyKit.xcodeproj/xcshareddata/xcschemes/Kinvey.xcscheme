@@ -101,9 +101,6 @@
                   Identifier = "KCSQueryTests">
                </Test>
                <Test
-                  Identifier = "KCSReduceFunctionTests">
-               </Test>
-               <Test
                   Identifier = "KCSRequest2Tests">
                </Test>
                <Test
