@@ -16,6 +16,8 @@ class KCSCachedStoreSwiftTests: KCSTestCase {
     override func setUp() {
         super.setUp()
         
+        KCSUser.activeUser()?.logout()
+        
         KCSClient.sharedClient().initializeKinveyServiceForAppKey(
             "kid_-1WAs8Rh2",
             withAppSecret: "2f355bfaa8cb4f7299e914e8e85d8c98",
@@ -133,19 +135,13 @@ class KCSCachedStoreSwiftTests: KCSTestCase {
     func testCount() {
         weak var expectationCount = expectationWithDescription("count")
         
-        var dispatched = false
-        
         LogbookStore.countWithBlock { (count: UInt, error: NSError!) -> Void in
             XCTAssertNil(error)
-            
-            XCTAssertTrue(dispatched)
             
             XCTAssertTrue(NSThread.isMainThread())
             
             expectationCount?.fulfill()
         }
-        
-        dispatched = true
         
         waitForExpectationsWithTimeout(30, handler: nil)
     }

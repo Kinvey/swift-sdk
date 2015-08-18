@@ -9,14 +9,35 @@
 #import "KCSTestCase.h"
 #import "KCS_DDLog.h"
 #import "KCSHiddenMethods.h"
+#import "KCSURLProtocol.h"
 
 @implementation KCSTestCase
+
+-(void)setUp
+{
+    [super setUp];
+    
+    [KCSRequest2 cancelAndWaitUntilAllOperationsAreFinished];
+    [KCSFileRequest cancelAndWaitUntilAllOperationsAreFinished];
+    [KCSAppdataStore cancelAndWaitUntilAllOperationsAreFinished];
+    
+    for (Class clazz in [KCSURLProtocol protocolClasses]) {
+        [KCSURLProtocol unregisterClass:clazz];
+    }
+    
+    [KCS_DDLog flushLog];
+}
 
 -(void)tearDown
 {
     [KCSRequest2 cancelAndWaitUntilAllOperationsAreFinished];
     [KCSFileRequest cancelAndWaitUntilAllOperationsAreFinished];
     [KCSAppdataStore cancelAndWaitUntilAllOperationsAreFinished];
+    
+    for (Class clazz in [KCSURLProtocol protocolClasses]) {
+        [KCSURLProtocol unregisterClass:clazz];
+    }
+    
     [KCS_DDLog flushLog];
     
     [super tearDown];
