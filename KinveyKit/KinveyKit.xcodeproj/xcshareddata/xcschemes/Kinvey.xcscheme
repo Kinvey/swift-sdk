@@ -59,9 +59,6 @@
                   Identifier = "KASTest">
                </Test>
                <Test
-                  Identifier = "KCSCachedStoreSwiftTests">
-               </Test>
-               <Test
                   Identifier = "KCSCachedStoreTests">
                </Test>
                <Test
