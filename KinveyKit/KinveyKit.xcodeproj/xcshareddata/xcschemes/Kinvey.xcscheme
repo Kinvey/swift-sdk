@@ -56,9 +56,6 @@
                   Identifier = "EmptyResponseDataTests">
                </Test>
                <Test
-                  Identifier = "FileUtilsTest">
-               </Test>
-               <Test
                   Identifier = "KASTest">
                </Test>
                <Test
