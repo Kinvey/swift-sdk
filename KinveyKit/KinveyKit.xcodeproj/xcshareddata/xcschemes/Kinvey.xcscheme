@@ -51,6 +51,224 @@
                BlueprintName = "KinveyTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "EmptyResponseDataTests">
+               </Test>
+               <Test
+                  Identifier = "KCSCallbacksInMainThreadTests">
+               </Test>
+               <Test
+                  Identifier = "KCSClientConfigurationTests">
+               </Test>
+               <Test
+                  Identifier = "KCSClientShimTests">
+               </Test>
+               <Test
+                  Identifier = "KCSCustomEndpointTests">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTestsSwift">
+               </Test>
+               <Test
+                  Identifier = "KCSKinveyTest">
+               </Test>
+               <Test
+                  Identifier = "KCSLinkedAppdataStoreSwiftTests">
+               </Test>
+               <Test
+                  Identifier = "KCSLinkedAppdataStoreTests">
+               </Test>
+               <Test
+                  Identifier = "KCSLogTests">
+               </Test>
+               <Test
+                  Identifier = "KCSLogTestsAllDisabled">
+               </Test>
+               <Test
+                  Identifier = "KCSLogTestsAllEnabled">
+               </Test>
+               <Test
+                  Identifier = "KCSMetadataTests">
+               </Test>
+               <Test
+                  Identifier = "KCSMockServerTest">
+               </Test>
+               <Test
+                  Identifier = "KCSMutableOrderedDictionaryTests">
+               </Test>
+               <Test
+                  Identifier = "KCSOfflineStoreTests">
+               </Test>
+               <Test
+                  Identifier = "KCSPingTests">
+               </Test>
+               <Test
+                  Identifier = "KCSProtocolTestsBaseURLProtocol">
+               </Test>
+               <Test
+                  Identifier = "KCSProtocolTestsIdMissing">
+               </Test>
+               <Test
+                  Identifier = "KCSProtocolTestsIdNotString">
+               </Test>
+               <Test
+                  Identifier = "KCSProtocolTestsKmdLmtMissing">
+               </Test>
+               <Test
+                  Identifier = "KCSProtocolTestsKmdMissing">
+               </Test>
+               <Test
+                  Identifier = "KCSProtocolTestsResponseContentType">
+               </Test>
+               <Test
+                  Identifier = "KCSProtocolTestsWrongJsonRootType">
+               </Test>
+               <Test
+                  Identifier = "KCSQueryTests">
+               </Test>
+               <Test
+                  Identifier = "KCSReduceFunctionTests">
+               </Test>
+               <Test
+                  Identifier = "KCSRequest2Tests">
+               </Test>
+               <Test
+                  Identifier = "KCSTestCase">
+               </Test>
+               <Test
+                  Identifier = "KCSUserSocialExtrasTest">
+               </Test>
+               <Test
+                  Identifier = "KCSUserTests">
+               </Test>
+               <Test
+                  Identifier = "KeychainTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyAppdataStoreTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitBase64Tests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitClientTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitEntityDictTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitEntityTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitKeyChainTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitNSDateTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitNSDictionaryTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitNSStringTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitNSURLTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitPushTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitQueryTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitUserTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyUserDiscoveryTests">
+               </Test>
+               <Test
+                  Identifier = "LogTests">
+               </Test>
+               <Test
+                  Identifier = "MICTests">
+               </Test>
+               <Test
+                  Identifier = "MICTestsObjC">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_239_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_248_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_256_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_260_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_290_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_322_Ext_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_322_ObjC_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_322_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_326_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_364_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_371_Tests">
+               </Test>
+               <Test
+                  Identifier = "MemoryLeakTests">
+               </Test>
+               <Test
+                  Identifier = "NetworkObserverTest">
+               </Test>
+               <Test
+                  Identifier = "OfflineTests">
+               </Test>
+               <Test
+                  Identifier = "PlatformUtilsTest">
+               </Test>
+               <Test
+                  Identifier = "Query2Tests">
+               </Test>
+               <Test
+                  Identifier = "RequestConfigurationTests">
+               </Test>
+               <Test
+                  Identifier = "RequestConfigurationTestsComplexHttpRequestHeaders">
+               </Test>
+               <Test
+                  Identifier = "RequestConfigurationTestsGlobalHttpRequestHeaders">
+               </Test>
+               <Test
+                  Identifier = "RequestConfigurationTestsHttpRequestHeaders">
+               </Test>
+               <Test
+                  Identifier = "TestThreads">
+               </Test>
+               <Test
+                  Identifier = "ThreadTests">
+               </Test>
+               <Test
+                  Identifier = "User2Tests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>
