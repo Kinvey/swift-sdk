@@ -131,9 +131,6 @@
                   Identifier = "MICTests">
                </Test>
                <Test
-                  Identifier = "MICTestsObjC">
-               </Test>
-               <Test
                   Identifier = "MLIBZ_239_Tests">
                </Test>
                <Test
