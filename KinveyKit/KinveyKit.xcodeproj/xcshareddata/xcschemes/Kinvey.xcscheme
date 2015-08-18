@@ -83,12 +83,6 @@
                   Identifier = "KCSOfflineStoreTests">
                </Test>
                <Test
-                  Identifier = "KCSPingTests">
-               </Test>
-               <Test
-                  Identifier = "KCSProtocolTestsBaseURLProtocol">
-               </Test>
-               <Test
                   Identifier = "KCSProtocolTestsIdMissing">
                </Test>
                <Test
