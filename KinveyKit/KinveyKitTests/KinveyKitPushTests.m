@@ -49,6 +49,8 @@ NSData* dataForTokenString(NSString* token)
 
 - (void)setUp
 {
+    [super setUp];
+    
     XCTAssertTrue([TestUtils setUpKinveyUnittestBackend:self], @"should be set up");
     
     _token = [NSString stringWithFormat:@"d4011af80d8cc2623f361d074a3c0a63162cc524bd18c4c07fbe05ebd074c62%d", arc4random() % 10];
