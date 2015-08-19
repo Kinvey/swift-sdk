@@ -1,0 +1,8 @@
+[
+  "-workspace", "Kinvey.xcworkspace",
+  "-scheme", "Kinvey",
+  "-configuration", "Debug",
+  "-sdk", "iphonesimulator",
+  "-reporter", "junit:junit-report.xml",
+  "clean", "build", "run-tests"
+]
