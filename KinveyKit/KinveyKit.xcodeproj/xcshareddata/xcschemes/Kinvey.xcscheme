@@ -62,6 +62,9 @@
                   Identifier = "KCSCachedStoreTests">
                </Test>
                <Test
+                  Identifier = "KCSCallbacksInMainThreadTests">
+               </Test>
+               <Test
                   Identifier = "KCSFileStoreTests">
                </Test>
                <Test
@@ -144,9 +147,6 @@
                </Test>
                <Test
                   Identifier = "MLIBZ_290_Tests">
-               </Test>
-               <Test
-                  Identifier = "MLIBZ_326_Tests">
                </Test>
                <Test
                   Identifier = "MLIBZ_364_Tests">
