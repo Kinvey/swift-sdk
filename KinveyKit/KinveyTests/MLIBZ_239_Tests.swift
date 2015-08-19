@@ -52,7 +52,9 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationSave1?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationSave1 = nil
+        })
         
         weak var expectationSave2 = expectationWithDescription("save2")
         let quote2 = MLIBZ_239_Quote()
@@ -72,7 +74,9 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationSave2?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationSave2 = nil
+        })
         
         weak var expectationSave3 = expectationWithDescription("save3")
         let quote3 = MLIBZ_239_Quote()
@@ -92,7 +96,9 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationSave3?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationSave3 = nil
+        })
         
         weak var expectationQuery1 = expectationWithDescription("query1")
         MLIBZ_239_DataHelper.instance().loadQuotesUseCache(
@@ -114,7 +120,9 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationQuery1?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationQuery1 = nil
+        })
         
         weak var expectationQuery2 = expectationWithDescription("query2")
         MLIBZ_239_DataHelper.instance().loadQuotesUseCache(
@@ -134,7 +142,9 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationQuery2?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationQuery2 = nil
+        })
         
         NSThread.sleepForTimeInterval(2) //Wait until query2 finished background update
         
@@ -156,7 +166,9 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationQuery3?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationQuery3 = nil
+        })
     }
     
 }

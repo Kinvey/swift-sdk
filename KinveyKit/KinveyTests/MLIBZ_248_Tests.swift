@@ -68,7 +68,9 @@ class MLIBZ_248_Tests: KCSTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationLogin = nil
+        })
         
         KCSURLProtocol.registerClass(MockURLProtocol.self)
     }
@@ -97,7 +99,9 @@ class MLIBZ_248_Tests: KCSTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationQuery = nil
+        })
     }
 
 }
