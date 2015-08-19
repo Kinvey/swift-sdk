@@ -94,9 +94,10 @@ class EmptyRequestConfigurationTests: KCSTestCase {
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
-                XCTAssertEqual(results.count, 1)
                 
                 if results.count > 0 {
+                    XCTAssertEqual(results.count, 1)
+                    
                     var result = results[0].mutableCopy() as! NSMutableDictionary
                     result.removeObjectForKey(KCSEntityKeyMetadata)
                     XCTAssertEqual(result, obj)
