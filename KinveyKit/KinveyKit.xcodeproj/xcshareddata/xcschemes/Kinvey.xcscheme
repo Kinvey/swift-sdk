@@ -146,6 +146,9 @@
                   Identifier = "MLIBZ_290_Tests">
                </Test>
                <Test
+                  Identifier = "MLIBZ_326_Tests">
+               </Test>
+               <Test
                   Identifier = "MLIBZ_364_Tests">
                </Test>
                <Test
@@ -159,6 +162,12 @@
                </Test>
                <Test
                   Identifier = "OfflineTests">
+               </Test>
+               <Test
+                  Identifier = "PlatformUtilsTest">
+               </Test>
+               <Test
+                  Identifier = "Query2Tests">
                </Test>
                <Test
                   Identifier = "RequestConfigurationTests">
