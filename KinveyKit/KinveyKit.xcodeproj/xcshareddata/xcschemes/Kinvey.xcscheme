@@ -161,9 +161,6 @@
                   Identifier = "OfflineTests">
                </Test>
                <Test
-                  Identifier = "PlatformUtilsTest">
-               </Test>
-               <Test
                   Identifier = "Query2Tests">
                </Test>
                <Test
