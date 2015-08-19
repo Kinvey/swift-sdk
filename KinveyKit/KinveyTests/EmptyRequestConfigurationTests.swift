@@ -95,12 +95,14 @@ class EmptyRequestConfigurationTests: KCSTestCase {
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
                 
-                if results.count > 0 {
+                if let results = results {
                     XCTAssertEqual(results.count, 1)
                     
-                    var result = results[0].mutableCopy() as! NSMutableDictionary
-                    result.removeObjectForKey(KCSEntityKeyMetadata)
-                    XCTAssertEqual(result, obj)
+                    if (results.count > 0) {
+                        var result = results[0].mutableCopy() as! NSMutableDictionary
+                        result.removeObjectForKey(KCSEntityKeyMetadata)
+                        XCTAssertEqual(result, obj)
+                    }
                 }
                 
                 XCTAssertTrue(NSThread.isMainThread())
