@@ -88,7 +88,7 @@ class EmptyRequestConfigurationTests: KCSTestCase {
             "name" : "Boston",
             "state" : "MA"
         ]
-        weak var expectationSave = self.expectationWithDescription("save")
+        weak var expectationSave = expectationWithDescription("save")
         
         self.store.saveObject(obj,
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
@@ -112,7 +112,9 @@ class EmptyRequestConfigurationTests: KCSTestCase {
             }
         )
         
-        self.waitForExpectationsWithTimeout(timeout, handler: nil)
+        waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in
+            expectationSave = nil
+        })
     }
 
 }
