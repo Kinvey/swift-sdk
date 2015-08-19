@@ -176,9 +176,6 @@
                   Identifier = "RequestConfigurationTestsHttpRequestHeaders">
                </Test>
                <Test
-                  Identifier = "TestThreads">
-               </Test>
-               <Test
                   Identifier = "ThreadTests">
                </Test>
                <Test
