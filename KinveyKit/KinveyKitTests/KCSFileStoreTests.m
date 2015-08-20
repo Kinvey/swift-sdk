@@ -2120,7 +2120,7 @@ NSData* testData2()
 
 - (void) testGetUIImageWithURL
 {
-    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak __block XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     NSURL* fileURL = [self largeImageURL];
@@ -2144,12 +2144,14 @@ NSData* testData2()
         [expectationUpload fulfill];
     } progressBlock:PROGRESS_BLOCK];
     
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationUpload = nil;
+    }];
     ASSERT_PROGESS
     XCTAssertNotNil(newFileId, @"Should get a file id");
     
     __block KCSFile* streamingFile = nil;
-    __weak XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
+    __weak __block XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
     [KCSFileStore getStreamingURL:newFileId completionBlock:^(KCSFile *streamingResource, NSError *error) {
         STAssertNoError_
         XCTAssertNotNil(streamingResource, @"should be not nil");
@@ -2161,7 +2163,9 @@ NSData* testData2()
         
         [expectationStream fulfill];
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationStream = nil;
+    }];
     
     XCTAssertNotNil(streamingFile, @"should get back a valid file");
     
