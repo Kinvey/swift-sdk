@@ -1,8 +1,12 @@
 [
+  "ONLY_ACTIVE_ARCH=NO",
   "-workspace", "Kinvey.xcworkspace",
   "-scheme", "Kinvey",
   "-configuration", "Debug",
   "-sdk", "iphonesimulator",
+  "-arch", "i386",
   "-reporter", "junit:junit-report.xml",
-  "clean", "build", "test", "-parallelize"
+  "-reporter", "plain:report.txt",
+  "clean", "build", "test", "-parallelize",
+  "TARGETED_DEVICE_FAMILY=1"
 ]
