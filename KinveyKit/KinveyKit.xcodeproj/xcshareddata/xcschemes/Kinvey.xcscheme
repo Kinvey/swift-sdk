@@ -199,7 +199,7 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5740AA6A1B866B3700F153A2"
@@ -215,6 +215,26 @@
                BlueprintIdentifier = "57B5CE7E1B8696070064EB00"
                BuildableName = "KCSFileStoreMemoryTestsSwift.xctest"
                BlueprintName = "KCSFileStoreMemoryTestsSwift"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "579523BD1B869C9E000D1C46"
+               BuildableName = "KCSLogTestsAllEnabled.xctest"
+               BlueprintName = "KCSLogTestsAllEnabled"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57E6B1E61B86A0A300E05C61"
+               BuildableName = "KCSLogTestsAllEnabled copy.xctest"
+               BlueprintName = "KCSLogTestsAllDisabled"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
