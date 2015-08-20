@@ -2188,7 +2188,7 @@ NSData* testData2()
 
 - (void) testSaveLocalResource
 {
-    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak __block XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
@@ -2205,11 +2205,13 @@ NSData* testData2()
         
         [expectationUpload fulfill];
     } progressBlock:PROGRESS_BLOCK];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationUpload = nil;
+    }];
     ASSERT_PROGESS
     
     if (newFileId) {
-        __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+        __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -2217,13 +2219,15 @@ NSData* testData2()
             
             [expectationDelete fulfill];
         }];
-        [self waitForExpectationsWithTimeout:30 handler:nil];
+        [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+            expectationDelete = nil;
+        }];
     }
 }
 
 - (void) testUploadLFOptions
 {
-    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak __block XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     SETUP_PROGRESS
     __block NSString* newFileId = nil;
     NSString* fileId = [NSString UUID];
@@ -2231,22 +2235,25 @@ NSData* testData2()
                      options:@{KCSFileFileName: @"FOO",
                                KCSFileMimeType: @"BAR",
                                KCSFileId: fileId }
-             completionBlock:^(KCSFile *uploadInfo, NSError *error) {
-                 STAssertNoError_;
-                 XCTAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
-                 XCTAssertEqualObjects(uploadInfo.filename, @"FOO", @"filename should match");
-                 XCTAssertNotNil(uploadInfo.fileId, @"should have a file id");
-                 XCTAssertEqualObjects(uploadInfo.fileId, fileId, @"file id should be match");
-                 XCTAssertEqualObjects(uploadInfo.mimeType, @"BAR", @"mime type should match");
-                 KTAssertEqualsInt(uploadInfo.length, kImageSize, @"sizes shoukld match");
-                 
-                 XCTAssertTrue([NSThread isMainThread]);
-                 
-                 newFileId = uploadInfo.fileId;
-                 
-                 [expectationUpload fulfill];
-             } progressBlock:PROGRESS_BLOCK];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+             completionBlock:^(KCSFile *uploadInfo, NSError *error)
+    {
+        STAssertNoError_;
+        XCTAssertNotNil(uploadInfo, @"uploadInfo should be a real value");
+        XCTAssertEqualObjects(uploadInfo.filename, @"FOO", @"filename should match");
+        XCTAssertNotNil(uploadInfo.fileId, @"should have a file id");
+        XCTAssertEqualObjects(uploadInfo.fileId, fileId, @"file id should be match");
+        XCTAssertEqualObjects(uploadInfo.mimeType, @"BAR", @"mime type should match");
+        KTAssertEqualsInt(uploadInfo.length, kImageSize, @"sizes shoukld match");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        newFileId = uploadInfo.fileId;
+        
+        [expectationUpload fulfill];
+    } progressBlock:PROGRESS_BLOCK];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationUpload = nil;
+    }];
     ASSERT_PROGESS
     
     KCSFile* metaFile = [self getMetadataForId:newFileId];
@@ -2257,7 +2264,7 @@ NSData* testData2()
     KTAssertEqualsInt(metaFile.length, kImageSize, @"sizes shoukld match");
     
     if (newFileId) {
-        __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+        __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
         [KCSFileStore deleteFile:newFileId completionBlock:^(unsigned long count, NSError *errorOrNil) {
             STAssertNoError;
             
@@ -2265,7 +2272,9 @@ NSData* testData2()
             
             [expectationDelete fulfill];
         }];
-        [self waitForExpectationsWithTimeout:30 handler:nil];
+        [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+            expectationDelete = nil;
+        }];
     }
 }
 
