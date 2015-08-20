@@ -740,6 +740,16 @@
 		579CFC041AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 579CFC031AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m */; };
 		579CFC061AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579CFC051AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift */; };
 		579CFC081AC9C05100CC1EDE /* MICTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579CFC071AC9C05100CC1EDE /* MICTests.swift */; };
+		57B5CE841B8696070064EB00 /* KCSTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */; };
+		57B5CE851B8696070064EB00 /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
+		57B5CE871B8696070064EB00 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
+		57B5CE881B8696070064EB00 /* libKinvey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C8DAF91AB8C968007F2E42 /* libKinvey.a */; };
+		57B5CE8A1B8696070064EB00 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27BFEC3217C6876100E6605D /* TestConfig.plist */; };
+		57B5CE8B1B8696070064EB00 /* mavericks.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 271DE7B917728815003541D4 /* mavericks.jpg */; };
+		57B5CE8C1B8696070064EB00 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D32A60E814716EE300F77A3F /* InfoPlist.strings */; };
+		57B5CE8D1B8696070064EB00 /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 574640281B3E0FA100D17CA0 /* video.mp4 */; };
+		57B5CE8E1B8696070064EB00 /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
+		57B5CE961B8696200064EB00 /* KCSFileStoreMemoryTestsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5720DDF01B86956A00306F57 /* KCSFileStoreMemoryTestsSwift.swift */; };
 		57B782961B85524800454C7E /* libKinvey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C8DAF91AB8C968007F2E42 /* libKinvey.a */; };
 		57B782A01B8555F900454C7E /* EmptyResponseDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574ABF141B4D817500632B3B /* EmptyResponseDataTests.swift */; };
 		57B782A11B8556C300454C7E /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
@@ -1053,6 +1063,13 @@
 			remoteInfo = Kinvey;
 		};
 		5749268C1B86625500A8B934 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57C8DAF81AB8C968007F2E42;
+			remoteInfo = Kinvey;
+		};
+		57B5CE801B8696070064EB00 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
 			proxyType = 1;
@@ -1412,6 +1429,7 @@
 		5718C8521B7E6EE2008CFE49 /* KCSTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSTestCase.h; sourceTree = "<group>"; };
 		5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSTestCase.m; sourceTree = "<group>"; };
 		571BFF721AF1948C00E91732 /* MLIBZ_260_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_260_Tests.swift; sourceTree = "<group>"; };
+		5720DDF01B86956A00306F57 /* KCSFileStoreMemoryTestsSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSFileStoreMemoryTestsSwift.swift; sourceTree = "<group>"; };
 		5725E6E51AD6E29F00B506BB /* KinveyPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinveyPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5725E6E81AD6E29F00B506BB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5725E6E91AD6E29F00B506BB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1455,6 +1473,7 @@
 		579CFC031AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCodeSnippetTestsObjC.m; sourceTree = "<group>"; };
 		579CFC051AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSCodeSnippetTestsSwift.swift; sourceTree = "<group>"; };
 		579CFC071AC9C05100CC1EDE /* MICTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MICTests.swift; sourceTree = "<group>"; };
+		57B5CE941B8696070064EB00 /* KCSFileStoreMemoryTestsSwift.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KCSFileStoreMemoryTestsSwift.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		57B782901B85524800454C7E /* EmptyResponseDataTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EmptyResponseDataTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		57C8DAF91AB8C968007F2E42 /* libKinvey.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libKinvey.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		57C8DB031AB8C968007F2E42 /* KinveyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinveyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1661,6 +1680,15 @@
 			files = (
 				574926DF1B86625500A8B934 /* libsqlite3.dylib in Frameworks */,
 				574926E01B86625500A8B934 /* libKinvey.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57B5CE861B8696070064EB00 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57B5CE871B8696070064EB00 /* libsqlite3.dylib in Frameworks */,
+				57B5CE881B8696070064EB00 /* libKinvey.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2361,6 +2389,7 @@
 				57405C751B2B9AB600238187 /* MLIBZ_326_Tests.m */,
 				574ABF141B4D817500632B3B /* EmptyResponseDataTests.swift */,
 				572ACA4F1B5027F000C098F7 /* KCSFileStoreTestsSwift.swift */,
+				5720DDF01B86956A00306F57 /* KCSFileStoreMemoryTestsSwift.swift */,
 				579BE41A1B79112F00938988 /* KCSCachedStoreSwiftTests.swift */,
 				579BE41C1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift */,
 				579BE41E1B7950A000938988 /* KCSUserTests.swift */,
@@ -2506,6 +2535,7 @@
 				574926EC1B86625500A8B934 /* KCSCachedStoreTests.xctest */,
 				5740AA661B8667C400F153A2 /* KCSCallbacksInMainThreadTests.xctest */,
 				5740AACA1B866B3700F153A2 /* KCSFileStoreTests.xctest */,
+				57B5CE941B8696070064EB00 /* KCSFileStoreMemoryTestsSwift.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3398,6 +3428,24 @@
 			productReference = 574926EC1B86625500A8B934 /* KCSCachedStoreTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		57B5CE7E1B8696070064EB00 /* KCSFileStoreMemoryTestsSwift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 57B5CE8F1B8696070064EB00 /* Build configuration list for PBXNativeTarget "KCSFileStoreMemoryTestsSwift" */;
+			buildPhases = (
+				57B5CE811B8696070064EB00 /* Sources */,
+				57B5CE861B8696070064EB00 /* Frameworks */,
+				57B5CE891B8696070064EB00 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				57B5CE7F1B8696070064EB00 /* PBXTargetDependency */,
+			);
+			name = KCSFileStoreMemoryTestsSwift;
+			productName = KinveyTests;
+			productReference = 57B5CE941B8696070064EB00 /* KCSFileStoreMemoryTestsSwift.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		57B7828F1B85524800454C7E /* EmptyResponseDataTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57B7829D1B85524800454C7E /* Build configuration list for PBXNativeTarget "EmptyResponseDataTests" */;
@@ -3550,6 +3598,7 @@
 				5749268A1B86625500A8B934 /* KCSCachedStoreTests */,
 				5740AA051B8667C400F153A2 /* KCSCallbacksInMainThreadTests */,
 				5740AA6A1B866B3700F153A2 /* KCSFileStoreTests */,
+				57B5CE7E1B8696070064EB00 /* KCSFileStoreMemoryTestsSwift */,
 				57FF3D881AB9B9C900128BC7 /* KinveyKit iOS Framework */,
 				5725E6E41AD6E29F00B506BB /* KinveyPlayground */,
 				5725E6FA1AD6E2A000B506BB /* KinveyPlaygroundTests */,
@@ -3642,6 +3691,18 @@
 				574926E41B86625500A8B934 /* InfoPlist.strings in Resources */,
 				574926E51B86625500A8B934 /* video.mp4 in Resources */,
 				574926E61B86625500A8B934 /* 1px.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57B5CE891B8696070064EB00 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57B5CE8A1B8696070064EB00 /* TestConfig.plist in Resources */,
+				57B5CE8B1B8696070064EB00 /* mavericks.jpg in Resources */,
+				57B5CE8C1B8696070064EB00 /* InfoPlist.strings in Resources */,
+				57B5CE8D1B8696070064EB00 /* video.mp4 in Resources */,
+				57B5CE8E1B8696070064EB00 /* 1px.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4008,6 +4069,16 @@
 				574926AC1B86625500A8B934 /* KCSTestCase.m in Sources */,
 				574926EE1B8662A000A8B934 /* KCSCachedStoreTests.m in Sources */,
 				574926EF1B8662EE00A8B934 /* TestUtils.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57B5CE811B8696070064EB00 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57B5CE961B8696200064EB00 /* KCSFileStoreMemoryTestsSwift.swift in Sources */,
+				57B5CE841B8696070064EB00 /* KCSTestCase.m in Sources */,
+				57B5CE851B8696070064EB00 /* TestUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4445,6 +4516,11 @@
 			isa = PBXTargetDependency;
 			target = 57C8DAF81AB8C968007F2E42 /* Kinvey */;
 			targetProxy = 5749268C1B86625500A8B934 /* PBXContainerItemProxy */;
+		};
+		57B5CE7F1B8696070064EB00 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57C8DAF81AB8C968007F2E42 /* Kinvey */;
+			targetProxy = 57B5CE801B8696070064EB00 /* PBXContainerItemProxy */;
 		};
 		57B782981B85524800454C7E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5874,6 +5950,175 @@
 			};
 			name = Release;
 		};
+		57B5CE901B8696070064EB00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/include",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = KCSFileStoreMemoryTestsSwift;
+				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		57B5CE911B8696070064EB00 /* DebugForTest */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/include",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = KCSFileStoreMemoryTestsSwift;
+				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = DebugForTest;
+		};
+		57B5CE921B8696070064EB00 /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/include",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = KCSFileStoreMemoryTestsSwift;
+				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = DebugForTest_run_tests;
+		};
+		57B5CE931B8696070064EB00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/include",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = KCSFileStoreMemoryTestsSwift;
+				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
+			};
+			name = Release;
+		};
 		57B782991B85524800454C7E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6748,6 +6993,17 @@
 				574926E91B86625500A8B934 /* DebugForTest */,
 				574926EA1B86625500A8B934 /* DebugForTest_run_tests */,
 				574926EB1B86625500A8B934 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = DebugForTest_run_tests;
+		};
+		57B5CE8F1B8696070064EB00 /* Build configuration list for PBXNativeTarget "KCSFileStoreMemoryTestsSwift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				57B5CE901B8696070064EB00 /* Debug */,
+				57B5CE911B8696070064EB00 /* DebugForTest */,
+				57B5CE921B8696070064EB00 /* DebugForTest_run_tests */,
+				57B5CE931B8696070064EB00 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = DebugForTest_run_tests;
