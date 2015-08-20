@@ -29,7 +29,7 @@
 
 #define KTAssertEqualsInt(x,y, desc) XCTAssertEqual((int)x,(int)y, desc)
 #define KTAssertCount(c, obj) XCTAssertNotNil(obj, @"obj should be non-nil"); XCTAssertEqual((int)[obj count], (int)c, @"count did not match expectation")
-#define KTAssertCountAtLeast(c, obj) XCTAssertTrue( [obj count] >= c, @"count (%i) should be at least (%i)", [obj count], c);
+#define KTAssertCountAtLeast(c, obj) XCTAssertTrue( [obj count] >= c, @"count (%@) should be at least (%@)", @(obj.count), @(c));
 #define KTAssertEqualsDates(date1,date2) XCTAssertTrue([date1 isEqualToDate:date2], @"Dates should match.");
 
 NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse);
