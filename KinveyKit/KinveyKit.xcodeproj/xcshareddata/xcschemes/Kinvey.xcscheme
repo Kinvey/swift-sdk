@@ -198,8 +198,18 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5749268A1B86625500A8B934"
-               BuildableName = "KinveyTests copy.xctest"
+               BuildableName = "KCSCachedStoreTests.xctest"
                BlueprintName = "KCSCachedStoreTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5740AA051B8667C400F153A2"
+               BuildableName = "KCSCallbacksInMainThreadTests.xctest"
+               BlueprintName = "KCSCallbacksInMainThreadTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
