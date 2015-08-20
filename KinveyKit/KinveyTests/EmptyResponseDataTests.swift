@@ -63,7 +63,11 @@ class EmptyResponseDataTests: KCSTestCase {
             expectationLogin?.fulfill()
         })
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationLogin = nil
+        })
+        
+        XCTAssertNotNil(KCSUser.activeUser())
     }
     
     override func tearDown() {
