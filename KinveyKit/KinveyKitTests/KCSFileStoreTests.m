@@ -728,7 +728,7 @@ NSData* testData2()
     __block KCSFile* file;
     [KCSFileStore downloadFile:kTestId options:@{KCSFileFileName : filename} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
-        KTAssertCount(1, downloadedResources);
+        KTAssertCountAtLeast(1, downloadedResources);
         
         if (downloadedResources.count > 0) {
             file = downloadedResources[0];
@@ -784,7 +784,7 @@ NSData* testData2()
     [KCSFileStore downloadFile:@[kTestId, file2Id] options:@{KCSFileFileName : @[filename1, filename2]} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         downloads = downloadedResources;
-        KTAssertCount(2, downloadedResources);
+        KTAssertCountAtLeast(2, downloadedResources);
         
         if (downloadedResources.count > 1) {
             KCSFile* f1 = downloadedResources[0];
