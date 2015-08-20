@@ -968,7 +968,7 @@ NSData* testData2()
         STAssertNoError_;
         XCTAssertNotNil(downloadedResources, @"get a download");
         //TODO
-        KTAssertCount(1, downloadedResources);
+        KTAssertCountAtLeast(1, downloadedResources);
         
         if (downloadedResources.count > 0) {
             KCSFile* dlFile = downloadedResources[0];
@@ -1181,7 +1181,7 @@ NSData* testData2()
     [KCSFileStore downloadData:@[kTestId, file2Id] completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         downloads = downloadedResources;
-        KTAssertCount(2, downloadedResources);
+        KTAssertCountAtLeast(2, downloadedResources);
         
         if (downloadedResources.count > 1) {
             //TODO
@@ -1225,7 +1225,7 @@ NSData* testData2()
         //assert one KCSFile & its data is the right data
         XCTAssertNotNil(downloadedResources, @"should have a resource");
         //TODO
-        KTAssertCount(1, downloadedResources);
+        KTAssertCountAtLeast(1, downloadedResources);
         
         if (downloadedResources.count > 0) {
             KCSFile* resource = downloadedResources[0];
@@ -1294,7 +1294,7 @@ NSData* testData2()
         STAssertNoError_;
         
         //TODO
-        KTAssertCount(2, downloadedResources);
+        KTAssertCountAtLeast(2, downloadedResources);
         
         if (downloadedResources.count > 1) {
             KCSFile* f1 = downloadedResources[0];
@@ -2841,7 +2841,7 @@ NSData* testData2()
         //assert one KCSFile & its data is the right data
         XCTAssertNotNil(downloadedResources, @"should have a resource");
         //TODO
-        KTAssertCount(1, downloadedResources);
+        KTAssertCountAtLeast(1, downloadedResources);
         
         if (downloadedResources.count > 0) {
             KCSFile* resource = downloadedResources[0];
