@@ -1707,7 +1707,7 @@ NSData* testData2()
 
 - (void) testDownloadWithResolvedURLStopAndResumeFromBeginningIfNewer
 {
-    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak __block XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     __block NSString* fileId;
     [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
@@ -1719,12 +1719,14 @@ NSData* testData2()
     } progressBlock:^(NSArray *objects, double percentComplete) {
         XCTAssertTrue([NSThread isMainThread]);
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationUpload = nil;
+    }];
     
     NSURL* downloadURL = [self getDownloadURLForId:fileId];
     
     //start a download and then abort it
-    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSDate* localLMT = nil;
     SETUP_PROGRESS
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
@@ -1753,11 +1755,13 @@ NSData* testData2()
         
         [expectationDownload fulfill];
     } progressBlock:PROGRESS_BLOCK];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDownload = nil;
+    }];
     
     //update the file
     PAUSE
-    __weak XCTestExpectation* expectationUpload2 = [self expectationWithDescription:@"upload2"];
+    __weak __block XCTestExpectation* expectationUpload2 = [self expectationWithDescription:@"upload2"];
     [KCSFileStore uploadFile:[self largeImageURL] options:@{KCSFileId : fileId} completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
         fileId = uploadInfo.fileId;
@@ -1768,10 +1772,12 @@ NSData* testData2()
     } progressBlock:^(NSArray *objects, double percentComplete) {
         XCTAssertTrue([NSThread isMainThread]);
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationUpload2 = nil;
+    }];
     
     //restart the download and make sure it starts over from the beginning
-    __weak XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
+    __weak __block XCTestExpectation* expectationDownload2 = [self expectationWithDescription:@"download2"];
     [KCSFileStore downloadFileWithResolvedURL:downloadURL options:@{KCSFileResume : @(YES), KCSFileOnlyIfNewer : @(YES)} completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
@@ -1799,7 +1805,9 @@ NSData* testData2()
         
         [expectationDownload2 fulfill];
     } progressBlock:PROGRESS_BLOCK];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDownload2 = nil;
+    }];
     //Note: don't ASSERT_PROGRESS becuase progress is going to go 0, .1, .2.. for first download and start back at 0 for second download - no longer monotonically increasing
 }
 
