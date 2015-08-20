@@ -12,6 +12,8 @@ import XCTest
 class MLIBZ_364_Tests: KCSTestCase {
     
     override func setUp() {
+        super.setUp()
+        
         KCSClient.sharedClient().initializeKinveyServiceForAppKey("kid_-k8AUP2hw", withAppSecret: "baf2a70a7fc1497ba00614528be622dd", usingOptions: nil)
     }
 

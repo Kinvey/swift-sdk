@@ -101,8 +101,10 @@
     [test testRemoveByQuery];
     [test testQueryByDate];
     
-    __weak XCTestExpectation *expectationLogVersion = [self expectationWithDescription:@"logVersion"];
+    __weak __block XCTestExpectation *expectationLogVersion = [self expectationWithDescription:@"logVersion"];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        [KCS_DDLog flushLog];
+        
         while (expectationLogVersion && self.logs.count < 1) {
         }
         
@@ -110,8 +112,9 @@
         
         [expectationLogVersion fulfill];
     });
-    [self waitForExpectationsWithTimeout:60 handler:nil];
-    expectationLogVersion = nil;
+    [self waitForExpectationsWithTimeout:60 handler:^(NSError *error) {
+        expectationLogVersion = nil;
+    }];
 }
 
 @end
