@@ -1402,7 +1402,7 @@
 		5743915E1AEE9AD200D55AAF /* KCSTryCatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSTryCatch.h; sourceTree = "<group>"; };
 		5743915F1AEE9AD200D55AAF /* KCSTryCatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSTryCatch.m; sourceTree = "<group>"; };
 		574640281B3E0FA100D17CA0 /* video.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video.mp4; sourceTree = "<group>"; };
-		574926EC1B86625500A8B934 /* KinveyTests copy.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests copy.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		574926EC1B86625500A8B934 /* KCSCachedStoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KCSCachedStoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		574ABF141B4D817500632B3B /* EmptyResponseDataTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyResponseDataTests.swift; sourceTree = "<group>"; };
 		574D8BA21B1641BB00C114A9 /* MLIBZ_322_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_322_Tests.swift; sourceTree = "<group>"; };
 		574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSKinveyTest.m; sourceTree = "<group>"; };
@@ -2452,7 +2452,7 @@
 				5725E6E51AD6E29F00B506BB /* KinveyPlayground.app */,
 				5725E6FB1AD6E2A000B506BB /* KinveyPlaygroundTests.xctest */,
 				57B782901B85524800454C7E /* EmptyResponseDataTests.xctest */,
-				574926EC1B86625500A8B934 /* KinveyTests copy.xctest */,
+				574926EC1B86625500A8B934 /* KCSCachedStoreTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3306,7 +3306,7 @@
 			);
 			name = KCSCachedStoreTests;
 			productName = KinveyTests;
-			productReference = 574926EC1B86625500A8B934 /* KinveyTests copy.xctest */;
+			productReference = 574926EC1B86625500A8B934 /* KCSCachedStoreTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		57B7828F1B85524800454C7E /* EmptyResponseDataTests */ = {
@@ -5257,12 +5257,12 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
-				INFOPLIST_FILE = "KinveyTests-Info.plist";
+				INFOPLIST_FILE = KinveyTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_NAME = "KinveyTests copy";
+				PRODUCT_NAME = KCSCachedStoreTests;
 				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -5300,12 +5300,12 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
-				INFOPLIST_FILE = "KinveyTests-Info.plist";
+				INFOPLIST_FILE = KinveyTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_NAME = "KinveyTests copy";
+				PRODUCT_NAME = KCSCachedStoreTests;
 				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -5343,12 +5343,12 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
-				INFOPLIST_FILE = "KinveyTests-Info.plist";
+				INFOPLIST_FILE = KinveyTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_NAME = "KinveyTests copy";
+				PRODUCT_NAME = KCSCachedStoreTests;
 				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -5384,12 +5384,12 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
-				INFOPLIST_FILE = "KinveyTests-Info.plist";
+				INFOPLIST_FILE = KinveyTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_NAME = "KinveyTests copy";
+				PRODUCT_NAME = KCSCachedStoreTests;
 				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
 			};
 			name = Release;
