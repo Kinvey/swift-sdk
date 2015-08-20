@@ -1615,7 +1615,7 @@ NSData* testData2()
 
 - (void) testDownloadWithResolvedURLStopAndResume
 {
-    __weak XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
+    __weak __block XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     __block NSString* fileId;
     [KCSFileStore uploadFile:[self largeImageURL] options:nil completionBlock:^(KCSFile *uploadInfo, NSError *error) {
         STAssertNoError_;
@@ -1627,7 +1627,9 @@ NSData* testData2()
     } progressBlock:^(NSArray *objects, double percentComplete) {
         XCTAssertTrue([NSThread isMainThread]);
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationUpload = nil;
+    }];
     
     NSURL* downloadURL = [self getDownloadURLForId:fileId];
     
