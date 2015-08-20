@@ -208,6 +208,16 @@
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57B5CE7E1B8696070064EB00"
+               BuildableName = "KCSFileStoreMemoryTestsSwift.xctest"
+               BlueprintName = "KCSFileStoreMemoryTestsSwift"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
