@@ -56,21 +56,6 @@
                   Identifier = "EmptyResponseDataTests">
                </Test>
                <Test
-                  Identifier = "KASTest">
-               </Test>
-               <Test
-                  Identifier = "KCSCachedStoreTests">
-               </Test>
-               <Test
-                  Identifier = "KCSCallbacksInMainThreadTests">
-               </Test>
-               <Test
-                  Identifier = "KCSFileStoreTests">
-               </Test>
-               <Test
-                  Identifier = "KCSFileStoreTestsSwift">
-               </Test>
-               <Test
                   Identifier = "KCSLinkedAppdataStoreTests">
                </Test>
                <Test
