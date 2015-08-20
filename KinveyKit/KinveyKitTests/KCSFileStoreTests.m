@@ -338,7 +338,7 @@ NSData* testData2()
     [KCSFileStore downloadFile:@[kTestId, file2Id] options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
         STAssertNoError_;
         downloads = downloadedResources;
-        KTAssertCount(2, downloadedResources);
+        KTAssertCountAtLeast(2, downloadedResources);
         
         if (downloadedResources.count > 1) {
             KCSFile* f1 = downloadedResources[0];
