@@ -62,9 +62,6 @@
                   Identifier = "KCSOfflineStoreTests">
                </Test>
                <Test
-                  Identifier = "KCSQueryTests">
-               </Test>
-               <Test
                   Identifier = "KCSRequest2Tests">
                </Test>
                <Test
@@ -261,6 +258,16 @@
                BlueprintIdentifier = "575F92551B87A56D006FB6FB"
                BuildableName = "KCSProtocolTestsWrongJsonRootType.xctest"
                BlueprintName = "KCSProtocolTestsWrongJsonRootType"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "575F92711B87AC98006FB6FB"
+               BuildableName = "KCSQueryTests.xctest"
+               BlueprintName = "KCSQueryTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
