@@ -75,6 +75,9 @@ class KCSQueryTests: KCSTestCase {
         weak var expectationRemove = expectationWithDescription("Remove")
         
         let query = KCSQuery(onField: field, withExactMatchForValue: value)
+        if let userId = KCSUser.activeUser()?.userId {
+            query.addQueryOnField("_acl.creator", withExactMatchForValue: userId)
+        }
         store.removeObject(
             query,
             withCompletionBlock: { (count: UInt, error: NSError!) -> Void in
