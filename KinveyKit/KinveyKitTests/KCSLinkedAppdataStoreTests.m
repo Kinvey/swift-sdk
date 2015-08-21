@@ -678,13 +678,12 @@ LinkedTestClass* randomTestClass(NSString* description)
     __block double done = -1;
     
     KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:[KCSCollection collectionFromString:_collection.collectionName ofClass:[ReffedTestClass class]] options:nil];
-    NSString* prefix = [NSString stringWithFormat:@"%s", __PRETTY_FUNCTION__];
     [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         STAssertNoError
         XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
-        ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
-        LinkedTestClass* newRef = [ret.setOfOthers anyObject];
         //TODO
+//        ReffedTestClass* ret = [objectsOrNil objectAtIndex:0];
+//        LinkedTestClass* newRef = [ret.setOfOthers anyObject];
 //        XCTAssertTrue([newRef isKindOfClass:[LinkedTestClass class]], @"Should get a TestClass back");
 //        XCTAssertTrue([newRef.objDescription hasPrefix:prefix], @"Should get our testclass back");
         

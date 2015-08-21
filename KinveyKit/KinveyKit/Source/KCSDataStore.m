@@ -174,7 +174,7 @@
     setIfEmpty(fullOptions, KCSRequestOptionClientMethod, KCSRequestOptionClientMethod);
 
     KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:objectsToSave[0] collection:self.collectionName];
-    NSDictionary* objGraph = [descr objectListFromObjects:objectsToSave];
+    [descr objectListFromObjects:objectsToSave];
     
     //TODO I don't known why this method was not returning anything. Legacy code???
     return nil;

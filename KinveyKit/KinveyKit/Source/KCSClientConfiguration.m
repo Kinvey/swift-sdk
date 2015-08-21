@@ -157,9 +157,10 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 
 + (instancetype)configurationFromPlist:(NSString*)plist
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:plist ofType:@"plist"];
 #if BUILD_FOR_UNIT_TEST
-    path = [[[NSBundle bundleForClass:[self class]] URLForResource:plist withExtension:@"plist"] path];
+    NSString* path = [[[NSBundle bundleForClass:[self class]] URLForResource:plist withExtension:@"plist"] path];
+#else
+    NSString* path = [[NSBundle mainBundle] pathForResource:plist ofType:@"plist"];
 #endif
     NSDictionary *opt = [NSDictionary dictionaryWithContentsOfFile:path];
     

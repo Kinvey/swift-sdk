@@ -184,10 +184,8 @@
 - (KCSQuery *)queryForSearchSubstring:(NSString *)substring inFields:(NSArray *)textFields{
     
     //Kinvey: Built complex query for filter entity which contains string field with substing
-    KCSQuery *query = [KCSQuery query];
-    
-    query = [KCSQuery queryOnField:[textFields firstObject]
-                         withRegex:[self regexForContaintSubstring:substring]];
+    KCSQuery *query = [KCSQuery queryOnField:textFields.firstObject
+                                   withRegex:[self regexForContaintSubstring:substring]];
     
     for (NSInteger i = 1; i < textFields.count; i ++) {
         KCSQuery *fieldQuery = [KCSQuery queryOnField:textFields[i]
