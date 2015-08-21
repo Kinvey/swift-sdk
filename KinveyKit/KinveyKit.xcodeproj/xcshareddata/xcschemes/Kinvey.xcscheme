@@ -224,7 +224,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "57E6B1E61B86A0A300E05C61"
-               BuildableName = "KCSLogTestsAllEnabled copy.xctest"
+               BuildableName = "KCSLogTestsAllDisabled.xctest"
                BlueprintName = "KCSLogTestsAllDisabled"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>

@@ -784,7 +784,7 @@ NSError* createCacheError(NSString* message)
                                                         route:route
                                                       options:@{KCSRequestLogMethod}
                                                   credentials:[KCSUser activeUser]];
-    if (route == KCSRESTRouteAppdata) {
+    if (route == KCSRESTRouteAppdata && collection.collectionName) {
         request.path = @[collection.collectionName, @"_group"];
     } else {
         request.path = @[@"_group"];
