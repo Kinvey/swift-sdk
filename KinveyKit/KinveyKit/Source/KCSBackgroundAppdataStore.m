@@ -149,7 +149,10 @@ return; \
     return  [self storeWithCollection:nil options:options];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 + (instancetype) storeWithAuthHandler: (KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options
+#pragma clang diagnostic pop
 {
     return [self storeWithCollection:nil options:options];
 }
