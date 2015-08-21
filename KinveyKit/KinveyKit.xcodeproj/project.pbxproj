@@ -648,6 +648,7 @@
 		575F92ED1B87B2CF006FB6FB /* ASTTestClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A93B56156AD2D500810B88 /* ASTTestClass.m */; };
 		575F92EE1B87B2EB006FB6FB /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
 		575F92EF1B87C4CB006FB6FB /* MICTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579CFC071AC9C05100CC1EDE /* MICTests.swift */; };
+		576202F41B87CEF5001E2B92 /* MICTestsObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F4256B1AD47B4C00773606 /* MICTestsObjC.m */; };
 		57728FE21ABF22480043E779 /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */; };
 		57728FE31ABF22480043E779 /* KCSMutableOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 57728FE11ABF22480043E779 /* KCSMutableOrderedDictionary.m */; };
 		57728FE41ABF22EB0043E779 /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */; };
@@ -864,7 +865,6 @@
 		57ED03E11ABC63F300D22BBF /* KCSRequestConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 57ED03DE1ABC63F300D22BBF /* KCSRequestConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57ED03E21ABC63F300D22BBF /* KCSRequestConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 57ED03DF1ABC63F300D22BBF /* KCSRequestConfiguration.m */; };
 		57ED03E31ABC63F300D22BBF /* KCSRequestConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 57ED03DF1ABC63F300D22BBF /* KCSRequestConfiguration.m */; };
-		57F4256C1AD47B4C00773606 /* MICTestsObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F4256B1AD47B4C00773606 /* MICTestsObjC.m */; };
 		57F556881AFD6044008CB244 /* MLIBZ_290_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F556871AFD6044008CB244 /* MLIBZ_290_Tests.swift */; };
 		57F5568A1AFD62C3008CB244 /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F556891AFD62C3008CB244 /* City.swift */; };
 		57F62A8C1B30D81F00779A5B /* KCSMICLoginViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 57F62A8A1B30D81F00779A5B /* KCSMICLoginViewController.h */; };
@@ -4691,6 +4691,7 @@
 				575F92EF1B87C4CB006FB6FB /* MICTests.swift in Sources */,
 				575F92EB1B87ADF9006FB6FB /* KCSUserTests.swift in Sources */,
 				575F92D81B87ADD0006FB6FB /* KCSTestCase.m in Sources */,
+				576202F41B87CEF5001E2B92 /* MICTestsObjC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4875,7 +4876,6 @@
 				57F5568A1AFD62C3008CB244 /* City.swift in Sources */,
 				5718C8541B7E6EE2008CFE49 /* KCSTestCase.m in Sources */,
 				5788344B1AB8D25500078CC5 /* LogTests.m in Sources */,
-				57F4256C1AD47B4C00773606 /* MICTestsObjC.m in Sources */,
 				575F926D1B87A953006FB6FB /* KCSQueryBaseTests.swift in Sources */,
 				574D8BA31B1641BB00C114A9 /* MLIBZ_322_Tests.swift in Sources */,
 				578834431AB8D25500078CC5 /* KCSClientShimTests.m in Sources */,
