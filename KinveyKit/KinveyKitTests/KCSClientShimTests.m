@@ -72,10 +72,6 @@
     }
     
     for (NSThread* thread in threads) {
-        thread.qualityOfService = NSQualityOfServiceBackground;
-    }
-    
-    for (NSThread* thread in threads) {
         [thread start];
     }
     
