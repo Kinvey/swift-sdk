@@ -124,12 +124,6 @@
                <Test
                   Identifier = "RequestConfigurationTestsHttpRequestHeaders">
                </Test>
-               <Test
-                  Identifier = "ThreadTests">
-               </Test>
-               <Test
-                  Identifier = "User2Tests">
-               </Test>
             </SkippedTests>
          </TestableReference>
          <TestableReference
@@ -269,6 +263,16 @@
                BlueprintIdentifier = "575F92D41B87ADD0006FB6FB"
                BuildableName = "KCSUserTests.xctest"
                BlueprintName = "KCSUserTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "576202F81B87D25B001E2B92"
+               BuildableName = "KCSThreadTests.xctest"
+               BlueprintName = "KCSThreadTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
