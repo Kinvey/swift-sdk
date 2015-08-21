@@ -571,7 +571,6 @@
 		5725E7181AD6E56B00B506BB /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
 		5736546F1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5736546E1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m */; };
 		573654711AE1851B00E3982B /* MLIBZ_239_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573654701AE1851B00E3982B /* MLIBZ_239_Tests.swift */; };
-		5739EC4D1B1F849E00B6BA91 /* MLIBZ_364_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5739EC4C1B1F849E00B6BA91 /* MLIBZ_364_Tests.swift */; };
 		57405C761B2B9AB600238187 /* MLIBZ_326_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 57405C751B2B9AB600238187 /* MLIBZ_326_Tests.m */; };
 		5740AABD1B866B3700F153A2 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
 		5740AABE1B866B3700F153A2 /* libKinvey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C8DAF91AB8C968007F2E42 /* libKinvey.a */; };
@@ -613,6 +612,7 @@
 		5746AACE1B87E76F00F8DFCE /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 574640281B3E0FA100D17CA0 /* video.mp4 */; };
 		5746AACF1B87E76F00F8DFCE /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		5746AAD71B87E79400F8DFCE /* RequestConfigurationTestsHttpRequestHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576203781B87E511001E2B92 /* RequestConfigurationTestsHttpRequestHeaders.swift */; };
+		5746AAD81B87E8F500F8DFCE /* MLIBZ_364_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5739EC4C1B1F849E00B6BA91 /* MLIBZ_364_Tests.swift */; };
 		574926AC1B86625500A8B934 /* KCSTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */; };
 		574926DF1B86625500A8B934 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
 		574926E01B86625500A8B934 /* libKinvey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C8DAF91AB8C968007F2E42 /* libKinvey.a */; };
@@ -4907,6 +4907,7 @@
 				575F92EF1B87C4CB006FB6FB /* MICTests.swift in Sources */,
 				576202F71B87D027001E2B92 /* LogTester.m in Sources */,
 				575F92EB1B87ADF9006FB6FB /* KCSUserTests.swift in Sources */,
+				5746AAD81B87E8F500F8DFCE /* MLIBZ_364_Tests.swift in Sources */,
 				575F92D81B87ADD0006FB6FB /* KCSTestCase.m in Sources */,
 				576202F41B87CEF5001E2B92 /* MICTestsObjC.m in Sources */,
 				576202F51B87CF89001E2B92 /* User2Tests.m in Sources */,
@@ -5091,7 +5092,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				578834491AB8D25500078CC5 /* KCSRequest2Tests.m in Sources */,
-				5739EC4D1B1F849E00B6BA91 /* MLIBZ_364_Tests.swift in Sources */,
 				5736546F1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m in Sources */,
 				579419141AD35A28001CFF5A /* KeychainTests.m in Sources */,
 				578834321AB8D25500078CC5 /* KinveyKitKeyChainTests.m in Sources */,
