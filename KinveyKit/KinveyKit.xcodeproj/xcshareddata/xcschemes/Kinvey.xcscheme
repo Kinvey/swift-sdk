@@ -59,15 +59,6 @@
                   Identifier = "KCSLinkedAppdataStoreTests">
                </Test>
                <Test
-                  Identifier = "KCSLogTests">
-               </Test>
-               <Test
-                  Identifier = "KCSLogTestsAllDisabled">
-               </Test>
-               <Test
-                  Identifier = "KCSLogTestsAllEnabled">
-               </Test>
-               <Test
                   Identifier = "KCSOfflineStoreTests">
                </Test>
                <Test
