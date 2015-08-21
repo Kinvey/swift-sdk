@@ -71,9 +71,6 @@
                   Identifier = "KCSUserSocialExtrasTest">
                </Test>
                <Test
-                  Identifier = "KCSUserTests">
-               </Test>
-               <Test
                   Identifier = "KinveyAppdataStoreTests">
                </Test>
                <Test
@@ -268,6 +265,16 @@
                BlueprintIdentifier = "575F92711B87AC98006FB6FB"
                BuildableName = "KCSQueryTests.xctest"
                BlueprintName = "KCSQueryTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "575F92D41B87ADD0006FB6FB"
+               BuildableName = "KCSUserTests.xctest"
+               BlueprintName = "KCSUserTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
