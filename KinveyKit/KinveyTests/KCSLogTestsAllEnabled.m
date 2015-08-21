@@ -34,9 +34,9 @@
      }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    KCSQueryTests* test = [[KCSQueryTests alloc] init];
-    [test testRemoveByQuery];
-    [test testQueryByDate];
+    KCSQueryBaseTests* test = [[KCSQueryBaseTests alloc] init];
+    [test removeByQuery];
+    [test queryByDate];
     
     __weak __block XCTestExpectation *expectationLogVersion = [self expectationWithDescription:@"logVersion"];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
