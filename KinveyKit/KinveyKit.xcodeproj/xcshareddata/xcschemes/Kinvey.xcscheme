@@ -77,9 +77,6 @@
                   Identifier = "KinveyKitEntityDictTests">
                </Test>
                <Test
-                  Identifier = "KinveyKitQueryTests">
-               </Test>
-               <Test
                   Identifier = "KinveyKitUserTests">
                </Test>
                <Test

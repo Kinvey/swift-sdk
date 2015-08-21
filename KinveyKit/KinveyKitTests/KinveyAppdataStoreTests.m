@@ -30,6 +30,8 @@
 
 - (void) setUp
 {
+    [super setUp];
+    
     BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"should be set-up");
     
