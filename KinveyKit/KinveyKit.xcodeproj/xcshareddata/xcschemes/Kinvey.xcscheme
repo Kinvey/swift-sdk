@@ -62,9 +62,6 @@
                   Identifier = "KCSOfflineStoreTests">
                </Test>
                <Test
-                  Identifier = "KCSProtocolTestsResponseContentType">
-               </Test>
-               <Test
                   Identifier = "KCSProtocolTestsWrongJsonRootType">
                </Test>
                <Test
@@ -247,6 +244,16 @@
                BlueprintIdentifier = "5718D89C1B87A205004EF225"
                BuildableName = "KCSProtocolTestsKmdMissing.xctest"
                BlueprintName = "KCSProtocolTestsKmdMissing"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5718D8B51B87A326004EF225"
+               BuildableName = "KCSProtocolTestsResponseContentType.xctest"
+               BlueprintName = "KCSProtocolTestsResponseContentType"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
