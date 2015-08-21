@@ -644,7 +644,6 @@
 		575F92E21B87ADD0006FB6FB /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 574640281B3E0FA100D17CA0 /* video.mp4 */; };
 		575F92E31B87ADD0006FB6FB /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		575F92EB1B87ADF9006FB6FB /* KCSUserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579BE41E1B7950A000938988 /* KCSUserTests.swift */; };
-		5760B6E01AD3159D00216DA6 /* KCSQueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760B6DF1AD3159D00216DA6 /* KCSQueryTests.swift */; };
 		57728FE21ABF22480043E779 /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */; };
 		57728FE31ABF22480043E779 /* KCSMutableOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 57728FE11ABF22480043E779 /* KCSMutableOrderedDictionary.m */; };
 		57728FE41ABF22EB0043E779 /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */; };
@@ -4900,7 +4899,6 @@
 				57E4F1111B28E97D0002342E /* MLIBZ_322_ObjC_Tests.m in Sources */,
 				57E40BCA1B20E95C00C37317 /* MLIBZ_371_Tests.m in Sources */,
 				578834381AB8D25500078CC5 /* KinveyKitEntityDictTests.m in Sources */,
-				5760B6E01AD3159D00216DA6 /* KCSQueryTests.swift in Sources */,
 				574391601AEE9AD200D55AAF /* KCSTryCatch.m in Sources */,
 				5788342D1AB8D25500078CC5 /* ASTTestClass.m in Sources */,
 				578834311AB8D25500078CC5 /* KCSReduceFunctionTests.m in Sources */,
