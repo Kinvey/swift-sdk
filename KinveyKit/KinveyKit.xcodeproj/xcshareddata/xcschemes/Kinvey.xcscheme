@@ -62,9 +62,6 @@
                   Identifier = "KCSOfflineStoreTests">
                </Test>
                <Test
-                  Identifier = "KCSProtocolTestsKmdLmtMissing">
-               </Test>
-               <Test
                   Identifier = "KCSProtocolTestsKmdMissing">
                </Test>
                <Test
@@ -233,6 +230,16 @@
                BlueprintIdentifier = "571D72CA1B879167009E9122"
                BuildableName = "KCSProtocolTestsIdNotString.xctest"
                BlueprintName = "KCSProtocolTestsIdNotString"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5718D8811B8795E3004EF225"
+               BuildableName = "KCSProtocolTestsKmdLmtMissing.xctest"
+               BlueprintName = "KCSProtocolTestsKmdLmtMissing"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
