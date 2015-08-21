@@ -48,6 +48,18 @@
 
 #define DISPATCH_ASYNC_MAIN_QUEUE(block) dispatch_async(dispatch_get_main_queue(), ^{ block; })
 
+#define DISPATCH_COMPLETION_BLOCK(completionBlock) \
+{ \
+    KCSCompletionBlock completionBlockOriginal = completionBlock; \
+    completionBlock = ^(NSArray *objectsOrNil, NSError *errorOrNil) { \
+        if (![NSThread isMainThread]) { \
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlockOriginal(objectsOrNil, errorOrNil)); \
+        } else { \
+            completionBlockOriginal(objectsOrNil, errorOrNil); \
+        } \
+    }; \
+}
+
 #define NSTHREAD_IS_MAIN_THREAD NSParameterAssert([NSThread isMainThread])
 #define NSTHREAD_IS_NOT_MAIN_THREAD NSParameterAssert(![NSThread isMainThread])
 

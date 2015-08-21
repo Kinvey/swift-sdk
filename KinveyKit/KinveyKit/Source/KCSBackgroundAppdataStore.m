@@ -1049,6 +1049,8 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 {
     KCSSTORE_VALIDATE_PRECONDITION
     
+    DISPATCH_COMPLETION_BLOCK(completionBlock);
+    
     NSArray* objectsToSave = [NSArray wrapIfNotArray:object];
     NSUInteger totalItemCount = [objectsToSave count];
     
