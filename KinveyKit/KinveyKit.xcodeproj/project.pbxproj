@@ -544,6 +544,15 @@
 		5718D8A91B87A205004EF225 /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 574640281B3E0FA100D17CA0 /* video.mp4 */; };
 		5718D8AA1B87A205004EF225 /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		5718D8B21B87A226004EF225 /* KCSProtocolTestsKmdMissing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5718D89A1B87A173004EF225 /* KCSProtocolTestsKmdMissing.swift */; };
+		5718D8BA1B87A326004EF225 /* KCSTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */; };
+		5718D8BC1B87A326004EF225 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
+		5718D8BD1B87A326004EF225 /* libKinvey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C8DAF91AB8C968007F2E42 /* libKinvey.a */; };
+		5718D8BF1B87A326004EF225 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27BFEC3217C6876100E6605D /* TestConfig.plist */; };
+		5718D8C01B87A326004EF225 /* mavericks.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 271DE7B917728815003541D4 /* mavericks.jpg */; };
+		5718D8C11B87A326004EF225 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D32A60E814716EE300F77A3F /* InfoPlist.strings */; };
+		5718D8C21B87A326004EF225 /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 574640281B3E0FA100D17CA0 /* video.mp4 */; };
+		5718D8C31B87A326004EF225 /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
+		5718D8CB1B87A34A004EF225 /* KCSProtocolTestsResponseContentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5718D8B31B87A2E9004EF225 /* KCSProtocolTestsResponseContentType.swift */; };
 		571BFF731AF1948C00E91732 /* MLIBZ_260_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571BFF721AF1948C00E91732 /* MLIBZ_260_Tests.swift */; };
 		571D731B1B879167009E9122 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
 		571D731C1B879167009E9122 /* libKinvey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C8DAF91AB8C968007F2E42 /* libKinvey.a */; };
@@ -1104,6 +1113,13 @@
 			remoteGlobalIDString = 57C8DAF81AB8C968007F2E42;
 			remoteInfo = Kinvey;
 		};
+		5718D8B71B87A326004EF225 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57C8DAF81AB8C968007F2E42;
+			remoteInfo = Kinvey;
+		};
 		571D72CC1B879167009E9122 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D32A60BC14716EE300F77A3F /* Project object */;
@@ -1516,6 +1532,8 @@
 		5718D8981B87A0A3004EF225 /* KCSProtocolTestsKmdLmtMissing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSProtocolTestsKmdLmtMissing.swift; sourceTree = "<group>"; };
 		5718D89A1B87A173004EF225 /* KCSProtocolTestsKmdMissing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSProtocolTestsKmdMissing.swift; sourceTree = "<group>"; };
 		5718D8B01B87A205004EF225 /* KCSProtocolTestsKmdMissing.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KCSProtocolTestsKmdMissing.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5718D8B31B87A2E9004EF225 /* KCSProtocolTestsResponseContentType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSProtocolTestsResponseContentType.swift; sourceTree = "<group>"; };
+		5718D8C91B87A326004EF225 /* KCSProtocolTestsResponseContentType.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KCSProtocolTestsResponseContentType.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		571BFF721AF1948C00E91732 /* MLIBZ_260_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_260_Tests.swift; sourceTree = "<group>"; };
 		571D72C81B879082009E9122 /* KCSProtocolTestsIdNotString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSProtocolTestsIdNotString.swift; sourceTree = "<group>"; };
 		571D73281B879167009E9122 /* KCSProtocolTestsIdNotString.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KCSProtocolTestsIdNotString.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1745,6 +1763,15 @@
 			files = (
 				5718D8A31B87A205004EF225 /* libsqlite3.dylib in Frameworks */,
 				5718D8A41B87A205004EF225 /* libKinvey.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5718D8BB1B87A326004EF225 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5718D8BC1B87A326004EF225 /* libsqlite3.dylib in Frameworks */,
+				5718D8BD1B87A326004EF225 /* libKinvey.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2447,6 +2474,7 @@
 				571D72C81B879082009E9122 /* KCSProtocolTestsIdNotString.swift */,
 				5718D8981B87A0A3004EF225 /* KCSProtocolTestsKmdLmtMissing.swift */,
 				5718D89A1B87A173004EF225 /* KCSProtocolTestsKmdMissing.swift */,
+				5718D8B31B87A2E9004EF225 /* KCSProtocolTestsResponseContentType.swift */,
 			);
 			name = KCSProtocolTests;
 			sourceTree = "<group>";
@@ -2695,6 +2723,7 @@
 				571D73281B879167009E9122 /* KCSProtocolTestsIdNotString.xctest */,
 				5718D8951B8795E3004EF225 /* KCSProtocolTestsKmdLmtMissing.xctest */,
 				5718D8B01B87A205004EF225 /* KCSProtocolTestsKmdMissing.xctest */,
+				5718D8C91B87A326004EF225 /* KCSProtocolTestsResponseContentType.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3533,6 +3562,24 @@
 			productReference = 5718D8B01B87A205004EF225 /* KCSProtocolTestsKmdMissing.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		5718D8B51B87A326004EF225 /* KCSProtocolTestsResponseContentType */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5718D8C41B87A326004EF225 /* Build configuration list for PBXNativeTarget "KCSProtocolTestsResponseContentType" */;
+			buildPhases = (
+				5718D8B81B87A326004EF225 /* Sources */,
+				5718D8BB1B87A326004EF225 /* Frameworks */,
+				5718D8BE1B87A326004EF225 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5718D8B61B87A326004EF225 /* PBXTargetDependency */,
+			);
+			name = KCSProtocolTestsResponseContentType;
+			productName = KinveyTests;
+			productReference = 5718D8C91B87A326004EF225 /* KCSProtocolTestsResponseContentType.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		571D72CA1B879167009E9122 /* KCSProtocolTestsIdNotString */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 571D73231B879167009E9122 /* Build configuration list for PBXNativeTarget "KCSProtocolTestsIdNotString" */;
@@ -3853,6 +3900,7 @@
 				571D72CA1B879167009E9122 /* KCSProtocolTestsIdNotString */,
 				5718D8811B8795E3004EF225 /* KCSProtocolTestsKmdLmtMissing */,
 				5718D89C1B87A205004EF225 /* KCSProtocolTestsKmdMissing */,
+				5718D8B51B87A326004EF225 /* KCSProtocolTestsResponseContentType */,
 				57FF3D881AB9B9C900128BC7 /* KinveyKit iOS Framework */,
 				5725E6E41AD6E29F00B506BB /* KinveyPlayground */,
 				5725E6FA1AD6E2A000B506BB /* KinveyPlaygroundTests */,
@@ -3914,6 +3962,18 @@
 				5718D8A81B87A205004EF225 /* InfoPlist.strings in Resources */,
 				5718D8A91B87A205004EF225 /* video.mp4 in Resources */,
 				5718D8AA1B87A205004EF225 /* 1px.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5718D8BE1B87A326004EF225 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5718D8BF1B87A326004EF225 /* TestConfig.plist in Resources */,
+				5718D8C01B87A326004EF225 /* mavericks.jpg in Resources */,
+				5718D8C11B87A326004EF225 /* InfoPlist.strings in Resources */,
+				5718D8C21B87A326004EF225 /* video.mp4 in Resources */,
+				5718D8C31B87A326004EF225 /* 1px.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4349,6 +4409,15 @@
 			files = (
 				5718D8B21B87A226004EF225 /* KCSProtocolTestsKmdMissing.swift in Sources */,
 				5718D8A01B87A205004EF225 /* KCSTestCase.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5718D8B81B87A326004EF225 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5718D8CB1B87A34A004EF225 /* KCSProtocolTestsResponseContentType.swift in Sources */,
+				5718D8BA1B87A326004EF225 /* KCSTestCase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4869,6 +4938,11 @@
 			isa = PBXTargetDependency;
 			target = 57C8DAF81AB8C968007F2E42 /* Kinvey */;
 			targetProxy = 5718D89E1B87A205004EF225 /* PBXContainerItemProxy */;
+		};
+		5718D8B61B87A326004EF225 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57C8DAF81AB8C968007F2E42 /* Kinvey */;
+			targetProxy = 5718D8B71B87A326004EF225 /* PBXContainerItemProxy */;
 		};
 		571D72CB1B879167009E9122 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5883,6 +5957,175 @@
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = KCSProtocolTestsKmdMissing;
+				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		5718D8C51B87A326004EF225 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/include",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = KCSProtocolTestsResponseContentType;
+				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		5718D8C61B87A326004EF225 /* DebugForTest */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/include",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = KCSProtocolTestsResponseContentType;
+				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = DebugForTest;
+		};
+		5718D8C71B87A326004EF225 /* DebugForTest_run_tests */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/include",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = KCSProtocolTestsResponseContentType;
+				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = DebugForTest_run_tests;
+		};
+		5718D8C81B87A326004EF225 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "KinveyKit/KinveyKit-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/include",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				INFOPLIST_FILE = KinveyTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = KCSProtocolTestsResponseContentType;
 				SWIFT_OBJC_BRIDGING_HEADER = "KinveyTests/KinveyTests-Bridging-Header.h";
 			};
 			name = Release;
@@ -8193,6 +8436,17 @@
 				5718D8AD1B87A205004EF225 /* DebugForTest */,
 				5718D8AE1B87A205004EF225 /* DebugForTest_run_tests */,
 				5718D8AF1B87A205004EF225 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = DebugForTest_run_tests;
+		};
+		5718D8C41B87A326004EF225 /* Build configuration list for PBXNativeTarget "KCSProtocolTestsResponseContentType" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5718D8C51B87A326004EF225 /* Debug */,
+				5718D8C61B87A326004EF225 /* DebugForTest */,
+				5718D8C71B87A326004EF225 /* DebugForTest_run_tests */,
+				5718D8C81B87A326004EF225 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = DebugForTest_run_tests;
