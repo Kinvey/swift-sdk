@@ -83,9 +83,6 @@
                   Identifier = "KinveyUserDiscoveryTests">
                </Test>
                <Test
-                  Identifier = "MICTests">
-               </Test>
-               <Test
                   Identifier = "MLIBZ_239_Tests">
                </Test>
                <Test
