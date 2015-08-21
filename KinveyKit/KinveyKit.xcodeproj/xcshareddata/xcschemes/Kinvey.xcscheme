@@ -112,18 +112,6 @@
                <Test
                   Identifier = "OfflineTests">
                </Test>
-               <Test
-                  Identifier = "RequestConfigurationTests">
-               </Test>
-               <Test
-                  Identifier = "RequestConfigurationTestsComplexHttpRequestHeaders">
-               </Test>
-               <Test
-                  Identifier = "RequestConfigurationTestsGlobalHttpRequestHeaders">
-               </Test>
-               <Test
-                  Identifier = "RequestConfigurationTestsHttpRequestHeaders">
-               </Test>
             </SkippedTests>
          </TestableReference>
          <TestableReference
@@ -143,16 +131,6 @@
                BlueprintIdentifier = "5749268A1B86625500A8B934"
                BuildableName = "KCSCachedStoreTests.xctest"
                BlueprintName = "KCSCachedStoreTests"
-               ReferencedContainer = "container:KinveyKit.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5740AA051B8667C400F153A2"
-               BuildableName = "KCSCallbacksInMainThreadTests.xctest"
-               BlueprintName = "KCSCallbacksInMainThreadTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -273,6 +251,36 @@
                BlueprintIdentifier = "576202F81B87D25B001E2B92"
                BuildableName = "KCSThreadTests.xctest"
                BlueprintName = "KCSThreadTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5762035B1B87E3CD001E2B92"
+               BuildableName = "RequestConfigurationTestsComplexHttpRequestHeaders.xctest"
+               BlueprintName = "RequestConfigurationTestsComplexHttpRequestHeaders"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5746AAA41B87E68400F8DFCE"
+               BuildableName = "RequestConfigurationTestsGlobalHttpRequestHeaders.xctest"
+               BlueprintName = "RequestConfigurationTestsGlobalHttpRequestHeaders"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5746AABE1B87E76F00F8DFCE"
+               BuildableName = "RequestConfigurationTestsHttpRequestHeaders.xctest"
+               BlueprintName = "RequestConfigurationTestsHttpRequestHeaders"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
