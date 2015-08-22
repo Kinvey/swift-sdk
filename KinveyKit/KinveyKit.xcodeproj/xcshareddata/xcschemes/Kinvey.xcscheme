@@ -86,9 +86,6 @@
                   Identifier = "MLIBZ_239_Tests">
                </Test>
                <Test
-                  Identifier = "MLIBZ_248_Tests">
-               </Test>
-               <Test
                   Identifier = "MLIBZ_256_Tests">
                </Test>
                <Test
@@ -228,6 +225,16 @@
                BlueprintIdentifier = "575F92711B87AC98006FB6FB"
                BuildableName = "KCSQueryTests.xctest"
                BlueprintName = "KCSQueryTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5746AADA1B87F2C200F8DFCE"
+               BuildableName = "KCSQueryTests copy.xctest"
+               BlueprintName = "KCSQueryJsonErrorTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
