@@ -29,8 +29,8 @@
 
 + (void) lookupUsersForFieldsAndValues:(NSDictionary*)fieldMatchDictionary completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
-    DISPATCH_COMPLETION_BLOCK(completionBlock);
-    DISPATCH_PROGRESS_BLOCK(progressBlock);
+    SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             completionBlock(nil, error);

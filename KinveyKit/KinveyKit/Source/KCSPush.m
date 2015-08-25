@@ -221,7 +221,7 @@
 
 - (void) registerDeviceToken:(KCSSuccessBlock)completionBlock
 {
-    DISPATCH_SUCCESS_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_SUCCESS_BLOCK(completionBlock);
     if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == NO) {
         NSString *deviceTokenString = [self deviceTokenString];
         KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
@@ -259,7 +259,7 @@
 
 - (void) unRegisterDeviceToken:(KCSSuccessBlock)completionBlock
 {
-    DISPATCH_SUCCESS_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_SUCCESS_BLOCK(completionBlock);
     if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == YES) {
         
         KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {

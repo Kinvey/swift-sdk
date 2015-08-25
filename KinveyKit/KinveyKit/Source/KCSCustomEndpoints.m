@@ -33,7 +33,7 @@
 {
     NSParameterAssert(endpoint);
     NSParameterAssert(completionBlock);
-    DISPATCH_CUSTOM_ENDPOINT_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_CUSTOM_ENDPOINT_BLOCK(completionBlock);
     if ([KCSUser activeUser] == nil) {
         [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Active User is `nil`. Log-in before calling custom endpoints" userInfo:nil] raise];
     }

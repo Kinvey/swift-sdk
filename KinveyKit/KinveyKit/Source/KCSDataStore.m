@@ -57,14 +57,14 @@
 
 - (void) getAll:(KCSDataStoreCompletion)completion
 {
-    DISPATCH_DATA_STORE_BLOCK(completion);
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_BLOCK(completion);
     [self query:nil options:@{KCSRequestLogMethod} completion:completion];
 }
 
 - (void) query:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion
 {
     NSParameterAssert(completion);
-    DISPATCH_DATA_STORE_BLOCK(completion);
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_BLOCK(completion);
     if (self.collectionName == nil) {
         [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"No collection set in data store" userInfo:nil] raise];
     }
@@ -110,7 +110,7 @@
 #pragma mark - Deletion
 - (id<KCSNetworkOperation>) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
 {
-    DISPATCH_DATA_STORE_COUNT_BLOCK(completion);
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_COUNT_BLOCK(completion);
     if (!_id) {
         NSError* error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"%@ is nil", KCSEntityKeyId]];
         completion(0, error);
@@ -139,7 +139,7 @@
 
 - (id<KCSNetworkOperation>) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
 {
-    DISPATCH_DATA_STORE_COUNT_BLOCK(completion);
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_COUNT_BLOCK(completion);
     if (!query) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"query is nil" userInfo:nil] raise];
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {

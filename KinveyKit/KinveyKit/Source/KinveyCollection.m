@@ -164,8 +164,8 @@ typedef enum KCSCollectionCategory : NSInteger {
 
 - (void)fetchWithQuery:(KCSQuery *)query withCompletionBlock:(KCSCompletionBlock)onCompletion withProgressBlock:(KCSProgressBlock)onProgress
 {
-    DISPATCH_COMPLETION_BLOCK(onCompletion);
-    DISPATCH_PROGRESS_BLOCK(onProgress);
+    SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(onCompletion);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(onProgress);
     [[KCSAppdataStore storeWithCollection:self options:nil] queryWithQuery:query withCompletionBlock:onCompletion withProgressBlock:onProgress];
 }
 
@@ -196,7 +196,7 @@ typedef enum KCSCollectionCategory : NSInteger {
 
 -(void)entityCountWithBlock:(KCSCountBlock)countBlock
 {
-    DISPATCH_COUNT_BLOCK(countBlock);
+    SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(countBlock);
     [[KCSAppdataStore storeWithCollection:self options:nil] countWithBlock:countBlock];
 }
 
