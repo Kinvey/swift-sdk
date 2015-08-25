@@ -31,7 +31,7 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
 
 + (void)pingKinveyWithBlock:(KCSPingBlock2)completion
 {
-    DISPATCH_PING_BLOCK2(completion);
+    SWITCH_TO_MAIN_THREAD_PING_BLOCK2(completion);
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSDictionary* appInfo = nil;
         if (!error) {

@@ -119,8 +119,8 @@ static NSOperationQueue* queue;
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
 {
-    DISPATCH_COMPLETION_BLOCK(completionBlock);
-    DISPATCH_PROGRESS_BLOCK(progressBlock);
+    SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     if (objectID == nil) {
         [[NSException exceptionWithName:NSInvalidArgumentException reason:@"objectId is `nil`." userInfo:nil] raise];
     }
@@ -139,8 +139,8 @@ static NSOperationQueue* queue;
 
 - (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    DISPATCH_COMPLETION_BLOCK(completionBlock);
-    DISPATCH_PROGRESS_BLOCK(progressBlock);
+    SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
@@ -155,8 +155,8 @@ static NSOperationQueue* queue;
 
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
-    DISPATCH_GROUP_COMPLETION_BLOCK(completionBlock);
-    DISPATCH_PROGRESS_BLOCK(progressBlock);
+    SWITCH_TO_MAIN_THREAD_GROUP_COMPLETION_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
@@ -171,15 +171,15 @@ static NSOperationQueue* queue;
 
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
-    DISPATCH_GROUP_COMPLETION_BLOCK(completionBlock);
-    DISPATCH_PROGRESS_BLOCK(progressBlock);
+    SWITCH_TO_MAIN_THREAD_GROUP_COMPLETION_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     [self group:fieldOrFields reduce:function condition:[KCSQuery query] completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 - (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    DISPATCH_COMPLETION_BLOCK(completionBlock);
-    DISPATCH_PROGRESS_BLOCK(progressBlock);
+    SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
@@ -194,8 +194,8 @@ static NSOperationQueue* queue;
 
 - (void) removeObject:(id)object withCompletionBlock:(KCSCountBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    DISPATCH_COUNT_BLOCK(completionBlock);
-    DISPATCH_PROGRESS_BLOCK(progressBlock);
+    SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
@@ -211,13 +211,13 @@ static NSOperationQueue* queue;
 #pragma mark - Information
 - (void)countWithBlock:(KCSCountBlock)countBlock
 {
-    DISPATCH_COUNT_BLOCK(countBlock);
+    SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(countBlock);
     [self countWithQuery:nil completion:countBlock];
 }
 
 - (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock
 {
-    DISPATCH_COUNT_BLOCK(countBlock);
+    SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(countBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{

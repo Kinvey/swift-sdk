@@ -29,7 +29,7 @@
 
 - (void) registerDeviceToken:(KCSSuccessBlock)completionBlock
 {
-    DISPATCH_SUCCESS_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_SUCCESS_BLOCK(completionBlock);
     completionBlock(NO, nil);
 }
 @end
