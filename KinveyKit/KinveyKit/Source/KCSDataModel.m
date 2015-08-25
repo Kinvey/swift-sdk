@@ -35,6 +35,8 @@
     self = [super init];
     if (self) {
         _collectionMap = [NSMutableDictionary dictionary];
+        [self setClass:[KCSUser class]
+         forCollection:KCSUserCollectionName];
     }
     return self;
 }

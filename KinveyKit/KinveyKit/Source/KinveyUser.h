@@ -21,6 +21,7 @@
 #import "KinveyEntity.h"
 #import "KinveyHeaderInfo.h"
 #import "KCSBlockDefs.h"
+#import "KCSUserActionResult.h"
 
 @class KCSCollection;
 @class KCSMetadata;
@@ -28,20 +29,6 @@
 // Need to predefine our classes here
 @class KCSUser;
 @class KCSUserResult;
-
-typedef NS_ENUM(NSInteger, KCSUserActionResult) {
-    KCSUserNoInformation = -1,
-    KCSUserCreated = 1,
-    KCSUserDeleted = 2,
-    KCSUserFound = 3,
-    KCSUSerNotFound = 4,
-    KCSUserInteractionCancel = 5,
-    KCSUserInteractionTimeout = 6
-};
-
-typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result);
-typedef void (^KCSUserSendEmailBlock)(BOOL emailSent, NSError* errorOrNil);
-typedef void (^KCSUserCheckUsernameBlock)(NSString* username, BOOL usernameAlreadyTaken, NSError* error);
 
 /** Social Network login providers supported for log-in
  */

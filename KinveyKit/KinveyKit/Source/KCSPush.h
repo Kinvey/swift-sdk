@@ -20,7 +20,7 @@
 #import <Foundation/Foundation.h>
 
 #import "KinveyHeaderInfo.h"
-
+#import "KCSBlockDefs.h"
 
 /*! Push Service (APNS) Helper Container
 
@@ -66,7 +66,7 @@
  @param completionBlock called when the request to Kinvey completes. If success is YES, then the token was removed.
  @since 1.26.6
  */
-- (void) unRegisterDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
+- (void) unRegisterDeviceToken:(KCSSuccessBlock)completionBlock;
 
 
 /*! Clean-up Push Service

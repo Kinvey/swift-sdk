@@ -27,8 +27,9 @@
     return [[[self class] alloc] init];
 }
 
-- (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock
+- (void) registerDeviceToken:(KCSSuccessBlock)completionBlock
 {
+    DISPATCH_SUCCESS_BLOCK(completionBlock);
     completionBlock(NO, nil);
 }
 @end
