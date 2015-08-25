@@ -57,12 +57,14 @@
 
 - (void) getAll:(KCSDataStoreCompletion)completion
 {
+    DISPATCH_DATA_STORE_BLOCK(completion);
     [self query:nil options:@{KCSRequestLogMethod} completion:completion];
 }
 
 - (void) query:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion
 {
     NSParameterAssert(completion);
+    DISPATCH_DATA_STORE_BLOCK(completion);
     if (self.collectionName == nil) {
         [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"No collection set in data store" userInfo:nil] raise];
     }
@@ -72,16 +74,16 @@
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
-            DISPATCH_ASYNC_MAIN_QUEUE(completion(nil, error));
+            completion(nil, error);
         } else {
             NSArray* elements = [response jsonObjectError:&error];
             if (error) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completion(nil, error));
+                completion(nil, error);
             } else {
                 if ([elements count] == kKCSMaxReturnSize) {
                     KCSLogForcedWarn(KCS_LOG_CONTEXT_DATA, @"Results returned exactly %d items. This is the server limit, so there may more entities that match the query. Try again with a more specific query or use limit and skip modifiers to get all the data.", kKCSMaxReturnSize);
                 }
-                DISPATCH_ASYNC_MAIN_QUEUE(completion(elements, nil));
+                completion(elements, nil);
             }
         }
     }
@@ -108,9 +110,10 @@
 #pragma mark - Deletion
 - (id<KCSNetworkOperation>) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
 {
+    DISPATCH_DATA_STORE_COUNT_BLOCK(completion);
     if (!_id) {
         NSError* error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"%@ is nil", KCSEntityKeyId]];
-        DISPATCH_ASYNC_MAIN_QUEUE(completion(0, error));
+        completion(0, error);
         return nil;
     }
     
@@ -123,7 +126,7 @@
                 count = [responseDict[@"count"] unsignedIntegerValue];
             }
         }
-        DISPATCH_ASYNC_MAIN_QUEUE(completion(count, error));
+        completion(count, error);
     }
                                                         route:self.route
                                                       options:@{KCSRequestLogMethod}
@@ -136,6 +139,7 @@
 
 - (id<KCSNetworkOperation>) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
 {
+    DISPATCH_DATA_STORE_COUNT_BLOCK(completion);
     if (!query) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"query is nil" userInfo:nil] raise];
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
@@ -147,7 +151,7 @@
                 count = [responseDict[@"count"] unsignedIntegerValue];
             }
         }
-        DISPATCH_ASYNC_MAIN_QUEUE(completion(count, error));
+        completion(count, error);
     }
                                                         route:self.route
                                                       options:@{KCSRequestLogMethod}

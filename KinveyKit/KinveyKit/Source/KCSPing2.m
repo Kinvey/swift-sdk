@@ -31,6 +31,7 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
 
 + (void)pingKinveyWithBlock:(KCSPingBlock2)completion
 {
+    DISPATCH_PING_BLOCK2(completion);
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSDictionary* appInfo = nil;
         if (!error) {
@@ -47,7 +48,7 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
                 }
             }
         }
-        DISPATCH_ASYNC_MAIN_QUEUE(completion(appInfo, error));
+        completion(appInfo, error);
     }
                             
                                                         route:KCSRESTRouteAppdata

@@ -119,6 +119,8 @@ static NSOperationQueue* queue;
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
 {
+    DISPATCH_COMPLETION_BLOCK(completionBlock);
+    DISPATCH_PROGRESS_BLOCK(progressBlock);
     if (objectID == nil) {
         [[NSException exceptionWithName:NSInvalidArgumentException reason:@"objectId is `nil`." userInfo:nil] raise];
     }
@@ -127,9 +129,7 @@ static NSOperationQueue* queue;
     @weakify(op);
     op.block = ^{
         [super loadObjectWithID:objectID withCompletionBlock:^(NSArray* obj, NSError* error){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(obj, error);
-            });
+            completionBlock(obj, error);
             @strongify(op);
             op.finished = YES;
         } withProgressBlock:progressBlock];
@@ -139,14 +139,13 @@ static NSOperationQueue* queue;
 
 - (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
-    
+    DISPATCH_COMPLETION_BLOCK(completionBlock);
+    DISPATCH_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
         [super queryWithQuery:query withCompletionBlock:^(NSArray* obj, NSError* error){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(obj, error);
-            });
+            completionBlock(obj, error);
             @strongify(op);
             op.finished = YES;
         } withProgressBlock:progressBlock];
@@ -156,13 +155,13 @@ static NSOperationQueue* queue;
 
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
+    DISPATCH_GROUP_COMPLETION_BLOCK(completionBlock);
+    DISPATCH_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
         [super group:fieldOrFields reduce:function condition:condition completionBlock:^(KCSGroup* valuesOrNil, NSError* errorOrNil){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(valuesOrNil, errorOrNil);
-            });
+            completionBlock(valuesOrNil, errorOrNil);
             @strongify(op);
             op.finished = YES;
         } progressBlock:progressBlock];
@@ -172,16 +171,20 @@ static NSOperationQueue* queue;
 
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
+    DISPATCH_GROUP_COMPLETION_BLOCK(completionBlock);
+    DISPATCH_PROGRESS_BLOCK(progressBlock);
     [self group:fieldOrFields reduce:function condition:[KCSQuery query] completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 - (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    DISPATCH_COMPLETION_BLOCK(completionBlock);
+    DISPATCH_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
         [super saveObject:object withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(objectsOrNil, errorOrNil));
+            completionBlock(objectsOrNil, errorOrNil);
             @strongify(op);
             op.finished = YES;
         } withProgressBlock:progressBlock];
@@ -191,13 +194,13 @@ static NSOperationQueue* queue;
 
 - (void) removeObject:(id)object withCompletionBlock:(KCSCountBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    DISPATCH_COUNT_BLOCK(completionBlock);
+    DISPATCH_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
         [super removeObject:object withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completionBlock(count, errorOrNil);
-            });
+            completionBlock(count, errorOrNil);
             @strongify(op);
             op.finished = YES;
        } withProgressBlock:progressBlock];
@@ -208,18 +211,18 @@ static NSOperationQueue* queue;
 #pragma mark - Information
 - (void)countWithBlock:(KCSCountBlock)countBlock
 {
+    DISPATCH_COUNT_BLOCK(countBlock);
     [self countWithQuery:nil completion:countBlock];
 }
 
 - (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock
 {
+    DISPATCH_COUNT_BLOCK(countBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     @weakify(op);
     op.block = ^{
         [super countWithQuery:query completion:^(unsigned long count, NSError *errorOrNil) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                countBlock(count, errorOrNil);
-            });
+            countBlock(count, errorOrNil);
             @strongify(op);
             op.finished = YES;
       }];

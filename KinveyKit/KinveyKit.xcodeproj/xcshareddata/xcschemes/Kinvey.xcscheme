@@ -233,7 +233,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5746AADA1B87F2C200F8DFCE"
-               BuildableName = "KCSQueryTests copy.xctest"
+               BuildableName = "KCSQueryJsonErrorTests.xctest"
                BlueprintName = "KCSQueryJsonErrorTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>

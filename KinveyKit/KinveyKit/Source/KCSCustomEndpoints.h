@@ -18,6 +18,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "KCSBlockDefs.h"
 
 /**
  Class to wrap Custom Business Logic Endpoints.
@@ -33,6 +34,6 @@
  */
 + (void) callEndpoint:(NSString*)endpoint
                params:(NSDictionary*)params
-      completionBlock:(void (^)(id results, NSError* error))completionBlock;
+      completionBlock:(KCSCustomEndpointBlock)completionBlock;
 
 @end

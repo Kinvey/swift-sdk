@@ -22,5 +22,5 @@
 @interface KCSPush : NSObject
 
 + (instancetype) sharedPush;
-- (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
+- (void) registerDeviceToken:(KCSSuccessBlock)completionBlock;
 @end
