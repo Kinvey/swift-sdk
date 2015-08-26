@@ -102,7 +102,9 @@ static NSOperationQueue* queue;
 {
     [super setUp];
     _count = 0;
-    _d = [NSMutableDictionary dictionary];
+    @synchronized (self) {
+        _d = [NSMutableDictionary dictionary];
+    }
     // Put setup code here; it will be run once, before the first test case.
 }
 
@@ -133,7 +135,9 @@ static NSOperationQueue* queue;
             //            session.delegate = self;
             NSURLSessionDataTask* task = [session dataTaskWithURL:[NSURL URLWithString:@"http://localhost:3000/locations"]];
             if (op) {
-                _d[task] = op;
+                @synchronized (self) {
+                    _d[task] = op;
+                }
             }
             [task resume];
              
@@ -154,7 +158,10 @@ static NSOperationQueue* queue;
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    TestOperation* op = _d[task];
+    TestOperation* op = nil;
+    @synchronized (self) {
+        op = _d[task];
+    }
     op.finished = YES;
     NSLog(@"%@ done", op);
     _count++;

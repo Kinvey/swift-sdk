@@ -42,6 +42,7 @@
 
 + (void)pingKinveyWithBlock: (KCSPingBlock)completionAction
 {
+    SWITCH_TO_MAIN_THREAD_PING_BLOCK(completionAction);
     [KCSPing2 pingKinveyWithBlock:^(NSDictionary *appInfo, NSError *error) {
         BOOL didSucceed = (error == nil || appInfo != nil);
         NSString* description;

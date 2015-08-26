@@ -29,10 +29,11 @@
 
 @implementation KCSCustomEndpoints
 
-+ (void) callEndpoint:(NSString*)endpoint params:(NSDictionary*)params completionBlock:(void (^)(id results, NSError* error))completionBlock
++ (void) callEndpoint:(NSString*)endpoint params:(NSDictionary*)params completionBlock:(KCSCustomEndpointBlock)completionBlock
 {
     NSParameterAssert(endpoint);
     NSParameterAssert(completionBlock);
+    SWITCH_TO_MAIN_THREAD_CUSTOM_ENDPOINT_BLOCK(completionBlock);
     if ([KCSUser activeUser] == nil) {
         [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Active User is `nil`. Log-in before calling custom endpoints" userInfo:nil] raise];
     }
@@ -45,7 +46,7 @@
             } else {
                 jsonObject = [response jsonObjectError:nil];
             }
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(jsonObject, error));
+            completionBlock(jsonObject, error);
         });
     }
                                                         route:KCSRESTRouteRPC

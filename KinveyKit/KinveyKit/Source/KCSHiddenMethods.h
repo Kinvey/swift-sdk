@@ -112,8 +112,8 @@ NSDictionary* defaultBuilders();
 
 #if TARGET_OS_IPHONE
 @interface KCSPush (KCSHiddenMethods)
-- (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
-- (void) unRegisterDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
+- (void) registerDeviceToken:(KCSSuccessBlock)completionBlock;
+- (void) unRegisterDeviceToken:(KCSSuccessBlock)completionBlock;
 @property (nonatomic, retain) id deviceToken;
 @end
 #endif
