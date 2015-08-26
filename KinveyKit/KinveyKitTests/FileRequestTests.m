@@ -65,7 +65,7 @@
          NSNumber* fileOnDiskSize = d[NSFileSize];
          XCTAssertEqual(bytes, (long)kImageSize, @"bytes downloaded should match");
          XCTAssertEqual(bytes, [fileOnDiskSize longValue], @"bytes should also match");
-         XCTAssertTrue([NSThread isMainThread]);
+         XCTAssertFalse([NSThread isMainThread]);
          
          [expectationDownload fulfill];
      } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext)

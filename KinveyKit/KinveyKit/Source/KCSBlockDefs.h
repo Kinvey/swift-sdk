@@ -20,6 +20,9 @@
 #ifndef KinveyKit_KCSBlockDefs_h
 #define KinveyKit_KCSBlockDefs_h
 
+#import "KCSUserActionResult.h"
+
+@class KCSUser;
 @class KCSGroup;
 
 typedef void(^KCSCompletionBlock)(NSArray *objectsOrNil, NSError *errorOrNil);
@@ -37,5 +40,17 @@ typedef void(^KCSProgressBlock)(NSArray *objects, double percentComplete);
 typedef void(^KCSCountBlock)(unsigned long count, NSError *errorOrNil);
 
 typedef void(^KCSGroupCompletionBlock)(KCSGroup* valuesOrNil, NSError* errorOrNil);
+
+typedef void(^KCSSuccessBlock)(BOOL success, NSError* error);
+
+typedef void (^KCSUserCompletionBlock)(KCSUser* user, NSError* errorOrNil, KCSUserActionResult result);
+typedef void (^KCSUserSendEmailBlock)(BOOL emailSent, NSError* errorOrNil);
+typedef void (^KCSUserCheckUsernameBlock)(NSString* username, BOOL usernameAlreadyTaken, NSError* error);
+
+/** Completion block for `getAccessDictionaryFromTwitterFromPrimaryAccount:` returns either the access dictionary to pass to `+[KCSUser loginWithWithSocialIdentity:accessDictionary:withCompletionBlock]` or an error.
+ */
+typedef void (^KCSLocalCredentialBlock)(NSDictionary* accessDictOrNil, NSError* errorOrNil);
+
+typedef void (^KCSCustomEndpointBlock)(id results, NSError* error);
 
 #endif

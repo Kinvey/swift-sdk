@@ -219,8 +219,9 @@
     return deviceToken;
 }
 
-- (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock
+- (void) registerDeviceToken:(KCSSuccessBlock)completionBlock
 {
+    SWITCH_TO_MAIN_THREAD_SUCCESS_BLOCK(completionBlock);
     if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == NO) {
         NSString *deviceTokenString = [self deviceTokenString];
         KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
@@ -228,14 +229,14 @@
                 KCSLogError(@"Device token did not register");
                 
                 if (completionBlock) {
-                    DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(NO, error));
+                    completionBlock(NO, error);
                 }
             } else {
                 KCSLogDebug(@"Device token registered");
                 [[KCSUser activeUser].deviceTokens addObject:deviceTokenString];
                 
                 if (completionBlock) {
-                    DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(YES, nil));
+                    completionBlock(YES, nil);
                 }
             }
         }
@@ -251,13 +252,14 @@
         [request start];
     } else {
         if (completionBlock) {
-            DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(NO, nil));
+            completionBlock(NO, nil);
         }
     }
 }
 
-- (void) unRegisterDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock
+- (void) unRegisterDeviceToken:(KCSSuccessBlock)completionBlock
 {
+    SWITCH_TO_MAIN_THREAD_SUCCESS_BLOCK(completionBlock);
     if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == YES) {
         
         KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
@@ -272,7 +274,7 @@
                 self.deviceToken = nil;
             }
             if (completionBlock) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(error == nil, error));
+                completionBlock(error == nil, error);
             }
 
         }
@@ -289,7 +291,7 @@
         
     } else {
         self.deviceToken = nil;
-        DISPATCH_ASYNC_MAIN_QUEUE(completionBlock(NO, nil));
+        completionBlock(NO, nil);
     }
 }
 
