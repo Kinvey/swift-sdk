@@ -55,6 +55,8 @@
  */
 + (void) getAccessDictionaryFromTwitterFromTwitterAccounts:(KCSLocalCredentialBlock)completionBlock accountChooseBlock:(ACAccount* (^)(NSArray* twitterAccounts))chooseBlock;
 
++(KCSRequest*)requestGetAccessDictionaryFromTwitterFromTwitterAccounts:(KCSLocalCredentialBlock)completionBlock accountChooseBlock:(ACAccount* (^)(NSArray* twitterAccounts))chooseBlock;
+
 
 /** Calls LinkedIn to obtain a user's auth token. You have to specify `KCS_LINKEDIN_API_KEY`, `KCS_LINKEDIN_SECRET_KEY`,  `KCS_LINKEDIN_ACCEPT_REDIRECT`, and `KCS_LINKEDIN_CANCEL_REDIRECT` in the `KCSClient` set-up. A web view is needed in order to display LinkedIn's sign-in page. A user must enter LinkedIn credentials and press "Allow access". If the user cancels or the system is unable to verify the app credentials, the process will fail.
  

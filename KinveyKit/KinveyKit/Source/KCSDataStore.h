@@ -17,6 +17,7 @@
 //
 
 #import "KinveyDataStore.h"
+#import "KCSRequest.h"
 
 typedef void(^KCSDataStoreCompletion)(NSArray* objects, NSError* error);
 typedef void(^KCSDataStoreCountCompletion)(NSUInteger count, NSError* error);
@@ -29,13 +30,17 @@ typedef void(^KCSDataStoreCountCompletion)(NSUInteger count, NSError* error);
 - (instancetype)initWithCollection:(NSString*)collection;
 
 - (void) getAll:(KCSDataStoreCompletion)completion;
+-(KCSRequest*)requestGetAll:(KCSDataStoreCompletion)completion;
 - (void) countAll:(KCSDataStoreCountCompletion)completion;
 
 - (void) query:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion; //todo return response object
+-(KCSRequest*)requestQuery:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion; //todo return response object
 - (void) countQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion;
 
 //TODO: KK2(base methods should be void, advanced should have the op return)
 - (id<KCSNetworkOperation>) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion;
+-(KCSRequest*)requestDeleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion;
 - (id<KCSNetworkOperation>) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion;
+-(KCSRequest*)requestDeleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion;
 
 @end

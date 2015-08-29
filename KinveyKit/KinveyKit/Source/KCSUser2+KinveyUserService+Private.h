@@ -14,6 +14,9 @@ extern NSString* const kKCSMICRedirectURIKey;
 
 @interface KCSUser2 ()
 
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                            isLoginPage:(BOOL)isLoginPage;
+
 +(void)oAuthTokenWithRefreshToken:(NSString*)refreshToken
                       redirectURI:(NSString*)redirectURI
                              sync:(BOOL)sync

@@ -20,6 +20,7 @@
 
 #import "KCSPing2.h"
 #import "KinveyCoreInternal.h"
+#import "KCSRequest+Private.h"
 
 KCS_CONST_IMPL KCS_PING_KINVEY_VERSION = @"kinveyVersion";
 KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
@@ -30,6 +31,11 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
 @implementation KCSPing2
 
 + (void)pingKinveyWithBlock:(KCSPingBlock2)completion
+{
+    [self requestPingKinveyWithBlock:completion];
+}
+
++(KCSRequest *)requestPingKinveyWithBlock:(KCSPingBlock2)completion
 {
     SWITCH_TO_MAIN_THREAD_PING_BLOCK2(completion);
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
@@ -55,7 +61,7 @@ KCS_CONST_IMPL KCS_PING_APP_NAME = @"appName";
                                                       options:@{KCSRequestLogMethod}
                                                   credentials:[KCSClient2 sharedClient]];
     request.path = @[@""];
-    [request start];
+    return [KCSRequest requestWithNetworkOperation:[request start]];
 }
 
 @end

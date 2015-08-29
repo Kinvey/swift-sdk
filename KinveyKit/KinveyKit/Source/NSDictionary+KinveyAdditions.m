@@ -79,4 +79,17 @@
     }];
     return d;
 }
+
+-(NSString *)queryString
+{
+    NSMutableString* result = [NSMutableString string];
+    for (NSString* key in self.allKeys) {
+        [result appendFormat:@"%@=%@&", [NSString stringByPercentEncodingString:key], [NSString stringByPercentEncodingString:self[key]]];
+    }
+    if (result.length > 0) {
+        [result deleteCharactersInRange:NSMakeRange(result.length - 1, 1)];
+    }
+    return result;
+}
+
 @end

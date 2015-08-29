@@ -25,11 +25,20 @@
 #import "KCSRequest2.h"
 #import "KCS_SBJson.h"
 #import "KCSNetworkResponse.h"
-
+#import "KCSRequest+Private.h"
 
 @implementation KCSCustomEndpoints
 
 + (void) callEndpoint:(NSString*)endpoint params:(NSDictionary*)params completionBlock:(KCSCustomEndpointBlock)completionBlock
+{
+    [self requestCallEndpoint:endpoint
+                       params:params
+              completionBlock:completionBlock];
+}
+
++(KCSRequest *)requestCallEndpoint:(NSString *)endpoint
+                            params:(NSDictionary *)params
+                   completionBlock:(KCSCustomEndpointBlock)completionBlock
 {
     NSParameterAssert(endpoint);
     NSParameterAssert(completionBlock);
@@ -64,8 +73,7 @@
     }
     
     request.body = params;
-    [request start];
+    return [KCSRequest requestWithNetworkOperation:[request start]];
 }
-
 
 @end

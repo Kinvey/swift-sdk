@@ -21,6 +21,7 @@
 #import "KCSQuery.h"
 #import "KinveyHeaderInfo.h"
 #import "KCSRequestConfiguration.h"
+#import "KCSRequest.h"
 
 // Forward decl
 @class KCSAuthHandler;
@@ -135,6 +136,11 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
  withCompletionBlock:(KCSCompletionBlock)completionBlock
    withProgressBlock:(KCSProgressBlock)progressBlock;
 
+-(KCSRequest*)requestSaveObject:(id)object
+           requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+            withCompletionBlock:(KCSCompletionBlock)completionBlock
+              withProgressBlock:(KCSProgressBlock)progressBlock;
+
 #pragma mark - Querying/Fetching
 ///---------------------------------------------------------------------------------------
 /// @name Querying/Fetching
@@ -153,6 +159,10 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
    withCompletionBlock:(KCSCompletionBlock)completionBlock
      withProgressBlock:(KCSProgressBlock)progressBlock;
 
+-(KCSRequest*)requestQueryWithQuery:(id)query
+                withCompletionBlock:(KCSCompletionBlock)completionBlock
+                  withProgressBlock:(KCSProgressBlock)progressBlock;
+
 /*! Query or fetch an object (or objects) in the store.
  
  This method takes a query object and calls the store to provide an array of objects that satisfies the query.
@@ -167,6 +177,11 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
    withCompletionBlock:(KCSCompletionBlock)completionBlock
      withProgressBlock:(KCSProgressBlock)progressBlock;
+
+-(KCSRequest*)requestQueryWithQuery:(id)query
+               requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                withCompletionBlock:(KCSCompletionBlock)completionBlock
+                  withProgressBlock:(KCSProgressBlock)progressBlock;
 
 #pragma mark - Removing
 ///---------------------------------------------------------------------------------------
