@@ -25,5 +25,6 @@
 - (NSString*) escapedJSON;
 - (NSString*)jsonString;
 - (NSDictionary*) invert;
+-(NSString*)queryString;
 
 @end

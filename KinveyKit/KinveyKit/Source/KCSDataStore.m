@@ -22,6 +22,7 @@
 
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
+#import "KCSRequest+Private.h"
 
 #define kKCSMaxReturnSize 10000
 
@@ -57,11 +58,22 @@
 
 - (void) getAll:(KCSDataStoreCompletion)completion
 {
-    SWITCH_TO_MAIN_THREAD_DATA_STORE_BLOCK(completion);
     [self query:nil options:@{KCSRequestLogMethod} completion:completion];
 }
 
+-(KCSRequest *)requestGetAll:(KCSDataStoreCompletion)completion
+{
+    return [self requestQuery:nil options:@{KCSRequestLogMethod} completion:completion];
+}
+
 - (void) query:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion
+{
+    [self requestQuery:query
+               options:options
+            completion:completion];
+}
+
+-(KCSRequest *)requestQuery:(KCSQuery2 *)query options:(NSDictionary *)options completion:(KCSDataStoreCompletion)completion
 {
     NSParameterAssert(completion);
     SWITCH_TO_MAIN_THREAD_DATA_STORE_BLOCK(completion);
@@ -92,7 +104,7 @@
                                                   credentials:[KCSUser activeUser]];
     request.path = @[_collectionName];
     request.queryString = [query escapedQueryString];
-    [request start];
+    return [KCSRequest requestWithNetworkOperation:[request start]];
 }
 
 #pragma mark - Count
@@ -108,6 +120,14 @@
 }
 
 #pragma mark - Deletion
+
+-(KCSRequest *)requestDeleteEntity:(NSString *)_id completion:(KCSDataStoreCountCompletion)completion
+{
+    id<KCSNetworkOperation> networkOperation = [self deleteEntity:_id
+                                                       completion:completion];
+    return [KCSRequest requestWithNetworkOperation:networkOperation];
+}
+
 - (id<KCSNetworkOperation>) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
 {
     SWITCH_TO_MAIN_THREAD_DATA_STORE_COUNT_BLOCK(completion);
@@ -133,8 +153,14 @@
                                                   credentials:[KCSUser activeUser]];
     request.path = @[self.collectionName, _id];
     request.method = KCSRESTMethodDELETE;
-    id<KCSNetworkOperation> op = [request start];
-    return op;
+    return [request start];
+}
+
+-(KCSRequest *)requestDeleteByQuery:(KCSQuery2 *)query completion:(KCSDataStoreCountCompletion)completion
+{
+    id<KCSNetworkOperation> networkOperation = [self deleteByQuery:query
+                                                        completion:completion];
+    return [KCSRequest requestWithNetworkOperation:networkOperation];
 }
 
 - (id<KCSNetworkOperation>) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
@@ -159,8 +185,7 @@
     request.path = @[self.collectionName];
     request.queryString = [query escapedQueryString];
     request.method = KCSRESTMethodDELETE;
-    id<KCSNetworkOperation> op = [request start];
-    return op;
+    return [request start];
 }
 
 #pragma mark - Save

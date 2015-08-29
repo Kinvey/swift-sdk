@@ -18,6 +18,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KCSBlockDefs.h"
+#import "KCSRequest.h"
 
 /**
  This class is for adding features that allow the current user to discover other users of the application */
@@ -32,5 +33,9 @@
  @see KCSUser
  */
 + (void) lookupUsersForFieldsAndValues:(NSDictionary*)fieldMatchDictionary completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
++(KCSRequest*)requestLookupUsersForFieldsAndValues:(NSDictionary*)fieldMatchDictionary
+                                   completionBlock:(KCSCompletionBlock)completionBlock
+                                     progressBlock:(KCSProgressBlock)progressBlock;
 
 @end

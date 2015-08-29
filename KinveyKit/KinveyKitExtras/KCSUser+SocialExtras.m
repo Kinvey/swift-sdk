@@ -28,6 +28,7 @@
 #import "KCSLinkedInHelper.h"
 #import "KinveyCoreInternal.h"
 #import "KinveySocialInternal.h"
+#import "KCSRequest+Private.h"
 
 @implementation KCSUser (SocialExtras)
 
@@ -56,6 +57,12 @@
 }
 
 + (void) getAccessDictionaryFromTwitterFromTwitterAccounts:(KCSLocalCredentialBlock)completionBlock accountChooseBlock:(ACAccount* (^)(NSArray* twitterAccounts))chooseBlock
+{
+    [self requestGetAccessDictionaryFromTwitterFromTwitterAccounts:completionBlock
+                                                accountChooseBlock:chooseBlock];
+}
+
++(KCSRequest *)requestGetAccessDictionaryFromTwitterFromTwitterAccounts:(KCSLocalCredentialBlock)completionBlock accountChooseBlock:(ACAccount *(^)(NSArray *))chooseBlock
 {
     //  Check to make sure that the user has added his credentials
     BOOL hasKeys = [self checkForTwitterKeys];
@@ -147,7 +154,7 @@
                 }];
             }
         };
-        [request start];
+        return [KCSRequest requestWithNetworkOperation:[request start]];
     } else {
         NSDictionary* info;
         NSString* description;
@@ -160,6 +167,7 @@
         }
         NSError* error = [KCSErrorUtilities createError:info description:description errorCode:KCSDeniedError domain:KCSUserErrorDomain requestId:nil];
         completionBlock(nil, error);
+        return nil;
     }
 }
 

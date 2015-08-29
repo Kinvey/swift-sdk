@@ -121,7 +121,7 @@
     
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     
-    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     
     [store deleteEntity:_id completion:^(NSUInteger count, NSError *error) {
         KTAssertNoError;
@@ -131,7 +131,43 @@
         [expectationDelete fulfill];
     }];
     
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDelete = nil;
+    }];
+    
+    id obj = [self getEntity:_id shouldExist:NO];
+    XCTAssertNil(obj, @"object should be gone");
+}
+
+- (void) testDeleteCancel
+{
+    NSString* _id = [self createEntity];
+    
+    KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
+    
+    __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    
+    KCSRequest* request = [store requestDeleteEntity:_id completion:^(NSUInteger count, NSError *error) {
+        KTAssertNoError;
+        KTAssertEqualsInt(count, 1);
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationDelete fulfill];
+    }];
+    
+    XCTAssertFalse(request.isCancelled);
+    
+    request.cancellationBlock = ^{
+        [expectationDelete fulfill];
+    };
+    
+    [request cancel];
+    
+    XCTAssertTrue(request.isCancelled);
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDelete = nil;
+    }];
     
     id obj = [self getEntity:_id shouldExist:NO];
     XCTAssertNil(obj, @"object should be gone");
@@ -144,7 +180,7 @@
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:_id];
     
-    __weak XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     
     [store deleteByQuery:[KCSQuery2 queryWithQuery1:query] completion:^(NSUInteger count, NSError *error) {
         KTAssertNoError;
@@ -154,7 +190,44 @@
         [expectationDelete fulfill];
     }];
     
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDelete = nil;
+    }];
+    
+    id obj = [self getEntity:_id shouldExist:NO];
+    XCTAssertNil(obj, @"object should be gone");
+}
+
+- (void) testDeleteByQueryCancel
+{
+    NSString* _id = [self createEntity];
+    
+    KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
+    KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId withExactMatchForValue:_id];
+    
+    __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
+    
+    KCSRequest* request = [store requestDeleteByQuery:[KCSQuery2 queryWithQuery1:query] completion:^(NSUInteger count, NSError *error) {
+        KTAssertNoError;
+        KTAssertEqualsInt(count, 1);
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationDelete fulfill];
+    }];
+    
+    XCTAssertFalse(request.isCancelled);
+    
+    request.cancellationBlock = ^{
+        [expectationDelete fulfill];
+    };
+    
+    [request cancel];
+    
+    XCTAssertTrue(request.isCancelled);
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDelete = nil;
+    }];
     
     id obj = [self getEntity:_id shouldExist:NO];
     XCTAssertNil(obj, @"object should be gone");

@@ -1,5 +1,5 @@
 //
-//  KCSNetworkOperation.h
+//  KCSRequest2.h
 //  KinveyKit
 //
 //  Copyright (c) 2013-2014 Kinvey. All rights reserved.
@@ -16,23 +16,15 @@
 // contents is a violation of applicable laws.
 //
 
+#import "KCSRequest2.h"
 
-#import <Foundation/Foundation.h>
+@interface KCSRequest2 ()
 
-#import "KCSNetworkDefs.h"
-
-@class KCSNetworkResponse;
-
-@protocol KCSNetworkOperation <NSObject>
-
-- (instancetype) initWithRequest:(NSURLRequest*)request;
-- (KCSNetworkResponse*)response;
-- (NSError*)error;
--(void)cancel;
-
-@property (atomic) NSUInteger retryCount;
-@property (nonatomic, copy) NSString* clientRequestId;
-@property (nonatomic, copy) KCSRequestProgressBlock progressBlock;
-@property (readonly, getter=isCancelled) BOOL cancelled;
+@property (nonatomic) BOOL useMock;
+@property (nonatomic, copy) KCSRequestCompletionBlock completionBlock;
+@property (nonatomic, copy) NSString* contentType;
+@property (nonatomic, weak) id<KCSCredentials> credentials;
+@property (nonatomic, retain) NSString* route;
+@property (nonatomic, copy) NSDictionary* options;
 
 @end

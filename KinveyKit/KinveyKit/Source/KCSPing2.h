@@ -19,6 +19,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KinveyCore.h"
+#import "KCSRequest.h"
 
 KCS_CONSTANT KCS_PING_KINVEY_VERSION;
 KCS_CONSTANT KCS_PING_APP_NAME;
@@ -38,5 +39,6 @@ typedef void(^KCSPingBlock2)(NSDictionary* appInfo, NSError* error);
  @param completionAction The callback to perform on completion.
  */
 + (void)pingKinveyWithBlock:(KCSPingBlock2)completion;
++(KCSRequest*)requestPingKinveyWithBlock:(KCSPingBlock2)completion;
 
 @end
