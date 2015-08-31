@@ -456,6 +456,17 @@ return x; \
     completionBlock(obj, error);
 }
 
+-(void)loadObjectWithID:(id)objectID
+    withCompletionBlock:(KCSCompletionBlock)completionBlock
+      withProgressBlock:(KCSProgressBlock)progressBlock
+            cachePolicy:(KCSCachePolicy)cachePolicy
+{
+    [self requestLoadObjectWithID:objectID
+              withCompletionBlock:completionBlock
+                withProgressBlock:progressBlock
+                      cachePolicy:cachePolicy];
+}
+
 -(KCSRequest*)requestLoadObjectWithID:(id)objectID
                   withCompletionBlock:(KCSCompletionBlock)completionBlock
                     withProgressBlock:(KCSProgressBlock)progressBlock
@@ -741,6 +752,17 @@ NSError* createCacheError(NSString* message)
                    withCompletionBlock:completionBlock
                      withProgressBlock:progressBlock
                            cachePolicy:self.cachePolicy];
+}
+
+-(void)queryWithQuery:(id)query
+  withCompletionBlock:(KCSCompletionBlock)completionBlock
+    withProgressBlock:(KCSProgressBlock)progressBlock
+          cachePolicy:(KCSCachePolicy)cachePolicy
+{
+    [self requestQueryWithQuery:query
+            withCompletionBlock:completionBlock
+              withProgressBlock:progressBlock
+                    cachePolicy:cachePolicy];
 }
 
 -(KCSRequest*)requestQueryWithQuery:(id)query
