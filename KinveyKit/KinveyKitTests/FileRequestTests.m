@@ -40,11 +40,6 @@
     [self setupKCS:YES];
 }
 
-- (void)tearDown
-{
-    [super tearDown];
-}
-
 - (void)testDownloadStream
 {
     KCSFileRequest* f = [[KCSFileRequest alloc] init];

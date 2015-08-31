@@ -119,6 +119,10 @@ KCS_DEPRECATED(use [KCSQuery query] instead, 1.26.0)
 withCompletionBlock:(KCSCompletionBlock)completionBlock
   withProgressBlock:(KCSProgressBlock)progressBlock;
 
+-(KCSRequest*)requestSaveObject:(id)object
+            withCompletionBlock:(KCSCompletionBlock)completionBlock
+              withProgressBlock:(KCSProgressBlock)progressBlock;
+
 /*! Add or update an object (or objects) in the store.
  
  This is the basic method to add or update objects in a Kinvey Store.  Specific stores may
@@ -200,6 +204,10 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
  withCompletionBlock:(KCSCountBlock)completionBlock
    withProgressBlock:(KCSProgressBlock)progressBlock;
 
+-(KCSRequest*)requestRemoveObject:(id)object
+              withCompletionBlock:(KCSCountBlock)completionBlock
+                withProgressBlock:(KCSProgressBlock)progressBlock;
+
 /*! Remove an object (or objects) from the store.
  
  @param object An object (or query) to remove from the store (if the object is a NSArray or query, matching objects will be removed)
@@ -213,6 +221,11 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
  withCompletionBlock:(KCSCountBlock)completionBlock
    withProgressBlock:(KCSProgressBlock)progressBlock;
+
+-(KCSRequest*)requestRemoveObject:(id)object
+             requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+              withCompletionBlock:(KCSCountBlock)completionBlock
+                withProgressBlock:(KCSProgressBlock)progressBlock;
 
 
 #pragma mark -

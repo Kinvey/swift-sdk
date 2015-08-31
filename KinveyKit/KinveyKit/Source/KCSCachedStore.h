@@ -89,6 +89,11 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
        withProgressBlock:(KCSProgressBlock)progressBlock
              cachePolicy:(KCSCachePolicy)cachePolicy;
 
+-(KCSRequest*)requestLoadObjectWithID:(id)objectID
+                  withCompletionBlock:(KCSCompletionBlock)completionBlock
+                    withProgressBlock:(KCSProgressBlock)progressBlock
+                          cachePolicy:(KCSCachePolicy)cachePolicy;
+
 /** Query or fetch an object (or objects) in the store (optional cache policy).
  
  This method takes a query object and returns the value from the server or cache, depending on the supplied `cachePolicy`. 
@@ -101,6 +106,8 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
  @param cachePolicy the policy for to use for this query only. 
  */
 - (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
+
+-(KCSRequest*)requestQueryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
 
 /*! Aggregate objects in the store and apply a function to all members in that group (optional cache policy).
  
@@ -115,6 +122,8 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
  @see [KCSAppdataStore group:reduce:condition:completionBlock:progressBlock:]
  */
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
+
+-(KCSRequest*)requestGroup:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
 
 ///---------------------------------------------------------------------------------------
 /// @name Bulk Data Operations
