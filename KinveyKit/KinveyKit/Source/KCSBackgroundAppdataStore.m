@@ -906,9 +906,17 @@ NSError* createCacheError(NSString* message)
 
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
 {
+    [self requestGroup:fieldOrFields
+                reduce:function
+       completionBlock:completionBlock
+         progressBlock:progressBlock];
+}
+
+-(KCSRequest *)requestGroup:(id)fieldOrFields reduce:(KCSReduceFunction *)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+{
     SWITCH_TO_MAIN_THREAD_GROUP_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
-    [self group:fieldOrFields reduce:function condition:[KCSQuery query] completionBlock:completionBlock progressBlock:progressBlock];
+    return [self requestGroup:fieldOrFields reduce:function condition:[KCSQuery query] completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 - (void) cacheGrouping:(NSArray*)fields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition results:(KCSGroup*)objectsOrNil error:(NSError*)errorOrNil policy:(KCSCachePolicy)cachePolicy
@@ -1190,12 +1198,21 @@ andResaveAfterReferencesSaved:^{
 withCompletionBlock:(KCSCompletionBlock)completionBlock
   withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    [self requestSaveObject:object
+        withCompletionBlock:completionBlock
+          withProgressBlock:progressBlock];
+}
+
+-(KCSRequest *)requestSaveObject:(id)object
+             withCompletionBlock:(KCSCompletionBlock)completionBlock
+               withProgressBlock:(KCSProgressBlock)progressBlock
+{
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
-    [self saveObject:object
-requestConfiguration:nil
- withCompletionBlock:completionBlock
-   withProgressBlock:progressBlock];
+    return [self requestSaveObject:object
+              requestConfiguration:nil
+               withCompletionBlock:completionBlock
+                 withProgressBlock:progressBlock];
 }
 
 - (void)  saveObject:(id)object
@@ -1282,12 +1299,21 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
   withCompletionBlock:(KCSCountBlock)completionBlock
     withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    [self requestRemoveObject:object
+          withCompletionBlock:completionBlock
+            withProgressBlock:progressBlock];
+}
+
+-(KCSRequest*)requestRemoveObject:(id)object
+              withCompletionBlock:(KCSCountBlock)completionBlock
+                withProgressBlock:(KCSProgressBlock)progressBlock
+{
     SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
-    [self removeObject:object
-  requestConfiguration:nil
-   withCompletionBlock:completionBlock
-     withProgressBlock:progressBlock];
+    return [self requestRemoveObject:object
+                requestConfiguration:nil
+                 withCompletionBlock:completionBlock
+                   withProgressBlock:progressBlock];
 }
 
 -(void) removeObject:(id)object
@@ -1295,13 +1321,24 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
  withCompletionBlock:(KCSCountBlock)completionBlock
    withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    [self requestRemoveObject:object
+         requestConfiguration:requestConfiguration
+          withCompletionBlock:completionBlock
+            withProgressBlock:progressBlock];
+}
+
+-(KCSRequest *)requestRemoveObject:(id)object
+              requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+               withCompletionBlock:(KCSCountBlock)completionBlock
+                 withProgressBlock:(KCSProgressBlock)progressBlock
+{
     SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:^(id objs, NSError *error) {
         completionBlock(0, error);
     }];
     if (okayToProceed == NO) {
-        return;
+        return nil;
     }
     
     if ([object isKindOfClass:[NSArray class]]) {
@@ -1309,7 +1346,7 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
         NSArray* objects = object;
         if (objects.count == 0) {
             completionBlock(0, nil);
-            return;
+            return nil;
         }
         if ([objects.firstObject isKindOfClass:[NSString class]]) {
             //input is _id array
@@ -1373,14 +1410,19 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
             progressBlock(nil, progress);
         };
     }
-    
+    return [KCSRequest requestWithNetworkOperation:op];
 }
 
 #pragma mark - Information
 - (void)countWithBlock:(KCSCountBlock)countBlock
 {
+    [self requestCountWithBlock:countBlock];
+}
+
+-(KCSRequest *)requestCountWithBlock:(KCSCountBlock)countBlock
+{
     SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(countBlock);
-    [self countWithQuery:nil completion:countBlock];
+    return [self requestCountWithQuery:nil completion:countBlock];
 }
 
 - (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock

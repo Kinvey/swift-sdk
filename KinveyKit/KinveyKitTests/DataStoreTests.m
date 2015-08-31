@@ -39,12 +39,6 @@
     self.collection = @"DataStoreTests";
 }
 
-- (void)tearDown
-{
-    // Put teardown code here; it will be run once, after the last test case.
-    [super tearDown];
-}
-
 - (void) testBasic
 {
     NSString* _id = [self createEntity];
@@ -169,8 +163,8 @@
         expectationDelete = nil;
     }];
     
-    id obj = [self getEntity:_id shouldExist:NO];
-    XCTAssertNil(obj, @"object should be gone");
+    id obj = [self getEntity:_id shouldExist:YES];
+    XCTAssertNotNil(obj, @"object should be gone");
 }
 
 - (void) testDeleteByQuery
@@ -229,8 +223,8 @@
         expectationDelete = nil;
     }];
     
-    id obj = [self getEntity:_id shouldExist:NO];
-    XCTAssertNil(obj, @"object should be gone");
+    id obj = [self getEntity:_id shouldExist:YES];
+    XCTAssertNotNil(obj, @"object should be gone");
 }
 
 @end

@@ -101,6 +101,10 @@
      withCompletionBlock: (KCSCompletionBlock)completionBlock
        withProgressBlock: (KCSProgressBlock)progressBlock;
 
+-(KCSRequest*)requestLoadObjectWithID:(id)objectID
+                  withCompletionBlock:(KCSCompletionBlock)completionBlock
+                    withProgressBlock:(KCSProgressBlock)progressBlock;
+
 /*! Aggregate objects in the store and apply a function to all members in that group.
  
  This method will find the objects in the store, collect them with other other objects that have the same value for the specified fields, and then apply the supplied function on those objects. Right now the types of functions that can be applied are simple mathematical operations. See KCSReduceFunction for more information on the types of functions available.
@@ -114,6 +118,8 @@
  @see KCSReduceFunction
  */
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction*)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
+-(KCSRequest*)requestGroup:(id)fieldOrFields reduce:(KCSReduceFunction*)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
 /*! Aggregate objects in the store and apply a function to all members in that group that satisfy the condition.
  
@@ -130,6 +136,8 @@
  */
 - (void) group:(id)fieldOrFields reduce:(KCSReduceFunction*)function condition:(KCSQuery*)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
+-(KCSRequest*)requestGroup:(id)fieldOrFields reduce:(KCSReduceFunction*)function condition:(KCSQuery*)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
 
 #pragma mark -  Information
 /** Count all the elements the collection
@@ -138,6 +146,8 @@
  @see countWithQuery:completion:
  */
 - (void)countWithBlock: (KCSCountBlock)countBlock;
+
+-(KCSRequest*)requestCountWithBlock: (KCSCountBlock)countBlock;
 
 /** Count all the elements the collection that match a given query.
  
@@ -148,4 +158,7 @@
  @since 1.15.0
  */
 - (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock;
+
+-(KCSRequest*)requestCountWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock;
+
 @end
