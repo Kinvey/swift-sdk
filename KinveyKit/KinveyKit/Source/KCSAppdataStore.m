@@ -58,18 +58,9 @@ static NSOperationQueue* queue;
     return [super storeWithCollection:collection authHandler:authHandler withOptions:options];
 }
 
-- (void)loadObjectWithID: (id)objectID
-     withCompletionBlock: (KCSCompletionBlock)completionBlock
-       withProgressBlock: (KCSProgressBlock)progressBlock;
-{
-    [self requestLoadObjectWithID:objectID
-              withCompletionBlock:completionBlock
-                withProgressBlock:progressBlock];
-}
-
--(KCSRequest *)requestLoadObjectWithID:(id)objectID
-                   withCompletionBlock:(KCSCompletionBlock)completionBlock
-                     withProgressBlock:(KCSProgressBlock)progressBlock
+-(KCSRequest*)loadObjectWithID:(id)objectID
+           withCompletionBlock:(KCSCompletionBlock)completionBlock
+             withProgressBlock:(KCSProgressBlock)progressBlock;
 {
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
@@ -81,7 +72,7 @@ static NSOperationQueue* queue;
     KCSDataStoreOperationRequest* request = [KCSDataStoreOperationRequest requestWithDataStoreOperation:op];
     @weakify(op);
     op.block = ^{
-        request.request = [super requestLoadObjectWithID:objectID withCompletionBlock:^(NSArray* obj, NSError* error) {
+        request.request = [super loadObjectWithID:objectID withCompletionBlock:^(NSArray* obj, NSError* error) {
             completionBlock(obj, error);
             @strongify(op);
             op.finished = YES;
@@ -91,14 +82,9 @@ static NSOperationQueue* queue;
     return request;
 }
 
-- (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
-{
-    [self requestQueryWithQuery:query
-            withCompletionBlock:completionBlock
-              withProgressBlock:progressBlock];
-}
-
--(KCSRequest*)requestQueryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+-(KCSRequest*)queryWithQuery:(id)query
+         withCompletionBlock:(KCSCompletionBlock)completionBlock
+           withProgressBlock:(KCSProgressBlock)progressBlock
 {
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
@@ -106,7 +92,7 @@ static NSOperationQueue* queue;
     KCSDataStoreOperationRequest* request = [KCSDataStoreOperationRequest requestWithDataStoreOperation:op];
     @weakify(op);
     op.block = ^{
-        request.request = [super requestQueryWithQuery:query withCompletionBlock:^(NSArray* obj, NSError* error){
+        request.request = [super queryWithQuery:query withCompletionBlock:^(NSArray* obj, NSError* error){
             completionBlock(obj, error);
             @strongify(op);
             op.finished = YES;
@@ -116,16 +102,11 @@ static NSOperationQueue* queue;
     return request;
 }
 
-- (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestGroup:fieldOrFields
-                reduce:function
-             condition:condition
-       completionBlock:completionBlock
-         progressBlock:progressBlock];
-}
-
--(KCSRequest*)requestGroup:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+-(KCSRequest*)group:(id)fieldOrFields
+             reduce:(KCSReduceFunction *)function
+          condition:(KCSQuery *)condition
+    completionBlock:(KCSGroupCompletionBlock)completionBlock
+      progressBlock:(KCSProgressBlock)progressBlock
 {
     SWITCH_TO_MAIN_THREAD_GROUP_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
@@ -133,7 +114,11 @@ static NSOperationQueue* queue;
     KCSDataStoreOperationRequest* request = [KCSDataStoreOperationRequest requestWithDataStoreOperation:op];
     @weakify(op);
     op.block = ^{
-        request.request = [super requestGroup:fieldOrFields reduce:function condition:condition completionBlock:^(KCSGroup* valuesOrNil, NSError* errorOrNil) {
+        request.request = [super group:fieldOrFields
+                                reduce:function
+                             condition:condition
+                       completionBlock:^(KCSGroup* valuesOrNil, NSError* errorOrNil)
+        {
             completionBlock(valuesOrNil, errorOrNil);
             @strongify(op);
             op.finished = YES;
@@ -143,29 +128,23 @@ static NSOperationQueue* queue;
     return request;
 }
 
-- (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
+-(KCSRequest*)group:(id)fieldOrFields
+             reduce:(KCSReduceFunction *)function
+    completionBlock:(KCSGroupCompletionBlock)completionBlock
+      progressBlock:(KCSProgressBlock)progressBlock
 {
-    [self requestGroup:fieldOrFields
+    SWITCH_TO_MAIN_THREAD_GROUP_COMPLETION_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
+    return [self group:fieldOrFields
                 reduce:function
+             condition:[KCSQuery query]
        completionBlock:completionBlock
          progressBlock:progressBlock];
 }
 
--(KCSRequest *)requestGroup:(id)fieldOrFields reduce:(KCSReduceFunction *)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    SWITCH_TO_MAIN_THREAD_GROUP_COMPLETION_BLOCK(completionBlock);
-    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
-    return [self requestGroup:fieldOrFields reduce:function condition:[KCSQuery query] completionBlock:completionBlock progressBlock:progressBlock];
-}
-
-- (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestSaveObject:object
-        withCompletionBlock:completionBlock
-          withProgressBlock:progressBlock];
-}
-
--(KCSRequest*)requestSaveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+-(KCSRequest*)saveObject:(id)object
+     withCompletionBlock:(KCSCompletionBlock)completionBlock
+       withProgressBlock:(KCSProgressBlock)progressBlock
 {
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
@@ -173,7 +152,9 @@ static NSOperationQueue* queue;
     KCSDataStoreOperationRequest* request = [KCSDataStoreOperationRequest requestWithDataStoreOperation:op];
     @weakify(op);
     op.block = ^{
-        request.request = [super requestSaveObject:object withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        request.request = [super saveObject:object
+                        withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+        {
             completionBlock(objectsOrNil, errorOrNil);
             @strongify(op);
             op.finished = YES;
@@ -183,14 +164,9 @@ static NSOperationQueue* queue;
     return request;
 }
 
-- (void) removeObject:(id)object withCompletionBlock:(KCSCountBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestRemoveObject:object
-          withCompletionBlock:completionBlock
-            withProgressBlock:progressBlock];
-}
-
--(KCSRequest*)requestRemoveObject:(id)object withCompletionBlock:(KCSCountBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+-(KCSRequest*)removeObject:(id)object
+       withCompletionBlock:(KCSCountBlock)completionBlock
+         withProgressBlock:(KCSProgressBlock)progressBlock
 {
     SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
@@ -198,7 +174,7 @@ static NSOperationQueue* queue;
     KCSDataStoreOperationRequest* request = [KCSDataStoreOperationRequest requestWithDataStoreOperation:op];
     @weakify(op);
     op.block = ^{
-        request.request = [super requestRemoveObject:object withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
+        request.request = [super removeObject:object withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
             completionBlock(count, errorOrNil);
             @strongify(op);
             op.finished = YES;
@@ -209,35 +185,28 @@ static NSOperationQueue* queue;
 }
 
 #pragma mark - Information
-- (void)countWithBlock:(KCSCountBlock)countBlock
-{
-    [self requestCountWithBlock:countBlock];
-}
-
--(KCSRequest *)requestCountWithBlock:(KCSCountBlock)countBlock
+-(KCSRequest*)countWithBlock:(KCSCountBlock)countBlock
 {
     SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(countBlock);
-    return [self requestCountWithQuery:nil completion:countBlock];
-}
-
-- (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock
-{
-    [self requestCountWithQuery:query
+    return [self countWithQuery:nil
                      completion:countBlock];
 }
 
--(KCSRequest *)requestCountWithQuery:(KCSQuery *)query completion:(KCSCountBlock)countBlock
+-(KCSRequest*)countWithQuery:(KCSQuery*)query
+                  completion:(KCSCountBlock)countBlock
 {
     SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(countBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
     KCSDataStoreOperationRequest* request = [KCSDataStoreOperationRequest requestWithDataStoreOperation:op];
     @weakify(op);
     op.block = ^{
-        request.request = [super requestCountWithQuery:query completion:^(unsigned long count, NSError *errorOrNil) {
+        request.request = [super countWithQuery:query
+                                     completion:^(unsigned long count, NSError *errorOrNil)
+        {
             countBlock(count, errorOrNil);
             @strongify(op);
             op.finished = YES;
-      }];
+        }];
     };
     [queue addOperation:op];
     return request;

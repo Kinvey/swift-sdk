@@ -360,7 +360,8 @@ static float pollTime;
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     __weak XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
-    [store removeObject:obj[KCSEntityKeyId] withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
+    [store removeObject:obj[KCSEntityKeyId]
+    withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError
         KTAssertEqualsInt(count, 1, @"Should delete one");
         XCTAssertTrue([NSThread isMainThread]);

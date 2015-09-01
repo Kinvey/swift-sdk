@@ -527,9 +527,13 @@ KCSFile* fileFromResults(NSDictionary* results)
             query.ttlModifier = ttl;
         }
 #endif
-        return [store requestQueryWithQuery:query withCompletionBlock:completionBlock withProgressBlock:nil];
+        return [store queryWithQuery:query
+                 withCompletionBlock:completionBlock
+                   withProgressBlock:nil];
     } else {
-        return [store requestLoadObjectWithID:fileId withCompletionBlock:completionBlock withProgressBlock:nil];
+        return [store loadObjectWithID:fileId
+                   withCompletionBlock:completionBlock
+                     withProgressBlock:nil];
     }
 }
 
@@ -651,7 +655,8 @@ KCSFile* fileFromResults(NSDictionary* results)
     NSParameterAssert(completionBlock != nil);
     
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
-    return [store requestQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    return [store queryWithQuery:query
+             withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
             NSError* fileError = [KCSErrorUtilities createError:nil
                                                     description:[NSString stringWithFormat:@"Error downloading file(S), query='%@'", [query description]]
@@ -794,7 +799,8 @@ KCSFile* fileFromResults(NSDictionary* results)
     SWITCH_TO_MAIN_THREAD_FILE_DOWNLOAD_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
-    return [store requestQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    return [store queryWithQuery:query
+             withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
             NSError* fileError = [KCSErrorUtilities createError:nil
                                                     description:[NSString stringWithFormat:@"Error downloading file(S), query='%@'", [query description]]
@@ -1069,7 +1075,8 @@ KCSFile* fileFromResults(NSDictionary* results)
 
     KCSQuery* nameQuery = [KCSQuery queryOnField:KCSFileFileName withExactMatchForValue:fileName];
     KCSAppdataStore* store = [KCSAppdataStore storeWithCollection:[KCSCollection fileMetadataCollection] options:nil];
-    return [store requestQueryWithQuery:nameQuery withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    return [store queryWithQuery:nameQuery
+             withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
             completionBlock(nil, errorOrNil);
         } else {

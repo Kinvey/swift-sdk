@@ -94,12 +94,7 @@ void setActive(KCSUser* user)
     [KCSUser2 clearSavedCredentials];
 }
 
-- (void) refreshFromServer:(KCSCompletionBlock)completionBlock
-{
-    [self requestRefreshFromServer:completionBlock];
-}
-
--(KCSRequest *)requestRefreshFromServer:(KCSCompletionBlock)completionBlock
+-(KCSRequest*)refreshFromServer:(KCSCompletionBlock)completionBlock
 {
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     return [KCSUser2 requestRefreshUser:(id)self options:nil completion:^(id<KCSUser2> user, NSError *error) {
@@ -351,12 +346,7 @@ void setActive(KCSUser* user)
     }
 }
 
-- (void) removeWithCompletionBlock:(KCSCompletionBlock)completionBlock
-{
-    [self requestRemoveWithCompletionBlock:completionBlock];
-}
-
--(KCSRequest *)requestRemoveWithCompletionBlock:(KCSCompletionBlock)completionBlock
+-(KCSRequest*)removeWithCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     return [KCSUser2 requestDeleteUser:(id)self options:nil completion:^(unsigned long count, NSError *errorOrNil) {
@@ -364,12 +354,7 @@ void setActive(KCSUser* user)
     }];
 }
 
-- (void) saveWithCompletionBlock:(KCSCompletionBlock)completionBlock
-{
-    [self requestSaveWithCompletionBlock:completionBlock];
-}
-
--(KCSRequest *)requestSaveWithCompletionBlock:(KCSCompletionBlock)completionBlock
+-(KCSRequest*)saveWithCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     return [KCSUser2 requestSaveUser:(id)self options:nil completion:^(id<KCSUser2> user, NSError *error) {
@@ -531,13 +516,8 @@ void setActive(KCSUser* user)
     return _push[kDeviceTokensKey];
 }
 
-- (void) changePassword:(NSString*)newPassword completionBlock:(KCSCompletionBlock)completionBlock
-{
-    [self requestChangePassword:newPassword
-                completionBlock:completionBlock];
-}
-
--(KCSRequest *)requestChangePassword:(NSString *)newPassword completionBlock:(KCSCompletionBlock)completionBlock
+-(KCSRequest*)changePassword:(NSString*)newPassword
+             completionBlock:(KCSCompletionBlock)completionBlock
 {
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     return [KCSUser2 requestChangePasswordForUser:(id)self password:newPassword completion:^(id<KCSUser2> user, NSError *error) {

@@ -377,7 +377,9 @@ static NSString* _collectionName;
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     __weak __block XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
-    KCSRequest* request = [store requestLoadObjectWithID:obj.objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+    KCSRequest* request = [store loadObjectWithID:obj.objId
+                              withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+    {
         XCTFail();
         
         [expectationLoad fulfill];

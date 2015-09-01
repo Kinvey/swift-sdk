@@ -141,7 +141,9 @@
     
     __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     
-    KCSRequest* request = [store requestDeleteEntity:_id completion:^(NSUInteger count, NSError *error) {
+    KCSRequest* request = [store deleteEntity:_id
+                                   completion:^(NSUInteger count, NSError *error)
+    {
         KTAssertNoError;
         KTAssertEqualsInt(count, 1);
         XCTAssertTrue([NSThread isMainThread]);
@@ -201,7 +203,9 @@
     
     __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
     
-    KCSRequest* request = [store requestDeleteByQuery:[KCSQuery2 queryWithQuery1:query] completion:^(NSUInteger count, NSError *error) {
+    KCSRequest* request = [store deleteByQuery:[KCSQuery2 queryWithQuery1:query]
+                                    completion:^(NSUInteger count, NSError *error)
+    {
         KTAssertNoError;
         KTAssertEqualsInt(count, 1);
         XCTAssertTrue([NSThread isMainThread]);
