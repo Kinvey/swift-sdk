@@ -166,6 +166,12 @@
                   Identifier = "KCSFileStoreTests/testGetByFilenamesCancel">
                </Test>
                <Test
+                  Identifier = "KCSFileStoreTests/testStreamingBasic">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testStreamingByName">
+               </Test>
+               <Test
                   Identifier = "KCSFileStoreTestsSwift/testDownloadByName()">
                </Test>
             </SkippedTests>
