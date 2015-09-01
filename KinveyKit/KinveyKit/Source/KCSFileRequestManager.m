@@ -54,6 +54,8 @@ static NSOperationQueue* queue;
                                  completionBlock:(StreamCompletionBlock)completionBlock
                                    progressBlock:(KCSProgressBlock2)progressBlock
 {
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK2(progressBlock);
+    
     //    self.completionBlock = completionBlock;
 
 //    NSError* error = nil;
