@@ -30,7 +30,7 @@
 #import "KCSFile.h"
 #import "KCSClientConfiguration.h"
 #import "KCSObjectCache.h"
-#import "KCSFileRequest.h"
+#import "KCSFileRequestManager.h"
 #import "KCSRequest2.h"
 
 #if TARGET_OS_IPHONE
@@ -80,7 +80,7 @@ NSDictionary* defaultBuilders();
 +(void)cancelAndWaitUntilAllOperationsAreFinished;
 @end
 
-@interface KCSFileRequest (KCSHiddenMethods)
+@interface KCSFileRequestManager (KCSHiddenMethods)
 +(void)cancelAndWaitUntilAllOperationsAreFinished;
 @end
 
