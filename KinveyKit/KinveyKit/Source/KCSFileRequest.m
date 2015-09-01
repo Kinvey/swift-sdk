@@ -68,7 +68,7 @@
 
 -(BOOL)isCancelled
 {
-    return self.fileOperation.isCancelled || self.networkOperation.isCancelled;
+    return [super isCancelled] || self.fileOperation.isCancelled || self.networkOperation.isCancelled;
 }
 
 -(void)cancel
