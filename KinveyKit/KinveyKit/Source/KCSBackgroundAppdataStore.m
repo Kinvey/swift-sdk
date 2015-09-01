@@ -444,7 +444,7 @@ return x; \
                     [self completeLoad:objs withCompletionBlock:completionBlock];
                 } else {
                     [self cacheObjects:objectIDs results:objectsOrNil error:errorOrNil policy:cachePolicy];
-                    completionBlock(objectsOrNil, errorOrNil);
+                    if (completionBlock) completionBlock(objectsOrNil, errorOrNil);
                 }
             }
                          withProgressBlock:progressBlock];
@@ -453,7 +453,7 @@ return x; \
 - (void) completeLoad:(id)obj withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     NSError* error = (obj == nil) ? createCacheError(@"Load query not in cache" ) : nil;
-    completionBlock(obj, error);
+    if (completionBlock) completionBlock(obj, error);
 }
 
 -(void)loadObjectWithID:(id)objectID
@@ -674,7 +674,7 @@ NSError* createCacheError(NSString* message)
 - (void) completeQuery:(NSArray*)objs withCompletionBlock:(KCSCompletionBlock)completionBlock
 {
     NSError* error = (objs == nil) ? createCacheError(@"Query not in cache") : nil;
-    completionBlock(objs, error);
+    if (completionBlock) completionBlock(objs, error);
 }
 
 -(KCSRequest*)requestQueryWithQuery:(id)query
@@ -945,7 +945,7 @@ NSError* createCacheError(NSString* message)
                 completionBlock:^(KCSGroup *valuesOrNil, NSError *errorOrNil)
             {
                 [self cacheGrouping:fields reduce:function condition:condition results:valuesOrNil error:errorOrNil policy:cachePolicy ];
-                completionBlock(valuesOrNil, errorOrNil);
+                if (completionBlock) completionBlock(valuesOrNil, errorOrNil);
             }
                   progressBlock:progressBlock];
 }
@@ -953,7 +953,7 @@ NSError* createCacheError(NSString* message)
 - (void) completeGroup:(id)obj withCompletionBlock:(KCSGroupCompletionBlock)completionBlock
 {
     NSError* error = (obj == nil) ? createCacheError(@"Grouping query not in cache") : nil;
-    completionBlock(obj, error);
+    if (completionBlock) completionBlock(obj, error);
 }
 
 -(KCSRequest*)requestGroup:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy
@@ -1241,7 +1241,7 @@ requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
     
     if (totalItemCount == 0) {
         //TODO: does this need an error?
-        completionBlock(@[], nil);
+        if (completionBlock) completionBlock(@[], nil);
     }
     
     __block int completedItemCount = 0;
@@ -1335,7 +1335,7 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
     SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:^(id objs, NSError *error) {
-        completionBlock(0, error);
+        if (completionBlock) completionBlock(0, error);
     }];
     if (okayToProceed == NO) {
         return nil;
@@ -1345,7 +1345,7 @@ requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
         //input is an array
         NSArray* objects = object;
         if (objects.count == 0) {
-            completionBlock(0, nil);
+            if (completionBlock) completionBlock(0, nil);
             return nil;
         }
         if ([objects.firstObject isKindOfClass:[NSString class]]) {

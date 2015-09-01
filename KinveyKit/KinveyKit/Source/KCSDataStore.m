@@ -130,12 +130,12 @@
 
 - (id<KCSNetworkOperation>) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
 {
-    SWITCH_TO_MAIN_THREAD_DATA_STORE_COUNT_BLOCK(completion);
     if (!_id) {
         NSError* error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"%@ is nil", KCSEntityKeyId]];
         completion(0, error);
         return nil;
     }
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_COUNT_BLOCK(completion);
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSUInteger count = 0;

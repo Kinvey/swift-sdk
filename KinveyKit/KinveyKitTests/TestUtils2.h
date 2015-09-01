@@ -42,6 +42,12 @@
 #define KTPollStart self.done = NO; XCTAssertTrue([self poll], @"polling timed out");
 #define KTPollNoAssert self.done = NO; [self poll];
 
+#define XCTAssertTrueWait(condition, seconds) \
+{ \
+    NSDate* now = [NSDate date]; \
+    while (!condition && [now timeIntervalSinceNow] > -seconds); \
+    XCTAssertTrue(condition); \
+}
 
 @protocol KCSCredentials;
 id<KCSCredentials> mockCredentails();
