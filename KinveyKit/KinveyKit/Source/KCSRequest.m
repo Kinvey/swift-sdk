@@ -27,20 +27,25 @@
 
 -(BOOL)isCancelled
 {
-    return self.networkOperation.isCancelled;
+    @synchronized(self) {
+        return self._cancelled || self.networkOperation.isCancelled;
+    }
 }
 
 -(void)cancel
 {
-    self.networkOperation.completionBlock = nil;
-    [self.networkOperation cancel];
-    if (self.cancellationBlock) {
-        if ([NSThread isMainThread]) {
-            self.cancellationBlock();
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
+    @synchronized(self) {
+        self.networkOperation.completionBlock = nil;
+        [self.networkOperation cancel];
+        self._cancelled = YES;
+        if (self.cancellationBlock) {
+            if ([NSThread isMainThread]) {
                 self.cancellationBlock();
-            });
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.cancellationBlock();
+                });
+            }
         }
     }
 }

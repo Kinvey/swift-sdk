@@ -8,12 +8,6 @@
 
 #import "KCSDataStoreOperationRequest.h"
 
-@interface KCSDataStoreOperationRequest ()
-
-@property BOOL _cancelled;
-
-@end
-
 @implementation KCSDataStoreOperationRequest
 
 +(instancetype)requestWithDataStoreOperation:(DataStoreOperation *)dataStoreOperation
@@ -55,7 +49,7 @@
 -(BOOL)isCancelled
 {
     @synchronized (self) {
-        return self._cancelled || self.dataStoreOperation.isCancelled || self.request.isCancelled;
+        return self.isCancelled || self.dataStoreOperation.isCancelled || self.request.isCancelled;
     }
 }
 
@@ -68,8 +62,6 @@
         [self.request cancel];
         
         [super cancel];
-        
-        self._cancelled = YES;
     }
 }
 

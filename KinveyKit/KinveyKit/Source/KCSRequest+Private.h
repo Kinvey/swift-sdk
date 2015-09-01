@@ -17,5 +17,6 @@
 -(instancetype)initWithNetworkOperation:(NSOperation<KCSNetworkOperation>*)networkOperation;
 
 @property (weak, atomic) NSOperation<KCSNetworkOperation>* networkOperation;
+@property BOOL _cancelled;
 
 @end
