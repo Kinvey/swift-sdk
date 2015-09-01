@@ -68,14 +68,18 @@
 
 -(BOOL)isCancelled
 {
-    return [super isCancelled] || self.fileOperation.isCancelled || self.networkOperation.isCancelled;
+    @synchronized(self) {
+        return [super isCancelled] || self.fileOperation.isCancelled;
+    }
 }
 
 -(void)cancel
 {
-    self.fileOperation.completionBlock = nil;
-    [self.fileOperation cancel];
-    [super cancel];
+    @synchronized(self) {
+        self.fileOperation.completionBlock = nil;
+        [self.fileOperation cancel];
+        [super cancel];
+    }
 }
 
 @end
