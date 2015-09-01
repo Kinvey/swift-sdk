@@ -157,11 +157,11 @@
     
     [request cancel];
     
-    XCTAssertTrue(request.isCancelled);
-    
     [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
         expectationDelete = nil;
     }];
+    
+    XCTAssertTrueWait(request.isCancelled, 10);
     
     id obj = [self getEntity:_id shouldExist:YES];
     XCTAssertNotNil(obj, @"object should be gone");

@@ -28,6 +28,7 @@
 #import "KCSHiddenMethods.h"
 #import "NSDate+KinveyAdditions.h"
 #import "KCSFileUtils.h"
+#import "TestUtils2.h"
 
 #define KTAssertIncresing(var) \
 { \
@@ -71,13 +72,6 @@ KTAssertIncresing(datas);
 #define kImageFilename @"mavericks.jpg"
 #define kImageMimeType @"image/jpeg"
 #define kImageSize 3510397
-
-#define XCTAssertTrueWait(condition, seconds) \
-{ \
-    NSDate* now = [NSDate date]; \
-    while (!condition && [now timeIntervalSinceNow] > -seconds); \
-    XCTAssertTrue(condition); \
-}
 
 //copy for testing
 @interface KCSDownloadStreamRequest : NSObject
