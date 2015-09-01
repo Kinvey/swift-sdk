@@ -49,7 +49,7 @@
 -(BOOL)isCancelled
 {
     @synchronized (self) {
-        return self.isCancelled || self.dataStoreOperation.isCancelled || self.request.isCancelled;
+        return [super isCancelled] || self.dataStoreOperation.isCancelled || self.request.isCancelled;
     }
 }
 
