@@ -415,10 +415,9 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 
 /*! Removes a user and their data from Kinvey
  * @param completionBlock The block that is called when operation is complete or fails.
+ * @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
  */
-- (void) removeWithCompletionBlock:(KCSCompletionBlock)completionBlock;
-
--(KCSRequest*)requestRemoveWithCompletionBlock:(KCSCompletionBlock)completionBlock;
+-(KCSRequest*)removeWithCompletionBlock:(KCSCompletionBlock)completionBlock;
 
 /*! Logout the user.
 */
@@ -435,19 +434,17 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  __NOTE:__ this only works for the active user. Otherwise there will be an error.
  
  @param completionBlock called when the refresh is complete or fails. The `objectsOrNil` property will have only the user, if there is no error.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
  @since 1.19.0
  */
-- (void) refreshFromServer:(KCSCompletionBlock)completionBlock;
-
--(KCSRequest*)requestRefreshFromServer:(KCSCompletionBlock)completionBlock;
+-(KCSRequest*)refreshFromServer:(KCSCompletionBlock)completionBlock;
                                                                                                                                                  
 /** Called to update the Kinvey state of a user.
-  @param completionBlock block called upon completion or error
-  @since 1.11.0
+ @param completionBlock block called upon completion or error
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.11.0
  */
-- (void) saveWithCompletionBlock:(KCSCompletionBlock)completionBlock;
-
--(KCSRequest*)requestSaveWithCompletionBlock:(KCSCompletionBlock)completionBlock;
+-(KCSRequest*)saveWithCompletionBlock:(KCSCompletionBlock)completionBlock;
 
 //---------------------------------------------------------------------------------------
 /// @name Using User Attributes
@@ -473,11 +470,11 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 /** Update a user's password and save the user object to the backend. 
  @param newPassword the new password for the user
  @param completionBlock block to be notified when operation is completed or fails. The `objectsOrNil` return array will have the updated user as its only value if successful. 
- @sicne 1.13.0
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.13.0
  */
-- (void) changePassword:(NSString*)newPassword completionBlock:(KCSCompletionBlock)completionBlock;
-
--(KCSRequest*)requestChangePassword:(NSString*)newPassword completionBlock:(KCSCompletionBlock)completionBlock;
+-(KCSRequest*)changePassword:(NSString*)newPassword
+             completionBlock:(KCSCompletionBlock)completionBlock;
 
 ///---------------------------------------------------------------------------------------
 /// @name User email management
