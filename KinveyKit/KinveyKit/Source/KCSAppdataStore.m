@@ -93,18 +93,27 @@ static NSOperationQueue* queue;
 
 - (void)queryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
 {
+    [self requestQueryWithQuery:query
+            withCompletionBlock:completionBlock
+              withProgressBlock:progressBlock];
+}
+
+-(KCSRequest*)requestQueryWithQuery:(id)query withCompletionBlock: (KCSCompletionBlock)completionBlock withProgressBlock: (KCSProgressBlock)progressBlock
+{
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
+    KCSDataStoreOperationRequest* request = [KCSDataStoreOperationRequest requestWithDataStoreOperation:op];
     @weakify(op);
     op.block = ^{
-        [super queryWithQuery:query withCompletionBlock:^(NSArray* obj, NSError* error){
+        request.request = [super requestQueryWithQuery:query withCompletionBlock:^(NSArray* obj, NSError* error){
             completionBlock(obj, error);
             @strongify(op);
             op.finished = YES;
         } withProgressBlock:progressBlock];
     };
     [queue addOperation:op];
+    return request;
 }
 
 - (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
@@ -151,18 +160,27 @@ static NSOperationQueue* queue;
 
 - (void)saveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
 {
+    [self requestSaveObject:object
+        withCompletionBlock:completionBlock
+          withProgressBlock:progressBlock];
+}
+
+-(KCSRequest*)requestSaveObject:(id)object withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+{
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     DataStoreOperation* op = [[DataStoreOperation alloc] init];
+    KCSDataStoreOperationRequest* request = [KCSDataStoreOperationRequest requestWithDataStoreOperation:op];
     @weakify(op);
     op.block = ^{
-        [super saveObject:object withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        request.request = [super requestSaveObject:object withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
             completionBlock(objectsOrNil, errorOrNil);
             @strongify(op);
             op.finished = YES;
         } withProgressBlock:progressBlock];
     };
     [queue addOperation:op];
+    return request;
 }
 
 - (void) removeObject:(id)object withCompletionBlock:(KCSCountBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock

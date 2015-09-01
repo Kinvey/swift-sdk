@@ -16,6 +16,6 @@
 
 -(instancetype)initWithNetworkOperation:(NSOperation<KCSNetworkOperation>*)networkOperation;
 
-@property (weak) NSOperation<KCSNetworkOperation>* networkOperation;
+@property (weak, atomic) NSOperation<KCSNetworkOperation>* networkOperation;
 
 @end

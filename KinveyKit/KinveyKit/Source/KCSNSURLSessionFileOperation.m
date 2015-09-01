@@ -50,19 +50,6 @@
         _bytesWritten = 0;
         _context = context;
         
-    }
-    return self;
-}
-
-
--(void)start {
-    if (self.isCancelled == YES) {
-        return;
-    }
-    
-    @autoreleasepool {
-        [super start];
-
         NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
         config.protocolClasses = [KCSURLProtocol protocolClasses];
         _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
@@ -99,6 +86,17 @@
             
             _task = [_session uploadTaskWithStreamedRequest:_request];
         }
+    }
+    return self;
+}
+
+-(void)start {
+    if (self.isCancelled) {
+        return;
+    }
+    
+    @autoreleasepool {
+        [super start];
         
         [_task resume];
     }
@@ -121,13 +119,20 @@
     return YES;//![self isFinished];
 }
 
+-(BOOL)isCancelled
+{
+    return self.task.state == NSURLSessionTaskStateCanceling;
+}
+
 - (void)cancel
 {
-    if (!_isUpload) {
-        [(NSURLSessionDownloadTask*)self.task cancelByProducingResumeData:^(NSData *resumeData) {
+    if ([self.task isKindOfClass:[NSURLSessionDownloadTask class]]) {
+        NSURLSessionDownloadTask* downloadTask = (NSURLSessionDownloadTask*) self.task;
+        [downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
             self.resumeData = resumeData;
-            [super cancel];
         }];
+    } else {
+        [self.task cancel];
     }
 }
 

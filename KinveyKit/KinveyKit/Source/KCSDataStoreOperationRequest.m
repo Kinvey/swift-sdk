@@ -20,8 +20,30 @@
     self = [super init];
     if (self) {
         self.dataStoreOperation = dataStoreOperation;
+        [self addObserver:self
+               forKeyPath:@"request"
+                  options:NSKeyValueObservingOptionNew
+                  context:nil];
     }
     return self;
+}
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (object == self) {
+        if ([keyPath isEqualToString:@"request"]) {
+            if (self.dataStoreOperation.isCancelled) {
+                KCSRequest* request = change[NSKeyValueChangeNewKey];
+                [request cancel];
+            }
+        }
+    }
+}
+
+-(void)dealloc
+{
+    [self removeObserver:self
+              forKeyPath:@"request"];
 }
 
 -(BOOL)isCancelled

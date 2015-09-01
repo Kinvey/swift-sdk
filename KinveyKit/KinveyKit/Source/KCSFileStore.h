@@ -20,6 +20,7 @@
 
 #import "KinveyCollection.h"
 #import "KCSBlockDefs.h"
+#import "KCSRequest.h"
 
 @class KCSFile;
 @class KCSQuery;
@@ -106,6 +107,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) uploadFile:(NSURL*)fileURL options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
++(KCSRequest*)requestUploadFile:(NSURL*)fileURL options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
 /**
  Uploads binary data to Kinvey's file store
  
@@ -125,6 +128,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 + (void) uploadData:(NSData*)data options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
++(KCSRequest*)requestUploadData:(NSData*)data options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
 
 #pragma mark - Downloading Files
@@ -149,6 +154,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) downloadFile:(id)idOrIds options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
++(KCSRequest*)requestDownloadFile:(id)idOrIds options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
 /** Downloads the specified file or files.
 
  __NOTE:__ If there is no matching file by the specified name, the result will be an empty `downloadedResources` array, and NOT a 404 error. This is a change of behavior from previous versions.
@@ -162,6 +169,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) downloadFileByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
++(KCSRequest*)requestDownloadFileByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
 /** Downloads the matching file or files.
  
  The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. 
@@ -172,6 +181,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 + (void) downloadFileByQuery:(KCSQuery*)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
++(KCSRequest*)requestDownloadFileByQuery:(KCSQuery*)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
 /** Downloads the specified URL.
  
@@ -191,6 +202,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) downloadFileWithResolvedURL:(NSURL*)url options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
++(KCSRequest*)requestDownloadFileWithResolvedURL:(NSURL*)url options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
 /** Downloads the specified file or files to memory.
  
  @param idOrIds a single string file id or an array of file ids
@@ -199,6 +212,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 + (void) downloadData:(id)idOrIds completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
++(KCSRequest*)requestDownloadData:(id)idOrIds completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
 /** Downloads the specified file or files to memory.
  
@@ -211,6 +226,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) downloadDataByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
++(KCSRequest*)requestDownloadDataByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
 /** Downloads the matching file or files to memory.
  
  @param query a standard Kinvey Query object
@@ -220,6 +237,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) downloadDataByQuery:(KCSQuery*)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
++(KCSRequest*)requestDownloadDataByQuery:(KCSQuery*)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
 /** Downloads the specified URL to memory.
  
  @param url a resolved GCS file URL. This request must be sucessfully sent before the `expirationTime` or the request will fail.
@@ -228,6 +247,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 + (void) downloadDataWithResolvedURL:(NSURL*)url completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
++(KCSRequest*)requestDownloadDataWithResolvedURL:(NSURL*)url completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
 /** Obtains a URL to stream the file. 
  
@@ -246,8 +267,12 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) getStreamingURL:(NSString*)fileId completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;
 
++(KCSRequest*)requestGetStreamingURL:(NSString*)fileId completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;
+
 //with internal options
 + (void) getStreamingURL:(NSString *)fileId options:(NSDictionary*)options completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;
+
++(KCSRequest*)requestGetStreamingURL:(NSString *)fileId options:(NSDictionary*)options completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;
 
 
 /** Obtains a URL to stream the file.
@@ -267,6 +292,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 + (void) getStreamingURLByName:(NSString*)fileName completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;
 
++(KCSRequest*)requestGetStreamingURLByName:(NSString*)fileName completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock;
+
 /** Resumes a partially downloaded file. This method is useful if the a previous getFileXXX method failed mid-transfer, such as from loss of network connectivity or app backgrounding.
  
  See the devcenter guide for an example on how to use this function.
@@ -278,6 +305,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 + (void) resumeDownload:(NSURL*)partialLocalFile from:(NSURL*)resolvedURL completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+
++(KCSRequest*)requestResumeDownload:(NSURL*)partialLocalFile from:(NSURL*)resolvedURL completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 
 #pragma mark - Deleting Files
 ///---------------------------------------------------------------------------------------
@@ -291,6 +320,8 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 + (void) deleteFile:(NSString*)fileId completionBlock:(KCSCountBlock)completionBlock;
+
++(KCSRequest*)requestDeleteFile:(NSString*)fileId completionBlock:(KCSCountBlock)completionBlock;
 
 
 /** Removes all downloaded files managed by KinveyKit.

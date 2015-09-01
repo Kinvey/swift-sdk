@@ -31,11 +31,6 @@
     return YES;
 }
 
-- (BOOL)isCancelled
-{
-    return NO;
-}
-
 - (void)setFinished:(BOOL)finished
 {
     [self willChangeValueForKey:@"isFinished"];

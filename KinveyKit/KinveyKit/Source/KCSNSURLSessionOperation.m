@@ -68,6 +68,10 @@
 }
 
 -(void)start {
+    if (self.isCancelled) {
+        return;
+    }
+    
     @autoreleasepool {
         [super start];
         
