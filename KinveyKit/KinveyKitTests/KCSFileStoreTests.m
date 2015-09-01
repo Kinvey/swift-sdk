@@ -28,7 +28,6 @@
 #import "KCSHiddenMethods.h"
 #import "NSDate+KinveyAdditions.h"
 #import "KCSFileUtils.h"
-#import "TestUtils2.h"
 
 #define KTAssertIncresing(var) \
 { \
