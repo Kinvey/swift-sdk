@@ -1790,6 +1790,7 @@
 		57F62A8E1B30D89C00779A5B /* MICViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MICViewController.swift; sourceTree = "<group>"; };
 		57F62A911B30F82600779A5B /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		57F6B88B1B1FB0EC00361C18 /* KinveyPlaygroundTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyPlaygroundTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		57F867071B9562B800380745 /* KCSAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAssert.h; sourceTree = "<group>"; };
 		57FEE8EE1B8E49C300CE0871 /* KCSRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRequest.h; sourceTree = "<group>"; };
 		57FEE8EF1B8E49C300CE0871 /* KCSRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRequest.m; sourceTree = "<group>"; };
 		57FEE8F41B8E521400CE0871 /* KCSRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSRequest+Private.h"; sourceTree = "<group>"; };
@@ -2795,6 +2796,7 @@
 			isa = PBXGroup;
 			children = (
 				57C8DB081AB8C968007F2E42 /* Supporting Files */,
+				57F867071B9562B800380745 /* KCSAssert.h */,
 				5718C8521B7E6EE2008CFE49 /* KCSTestCase.h */,
 				5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */,
 				571200EA1ABB203D002B148D /* KinveyTests-Bridging-Header.h */,
