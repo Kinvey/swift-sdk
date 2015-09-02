@@ -42,7 +42,7 @@ class MLIBZ_364_Tests: KCSTestCase {
         weak var expectationCheckUsername = expectationWithDescription("CheckUsername")
         
         let username = "chicksabcs@gmail.com"
-        let request = KCSUser.requestCheckUsername(username, withCompletionBlock: { (_username: String!, usernameAlreadyTaken: Bool, error: NSError!) -> Void in
+        let request = KCSUser.checkUsername(username, withCompletionBlock: { (_username: String!, usernameAlreadyTaken: Bool, error: NSError!) -> Void in
             XCTAssertNil(error)
             XCTAssertNotNil(_username)
             if (_username != nil) {
