@@ -28,16 +28,9 @@
 
 @implementation KCSUserDiscovery
 
-+ (void) lookupUsersForFieldsAndValues:(NSDictionary*)fieldMatchDictionary completionBlock:(KCSCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestLookupUsersForFieldsAndValues:fieldMatchDictionary
-                               completionBlock:completionBlock
-                                 progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestLookupUsersForFieldsAndValues:(NSDictionary *)fieldMatchDictionary
-                                    completionBlock:(KCSCompletionBlock)completionBlock
-                                      progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)lookupUsersForFieldsAndValues:(NSDictionary*)fieldMatchDictionary
+                            completionBlock:(KCSCompletionBlock)completionBlock
+                              progressBlock:(KCSProgressBlock)progressBlock
 {
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);

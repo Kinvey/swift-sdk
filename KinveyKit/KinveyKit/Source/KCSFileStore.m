@@ -228,18 +228,10 @@ KCSFile* fileFromResults(NSDictionary* results)
     return uploadFile;
 }
 
-+ (void)uploadData:(NSData *)data options:(NSDictionary *)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestUploadData:data
-                    options:uploadOptions
-            completionBlock:completionBlock
-              progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestUploadData:(NSData *)data
-                         options:(NSDictionary *)uploadOptions
-                 completionBlock:(KCSFileUploadCompletionBlock)completionBlock
-                   progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)uploadData:(NSData *)data
+                 options:(NSDictionary *)uploadOptions
+         completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+           progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(data);
     NSParameterAssert(completionBlock);
@@ -280,18 +272,10 @@ KCSFile* fileFromResults(NSDictionary* results)
     return fileRequest;
 }
 
-+ (void) uploadFile:(NSURL*)fileURL options:(NSDictionary*)uploadOptions completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestUploadFile:fileURL
-                    options:uploadOptions
-            completionBlock:completionBlock
-              progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestUploadFile:(NSURL *)fileURL
-                         options:(NSDictionary *)uploadOptions
-                 completionBlock:(KCSFileUploadCompletionBlock)completionBlock
-                   progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)uploadFile:(NSURL*)fileURL
+                 options:(NSDictionary*)uploadOptions
+         completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+           progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(fileURL != nil);
     NSParameterAssert(completionBlock != nil);
@@ -633,16 +617,9 @@ KCSFile* fileFromResults(NSDictionary* results)
     }];
 }
 
-+ (void)downloadFileByQuery:(KCSQuery *)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestDownloadFileByQuery:query
-                     completionBlock:completionBlock
-                       progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestDownloadFileByQuery:(KCSQuery *)query
-                          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
-                            progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)downloadFileByQuery:(KCSQuery *)query
+                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                    progressBlock:(KCSProgressBlock)progressBlock
 {
     SWITCH_TO_MAIN_THREAD_FILE_DOWNLOAD_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
@@ -736,14 +713,9 @@ KCSFile* fileFromResults(NSDictionary* results)
     } withProgressBlock:nil];
 }
 
-+ (void)downloadFileByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestDownloadFileByName:nameOrNames
-                    completionBlock:completionBlock
-                      progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestDownloadFileByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)downloadFileByName:(id)nameOrNames
+                 completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                   progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(nameOrNames != nil);
     NSParameterAssert(completionBlock != nil);
@@ -751,18 +723,15 @@ KCSFile* fileFromResults(NSDictionary* results)
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     NSArray* names = [NSArray wrapIfNotArray:nameOrNames];
     KCSQuery* nameQuery = [KCSQuery queryOnField:KCSFileFileName usingConditional:kKCSIn forValue:names];
-    return [self requestDownloadFileByQuery:nameQuery completionBlock:completionBlock progressBlock:progressBlock];
+    return [self downloadFileByQuery:nameQuery
+                     completionBlock:completionBlock
+                       progressBlock:progressBlock];
 }
 
-+ (void)downloadFile:(id)idOrIds options:(NSDictionary *)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestDownloadFile:idOrIds
-                      options:options
-              completionBlock:completionBlock
-                progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestDownloadFile:(id)idOrIds options:(NSDictionary *)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)downloadFile:(id)idOrIds
+                   options:(NSDictionary *)options
+           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+             progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(idOrIds != nil);
     NSParameterAssert(completionBlock != nil);
@@ -783,16 +752,9 @@ KCSFile* fileFromResults(NSDictionary* results)
     }
 }
 
-+ (void)downloadDataByQuery:(KCSQuery *)query completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestDownloadDataByQuery:query
-                     completionBlock:completionBlock
-                       progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestDownloadDataByQuery:(KCSQuery *)query
-                          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
-                            progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)downloadDataByQuery:(KCSQuery *)query
+                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                    progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(query != nil);
     NSParameterAssert(completionBlock != nil);
@@ -855,16 +817,9 @@ KCSFile* fileFromResults(NSDictionary* results)
     } withProgressBlock:nil];
 }
 
-+ (void)downloadDataByName:(id)nameOrNames completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestDownloadDataByName:nameOrNames
-                    completionBlock:completionBlock
-                      progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestDownloadDataByName:(id)nameOrNames
-                         completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
-                           progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)downloadDataByName:(id)nameOrNames
+                 completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                   progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(nameOrNames != nil);
     NSParameterAssert(completionBlock != nil);
@@ -872,19 +827,14 @@ KCSFile* fileFromResults(NSDictionary* results)
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     NSArray* names = [NSArray wrapIfNotArray:nameOrNames];
     KCSQuery* nameQuery = [KCSQuery queryOnField:KCSFileFileName usingConditional:kKCSIn forValue:names];
-    return [self requestDownloadDataByQuery:nameQuery completionBlock:completionBlock progressBlock:progressBlock];
+    return [self downloadDataByQuery:nameQuery
+                     completionBlock:completionBlock
+                       progressBlock:progressBlock];
 }
 
-+ (void)downloadData:(id)idOrIds completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestDownloadData:idOrIds
-              completionBlock:completionBlock
-                progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestDownloadData:(id)idOrIds
-                   completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
-                     progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)downloadData:(id)idOrIds
+           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+             progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(idOrIds != nil);
     NSParameterAssert(completionBlock != nil);
@@ -897,24 +847,18 @@ KCSFile* fileFromResults(NSDictionary* results)
         return [self _downloadData:idOrIds completionBlock:completionBlock progressBlock:progressBlock];
     } else if (idIsArray) {
         KCSQuery* idQuery = [KCSQuery queryOnField:KCSFileId usingConditional:kKCSIn forValue:idOrIds];
-        return [self requestDownloadDataByQuery:idQuery completionBlock:completionBlock progressBlock:progressBlock];
+        return [self downloadDataByQuery:idQuery
+                         completionBlock:completionBlock
+                           progressBlock:progressBlock];
     } else {
         @throw [NSException exceptionWithName:@"KCSInvalidParameter" reason:@"idOrIds is not single id or array of ids" userInfo:nil];
     }
 }
 
-+ (void)downloadFileWithResolvedURL:(NSURL *)url options:(NSDictionary *)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestDownloadFileWithResolvedURL:url
-                                     options:options
-                             completionBlock:completionBlock
-                               progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestDownloadFileWithResolvedURL:(NSURL *)url
-                                          options:(NSDictionary *)options
-                                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
-                                    progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)downloadFileWithResolvedURL:(NSURL *)url
+                                  options:(NSDictionary *)options
+                          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                            progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(url);
     NSParameterAssert(completionBlock);
@@ -963,22 +907,18 @@ KCSFile* fileFromResults(NSDictionary* results)
     return [KCSFileRequest requestWithFileOperation:op];
 }
 
-+ (void)downloadDataWithResolvedURL:(NSURL *)url completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestDownloadDataWithResolvedURL:url
-                             completionBlock:completionBlock
-                               progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestDownloadDataWithResolvedURL:(NSURL *)url
-                                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
-                                    progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)downloadDataWithResolvedURL:(NSURL *)url
+                          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                            progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(url);
     NSParameterAssert(completionBlock);
     SWITCH_TO_MAIN_THREAD_FILE_DOWNLOAD_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
-    return [self requestDownloadFileWithResolvedURL:url options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    return [self downloadFileWithResolvedURL:url
+                                     options:nil
+                             completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         if (!error && downloadedResources != nil && downloadedResources.count > 0) {
             KCSFile* file = downloadedResources[0];
             NSURL* localFile = file.localURL;
@@ -1001,48 +941,33 @@ KCSFile* fileFromResults(NSDictionary* results)
     } progressBlock:progressBlock];
 }
 
-+ (void)resumeDownload:(NSURL *)partialLocalFile from:(NSURL *)resolvedURL completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
-{
-    [self requestResumeDownload:partialLocalFile
-                           from:resolvedURL
-                completionBlock:completionBlock
-                  progressBlock:progressBlock];
-}
-
-+(KCSRequest *)requestResumeDownload:(NSURL *)partialLocalFile
-                                from:(NSURL *)resolvedURL
-                     completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
-                       progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)resumeDownload:(NSURL *)partialLocalFile
+                        from:(NSURL *)resolvedURL
+             completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+               progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(partialLocalFile);
     NSParameterAssert(resolvedURL);
     NSParameterAssert(completionBlock);
     SWITCH_TO_MAIN_THREAD_FILE_DOWNLOAD_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
-    return [self requestDownloadFileWithResolvedURL:resolvedURL options:@{KCSFileLocalURL : partialLocalFile, KCSFileResume : @(YES)} completionBlock:completionBlock progressBlock:progressBlock];
+    return [self downloadFileWithResolvedURL:resolvedURL
+                                     options:@{KCSFileLocalURL : partialLocalFile, KCSFileResume : @(YES)}
+                             completionBlock:completionBlock progressBlock:progressBlock];
 }
 
 #pragma mark - Streaming
-+ (void) getStreamingURL:(NSString *)fileId completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
++(KCSRequest*)getStreamingURL:(NSString *)fileId
+              completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
 {
-    [self requestGetStreamingURL:fileId
+    return [self getStreamingURL:fileId
+                         options:nil
                  completionBlock:completionBlock];
 }
 
-+(KCSRequest *)requestGetStreamingURL:(NSString *)fileId
-                      completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
-{
-    return [self requestGetStreamingURL:fileId options:nil completionBlock:completionBlock];
-}
-
-+ (void) getStreamingURL:(NSString *)fileId options:(NSDictionary*)options completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
-{
-    [self requestGetStreamingURL:fileId
-                         options:options
-                 completionBlock:completionBlock];
-}
-
-+(KCSRequest *)requestGetStreamingURL:(NSString *)fileId options:(NSDictionary *)options completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
++(KCSRequest*)getStreamingURL:(NSString *)fileId
+                      options:(NSDictionary*)options
+              completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
 {
     NSParameterAssert(fileId != nil);
     NSParameterAssert(completionBlock != nil);
@@ -1061,14 +986,8 @@ KCSFile* fileFromResults(NSDictionary* results)
     }];
 }
 
-+ (void)getStreamingURLByName:(NSString *)fileName completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
-{
-    [self requestGetStreamingURLByName:fileName
-                       completionBlock:completionBlock];
-}
-
-+(KCSRequest *)requestGetStreamingURLByName:(NSString *)fileName
-                            completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
++(KCSRequest*)getStreamingURLByName:(NSString *)fileName
+                    completionBlock:(KCSFileStreamingURLCompletionBlock)completionBlock
 {
     NSParameterAssert(fileName != nil);
     NSParameterAssert(completionBlock != nil);
@@ -1093,14 +1012,8 @@ KCSFile* fileFromResults(NSDictionary* results)
 }
 
 #pragma mark - Deletes
-+ (void)deleteFile:(NSString *)fileId completionBlock:(KCSCountBlock)completionBlock
-{
-    [self requestDeleteFile:fileId
-            completionBlock:completionBlock];
-}
-
-+(KCSRequest *)requestDeleteFile:(NSString *)fileId
-                 completionBlock:(KCSCountBlock)completionBlock
++(KCSRequest*)deleteFile:(NSString *)fileId
+         completionBlock:(KCSCountBlock)completionBlock
 {
     NSParameterAssert(fileId != nil);
     NSParameterAssert(completionBlock != nil);
