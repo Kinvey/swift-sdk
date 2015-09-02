@@ -95,7 +95,7 @@ class MICTests: KCSTestCase {
         weak var expectation = expectationWithDescription("login")
         
         var executed = false
-        let request = KCSUser.requestLoginWithAuthorizationCodeAPI(
+        let request = KCSUser.loginWithAuthorizationCodeAPI(
             "kinveyAuthDemo://",
             options: [
                 KCSUsername : "mjs",
