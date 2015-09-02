@@ -56,13 +56,8 @@
     }];
 }
 
-+ (void) getAccessDictionaryFromTwitterFromTwitterAccounts:(KCSLocalCredentialBlock)completionBlock accountChooseBlock:(ACAccount* (^)(NSArray* twitterAccounts))chooseBlock
-{
-    [self requestGetAccessDictionaryFromTwitterFromTwitterAccounts:completionBlock
-                                                accountChooseBlock:chooseBlock];
-}
-
-+(KCSRequest *)requestGetAccessDictionaryFromTwitterFromTwitterAccounts:(KCSLocalCredentialBlock)completionBlock accountChooseBlock:(ACAccount *(^)(NSArray *))chooseBlock
++(KCSRequest*)getAccessDictionaryFromTwitterFromTwitterAccounts:(KCSLocalCredentialBlock)completionBlock
+                                             accountChooseBlock:(ACAccount* (^)(NSArray* twitterAccounts))chooseBlock
 {
     //  Check to make sure that the user has added his credentials
     BOOL hasKeys = [self checkForTwitterKeys];

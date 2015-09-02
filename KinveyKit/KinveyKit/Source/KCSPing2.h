@@ -37,8 +37,8 @@ typedef void(^KCSPingBlock2)(NSDictionary* appInfo, NSError* error);
 /* Ping Kinvey and perform a callback when complete.
  
  @param completionAction The callback to perform on completion.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
  */
-+ (void)pingKinveyWithBlock:(KCSPingBlock2)completion;
-+(KCSRequest*)requestPingKinveyWithBlock:(KCSPingBlock2)completion;
++(KCSRequest*)pingKinveyWithBlock:(KCSPingBlock2)completion;
 
 @end

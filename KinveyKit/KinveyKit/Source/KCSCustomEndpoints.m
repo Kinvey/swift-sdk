@@ -29,16 +29,9 @@
 
 @implementation KCSCustomEndpoints
 
-+ (void) callEndpoint:(NSString*)endpoint params:(NSDictionary*)params completionBlock:(KCSCustomEndpointBlock)completionBlock
-{
-    [self requestCallEndpoint:endpoint
-                       params:params
-              completionBlock:completionBlock];
-}
-
-+(KCSRequest *)requestCallEndpoint:(NSString *)endpoint
-                            params:(NSDictionary *)params
-                   completionBlock:(KCSCustomEndpointBlock)completionBlock
++(KCSRequest*)callEndpoint:(NSString*)endpoint
+                    params:(NSDictionary*)params
+           completionBlock:(KCSCustomEndpointBlock)completionBlock
 {
     NSParameterAssert(endpoint);
     NSParameterAssert(completionBlock);

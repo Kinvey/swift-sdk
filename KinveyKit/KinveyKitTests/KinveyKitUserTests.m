@@ -688,7 +688,9 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
     }];
     
     __weak __block XCTestExpectation* expectationResetPassword = [self expectationWithDescription:@"resetPassword"];
-    KCSRequest* request = [KCSUser requestSendEmailConfirmationForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
+    KCSRequest* request = [KCSUser sendEmailConfirmationForUser:testUser
+                                            withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil)
+    {
         STAssertNoError;
         XCTAssertTrue(emailSent, @"Should send email");
         
@@ -785,7 +787,9 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
     }];
     
     __weak __block XCTestExpectation* expectationSendForgotUsername = [self expectationWithDescription:@"sendForgotUsername"];
-    KCSRequest* request = [KCSUser requestSendForgotUsername:[KCSUser activeUser].email withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
+    KCSRequest* request = [KCSUser sendForgotUsername:[KCSUser activeUser].email
+                                  withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil)
+    {
         STAssertNoError;
         XCTAssertTrue(emailSent, @"Should send email");
         

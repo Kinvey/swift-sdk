@@ -149,9 +149,9 @@
     }];
     
     __weak __block XCTestExpectation* expectationCustomEndpoint = [self expectationWithDescription:@"customEndpoint"];
-    KCSRequest* request = [KCSCustomEndpoints requestCallEndpoint:@"jeppe"
-                              params:nil
-                     completionBlock:^(id results, NSError *error)
+    KCSRequest* request = [KCSCustomEndpoints callEndpoint:@"jeppe"
+                                                    params:nil
+                                           completionBlock:^(id results, NSError *error)
     {
         XCTAssertNotNil(results);
         XCTAssertNil(error);

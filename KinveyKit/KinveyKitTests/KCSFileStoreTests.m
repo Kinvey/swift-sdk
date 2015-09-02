@@ -286,7 +286,10 @@ NSData* testData2()
 {
     __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
-    KCSRequest* request = [KCSFileStore requestDownloadFile:kTestId options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    KCSRequest* request = [KCSFileStore downloadFile:kTestId
+                                             options:nil
+                                     completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         XCTFail();
         
         [expectationDownload fulfill];
@@ -999,7 +1002,9 @@ NSData* testData2()
     __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS;
     KCSQuery* query = [KCSQuery queryOnField:KCSFileMimeType withExactMatchForValue:umt];
-    KCSRequest* request = [KCSFileStore requestDownloadFileByQuery:query completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    KCSRequest* request = [KCSFileStore downloadFileByQuery:query
+                                            completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         STAssertNoError_;
         XCTAssertNotNil(downloadedResources, @"get a download");
         KTAssertCount(1, downloadedResources);
@@ -1123,7 +1128,9 @@ NSData* testData2()
     __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS;
     KCSQuery* query = [KCSQuery queryOnField:KCSFileMimeType withExactMatchForValue:umt];
-    KCSRequest* request = [KCSFileStore requestDownloadDataByQuery:query completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    KCSRequest* request = [KCSFileStore downloadDataByQuery:query
+                                            completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         STAssertNoError_;
         XCTAssertNotNil(downloadedResources, @"get a download");
         //TODO
@@ -1318,7 +1325,9 @@ NSData* testData2()
     __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     __block NSArray* downloads;
     NSArray* names = @[kTestFilename, file2name];
-    KCSRequest* request = [KCSFileStore requestDownloadFileByName:names completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    KCSRequest* request = [KCSFileStore downloadFileByName:names
+                                           completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         XCTFail();
         
         [expectationDownload fulfill];
@@ -1484,7 +1493,9 @@ NSData* testData2()
 {
     __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
-    KCSRequest* request = [KCSFileStore requestDownloadDataByName:kTestFilename completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    KCSRequest* request = [KCSFileStore downloadDataByName:kTestFilename
+                                           completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         STAssertNoError_;
         //assert one KCSFile & its data is the right data
         XCTAssertNotNil(downloadedResources, @"should have a resource");
@@ -1643,7 +1654,10 @@ NSData* testData2()
     
     __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
-    KCSRequest* request = [KCSFileStore requestDownloadFileWithResolvedURL:downloadURL options:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    KCSRequest* request = [KCSFileStore downloadFileWithResolvedURL:downloadURL
+                                                            options:nil
+                                                    completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         STAssertNoError_
         KTAssertCount(1, downloadedResources);
         
@@ -2170,7 +2184,9 @@ NSData* testData2()
     
     __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     SETUP_PROGRESS
-    KCSRequest* request = [KCSFileStore requestDownloadDataWithResolvedURL:downloadURL completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    KCSRequest* request = [KCSFileStore downloadDataWithResolvedURL:downloadURL
+                                                    completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         XCTFail();
         
         [expectationDownload fulfill];
@@ -2353,7 +2369,10 @@ NSData* testData2()
     
     //4. Resume Download
     __weak __block XCTestExpectation* expectationResumeDownload = [self expectationWithDescription:@"resumeDownload"];
-    KCSRequest* request = [KCSFileStore requestResumeDownload:startedURL from:downloadURL completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    KCSRequest* request = [KCSFileStore resumeDownload:startedURL
+                                                  from:downloadURL
+                                       completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         XCTFail();
         
         [expectationResumeDownload fulfill];
@@ -2513,7 +2532,9 @@ NSData* testData2()
 - (void) testStreamingBasicCancel
 {
     __weak __block XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
-    KCSRequest* request = [KCSFileStore requestGetStreamingURL:kTestId completionBlock:^(KCSFile *streamingResource, NSError *error) {
+    KCSRequest* request = [KCSFileStore getStreamingURL:kTestId
+                                        completionBlock:^(KCSFile *streamingResource, NSError *error)
+    {
         XCTFail();
         
         [expectationStream fulfill];
@@ -2580,7 +2601,9 @@ NSData* testData2()
 {
     __weak __block XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
     __block NSURL* streamURL = nil;
-    KCSRequest* request = [KCSFileStore requestGetStreamingURLByName:kTestFilename completionBlock:^(KCSFile *streamingResource, NSError *error) {
+    KCSRequest* request = [KCSFileStore getStreamingURLByName:kTestFilename
+                                              completionBlock:^(KCSFile *streamingResource, NSError *error)
+    {
         XCTFail();
         
         [expectationStream fulfill];
@@ -2995,7 +3018,9 @@ NSData* testData2()
     XCTAssertNotNil(newFileId, @"Should get a file id");
     
     __weak __block XCTestExpectation* expectationStream = [self expectationWithDescription:@"stream"];
-    KCSRequest* request = [KCSFileStore requestGetStreamingURL:newFileId options:@{KCSFileLinkExpirationTimeInterval : @1} completionBlock:^(KCSFile *streamingResource, NSError *error)
+    KCSRequest* request = [KCSFileStore getStreamingURL:newFileId
+                                                options:@{KCSFileLinkExpirationTimeInterval : @1}
+                                        completionBlock:^(KCSFile *streamingResource, NSError *error)
     {
         XCTFail();
         
@@ -3597,7 +3622,9 @@ NSData* testData2()
 - (void) testDeleteCancel
 {
     __weak __block XCTestExpectation* expectationDelete = [self expectationWithDescription:@"delete"];
-    KCSRequest* request = [KCSFileStore requestDeleteFile:kTestId completionBlock:^(unsigned long count, NSError *errorOrNil) {
+    KCSRequest* request = [KCSFileStore deleteFile:kTestId
+                                   completionBlock:^(unsigned long count, NSError *errorOrNil)
+    {
         XCTFail();
         
         [expectationDelete fulfill];
@@ -3618,7 +3645,9 @@ NSData* testData2()
     }];
     
     __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
-    request = [KCSFileStore requestDownloadData:kTestId completionBlock:^(NSArray *downloadedResources, NSError *error) {
+    request = [KCSFileStore downloadData:kTestId
+                         completionBlock:^(NSArray *downloadedResources, NSError *error)
+    {
         XCTAssertNotNil(error, @"should get an error");
         XCTAssertEqualObjects(error.domain, KCSFileStoreErrorDomain, @"Should be a file error");
         KTAssertEqualsInt(error.code, KCSNotFoundError, @"should be a 404");
@@ -4049,7 +4078,7 @@ NSData* testData2()
 {
     __weak __block XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
 
-    KCSRequest* request = [KCSFileStore requestUploadFile:[self largeVideoURL]
+    KCSRequest* request = [KCSFileStore uploadFile:[self largeVideoURL]
                      options:nil
              completionBlock:^(KCSFile *uploadInfo, NSError *error)
     {
@@ -4104,9 +4133,9 @@ NSData* testData2()
     __weak __block XCTestExpectation* expectationUpload = [self expectationWithDescription:@"upload"];
     
     NSData* data = [NSData dataWithContentsOfURL:[self largeVideoURL]];
-    KCSRequest* request = [KCSFileStore requestUploadData:data
-                                                  options:nil
-                                          completionBlock:^(KCSFile *uploadInfo, NSError *error)
+    KCSRequest* request = [KCSFileStore uploadData:data
+                                           options:nil
+                                   completionBlock:^(KCSFile *uploadInfo, NSError *error)
     {
         XCTFail();
         
