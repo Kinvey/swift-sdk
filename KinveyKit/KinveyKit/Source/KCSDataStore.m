@@ -22,6 +22,7 @@
 
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
+#import "KCSRequest+Private.h"
 
 #define kKCSMaxReturnSize 10000
 
@@ -55,14 +56,17 @@
 
 #pragma mark - READ
 
-- (void) getAll:(KCSDataStoreCompletion)completion
+-(KCSRequest*)getAll:(KCSDataStoreCompletion)completion
 {
-    [self query:nil options:@{KCSRequestLogMethod} completion:completion];
+    return [self query:nil options:@{KCSRequestLogMethod} completion:completion];
 }
 
-- (void) query:(KCSQuery2*)query options:(NSDictionary*)options completion:(KCSDataStoreCompletion)completion
+-(KCSRequest*)query:(KCSQuery2*)query
+            options:(NSDictionary*)options
+         completion:(KCSDataStoreCompletion)completion
 {
     NSParameterAssert(completion);
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_BLOCK(completion);
     if (self.collectionName == nil) {
         [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"No collection set in data store" userInfo:nil] raise];
     }
@@ -72,16 +76,16 @@
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
-            DISPATCH_ASYNC_MAIN_QUEUE(completion(nil, error));
+            completion(nil, error);
         } else {
             NSArray* elements = [response jsonObjectError:&error];
             if (error) {
-                DISPATCH_ASYNC_MAIN_QUEUE(completion(nil, error));
+                completion(nil, error);
             } else {
                 if ([elements count] == kKCSMaxReturnSize) {
                     KCSLogForcedWarn(KCS_LOG_CONTEXT_DATA, @"Results returned exactly %d items. This is the server limit, so there may more entities that match the query. Try again with a more specific query or use limit and skip modifiers to get all the data.", kKCSMaxReturnSize);
                 }
-                DISPATCH_ASYNC_MAIN_QUEUE(completion(elements, nil));
+                completion(elements, nil);
             }
         }
     }
@@ -90,29 +94,35 @@
                                                   credentials:[KCSUser activeUser]];
     request.path = @[_collectionName];
     request.queryString = [query escapedQueryString];
-    [request start];
+    return [KCSRequest requestWithNetworkOperation:[request start]];
 }
 
 #pragma mark - Count
 
-- (void) countAll:(KCSDataStoreCountCompletion)completion
+-(KCSRequest*)countAll:(KCSDataStoreCountCompletion)completion
 {
     KCS_BREAK
+    return nil;
 }
 
-- (void) countQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
+-(KCSRequest*)countQuery:(KCSQuery2*)query
+              completion:(KCSDataStoreCountCompletion)completion
 {
     KCS_BREAK
+    return nil;
 }
 
 #pragma mark - Deletion
-- (id<KCSNetworkOperation>) deleteEntity:(NSString*)_id completion:(KCSDataStoreCountCompletion)completion
+
+-(KCSRequest*)deleteEntity:(NSString*)_id
+                completion:(KCSDataStoreCountCompletion)completion
 {
     if (!_id) {
         NSError* error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"%@ is nil", KCSEntityKeyId]];
-        DISPATCH_ASYNC_MAIN_QUEUE(completion(0, error));
+        completion(0, error);
         return nil;
     }
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_COUNT_BLOCK(completion);
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSUInteger count = 0;
@@ -123,19 +133,20 @@
                 count = [responseDict[@"count"] unsignedIntegerValue];
             }
         }
-        DISPATCH_ASYNC_MAIN_QUEUE(completion(count, error));
+        completion(count, error);
     }
                                                         route:self.route
                                                       options:@{KCSRequestLogMethod}
                                                   credentials:[KCSUser activeUser]];
     request.path = @[self.collectionName, _id];
     request.method = KCSRESTMethodDELETE;
-    id<KCSNetworkOperation> op = [request start];
-    return op;
+    return [KCSRequest requestWithNetworkOperation:[request start]];
 }
 
-- (id<KCSNetworkOperation>) deleteByQuery:(KCSQuery2*)query completion:(KCSDataStoreCountCompletion)completion
+-(KCSRequest*)deleteByQuery:(KCSQuery2*)query
+                 completion:(KCSDataStoreCountCompletion)completion
 {
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_COUNT_BLOCK(completion);
     if (!query) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"query is nil" userInfo:nil] raise];
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
@@ -147,7 +158,7 @@
                 count = [responseDict[@"count"] unsignedIntegerValue];
             }
         }
-        DISPATCH_ASYNC_MAIN_QUEUE(completion(count, error));
+        completion(count, error);
     }
                                                         route:self.route
                                                       options:@{KCSRequestLogMethod}
@@ -155,8 +166,7 @@
     request.path = @[self.collectionName];
     request.queryString = [query escapedQueryString];
     request.method = KCSRESTMethodDELETE;
-    id<KCSNetworkOperation> op = [request start];
-    return op;
+    return [KCSRequest requestWithNetworkOperation:[request start]];
 }
 
 #pragma mark - Save
@@ -174,7 +184,7 @@
     setIfEmpty(fullOptions, KCSRequestOptionClientMethod, KCSRequestOptionClientMethod);
 
     KCSPersistableDescription* descr = [[KCSPersistableDescription alloc] initWithKinveyKit1Object:objectsToSave[0] collection:self.collectionName];
-    NSDictionary* objGraph = [descr objectListFromObjects:objectsToSave];
+    [descr objectListFromObjects:objectsToSave];
     
     //TODO I don't known why this method was not returning anything. Legacy code???
     return nil;

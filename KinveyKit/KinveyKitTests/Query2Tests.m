@@ -26,7 +26,7 @@
 - (NSString*)queryString:(BOOL)e;
 @end
 
-@interface Query2Tests : XCTestCase
+@interface Query2Tests : KCSTestCase
 
 @end
 

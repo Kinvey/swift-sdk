@@ -23,7 +23,7 @@
 #import "KinveyCoreInternal.h"
 #import "TestUtils2.h"
 
-@interface KCSPingTests : XCTestCase
+@interface KCSPingTests : KCSTestCase
 
 @end
 

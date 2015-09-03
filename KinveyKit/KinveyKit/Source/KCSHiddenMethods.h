@@ -30,6 +30,8 @@
 #import "KCSFile.h"
 #import "KCSClientConfiguration.h"
 #import "KCSObjectCache.h"
+#import "KCSFileRequestManager.h"
+#import "KCSRequest2.h"
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
@@ -75,6 +77,15 @@ NSDictionary* defaultBuilders();
 
 @interface KCSAppdataStore (KCSHiddenMethods)
 + (KCSObjectCache*) caches;
++(void)cancelAndWaitUntilAllOperationsAreFinished;
+@end
+
+@interface KCSFileRequestManager (KCSHiddenMethods)
++(void)cancelAndWaitUntilAllOperationsAreFinished;
+@end
+
+@interface KCSRequest2 (KCSHiddenMethods)
++(void)cancelAndWaitUntilAllOperationsAreFinished;
 @end
 
 @interface KCSUser (KCSHiddenMethods)
@@ -88,8 +99,6 @@ NSDictionary* defaultBuilders();
 @interface KCSFileStore (KCSHiddenMethods)
 + (void) uploadKCSFile:(KCSFile*)file options:(NSDictionary*)options completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
 + (void)downloadKCSFile:(KCSFile*) file completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock) progressBlock;
-
-+ (id) lastRequest;
 @end
 
 
@@ -103,8 +112,8 @@ NSDictionary* defaultBuilders();
 
 #if TARGET_OS_IPHONE
 @interface KCSPush (KCSHiddenMethods)
-- (void) registerDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
-- (void) unRegisterDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock;
+- (void) registerDeviceToken:(KCSSuccessBlock)completionBlock;
+- (void) unRegisterDeviceToken:(KCSSuccessBlock)completionBlock;
 @property (nonatomic, retain) id deviceToken;
 @end
 #endif

@@ -24,10 +24,15 @@
 @class KCSNetworkResponse;
 
 @protocol KCSNetworkOperation <NSObject>
+
 - (instancetype) initWithRequest:(NSURLRequest*)request;
 - (KCSNetworkResponse*)response;
 - (NSError*)error;
+-(void)cancel;
+
 @property (atomic) NSUInteger retryCount;
 @property (nonatomic, copy) NSString* clientRequestId;
 @property (nonatomic, copy) KCSRequestProgressBlock progressBlock;
+@property (readonly, getter=isCancelled) BOOL cancelled;
+
 @end

@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class MLIBZ_322_Tests: XCTestCase {
+class MLIBZ_322_Tests: KCSTestCase {
 
     func testDouble() {
         // Find all entites within .5 miles of the sphere centered at [-71.05, 42.35]

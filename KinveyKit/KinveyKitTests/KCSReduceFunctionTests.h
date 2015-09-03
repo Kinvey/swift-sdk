@@ -17,10 +17,10 @@
 //
 
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
 @class KCSAppdataStore;
-@interface KCSReduceFunctionTests : XCTestCase {
+@interface KCSReduceFunctionTests : KCSTestCase {
     KCSAppdataStore* store;
 }
 

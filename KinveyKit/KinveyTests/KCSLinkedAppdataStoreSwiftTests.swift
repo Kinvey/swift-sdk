@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class KCSLinkedAppdataStoreSwiftTests: XCTestCase {
+class KCSLinkedAppdataStoreSwiftTests: KCSTestCase {
 
     var LogbookStore: KCSLinkedAppdataStore!
     

@@ -24,14 +24,6 @@
 
 @implementation KinveyKitKeyChainTests
 
-- (void)setUp
-{
-}
-
-- (void)tearDown
-{
-}
-
 - (void) testToknes
 {
     NSString* token = [NSString UUID];

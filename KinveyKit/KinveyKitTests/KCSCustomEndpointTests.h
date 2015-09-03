@@ -18,8 +18,8 @@
 //
 
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
-@interface KCSCustomEndpointTests : XCTestCase
+@interface KCSCustomEndpointTests : KCSTestCase
 
 @end

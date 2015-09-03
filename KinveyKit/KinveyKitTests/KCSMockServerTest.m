@@ -43,7 +43,7 @@
 
 @end
 
-@interface KCSMockServerTest : XCTestCase
+@interface KCSMockServerTest : KCSTestCase
 @property (nonatomic, strong) KCSMockServer* server;
 @end
 

@@ -29,6 +29,7 @@
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
 #import "KCSRequest2.h"
+#import "KCS_DDLog.h"
 
 @interface TestEntity : NSObject
 @property (nonatomic, retain) NSString* key;
@@ -62,7 +63,7 @@ static float pollTime;
     id query = [KCSQuery query];
  
     NSUInteger previouscount = self.requestArray.count;
-    __block NSUInteger newcount;
+    __block NSUInteger newcount = 0;
     
     __weak __block XCTestExpectation* expectationQueryServer = [self expectationWithDescription:@"queryServer"];
     
@@ -120,6 +121,10 @@ static float pollTime;
 
 - (void) setUp
 {
+    [super setUp];
+    
+    NSLog(@"%@ %@", [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion);
+    
     pollTime = 0.1;
     _callbackCount = 0;
     
@@ -137,6 +142,9 @@ static float pollTime;
 
 - (void) tearDown
 {
+    [[KCSUser activeUser] logout];
+    
+    [super tearDown];
 }
 
 - (void) testCachedStoreNoCache
@@ -352,7 +360,8 @@ static float pollTime;
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
     __weak XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
-    [store removeObject:obj[KCSEntityKeyId] withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
+    [store removeObject:obj[KCSEntityKeyId]
+    withCompletionBlock:^(unsigned long count, NSError *errorOrNil) {
         STAssertNoError
         KTAssertEqualsInt(count, 1, @"Should delete one");
         XCTAssertTrue([NSThread isMainThread]);

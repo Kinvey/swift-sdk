@@ -12,7 +12,7 @@ import XCTest
 /*!
     Unit Test for MLIBZ-408: iOS SDK 1.32.1 KCSObjectMapper crash
 */
-class EmptyResponseDataTests: XCTestCase {
+class EmptyResponseDataTests: KCSTestCase {
     
     private class MockProtocol : NSURLProtocol {
         
@@ -63,7 +63,11 @@ class EmptyResponseDataTests: XCTestCase {
             expectationLogin?.fulfill()
         })
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationLogin = nil
+        })
+        
+        XCTAssertNotNil(KCSUser.activeUser())
     }
     
     override func tearDown() {

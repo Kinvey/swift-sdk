@@ -77,15 +77,7 @@ NSString * getLogDate3()
     return [NSString stringWithCString:timestring encoding:NSASCIIStringEncoding];
 }
 
-
-@interface KCSRequest2 ()
-@property (nonatomic) BOOL useMock;
-@property (nonatomic, copy) KCSRequestCompletionBlock completionBlock;
-@property (nonatomic, copy) NSString* contentType;
-@property (nonatomic, weak) id<KCSCredentials> credentials;
-@property (nonatomic, retain) NSString* route;
-@property (nonatomic, copy) NSDictionary* options;
-@end
+#import "KCSRequest2+Private.h"
 
 @implementation KCSRequest2
 static NSOperationQueue* kcsRequestQueue;
@@ -338,7 +330,7 @@ static NSOperationQueue* kcsRequestQueue;
     return request;
 }
 
-- (id<KCSNetworkOperation>) start
+- (NSOperation<KCSNetworkOperation>*) start
 {
     NSAssert(_route, @"should have route");
     if (!self.credentials) {
@@ -370,7 +362,9 @@ static NSOperationQueue* kcsRequestQueue;
     @weakify(op);
     op.completionBlock = ^() {
         @strongify(op);
-        [self requestCallback:op request:request];
+        if (!op.isCancelled) {
+            [self requestCallback:op request:request];
+        }
     };
     op.progressBlock = self.progress;
     
@@ -519,5 +513,11 @@ static NSMutableArray* _sRequestArray;
     NSAssert(NO, @"Should not call this function");
 }
 #endif
+
++(void)cancelAndWaitUntilAllOperationsAreFinished
+{
+    [kcsRequestQueue cancelAllOperations];
+    [kcsRequestQueue waitUntilAllOperationsAreFinished];
+}
 
 @end

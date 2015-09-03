@@ -30,6 +30,8 @@
 
 - (void) setUp
 {
+    [super setUp];
+    
     BOOL setup = [TestUtils setUpKinveyUnittestBackend:self];
     XCTAssertTrue(setup, @"should be set-up");
     
@@ -627,7 +629,6 @@ NSArray* largeArray()
     KCSQuery* planRoomQuery = [KCSQuery query];
     
     KCSQueryLimitModifier *limitModifier = [[KCSQueryLimitModifier alloc] initWithLimit:200];
-    KCSQuerySkipModifier *skipModifier = [[KCSQuerySkipModifier alloc] initWithcount:1800];
     
     planRoomQuery.limitModifer = limitModifier;
     // planRoomQuery.skipModifier = skipModifier;

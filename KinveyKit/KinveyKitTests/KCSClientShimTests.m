@@ -17,11 +17,11 @@
 // contents is a violation of applicable laws.
 //
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
 #import "KinveyCoreInternal.h"
 
-@interface KCSClientShimTests : XCTestCase
+@interface KCSClientShimTests : KCSTestCase
 
 @end
 
@@ -60,31 +60,37 @@
     KCSClient* client = [KCSClient sharedClient];
     
     NSMutableArray* threads = [NSMutableArray array];
+    NSMutableArray* expectations = [NSMutableArray array];
     
     for (NSUInteger i = 0; i < 1000; i++) {
         NSString* name = [NSString stringWithFormat:@"ClearCache Thread %@", @(i)];
-        __weak XCTestExpectation* expectationThread = [self expectationWithDescription:name];
-        NSThread* thread = [[NSThread alloc] initWithTarget:self selector:@selector(KCSClient_clearCache:) object:@[client, expectationThread]];
+        XCTestExpectation* expectationThread = [self expectationWithDescription:name];
+        [expectations addObject:expectationThread];
+        NSThread* thread = [[NSThread alloc] initWithTarget:self selector:@selector(KCSClient_clearCache:) object:@[client, expectations, expectationThread]];
         thread.name = name;
         [threads addObject:thread];
-    }
-    
-    for (NSThread* thread in threads) {
-        thread.qualityOfService = NSQualityOfServiceBackground;
     }
     
     for (NSThread* thread in threads) {
         [thread start];
     }
     
-    [self waitForExpectationsWithTimeout:60 handler:nil];
+    [self waitForExpectationsWithTimeout:60 handler:^(NSError *error) {
+        [expectations removeAllObjects];
+    }];
 }
 
 -(void)KCSClient_clearCache:(NSArray*)args
 {
     @autoreleasepool {
         [(KCSClient*) args[0] clearCache];
-        [(XCTestExpectation*) args[1] fulfill];
+        NSArray* expectations = args[1];
+        XCTestExpectation* expectation = args[2];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([expectations containsObject:expectation]) {
+                [expectation fulfill];
+            }
+        });
     }
 }
 

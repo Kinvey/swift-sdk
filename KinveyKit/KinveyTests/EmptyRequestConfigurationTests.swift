@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class EmptyRequestConfigurationTests: XCTestCase {
+class EmptyRequestConfigurationTests: KCSTestCase {
 
     var collection: KCSCollection!
     var store: KCSStore!
@@ -72,10 +72,12 @@ class EmptyRequestConfigurationTests: XCTestCase {
             KCSStoreKeyCachePolicy : KCSCachePolicy.LocalFirst.rawValue,
             KCSStoreKeyOfflineUpdateEnabled : true
         ])
+        
+        XCTAssertTrue(KCSURLProtocol.registerClass(MockURLProtocol.self))
     }
     
     override func tearDown() {
-        KCSURLProtocol.unregisterClass(MockURLProtocol)
+        KCSURLProtocol.unregisterClass(MockURLProtocol.self)
         
         super.tearDown()
     }
@@ -86,20 +88,21 @@ class EmptyRequestConfigurationTests: XCTestCase {
             "name" : "Boston",
             "state" : "MA"
         ]
-        weak var expectationSave = self.expectationWithDescription("save")
-        
-        XCTAssertTrue(KCSURLProtocol.registerClass(MockURLProtocol))
+        weak var expectationSave = expectationWithDescription("save")
         
         self.store.saveObject(obj,
             withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                 XCTAssertNil(error)
                 XCTAssertNotNil(results)
-                XCTAssertEqual(results.count, 1)
                 
-                if results.count > 0 {
-                    var result = results[0].mutableCopy() as! NSMutableDictionary
-                    result.removeObjectForKey(KCSEntityKeyMetadata)
-                    XCTAssertEqual(result, obj)
+                if let results = results {
+                    XCTAssertEqual(results.count, 1)
+                    
+                    if (results.count > 0) {
+                        var result = results[0].mutableCopy() as! NSMutableDictionary
+                        result.removeObjectForKey(KCSEntityKeyMetadata)
+                        XCTAssertEqual(result, obj)
+                    }
                 }
                 
                 XCTAssertTrue(NSThread.isMainThread())
@@ -111,7 +114,9 @@ class EmptyRequestConfigurationTests: XCTestCase {
             }
         )
         
-        self.waitForExpectationsWithTimeout(timeout, handler: nil)
+        waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in
+            expectationSave = nil
+        })
     }
 
 }

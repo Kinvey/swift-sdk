@@ -14,7 +14,7 @@
 #import "KinveyUser+Private.h"
 #import "NSString+KinveyAdditions.h"
 
-@interface MICTestsObjC : XCTestCase
+@interface MICTestsObjC : KCSTestCase
 
 @end
 

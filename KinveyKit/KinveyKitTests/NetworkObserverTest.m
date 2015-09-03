@@ -21,7 +21,7 @@
 #import "KinveyCoreInternal.h"
 #import "TestUtils2.h"
 
-@interface NetworkObserverTest : XCTestCase
+@interface NetworkObserverTest : KCSTestCase
 @property (atomic) NSInteger count;
 @end
 

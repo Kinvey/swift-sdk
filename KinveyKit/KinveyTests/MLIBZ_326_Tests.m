@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 #import <KinveyKit/KinveyKit.h>
 
-@interface MLIBZ_326_Tests : XCTestCase
+@interface MLIBZ_326_Tests : KCSTestCase
 
 @end
 

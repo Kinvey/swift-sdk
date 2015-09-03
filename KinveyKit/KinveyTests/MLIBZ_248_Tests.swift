@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class MLIBZ_248_Tests: XCTestCase {
+class MLIBZ_248_Tests: KCSTestCase {
     
     class MockURLProtocol: NSURLProtocol {
         
@@ -68,7 +68,9 @@ class MLIBZ_248_Tests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationLogin = nil
+        })
         
         KCSURLProtocol.registerClass(MockURLProtocol.self)
     }
@@ -97,7 +99,9 @@ class MLIBZ_248_Tests: XCTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: nil)
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectationQuery = nil
+        })
     }
 
 }

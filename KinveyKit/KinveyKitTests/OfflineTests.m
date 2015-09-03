@@ -110,7 +110,7 @@
 
 @end
 
-@interface OfflineTests : XCTestCase
+@interface OfflineTests : KCSTestCase
 @property (nonatomic, strong) KCSOfflineUpdate* update;
 @property (nonatomic, strong) KCSEntityPersistence* persistence;
 @property (nonatomic, strong) OfflineDelegate* delegate;

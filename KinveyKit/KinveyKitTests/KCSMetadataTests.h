@@ -16,8 +16,8 @@
 // contents is a violation of applicable laws.
 //
 
-#import <XCTest/XCTest.h>
+#import "KCSTestCase.h"
 
-@interface KCSMetadataTests : XCTestCase
+@interface KCSMetadataTests : KCSTestCase
 
 @end

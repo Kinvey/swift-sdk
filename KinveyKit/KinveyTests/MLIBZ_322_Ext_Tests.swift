@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class MLIBZ_322_Ext_Tests: XCTestCase {
+class MLIBZ_322_Ext_Tests: KCSTestCase {
 
     func testInvalidOperator() {
         let low = 1;

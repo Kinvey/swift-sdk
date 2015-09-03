@@ -28,7 +28,7 @@
 #define kImageSize 3510397
 
 /* Test File loading irrespective of KCS blob service */
-@interface FileRequestTests : XCTestCase
+@interface FileRequestTests : KCSTestCase
 
 @end
 
@@ -40,39 +40,70 @@
     [self setupKCS:YES];
 }
 
-- (void)tearDown
-{
-    [super tearDown];
-}
-
 - (void)testDownloadStream
 {
-    KCSFileRequest* f = [[KCSFileRequest alloc] init];
+    KCSFileRequestManager* f = [[KCSFileRequestManager alloc] init];
     KCSFile* file = [[KCSFile alloc] init];
     NSString* fileStr = @"/tmp/123.jpg";
     file.localURL = [KCSFileUtils fileURLForName:fileStr];
     [[NSFileManager defaultManager] removeItemAtURL:file.localURL error:NULL];
     
-    __weak XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
     
     [f downloadStream:file
               fromURL:[NSURL URLWithString:publicFileURL]
   alreadyWrittenBytes:@0 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
-     {
-         KTAssertNoError
-         long bytes = [returnInfo[@"bytesWritten"] longValue];
-         NSDictionary* d = [[NSFileManager defaultManager] attributesOfItemAtPath:[file.localURL path] error:NULL];
-         NSNumber* fileOnDiskSize = d[NSFileSize];
-         XCTAssertEqual(bytes, (long)kImageSize, @"bytes downloaded should match");
-         XCTAssertEqual(bytes, [fileOnDiskSize longValue], @"bytes should also match");
-         XCTAssertTrue([NSThread isMainThread]);
-         
-         [expectationDownload fulfill];
-     } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext)
-     {
-     }];
+    {
+        KTAssertNoError
+        long bytes = [returnInfo[@"bytesWritten"] longValue];
+        NSDictionary* d = [[NSFileManager defaultManager] attributesOfItemAtPath:[file.localURL path] error:NULL];
+        NSNumber* fileOnDiskSize = d[NSFileSize];
+        XCTAssertEqual(bytes, (long)kImageSize, @"bytes downloaded should match");
+        XCTAssertEqual(bytes, [fileOnDiskSize longValue], @"bytes should also match");
+        XCTAssertFalse([NSThread isMainThread]);
+        
+        [expectationDownload fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext)
+    {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDownload = nil;
+    }];
+}
+
+- (void)testDownloadStreamCancel
+{
+    KCSFileRequestManager* f = [[KCSFileRequestManager alloc] init];
+    KCSFile* file = [[KCSFile alloc] init];
+    NSString* fileStr = @"/tmp/123.jpg";
+    file.localURL = [KCSFileUtils fileURLForName:fileStr];
+    [[NSFileManager defaultManager] removeItemAtURL:file.localURL error:NULL];
+    
+    __weak __block XCTestExpectation* expectationDownload = [self expectationWithDescription:@"download"];
+    
+    [f downloadStream:file
+              fromURL:[NSURL URLWithString:publicFileURL]
+  alreadyWrittenBytes:@0 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
+    {
+        KTAssertNoError
+        long bytes = [returnInfo[@"bytesWritten"] longValue];
+        NSDictionary* d = [[NSFileManager defaultManager] attributesOfItemAtPath:[file.localURL path] error:NULL];
+        NSNumber* fileOnDiskSize = d[NSFileSize];
+        XCTAssertEqual(bytes, (long)kImageSize, @"bytes downloaded should match");
+        XCTAssertEqual(bytes, [fileOnDiskSize longValue], @"bytes should also match");
+        XCTAssertFalse([NSThread isMainThread]);
+        
+        [expectationDownload fulfill];
+    } progressBlock:^(NSArray *objects, double percentComplete, NSDictionary *additionalContext)
+    {
+         XCTAssertTrue([NSThread isMainThread]);
+    }];
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationDownload = nil;
+    }];
 }
 
 @end

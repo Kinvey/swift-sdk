@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-class MLIBZ_256_Tests: XCTestCase {
+class MLIBZ_256_Tests: KCSTestCase {
     
     static let appId = "kid_-1WAs8Rh2"
     static let appSecret = "2f355bfaa8cb4f7299e914e8e85d8c98"

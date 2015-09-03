@@ -35,7 +35,7 @@
 
 #define KTAssertU XCTAssertTrue(u, @"pass");
 
-@interface EntityCacheTests : XCTestCase
+@interface EntityCacheTests : KCSTestCase
 
 @end
 
@@ -443,6 +443,43 @@
     XCTAssertTrue([results containsObject:obj1], @"should have item 1");
     XCTAssertTrue([results containsObject:obj2], @"should have item 2");
     
+}
+
+-(void)testCacheForRouteCollectionAndClear
+{
+    KCSObjectCache* ocache = [[KCSObjectCache alloc] init];
+    NSString* route = @"R";
+    NSString* collection = @"zfasdf";
+    
+    NSUInteger size = 5000;
+    NSMutableArray* expectations = [NSMutableArray arrayWithCapacity:size];
+    NSOperationQueue* queue = [[NSOperationQueue alloc] init];
+    queue.maxConcurrentOperationCount = 256;
+    for (NSUInteger i = 0; i < size; i++) {
+        __weak __block XCTestExpectation* expectation = [self expectationWithDescription:[NSString stringWithFormat:@"expectation %@", @(i + 1)]];
+        [expectations addObject:expectation];
+        
+        [queue addOperationWithBlock:^{
+            [ocache addObjects:@[@{@"value" : @(i + 1)}]
+                         route:route
+                    collection:collection];
+            [expectation fulfill];
+        }];
+        
+        __weak __block XCTestExpectation* expectationClear = [self expectationWithDescription:@"clear"];
+        [expectations addObject:expectationClear];
+        
+        [queue addOperationWithBlock:^{
+            [ocache clear];
+            [expectationClear fulfill];
+        }];
+    }
+    
+    [self waitForExpectationsWithTimeout:60 handler:^(NSError *error) {
+        [expectations removeAllObjects];
+        [queue cancelAllOperations];
+        [queue waitUntilAllOperationsAreFinished];
+    }];
 }
 
 #warning REINSTATE TESTS

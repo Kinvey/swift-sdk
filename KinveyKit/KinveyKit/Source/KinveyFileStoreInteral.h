@@ -24,7 +24,7 @@
 
 #import "KCSFile+KCSInternal.h"
 
-#import "KCSFileRequest.h"
+#import "KCSFileRequestManager.h"
 #import "KCSFileOperation.h"
 
 #endif

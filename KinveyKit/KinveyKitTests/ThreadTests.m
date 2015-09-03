@@ -82,7 +82,7 @@
 @end
 
 
-@interface ThreadTests : XCTestCase <NSURLSessionDataDelegate>
+@interface ThreadTests : KCSTestCase <NSURLSessionDataDelegate>
 @property (nonatomic) int count;
 @property (nonatomic, retain) NSMutableDictionary* d;
 @end
@@ -102,13 +102,24 @@ static NSOperationQueue* queue;
 {
     [super setUp];
     _count = 0;
-    _d = [NSMutableDictionary dictionary];
+    @synchronized (self) {
+        _d = [NSMutableDictionary dictionary];
+    }
     // Put setup code here; it will be run once, before the first test case.
 }
 
-- (void)tearDown
++ (void)tearDown
 {
-    // Put teardown code here; it will be run once, after the last test case.
+    [queue cancelAllOperations];
+    if (queue.operationCount > 0) {
+        for (NSOperation* op in queue.operations) {
+            if ([op isKindOfClass:[TestOperation class]]) {
+                ((TestOperation*) op).finished = YES;
+            }
+        }
+    }
+    [queue waitUntilAllOperationsAreFinished];
+    
     [super tearDown];
 }
 
@@ -124,7 +135,9 @@ static NSOperationQueue* queue;
             //            session.delegate = self;
             NSURLSessionDataTask* task = [session dataTaskWithURL:[NSURL URLWithString:@"http://localhost:3000/locations"]];
             if (op) {
-                _d[task] = op;
+                @synchronized (self) {
+                    _d[task] = op;
+                }
             }
             [task resume];
              
@@ -145,7 +158,10 @@ static NSOperationQueue* queue;
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-    TestOperation* op = _d[task];
+    TestOperation* op = nil;
+    @synchronized (self) {
+        op = _d[task];
+    }
     op.finished = YES;
     NSLog(@"%@ done", op);
     _count++;

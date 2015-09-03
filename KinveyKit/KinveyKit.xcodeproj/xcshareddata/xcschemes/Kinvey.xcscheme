@@ -51,6 +51,280 @@
                BlueprintName = "KinveyTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "EmptyResponseDataTests">
+               </Test>
+               <Test
+                  Identifier = "KCSLinkedAppdataStoreTests">
+               </Test>
+               <Test
+                  Identifier = "KCSOfflineStoreTests">
+               </Test>
+               <Test
+                  Identifier = "KCSRequest2Tests">
+               </Test>
+               <Test
+                  Identifier = "KCSTestCase">
+               </Test>
+               <Test
+                  Identifier = "KCSUserSocialExtrasTest">
+               </Test>
+               <Test
+                  Identifier = "KinveyAppdataStoreTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitEntityDictTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyKitUserTests">
+               </Test>
+               <Test
+                  Identifier = "KinveyUserDiscoveryTests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_239_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_256_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_260_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_290_Tests">
+               </Test>
+               <Test
+                  Identifier = "MLIBZ_371_Tests">
+               </Test>
+               <Test
+                  Identifier = "MemoryLeakTests">
+               </Test>
+               <Test
+                  Identifier = "NetworkObserverTest">
+               </Test>
+               <Test
+                  Identifier = "OfflineTests">
+               </Test>
+            </SkippedTests>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57B7828F1B85524800454C7E"
+               BuildableName = "EmptyResponseDataTests.xctest"
+               BlueprintName = "EmptyResponseDataTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5749268A1B86625500A8B934"
+               BuildableName = "KCSCachedStoreTests.xctest"
+               BlueprintName = "KCSCachedStoreTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5740AA6A1B866B3700F153A2"
+               BuildableName = "KCSFileStoreTests.xctest"
+               BlueprintName = "KCSFileStoreTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLOptionsFilename">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLOptionsFilenameAndNewer">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLOptionsIfNewer">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLOptionsIfNewerButNotNewer">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLStopAndResume">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithURLData">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithURLDataCancel">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testGetByFilenames">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testGetByFilenamesCancel">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testStreamingBasic">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testStreamingByName">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTestsSwift/testDownloadByName()">
+               </Test>
+            </SkippedTests>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57B5CE7E1B8696070064EB00"
+               BuildableName = "KCSFileStoreMemoryTestsSwift.xctest"
+               BlueprintName = "KCSFileStoreMemoryTestsSwift"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "579523BD1B869C9E000D1C46"
+               BuildableName = "KCSLogTestsAllEnabled.xctest"
+               BlueprintName = "KCSLogTestsAllEnabled"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57E6B1E61B86A0A300E05C61"
+               BuildableName = "KCSLogTestsAllDisabled.xctest"
+               BlueprintName = "KCSLogTestsAllDisabled"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "571D72CA1B879167009E9122"
+               BuildableName = "KCSProtocolTestsIdNotString.xctest"
+               BlueprintName = "KCSProtocolTestsIdNotString"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5718D8811B8795E3004EF225"
+               BuildableName = "KCSProtocolTestsKmdLmtMissing.xctest"
+               BlueprintName = "KCSProtocolTestsKmdLmtMissing"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5718D89C1B87A205004EF225"
+               BuildableName = "KCSProtocolTestsKmdMissing.xctest"
+               BlueprintName = "KCSProtocolTestsKmdMissing"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5718D8B51B87A326004EF225"
+               BuildableName = "KCSProtocolTestsResponseContentType.xctest"
+               BlueprintName = "KCSProtocolTestsResponseContentType"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "575F92551B87A56D006FB6FB"
+               BuildableName = "KCSProtocolTestsWrongJsonRootType.xctest"
+               BlueprintName = "KCSProtocolTestsWrongJsonRootType"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "575F92711B87AC98006FB6FB"
+               BuildableName = "KCSQueryTests.xctest"
+               BlueprintName = "KCSQueryTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5746AADA1B87F2C200F8DFCE"
+               BuildableName = "KCSQueryJsonErrorTests.xctest"
+               BlueprintName = "KCSQueryJsonErrorTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "575F92D41B87ADD0006FB6FB"
+               BuildableName = "KCSUserTests.xctest"
+               BlueprintName = "KCSUserTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "576202F81B87D25B001E2B92"
+               BuildableName = "KCSThreadTests.xctest"
+               BlueprintName = "KCSThreadTests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5762035B1B87E3CD001E2B92"
+               BuildableName = "RequestConfigurationTestsComplexHttpRequestHeaders.xctest"
+               BlueprintName = "RequestConfigurationTestsComplexHttpRequestHeaders"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5746AAA41B87E68400F8DFCE"
+               BuildableName = "RequestConfigurationTestsGlobalHttpRequestHeaders.xctest"
+               BlueprintName = "RequestConfigurationTestsGlobalHttpRequestHeaders"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5746AABE1B87E76F00F8DFCE"
+               BuildableName = "RequestConfigurationTestsHttpRequestHeaders.xctest"
+               BlueprintName = "RequestConfigurationTestsHttpRequestHeaders"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
