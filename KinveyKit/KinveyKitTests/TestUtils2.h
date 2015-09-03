@@ -25,6 +25,7 @@
 #import "KCSMockServer.h"
 #import "KCSMockReachability.h"
 #import "KCSRequestConfiguration.h"
+#import "KCSAssert.h"
 
 #define KTAssertNoError XCTAssertNil(error, @"Should not get an error: %@", error);
 
@@ -41,7 +42,6 @@
 #define KTPollDone self.done = YES;
 #define KTPollStart self.done = NO; XCTAssertTrue([self poll], @"polling timed out");
 #define KTPollNoAssert self.done = NO; [self poll];
-
 
 @protocol KCSCredentials;
 id<KCSCredentials> mockCredentails();

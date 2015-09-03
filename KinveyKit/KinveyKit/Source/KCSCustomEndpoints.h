@@ -19,6 +19,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KCSBlockDefs.h"
+#import "KCSRequest.h"
 
 /**
  Class to wrap Custom Business Logic Endpoints.
@@ -30,10 +31,11 @@
  @param endpoint the name of the custom endpoint
  @param params the body paramaters to pass to the endpoint
  @param completionBlock the response block. `results` will be the value returned by your business logic, and `error` will be non-nil if an error occurred.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
  @since 1.17.0
  */
-+ (void) callEndpoint:(NSString*)endpoint
-               params:(NSDictionary*)params
-      completionBlock:(KCSCustomEndpointBlock)completionBlock;
++(KCSRequest*)callEndpoint:(NSString*)endpoint
+                    params:(NSDictionary*)params
+           completionBlock:(KCSCustomEndpointBlock)completionBlock;
 
 @end

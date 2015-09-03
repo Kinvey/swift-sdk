@@ -19,6 +19,7 @@
 #import <Foundation/Foundation.h>
 
 #import "KCSStore.h"
+#import "KCSRequest.h"
 
 @class KCSCollection;
 @interface KCSBackgroundAppdataStore : NSObject <KCSStore>
@@ -30,18 +31,25 @@
 
 + (instancetype)storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options KCS_DEPRECATED(Auth handler not used--use storeWithCollection:options: instead, 1.22.0);
 
-- (void)loadObjectWithID: (id)objectID
-     withCompletionBlock: (KCSCompletionBlock)completionBlock
-       withProgressBlock: (KCSProgressBlock)progressBlock;
+-(KCSRequest*)loadObjectWithID:(id)objectID
+           withCompletionBlock:(KCSCompletionBlock)completionBlock
+             withProgressBlock:(KCSProgressBlock)progressBlock;
 
-- (void)group:(id)fieldOrFields reduce:(KCSReduceFunction*)function completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
+-(KCSRequest*)group:(id)fieldOrFields
+             reduce:(KCSReduceFunction*)function
+    completionBlock:(KCSGroupCompletionBlock)completionBlock
+      progressBlock:(KCSProgressBlock)progressBlock;
 
-- (void) group:(id)fieldOrFields reduce:(KCSReduceFunction*)function condition:(KCSQuery*)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock;
-
+-(KCSRequest*)group:(id)fieldOrFields
+             reduce:(KCSReduceFunction*)function
+          condition:(KCSQuery*)condition
+    completionBlock:(KCSGroupCompletionBlock)completionBlock
+      progressBlock:(KCSProgressBlock)progressBlock;
 
 #pragma mark -  Information
-- (void)countWithBlock: (KCSCountBlock)countBlock;
+-(KCSRequest*)countWithBlock:(KCSCountBlock)countBlock;
 
-- (void)countWithQuery:(KCSQuery*)query completion:(KCSCountBlock)countBlock;
+-(KCSRequest*)countWithQuery:(KCSQuery*)query
+                  completion:(KCSCountBlock)countBlock;
 
 @end

@@ -82,12 +82,13 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
  @param completionBlock A block that gets invoked when all objects are loaded
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  @param cachePolicy override the object's cachePolicy for this load only.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
  @see [KCSAppdataStore loadObjectWithID:withCompletionBlock:withProgressBlock:]
  */
-- (void)loadObjectWithID:(id)objectID 
-     withCompletionBlock:(KCSCompletionBlock)completionBlock
-       withProgressBlock:(KCSProgressBlock)progressBlock
-             cachePolicy:(KCSCachePolicy)cachePolicy;
+-(KCSRequest*)loadObjectWithID:(id)objectID
+           withCompletionBlock:(KCSCompletionBlock)completionBlock
+             withProgressBlock:(KCSProgressBlock)progressBlock
+                   cachePolicy:(KCSCachePolicy)cachePolicy;
 
 /** Query or fetch an object (or objects) in the store (optional cache policy).
  
@@ -99,8 +100,12 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
  @param completionBlock A block that gets invoked when the query/fetch is "complete" (as defined by the store)
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  @param cachePolicy the policy for to use for this query only. 
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
  */
-- (void)queryWithQuery:(id)query withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
+-(KCSRequest*)queryWithQuery:(id)query
+         withCompletionBlock:(KCSCompletionBlock)completionBlock
+           withProgressBlock:(KCSProgressBlock)progressBlock
+                 cachePolicy:(KCSCachePolicy)cachePolicy;
 
 /*! Aggregate objects in the store and apply a function to all members in that group (optional cache policy).
  
@@ -112,9 +117,15 @@ KCS_CONSTANT KCSStoreKeyOfflineUpdateEnabled;
  @param completionBlock A block that is invoked when the grouping is complete, or an error occurs. 
  @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
  @param cachePolicy override the object's cachePolicy for this group query only.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
  @see [KCSAppdataStore group:reduce:condition:completionBlock:progressBlock:]
  */
-- (void)group:(id)fieldOrFields reduce:(KCSReduceFunction *)function condition:(KCSQuery *)condition completionBlock:(KCSGroupCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock cachePolicy:(KCSCachePolicy)cachePolicy;
+-(KCSRequest*)group:(id)fieldOrFields
+             reduce:(KCSReduceFunction *)function
+          condition:(KCSQuery *)condition
+    completionBlock:(KCSGroupCompletionBlock)completionBlock
+      progressBlock:(KCSProgressBlock)progressBlock
+        cachePolicy:(KCSCachePolicy)cachePolicy;
 
 ///---------------------------------------------------------------------------------------
 /// @name Bulk Data Operations

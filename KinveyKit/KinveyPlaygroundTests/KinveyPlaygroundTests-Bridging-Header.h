@@ -4,3 +4,4 @@
 
 #import <KinveyKit/KinveyKit.h>
 #import "KCSKeychain.h"
+#import "KCSTestCase.h"

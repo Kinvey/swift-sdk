@@ -328,7 +328,7 @@ static NSString* _collectionName;
     }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     
-    __weak XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    __weak __block XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
     [store loadObjectWithID:obj.objId withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         //TODO
 //        STAssertNoError
@@ -345,7 +345,61 @@ static NSString* _collectionName;
     } withProgressBlock:^(NSArray *objects, double percentComplete) {
         XCTAssertTrue([NSThread isMainThread]);
     }];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationLoad = nil;
+    }];
+}
+
+- (void) testLoadCancel
+{
+    __block LinkedTestClass* obj = [[LinkedTestClass alloc] init];
+    obj.objDescription = @"test load";
+    obj.resource = [self makeImage];
+    
+    __weak XCTestExpectation* expectationSave = [self expectationWithDescription:@"save"];
+    
+    KCSLinkedAppdataStore* store = [KCSLinkedAppdataStore storeWithCollection:_collection options:nil];
+    [store saveObject:obj withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+        STAssertNoError
+        XCTAssertNotNil(objectsOrNil, @"should have gotten back the objects");
+        LinkedTestClass* savedObj = [objectsOrNil objectAtIndex:0];
+        XCTAssertNotNil(savedObj.resource, @"need a resource filled out");
+        XCTAssertTrue([savedObj.resource isKindOfClass:[UIImage class]], @"expecting an UIImage out");
+        XCTAssertTrue([NSThread isMainThread]);
+        obj = [objectsOrNil objectAtIndex:0];
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSave fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
     [self waitForExpectationsWithTimeout:30 handler:nil];
+    
+    __weak __block XCTestExpectation* expectationLoad = [self expectationWithDescription:@"load"];
+    KCSRequest* request = [store loadObjectWithID:obj.objId
+                              withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+    {
+        XCTFail();
+        
+        [expectationLoad fulfill];
+    } withProgressBlock:^(NSArray *objects, double percentComplete) {
+        XCTAssertTrue([NSThread isMainThread]);
+    }];
+    
+    XCTAssertFalse(request.isCancelled);
+    
+    request.cancellationBlock = ^{
+        [expectationLoad fulfill];
+    };
+    
+    [request cancel];
+    
+    XCTAssertTrue(request.isCancelled);
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationLoad = nil;
+    }];
 }
 
 - (void) testLinkedFilePreservesObjectMetadata

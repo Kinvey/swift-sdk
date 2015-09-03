@@ -72,6 +72,18 @@ if (progressBlock) { \
     }; \
 }
 
+#define SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK2(progressBlock) \
+if (progressBlock) { \
+    KCSProgressBlock2 progressBlockOriginal = progressBlock; \
+    progressBlock = ^(NSArray *objects, double percentComplete, NSDictionary* additionalContext) { \
+        if ([NSThread isMainThread]) { \
+            progressBlockOriginal(objects, percentComplete, additionalContext); \
+        } else { \
+            DISPATCH_ASYNC_MAIN_QUEUE(progressBlockOriginal(objects, percentComplete, additionalContext)); \
+        } \
+    }; \
+}
+
 #define SWITCH_TO_MAIN_THREAD_GROUP_COMPLETION_BLOCK(completionBlock) \
 if (completionBlock) { \
     KCSGroupCompletionBlock completionBlockOriginal = completionBlock; \

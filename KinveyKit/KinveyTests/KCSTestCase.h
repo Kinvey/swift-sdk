@@ -7,6 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "KCSAssert.h"
 
 @interface KCSTestCase : XCTestCase
 

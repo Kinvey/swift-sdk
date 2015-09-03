@@ -291,7 +291,7 @@
         
     } else {
         self.deviceToken = nil;
-        completionBlock(NO, nil);
+        if (completionBlock) completionBlock(NO, nil);
     }
 }
 

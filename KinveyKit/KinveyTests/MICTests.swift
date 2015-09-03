@@ -91,6 +91,62 @@ class MICTests: KCSTestCase {
         waitForExpectationsWithTimeout(30, handler: nil)
     }
     
+    func testAuthCodeApiCancel() {
+        weak var expectation = expectationWithDescription("login")
+        
+        var executed = false
+        let request = KCSUser.loginWithAuthorizationCodeAPI(
+            "kinveyAuthDemo://",
+            options: [
+                KCSUsername : "mjs",
+                KCSPassword : "demo"
+            ]
+        ) { (user: KCSUser!, error: NSError!, userActionResult: KCSUserActionResult) -> Void in
+            executed = true
+            XCTAssertNil(error)
+            XCTAssertNotNil(user)
+            
+            if user != nil {
+                XCTAssertNotNil(user.userId)
+                XCTAssertNotNil(user.username)
+                XCTAssertNotNil(user.userAttributes)
+                
+                let socialIdentity = user.userAttributes["_socialIdentity"] as! NSDictionary
+                
+                XCTAssertNotNil(socialIdentity)
+                
+                let kinveyAuth = socialIdentity["kinveyAuth"] as! NSDictionary
+                
+                XCTAssertNotNil(kinveyAuth)
+                XCTAssertNotNil(kinveyAuth["access_token"])
+                XCTAssertNotNil(kinveyAuth["audience"])
+                XCTAssertNotNil(kinveyAuth["client_token"])
+                XCTAssertNotNil(kinveyAuth["id"])
+                XCTAssertEqual(kinveyAuth["id"] as! String, "mjs")
+            }
+            
+            XCTAssertTrue(NSThread.isMainThread())
+            
+            expectation?.fulfill()
+        }
+        
+        XCTAssertFalse(request.cancelled)
+        
+        request.cancellationBlock = {
+            expectation?.fulfill()
+        }
+        
+        request.cancel()
+        
+        XCTAssertTrue(request.cancelled)
+        
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            expectation = nil
+        })
+        
+        XCTAssertFalse(executed)
+    }
+    
 //    func testRefreshToken() {
 //        weak var expectationLogin = expectationWithDescription("login")
 //        

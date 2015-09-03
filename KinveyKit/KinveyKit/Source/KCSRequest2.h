@@ -74,7 +74,7 @@ typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*e
                            credentials:(id)credentials
                   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration;
 
-- (id<KCSNetworkOperation>) start;
+- (NSOperation<KCSNetworkOperation>*) start;
 
 BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op);
 + (NSOperationQueue*) requestQueue;
