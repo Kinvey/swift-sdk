@@ -69,6 +69,7 @@
 - (void) testBasicDisableRetry
 {
     NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:[KCSClient sharedClient].configuration.options];
+    BOOL originalValue = [options[@"KCS_CONFIG_RETRY_DISABLED"] boolValue];
     options[@"KCS_CONFIG_RETRY_DISABLED"] = @YES;
     [KCSClient sharedClient].configuration.options = options;
     
@@ -88,6 +89,10 @@
     
     [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
         expectationGetAll = nil;
+        
+        NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:[KCSClient sharedClient].configuration.options];
+        options[@"KCS_CONFIG_RETRY_DISABLED"] = @(originalValue);
+        [KCSClient sharedClient].configuration.options = options;
     }];
 }
 
