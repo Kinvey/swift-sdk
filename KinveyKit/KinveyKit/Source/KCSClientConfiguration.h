@@ -37,6 +37,9 @@ KCS_CONSTANT KCS_DATE_FORMAT;
 /** This object shoul implement the `KCSLogSink` protocol. Use this along with +[KinveyKit configureLoggingWithNetworkEnabled:debugEnabled:traceEnabled:warningEnabled:errorEnabled:] to send log messages to a custom sink.*/
 KCS_CONSTANT KCS_LOG_SINK;
 
+/** Constant to set a flag in the KCSClientConfiguration to prevent retry on failed requests. */
+KCS_CONSTANT KCS_CONFIG_RETRY_DISABLED;
+
 // Data Protection
 // See the Apple Data Protection guide in the iOS Programming Guide : Advanced App Tricks for more information
 

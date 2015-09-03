@@ -25,6 +25,7 @@
 
 @interface DataStoreTests : KCSTestCase
 @property (nonatomic, retain) NSString* collection;
+@property BOOL configRetryDisabled;
 @end
 
 @implementation DataStoreTests
@@ -37,6 +38,15 @@
     
     //TODO: msg [INFO (datastore, network)] msg
     self.collection = @"DataStoreTests";
+    
+    self.configRetryDisabled = [[KCSClient sharedClient].options[KCS_CONFIG_RETRY_DISABLED] boolValue];
+}
+
+- (void)tearDown
+{
+    XCTAssertEqual([[KCSClient sharedClient].options[KCS_CONFIG_RETRY_DISABLED] boolValue], self.configRetryDisabled);
+    
+    [super tearDown];
 }
 
 - (void) testBasic
@@ -44,7 +54,7 @@
     NSString* _id = [self createEntity];
     XCTAssertNotNil(_id);
     
-    __weak XCTestExpectation* expectationGetAll = [self expectationWithDescription:@"getAll"];
+    __weak __block XCTestExpectation* expectationGetAll = [self expectationWithDescription:@"getAll"];
     
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     [store getAll:^(NSArray *objects, NSError *error) {
@@ -55,7 +65,41 @@
         [expectationGetAll fulfill];
     }];
     
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationGetAll = nil;
+    }];
+}
+
+- (void) testBasicDisableRetry
+{
+    NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:[KCSClient sharedClient].options];
+    BOOL originalValue = [options[KCS_CONFIG_RETRY_DISABLED] boolValue];
+    options[KCS_CONFIG_RETRY_DISABLED] = @YES;
+    [KCSClient sharedClient].configuration.options = options.copy;
+    
+    XCTAssertTrue([KCSClient sharedClient].options[KCS_CONFIG_RETRY_DISABLED]);
+    
+    NSString* _id = [self createEntity];
+    XCTAssertNotNil(_id);
+    
+    __weak __block XCTestExpectation* expectationGetAll = [self expectationWithDescription:@"getAll"];
+    
+    KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
+    [store getAll:^(NSArray *objects, NSError *error) {
+        KTAssertNoError
+        XCTAssertGreaterThanOrEqual(objects.count, 1);
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGetAll fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationGetAll = nil;
+        
+        NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:[KCSClient sharedClient].configuration.options];
+        options[KCS_CONFIG_RETRY_DISABLED] = @(originalValue);
+        [KCSClient sharedClient].configuration.options = options.copy;
+    }];
 }
 
 - (NSString*) createEntity
