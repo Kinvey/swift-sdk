@@ -25,6 +25,7 @@
 
 @interface DataStoreTests : KCSTestCase
 @property (nonatomic, retain) NSString* collection;
+@property BOOL configRetryDisabled;
 @end
 
 @implementation DataStoreTests
@@ -37,11 +38,14 @@
     
     //TODO: msg [INFO (datastore, network)] msg
     self.collection = @"DataStoreTests";
+    
+    self.configRetryDisabled = [[KCSClient sharedClient].options[KCS_CONFIG_RETRY_DISABLED] boolValue];
 }
 
 - (void)tearDown
 {
-    // Put teardown code here; it will be run once, after the last test case.
+    XCTAssertEqual([[KCSClient sharedClient].options[KCS_CONFIG_RETRY_DISABLED] boolValue], self.configRetryDisabled);
+    
     [super tearDown];
 }
 
@@ -68,10 +72,12 @@
 
 - (void) testBasicDisableRetry
 {
-    NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:[KCSClient sharedClient].configuration.options];
-    BOOL originalValue = [options[@"KCS_CONFIG_RETRY_DISABLED"] boolValue];
-    options[@"KCS_CONFIG_RETRY_DISABLED"] = @YES;
-    [KCSClient sharedClient].configuration.options = options;
+    NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:[KCSClient sharedClient].options];
+    BOOL originalValue = [options[KCS_CONFIG_RETRY_DISABLED] boolValue];
+    options[KCS_CONFIG_RETRY_DISABLED] = @YES;
+    [KCSClient sharedClient].configuration.options = options.copy;
+    
+    XCTAssertTrue([KCSClient sharedClient].options[KCS_CONFIG_RETRY_DISABLED]);
     
     NSString* _id = [self createEntity];
     XCTAssertNotNil(_id);
@@ -91,8 +97,8 @@
         expectationGetAll = nil;
         
         NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:[KCSClient sharedClient].configuration.options];
-        options[@"KCS_CONFIG_RETRY_DISABLED"] = @(originalValue);
-        [KCSClient sharedClient].configuration.options = options;
+        options[KCS_CONFIG_RETRY_DISABLED] = @(originalValue);
+        [KCSClient sharedClient].configuration.options = options.copy;
     }];
 }
 
