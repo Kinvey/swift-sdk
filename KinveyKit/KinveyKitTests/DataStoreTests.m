@@ -50,7 +50,7 @@
     NSString* _id = [self createEntity];
     XCTAssertNotNil(_id);
     
-    __weak XCTestExpectation* expectationGetAll = [self expectationWithDescription:@"getAll"];
+    __weak __block XCTestExpectation* expectationGetAll = [self expectationWithDescription:@"getAll"];
     
     KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
     [store getAll:^(NSArray *objects, NSError *error) {
@@ -61,7 +61,34 @@
         [expectationGetAll fulfill];
     }];
     
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationGetAll = nil;
+    }];
+}
+
+- (void) testBasicDisableRetry
+{
+    NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:[KCSClient sharedClient].configuration.options];
+    options[@"KCS_CONFIG_RETRY_DISABLED"] = @YES;
+    [KCSClient sharedClient].configuration.options = options;
+    
+    NSString* _id = [self createEntity];
+    XCTAssertNotNil(_id);
+    
+    __weak __block XCTestExpectation* expectationGetAll = [self expectationWithDescription:@"getAll"];
+    
+    KCSDataStore* store = [[KCSDataStore alloc] initWithCollection:self.collection];
+    [store getAll:^(NSArray *objects, NSError *error) {
+        KTAssertNoError
+        XCTAssertGreaterThanOrEqual(objects.count, 1);
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationGetAll fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationGetAll = nil;
+    }];
 }
 
 - (NSString*) createEntity
