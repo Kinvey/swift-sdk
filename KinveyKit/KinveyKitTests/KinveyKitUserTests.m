@@ -645,7 +645,7 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
 
 - (void) testSendEmailConfirm
 {
-    __weak XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+    __weak __block XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     NSString* testUser = @"testino";
     [KCSUser loginWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError;
@@ -654,9 +654,11 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
         
         [expectationLogin fulfill];
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationLogin = nil;
+    }];
     
-    __weak XCTestExpectation* expectationResetPassword = [self expectationWithDescription:@"resetPassword"];
+    __weak __block XCTestExpectation* expectationResetPassword = [self expectationWithDescription:@"resetPassword"];
     [KCSUser sendEmailConfirmationForUser:testUser withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
         STAssertNoError;
         XCTAssertTrue(emailSent, @"Should send email");
@@ -665,8 +667,52 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
         
         [expectationResetPassword fulfill];
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationResetPassword = nil;
+    }];
+}
 
+- (void) testSendEmailConfirmCancel
+{
+    __weak __block XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+    NSString* testUser = @"testino";
+    [KCSUser loginWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNoError;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLogin fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationLogin = nil;
+    }];
+    
+    __weak __block XCTestExpectation* expectationResetPassword = [self expectationWithDescription:@"resetPassword"];
+    KCSRequest* request = [KCSUser sendEmailConfirmationForUser:testUser
+                                            withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil)
+    {
+        STAssertNoError;
+        XCTAssertTrue(emailSent, @"Should send email");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        XCTFail();
+        
+        [expectationResetPassword fulfill];
+    }];
+    
+    XCTAssertFalse(request.isCancelled);
+    
+    request.cancellationBlock = ^{
+        [expectationResetPassword fulfill];
+    };
+    
+    [request cancel];
+    
+    XCTAssertTrue(request.isCancelled);
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationResetPassword = nil;
+    }];
 }
 
 #if NEVER
@@ -698,7 +744,7 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
 
 - (void) testForgotUsername
 {
-    __weak XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+    __weak __block XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
     NSString* testUser = @"testino";
     [KCSUser loginWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
         STAssertNoError;
@@ -707,9 +753,11 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
         
         [expectationLogin fulfill];
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationLogin = nil;
+    }];
     
-    __weak XCTestExpectation* expectationSendForgotUsername = [self expectationWithDescription:@"sendForgotUsername"];
+    __weak __block XCTestExpectation* expectationSendForgotUsername = [self expectationWithDescription:@"sendForgotUsername"];
     [KCSUser sendForgotUsername:[KCSUser activeUser].email withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil) {
         STAssertNoError;
         XCTAssertTrue(emailSent, @"Should send email");
@@ -718,7 +766,51 @@ static NSString* access_token = @"CAACEdEose0cBAIMFZAoNuuNmjJKkxVmdaqzRXobI6obdA
         
         [expectationSendForgotUsername fulfill];
     }];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationSendForgotUsername = nil;
+    }];
+}
+
+- (void) testForgotUsernameCancel
+{
+    __weak __block XCTestExpectation* expectationLogin = [self expectationWithDescription:@"login"];
+    NSString* testUser = @"testino";
+    [KCSUser loginWithUsername:testUser password:@"12345" withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result) {
+        STAssertNoError;
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationLogin fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationLogin = nil;
+    }];
+    
+    __weak __block XCTestExpectation* expectationSendForgotUsername = [self expectationWithDescription:@"sendForgotUsername"];
+    KCSRequest* request = [KCSUser sendForgotUsername:[KCSUser activeUser].email
+                                  withCompletionBlock:^(BOOL emailSent, NSError *errorOrNil)
+    {
+        STAssertNoError;
+        XCTAssertTrue(emailSent, @"Should send email");
+        
+        XCTAssertTrue([NSThread isMainThread]);
+        
+        [expectationSendForgotUsername fulfill];
+    }];
+    
+    XCTAssertFalse(request.isCancelled);
+    
+    request.cancellationBlock = ^{
+        [expectationSendForgotUsername fulfill];
+    };
+    
+    [request cancel];
+    
+    XCTAssertTrue(request.isCancelled);
+    
+    [self waitForExpectationsWithTimeout:30 handler:^(NSError *error) {
+        expectationSendForgotUsername = nil;
+    }];
 }
 
 #pragma mark - test custom items

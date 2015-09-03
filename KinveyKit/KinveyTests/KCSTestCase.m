@@ -18,7 +18,7 @@
     [super setUp];
     
     [KCSRequest2 cancelAndWaitUntilAllOperationsAreFinished];
-    [KCSFileRequest cancelAndWaitUntilAllOperationsAreFinished];
+    [KCSFileRequestManager cancelAndWaitUntilAllOperationsAreFinished];
     [KCSAppdataStore cancelAndWaitUntilAllOperationsAreFinished];
     
     for (Class clazz in [KCSURLProtocol protocolClasses]) {
@@ -31,7 +31,7 @@
 -(void)tearDown
 {
     [KCSRequest2 cancelAndWaitUntilAllOperationsAreFinished];
-    [KCSFileRequest cancelAndWaitUntilAllOperationsAreFinished];
+    [KCSFileRequestManager cancelAndWaitUntilAllOperationsAreFinished];
     [KCSAppdataStore cancelAndWaitUntilAllOperationsAreFinished];
     
     for (Class clazz in [KCSURLProtocol protocolClasses]) {

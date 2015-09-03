@@ -129,7 +129,7 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "YES">
+            skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5740AA6A1B866B3700F153A2"
@@ -137,6 +137,44 @@
                BlueprintName = "KCSFileStoreTests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLOptionsFilename">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLOptionsFilenameAndNewer">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLOptionsIfNewer">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLOptionsIfNewerButNotNewer">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithResolvedURLStopAndResume">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithURLData">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testDownloadWithURLDataCancel">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testGetByFilenames">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testGetByFilenamesCancel">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testStreamingBasic">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTests/testStreamingByName">
+               </Test>
+               <Test
+                  Identifier = "KCSFileStoreTestsSwift/testDownloadByName()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO">

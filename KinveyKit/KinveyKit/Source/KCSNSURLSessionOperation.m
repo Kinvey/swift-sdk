@@ -1,4 +1,4 @@
-//
+;//
 //  KCSNSURLSessionOperation.m
 //  KinveyKit
 //
@@ -24,6 +24,7 @@
 #import "KCSURLProtocol.h"
 
 @interface KCSNSURLSessionOperation () <NSURLSessionDelegate, NSURLSessionDataDelegate>
+
 @property (nonatomic, strong) NSMutableURLRequest* request;
 @property (nonatomic, strong) NSMutableData* downloadedData;
 @property (nonatomic, strong) NSURLSessionDataTask* dataTask;
@@ -33,6 +34,7 @@
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSURLSession* session;
 @property (nonatomic, assign) dispatch_once_t sessionOnceToken;
+
 @end
 
 @implementation KCSNSURLSessionOperation
@@ -57,18 +59,23 @@
     if (self) {
         _request = request;
         _progressBlock = nil;
+        
+        self.response = [[KCSNetworkResponse alloc] init];
+        self.dataTask = [[self session] dataTaskWithRequest:self.request];
+        [self.dataTask setTaskDescription:self.clientRequestId];
     }
     return self;
 }
 
 -(void)start {
+    if (self.isCancelled) {
+        return;
+    }
+    
     @autoreleasepool {
         [super start];
         
         self.downloadedData = [NSMutableData data];
-        self.response = [[KCSNetworkResponse alloc] init];
-        self.dataTask = [[self session] dataTaskWithRequest:self.request];
-        [self.dataTask setTaskDescription:self.clientRequestId];
         [self.dataTask resume];
     }
 }
@@ -100,9 +107,22 @@
     return YES;
 }
 
+-(BOOL)isCancelled
+{
+    return self.dataTask.state == NSURLSessionTaskStateCanceling;
+}
+
+-(void)cancel
+{
+    [self.dataTask cancel];
+    [super cancel];
+}
+
 - (void) complete:(NSError*) error
 {
-    self.response.jsonData = self.downloadedData;
+    if (!self.isCancelled) {
+        self.response.jsonData = self.downloadedData;
+    }
     self.error = error;
     self.finished = YES;
 }
