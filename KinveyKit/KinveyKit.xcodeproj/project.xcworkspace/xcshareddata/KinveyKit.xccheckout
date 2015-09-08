@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>C1C42193-BD1A-4521-9FD7-24BE6FFDA96A</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>KinveyKit</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>07F9A0674E5BFDFFFC8227534C80C3CFAEFB63A0</key>
 		<string>https://github.com/Kinvey/ios-library.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>KinveyKit/KinveyKit.xcodeproj/project.xcworkspace</string>
+	<string>KinveyKit/KinveyKit.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>07F9A0674E5BFDFFFC8227534C80C3CFAEFB63A0</key>

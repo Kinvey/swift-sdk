@@ -1097,6 +1097,7 @@
 		57FF3E441ABA296200128BC7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D32A60E814716EE300F77A3F /* InfoPlist.strings */; };
 		57FF3E451ABA297A00128BC7 /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		57FF3E461ABA298800128BC7 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27BFEC3217C6876100E6605D /* TestConfig.plist */; };
+		96FDEE0F1B9F6EE0008CC503 /* config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 96FDEE0E1B9F6EE0008CC503 /* config.plist */; };
 		D306B58E154F847C00A52CB8 /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B58D154F847C00A52CB8 /* KCSStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D306B5A3155095A800A52CB8 /* KinveyAppdataStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */; };
 		D306B5A61550B29100A52CB8 /* KCSAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = D306B5A41550B29100A52CB8 /* KCSAppdataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1796,6 +1797,7 @@
 		57FEE8EE1B8E49C300CE0871 /* KCSRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRequest.h; sourceTree = "<group>"; };
 		57FEE8EF1B8E49C300CE0871 /* KCSRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRequest.m; sourceTree = "<group>"; };
 		57FEE8F41B8E521400CE0871 /* KCSRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSRequest+Private.h"; sourceTree = "<group>"; };
+		96FDEE0E1B9F6EE0008CC503 /* config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = config.plist; sourceTree = "<group>"; };
 		D306B58D154F847C00A52CB8 /* KCSStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSStore.h; sourceTree = "<group>"; };
 		D306B5A1155095A800A52CB8 /* KinveyAppdataStoreTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyAppdataStoreTests.h; sourceTree = "<group>"; };
 		D306B5A2155095A800A52CB8 /* KinveyAppdataStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyAppdataStoreTests.m; sourceTree = "<group>"; };
@@ -3094,6 +3096,7 @@
 				D32A60E714716EE300F77A3F /* KinveyKitTests-Info.plist */,
 				D32A60E814716EE300F77A3F /* InfoPlist.strings */,
 				27BFEC3217C6876100E6605D /* TestConfig.plist */,
+				96FDEE0E1B9F6EE0008CC503 /* config.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -4644,6 +4647,7 @@
 			files = (
 				27BFEC3317C6876100E6605D /* TestConfig.plist in Resources */,
 				271DE7BA17728815003541D4 /* mavericks.jpg in Resources */,
+				96FDEE0F1B9F6EE0008CC503 /* config.plist in Resources */,
 				D32A60EA14716EE300F77A3F /* InfoPlist.strings in Resources */,
 				574640291B3E0FA100D17CA0 /* video.mp4 in Resources */,
 				D3F3E88E14BABD5F009063DE /* 1px.png in Resources */,
