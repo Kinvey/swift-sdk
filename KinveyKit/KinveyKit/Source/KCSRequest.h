@@ -19,7 +19,7 @@ typedef void(^KCSRequestCancelationBlock)();
 /*! Flag indicating if the request was cancelled or not. */
 @property (readonly, getter=isCancelled) BOOL cancelled;
 
-/*! Block called during the cancellation process. */
+/*! Block called in response to request cancellation. */
 @property (copy) KCSRequestCancelationBlock cancellationBlock;
 
 /*! Cancel the pending request. */
