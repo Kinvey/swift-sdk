@@ -82,6 +82,28 @@ class KCSErrorDebugTests: KCSTestCase {
                     XCTAssertNotNil(error.userInfo)
                     
                     if let userInfo = error.userInfo {
+                        let kinveyError: AnyObject? = userInfo["Kinvey.kinveyErrorCode"]
+                        XCTAssertNotNil(kinveyError)
+                        if let kinveyError: AnyObject = kinveyError {
+                            XCTAssertTrue(kinveyError.isKindOfClass(NSString.self))
+                            
+                            if kinveyError.isKindOfClass(NSString.self) {
+                                let kinveyErrorStr = kinveyError as! String
+                                XCTAssertEqual(kinveyErrorStr, "Error test")
+                            }
+                        }
+                        
+                        let description: AnyObject? = userInfo[NSLocalizedDescriptionKey]
+                        XCTAssertNotNil(description)
+                        if let description: AnyObject = description {
+                            XCTAssertTrue(description.isKindOfClass(NSString.self))
+                            
+                            if description.isKindOfClass(NSString.self) {
+                                let descriptionStr = description as! String
+                                XCTAssertEqual(descriptionStr, "Description test")
+                            }
+                        }
+                        
                         let debug: AnyObject? = userInfo[NSLocalizedFailureReasonErrorKey]
                         XCTAssertNotNil(debug)
                         if let debug: AnyObject = debug {
