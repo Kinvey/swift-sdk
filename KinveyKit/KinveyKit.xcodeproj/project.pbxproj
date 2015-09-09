@@ -950,6 +950,7 @@
 		57F6B88F1B1FB2D100361C18 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27264AE91880AD1E002C37C9 /* Social.framework */; };
 		57F6B8901B1FB2E300361C18 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68614745F09002D8F2B /* SystemConfiguration.framework */; };
 		57F6B8911B1FB2EB00361C18 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E68414745F09002D8F2B /* MobileCoreServices.framework */; };
+		57FB606A1BA07DC100506172 /* KCSErrorDebugTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB60691BA07DC100506172 /* KCSErrorDebugTests.swift */; };
 		57FEE8F01B8E49C300CE0871 /* KCSRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57FEE8EE1B8E49C300CE0871 /* KCSRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57FEE8F11B8E49C300CE0871 /* KCSRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57FEE8EE1B8E49C300CE0871 /* KCSRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57FEE8F21B8E49C300CE0871 /* KCSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57FEE8EF1B8E49C300CE0871 /* KCSRequest.m */; };
@@ -1791,6 +1792,7 @@
 		57F62A911B30F82600779A5B /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		57F6B88B1B1FB0EC00361C18 /* KinveyPlaygroundTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyPlaygroundTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		57F867071B9562B800380745 /* KCSAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAssert.h; sourceTree = "<group>"; };
+		57FB60691BA07DC100506172 /* KCSErrorDebugTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSErrorDebugTests.swift; sourceTree = "<group>"; };
 		57FEE8EE1B8E49C300CE0871 /* KCSRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRequest.h; sourceTree = "<group>"; };
 		57FEE8EF1B8E49C300CE0871 /* KCSRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRequest.m; sourceTree = "<group>"; };
 		57FEE8F41B8E521400CE0871 /* KCSRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSRequest+Private.h"; sourceTree = "<group>"; };
@@ -2841,6 +2843,7 @@
 				579BE41A1B79112F00938988 /* KCSCachedStoreSwiftTests.swift */,
 				579BE41C1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift */,
 				579BE41E1B7950A000938988 /* KCSUserTests.swift */,
+				57FB60691BA07DC100506172 /* KCSErrorDebugTests.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -5286,6 +5289,7 @@
 				578834451AB8D25500078CC5 /* KCSMockReachability.m in Sources */,
 				579CFC041AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m in Sources */,
 				57405C761B2B9AB600238187 /* MLIBZ_326_Tests.m in Sources */,
+				57FB606A1BA07DC100506172 /* KCSErrorDebugTests.swift in Sources */,
 				578834501AB8D25500078CC5 /* Query2Tests.m in Sources */,
 				578834391AB8D25500078CC5 /* KinveyKitEntityTests.m in Sources */,
 				578834341AB8D25500078CC5 /* KinveyUserDiscoveryTests.m in Sources */,
