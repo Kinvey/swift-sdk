@@ -11,7 +11,7 @@
 typedef void(^KCSRequestCancelationBlock)();
 
 /*!
- Represents a pending request made against a store. Holding an instance of this class allows you, for example, cancel a pending request.
+ Represents a pending request made against a store. Holding an instance of this class allows you, for example, to cancel a pending request.
  @since 1.36.0
  */
 @interface KCSRequest : NSObject
