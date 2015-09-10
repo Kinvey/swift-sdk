@@ -15,6 +15,7 @@
 #import "KCSNSURLSessionFileOperation.h"
 #import "KCSTestCase.h"
 #import "KCSNetworkResponse.h"
+#import "KinveyErrorCodes.h"
 
 @interface KCSUser2 ()
 
