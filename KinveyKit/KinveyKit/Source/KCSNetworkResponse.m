@@ -28,7 +28,7 @@
 #define KCS_ERROR_DESCRIPTION_KEY @"description"
 #define KCS_ERROR_KINVEY_ERROR_CODE_KEY @"error"
 
-#define kKCSErrorCode @"Kinvey.kinveyErrorCode"
+#define kKCSErrorCode KCSErrorCodeKey
 #define kKCSRequestId @"Kinvey.RequestId"
 #define kKCSUnknownBody @"Kinvey.UnknownErrorBody"
 #define kKCSExecutedBL @"Kinvey.ExecutedHooks"
