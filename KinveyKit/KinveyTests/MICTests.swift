@@ -140,7 +140,7 @@ class MICTests: KCSTestCase {
         
         XCTAssertTrue(request.cancelled)
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectation = nil
         })
         
@@ -231,7 +231,7 @@ class MICTests: KCSTestCase {
 //            }
 //        )
 //        
-//        waitForExpectationsWithTimeout(60, handler: { (error: NSError!) -> Void in
+//        waitForExpectationsWithTimeout(60, handler: { (error: NSError?) -> Void in
 //            KCSURLProtocol.unregisterClass(MockURLProtocol)
 //        })
 //    }
