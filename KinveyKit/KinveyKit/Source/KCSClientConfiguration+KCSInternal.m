@@ -30,11 +30,7 @@
 
 - (NSString*) baseURL
 {
-    NSString* protocol = self.options[@"KCS_HOST_PROTOCOL"];
-    NSString* hostname = self.serviceHostname;
-    NSString* hostdomain = self.options[@"KCS_HOST_DOMAIN"];
-    NSString* port = self.options[@"KCS_HOST_PORT"];
-    return [NSString stringWithFormat:@"%@://%@.%@%@/", protocol, hostname, hostdomain, port];
+    return [KCSClient sharedClient].baseURL;
 }
 
 - (int)loglevel

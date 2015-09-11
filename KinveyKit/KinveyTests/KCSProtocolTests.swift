@@ -30,10 +30,9 @@ class KCSProtocolTestsBaseURLProtocol: KCSTestCase {
         let config = KCSClientConfiguration(
             appKey: "kid_-1WAs8Rh2",
             secret: "2f355bfaa8cb4f7299e914e8e85d8c98",
-            options: [
-                "KCS_HOST_PROTOCOL" : "http"
-            ]
+            options: nil
         )
+        config.hostProtocol = "http"
         KCSClient.sharedClient().initializeWithConfiguration(config)
         
         weak var expectationCreateUser = expectationWithDescription("createUser")
