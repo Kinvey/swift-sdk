@@ -36,31 +36,31 @@ class EmptyRequestConfigurationTests: KCSTestCase {
         
         class MockOfflineUpdateDelegate:NSObject, KCSOfflineUpdateDelegate {
             
-            private func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
+            @objc private func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
                 return true
             }
             
-            private func didEnqueueObject(objectId: String!, inCollection collectionName: String!) {
+            @objc private func didEnqueueObject(objectId: String!, inCollection collectionName: String!) {
             }
             
-            private func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
+            @objc private func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
                 return true
             }
             
-            private func willSaveObject(objectId: String!, inCollection collectionName: String!) {
+            @objc private func willSaveObject(objectId: String!, inCollection collectionName: String!) {
             }
             
-            private func didSaveObject(objectId: String!, inCollection collectionName: String!) {
+            @objc private func didSaveObject(objectId: String!, inCollection collectionName: String!) {
             }
             
-            private func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
+            @objc private func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
                 return true
             }
             
-            private func willDeleteObject(objectId: String!, inCollection collectionName: String!) {
+            @objc private func willDeleteObject(objectId: String!, inCollection collectionName: String!) {
             }
             
-            private func didDeleteObject(objectId: String!, inCollection collectionName: String!) {
+            @objc private func didDeleteObject(objectId: String!, inCollection collectionName: String!) {
             }
             
         }
@@ -83,7 +83,7 @@ class EmptyRequestConfigurationTests: KCSTestCase {
     }
 
     func test() {
-        var obj = [
+        let obj = [
             "_id" : "Boston",
             "name" : "Boston",
             "state" : "MA"
@@ -99,7 +99,7 @@ class EmptyRequestConfigurationTests: KCSTestCase {
                     XCTAssertEqual(results.count, 1)
                     
                     if (results.count > 0) {
-                        var result = results[0].mutableCopy() as! NSMutableDictionary
+                        let result = results[0].mutableCopy() as! NSMutableDictionary
                         result.removeObjectForKey(KCSEntityKeyMetadata)
                         XCTAssertEqual(result, obj)
                     }
@@ -114,7 +114,7 @@ class EmptyRequestConfigurationTests: KCSTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(timeout, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(timeout, handler: { (error: NSError?) -> Void in
             expectationSave = nil
         })
     }

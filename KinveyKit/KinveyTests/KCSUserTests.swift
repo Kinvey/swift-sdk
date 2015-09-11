@@ -39,7 +39,7 @@ class KCSUserTests: KCSTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationCreate = nil
         })
     }
@@ -69,7 +69,7 @@ class KCSUserTests: KCSTestCase {
         
         XCTAssertTrue(request.cancelled)
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationCreate = nil
         })
         
@@ -91,7 +91,7 @@ class KCSUserTests: KCSTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationCreate = nil
         })
     }
@@ -108,7 +108,7 @@ class KCSUserTests: KCSTestCase {
                 expectationRefresh?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
                 expectationRefresh = nil
             })
         }
@@ -137,7 +137,7 @@ class KCSUserTests: KCSTestCase {
             
             XCTAssertTrue(request.cancelled)
             
-            waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
                 expectationRefresh = nil
             })
         }
@@ -158,7 +158,7 @@ class KCSUserTests: KCSTestCase {
                 }
             )
             
-            waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
                 expectationChangePassword = nil
             })
         }
@@ -189,7 +189,7 @@ class KCSUserTests: KCSTestCase {
             
             XCTAssertTrue(request.cancelled)
             
-            waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
                 expectationChangePassword = nil
             })
         }
@@ -207,7 +207,7 @@ class KCSUserTests: KCSTestCase {
                 expectationSaveUser?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
                 expectationSaveUser = nil
             })
         }
@@ -236,7 +236,7 @@ class KCSUserTests: KCSTestCase {
             
             XCTAssertTrue(request.cancelled)
             
-            waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
                 expectationSaveUser = nil
             })
         }
@@ -254,7 +254,7 @@ class KCSUserTests: KCSTestCase {
                 expectationDeleteUser?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
                 expectationDeleteUser = nil
             })
         }
@@ -283,7 +283,7 @@ class KCSUserTests: KCSTestCase {
             
             XCTAssertTrue(request.cancelled)
             
-            waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+            waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
                 expectationDeleteUser = nil
             })
         }

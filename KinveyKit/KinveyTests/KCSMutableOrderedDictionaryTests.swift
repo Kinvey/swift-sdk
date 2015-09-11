@@ -32,7 +32,13 @@ class KCSMutableOrderedDictionaryTests: KCSTestCase {
         ] as Dictionary<String, AnyObject>!
         let orderedDict = KCSMutableOrderedDictionary(dictionary: dict)!
         var error: NSError? = nil
-        let data = NSJSONSerialization.dataWithJSONObject(orderedDict, options: NSJSONWritingOptions.allZeros, error: &error)
+        let data: NSData?
+        do {
+            data = try NSJSONSerialization.dataWithJSONObject(orderedDict, options: NSJSONWritingOptions())
+        } catch let error1 as NSError {
+            error = error1
+            data = nil
+        }
         
         XCTAssertNil(error)
         
@@ -52,7 +58,7 @@ class KCSMutableOrderedDictionaryTests: KCSTestCase {
                     "apple" : 2
                 ]
             ] as Dictionary<String, AnyObject>!
-            for i in 0...100 {
+            for _ in 0...100 {
                 let orderedDict = KCSMutableOrderedDictionary(dictionary: dict)!
             }
         }
@@ -69,9 +75,17 @@ class KCSMutableOrderedDictionaryTests: KCSTestCase {
                 ]
                 ] as Dictionary<String, AnyObject>!
             let orderedDict = KCSMutableOrderedDictionary(dictionary: dict)!
-            for i in 0...100 {
+            for _ in 0...100 {
                 var error: NSError? = nil
-                let data = NSJSONSerialization.dataWithJSONObject(orderedDict, options: NSJSONWritingOptions.allZeros, error: &error)
+                let data: NSData?
+                do {
+                    data = try NSJSONSerialization.dataWithJSONObject(orderedDict, options: NSJSONWritingOptions())
+                } catch let error1 as NSError {
+                    error = error1
+                    data = nil
+                } catch {
+                    fatalError()
+                }
             }
         }
     }

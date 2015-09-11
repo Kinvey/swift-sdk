@@ -35,16 +35,17 @@ class MLIBZ_248_Tests: KCSTestCase {
                 didReceiveResponse: response,
                 cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed
             )
-            let data = NSJSONSerialization.dataWithJSONObject(
+            let data = try! NSJSONSerialization.dataWithJSONObject(
                 [],
-                options: NSJSONWritingOptions.allZeros,
-                error: nil
-            )!
+                options: NSJSONWritingOptions())
             client!.URLProtocol(
                 self,
                 didLoadData: data
             )
             client!.URLProtocolDidFinishLoading(self)
+        }
+        
+        override func stopLoading() {
         }
         
     }
@@ -68,7 +69,7 @@ class MLIBZ_248_Tests: KCSTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationLogin = nil
         })
         
@@ -99,7 +100,7 @@ class MLIBZ_248_Tests: KCSTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationQuery = nil
         })
     }
