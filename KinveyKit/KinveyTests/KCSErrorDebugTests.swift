@@ -82,7 +82,7 @@ class KCSErrorDebugTests: KCSTestCase {
                     XCTAssertNotNil(error.userInfo)
                     
                     if let userInfo = error.userInfo {
-                        let kinveyError: AnyObject? = userInfo["Kinvey.kinveyErrorCode"]
+                        let kinveyError: AnyObject? = userInfo[KCSErrorCodeKey]
                         XCTAssertNotNil(kinveyError)
                         if let kinveyError: AnyObject = kinveyError {
                             XCTAssertTrue(kinveyError.isKindOfClass(NSString.self))
