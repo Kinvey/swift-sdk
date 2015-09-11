@@ -122,7 +122,7 @@
     // TODO: Investigate being notified of changes in KCS Client
 
     // We do this here because there is latency on DNS resolution of the hostname.  We need to do this ASAP when the hostname changes
-    self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.configuration.serviceHostname, configuration.options[@"KCS_HOST_DOMAIN"]]];
+    self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.configuration.serviceHostname, self.configuration.hostDomain]];
 
     [self updateURLs];
     // Check to make sure appdata URL is good
@@ -207,16 +207,15 @@
 
 - (void)updateURLs
 {
-    NSString* protocol = self.configuration.options[@"KCS_HOST_PROTOCOL"];
-    NSString* hostname = self.configuration.serviceHostname;
-    NSString* hostdomain = self.configuration.options[@"KCS_HOST_DOMAIN"];
-    NSString* port = self.configuration.options[@"KCS_HOST_PORT"];
-    NSString* host = [NSString stringWithFormat:@"%@://%@.%@%@", protocol, hostname, hostdomain, port];
-    self.appdataBaseURL  = [NSString stringWithFormat:@"%@/appdata/%@/", host, self.appKey];
-    self.resourceBaseURL = [NSString stringWithFormat:@"%@/blob/%@/", host, self.appKey];
-    self.userBaseURL     = [NSString stringWithFormat:@"%@/user/%@/", host, self.appKey];
+    NSString* host = self.baseURL;
+    if (![host hasSuffix:@"/"]) {
+        host = [NSString stringWithFormat:@"%@/", host];
+    }
+    self.appdataBaseURL  = [NSString stringWithFormat:@"%@appdata/%@/", host, self.appKey];
+    self.resourceBaseURL = [NSString stringWithFormat:@"%@blob/%@/", host, self.appKey];
+    self.userBaseURL     = [NSString stringWithFormat:@"%@user/%@/", host, self.appKey];
     //rpc/:kid/:username/user-password-reset-initiate
-    self.rpcBaseURL      = [NSString stringWithFormat:@"%@/rpc/%@/", host, self.appKey];
+    self.rpcBaseURL      = [NSString stringWithFormat:@"%@rpc/%@/", host, self.appKey];
 
 }
 
@@ -271,13 +270,37 @@
     return self.configuration.appKey;
 }
 
-- (NSString*) baseURL
+-(NSString*)baseURL
 {
-    NSString* protocol = self.configuration.options[@"KCS_HOST_PROTOCOL"];
+    NSString* protocol = self.configuration.hostProtocol;
+    
     NSString* hostname = self.configuration.serviceHostname;
-    NSString* hostdomain = self.configuration.options[@"KCS_HOST_DOMAIN"];
-    NSString* port = self.configuration.options[@"KCS_HOST_PORT"];
-    return [NSString stringWithFormat:@"%@://%@.%@%@/", protocol, hostname, hostdomain, port];
+    if (hostname.length > 0 && ![hostname hasSuffix:@"."]) {
+        hostname = [NSString stringWithFormat:@"%@.", hostname];
+    }
+    
+    NSString* hostdomain = self.configuration.hostDomain;
+    
+    NSString* port = self.configuration.hostPort;
+    if (port.length > 0 && ![port hasPrefix:@":"]) {
+        port = [NSString stringWithFormat:@":%@", port];
+    }
+    
+    return [NSString stringWithFormat:@"%@://%@%@%@/", protocol, hostname, hostdomain, port];
+}
+
+-(void)setBaseURL:(NSString *)baseURL
+{
+    NSURL* url = [NSURL URLWithString:baseURL];
+    if (url == nil) {
+        @throw [NSException exceptionWithName:KCSErrorDomain
+                                       reason:[NSString stringWithFormat:@"'%@' is not a valid URL.", baseURL]
+                                     userInfo:nil];
+    }
+    self.configuration.hostProtocol = url.scheme;
+    self.configuration.serviceHostname = @"";
+    self.configuration.hostDomain = url.host;
+    self.configuration.hostPort = url.port ? url.port.stringValue : @"";
 }
 
 #pragma mark - Data Protection
