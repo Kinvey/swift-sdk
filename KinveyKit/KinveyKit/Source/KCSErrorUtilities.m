@@ -85,7 +85,7 @@
                 }
             }
             
-            NSString* kcsDebugKey = [errorValues popObjectForKey:KCS_ERROR_DEBUG_KEY];
+            id kcsDebugKey = [errorValues popObjectForKey:KCS_ERROR_DEBUG_KEY];
             if (kcsDebugKey != nil) {
                 [userInfo setValue:kcsDebugKey forKey:KCSErrorInternalError];
             }
