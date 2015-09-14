@@ -27,6 +27,8 @@
 #import "KCSEntityPersistence.h"
 #import "KCSOfflineUpdate.h"
 
+#import "NSDate+ISO8601.h"
+
 KK2(cleanup)
 #import "KCSHiddenMethods.h"
 #import "KCSQuery2+KCSInternal.h"
@@ -44,10 +46,33 @@ NSString* kinveyObjectIdHostProperty(id<KCSPersistable>obj)
     return nil;
 }
 
+
+NSString* kinveyObjectMdProperty(id<KCSPersistable>obj)
+{
+    NSDictionary *kinveyMapping = [obj hostToKinveyPropertyMapping];
+    for (NSString *key in kinveyMapping){
+        NSString *jsonName = [kinveyMapping valueForKey:key];
+        if ([jsonName isEqualToString:KCSEntityKeyMetadata]){
+            return key;
+        }
+    }
+    return nil;
+}
+
 NSString* kinveyObjectId(NSObject<KCSPersistable>* obj)
 {
     NSString* objKey = kinveyObjectIdHostProperty(obj);
     return ifNotNil(objKey, [obj valueForKey:objKey]);
+}
+
+NSDate* kinveyObjectLmt(NSObject<KCSPersistable>* obj)
+{
+    NSString* objKey = kinveyObjectMdProperty(obj);
+    KCSMetadata* kmd = ifNotNil(objKey, [obj valueForKey:objKey]);
+    if (kmd){
+        return kmd.lastModifiedTime;
+    }
+    return 0;
 }
 
 void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
@@ -170,6 +195,53 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     NSString* queryKey = [query keyString];
     return [NSString stringWithFormat:@"%@_%@_%@", route, collection, queryKey];
 }
+
+
+- (NSArray*) computeDelta:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection referenceObjs: (NSArray*) refObjs;
+{
+    NSString* queryKey = [query keyString];
+    NSString* key = [self queryKey:query route:route collection:collection];
+    __block NSArray* ids = [_queryCache objectForKey:key];
+    if (!ids) {
+        //not in the local cache, pull from the db
+        ids = [_persistenceLayer idsForQuery:queryKey route:route collection:collection];
+        if ([ids count] == 0 && [query isAllQuery]) {
+            ids = [_persistenceLayer allIds:route collection:collection];
+        }
+    }
+    NSMutableArray* cachedObjs = [NSMutableArray arrayWithArray:[self objectsForIds:ids route:route collection:collection]];
+    NSMutableArray* delta = [NSMutableArray array];
+    
+    NSMutableArray* refIds = [NSMutableArray array];
+    for (int i=0; i<refObjs.count; i++) {
+        id refObj =[refObjs objectAtIndex:i];
+        NSString* refId = refObj[@"id"];
+        NSDate* refLmt = [NSDate dateFromISO8601EncodedString:refObj[@"lmt"]]; //get lmt
+        for (int j=0; j<cachedObjs.count; j++){
+            id cachedObj = [cachedObjs objectAtIndex:j];
+            id cachedId = kinveyObjectId(cachedObj);
+            if ([refId isEqual: cachedId]){
+                NSDate* cachedLmt = kinveyObjectLmt(cachedObj);
+                if (![refLmt isEqualToDate:cachedLmt]){
+                    [delta addObject: refId];
+
+                }
+                [cachedObjs removeObjectAtIndex:j];
+                break;
+            }
+        }
+        [refIds addObject:refId];
+    }
+    if (cachedObjs.count > 0){ //objects in the cache that don't appear in the fresh data
+        [self deleteObjects:cachedObjs route:route collection:collection];
+    }
+    [_queryCache setObject:refIds forKey:key];
+    [_persistenceLayer setIds:refIds forQuery:queryKey route:route collection:collection];
+
+
+    return delta;
+}
+
 
 - (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
