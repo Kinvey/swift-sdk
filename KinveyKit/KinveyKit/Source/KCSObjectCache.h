@@ -35,6 +35,7 @@
 
 - (void) setOfflineUpdateDelegate:(id<KCSOfflineUpdateDelegate>)offlineUpdateDelegate;
 
+- (NSArray*) computeDelta:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection referenceObjs: (NSArray*) refIds;
 - (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 - (NSArray*) pullIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection;
 - (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
