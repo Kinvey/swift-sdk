@@ -243,7 +243,7 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 
 -(void)setHostProtocol:(NSString *)hostProtocol
 {
-    if (hostProtocol != nil && ([hostProtocol compare:@"https" options:NSCaseInsensitiveSearch] == 0 || [hostProtocol compare:@"http" options:NSCaseInsensitiveSearch] == 0)) {
+    if (hostProtocol == nil || ([hostProtocol compare:@"https" options:NSCaseInsensitiveSearch] != 0 && [hostProtocol compare:@"http" options:NSCaseInsensitiveSearch] != 0)) {
         @throw [NSException exceptionWithName:KCSErrorDomain
                                        reason:[NSString stringWithFormat:@"'%@' is not a valid protocol. Please use https (highly recommended) or http.", hostProtocol]
                                      userInfo:nil];
@@ -303,6 +303,39 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
     [self setValue:hostPort
          forOption:KCS_HOST_PORT
       defaultValue:KCS_DEFAULT_HOST_PORT];
+}
+
+-(NSString*)baseURL
+{
+    NSString* protocol = self.hostProtocol;
+    
+    NSString* hostname = self.serviceHostname;
+    if (hostname.length > 0 && ![hostname hasSuffix:@"."]) {
+        hostname = [NSString stringWithFormat:@"%@.", hostname];
+    }
+    
+    NSString* hostdomain = self.hostDomain;
+    
+    NSString* port = self.hostPort;
+    if (port.length > 0 && ![port hasPrefix:@":"]) {
+        port = [NSString stringWithFormat:@":%@", port];
+    }
+    
+    return [NSString stringWithFormat:@"%@://%@%@%@/", protocol, hostname, hostdomain, port];
+}
+
+-(void)setBaseURL:(NSString *)baseURL
+{
+    NSURL* url = [NSURL URLWithString:baseURL.copy];
+    if (url == nil) {
+        @throw [NSException exceptionWithName:KCSErrorDomain
+                                       reason:[NSString stringWithFormat:@"'%@' is not a valid URL.", baseURL]
+                                     userInfo:nil];
+    }
+    self.hostProtocol = url.scheme;
+    self.serviceHostname = @"";
+    self.hostDomain = url.host;
+    self.hostPort = url.port ? url.port.stringValue : @"";
 }
 
 - (BOOL) valid

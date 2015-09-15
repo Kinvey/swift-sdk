@@ -28,11 +28,6 @@
 
 @implementation KCSClientConfiguration (KCSInternal)
 
-- (NSString*) baseURL
-{
-    return [KCSClient sharedClient].baseURL;
-}
-
 - (int)loglevel
 {
     int baselevel = [self.options[KCS_LOG_LEVEL] intValue];
