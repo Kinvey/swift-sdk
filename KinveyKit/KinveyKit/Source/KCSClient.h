@@ -106,9 +106,6 @@ KCS_CONSTANT KCSNetworkConnectionDidEnd;
 /*! Base URL for Kinvey User Service */
 @property (nonatomic, copy, readonly) NSString *userBaseURL;
 
-/*! Base URL for Kinvey. */
-@property (nonatomic, copy) NSString *baseURL;
-
 /*! Connection Timeout value, set this to cause shorter or longer network timeouts. Set via configuration KCS_CONNECTION_TIMEOUT. */
 @property (nonatomic, readonly) double connectionTimeout;
 

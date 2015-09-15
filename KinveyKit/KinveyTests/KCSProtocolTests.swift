@@ -66,10 +66,10 @@ class KCSProtocolTestsBaseURLProtocol: KCSTestCase {
                         expectationCreateUser?.fulfill()
                     }
                 )
+                XCTFail()
             },
             catch: { (exception: NSException!) -> Void in
                 self.exception = exception
-                XCTFail()
                 
                 expectationCreateUser?.fulfill()
             },
@@ -78,9 +78,9 @@ class KCSProtocolTestsBaseURLProtocol: KCSTestCase {
         
         waitForExpectationsWithTimeout(30, handler: nil)
         
-        XCTAssertNil(exception)
-        XCTAssertNotNil(request)
-        XCTAssertNotNil(user)
+        XCTAssertNotNil(exception)
+        XCTAssertNil(request)
+        XCTAssertNil(user)
     }
     
     //MLIBZ-577
@@ -90,7 +90,7 @@ class KCSProtocolTestsBaseURLProtocol: KCSTestCase {
             secret: "2f355bfaa8cb4f7299e914e8e85d8c98",
             options: nil
         )
-        config.baseURL = "http://10.130.247.253:3000"
+        config.setBaseURL("http://10.130.247.253:3000")
         
         XCTAssertEqual("http", config.hostProtocol)
         XCTAssertEqual("10.130.247.253", config.hostDomain)
@@ -98,7 +98,7 @@ class KCSProtocolTestsBaseURLProtocol: KCSTestCase {
         
         KCSClient.sharedClient().initializeWithConfiguration(config)
         
-        XCTAssertEqual("http://10.130.247.253:3000/", KCSClient.sharedClient().baseURL)
+        XCTAssertEqual("http://10.130.247.253:3000/", KCSClient.sharedClient().configuration.baseURL())
         
         MockURLProtocol.canInitWithRequestBlock = { (request: NSURLRequest) -> Bool in
             return true

@@ -19,6 +19,7 @@
 
 
 #import "KCSClientConfiguration.h"
+#import "KCSClientConfiguration+KCSInternal.h"
 
 KK2(remove import)
 #import "KCSClient.h"
@@ -57,9 +58,6 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 #define KCS_DEFAULT_CONNETION_TIMEOUT @10.0 // Default timeout to 10 seconds
 #define KCS_DEFAULT_URL_CACHE_POLICY  @(NSURLRequestReloadIgnoringLocalAndRemoteCacheData)
 #define KCS_DEFAULT_DATE_FORMAT       @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
-
-@interface KCSClientConfiguration ()
-@end
 
 @implementation KCSClientConfiguration
 
@@ -243,7 +241,7 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 
 -(void)setHostProtocol:(NSString *)hostProtocol
 {
-    if (hostProtocol == nil || ([hostProtocol compare:@"https" options:NSCaseInsensitiveSearch] != 0 && [hostProtocol compare:@"http" options:NSCaseInsensitiveSearch] != 0)) {
+    if (hostProtocol == nil || ([hostProtocol compare:@"https" options:NSCaseInsensitiveSearch] != NSOrderedSame && [hostProtocol compare:@"http" options:NSCaseInsensitiveSearch] != NSOrderedSame)) {
         @throw [NSException exceptionWithName:KCSErrorDomain
                                        reason:[NSString stringWithFormat:@"'%@' is not a valid protocol. Please use https (highly recommended) or http.", hostProtocol]
                                      userInfo:nil];
