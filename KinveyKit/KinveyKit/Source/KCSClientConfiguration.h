@@ -134,15 +134,6 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
  */
 @property (nonatomic, copy) NSDictionary* options;
 
-/*! Protocol used to connect to the backend server. Default value: "https". Valid values: "https" or "http" */
-@property (nonatomic, copy) NSString* hostProtocol;
-
-/*! Domain host used to connect to the backend server. Default value: "kinvey.com". Sample values: "mydomain.com" */
-@property (nonatomic, copy) NSString* hostDomain;
-
-/*! Port used to connect to the backend server Default value: "" (empty string). Sample values: "8080" or ":8080". */
-@property (nonatomic, copy) NSString* hostPort;
-
 /*! Subdomain used to connect to the backend server. Default value: "baas". Sample values: "foo-baas" or "foo-baas.". */
 @property (nonatomic, copy) NSString* serviceHostname;
 

@@ -16,6 +16,8 @@
 #import "KCSTestCase.h"
 #import "KCSNetworkResponse.h"
 #import "KinveyErrorCodes.h"
+#import "KCSClientConfiguration.h"
+#import "KCSClientConfiguration+KCSInternal.h"
 
 @interface KCSUser2 ()
 

@@ -207,7 +207,7 @@
 
 - (void)updateURLs
 {
-    NSString* host = self.baseURL;
+    NSString* host = self.configuration.baseURL;
     if (![host hasSuffix:@"/"]) {
         host = [NSString stringWithFormat:@"%@/", host];
     }
@@ -268,16 +268,6 @@
 - (NSString*) kid
 {
     return self.configuration.appKey;
-}
-
--(NSString*)baseURL
-{
-    return self.configuration.baseURL;
-}
-
--(void)setBaseURL:(NSString *)baseURL
-{
-    self.configuration.baseURL = baseURL.copy;
 }
 
 #pragma mark - Data Protection
