@@ -279,17 +279,6 @@ static NSOperationQueue* kcsRequestQueue;
     
     NSURL* url = [NSURL URLWithString:endpoint];
     DBAssert(url, @"Should have a valid url");
-    
-    if (![url.scheme isEqualToString:@"https"]) {
-        NSString* reason = [NSString stringWithFormat:@"Kinvey requires `https` as the protocol when setting a base URL, instead found: %@ in baseURL: %@://%@%@", url.scheme, url.scheme, url.host, url.port ? [NSString stringWithFormat:@":%@", url.port] : @""];
-        NSDictionary* userInfo = @{
-            NSLocalizedDescriptionKey : reason,
-            NSLocalizedFailureReasonErrorKey : reason
-        };
-        @throw [NSException exceptionWithName:@"KinveyException"
-                                       reason:reason
-                                     userInfo:userInfo];
-    }
 
     NSMutableURLRequest* request = [self requestForURL:url];
     request.HTTPMethod = self.method;

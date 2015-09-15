@@ -149,6 +149,9 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
 /*! Subdomain used to connect to the backend server. Default value: "auth". Sample values: "foo-auth" or "foo-auth.". */
 @property (nonatomic, copy) NSString* authHostname;
 
+/*! Base URL used to connect to the backend server. Default value: "https://baas.kinvey.com" */
+@property (nonatomic, copy) NSString* baseURL;
+
 /** Basic configuration with an app key and secret, no options. Uses the default options.
  
  Usage:

@@ -272,35 +272,12 @@
 
 -(NSString*)baseURL
 {
-    NSString* protocol = self.configuration.hostProtocol;
-    
-    NSString* hostname = self.configuration.serviceHostname;
-    if (hostname.length > 0 && ![hostname hasSuffix:@"."]) {
-        hostname = [NSString stringWithFormat:@"%@.", hostname];
-    }
-    
-    NSString* hostdomain = self.configuration.hostDomain;
-    
-    NSString* port = self.configuration.hostPort;
-    if (port.length > 0 && ![port hasPrefix:@":"]) {
-        port = [NSString stringWithFormat:@":%@", port];
-    }
-    
-    return [NSString stringWithFormat:@"%@://%@%@%@/", protocol, hostname, hostdomain, port];
+    return self.configuration.baseURL;
 }
 
 -(void)setBaseURL:(NSString *)baseURL
 {
-    NSURL* url = [NSURL URLWithString:baseURL];
-    if (url == nil) {
-        @throw [NSException exceptionWithName:KCSErrorDomain
-                                       reason:[NSString stringWithFormat:@"'%@' is not a valid URL.", baseURL]
-                                     userInfo:nil];
-    }
-    self.configuration.hostProtocol = url.scheme;
-    self.configuration.serviceHostname = @"";
-    self.configuration.hostDomain = url.host;
-    self.configuration.hostPort = url.port ? url.port.stringValue : @"";
+    self.configuration.baseURL = baseURL.copy;
 }
 
 #pragma mark - Data Protection
