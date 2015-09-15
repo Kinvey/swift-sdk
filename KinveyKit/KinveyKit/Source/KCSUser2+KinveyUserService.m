@@ -557,7 +557,22 @@ static NSString* micApiVersion = nil;
 +(NSMutableString*)baseMicURL
 {
     KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-    NSMutableString* baseURL = [NSMutableString stringWithFormat:@"https://%@.kinvey.com", config.authHostname];
+    
+    NSString* hostProtocol = config.hostProtocol;
+    
+    NSString* authHostname = config.authHostname;
+    if (authHostname.length > 0 && ![authHostname hasSuffix:@"."]) {
+        authHostname = [NSString stringWithFormat:@"%@.", authHostname];
+    }
+    
+    NSString* hostDomain = config.hostDomain;
+    
+    NSString* hostPort = config.hostPort;
+    if (hostPort.length > 0 && ![hostPort hasPrefix:@":"]) {
+        hostPort = [NSString stringWithFormat:@":%@", hostPort];
+    }
+    
+    NSMutableString* baseURL = [NSMutableString stringWithFormat:@"%@://%@%@%@", hostProtocol, authHostname, hostDomain, hostPort];
     if (micApiVersion && micApiVersion.length > 0) {
         [baseURL appendFormat:@"/%@", micApiVersion];
     }
