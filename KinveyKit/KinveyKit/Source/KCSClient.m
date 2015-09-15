@@ -122,7 +122,7 @@
     // TODO: Investigate being notified of changes in KCS Client
 
     // We do this here because there is latency on DNS resolution of the hostname.  We need to do this ASAP when the hostname changes
-    self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.configuration.serviceHostname, configuration.options[@"KCS_HOST_DOMAIN"]]];
+    self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.configuration.serviceHostname, self.configuration.hostDomain]];
 
     [self updateURLs];
     // Check to make sure appdata URL is good
@@ -207,16 +207,15 @@
 
 - (void)updateURLs
 {
-    NSString* protocol = self.configuration.options[@"KCS_HOST_PROTOCOL"];
-    NSString* hostname = self.configuration.serviceHostname;
-    NSString* hostdomain = self.configuration.options[@"KCS_HOST_DOMAIN"];
-    NSString* port = self.configuration.options[@"KCS_HOST_PORT"];
-    NSString* host = [NSString stringWithFormat:@"%@://%@.%@%@", protocol, hostname, hostdomain, port];
-    self.appdataBaseURL  = [NSString stringWithFormat:@"%@/appdata/%@/", host, self.appKey];
-    self.resourceBaseURL = [NSString stringWithFormat:@"%@/blob/%@/", host, self.appKey];
-    self.userBaseURL     = [NSString stringWithFormat:@"%@/user/%@/", host, self.appKey];
+    NSString* host = self.configuration.baseURL;
+    if (![host hasSuffix:@"/"]) {
+        host = [NSString stringWithFormat:@"%@/", host];
+    }
+    self.appdataBaseURL  = [NSString stringWithFormat:@"%@appdata/%@/", host, self.appKey];
+    self.resourceBaseURL = [NSString stringWithFormat:@"%@blob/%@/", host, self.appKey];
+    self.userBaseURL     = [NSString stringWithFormat:@"%@user/%@/", host, self.appKey];
     //rpc/:kid/:username/user-password-reset-initiate
-    self.rpcBaseURL      = [NSString stringWithFormat:@"%@/rpc/%@/", host, self.appKey];
+    self.rpcBaseURL      = [NSString stringWithFormat:@"%@rpc/%@/", host, self.appKey];
 
 }
 
@@ -269,15 +268,6 @@
 - (NSString*) kid
 {
     return self.configuration.appKey;
-}
-
-- (NSString*) baseURL
-{
-    NSString* protocol = self.configuration.options[@"KCS_HOST_PROTOCOL"];
-    NSString* hostname = self.configuration.serviceHostname;
-    NSString* hostdomain = self.configuration.options[@"KCS_HOST_DOMAIN"];
-    NSString* port = self.configuration.options[@"KCS_HOST_PORT"];
-    return [NSString stringWithFormat:@"%@://%@.%@%@/", protocol, hostname, hostdomain, port];
 }
 
 #pragma mark - Data Protection
