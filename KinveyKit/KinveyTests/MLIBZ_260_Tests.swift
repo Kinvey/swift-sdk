@@ -16,7 +16,7 @@ class MLIBZ_260_Tests: KCSTestCase {
     class MockURLProtocol: NSURLProtocol {
         
         override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-            return request.URL!.absoluteString! != "https://baas.kinvey.com/user/\(appId)/login"
+            return request.URL!.absoluteString != "https://baas.kinvey.com/user/\(appId)/login"
         }
         
         override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
@@ -64,15 +64,15 @@ class MLIBZ_260_Tests: KCSTestCase {
         
         class OfflineSaveDelegate: NSObject, KCSOfflineUpdateDelegate {
             
-            private func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
+            @objc private func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
                 return true
             }
             
-            private func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
+            @objc private func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
                 return true
             }
             
-            private func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
+            @objc private func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
                 return true
             }
             
@@ -96,7 +96,7 @@ class MLIBZ_260_Tests: KCSTestCase {
                 } else {
                     // NOTE: SET A BREAKPOINT HERE AND DISCONNECT NETWORK (WIFI) TO MAKE SURE THE FOLLOWING NEEDS OFFLINE SAVE
                     
-                    class Object : NSObject, KCSPersistable {
+                    class Object : NSObject {
                         
                         dynamic var objectId: String?
                         dynamic var hey: String?
@@ -118,7 +118,7 @@ class MLIBZ_260_Tests: KCSTestCase {
                         ]
                     )
                     
-                    var obj = Object()
+                    let obj = Object()
                     obj.hey = "there"
                     
                     store.saveObject(

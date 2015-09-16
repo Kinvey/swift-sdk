@@ -22,6 +22,8 @@
 // NSError UserInfo Keys
 /** String Error code that corresponds to a specific error on the server. This can be used as the key for checking the error type or creating localized errors */
 #define KCSErrorCode @"kinveyErrorCode"
+#define KCSErrorCodeKey @"Kinvey.kinveyErrorCode"
+
 /** This is an optional server error string, useful for reporting back to Kinvey for debugging purposes. */
 #define KCSErrorInternalError @"kinveyInternalErrorString"
 /** This is an optional request id, useful for reporting back to Kinvey for debugging purposes. */

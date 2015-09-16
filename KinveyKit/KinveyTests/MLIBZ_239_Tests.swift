@@ -52,7 +52,7 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationSave1?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationSave1 = nil
         })
         
@@ -74,7 +74,7 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationSave2?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationSave2 = nil
         })
         
@@ -96,7 +96,7 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationSave3?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationSave3 = nil
         })
         
@@ -120,7 +120,7 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationQuery1?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationQuery1 = nil
         })
         
@@ -142,7 +142,7 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationQuery2?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationQuery2 = nil
         })
         
@@ -166,7 +166,7 @@ class MLIBZ_239_Tests: KCSTestCase {
                 expectationQuery3?.fulfill()
             }
         )
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationQuery3 = nil
         })
     }

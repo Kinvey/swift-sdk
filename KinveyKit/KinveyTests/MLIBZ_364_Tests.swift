@@ -33,7 +33,7 @@ class MLIBZ_364_Tests: KCSTestCase {
             expectationCheckUsername?.fulfill()
         })
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationCheckUsername = nil
         })
     }
@@ -64,7 +64,7 @@ class MLIBZ_364_Tests: KCSTestCase {
         
         XCTAssertTrue(request.cancelled)
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationCheckUsername = nil
         })
     }

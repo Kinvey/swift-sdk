@@ -23,7 +23,7 @@ class KCSProtocolTestsIdNotString: KCSTestCase {
                 KCSEntityKeyId : 123,
                 "name" : "Kinvey2"
             ]
-            let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
+            let data = try! NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions())
             
             let response = NSHTTPURLResponse(
                 URL: request.URL!,
@@ -41,6 +41,9 @@ class KCSProtocolTestsIdNotString: KCSTestCase {
             )
             client!.URLProtocol(self, didLoadData: data)
             client!.URLProtocolDidFinishLoading(self)
+        }
+        
+        private override func stopLoading() {
         }
         
     }

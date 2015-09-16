@@ -36,6 +36,9 @@ class KCSProtocolTestsWrongJsonRootType: KCSTestCase {
             client!.URLProtocolDidFinishLoading(self)
         }
         
+        private override func stopLoading() {
+        }
+        
     }
     
     override func setUp() {

@@ -19,6 +19,7 @@
 
 
 #import "KCSClientConfiguration.h"
+#import "KCSClientConfiguration+KCSInternal.h"
 
 KK2(remove import)
 #import "KCSClient.h"
@@ -46,6 +47,8 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 #define KCS_HOST_PORT     @"KCS_HOST_PORT"
 #define KCS_HOST_PROTOCOL @"KCS_HOST_PROTOCOL"
 #define KCS_HOST_DOMAIN   @"KCS_HOST_DOMAIN"
+#define KCS_HOSTNAME      @"KCS_HOSTNAME"
+#define KCS_AUTH_HOSTNAME @"KCS_AUTH_HOSTNAME"
 
 #define KCS_DEFAULT_AUTH_HOSTNAME     @"auth"
 #define KCS_DEFAULT_HOSTNAME          @"baas"
@@ -55,9 +58,6 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 #define KCS_DEFAULT_CONNETION_TIMEOUT @10.0 // Default timeout to 10 seconds
 #define KCS_DEFAULT_URL_CACHE_POLICY  @(NSURLRequestReloadIgnoringLocalAndRemoteCacheData)
 #define KCS_DEFAULT_DATE_FORMAT       @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
-
-@interface KCSClientConfiguration ()
-@end
 
 @implementation KCSClientConfiguration
 
@@ -71,14 +71,14 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
                      KCS_URL_CACHE_POLICY      : KCS_DEFAULT_URL_CACHE_POLICY,
                      KCS_HOST_PORT             : KCS_DEFAULT_HOST_PORT,
                      KCS_HOST_PROTOCOL         : KCS_DEFAULT_HOST_PROTOCOL,
+                     KCS_HOSTNAME              : KCS_DEFAULT_HOSTNAME,
+                     KCS_AUTH_HOSTNAME         : KCS_DEFAULT_AUTH_HOSTNAME,
                      KCS_HOST_DOMAIN           : KCS_DEFAULT_HOST_DOMAIN,
                      KCS_DATE_FORMAT           : KCS_DEFAULT_DATE_FORMAT,
                      KCS_LOG_LEVEL             : @(0),
                      KCS_DATA_PROTECTION_LEVEL : @(KCSDataCompleteUntilFirstLogin),
                      KCS_USER_CLASS            : [KCSUser class]
                      };
-        _serviceHostname = KCS_DEFAULT_HOSTNAME;
-        _authHostname = KCS_DEFAULT_AUTH_HOSTNAME;
         
         
         KCSLogFormatter* formatter = [[KCSLogFormatter alloc] init];
@@ -201,15 +201,139 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
     return configuration;
 }
 
-- (void)setServiceHostname:(NSString *)serviceHostname
+-(id)valueForOption:(id)key
+       defaultValue:(id)defaultValue
 {
-    if (serviceHostname == nil) {
-        serviceHostname = KCS_DEFAULT_HOSTNAME;
+    id value = self.options[key];
+    if (value == nil) {
+        value = defaultValue;
     }
-    _serviceHostname = [serviceHostname copy];
+    return value;
+}
+
+-(void)setValue:(id)value
+      forOption:(id)key
+{
+    NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:self.options];
+    options[key] = value;
+    self.options = options;
+}
+
+-(void)setValue:(id)value
+      forOption:(id)key
+   defaultValue:(id)defaultValue
+{
+    if (value == nil) {
+        value = defaultValue;
+    }
+    [self setValue:[value copy]
+         forOption:key];
     if ([KCSClient sharedClient].configuration == self) {
         [[KCSClient sharedClient] setConfiguration:self];
     }
+}
+
+-(NSString *)hostProtocol
+{
+    return [self valueForOption:KCS_HOST_PROTOCOL
+                   defaultValue:KCS_DEFAULT_HOST_PROTOCOL];
+}
+
+-(void)setHostProtocol:(NSString *)hostProtocol
+{
+    if (hostProtocol == nil || ([hostProtocol compare:@"https" options:NSCaseInsensitiveSearch] != NSOrderedSame && [hostProtocol compare:@"http" options:NSCaseInsensitiveSearch] != NSOrderedSame)) {
+        @throw [NSException exceptionWithName:KCSErrorDomain
+                                       reason:[NSString stringWithFormat:@"'%@' is not a valid protocol. Please use https (highly recommended) or http.", hostProtocol]
+                                     userInfo:nil];
+    }
+    [self setValue:hostProtocol
+         forOption:KCS_HOST_PROTOCOL
+      defaultValue:KCS_DEFAULT_HOST_PROTOCOL];
+}
+
+-(NSString *)serviceHostname
+{
+    return [self valueForOption:KCS_HOSTNAME
+                   defaultValue:KCS_DEFAULT_HOSTNAME];
+}
+
+- (void)setServiceHostname:(NSString *)serviceHostname
+{
+    [self setValue:serviceHostname
+         forOption:KCS_HOSTNAME
+      defaultValue:KCS_DEFAULT_HOSTNAME];
+}
+
+-(NSString *)authHostname
+{
+    return [self valueForOption:KCS_AUTH_HOSTNAME
+                   defaultValue:KCS_DEFAULT_AUTH_HOSTNAME];
+}
+
+-(void)setAuthHostname:(NSString *)authHostname
+{
+    [self setValue:authHostname
+         forOption:KCS_AUTH_HOSTNAME
+      defaultValue:KCS_DEFAULT_AUTH_HOSTNAME];
+}
+
+-(NSString *)hostDomain
+{
+    return [self valueForOption:KCS_HOST_DOMAIN
+                   defaultValue:KCS_DEFAULT_HOST_DOMAIN];
+}
+
+-(void)setHostDomain:(NSString *)hostDomain
+{
+    [self setValue:hostDomain
+         forOption:KCS_HOST_DOMAIN
+      defaultValue:KCS_DEFAULT_HOST_DOMAIN];
+}
+
+-(NSString *)hostPort
+{
+    return [self valueForOption:KCS_HOST_PORT
+                   defaultValue:KCS_DEFAULT_HOST_PORT];
+}
+
+-(void)setHostPort:(NSString *)hostPort
+{
+    [self setValue:hostPort
+         forOption:KCS_HOST_PORT
+      defaultValue:KCS_DEFAULT_HOST_PORT];
+}
+
+-(NSString*)baseURL
+{
+    NSString* protocol = self.hostProtocol;
+    
+    NSString* hostname = self.serviceHostname;
+    if (hostname.length > 0 && ![hostname hasSuffix:@"."]) {
+        hostname = [NSString stringWithFormat:@"%@.", hostname];
+    }
+    
+    NSString* hostdomain = self.hostDomain;
+    
+    NSString* port = self.hostPort;
+    if (port.length > 0 && ![port hasPrefix:@":"]) {
+        port = [NSString stringWithFormat:@":%@", port];
+    }
+    
+    return [NSString stringWithFormat:@"%@://%@%@%@/", protocol, hostname, hostdomain, port];
+}
+
+-(void)setBaseURL:(NSString *)baseURL
+{
+    NSURL* url = [NSURL URLWithString:baseURL.copy];
+    if (url == nil) {
+        @throw [NSException exceptionWithName:KCSErrorDomain
+                                       reason:[NSString stringWithFormat:@"'%@' is not a valid URL.", baseURL]
+                                     userInfo:nil];
+    }
+    self.hostProtocol = url.scheme;
+    self.serviceHostname = @"";
+    self.hostDomain = url.host;
+    self.hostPort = url.port ? url.port.stringValue : @"";
 }
 
 - (BOOL) valid

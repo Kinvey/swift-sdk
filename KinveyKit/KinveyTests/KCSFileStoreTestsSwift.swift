@@ -33,7 +33,7 @@ class KCSFileStoreTestsSwift: KCSTestCase {
                 expectationLogin?.fulfill()
         })
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationLogin = nil
         })
     }
@@ -58,7 +58,7 @@ class KCSFileStoreTestsSwift: KCSTestCase {
                 XCTAssertNotNil(file)
                 
                 if let file = file {
-                    XCTAssertEqual("https", file.remoteURL.scheme!)
+                    XCTAssertEqual("https", file.remoteURL.scheme)
                 }
                 
                 XCTAssertTrue(NSThread.isMainThread())
@@ -68,7 +68,7 @@ class KCSFileStoreTestsSwift: KCSTestCase {
             progressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(60, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(60, handler: { (error: NSError?) -> Void in
             expectationUpload = nil
         })
     }
@@ -98,7 +98,7 @@ class KCSFileStoreTestsSwift: KCSTestCase {
                 if let results = results {
                     XCTAssertGreaterThan(results.count, 0)
                     for file in results as! [KCSFile] {
-                        XCTAssertEqual("https", file.remoteURL.scheme!)
+                        XCTAssertEqual("https", file.remoteURL.scheme)
                     }
                 }
                 
@@ -131,7 +131,7 @@ class KCSFileStoreTestsSwift: KCSTestCase {
                 if let results = results {
                     XCTAssertGreaterThan(results.count, 0)
                     for file in results as! [KCSFile] {
-                        XCTAssertEqual("https", file.remoteURL.scheme!)
+                        XCTAssertEqual("https", file.remoteURL.scheme)
                     }
                 }
                 
@@ -159,7 +159,7 @@ class KCSFileStoreTestsSwift: KCSTestCase {
                 if let results = results {
                     XCTAssertGreaterThan(results.count, 0)
                     for file in results as! [KCSFile] {
-                        XCTAssertEqual("https", file.remoteURL.scheme!)
+                        XCTAssertEqual("https", file.remoteURL.scheme)
                     }
                 }
                 
@@ -191,7 +191,7 @@ class KCSFileStoreTestsSwift: KCSTestCase {
                         XCTAssertGreaterThan(results.count, 0)
                         
                         for file in results as! [KCSFile] {
-                            XCTAssertEqual("https", file.remoteURL.scheme!)
+                            XCTAssertEqual("https", file.remoteURL.scheme)
                         }
                     }
                     
