@@ -222,41 +222,46 @@
 - (void) registerDeviceToken:(KCSSuccessBlock)completionBlock
 {
     SWITCH_TO_MAIN_THREAD_SUCCESS_BLOCK(completionBlock);
+    BOOL deviceTokenExists;
+    NSString *deviceTokenString = nil;
     @synchronized (self) {
-        if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == NO) {
-            NSString *deviceTokenString = [self deviceTokenString];
-            KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-                if (error || deviceTokenString == nil) {
-                    KCSLogError(@"Device token did not register");
-                    
-                    if (completionBlock) {
-                        completionBlock(NO, error);
-                    }
-                } else {
-                    KCSLogDebug(@"Device token registered");
-                    @synchronized (self) {
-                        [[KCSUser activeUser].deviceTokens addObject:deviceTokenString];
-                    }
-                    
-                    if (completionBlock) {
-                        completionBlock(YES, nil);
-                    }
+        deviceTokenExists = self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == NO;
+        if (deviceTokenExists) {
+            deviceTokenString = [self deviceTokenString];
+        }
+    }
+    if (deviceTokenExists) {
+        KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+            if (error || deviceTokenString == nil) {
+                KCSLogError(@"Device token did not register");
+                
+                if (completionBlock) {
+                    completionBlock(NO, error);
+                }
+            } else {
+                KCSLogDebug(@"Device token registered");
+                @synchronized (self) {
+                    [[KCSUser activeUser].deviceTokens addObject:deviceTokenString];
+                }
+                
+                if (completionBlock) {
+                    completionBlock(YES, nil);
                 }
             }
-                                                                route:KCSRESTRoutePush
-                                                              options:@{KCSRequestLogMethod}
-                                                          credentials:[KCSUser activeUser]];
-            request.method = KCSRESTMethodPOST;
-            request.path = @[@"register-device"];
-            request.body = @{@"userId"   : [KCSUser activeUser].userId,
-                             @"deviceId" : deviceTokenString,
-                             @"platform" : @"ios"};
-    //        TODO: request.errorDomain = KCSUserErrorDomain;
-            [request start];
-        } else {
-            if (completionBlock) {
-                completionBlock(NO, nil);
-            }
+        }
+                                                            route:KCSRESTRoutePush
+                                                          options:@{KCSRequestLogMethod}
+                                                      credentials:[KCSUser activeUser]];
+        request.method = KCSRESTMethodPOST;
+        request.path = @[@"register-device"];
+        request.body = @{@"userId"   : [KCSUser activeUser].userId,
+                         @"deviceId" : deviceTokenString,
+                         @"platform" : @"ios"};
+//        TODO: request.errorDomain = KCSUserErrorDomain;
+        [request start];
+    } else {
+        if (completionBlock) {
+            completionBlock(NO, nil);
         }
     }
 }
