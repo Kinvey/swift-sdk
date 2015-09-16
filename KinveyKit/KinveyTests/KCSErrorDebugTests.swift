@@ -48,6 +48,9 @@ class KCSErrorDebugTests: KCSTestCase {
             }
         }
         
+        private override func stopLoading() {
+        }
+        
     }
 
     override func setUp() {
