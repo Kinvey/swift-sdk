@@ -28,6 +28,7 @@ typedef NS_ENUM(NSUInteger, KCSCachePolicy) {
     KCSCachePolicyLocalFirst,
     KCSCachePolicyNetworkFirst,
     KCSCachePolicyBoth,
+    KCSCachePolicyDeltaFetch,
     KCSCachePolicyReadOnceAndSaveLocal_Xperimental //for caching assests that change infrequently (e.g. ui assets, names of presidents, etc)
 };
 

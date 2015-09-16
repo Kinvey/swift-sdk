@@ -27,6 +27,8 @@
 
 typedef void(^KCSCompletionBlock)(NSArray *objectsOrNil, NSError *errorOrNil);
 
+//TODO cleanup, temp for delta caching
+typedef void(^KCSDeltaResponseBlock)(NSDictionary* dict, NSError * errorOrNil);
 /*! A progress block.
  @param objects if there are any valid objects available. Could be `nil` or empty.
  @param percentComplete the percentage of the total progress made so far. Suitable for a progress indicator.
