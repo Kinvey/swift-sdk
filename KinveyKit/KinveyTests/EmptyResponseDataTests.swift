@@ -34,6 +34,9 @@ class EmptyResponseDataTests: KCSTestCase {
             client?.URLProtocolDidFinishLoading(self)
         }
         
+        private override func stopLoading() {
+        }
+        
     }
     
     var collection: KCSCollection!
@@ -63,7 +66,7 @@ class EmptyResponseDataTests: KCSTestCase {
             expectationLogin?.fulfill()
         })
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationLogin = nil
         })
         

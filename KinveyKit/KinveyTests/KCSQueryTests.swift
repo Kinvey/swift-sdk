@@ -32,7 +32,7 @@ class KCSQueryTests: KCSQueryBaseTests {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationLogin = nil
         })
     }
@@ -66,7 +66,7 @@ class KCSQueryTests: KCSQueryBaseTests {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationLogin = nil
         })
         
@@ -105,7 +105,7 @@ class KCSQueryTests: KCSQueryBaseTests {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationSave = nil
         })
         
@@ -136,7 +136,7 @@ class KCSQueryTests: KCSQueryBaseTests {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationQuery = nil
         })
         
@@ -167,7 +167,7 @@ class KCSQueryTests: KCSQueryBaseTests {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationQuery2 = nil
         })
     }

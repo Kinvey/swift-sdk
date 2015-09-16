@@ -23,7 +23,7 @@ class MLIBZ_256_Tests: KCSTestCase {
         static var urlError: NSError!
         
         override class func canInitWithRequest(request: NSURLRequest) -> Bool {
-            return request.URL!.absoluteString! != "https://baas.kinvey.com/user/\(appId)/login"
+            return request.URL!.absoluteString != "https://baas.kinvey.com/user/\(appId)/login"
         }
         
         override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
@@ -52,15 +52,15 @@ class MLIBZ_256_Tests: KCSTestCase {
         
         class OfflineSaveDelegate: NSObject, KCSOfflineUpdateDelegate {
             
-            private func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
+            @objc private func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
                 return true
             }
             
-            private func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
+            @objc private func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
                 return true
             }
             
-            private func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
+            @objc private func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
                 return true
             }
             
@@ -83,7 +83,7 @@ class MLIBZ_256_Tests: KCSTestCase {
         
         weak var expectationSave = expectationWithDescription("save")
         
-        class Object : NSObject, KCSPersistable {
+        class Object : NSObject {
             
             dynamic var objectId: String?
             dynamic var policyId: String?
@@ -106,7 +106,7 @@ class MLIBZ_256_Tests: KCSTestCase {
             ]
         )
         
-        var obj = Object()
+        let obj = Object()
         obj.policyId = "5"
         
         store.saveObject(
@@ -150,7 +150,7 @@ class MLIBZ_256_Tests: KCSTestCase {
         super.tearDown()
     }
     
-    func runTest() {
+    override func runTest() {
         weak var expectationQuery1 = expectationWithDescription("query1")
         
         var firstTime = true;

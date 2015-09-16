@@ -43,7 +43,7 @@ class KCSFileStoreMemoryTestsSwift: KCSTestCase {
             progressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(60, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(60, handler: { (error: NSError?) -> Void in
             expectationUpload = nil
         })
         
@@ -61,7 +61,7 @@ class KCSFileStoreMemoryTestsSwift: KCSTestCase {
             }
         })
         
-        waitForExpectationsWithTimeout(10, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: { (error: NSError?) -> Void in
             running = false
             expectationMemory = nil
         })

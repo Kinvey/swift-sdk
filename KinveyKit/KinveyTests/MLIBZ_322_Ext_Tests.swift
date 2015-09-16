@@ -14,12 +14,12 @@ class MLIBZ_322_Ext_Tests: KCSTestCase {
     func testInvalidOperator() {
         let low = 1;
         let high = 5;
-        KCSTryCatch.try(
+        KCSTryCatch.`try`(
             { () -> Void in
                 KCSQuery(onField: "age", usingConditionalPairs: [-1234, low, KCSQueryConditional.KCSLessThan.rawValue, high])
                 
                 XCTAssert(false)
-            }, catch: { (exception: NSException!) -> Void in
+            }, `catch`: { (exception: NSException!) -> Void in
                 XCTAssert(true)
             }, finally: nil
         )
@@ -28,12 +28,12 @@ class MLIBZ_322_Ext_Tests: KCSTestCase {
     func testInvalidOperatorString() {
         let low = 1;
         let high = 5;
-        KCSTryCatch.try(
+        KCSTryCatch.`try`(
             { () -> Void in
                 KCSQuery(onField: "age", usingConditionalPairs: ["-1234", low, KCSQueryConditional.KCSLessThan.rawValue, high])
                 
                 XCTAssert(false)
-            }, catch: { (exception: NSException!) -> Void in
+            }, `catch`: { (exception: NSException!) -> Void in
                 XCTAssert(true)
             }, finally: nil
         )
@@ -42,12 +42,12 @@ class MLIBZ_322_Ext_Tests: KCSTestCase {
     func testInvalidArray() {
         let low = 1;
         let high = 5;
-        KCSTryCatch.try(
+        KCSTryCatch.`try`(
             { () -> Void in
                 KCSQuery(onField: "age", usingConditionalPairs: [KCSQueryConditional.KCSGreaterThan.rawValue, low, KCSQueryConditional.KCSLessThan.rawValue, high, KCSQueryConditional.KCSSize.rawValue])
                 
                 XCTAssert(false)
-            }, catch: { (exception: NSException!) -> Void in
+            }, `catch`: { (exception: NSException!) -> Void in
                 XCTAssert(true)
             }, finally: nil
         )

@@ -4277,6 +4277,8 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = KCS;
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = Kinvey;
 				TargetAttributes = {

@@ -10,6 +10,28 @@ import XCTest
 
 class MLIBZ_290_Tests: KCSTestCase {
     
+    private class OfflineUpdateDelegate : NSObject, KCSOfflineUpdateDelegate {
+        
+        static weak var expectationLogin: XCTestExpectation?
+        
+        @objc func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
+            return true
+        }
+        
+        @objc func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
+            return true
+        }
+        
+        @objc func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
+            return true
+        }
+        
+        @objc func didSaveObject(objectId: String!, inCollection collectionName: String!) {
+            OfflineUpdateDelegate.self.expectationLogin?.fulfill()
+        }
+        
+    }
+    
     private class MockURLProtocol : NSURLProtocol {
         
         static var putRequests: [NSURLRequest] = []
@@ -44,11 +66,9 @@ class MLIBZ_290_Tests: KCSTestCase {
                     mutableRequest.HTTPBodyStream = nil
                     mutableRequest.HTTPBody = data
                     
-                    let object = NSJSONSerialization.JSONObjectWithData(
+                    let object = (try! NSJSONSerialization.JSONObjectWithData(
                         data,
-                        options: NSJSONReadingOptions.allZeros,
-                        error: nil
-                        ) as! NSDictionary
+                        options: NSJSONReadingOptions())) as! NSDictionary
                     
                     XCTAssertNil(object[KCSEntityKeyId])
                 }
@@ -98,25 +118,7 @@ class MLIBZ_290_Tests: KCSTestCase {
         
         waitForExpectationsWithTimeout(30, handler: nil)
         
-        class OfflineUpdateDelegate : NSObject, KCSOfflineUpdateDelegate {
-            
-            func shouldDeleteObject(objectId: String!, inCollection collectionName: String!, lastAttemptedDeleteTime time: NSDate!) -> Bool {
-                return true
-            }
-            
-            func shouldEnqueueObject(objectId: String!, inCollection collectionName: String!, onError error: NSError!) -> Bool {
-                return true
-            }
-            
-            func shouldSaveObject(objectId: String!, inCollection collectionName: String!, lastAttemptedSaveTime saveTime: NSDate!) -> Bool {
-                return true
-            }
-            
-            func didSaveObject(objectId: String!, inCollection collectionName: String!) {
-                expectationLogin?.fulfill()
-            }
-            
-        }
+        OfflineUpdateDelegate.self.expectationLogin = expectationLogin
         
         let delegate = OfflineUpdateDelegate()
         KCSClient.sharedClient().setOfflineDelegate(delegate)
