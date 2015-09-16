@@ -663,15 +663,15 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
             continue;
         }
         
-        //serialize the fields to a dictionary
-        if ([jsonName isEqualToString:KCSEntityKeyMetadata]) {
-            //hijack metadata & only save ACLs (kmd can't be overwritten yet)
-            if ([value isKindOfClass:[KCSMetadata class]]) {
-                dictionaryToMap[kACLKey] = [(KCSMetadata*)value aclValue];
-            } else if ([value isKindOfClass:[NSDictionary class]] && value[kACLKey]) {
-                dictionaryToMap[kACLKey] = value[kACLKey];
-            }
-        } else {
+//        //serialize the fields to a dictionary
+//        if ([jsonName isEqualToString:KCSEntityKeyMetadata]) {
+//            //hijack metadata & only save ACLs (kmd can't be overwritten yet)
+//            if ([value isKindOfClass:[KCSMetadata class]]) {
+//                dictionaryToMap[kACLKey] = [(KCSMetadata*)value aclValue];
+//            } else if ([value isKindOfClass:[NSDictionary class]] && value[kACLKey]) {
+//                dictionaryToMap[kACLKey] = value[kACLKey];
+//            }
+//        } else {
             value = valueForProperty(jsonName, //jsonName
                                      value, //value
                                      withRefs, //withRefs
@@ -688,7 +688,7 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
             }
             
             dictionaryToMap[jsonName] = value;
-        } // end test object name
+//        } // end test object name
     } // end for key in kinveyMapping
     
     // We've handled all the built-in keys, we need to just store the dict if there is one
