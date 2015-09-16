@@ -39,9 +39,13 @@ class KCSErrorDebugTests: KCSTestCase {
                     "key2" : "value2"
                 ]
             ]
-            let bodyData = NSJSONSerialization.dataWithJSONObject(body, options: .allZeros, error: nil)!
-            client?.URLProtocol(self, didLoadData: bodyData)
-            client?.URLProtocolDidFinishLoading(self)
+            do {
+                let bodyData = try NSJSONSerialization.dataWithJSONObject(body, options: [])
+                client?.URLProtocol(self, didLoadData: bodyData)
+                client?.URLProtocolDidFinishLoading(self)
+            } catch let error as NSError {
+                client?.URLProtocol(self, didFailWithError: error)
+            }
         }
         
     }
@@ -80,47 +84,46 @@ class KCSErrorDebugTests: KCSTestCase {
                 
                 if let error = error {
                     XCTAssertNotNil(error.userInfo)
+                    let userInfo = error.userInfo
+
+                    let kinveyError: AnyObject? = userInfo[KCSErrorCodeKey]
+                    XCTAssertNotNil(kinveyError)
+                    if let kinveyError: AnyObject = kinveyError {
+                        XCTAssertTrue(kinveyError.isKindOfClass(NSString.self))
+                        
+                        if kinveyError.isKindOfClass(NSString.self) {
+                            let kinveyErrorStr = kinveyError as! String
+                            XCTAssertEqual(kinveyErrorStr, "Error test")
+                        }
+                    }
                     
-                    if let userInfo = error.userInfo {
-                        let kinveyError: AnyObject? = userInfo[KCSErrorCodeKey]
-                        XCTAssertNotNil(kinveyError)
-                        if let kinveyError: AnyObject = kinveyError {
-                            XCTAssertTrue(kinveyError.isKindOfClass(NSString.self))
-                            
-                            if kinveyError.isKindOfClass(NSString.self) {
-                                let kinveyErrorStr = kinveyError as! String
-                                XCTAssertEqual(kinveyErrorStr, "Error test")
-                            }
-                        }
+                    let description: AnyObject? = userInfo[NSLocalizedDescriptionKey]
+                    XCTAssertNotNil(description)
+                    if let description: AnyObject = description {
+                        XCTAssertTrue(description.isKindOfClass(NSString.self))
                         
-                        let description: AnyObject? = userInfo[NSLocalizedDescriptionKey]
-                        XCTAssertNotNil(description)
-                        if let description: AnyObject = description {
-                            XCTAssertTrue(description.isKindOfClass(NSString.self))
-                            
-                            if description.isKindOfClass(NSString.self) {
-                                let descriptionStr = description as! String
-                                XCTAssertEqual(descriptionStr, "Description test")
-                            }
+                        if description.isKindOfClass(NSString.self) {
+                            let descriptionStr = description as! String
+                            XCTAssertEqual(descriptionStr, "Description test")
                         }
+                    }
+                    
+                    let debug: AnyObject? = userInfo[NSLocalizedFailureReasonErrorKey]
+                    XCTAssertNotNil(debug)
+                    if let debug: AnyObject = debug {
+                        XCTAssertTrue(debug.isKindOfClass(NSDictionary.self))
                         
-                        let debug: AnyObject? = userInfo[NSLocalizedFailureReasonErrorKey]
-                        XCTAssertNotNil(debug)
-                        if let debug: AnyObject = debug {
-                            XCTAssertTrue(debug.isKindOfClass(NSDictionary.self))
+                        if debug.isKindOfClass(NSDictionary.self) {
+                            let debugObj = debug as! NSDictionary
                             
-                            if debug.isKindOfClass(NSDictionary.self) {
-                                let debugObj = debug as! NSDictionary
-                                
-                                XCTAssertNotNil(debugObj["key1"])
-                                if let value = debugObj["key1"] as? String {
-                                    XCTAssertEqual(value, "value1")
-                                }
-                                
-                                XCTAssertNotNil(debugObj["key2"])
-                                if let value = debugObj["key2"] as? String {
-                                    XCTAssertEqual(value, "value2")
-                                }
+                            XCTAssertNotNil(debugObj["key1"])
+                            if let value = debugObj["key1"] as? String {
+                                XCTAssertEqual(value, "value1")
+                            }
+                            
+                            XCTAssertNotNil(debugObj["key2"])
+                            if let value = debugObj["key2"] as? String {
+                                XCTAssertEqual(value, "value2")
                             }
                         }
                     }
@@ -131,7 +134,7 @@ class KCSErrorDebugTests: KCSTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectation = nil
         })
     }
