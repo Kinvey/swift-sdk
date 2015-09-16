@@ -26,7 +26,7 @@ class KCSProtocolTestsKmdLmtMissing: KCSTestCase {
                 ],
                 "name" : "Kinvey2"
             ]
-            let data = NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions.allZeros, error: nil)!
+            let data = try! NSJSONSerialization.dataWithJSONObject(user, options: NSJSONWritingOptions())
             
             let response = NSHTTPURLResponse(
                 URL: request.URL!,
@@ -44,6 +44,9 @@ class KCSProtocolTestsKmdLmtMissing: KCSTestCase {
             )
             client!.URLProtocol(self, didLoadData: data)
             client!.URLProtocolDidFinishLoading(self)
+        }
+        
+        private override func stopLoading() {
         }
         
     }
@@ -72,7 +75,7 @@ class KCSProtocolTestsKmdLmtMissing: KCSTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationCreateUser = nil
         })
         
@@ -93,7 +96,7 @@ class KCSProtocolTestsKmdLmtMissing: KCSTestCase {
             withProgressBlock: nil
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationSave = nil
         })
     }

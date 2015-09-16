@@ -218,7 +218,9 @@
 
 #define LOG_ERROR   (ddLogLevel & LOG_FLAG_ERROR)
 #define LOG_WARN    (ddLogLevel & LOG_FLAG_WARN)
-#define LOG_INFO    (ddLogLevel & LOG_FLAG_INFO)
+#ifndef LOG_INFO
+    #define LOG_INFO    (ddLogLevel & LOG_FLAG_INFO)
+#endif
 #define LOG_VERBOSE (ddLogLevel & LOG_FLAG_VERBOSE)
 
 #define LOG_ASYNC_ENABLED YES

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class City: NSObject, KCSPersistable {
+class City: NSObject {
     
     var objectId: String!
     var name: String!

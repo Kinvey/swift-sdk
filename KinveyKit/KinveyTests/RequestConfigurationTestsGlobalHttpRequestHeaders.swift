@@ -13,19 +13,24 @@ class RequestConfigurationTestsGlobalHttpRequestHeaders: RequestConfigurationTes
         override class func canInitWithRequest(request: NSURLRequest) -> Bool {
             let headers = request.allHTTPHeaderFields!
             
-            XCTAssertEqual(headers["X-Kinvey-Client-App-Version"] as! NSString!, "2.0")
+            XCTAssertEqual(headers["X-Kinvey-Client-App-Version"] as NSString!, "2.0")
             
             var error: NSError?
             let expectedResult = [
                 "lang" : "fr",
                 "globalProperty" : "abc"
                 ] as Dictionary<String, String>
-            let data = NSJSONSerialization.dataWithJSONObject(KCSMutableOrderedDictionary(dictionary: expectedResult),
-                options: nil,
-                error: &error)
+            let data: NSData?
+            do {
+                data = try NSJSONSerialization.dataWithJSONObject(KCSMutableOrderedDictionary(dictionary: expectedResult),
+                                options: [])
+            } catch let error1 as NSError {
+                error = error1
+                data = nil
+            }
             XCTAssertNil(error)
             let json = NSString(data: data!, encoding: NSUTF8StringEncoding)!
-            XCTAssertEqual(headers["X-Kinvey-Custom-Request-Properties"] as! NSString!, json)
+            XCTAssertEqual(headers["X-Kinvey-Custom-Request-Properties"] as NSString!, json)
             
             return false
         }
@@ -33,7 +38,7 @@ class RequestConfigurationTestsGlobalHttpRequestHeaders: RequestConfigurationTes
     }
     
     func testGlobalHttpRequestHeaders() {
-        var obj = [
+        let obj = [
             "_id" : "Boston",
             "name" : "Boston",
             "state" : "MA"

@@ -44,7 +44,7 @@ class KCSCachedStoreSwiftTests: KCSTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(30, handler: { (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(30, handler: { (error: NSError?) -> Void in
             expectationLogin = nil
         })
     }
