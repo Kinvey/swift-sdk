@@ -59,20 +59,27 @@ NSString* kinveyObjectMdProperty(id<KCSPersistable>obj)
     return nil;
 }
 
-NSString* kinveyObjectId(NSObject<KCSPersistable>* obj)
-{
-    NSString* objKey = kinveyObjectIdHostProperty(obj);
+NSString* kinveyObjectIdWithKey(NSObject<KCSPersistable>* obj, NSString* objKey){
     return ifNotNil(objKey, [obj valueForKey:objKey]);
 }
 
-NSDate* kinveyObjectLmt(NSObject<KCSPersistable>* obj)
+NSString* kinveyObjectId(NSObject<KCSPersistable>* obj)
 {
-    NSString* objKey = kinveyObjectMdProperty(obj);
+    return kinveyObjectIdWithKey(obj,kinveyObjectIdHostProperty(obj));
+}
+
+NSDate* kinveyObjectLmtWithMdKey(NSObject<KCSPersistable>* obj, NSString* objKey){
     KCSMetadata* kmd = ifNotNil(objKey, [obj valueForKey:objKey]);
     if (kmd){
         return kmd.lastModifiedTime;
     }
     return 0;
+}
+
+
+NSDate* kinveyObjectLmt(NSObject<KCSPersistable>* obj)
+{
+    return kinveyObjectLmtWithMdKey(obj, kinveyObjectMdProperty(obj));
 }
 
 void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
@@ -197,8 +204,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 }
 
 
-- (NSArray*) computeDelta:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection referenceObjs: (NSArray*) refObjs;
+- (NSArray*) computeDelta:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection referenceObjs: (NSDictionary*) refObjs;
 {
+    double current = [[NSDate date] timeIntervalSince1970];
     NSString* queryKey = [query keyString];
     NSString* key = [self queryKey:query route:route collection:collection];
     __block NSArray* ids = [_queryCache objectForKey:key];
@@ -210,36 +218,69 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
         }
     }
     NSMutableArray* cachedObjs = [NSMutableArray arrayWithArray:[self objectsForIds:ids route:route collection:collection]];
-    NSMutableArray* delta = [NSMutableArray array];
+    NSMutableDictionary* delta = [NSMutableDictionary dictionaryWithDictionary:refObjs];
+    NSMutableDictionary* deletes = [NSMutableDictionary dictionary];
     
-    NSMutableArray* refIds = [NSMutableArray array];
-    for (int i=0; i<refObjs.count; i++) {
-        id refObj =[refObjs objectAtIndex:i];
-        NSString* refId = refObj[@"id"];
-        NSDate* refLmt = [NSDate dateFromISO8601EncodedString:refObj[@"lmt"]]; //get lmt
-        for (int j=0; j<cachedObjs.count; j++){
-            id cachedObj = [cachedObjs objectAtIndex:j];
-            id cachedId = kinveyObjectId(cachedObj);
-            if ([refId isEqual: cachedId]){
-                NSDate* cachedLmt = kinveyObjectLmt(cachedObj);
-                if (![refLmt isEqualToDate:cachedLmt]){
-                    [delta addObject: refId];
+    //NSMutableArray* refIds = [NSMutableArray array];
+    NSArray* refIds = [refObjs allKeys];
+    
+    NSString* idKey = kinveyObjectIdHostProperty([cachedObjs objectAtIndex:0]);
+    NSString* mdKey = kinveyObjectMdProperty([cachedObjs objectAtIndex:0]);
+    
+    for (int i=0; i<cachedObjs.count; i++){
+        id cachedObj = [cachedObjs objectAtIndex:i];
+        NSString* cachedId = kinveyObjectIdWithKey(cachedObj, idKey);
+        NSString* ref = [delta objectForKey:cachedId];
 
-                }
-                [cachedObjs removeObjectAtIndex:j];
-                break;
+        if (ref){ //cached object found in ref
+            NSDate* refLmt = [NSDate dateFromISO8601EncodedString:ref];
+            NSDate* cachedLmt = kinveyObjectLmtWithMdKey(cachedObj, mdKey);
+            if ([refLmt isEqualToDate:cachedLmt]){
+                [delta removeObjectForKey:cachedId];
             }
         }
-        [refIds addObject:refId];
+        else{
+            //items to be deleted
+            [deletes setObject:cachedObj forKey:cachedId];
+        }
     }
-    if (cachedObjs.count > 0){ //objects in the cache that don't appear in the fresh data
-        [self deleteObjects:cachedObjs route:route collection:collection];
-    }
+    
+//    for (int i=0; i<refObjs.count; i++) {
+//        id refObj =[refObjs objectAtIndex:i];
+//        NSString* refId = refObj[@"id"];
+//        NSDate* refLmt = [NSDate dateFromISO8601EncodedString:refObj[@"lmt"]]; //get lmt
+//        int j;
+//        BOOL found = NO;
+//        for (j=0; j<cachedObjs.count; j++){
+//            id cachedObj = [cachedObjs objectAtIndex:j];
+//            id cachedId = kinveyObjectId(cachedObj);
+//            if ([refId isEqual: cachedId]){
+//                found = YES;
+//                NSDate* cachedLmt = kinveyObjectLmt(cachedObj);
+//                if (![refLmt isEqualToDate:cachedLmt]){
+//                    [delta addObject: refId];
+//
+//                }
+//                [cachedObjs removeObjectAtIndex:j];
+//                break;
+//            }
+//        }
+//        if (found == NO) {  //no cached object matched, so this is a new object
+//            [delta addObject:refId];
+//        }
+//        [refIds addObject:refId];
+//    }
+//    if (cachedObjs.count > 0){ //objects in the cache that don't appear in the fresh data
+//        [self deleteObjects:cachedObjs route:route collection:collection];
+//    }
     [_queryCache setObject:refIds forKey:key];
     [_persistenceLayer setIds:refIds forQuery:queryKey route:route collection:collection];
 
-
-    return delta;
+    NSLog(@"Time taken for delta set computation: %f", [[NSDate date] timeIntervalSince1970] - current);
+    NSLog(@"Delta set size: %lu", (unsigned long)[[delta allKeys] count]);
+    NSLog(@"Deletes: %lu", (unsigned long)[[deletes allKeys] count]);
+    
+    return [delta allKeys];
 }
 
 

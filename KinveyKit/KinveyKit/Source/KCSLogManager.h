@@ -28,7 +28,7 @@ withFormat:(format),##__VA_ARGS__]
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kNetworkChannel] file:__FILE__ lineNumber:__LINE__ \
 withFormat:(format),##__VA_ARGS__]
 
-#define KCSLogDebug(format,...) \
+#define     (format,...) \
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kDebugChannel] file:__FILE__ lineNumber:__LINE__ \
 withFormat:(format),##__VA_ARGS__]
 
