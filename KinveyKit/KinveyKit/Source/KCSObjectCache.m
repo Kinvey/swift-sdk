@@ -221,7 +221,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     }];
 }
 
-      - (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
+- (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
 {
     NSArray* retVal = nil;
     NSString* queryKey = [query keyString];
