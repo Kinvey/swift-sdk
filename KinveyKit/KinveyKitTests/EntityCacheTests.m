@@ -257,7 +257,7 @@
     KCSQuery* q = [KCSQuery query];
     NSString* route = @"r";
     NSString* cln = @"c";
-    NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
+    NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln persist:YES];
     KTAssertCount(8, results);
     
     [ocache clear];
@@ -275,7 +275,7 @@
     q1.skipModifier = [[KCSQuerySkipModifier alloc] initWithcount:0];
     q1.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:4];
     
-    NSArray* results1 = [ocache setObjects:[entities subarrayWithRange:NSMakeRange(0, 4)] forQuery:[KCSQuery2 queryWithQuery1:q1] route:route collection:collection];
+    NSArray* results1 = [ocache setObjects:[entities subarrayWithRange:NSMakeRange(0, 4)] forQuery:[KCSQuery2 queryWithQuery1:q1] route:route collection:collection persist:YES];
     KTAssertCount(4, results1);
 
 
@@ -283,7 +283,7 @@
     q2.skipModifier = [[KCSQuerySkipModifier alloc] initWithcount:4];
     q2.limitModifer = [[KCSQueryLimitModifier alloc] initWithLimit:4];
     
-    NSArray* results2 = [ocache setObjects:[entities subarrayWithRange:NSMakeRange(4, 4)] forQuery:[KCSQuery2 queryWithQuery1:q2] route:route collection:collection];
+    NSArray* results2 = [ocache setObjects:[entities subarrayWithRange:NSMakeRange(4, 4)] forQuery:[KCSQuery2 queryWithQuery1:q2] route:route collection:collection persist:YES];
     KTAssertCount(4, results2);
     
     NSArray* pull1 = [ocache pullQuery:[KCSQuery2 queryWithQuery1:q1] route:route collection:collection];
@@ -305,7 +305,7 @@
     KCSQuery* q = [KCSQuery query];
     NSString* route = @"r";
     NSString* cln = @"c";
-    NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
+    NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln persist:YES];
     KTAssertCount(8, results);
     
     NSArray* preResults = [ocache pullQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
@@ -326,7 +326,7 @@
     KCSQuery2* q2 = [KCSQuery2 queryWithQuery1:q];
     NSString* route = @"R";
     NSString* collection = @"zfasdf";
-    NSArray* a = [ocache setObjects:entities forQuery:q2 route:route collection:collection];
+    NSArray* a = [ocache setObjects:entities forQuery:q2 route:route collection:collection persist:YES];
     KTAssertCount(1, a);
     
     NSArray* preResults = [ocache pullQuery:q2 route:route collection:collection];
@@ -368,7 +368,7 @@
     KCSQuery* q = [KCSQuery queryOnField:@"A" withExactMatchForValue:@"X"];
     NSString* route = @"r";
     NSString* cln = @"c";
-    NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln];
+    NSArray* results = [ocache setObjects:entities forQuery:[KCSQuery2 queryWithQuery1:q] route:route collection:cln persist:YES];
     KTAssertCount(8, results);
     
     NSArray* allResults = [ocache pullQuery:[KCSQuery2 allQuery] route:route collection:cln];
@@ -391,7 +391,7 @@
     obj1.objId = @"1";
     ASTTestClass* obj2 = [[ASTTestClass alloc] init];
     obj2.objId = @"2";
-    [cache setObjects:@[obj1,obj2] forQuery:q route:@"user" collection:@"_user"];
+    [cache setObjects:@[obj1,obj2] forQuery:q route:@"user" collection:@"_user" persist:YES];
 
     
     NSPredicate* queryPredicate = [q predicate];
@@ -433,7 +433,7 @@
     obj1.objId = @"1";
     ASTTestClass* obj2 = [[ASTTestClass alloc] init];
     obj2.objId = @"2";
-    [cache setObjects:@[obj1,obj2] forQuery:[KCSQuery2 queryWithQuery1:query] route:@"A" collection:@"B"];
+    [cache setObjects:@[obj1,obj2] forQuery:[KCSQuery2 queryWithQuery1:query] route:@"A" collection:@"B" persist:YES];
     
     KCSQuery* query2 = [KCSQuery queryOnField:@"foo" withExactMatchForValue:@"bar"];
     [query2 addSortModifier:[[KCSQuerySortModifier alloc] initWithField:@"sortOrder" inDirection:kKCSAscending]];
