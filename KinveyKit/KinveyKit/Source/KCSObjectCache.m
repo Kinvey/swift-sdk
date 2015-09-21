@@ -195,7 +195,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     retVal = [self objectsForIds:ids route:route collection:collection];
     
     if (shouldCacheFromPersistence) {
-        [self setObjects:retVal forQuery:query route:route collection:collection];
+        [self setObjects:retVal forQuery:query route:route collection:collection persist:NO];
     }
     
     return retVal;
@@ -217,11 +217,11 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     [objects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         NSDictionary* entity = [self.dataModel jsonEntityForObject:obj route:route collection:collection];
         DBAssert(entity != nil, @"should have an entity");
-        [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache];
+        [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache persist:YES];
     }];
 }
 
-- (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection
+- (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection persist:(BOOL) shouldPersist
 {
     NSArray* retVal = nil;
     NSString* queryKey = [query keyString];
@@ -241,12 +241,15 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
         NSMutableArray* objs = [NSMutableArray arrayWithCapacity:ids.count];
         for (id<KCSPersistable> obj in objArray) {
             NSDictionary* entity = [_dataModel jsonEntityForObject:obj route:route collection:collection];
-            [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache];
+            [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache persist:shouldPersist];
             [objs addObject:obj];
         }
         
         [_queryCache setObject:ids forKey:key];
-        [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
+        if (shouldPersist) {
+            [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
+        }
+
         retVal = objs;
     }
     
@@ -284,7 +287,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 }
 
 #pragma mark - Saving
-- (BOOL) updateObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection collectionCache:(NSCache*)clnCache
+- (BOOL) updateObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection collectionCache:(NSCache*)clnCache persist:(BOOL) shouldPersist
 {
     NSString* key = entity[KCSEntityKeyId];
     if (!key) {
@@ -293,10 +296,13 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     }
     [clnCache setObject:object forKey:entity[KCSEntityKeyId]];
     __block BOOL updated = NO;
-    updated = [_persistenceLayer updateWithEntity:entity route:route collection:collection];
-    
-    if (updated && _preCalculatesResults) {
-        [self preCalculateQueries:entity route:route collection:collection];
+
+    if (shouldPersist) {
+        updated = [_persistenceLayer updateWithEntity:entity route:route collection:collection];
+        
+        if (updated && _preCalculatesResults) {
+            [self preCalculateQueries:entity route:route collection:collection];
+        }
     }
     return updated;
 }
@@ -309,7 +315,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     NSDictionary* entity = [self.dataModel jsonEntityForObject:object route:route collection:collection];
     NSCache* clnCache = [self cacheForRoute:route collection:collection];
     
-    BOOL updated = [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
+    BOOL updated = [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache persist:YES];
     
     if (self.offlineUpdateEnabled) {
         //had a good save
@@ -329,7 +335,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
         [self.dataModel updateObject:object withEntity:entity atRoute:route collection:collection];
     }
     
-    [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache];
+    [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache persist:NO];
 }
 
 - (NSString*) addUnsavedObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection method:(NSString*)method headers:(NSDictionary*)headers error:(NSError*)error
@@ -355,7 +361,7 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     }
     
     if (_updatesLocalWithUnconfirmedSaves == YES) {
-        [self updateObject:object entity:bEntity route:route collection:collection collectionCache:clnCache];
+        [self updateObject:object entity:bEntity route:route collection:collection collectionCache:clnCache persist:YES];
     }
     
     return newid;
