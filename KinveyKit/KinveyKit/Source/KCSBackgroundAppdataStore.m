@@ -599,7 +599,7 @@ NSError* createCacheError(NSString* message)
             KCSLogError(@"Error clearing query '%@' from cache:", query);
         }
     } else if (objectsOrNil != nil) {
-        [[KCSAppdataStore caches] setObjects:objectsOrNil forQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+        [[KCSAppdataStore caches] setObjects:objectsOrNil forQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName persist:YES];
     }
 }
 
