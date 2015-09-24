@@ -44,7 +44,9 @@ KCS_CONST_IMPL KCSMetadataFieldCreationTime = @"_kmd.ect";
 
 @interface KCSMetadata ()
 @property (nonatomic, strong, readonly) NSString* lmt;
+@property (nonatomic, strong, readonly) NSDate* lmtAsDate;
 @property (nonatomic, strong, readonly) NSString* ect;
+@property (nonatomic, strong, readonly) NSDate* ectAsDate;
 @property (nonatomic, strong, readonly) NSMutableDictionary* acl;
 @end
 
@@ -85,7 +87,9 @@ KCS_CONST_IMPL KCSMetadataFieldCreationTime = @"_kmd.ect";
     if (metadata) {
         [metadata.acl addEntriesFromDictionary:_acl];
         metadata->_ect = [_ect copyWithZone:zone];
+        metadata->_ectAsDate = [_ectAsDate copyWithZone:zone];
         metadata->_lmt = [_lmt copyWithZone:zone];
+        metadata->_lmtAsDate = [_lmtAsDate copyWithZone:zone];
         [metadata.writers addObjectsFromArray:self.writers];
         [metadata.readers addObjectsFromArray:self.readers];
     }
@@ -97,8 +101,10 @@ KCS_CONST_IMPL KCSMetadataFieldCreationTime = @"_kmd.ect";
     NSDictionary* kmd;
     if (_ect) {
         kmd = @{kKMDECTKey : _ect, kKMDLMTKey : _lmt};
-    } else {
+    } else if (_lmt) {
         kmd =  @{kKMDLMTKey : _lmt};
+    } else {
+        kmd = nil;
     }
     return kmd;
 }
@@ -204,11 +210,17 @@ KCS_CONST_IMPL KCSMetadataFieldCreationTime = @"_kmd.ect";
 }
 
 - (NSDate*) lastModifiedTime {
-    return self.lmt? [NSDate dateFromISO8601EncodedString:self.lmt] : nil;
+    if (!self.lmtAsDate && self.lmt) {
+        _lmtAsDate = [NSDate dateFromISO8601EncodedString:self.lmt];
+    }
+    return self.lmtAsDate;
 }
 
 - (NSDate*) creationTime {
-    return self.ect? [NSDate dateFromISO8601EncodedString:self.ect] : nil;
+    if (!self.ectAsDate && self.ect) {
+        _ectAsDate = [NSDate dateFromISO8601EncodedString:self.ect];
+    }
+    return self.ectAsDate;
 }
 
 @end
