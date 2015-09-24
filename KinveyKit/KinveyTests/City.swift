@@ -10,13 +10,15 @@ import Foundation
 
 class City: NSObject {
     
-    var objectId: String!
+    var objectId: String?
     var name: String!
+    var metadata: KCSMetadata?
     
     override func hostToKinveyPropertyMapping() -> [NSObject : AnyObject]! {
         return [
             "objectId" : KCSEntityKeyId,
-            "name" : "name"
+            "name" : "name",
+            "metadata" : KCSEntityKeyMetadata
         ]
     }
     
