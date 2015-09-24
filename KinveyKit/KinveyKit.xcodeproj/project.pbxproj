@@ -916,6 +916,9 @@
 		57DD612D1ABCB419006DD3F0 /* KCSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DD612B1ABCB419006DD3F0 /* KCSURLProtocol.m */; };
 		57DD612E1ABCB6D5006DD3F0 /* KCSURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 57DD612A1ABCB419006DD3F0 /* KCSURLProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57DD612F1ABCB6DB006DD3F0 /* KCSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DD612B1ABCB419006DD3F0 /* KCSURLProtocol.m */; };
+		57DF5C341BB355CE0036EF99 /* KCSDeltaSetCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF5C331BB355CE0036EF99 /* KCSDeltaSetCacheTests.swift */; settings = {ASSET_TAGS = (); }; };
+		57DF5C351BB37E250036EF99 /* KCSDeltaSetCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF5C331BB355CE0036EF99 /* KCSDeltaSetCacheTests.swift */; settings = {ASSET_TAGS = (); }; };
+		57DF5C361BB37FA20036EF99 /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F556891AFD62C3008CB244 /* City.swift */; settings = {ASSET_TAGS = (); }; };
 		57E40BC81B20DC9F00C37317 /* libKinvey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C8DAF91AB8C968007F2E42 /* libKinvey.a */; };
 		57E40BCA1B20E95C00C37317 /* MLIBZ_371_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E40BC91B20E95C00C37317 /* MLIBZ_371_Tests.m */; };
 		57E4F1041B28BE900002342E /* MLIBZ_322_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574D8BA21B1641BB00C114A9 /* MLIBZ_322_Tests.swift */; };
@@ -1775,6 +1778,7 @@
 		57C8DB091AB8C968007F2E42 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		57DD612A1ABCB419006DD3F0 /* KCSURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSURLProtocol.h; sourceTree = "<group>"; };
 		57DD612B1ABCB419006DD3F0 /* KCSURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSURLProtocol.m; sourceTree = "<group>"; };
+		57DF5C331BB355CE0036EF99 /* KCSDeltaSetCacheTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSDeltaSetCacheTests.swift; sourceTree = "<group>"; };
 		57E40BC91B20E95C00C37317 /* MLIBZ_371_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLIBZ_371_Tests.m; sourceTree = "<group>"; };
 		57E4F1101B28E97D0002342E /* MLIBZ_322_ObjC_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLIBZ_322_ObjC_Tests.m; sourceTree = "<group>"; };
 		57E5FC001AD379BF00C19528 /* KinveyUser+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KinveyUser+Private.h"; sourceTree = "<group>"; };
@@ -2846,6 +2850,7 @@
 				579BE41C1B791BD300938988 /* KCSLinkedAppdataStoreSwiftTests.swift */,
 				579BE41E1B7950A000938988 /* KCSUserTests.swift */,
 				57FB60691BA07DC100506172 /* KCSErrorDebugTests.swift */,
+				57DF5C331BB355CE0036EF99 /* KCSDeltaSetCacheTests.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -4975,11 +4980,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57DF5C351BB37E250036EF99 /* KCSDeltaSetCacheTests.swift in Sources */,
 				57F691851B8F9B9000F1FF87 /* KCSTestCase.m in Sources */,
 				57E4F1041B28BE900002342E /* MLIBZ_322_Tests.swift in Sources */,
 				57E4F1121B28E9CA0002342E /* MLIBZ_322_ObjC_Tests.m in Sources */,
 				5725E7021AD6E2A000B506BB /* KinveyPlaygroundTests.swift in Sources */,
 				57E4F1131B28EF330002342E /* KCSTryCatch.m in Sources */,
+				57DF5C361BB37FA20036EF99 /* City.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5261,6 +5268,7 @@
 				5736546F1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m in Sources */,
 				579419141AD35A28001CFF5A /* KeychainTests.m in Sources */,
 				578834321AB8D25500078CC5 /* KinveyKitKeyChainTests.m in Sources */,
+				57DF5C341BB355CE0036EF99 /* KCSDeltaSetCacheTests.swift in Sources */,
 				578076771AF7FCD500C220C4 /* KCSMemory.m in Sources */,
 				5788343F1AB8D25500078CC5 /* KinveyKitNSDateTests.m in Sources */,
 				5788342B1AB8D25500078CC5 /* KinveyAppdataStoreTests.m in Sources */,

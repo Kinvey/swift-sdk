@@ -167,7 +167,8 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 @implementation TestUtils
 
-+ (void) initKinvey {
++ (void) initKinvey:(NSDictionary*)opts
+{
     NSString* path = [[NSBundle mainBundle] pathForResource:@"config" ofType:@"plist"];
     NSDictionary *config = [NSDictionary dictionaryWithContentsOfFile:path];
 

@@ -40,6 +40,8 @@
     
     [KCS_DDLog flushLog];
     
+    [KCSObjectCache setDeltaCacheBlock:nil];
+    
     [super tearDown];
 }
 

@@ -25,6 +25,8 @@
 @protocol KCSOfflineUpdateDelegate;
 @protocol KCSUser2;
 
+typedef void (^KCSObjectDeltaCacheBlock)(NSDictionary*, NSDictionary*, NSTimeInterval);
+
 @interface KCSObjectCache : NSObject
 
 @property (nonatomic, strong) KCSDataModel* dataModel;
@@ -32,6 +34,8 @@
 @property (atomic) BOOL preCalculatesResults;
 @property (atomic) BOOL updatesLocalWithUnconfirmedSaves;
 @property (atomic) BOOL offlineUpdateEnabled;
+
++(void)setDeltaCacheBlock:(KCSObjectDeltaCacheBlock)block;
 
 - (void) setOfflineUpdateDelegate:(id<KCSOfflineUpdateDelegate>)offlineUpdateDelegate;
 

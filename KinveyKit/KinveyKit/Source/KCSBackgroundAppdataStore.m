@@ -289,7 +289,7 @@ return x; \
 
 - (void) handleLoadResponse:(KCSNetworkResponse*)response error:(NSError*)error completionBlock:(KCSCompletionBlock)completionBlock
 {
-    NSAssert(![NSThread isMainThread], @"%s should not run in the main thread", __FUNCTION__);
+    if (response) NSAssert(![NSThread isMainThread], @"%s should not run in the main thread", __FUNCTION__);
     if (error) {
         completionBlock(nil, error);
     } else {
@@ -440,7 +440,7 @@ return x; \
     return [self doLoadObjectWithID:objectIDs
                        withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
     {
-        if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain]  && (cachePolicy == KCSCachePolicyNetworkFirst || cachePolicy == KCSCachePolicyDeltaFetch)) {
+        if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain]  && cachePolicy == KCSCachePolicyNetworkFirst) {
             NSArray* objs = [[KCSAppdataStore caches] pullIds:objectIDs route:[self.backingCollection route] collection:self.backingCollection.collectionName];
             [self completeLoad:objs withCompletionBlock:completionBlock];
         } else {
@@ -522,7 +522,7 @@ return x; \
 
 
 -(KCSRequest*)doDeltaQueryWithQuery:(KCSQuery*)query
-           withCompletionBlock:(KCSDeltaResponseBlock)completionBlock
+                withCompletionBlock:(KCSDeltaResponseBlock)completionBlock
 {
     
     KCSSTORE_VALIDATE_PRECONDITION_RETURN(nil)
@@ -617,7 +617,7 @@ NSError* createCacheError(NSString* message)
 - (BOOL) shouldCallNetworkFirst:(id)cachedResult cachePolicy:(KCSCachePolicy)cachePolicy
 {
     return cachePolicy == KCSCachePolicyNone ||
-           cachePolicy == KCSCachePolicyNetworkFirst || cachePolicy == KCSCachePolicyDeltaFetch ||
+           cachePolicy == KCSCachePolicyNetworkFirst ||
            (cachePolicy != KCSCachePolicyLocalOnly && (cachedResult == nil ||
                                                        ([cachedResult isKindOfClass:[NSArray class]] && [cachedResult count] == 0)));
 }
@@ -684,8 +684,7 @@ NSError* createCacheError(NSString* message)
 {
     
      return [self doQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-//    return [self doDeltaQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
-             if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain] && (cachePolicy == KCSCachePolicyNetworkFirst || cachePolicy == KCSCachePolicyDeltaFetch)) {
+             if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain] && cachePolicy == KCSCachePolicyNetworkFirst) {
                  id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
                  [self completeQuery:obj withCompletionBlock:completionBlock];
              } else {
@@ -698,8 +697,13 @@ NSError* createCacheError(NSString* message)
     } withProgressBlock: progressBlock];
 }
 
-- (void) completeDeltaQuery: (KCSQuery*)query withSet: (NSArray*) deltaSet withCompletionBlock: (KCSCompletionBlock) completionBlock {
-    [self loadObjectWithID:deltaSet withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+-(KCSRequest*)completeDeltaQuery:(KCSQuery*)query
+                         withSet:(NSArray*) deltaSet
+             withCompletionBlock:(KCSCompletionBlock) completionBlock
+{
+    return [self loadObjectWithID:deltaSet
+              withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+    {
         id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
         [self completeQuery:obj withCompletionBlock:completionBlock];
     } withProgressBlock: nil];
@@ -725,13 +729,23 @@ NSError* createCacheError(NSString* message)
     } else {
         obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     }
-    if (cachePolicy == KCSCachePolicyDeltaFetch){
-        if (obj && [obj count]>0) { //exists in cache
-            [self doDeltaQueryWithQuery:query withCompletionBlock:^(NSDictionary *objectsOrNil, NSError *errorOrNil) {   //get IDs from backend
-                NSArray* deltaSet = [[KCSAppdataStore caches] computeDelta:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName referenceObjs: objectsOrNil];
-                [self completeDeltaQuery:query withSet:deltaSet withCompletionBlock:completionBlock];
+    if (self.enableDataSetCaching) {
+        if (obj && [obj count] > 0) { //exists in cache
+            KCSMultipleRequest* requests = [KCSMultipleRequest new];
+            KCSRequest* request = [self doDeltaQueryWithQuery:query
+                                          withCompletionBlock:^(NSMutableDictionary *objectsOrNil, NSError *errorOrNil)
+            { //get IDs from backend
+                NSArray* deltaSet = [[KCSAppdataStore caches] computeDelta:[KCSQuery2 queryWithQuery1:query]
+                                                                     route:[self.backingCollection route]
+                                                                collection:self.backingCollection.collectionName
+                                                             referenceObjs:objectsOrNil];
+                KCSRequest* request = [self completeDeltaQuery:query
+                                                       withSet:deltaSet
+                                           withCompletionBlock:completionBlock];
+                [requests addRequest:request];
             }];
-            return nil;
+            [requests addRequest:request];
+            return requests;
         }
     }
     if (noneCachePolicy || [self shouldCallNetworkFirst:obj cachePolicy:cachePolicy]) {
