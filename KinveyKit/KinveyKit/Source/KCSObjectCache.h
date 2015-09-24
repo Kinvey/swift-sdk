@@ -46,7 +46,7 @@ typedef void (^KCSObjectDeltaCacheBlock)(NSDictionary*, NSDictionary*, NSTimeInt
 - (BOOL) removeQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 
 - (void) addObjects:(NSArray*)objects route:(NSString*)route  collection:(NSString*)collection;
-- (BOOL) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection persist:(BOOL)shouldPersist;
+- (BOOL) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection;
 - (void) updateCacheForObject:(NSString*)objId withEntity:(NSDictionary*)entity atRoute:(NSString*)route collection:(NSString*)collection;
 
 - (void) deleteObject:(NSString*)objId route:(NSString*)route collection:(NSString*)collection;

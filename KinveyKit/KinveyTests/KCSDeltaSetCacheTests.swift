@@ -109,6 +109,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
     }
     
     func testNoDeltaChanges() {
+        var count = 0
         do {
             weak var expectationQuery = self.expectationWithDescription("query")
             
@@ -117,6 +118,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
+                    
+                    count += results.count
                     
                     expectationQuery?.fulfill()
                 },
@@ -141,6 +144,10 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
                     
+                    if let results = results {
+                        XCTAssertEqual(count, results.count)
+                    }
+                    
                     expectationQuery2?.fulfill()
                 },
                 withProgressBlock: nil
@@ -153,6 +160,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
     }
     
     func testDeltaCreate1NewRecord() {
+        var count = 0
         do {
             weak var expectationQuery = self.expectationWithDescription("query")
             
@@ -161,6 +169,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
+                    
+                    count += results.count
                     
                     expectationQuery?.fulfill()
                 },
@@ -187,6 +197,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                         XCTAssertNotNil(results)
                         XCTAssertNil(error)
                         
+                        count += results.count
+                        
                         expectationSave?.fulfill()
                     },
                     withProgressBlock: nil
@@ -204,6 +216,10 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
+                    
+                    if let results = results {
+                        XCTAssertEqual(count, results.count)
+                    }
                     
                     expectationQuery2?.fulfill()
                 },
@@ -228,7 +244,12 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
                     
-                    cities.append(results.first as! City)
+                    if let results = results {
+                        XCTAssertEqual(1, results.count)
+                        if let city = results.first {
+                            cities.append(city as! City)
+                        }
+                    }
                     
                     expectationSave?.fulfill()
                 },
@@ -240,6 +261,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
             }
         }
         
+        var count = 0
+        
         do {
             weak var expectationQuery = self.expectationWithDescription("query")
             
@@ -248,6 +271,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
+                    
+                    count += results.count
                     
                     expectationQuery?.fulfill()
                 },
@@ -259,7 +284,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
             }
         }
         
-        var count = 0
+        var cityCount = 0
         KCSObjectCache.setDeltaCacheBlock({ (delta: [NSObject : AnyObject]!, deletes: [NSObject : AnyObject]!, time: NSTimeInterval) -> Void in
             XCTAssertEqual(0, delta.count)
             XCTAssertEqual(1, deletes.count)
@@ -269,10 +294,12 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 weak var expectationDelete = self.expectationWithDescription("delete")
                 
                 self.storeNoCache.removeObject(
-                    cities[count++],
-                    withCompletionBlock: { (count: UInt, error: NSError!) -> Void in
-                        XCTAssertEqual(1, count)
+                    cities[cityCount++],
+                    withCompletionBlock: { (_count: UInt, error: NSError!) -> Void in
+                        XCTAssertEqual(1, _count)
                         XCTAssertNil(error)
+                        
+                        count -= Int(_count)
                         
                         expectationDelete?.fulfill()
                     },
@@ -291,6 +318,10 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
+                    
+                    if let results = results {
+                        XCTAssertEqual(count, results.count)
+                    }
                     
                     expectationQuery2?.fulfill()
                 },
@@ -324,6 +355,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
             expectationSave = nil
         }
         
+        var count = 0
+        
         do {
             weak var expectationQuery = self.expectationWithDescription("query")
             
@@ -332,6 +365,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
+                    
+                    count += results.count
                     
                     expectationQuery?.fulfill()
                 },
@@ -375,6 +410,10 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
+                    
+                    if let results = results {
+                        XCTAssertEqual(count, results.count)
+                    }
                     
                     expectationQuery2?.fulfill()
                 },
@@ -431,6 +470,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
             expectationSave = nil
         }
         
+        var count = 0
+        
         do {
             weak var expectationQuery = self.expectationWithDescription("query")
             
@@ -439,6 +480,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
+                    
+                    count += results.count
                     
                     expectationQuery?.fulfill()
                 },
@@ -450,7 +493,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
             }
         }
         
-        var count = 0
+        var citiesCount = 0
         KCSObjectCache.setDeltaCacheBlock({ (delta: [NSObject : AnyObject]!, deletes: [NSObject : AnyObject]!, time: NSTimeInterval) -> Void in
             XCTAssertEqual(2, delta.count)
             XCTAssertEqual(1, deletes.count)
@@ -465,6 +508,12 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                     withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                         XCTAssertNotNil(results)
                         XCTAssertNil(error)
+                        
+                        if let results = results {
+                            XCTAssertEqual(1, results.count)
+                        }
+                        
+                        count += results.count
                         
                         expectationSave?.fulfill()
                     },
@@ -486,6 +535,10 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                         XCTAssertNotNil(results)
                         XCTAssertNil(error)
                         
+                        if let results = results {
+                            XCTAssertEqual(1, results.count)
+                        }
+                        
                         expectationUpdate?.fulfill()
                     },
                     withProgressBlock: nil
@@ -500,10 +553,12 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 weak var expectationDelete = self.expectationWithDescription("delete")
                 
                 self.storeNoCache.removeObject(
-                    cities[count++],
-                    withCompletionBlock: { (count: UInt, error: NSError!) -> Void in
-                        XCTAssertEqual(1, count)
+                    cities[citiesCount++],
+                    withCompletionBlock: { (_count: UInt, error: NSError!) -> Void in
+                        XCTAssertEqual(1, _count)
                         XCTAssertNil(error)
+                        
+                        count -= Int(_count)
                         
                         expectationDelete?.fulfill()
                     },
@@ -522,6 +577,10 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
+                    
+                    if let results = results {
+                        XCTAssertEqual(count, results.count)
+                    }
                     
                     expectationQuery2?.fulfill()
                 },

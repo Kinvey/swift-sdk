@@ -69,19 +69,13 @@ NSString* kinveyObjectId(NSObject<KCSPersistable>* obj)
     return kinveyObjectIdWithKey(obj,kinveyObjectIdHostProperty(obj));
 }
 
-NSDate* kinveyObjectLmtWithMdKey(NSObject<KCSPersistable>* obj, NSString* objKey)
+NSString* kinveyObjectLmtWithMdKey(NSObject<KCSPersistable>* obj, NSString* objKey)
 {
     KCSMetadata* kmd = ifNotNil(objKey, [obj valueForKey:objKey]);
     if (kmd) {
-        return kmd.lastModifiedTime;
+        return kmd.kmdDict[KCSEntityKeyMetadataLastModificationTime];
     }
     return nil;
-}
-
-
-NSDate* kinveyObjectLmt(NSObject<KCSPersistable>* obj)
-{
-    return kinveyObjectLmtWithMdKey(obj, kinveyObjectMdProperty(obj));
 }
 
 void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
@@ -234,16 +228,14 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     NSString* idKey = kinveyObjectIdHostProperty([cachedObjs objectAtIndex:0]);
     NSString* mdKey = kinveyObjectMdProperty([cachedObjs objectAtIndex:0]);
     
-    NSString *cachedId, *ref;
-    NSDate *refLmt, *cachedLmt;
+    NSString *cachedId, *refLmt, *cachedLmt;
     for (id cachedObj in cachedObjs) {
         cachedId = kinveyObjectIdWithKey(cachedObj, idKey);
-        ref = [delta objectForKey:cachedId];
+        refLmt = [delta objectForKey:cachedId];
 
-        if (ref) { //cached object found in ref
-            refLmt = [NSDate dateFromISO8601EncodedString:ref];
+        if (refLmt) { //cached object found in ref
             cachedLmt = kinveyObjectLmtWithMdKey(cachedObj, mdKey);
-            if ([refLmt isEqualToDate:cachedLmt]) {
+            if ([refLmt isEqualToString:cachedLmt]) {
                 [delta removeObjectForKey:cachedId];
             }
         } else {
@@ -383,7 +375,12 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 }
 
 #pragma mark - Saving
-- (BOOL) updateObject:(id<KCSPersistable>)object entity:(NSDictionary*)entity route:(NSString*)route collection:(NSString*)collection collectionCache:(NSCache*)clnCache persist:(BOOL) shouldPersist
+-(BOOL)updateObject:(id<KCSPersistable>)object
+             entity:(NSDictionary*)entity
+              route:(NSString*)route
+         collection:(NSString*)collection
+    collectionCache:(NSCache*)clnCache
+            persist:(BOOL) shouldPersist
 {
     NSString* key = entity[KCSEntityKeyId];
     if (!key) {
@@ -403,15 +400,25 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     return updated;
 }
 
-- (BOOL) updateObject:(id<KCSPersistable>)object route:(NSString*)route collection:(NSString*)collection
+-(BOOL)updateObject:(id<KCSPersistable>)object
+              route:(NSString*)route
+         collection:(NSString*)collection
 {
     if (object == nil) {
         return NO;
     }
-    NSDictionary* entity = [self.dataModel jsonEntityForObject:object route:route collection:collection];
-    NSCache* clnCache = [self cacheForRoute:route collection:collection];
+    NSDictionary* entity = [self.dataModel jsonEntityForObject:object
+                                                         route:route
+                                                    collection:collection];
+    NSCache* clnCache = [self cacheForRoute:route
+                                 collection:collection];
     
-    BOOL updated = [self updateObject:object entity:entity route:route collection:collection collectionCache:clnCache persist:YES];
+    BOOL updated = [self updateObject:object
+                               entity:entity
+                                route:route
+                           collection:collection
+                      collectionCache:clnCache
+                              persist:YES];
     
     if (self.offlineUpdateEnabled) {
         //had a good save
@@ -584,7 +591,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
 - (void) cacheActiveUser:(id<KCSUser2>)user
 {
     KCSCollection* userCollection = [KCSCollection userCollection];
-    BOOL updated = [self updateObject:user route:[userCollection route] collection:userCollection.collectionName];
+    BOOL updated = [self updateObject:user
+                                route:[userCollection route]
+                           collection:userCollection.collectionName];
     
     if (updated) {
         NSString* userId = user.userId;
