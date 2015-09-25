@@ -327,6 +327,16 @@
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57B5566B1BB4B0FA0000FF50"
+               BuildableName = "KinveyPlaygroundUITests.xctest"
+               BlueprintName = "KinveyPlaygroundUITests"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
