@@ -45,6 +45,10 @@ class MICViewController: UITableViewController {
                     }
                     
                     NSLog("KCSUserActionResult: \(actionResult.rawValue)")
+                    
+                    if (indexPath.row == 2) {
+                        self.dismissViewControllerAnimated(true, completion: nil)
+                    }
                 }
             )
         }
