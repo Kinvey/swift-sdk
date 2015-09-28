@@ -45,6 +45,7 @@
 #import "NSString+KinveyAdditions.h"
 #import "KCSRequest+Private.h"
 #import "KCSMultipleRequest.h"
+#import "KCSPrivateBlockDefs.h"
 
 #define KCSSTORE_VALIDATE_PRECONDITION KCSSTORE_VALIDATE_PRECONDITION_RETURN()
 
@@ -530,21 +531,14 @@ return x; \
     NSString* route = [collection route];
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-        //[self handleLoadResponse:response error:error completionBlock:completionBlock];
-        
         NSDictionary* jsonResponse = [response jsonObjectError:&error];
         if (error) {
             completionBlock(nil, error);
         } else {
             NSArray* jsonArray = [NSArray wrapIfNotArray:jsonResponse];
-            //NSMutableArray* retVal = [NSMutableArray array];
             NSMutableDictionary* retVal = [NSMutableDictionary dictionaryWithCapacity:jsonArray.count];
             for (NSDictionary* jsonDict in jsonArray){
-                //NSMutableDictionary* refObj = [NSMutableDictionary dictionary];
-                //refObj[@"id"] = jsonDict[@"_id"];
-                //refObj[@"lmt"] = jsonDict[@"_kmd"][@"lmt"];
-                //[retVal addObject:refObj];
-                [retVal setObject:jsonDict[@"_kmd"][@"lmt"] forKey:jsonDict[@"_id"]];
+                retVal[jsonDict[@"_id"]] = jsonDict[@"_kmd"][@"lmt"];
             }
             completionBlock(retVal, error);
         }
@@ -729,7 +723,7 @@ NSError* createCacheError(NSString* message)
     } else {
         obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     }
-    if (self.enableDataSetCaching) {
+    if (self.incrementalCache == KCSIncrementalCacheEnabled) {
         if (obj && [obj count] > 0) { //exists in cache
             KCSMultipleRequest* requests = [KCSMultipleRequest new];
             KCSRequest* request = [self doDeltaQueryWithQuery:query
