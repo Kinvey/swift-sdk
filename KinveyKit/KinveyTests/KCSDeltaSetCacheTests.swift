@@ -34,7 +34,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 KCSStoreKeyCachePolicy: KCSCachePolicy.NetworkFirst.rawValue,
             ]
         )
-        store.enableDataSetCaching = true
+        store.incrementalCache = .Enabled
         
         storeNoCache = KCSBackgroundAppdataStore(
             collection: collection,
@@ -69,7 +69,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         }
     }
     
-    override func tearDown() {
+    func removeAndLogoutActiveUser() {
         if let user = KCSUser.activeUser() {
             weak var expectationRemove = expectationWithDescription("remove")
             
@@ -83,6 +83,10 @@ class KCSDeltaSetCacheTests: KCSTestCase {
             
             user.logout()
         }
+    }
+    
+    override func tearDown() {
+        removeAndLogoutActiveUser()
         
         super.tearDown()
     }
@@ -589,6 +593,205 @@ class KCSDeltaSetCacheTests: KCSTestCase {
             
             self.waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
                 expectationQuery2 = nil
+            }
+        }
+    }
+    
+    func testDeltaUpdate1000Record() {
+        let collectionName = "persons"
+        let baasAPI = KCSBaasAPI(kid: KCSClient.sharedClient().appKey, appSecret: KCSClient.sharedClient().appSecret, masterSecret: masterSecret)
+        importPersons(collectionName, baasAPI: baasAPI)
+        let deleteNumber = 1000
+        
+        let collection = KCSCollection(fromString: collectionName, ofClass: NSDictionary.self)
+        let store = KCSBackgroundAppdataStore(
+            collection: collection,
+            options: [
+                KCSStoreKeyCachePolicy: KCSCachePolicy.NetworkFirst.rawValue,
+            ]
+        )
+        store.incrementalCache = .Enabled
+        
+        let storeNoCache = KCSBackgroundAppdataStore(
+            collection: collection,
+            options: [
+                KCSStoreKeyCachePolicy: KCSCachePolicy.None.rawValue,
+            ]
+        )
+        
+        let query = KCSQuery()
+        
+        do {
+            let start = NSDate()
+            var wait = true
+            while (wait && NSDate().timeIntervalSinceDate(start) < 60 * 5) {
+                weak var expectationCount = expectationWithDescription("count")
+                
+                store.countWithBlock({ (count: UInt, error: NSError!) -> Void in
+                    wait = Int(count) < 5000
+                    
+                    expectationCount?.fulfill()
+                })
+                
+                waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
+                    expectationCount = nil
+                }
+            }
+            
+            XCTAssertFalse(wait)
+        }
+        
+        var results: [AnyObject]? = nil
+        do {
+            weak var expectationQuery = expectationWithDescription("query")
+            
+            store.queryWithQuery(
+                query,
+                withCompletionBlock: { (_results: [AnyObject]!, error: NSError!) -> Void in
+                    results = _results
+                    
+                    XCTAssertNotNil(results)
+                    XCTAssertNil(error)
+                    
+                    if let results = results {
+                        XCTAssertEqual(5000, results.count)
+                    }
+                    
+                    expectationQuery?.fulfill()
+                },
+                withProgressBlock: nil
+            )
+            
+            waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
+                expectationQuery = nil
+            }
+        }
+        
+        if let results = results {
+            weak var expectationDelete = expectationWithDescription("delete")
+            
+            let deletes = Array(results[0..<deleteNumber])
+            storeNoCache.removeObject(
+                deletes,
+                withCompletionBlock: { (count: UInt, error: NSError!) -> Void in
+                    XCTAssertEqual(deleteNumber, Int(count))
+                    XCTAssertNil(error)
+                    
+                    expectationDelete?.fulfill()
+                },
+                withProgressBlock: nil
+            )
+            
+            waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
+                expectationDelete = nil
+            }
+        }
+        
+        KCSObjectCache.setDeltaCacheBlock({ (delta: [NSObject : AnyObject]!, deletes: [NSObject : AnyObject]!, time: NSTimeInterval) -> Void in
+            XCTAssertEqual(0, delta.count)
+            XCTAssertEqual(deleteNumber, deletes.count)
+        })
+        do {
+            weak var expectationQuery2 = expectationWithDescription("query2")
+            
+            store.queryWithQuery(
+                query,
+                withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                    XCTAssertNotNil(results)
+                    XCTAssertNil(error)
+                    
+                    if let results = results {
+                        XCTAssertEqual(4000, results.count)
+                    }
+                    
+                    expectationQuery2?.fulfill()
+                },
+                withProgressBlock: nil
+            )
+            
+            waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
+                expectationQuery2 = nil
+            }
+        }
+    }
+    
+    func importPersons(collectionName: String, baasAPI: KCSBaasAPI) {
+        let manageAPI = KCSManageAPI(kid: KCSClient.sharedClient().appKey)
+        
+        do {
+            weak var expectationClear = expectationWithDescription("clear")
+            
+            baasAPI.clearCollection(
+                collectionName,
+                completionBlock: { (response: NSURLResponse?, json: [String : AnyObject]?, error: NSError?) -> Void in
+                    XCTAssertNotNil(response)
+                    XCTAssertNotNil(json)
+                    XCTAssertNil(error)
+                    
+                    if let json = json {
+                        XCTAssertNotNil(json["count"])
+                        if let count = json["count"] {
+                            XCTAssertEqual(1, count as? NSNumber)
+                        }
+                    }
+                    
+                    expectationClear?.fulfill()
+                }
+            )
+            
+            waitForExpectationsWithTimeout(timeout) { (error: NSError?) -> Void in
+                expectationClear = nil
+            }
+        }
+        
+        do {
+            weak var expectationLogin = expectationWithDescription("login")
+            
+            manageAPI.loginWithEmail(
+                "victor@kinvey.com",
+                password: "avT-UDD-aTS-6JT",
+                completionBlock: { (response: NSURLResponse?, json: [String : AnyObject]?, error: NSError?) -> Void in
+                    XCTAssertNotNil(response)
+                    XCTAssertNotNil(json)
+                    XCTAssertNil(error)
+                    
+                    expectationLogin?.fulfill()
+                }
+            )
+            
+            waitForExpectationsWithTimeout(timeout) { (error: NSError?) -> Void in
+                expectationLogin = nil
+            }
+        }
+        
+        XCTAssertNotNil(manageAPI.token)
+        
+        if manageAPI.token != nil {
+            weak var expectationImport = expectationWithDescription("import")
+            
+            let timeout = NSTimeInterval(60 * 5)
+            
+            let fileURL = NSBundle(forClass: KCSDeltaSetCacheTests.self).URLForResource("persons", withExtension: "csv")!
+            manageAPI.importData(
+                collectionName,
+                fileURL: fileURL,
+                timeout: timeout,
+                completionBlock: { (response: NSURLResponse?, json: [String : AnyObject]?, error: NSError?) -> Void in
+                    if let response = response {
+                        if response.isKindOfClass(NSHTTPURLResponse.self) {
+                            let httpResponse = response as! NSHTTPURLResponse
+                            if 200 <= httpResponse.statusCode && httpResponse.statusCode < 300 {
+                                NSLog("Import in progress or done!")
+                            }
+                        }
+                    }
+                    
+                    expectationImport?.fulfill()
+                }
+            )
+            
+            waitForExpectationsWithTimeout(timeout) { (error: NSError?) -> Void in
+                expectationImport = nil
             }
         }
     }

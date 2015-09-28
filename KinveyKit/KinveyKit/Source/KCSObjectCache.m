@@ -220,7 +220,9 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     }
     NSMutableArray* cachedObjs = [NSMutableArray arrayWithArray:[self objectsForIds:ids route:route collection:collection]];
     NSMutableDictionary* delta = [NSMutableDictionary dictionaryWithDictionary:refObjs];
+#if BUILD_FOR_UNIT_TEST
     NSMutableDictionary* deletes = [NSMutableDictionary dictionary];
+#endif
     
     //NSMutableArray* refIds = [NSMutableArray array];
     NSArray* refIds = [refObjs allKeys];
@@ -238,9 +240,11 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
             if ([refLmt isEqualToString:cachedLmt]) {
                 [delta removeObjectForKey:cachedId];
             }
+#if BUILD_FOR_UNIT_TEST
         } else {
             //items to be deleted
             [deletes setObject:cachedObj forKey:cachedId];
+#endif
         }
     }
     
