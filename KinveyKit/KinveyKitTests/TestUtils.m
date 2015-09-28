@@ -161,43 +161,60 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 //@end
 
 
+#define KCS_APP_SECRET @"KCS_APP_SECRET"
+#define KCS_APP_KEY @"KCS_APP_KEY"
+#define KCS_API @"KCS_API"
 
 @implementation TestUtils
 
-+ (void) initCustom:(NSDictionary*)opts
-{
-//    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_TT1n4clp2M" withAppSecret:@"4ffcb1c73a0847f28d54ff75225a3944" usingOptions:opts];
-//    [[KCSClient sharedClient] setKinveyDomain:@"168.1.18"];
-//    [[KCSClient sharedClient] setProtocol:@"http" ];
-//    [[KCSClient sharedClient] setPort:@":7007"];
-//    [[KCSClient sharedClient].configuration setServiceHostname:@"192"];
++ (void) initKinvey {
+    NSString* path = [[NSBundle mainBundle] pathForResource:@"config" ofType:@"plist"];
+    NSDictionary *config = [NSDictionary dictionaryWithContentsOfFile:path];
+
+    [[KCSClient sharedClient] initializeKinveyServiceForAppKey: config[KCS_APP_KEY]
+                                                 withAppSecret: config[KCS_APP_SECRET]
+                                                  usingOptions: opts];
+
+    [[KCSClient sharedClient].configuration setServiceHostname: config[KCS_API]];
+
 }
 
+//+ (void) initCustom:(NSDictionary*)opts
+//{
+////    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_TT1n4clp2M" withAppSecret:@"4ffcb1c73a0847f28d54ff75225a3944" usingOptions:opts];
+////    [[KCSClient sharedClient] setKinveyDomain:@"168.1.18"];
+////    [[KCSClient sharedClient] setProtocol:@"http" ];
+////    [[KCSClient sharedClient] setPort:@":7007"];
+////    [[KCSClient sharedClient].configuration setServiceHostname:@"192"];
+//}
 
-+ (void) initStaging:(NSDictionary*)opts
-{
-    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_-1WAs8Rh2"
-                                                 withAppSecret:@"2f355bfaa8cb4f7299e914e8e85d8c98"
-                                                  usingOptions:opts];
-//    [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
-    
-}
 
-+ (void) initProduction:(NSDictionary*)opts
-{
-    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1880" withAppSecret:@"6414992408f04132bd467746f7ecbdcf" usingOptions:opts];
-}
+//+ (void) initStaging:(NSDictionary*)opts
+//{
+//    [[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid_-1WAs8Rh2"
+//                                                 withAppSecret:@"2f355bfaa8cb4f7299e914e8e85d8c98"
+//                                                  usingOptions:opts];
+////    [[KCSClient sharedClient].configuration setServiceHostname:STAGING_API];
+//    
+//}
+//
+//+ (void) initProduction:(NSDictionary*)opts
+//{
+//    (void)[[KCSClient sharedClient] initializeKinveyServiceForAppKey:@"kid1880" withAppSecret:@"6414992408f04132bd467746f7ecbdcf" usingOptions:opts];
+//}
 
 + (void) justInitServer
 {
     NSDictionary* opts = @{KCS_TWITTER_CLIENT_SECRET : @"rLUxyvve0neLqO8P8pWY6S8fOToXtL7qcNzxNMaUSA",
                            KCS_TWITTER_CLIENT_KEY : @"5sCifD1tKCjA6zQD5jE6A",
                            KCS_FACEBOOK_APP_KEY: @"432021153527854"};
-    if (/* DISABLES CODE */ (1)) {
-        [self initStaging:opts];
-    } else {
-        [self initProduction:opts];
-    }
+//    if (/* DISABLES CODE */ (1)) {
+//        [self initStaging:opts];
+//    } else {
+//        [self initProduction:opts];
+//    }
+    [self initKinvey:opts];
+    
     [KCSClient configureLoggingWithNetworkEnabled:YES debugEnabled:YES traceEnabled:YES warningEnabled:YES errorEnabled:YES];
 //    [self initCustom:opts];
 }
