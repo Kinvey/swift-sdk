@@ -891,7 +891,7 @@
 		579CC4951B8ED9D300064718 /* KCSUser2+KinveyUserService+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E5FC041AD37B1B00C19528 /* KCSUser2+KinveyUserService+Private.h */; };
 		579CFC041AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 579CFC031AC4829000CC1EDE /* KCSCodeSnippetTestsObjC.m */; };
 		579CFC061AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579CFC051AC482B400CC1EDE /* KCSCodeSnippetTestsSwift.swift */; };
-		57B556811BB5B1300000FF50 /* KCSIncrementalCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B5567F1BB5B1300000FF50 /* KCSIncrementalCache.h */; settings = {ASSET_TAGS = (); }; };
+		57B556811BB5B1300000FF50 /* KCSIncrementalCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B5567F1BB5B1300000FF50 /* KCSIncrementalCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B556861BB5F7030000FF50 /* KCSManageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B556851BB5F7030000FF50 /* KCSManageAPI.swift */; settings = {ASSET_TAGS = (); }; };
 		57B5CE841B8696070064EB00 /* KCSTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */; };
 		57B5CE851B8696070064EB00 /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
