@@ -141,6 +141,7 @@ return x; \
         _cachePolicy = [KCSCachedStore defaultCachePolicy];
         _title = nil;
         _queue = dispatch_queue_create("com.kinvey.KCSBackgroundAppdataStore", DISPATCH_QUEUE_SERIAL);
+        _maxObjectIdsPerQuery = 200;
     }
     return self;
 }
@@ -1386,6 +1387,36 @@ andResaveAfterReferencesSaved:^{
             withProgressBlock:progressBlock];
 }
 
+-(KCSQuery*)queryForObjects:(NSArray*)objects
+                       skip:(NSUInteger)skip
+{
+    if ([objects.firstObject isKindOfClass:[NSString class]]) {
+        //input is _id array
+        NSArray* array;
+        if (objects.count > self.maxObjectIdsPerQuery) {
+            array = [objects subarrayWithRange:NSMakeRange(skip, self.maxObjectIdsPerQuery)];
+        } else {
+            array = objects;
+        }
+        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:array];
+    } else if ([objects.firstObject conformsToProtocol:@protocol(KCSPersistable)] == YES) {
+        //input is object array?
+        NSMutableArray* ids = [NSMutableArray arrayWithCapacity:MIN(objects.count, self.maxObjectIdsPerQuery)];
+        NSArray* array;
+        if (objects.count > self.maxObjectIdsPerQuery) {
+            array = [objects subarrayWithRange:NSMakeRange(skip, self.maxObjectIdsPerQuery)];
+        } else {
+            array = objects;
+        }
+        for (NSObject<KCSPersistable>* obj in array) {
+            [ids addObject:[obj kinveyObjectId]];
+        }
+        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:ids];
+    } else {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil];
+    }
+}
+
 -(KCSRequest*)removeObject:(id)object
       requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
        withCompletionBlock:(KCSCountBlock)completionBlock
@@ -1400,26 +1431,15 @@ andResaveAfterReferencesSaved:^{
         return nil;
     }
     
+    NSArray* objects = nil;
     if ([object isKindOfClass:[NSArray class]]) {
         //input is an array
-        NSArray* objects = object;
+        objects = object;
         if (objects.count == 0) {
             if (completionBlock) completionBlock(0, nil);
             return nil;
         }
-        if ([objects.firstObject isKindOfClass:[NSString class]]) {
-            //input is _id array
-            object = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objects];
-        } else if ([objects.firstObject conformsToProtocol:@protocol(KCSPersistable)] == YES) {
-            //input is object array?
-            NSMutableArray* ids = [NSMutableArray arrayWithCapacity:objects.count];
-            for (NSObject<KCSPersistable>* obj in objects) {
-                [ids addObject:[obj kinveyObjectId]];
-            }
-            object = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:ids];
-        } else {
-            [[NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil] raise];
-        }
+        object = [self queryForObjects:objects skip:0];
     } else if ([object isKindOfClass:[NSString class]] || [object isKindOfClass:[KCSQuery class]]) {
         //do this since all objs are KCSPersistables
         object = object;
@@ -1431,22 +1451,14 @@ andResaveAfterReferencesSaved:^{
     KCSDataStore* store2 = [[KCSDataStore alloc] initWithCollection:self.backingCollection.collectionName];
     
     id<KCSNetworkOperation> op = nil;
+    KCSMultipleRequest* requests = [[KCSMultipleRequest alloc] init];
     if ([object isKindOfClass:[KCSQuery class]]) {
-        op = [store2 deleteByQuery:[KCSQuery2 queryWithQuery1:object] completion:^(NSUInteger count, NSError *error) {
-            if (error) {
-                if ([self shouldEnqueue:error]) {
-                    //enqueue save
-                    id errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:[KCSQuery2 queryWithQuery1:object] route:[self.backingCollection route] collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
-                    
-                    if (errorValue != nil) {
-                        error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
-                    }
-                }
-                completionBlock(0, error);
-            } else {
-                completionBlock(count, nil);
-            }
-        }].networkOperation;
+        op = [self deleteByQueryForStore:store2
+                                   query:object
+                                   count:0
+                                     ids:objects
+                                requests:requests
+                              completion:completionBlock];
     } else {
         op = [store2 deleteEntity:object completion:^(NSUInteger count, NSError *error) {
             if (error) {
@@ -1469,7 +1481,45 @@ andResaveAfterReferencesSaved:^{
             progressBlock(nil, progress);
         };
     }
-    return [KCSRequest requestWithNetworkOperation:op];
+    [requests addRequest:[KCSRequest requestWithNetworkOperation:op]];
+    return requests;
+}
+
+-(NSOperation<KCSNetworkOperation>*)deleteByQueryForStore:(KCSDataStore*)store2
+                                                    query:(KCSQuery*)query
+                                                    count:(NSUInteger)_count
+                                                      ids:(NSArray*)ids
+                                                 requests:(KCSMultipleRequest*)requests
+                                               completion:(KCSDataStoreCountCompletion)completionBlock
+{
+    __block NSUInteger count = _count;
+    KCSQuery2* query2 = [KCSQuery2 queryWithQuery1:query];
+    return [store2 deleteByQuery:query2 completion:^(NSUInteger _count, NSError *error) {
+        count += _count;
+        if (error) {
+            if ([self shouldEnqueue:error]) {
+                //enqueue save
+                id errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:query2 route:[self.backingCollection route] collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+                
+                if (errorValue != nil) {
+                    error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
+                }
+            }
+            completionBlock(count, error);
+        } else {
+            if (count < ids.count) {
+                id<KCSNetworkOperation> op = [self deleteByQueryForStore:store2
+                                                                   query:[self queryForObjects:ids skip:count]
+                                                                   count:count
+                                                                     ids:ids
+                                                                requests:requests
+                                                              completion:completionBlock];
+                [requests addRequest:[KCSRequest requestWithNetworkOperation:op]];
+            } else {
+                completionBlock(count, nil);
+            }
+        }
+    }].networkOperation;
 }
 
 #pragma mark - Information
