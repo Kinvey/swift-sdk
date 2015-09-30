@@ -141,7 +141,6 @@ return x; \
         _cachePolicy = [KCSCachedStore defaultCachePolicy];
         _title = nil;
         _queue = dispatch_queue_create("com.kinvey.KCSBackgroundAppdataStore", DISPATCH_QUEUE_SERIAL);
-        _maxObjectIdsPerQuery = 200;
     }
     return self;
 }
@@ -1385,36 +1384,6 @@ andResaveAfterReferencesSaved:^{
          requestConfiguration:nil
           withCompletionBlock:completionBlock
             withProgressBlock:progressBlock];
-}
-
--(KCSQuery*)queryForObjects:(NSArray*)objects
-                       skip:(NSUInteger)skip
-{
-    if ([objects.firstObject isKindOfClass:[NSString class]]) {
-        //input is _id array
-        NSArray* array;
-        if (objects.count > self.maxObjectIdsPerQuery) {
-            array = [objects subarrayWithRange:NSMakeRange(skip, self.maxObjectIdsPerQuery)];
-        } else {
-            array = objects;
-        }
-        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:array];
-    } else if ([objects.firstObject conformsToProtocol:@protocol(KCSPersistable)] == YES) {
-        //input is object array?
-        NSMutableArray* ids = [NSMutableArray arrayWithCapacity:MIN(objects.count, self.maxObjectIdsPerQuery)];
-        NSArray* array;
-        if (objects.count > self.maxObjectIdsPerQuery) {
-            array = [objects subarrayWithRange:NSMakeRange(skip, self.maxObjectIdsPerQuery)];
-        } else {
-            array = objects;
-        }
-        for (NSObject<KCSPersistable>* obj in array) {
-            [ids addObject:[obj kinveyObjectId]];
-        }
-        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:ids];
-    } else {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil];
-    }
 }
 
 -(KCSRequest*)removeObject:(id)object
