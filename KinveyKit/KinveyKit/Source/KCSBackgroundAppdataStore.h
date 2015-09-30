@@ -32,10 +32,6 @@
  */
 @property (nonatomic) KCSCacheUpdatePolicy cacheUpdatePolicy;
 
-/**
- Maximum number of object ids per query. Default: 200
- */
-@property (nonatomic) NSUInteger maxObjectIdsPerQuery;
 
 + (instancetype) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options;
 
