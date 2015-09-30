@@ -55,6 +55,7 @@ return x; \
 }
 
 #define KCS_OBJECT_LIMIT 10000
+#define KCS_OBJECT_IDS_PER_QUERY 200
 
 @interface KCSBackgroundAppdataStore () {
     KCSSaveGraph* _previousProgress;
@@ -358,6 +359,42 @@ return x; \
     return nil;
 }
 
+-(KCSRequest*)loadByIds:(NSArray*)objectIDs
+                   skip:(NSUInteger)skip
+                results:(NSMutableArray*)results
+               requests:(KCSMultipleRequest*)requests
+    withCompletionBlock:(KCSCompletionBlock)completionBlock
+      withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    KCSQuery* query = [self queryForObjects:objectIDs skip:skip];
+    return [self doQueryWithQuery:query
+              withCompletionBlock:^(NSArray *objects, NSError *errorOrNil)
+    {
+        if (objects) {
+            [results addObjectsFromArray:objects];
+        }
+        if (errorOrNil) {
+            completionBlock(results, errorOrNil);
+        } else {
+            NSUInteger next = MIN(skip + KCS_OBJECT_IDS_PER_QUERY, objectIDs.count);
+            if (next < objectIDs.count) {
+                if (progressBlock) {
+                    progressBlock(results, (double) results.count / (double) objectIDs.count);
+                }
+                KCSRequest* request = [self loadByIds:objectIDs
+                                                 skip:next
+                                              results:results
+                                             requests:requests
+                                  withCompletionBlock:completionBlock
+                                    withProgressBlock:progressBlock];
+                [requests addRequest:request];
+            } else {
+                completionBlock(results, errorOrNil);
+            }
+        }
+    } withProgressBlock:nil];
+}
+
 -(KCSRequest*)doLoadObjectWithID:(id)objectID
              withCompletionBlock:(KCSCompletionBlock)completionBlock
                withProgressBlock:(KCSProgressBlock)progressBlock;
@@ -375,11 +412,23 @@ return x; \
             return nil;
         }
         
-        
-        KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objectID];
-        return [self doQueryWithQuery:query
-                  withCompletionBlock:completionBlock
-                    withProgressBlock:progressBlock]; //TODO pass down option with request method
+        NSArray* objectIDs = (NSArray*) objectID;
+        if (objectIDs.count > KCS_OBJECT_IDS_PER_QUERY) { //have to splitted in many calls
+            KCSMultipleRequest* requests = [KCSMultipleRequest new];
+            KCSRequest* request = [self loadByIds:objectIDs
+                                             skip:0
+                                          results:[NSMutableArray arrayWithCapacity:objectIDs.count]
+                                         requests:requests
+                              withCompletionBlock:completionBlock
+                                withProgressBlock:progressBlock];
+            [requests addRequest:request];
+            return requests;
+        } else { //single call
+            KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objectIDs];
+            return [self doQueryWithQuery:query
+                      withCompletionBlock:completionBlock
+                        withProgressBlock:progressBlock];
+        }
     } else {
         NSString* _id = [self getObjIdFromObject:objectID completionBlock:completionBlock];
         if (_id) {
@@ -439,7 +488,7 @@ return x; \
                              policy:(KCSCachePolicy)cachePolicy
 {
     return [self doLoadObjectWithID:objectIDs
-                       withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+                withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
     {
         if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain]  && cachePolicy == KCSCachePolicyNetworkFirst) {
             NSArray* objs = [[KCSAppdataStore caches] pullIds:objectIDs route:[self.backingCollection route] collection:self.backingCollection.collectionName];
@@ -692,15 +741,16 @@ NSError* createCacheError(NSString* message)
 }
 
 -(KCSRequest*)completeDeltaQuery:(KCSQuery*)query
-                         withSet:(NSArray*) deltaSet
-             withCompletionBlock:(KCSCompletionBlock) completionBlock
+                         withSet:(NSArray*)deltaSet
+             withCompletionBlock:(KCSCompletionBlock)completionBlock
+               withProgressBlock:(KCSProgressBlock)progressBlock
 {
     return [self loadObjectWithID:deltaSet
               withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
     {
         id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
         [self completeQuery:obj withCompletionBlock:completionBlock];
-    } withProgressBlock: nil];
+    } withProgressBlock: progressBlock];
 }
 
 - (void) completeQuery:(NSArray*)objs withCompletionBlock:(KCSCompletionBlock)completionBlock
@@ -735,7 +785,8 @@ NSError* createCacheError(NSString* message)
                                                              referenceObjs:objectsOrNil];
                 KCSRequest* request = [self completeDeltaQuery:query
                                                        withSet:deltaSet
-                                           withCompletionBlock:completionBlock];
+                                           withCompletionBlock:completionBlock
+                                             withProgressBlock:progressBlock];
                 [requests addRequest:request];
             }];
             [requests addRequest:request];
@@ -820,6 +871,39 @@ NSError* createCacheError(NSString* message)
             withCompletionBlock:completionBlock
               withProgressBlock:progressBlock
                     cachePolicy:self.cachePolicy];
+}
+
+-(KCSQuery*)queryForObjects:(NSArray*)objects
+                       skip:(NSUInteger)skip
+{
+    if ([objects.firstObject isKindOfClass:[NSString class]]) {
+        //input is _id array
+        NSArray* array;
+        if (objects.count > KCS_OBJECT_IDS_PER_QUERY) {
+            NSUInteger nextChunk = objects.count - skip;
+            array = [objects subarrayWithRange:NSMakeRange(skip, MIN(nextChunk, KCS_OBJECT_IDS_PER_QUERY))];
+        } else {
+            array = objects;
+        }
+        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:array];
+    } else if ([objects.firstObject conformsToProtocol:@protocol(KCSPersistable)] == YES) {
+        //input is object array?
+        NSUInteger nextChunk = objects.count - skip;
+        NSUInteger count = MIN(nextChunk, KCS_OBJECT_IDS_PER_QUERY);
+        NSMutableArray* ids = [NSMutableArray arrayWithCapacity:count];
+        NSArray* array;
+        if (objects.count > KCS_OBJECT_IDS_PER_QUERY) {
+            array = [objects subarrayWithRange:NSMakeRange(skip, count)];
+        } else {
+            array = objects;
+        }
+        for (NSObject<KCSPersistable>* obj in array) {
+            [ids addObject:[obj kinveyObjectId]];
+        }
+        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:ids];
+    } else {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil];
+    }
 }
 
 #pragma mark - grouping
