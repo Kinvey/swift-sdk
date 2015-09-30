@@ -32,6 +32,7 @@
  */
 @property (nonatomic) KCSCacheUpdatePolicy cacheUpdatePolicy;
 
+
 + (instancetype) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options;
 
 + (instancetype)storeWithCollection:(KCSCollection*)collection authHandler:(KCSAuthHandler *)authHandler withOptions: (NSDictionary *)options KCS_DEPRECATED(Auth handler not used--use storeWithCollection:options: instead, 1.22.0);

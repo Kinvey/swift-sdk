@@ -876,34 +876,32 @@ NSError* createCacheError(NSString* message)
 -(KCSQuery*)queryForObjects:(NSArray*)objects
                        skip:(NSUInteger)skip
 {
+    NSArray* ids;
     if ([objects.firstObject isKindOfClass:[NSString class]]) {
         //input is _id array
-        NSArray* array;
         if (objects.count > KCS_OBJECT_IDS_PER_QUERY) {
             NSUInteger nextChunk = objects.count - skip;
-            array = [objects subarrayWithRange:NSMakeRange(skip, MIN(nextChunk, KCS_OBJECT_IDS_PER_QUERY))];
+            ids = [objects subarrayWithRange:NSMakeRange(skip, MIN(nextChunk, KCS_OBJECT_IDS_PER_QUERY))];
         } else {
-            array = objects;
+            ids = objects;
         }
-        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:array];
     } else if ([objects.firstObject conformsToProtocol:@protocol(KCSPersistable)] == YES) {
         //input is object array?
         NSUInteger nextChunk = objects.count - skip;
         NSUInteger count = MIN(nextChunk, KCS_OBJECT_IDS_PER_QUERY);
-        NSMutableArray* ids = [NSMutableArray arrayWithCapacity:count];
-        NSArray* array;
+        NSMutableArray* _ids = [NSMutableArray arrayWithCapacity:count];
         if (objects.count > KCS_OBJECT_IDS_PER_QUERY) {
-            array = [objects subarrayWithRange:NSMakeRange(skip, count)];
-        } else {
-            array = objects;
+            objects = [objects subarrayWithRange:NSMakeRange(skip, count)];
         }
-        for (NSObject<KCSPersistable>* obj in array) {
-            [ids addObject:[obj kinveyObjectId]];
+        for (NSObject<KCSPersistable>* obj in objects) {
+            [_ids addObject:[obj kinveyObjectId]];
         }
-        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:ids];
+        ids = _ids;
     } else {
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil];
     }
+    
+    return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:ids];
 }
 
 #pragma mark - grouping
@@ -1400,26 +1398,15 @@ andResaveAfterReferencesSaved:^{
         return nil;
     }
     
+    NSArray* objects = nil;
     if ([object isKindOfClass:[NSArray class]]) {
         //input is an array
-        NSArray* objects = object;
+        objects = object;
         if (objects.count == 0) {
             if (completionBlock) completionBlock(0, nil);
             return nil;
         }
-        if ([objects.firstObject isKindOfClass:[NSString class]]) {
-            //input is _id array
-            object = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objects];
-        } else if ([objects.firstObject conformsToProtocol:@protocol(KCSPersistable)] == YES) {
-            //input is object array?
-            NSMutableArray* ids = [NSMutableArray arrayWithCapacity:objects.count];
-            for (NSObject<KCSPersistable>* obj in objects) {
-                [ids addObject:[obj kinveyObjectId]];
-            }
-            object = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:ids];
-        } else {
-            [[NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil] raise];
-        }
+        object = [self queryForObjects:objects skip:0];
     } else if ([object isKindOfClass:[NSString class]] || [object isKindOfClass:[KCSQuery class]]) {
         //do this since all objs are KCSPersistables
         object = object;
@@ -1431,22 +1418,14 @@ andResaveAfterReferencesSaved:^{
     KCSDataStore* store2 = [[KCSDataStore alloc] initWithCollection:self.backingCollection.collectionName];
     
     id<KCSNetworkOperation> op = nil;
+    KCSMultipleRequest* requests = [[KCSMultipleRequest alloc] init];
     if ([object isKindOfClass:[KCSQuery class]]) {
-        op = [store2 deleteByQuery:[KCSQuery2 queryWithQuery1:object] completion:^(NSUInteger count, NSError *error) {
-            if (error) {
-                if ([self shouldEnqueue:error]) {
-                    //enqueue save
-                    id errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:[KCSQuery2 queryWithQuery1:object] route:[self.backingCollection route] collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
-                    
-                    if (errorValue != nil) {
-                        error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
-                    }
-                }
-                completionBlock(0, error);
-            } else {
-                completionBlock(count, nil);
-            }
-        }].networkOperation;
+        op = [self deleteByQueryForStore:store2
+                                   query:object
+                                   count:0
+                                     ids:objects
+                                requests:requests
+                              completion:completionBlock];
     } else {
         op = [store2 deleteEntity:object completion:^(NSUInteger count, NSError *error) {
             if (error) {
@@ -1469,7 +1448,45 @@ andResaveAfterReferencesSaved:^{
             progressBlock(nil, progress);
         };
     }
-    return [KCSRequest requestWithNetworkOperation:op];
+    [requests addRequest:[KCSRequest requestWithNetworkOperation:op]];
+    return requests;
+}
+
+-(NSOperation<KCSNetworkOperation>*)deleteByQueryForStore:(KCSDataStore*)store
+                                                    query:(KCSQuery*)query
+                                                    count:(NSUInteger)_count //an accumulative number to keep track of how many objects were deleted successfully 
+                                                      ids:(NSArray*)ids
+                                                 requests:(KCSMultipleRequest*)requests
+                                               completion:(KCSDataStoreCountCompletion)completionBlock
+{
+    __block NSUInteger count = _count;
+    KCSQuery2* query2 = [KCSQuery2 queryWithQuery1:query];
+    return [store deleteByQuery:query2 completion:^(NSUInteger _count, NSError *error) {
+        count += _count;
+        if (error) {
+            if ([self shouldEnqueue:error]) {
+                //enqueue save
+                id errorValue = [[KCSAppdataStore caches] addUnsavedDeleteQuery:query2 route:[self.backingCollection route] collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
+                
+                if (errorValue != nil) {
+                    error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
+                }
+            }
+            completionBlock(count, error);
+        } else {
+            if (count < ids.count) {
+                id<KCSNetworkOperation> op = [self deleteByQueryForStore:store
+                                                                   query:[self queryForObjects:ids skip:count]
+                                                                   count:count
+                                                                     ids:ids
+                                                                requests:requests
+                                                              completion:completionBlock];
+                [requests addRequest:[KCSRequest requestWithNetworkOperation:op]];
+            } else {
+                completionBlock(count, nil);
+            }
+        }
+    }].networkOperation;
 }
 
 #pragma mark - Information
