@@ -18,6 +18,7 @@
 #import "KinveyErrorCodes.h"
 #import "KCSClientConfiguration.h"
 #import "KCSClientConfiguration+KCSInternal.h"
+#import "KCSObjectCache.h"
 
 @interface KCSUser2 ()
 

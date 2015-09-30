@@ -54,7 +54,7 @@ class FileUploadViewController: UIViewController, UITextFieldDelegate {
     */
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
-        let newString = (textField.text as NSString).stringByReplacingCharactersInRange(range, withString: string)
+        let newString = (textField.text! as NSString).stringByReplacingCharactersInRange(range, withString: string)
         
         if (textField == timesTextField) {
             valueChangedTimes(newString)
@@ -64,7 +64,7 @@ class FileUploadViewController: UIViewController, UITextFieldDelegate {
     }
     
     func valueChangedTimes(string: String) {
-        if let int = string.toInt() {
+        if let int = Int(string) {
             timesStepper.value = Double(int)
         }
     }
