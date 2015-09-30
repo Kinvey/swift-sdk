@@ -34,7 +34,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 KCSStoreKeyCachePolicy: KCSCachePolicy.NetworkFirst.rawValue,
             ]
         )
-        store.incrementalCache = .Enabled
+        store.cacheUpdatePolicy = .LoadIncremental
         
         storeNoCache = KCSBackgroundAppdataStore(
             collection: collection,
@@ -670,7 +670,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 KCSStoreKeyCachePolicy: KCSCachePolicy.NetworkFirst.rawValue,
             ]
         )
-        store.incrementalCache = .Enabled
+        store.cacheUpdatePolicy = .LoadIncremental
         
         let storeNoCache = KCSBackgroundAppdataStore(
             collection: collection,
@@ -797,7 +797,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 KCSStoreKeyCachePolicy: KCSCachePolicy.NetworkFirst.rawValue,
             ]
         )
-        store.incrementalCache = .Enabled
+        store.cacheUpdatePolicy = .LoadIncremental
         
         let storeNoCache = KCSBackgroundAppdataStore(
             collection: collection,
@@ -914,7 +914,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 KCSStoreKeyCachePolicy: KCSCachePolicy.NetworkFirst.rawValue,
             ]
         )
-        store.incrementalCache = .Enabled
+        store.cacheUpdatePolicy = .LoadIncremental
         
         let storeNoCache = KCSBackgroundAppdataStore(
             collection: collection,

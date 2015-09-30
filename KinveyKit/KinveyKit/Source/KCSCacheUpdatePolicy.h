@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, KCSIncrementalCache) {
-    KCSIncrementalCacheDisabled = 0,
-    KCSIncrementalCacheEnabled,
+typedef NS_ENUM(NSUInteger, KCSCacheUpdatePolicy) {
+    KCSCacheUpdatePolicyLoadFull = 0,
+    KCSCacheUpdatePolicyLoadIncremental,
 };

@@ -773,7 +773,7 @@ NSError* createCacheError(NSString* message)
     } else {
         obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     }
-    if (self.incrementalCache == KCSIncrementalCacheEnabled) {
+    if (self.cacheUpdatePolicy == KCSCacheUpdatePolicyLoadIncremental) {
         if (obj && [obj count] > 0) { //exists in cache
             KCSMultipleRequest* requests = [KCSMultipleRequest new];
             KCSRequest* request = [self doDeltaQueryWithQuery:query
