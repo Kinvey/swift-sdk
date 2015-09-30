@@ -597,7 +597,41 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         }
     }
     
+    func waitForCount(
+        desiredNumber: Int,
+        store: KCSBackgroundAppdataStore,
+        waitForSeconds: NSTimeInterval = 60 * 5,
+        function: String = __FUNCTION__,
+        file: String = __FILE__,
+        line: UInt = __LINE__,
+        _ message: String = "")
+    {
+        let start = NSDate()
+        var wait = true
+        var lastCount: UInt = 0
+        while (wait && NSDate().timeIntervalSinceDate(start) < waitForSeconds) {
+            weak var expectationCount = expectationWithDescription("count")
+            
+            store.countWithBlock({ (count: UInt, error: NSError!) -> Void in
+                wait = Int(count) < desiredNumber
+                lastCount = count
+                
+                expectationCount?.fulfill()
+            })
+            
+            waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
+                expectationCount = nil
+            }
+        }
+        
+        if wait {
+            _XCTPreformattedFailureHandler(self, !wait, file, line, "Count failed: \(lastCount) is not equal to \(desiredNumber)", message)
+        }
+    }
+    
     func testDeltaDelete1000Record() {
+        KCSClient.sharedClient().clearCache()
+        
         let collectionName = "persons"
         importPersons(collectionName)
         let originalNumber = 5000
@@ -606,7 +640,20 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         deltaDelete(collectionName, originalNumber: originalNumber, deleteNumber: deleteNumber)
     }
     
+    func testDeltaDelete2500Record() {
+        KCSClient.sharedClient().clearCache()
+        
+        let collectionName = "persons"
+        importPersons(collectionName)
+        let originalNumber = 5000
+        let deleteNumber = 2500
+        
+        deltaDelete(collectionName, originalNumber: originalNumber, deleteNumber: deleteNumber)
+    }
+    
     func testDeltaDelete4000Record() {
+        KCSClient.sharedClient().clearCache()
+        
         let collectionName = "persons"
         importPersons(collectionName)
         let originalNumber = 5000
@@ -634,25 +681,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         
         let query = KCSQuery()
         
-        do {
-            let start = NSDate()
-            var wait = true
-            while (wait && NSDate().timeIntervalSinceDate(start) < 60 * 5) {
-                weak var expectationCount = expectationWithDescription("count")
-                
-                store.countWithBlock({ (count: UInt, error: NSError!) -> Void in
-                    wait = Int(count) < originalNumber
-                    
-                    expectationCount?.fulfill()
-                })
-                
-                waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
-                    expectationCount = nil
-                }
-            }
-            
-            XCTAssertFalse(wait)
-        }
+        waitForCount(originalNumber, store: store)
         
         var results: [AnyObject]? = nil
         do {
@@ -689,17 +718,19 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                 return
             }
             
+            let chunkSize = 200
             for (var i = 0; i < deleteNumber;) {
                 weak var expectationDelete = expectationWithDescription("delete")
                 
-                let deletes = Array(results[i..<Int(i+deleteNumber)])
+                let n = min(i + chunkSize, deleteNumber)
+                let deletes = Array(results[i..<n])
                 storeNoCache.removeObject(
                     deletes,
                     withCompletionBlock: { (count: UInt, error: NSError!) -> Void in
-                        XCTAssertEqual(deleteNumber, Int(count))
+                        XCTAssertEqual(n - i, Int(count))
                         XCTAssertNil(error)
                         
-                        i += Int(count)
+                        i += n - i
                         
                         expectationDelete?.fulfill()
                     },
@@ -719,6 +750,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         do {
             weak var expectationQuery2 = expectationWithDescription("query2")
             
+            var lastPercentage = Double(0)
             store.queryWithQuery(
                 query,
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
@@ -731,7 +763,108 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                     
                     expectationQuery2?.fulfill()
                 },
+                withProgressBlock: { (partialResults: [AnyObject]!, percentage: Double) -> Void in
+                    XCTAssertNotNil(partialResults)
+                    XCTAssertTrue(percentage > lastPercentage)
+                    XCTAssertTrue(NSThread.isMainThread())
+                    
+                    if let partialResults = partialResults {
+                        XCTAssertEqualWithAccuracy(Double(partialResults.count) / Double(deleteNumber), percentage, accuracy: 0.01)
+                    }
+                    
+                    lastPercentage = percentage
+                }
+            )
+            
+            waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
+                expectationQuery2 = nil
+            }
+        }
+    }
+    
+    func testDeltaCreate5000Record() {
+        KCSClient.sharedClient().clearCache()
+        
+        let collectionName = "persons"
+        importPersons(collectionName)
+        let originalNumber = 5000
+        let createNumber = 5000
+        
+        let collection = KCSCollection(fromString: collectionName, ofClass: NSDictionary.self)
+        let store = KCSBackgroundAppdataStore(
+            collection: collection,
+            options: [
+                KCSStoreKeyCachePolicy: KCSCachePolicy.NetworkFirst.rawValue,
+            ]
+        )
+        store.incrementalCache = .Enabled
+        
+        let storeNoCache = KCSBackgroundAppdataStore(
+            collection: collection,
+            options: [
+                KCSStoreKeyCachePolicy: KCSCachePolicy.None.rawValue,
+            ]
+        )
+        
+        let query = KCSQuery()
+        
+        waitForCount(originalNumber, store: storeNoCache)
+        
+        do {
+            weak var expectationQuery = expectationWithDescription("query")
+            
+            store.queryWithQuery(
+                query,
+                withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                    XCTAssertNotNil(results)
+                    XCTAssertNil(error)
+                    
+                    if let results = results {
+                        XCTAssertEqual(originalNumber, results.count)
+                    }
+                    
+                    expectationQuery?.fulfill()
+                },
                 withProgressBlock: nil
+            )
+            
+            waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
+                expectationQuery = nil
+            }
+        }
+        
+        importPersons(collectionName, clearBeforeImport: false)
+        
+        waitForCount(originalNumber + createNumber, store: storeNoCache)
+        
+        KCSObjectCache.setDeltaCacheBlock({ (delta: [NSObject : AnyObject]!, deletes: [NSObject : AnyObject]!, time: NSTimeInterval) -> Void in
+            XCTAssertEqual(createNumber, delta.count)
+            XCTAssertEqual(0, deletes.count)
+        })
+        do {
+            weak var expectationQuery2 = expectationWithDescription("query2")
+            
+            store.queryWithQuery(
+                query,
+                withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
+                    XCTAssertNotNil(results)
+                    XCTAssertNil(error)
+                    
+                    if let results = results {
+                        XCTAssertEqual(originalNumber + createNumber, results.count)
+                    }
+                    
+                    expectationQuery2?.fulfill()
+                },
+                withProgressBlock: { (partialResults: [AnyObject]!, percentage: Double) -> Void in
+                    XCTAssertNotNil(partialResults)
+                    
+                    if let partialResults = partialResults {
+                        XCTAssertEqualWithAccuracy(Double(partialResults.count) / Double(createNumber), percentage, accuracy: 0.01)
+                    }
+                    
+                    XCTAssertTrue(NSThread.isMainThread())
+                }
             )
             
             waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
@@ -744,9 +877,20 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         KCSClient.sharedClient().clearCache()
         
         let collectionName = "persons"
-//        importPersons(collectionName)
+        importPersons(collectionName)
         let originalNumber = 5000
         let updateNumber = 1000
+        
+        deltaUpdate(collectionName, originalNumber: originalNumber, updateNumber: updateNumber)
+    }
+    
+    func testDeltaUpdate2500Record() {
+        KCSClient.sharedClient().clearCache()
+        
+        let collectionName = "persons"
+        importPersons(collectionName)
+        let originalNumber = 5000
+        let updateNumber = 2500
         
         deltaUpdate(collectionName, originalNumber: originalNumber, updateNumber: updateNumber)
     }
@@ -755,7 +899,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         KCSClient.sharedClient().clearCache()
         
         let collectionName = "persons"
-//        importPersons(collectionName)
+        importPersons(collectionName)
         let originalNumber = 5000
         let updateNumber = 4000
         
@@ -781,25 +925,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         
         let query = KCSQuery()
         
-        do {
-            let start = NSDate()
-            var wait = true
-            while (wait && NSDate().timeIntervalSinceDate(start) < 60 * 5) {
-                weak var expectationCount = expectationWithDescription("count")
-                
-                store.countWithBlock({ (count: UInt, error: NSError!) -> Void in
-                    wait = Int(count) < originalNumber
-                    
-                    expectationCount?.fulfill()
-                })
-                
-                waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
-                    expectationCount = nil
-                }
-            }
-            
-            XCTAssertFalse(wait)
-        }
+        waitForCount(originalNumber, store: store)
         
         var results: [AnyObject]? = nil
         do {
@@ -840,7 +966,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
             for (var i = 0; i < updateNumber;) {
                 weak var expectationSave = expectationWithDescription("save")
                 
-                let slice = Array(results[i..<i+chunckSize])
+                let n = min(i + chunckSize, updateNumber)
+                let slice = Array(results[i..<n])
                 var updates = slice as! [[String : AnyObject]]
                 for index in 0..<updates.count {
                     updates[index]["age"] = 0
@@ -852,10 +979,10 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                         XCTAssertNil(error)
                         
                         if let results = results {
-                            XCTAssertEqual(chunckSize, results.count)
+                            XCTAssertEqual(n - i, results.count)
                         }
                         
-                        i += chunckSize
+                        i += n - i
                         
                         expectationSave?.fulfill()
                     },
@@ -875,6 +1002,7 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         do {
             weak var expectationQuery2 = expectationWithDescription("query2")
             
+            var lastPercentage = Double(0)
             store.queryWithQuery(
                 query,
                 withCompletionBlock: { (results: [AnyObject]!, error: NSError!) -> Void in
@@ -887,7 +1015,17 @@ class KCSDeltaSetCacheTests: KCSTestCase {
                     
                     expectationQuery2?.fulfill()
                 },
-                withProgressBlock: nil
+                withProgressBlock: { (partialResults: [AnyObject]!, percentage: Double) -> Void in
+                    XCTAssertNotNil(partialResults)
+                    XCTAssertTrue(percentage > lastPercentage)
+                    XCTAssertTrue(NSThread.isMainThread())
+                    
+                    if let partialResults = partialResults {
+                        XCTAssertEqualWithAccuracy(Double(partialResults.count) / Double(updateNumber), percentage, accuracy: 0.01)
+                    }
+                    
+                    lastPercentage = percentage
+                }
             )
             
             waitForExpectationsWithTimeout(self.timeout) { (error: NSError?) -> Void in
@@ -896,11 +1034,11 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         }
     }
     
-    func importPersons(collectionName: String) {
+    func importPersons(collectionName: String, clearBeforeImport: Bool = true) {
         let manageAPI = KCSManageAPI(kid: KCSClient.sharedClient().appKey)
         let baasAPI = KCSBaasAPI(kid: KCSClient.sharedClient().appKey, appSecret: KCSClient.sharedClient().appSecret, masterSecret: masterSecret)
         
-        do {
+        if clearBeforeImport {
             weak var expectationClear = expectationWithDescription("clear")
             
             baasAPI.clearCollection(
