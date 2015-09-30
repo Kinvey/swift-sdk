@@ -26,7 +26,7 @@
  @param objects if there are any valid objects available. Could be `nil` or empty.
  @param percentComplete the percentage of the total progress made so far. Suitable for a progress indicator.
  */
-KK2(cleanup and merge)
+//KK2(cleanup and merge)
 typedef void(^KCSProgressBlock2)(NSArray *objects, double percentComplete, NSDictionary* additionalContext);
 
 

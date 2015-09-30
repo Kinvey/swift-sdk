@@ -45,6 +45,7 @@
 #import "NSString+KinveyAdditions.h"
 #import "KCSRequest+Private.h"
 #import "KCSMultipleRequest.h"
+#import "KCSPrivateBlockDefs.h"
 
 #define KCSSTORE_VALIDATE_PRECONDITION KCSSTORE_VALIDATE_PRECONDITION_RETURN()
 
@@ -54,6 +55,7 @@ return x; \
 }
 
 #define KCS_OBJECT_LIMIT 10000
+#define KCS_OBJECT_IDS_PER_QUERY 200
 
 @interface KCSBackgroundAppdataStore () {
     KCSSaveGraph* _previousProgress;
@@ -286,9 +288,10 @@ return x; \
     return theId;
 }
 
+
 - (void) handleLoadResponse:(KCSNetworkResponse*)response error:(NSError*)error completionBlock:(KCSCompletionBlock)completionBlock
 {
-    NSAssert(![NSThread isMainThread], @"%s should not run in the main thread", __FUNCTION__);
+    if (response) NSAssert(![NSThread isMainThread], @"%s should not run in the main thread", __FUNCTION__);
     if (error) {
         completionBlock(nil, error);
     } else {
@@ -356,6 +359,42 @@ return x; \
     return nil;
 }
 
+-(KCSRequest*)loadByIds:(NSArray*)objectIDs
+                   skip:(NSUInteger)skip
+                results:(NSMutableArray*)results
+               requests:(KCSMultipleRequest*)requests
+    withCompletionBlock:(KCSCompletionBlock)completionBlock
+      withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    KCSQuery* query = [self queryForObjects:objectIDs skip:skip];
+    return [self doQueryWithQuery:query
+              withCompletionBlock:^(NSArray *objects, NSError *errorOrNil)
+    {
+        if (objects) {
+            [results addObjectsFromArray:objects];
+        }
+        if (errorOrNil) {
+            completionBlock(results, errorOrNil);
+        } else {
+            NSUInteger next = MIN(skip + KCS_OBJECT_IDS_PER_QUERY, objectIDs.count);
+            if (next < objectIDs.count) {
+                if (progressBlock) {
+                    progressBlock(results, (double) results.count / (double) objectIDs.count);
+                }
+                KCSRequest* request = [self loadByIds:objectIDs
+                                                 skip:next
+                                              results:results
+                                             requests:requests
+                                  withCompletionBlock:completionBlock
+                                    withProgressBlock:progressBlock];
+                [requests addRequest:request];
+            } else {
+                completionBlock(results, errorOrNil);
+            }
+        }
+    } withProgressBlock:nil];
+}
+
 -(KCSRequest*)doLoadObjectWithID:(id)objectID
              withCompletionBlock:(KCSCompletionBlock)completionBlock
                withProgressBlock:(KCSProgressBlock)progressBlock;
@@ -373,11 +412,23 @@ return x; \
             return nil;
         }
         
-        
-        KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objectID];
-        return [self doQueryWithQuery:query
-                  withCompletionBlock:completionBlock
-                    withProgressBlock:progressBlock]; //TODO pass down option with request method
+        NSArray* objectIDs = (NSArray*) objectID;
+        if (objectIDs.count > KCS_OBJECT_IDS_PER_QUERY) { //have to splitted in many calls
+            KCSMultipleRequest* requests = [KCSMultipleRequest new];
+            KCSRequest* request = [self loadByIds:objectIDs
+                                             skip:0
+                                          results:[NSMutableArray arrayWithCapacity:objectIDs.count]
+                                         requests:requests
+                              withCompletionBlock:completionBlock
+                                withProgressBlock:progressBlock];
+            [requests addRequest:request];
+            return requests;
+        } else { //single call
+            KCSQuery* query = [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:objectIDs];
+            return [self doQueryWithQuery:query
+                      withCompletionBlock:completionBlock
+                        withProgressBlock:progressBlock];
+        }
     } else {
         NSString* _id = [self getObjIdFromObject:objectID completionBlock:completionBlock];
         if (_id) {
@@ -437,7 +488,7 @@ return x; \
                              policy:(KCSCachePolicy)cachePolicy
 {
     return [self doLoadObjectWithID:objectIDs
-                       withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+                withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
     {
         if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain]  && cachePolicy == KCSCachePolicyNetworkFirst) {
             NSArray* objs = [[KCSAppdataStore caches] pullIds:objectIDs route:[self.backingCollection route] collection:self.backingCollection.collectionName];
@@ -519,6 +570,43 @@ return x; \
     return query;
 }
 
+
+-(KCSRequest*)doDeltaQueryWithQuery:(KCSQuery*)query
+                withCompletionBlock:(KCSDeltaResponseBlock)completionBlock
+{
+    
+    KCSSTORE_VALIDATE_PRECONDITION_RETURN(nil)
+    KCSCollection* collection = self.backingCollection;
+    NSString* route = [collection route];
+    
+    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        NSDictionary* jsonResponse = [response jsonObjectError:&error];
+        if (error) {
+            completionBlock(nil, error);
+        } else {
+            NSArray* jsonArray = [NSArray wrapIfNotArray:jsonResponse];
+            NSMutableDictionary* retVal = [NSMutableDictionary dictionaryWithCapacity:jsonArray.count];
+            for (NSDictionary* jsonDict in jsonArray){
+                retVal[jsonDict[@"_id"]] = jsonDict[@"_kmd"][@"lmt"];
+            }
+            completionBlock(retVal, error);
+        }
+    }
+                                                        route:route
+                                                      options:@{KCSRequestLogMethod}
+                                                  credentials:[KCSUser activeUser]];
+    if (route == KCSRESTRouteAppdata) {
+        request.path = @[collection.collectionName];
+    } else {
+        request.path = @[];
+    }
+    
+    NSString* queryString = [[self modifyQuery:query] parameterStringRepresentation];
+    queryString = [queryString stringByAppendingQueryString:@"fields=_id,_kmd"];
+    request.queryString = [queryString stringByAppendingQueryString:@"tls=true"];
+    
+    return [KCSRequest requestWithNetworkOperation:[request start]];
+}
 
 -(KCSRequest*)doQueryWithQuery:(KCSQuery*)query
            withCompletionBlock:(KCSCompletionBlock)completionBlock
@@ -637,18 +725,32 @@ NSError* createCacheError(NSString* message)
                     policy:(KCSCachePolicy)cachePolicy
                 cacheBlock:(void(^)(KCSQuery* query, NSArray *objectsOrNil, NSError *errorOrNil))cacheBlock
 {
-    return [self doQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
+    
+     return [self doQueryWithQuery:query withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+             if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain] && cachePolicy == KCSCachePolicyNetworkFirst) {
+                 id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+                 [self completeQuery:obj withCompletionBlock:completionBlock];
+             } else {
+                 if (cacheBlock) {
+                     cacheBlock(query, objectsOrNil, errorOrNil);
+                 }
+                 completionBlock(objectsOrNil, errorOrNil);
+             }
+         
+    } withProgressBlock: progressBlock];
+}
+
+-(KCSRequest*)completeDeltaQuery:(KCSQuery*)query
+                         withSet:(NSArray*)deltaSet
+             withCompletionBlock:(KCSCompletionBlock)completionBlock
+               withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    return [self loadObjectWithID:deltaSet
+              withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
     {
-        if ([[errorOrNil domain] isEqualToString:NSURLErrorDomain] && cachePolicy == KCSCachePolicyNetworkFirst) {
-            id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
-            [self completeQuery:obj withCompletionBlock:completionBlock];
-        } else {
-            if (cacheBlock) {
-                cacheBlock(query, objectsOrNil, errorOrNil);
-            }
-            completionBlock(objectsOrNil, errorOrNil);
-        }
-    } withProgressBlock:progressBlock];
+        id obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
+        [self completeQuery:obj withCompletionBlock:completionBlock];
+    } withProgressBlock: progressBlock];
 }
 
 - (void) completeQuery:(NSArray*)objs withCompletionBlock:(KCSCompletionBlock)completionBlock
@@ -671,11 +773,32 @@ NSError* createCacheError(NSString* message)
     } else {
         obj = [[KCSAppdataStore caches] pullQuery:[KCSQuery2 queryWithQuery1:query] route:[self.backingCollection route] collection:self.backingCollection.collectionName];
     }
+    if (self.cacheUpdatePolicy == KCSCacheUpdatePolicyLoadIncremental) {
+        if (obj && [obj count] > 0) { //exists in cache
+            KCSMultipleRequest* requests = [KCSMultipleRequest new];
+            KCSRequest* request = [self doDeltaQueryWithQuery:query
+                                          withCompletionBlock:^(NSMutableDictionary *objectsOrNil, NSError *errorOrNil)
+            { //get IDs from backend
+                NSArray* deltaSet = [[KCSAppdataStore caches] computeDelta:[KCSQuery2 queryWithQuery1:query]
+                                                                     route:[self.backingCollection route]
+                                                                collection:self.backingCollection.collectionName
+                                                             referenceObjs:objectsOrNil];
+                KCSRequest* request = [self completeDeltaQuery:query
+                                                       withSet:deltaSet
+                                           withCompletionBlock:completionBlock
+                                             withProgressBlock:progressBlock];
+                [requests addRequest:request];
+            }];
+            [requests addRequest:request];
+            return requests;
+        }
+    }
     if (noneCachePolicy || [self shouldCallNetworkFirst:obj cachePolicy:cachePolicy]) {
         return [self queryNetwork:query
               withCompletionBlock:completionBlock
                 withProgressBlock:progressBlock
                            policy:cachePolicy];
+        
     } else {
         [self completeQuery:obj withCompletionBlock:completionBlock];
         if ([self shouldUpdateInBackground:cachePolicy]) {
@@ -748,6 +871,39 @@ NSError* createCacheError(NSString* message)
             withCompletionBlock:completionBlock
               withProgressBlock:progressBlock
                     cachePolicy:self.cachePolicy];
+}
+
+-(KCSQuery*)queryForObjects:(NSArray*)objects
+                       skip:(NSUInteger)skip
+{
+    if ([objects.firstObject isKindOfClass:[NSString class]]) {
+        //input is _id array
+        NSArray* array;
+        if (objects.count > KCS_OBJECT_IDS_PER_QUERY) {
+            NSUInteger nextChunk = objects.count - skip;
+            array = [objects subarrayWithRange:NSMakeRange(skip, MIN(nextChunk, KCS_OBJECT_IDS_PER_QUERY))];
+        } else {
+            array = objects;
+        }
+        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:array];
+    } else if ([objects.firstObject conformsToProtocol:@protocol(KCSPersistable)] == YES) {
+        //input is object array?
+        NSUInteger nextChunk = objects.count - skip;
+        NSUInteger count = MIN(nextChunk, KCS_OBJECT_IDS_PER_QUERY);
+        NSMutableArray* ids = [NSMutableArray arrayWithCapacity:count];
+        NSArray* array;
+        if (objects.count > KCS_OBJECT_IDS_PER_QUERY) {
+            array = [objects subarrayWithRange:NSMakeRange(skip, count)];
+        } else {
+            array = objects;
+        }
+        for (NSObject<KCSPersistable>* obj in array) {
+            [ids addObject:[obj kinveyObjectId]];
+        }
+        return [KCSQuery queryOnField:KCSEntityKeyId usingConditional:kKCSIn forValue:ids];
+    } else {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"input is not a homogenous array of id strings or objects" userInfo:nil];
+    }
 }
 
 #pragma mark - grouping
