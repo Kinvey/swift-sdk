@@ -20,7 +20,7 @@
 
 #import "KCSStore.h"
 #import "KCSRequest.h"
-#import "KCSIncrementalCache.h"
+#import "KCSCacheUpdatePolicy.h"
 
 @class KCSCollection;
 @interface KCSBackgroundAppdataStore : NSObject <KCSStore>
@@ -30,7 +30,7 @@
 /**
  Enable delta set caching for this store. This optimize the time to retrieve objects from the server since it will only return the delta between the local cache and the Kinvey server.
  */
-@property (nonatomic) KCSIncrementalCache incrementalCache;
+@property (nonatomic) KCSCacheUpdatePolicy cacheUpdatePolicy;
 
 + (instancetype) storeWithCollection:(KCSCollection*)collection options:(NSDictionary*)options;
 
