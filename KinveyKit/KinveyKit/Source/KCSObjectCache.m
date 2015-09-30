@@ -172,13 +172,13 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     return obj;
 }
 
-- (NSArray*) objectsForIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection
+- (NSMutableArray*) objectsForIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection
 {
     if (ids == nil) {
         return nil;
     }
     if (ids.count == 0) {
-        return @[];
+        return [NSMutableArray array];
     }
     
     NSMutableArray* objs = [NSMutableArray arrayWithCapacity:ids.count];
@@ -218,13 +218,12 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
             ids = [_persistenceLayer allIds:route collection:collection];
         }
     }
-    NSMutableArray* cachedObjs = [NSMutableArray arrayWithArray:[self objectsForIds:ids route:route collection:collection]];
+    NSMutableArray* cachedObjs = [self objectsForIds:ids route:route collection:collection];
     NSMutableDictionary* delta = [NSMutableDictionary dictionaryWithDictionary:refObjs];
 #if BUILD_FOR_UNIT_TEST
     NSMutableDictionary* deletes = [NSMutableDictionary dictionary];
 #endif
     
-    //NSMutableArray* refIds = [NSMutableArray array];
     NSArray* refIds = [refObjs allKeys];
     
     NSString* idKey = kinveyObjectIdHostProperty([cachedObjs objectAtIndex:0]);
