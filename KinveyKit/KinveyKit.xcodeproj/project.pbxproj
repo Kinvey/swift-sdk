@@ -652,6 +652,8 @@
 		574926EF1B8662EE00A8B934 /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
 		574D8BA31B1641BB00C114A9 /* MLIBZ_322_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574D8BA21B1641BB00C114A9 /* MLIBZ_322_Tests.swift */; };
 		574FD5551AC1C0BB00CA26CD /* KCSKinveyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */; };
+		57524D0C1BBC5750000D14AC /* KCSManageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B556851BB5F7030000FF50 /* KCSManageAPI.swift */; settings = {ASSET_TAGS = (); }; };
+		57524D0D1BBC5750000D14AC /* KCSBaasAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57155E571BB6120E00A13B97 /* KCSBaasAPI.swift */; settings = {ASSET_TAGS = (); }; };
 		575675011AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575675001AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift */; };
 		575675051AF2E70400A7C0DB /* MLIBZ_256_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575675041AF2E70400A7C0DB /* MLIBZ_256_Tests.swift */; };
 		575F925A1B87A56D006FB6FB /* KCSTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */; };
@@ -4997,7 +4999,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				57DF5C351BB37E250036EF99 /* KCSDeltaSetCacheTests.swift in Sources */,
+				57524D0C1BBC5750000D14AC /* KCSManageAPI.swift in Sources */,
 				57F691851B8F9B9000F1FF87 /* KCSTestCase.m in Sources */,
+				57524D0D1BBC5750000D14AC /* KCSBaasAPI.swift in Sources */,
 				57E4F1041B28BE900002342E /* MLIBZ_322_Tests.swift in Sources */,
 				57E4F1121B28E9CA0002342E /* MLIBZ_322_ObjC_Tests.m in Sources */,
 				5725E7021AD6E2A000B506BB /* KinveyPlaygroundTests.swift in Sources */,
