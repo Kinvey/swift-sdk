@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "KinveyKit"
-  s.version          = "1.37.0"
+  s.version          = "1.38.0"
   s.summary          = "Kinvey iOS SDK"
   s.description      = "Kinvey provides a robust backend for your mobile apps by providing features that enable you to build amazing apps without worrying about your backend. Currently Kinvey provides the following services:\n\n* __appdata__ — A query-able key/value (and more) data storage platform for your app\n* __Resources__ — A storage system for your media content (images, videos, files, etc.) that provides out of the box Content Distribution Network (CDN) capabilities.\n* __Users__ — Keep track of users of your application and control access to data on a user-by-user basis\n* __Push Notifications__ — Our partnership with Urban Airship gives you awesome push features without the headache of managing them yourself.\n* __Location-Aware Queries__ — Query your data for entities that are near other entities.\n\nFor more details on how to use these features read the [Kinvey Service Overview](http://docs.kinvey.com/service-overview.html).\n"
   s.homepage         = "http://devcenter.kinvey.com/ios/guides/getting-started"
