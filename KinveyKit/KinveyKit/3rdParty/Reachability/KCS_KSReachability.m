@@ -65,6 +65,7 @@
 @property(nonatomic,readwrite,assign) BOOL reachable;
 @property(nonatomic,readwrite,assign) BOOL WWANOnly;
 @property(nonatomic,readwrite,assign) SCNetworkReachabilityRef reachabilityRef;
+@property(nonatomic,readwrite,assign) Boolean scheduled;
 @property(atomic,readwrite,assign) BOOL initialized;
 
 @end
@@ -115,14 +116,20 @@ static void onReachabilityChanged(SCNetworkReachabilityRef target,
         return [self initWithAddress:(const struct sockaddr*)&address];
     }
 
-    return [self initWithReachabilityRef:SCNetworkReachabilityCreateWithName(NULL, [hostname UTF8String])
-                                hostname:hostname];
+    SCNetworkReachabilityRef networkReachability = SCNetworkReachabilityCreateWithName(NULL, [hostname UTF8String]);
+    id instance = [self initWithReachabilityRef:networkReachability
+                                       hostname:hostname];
+    CFRelease(networkReachability);
+    return instance;
 }
 
 - (id) initWithAddress:(const struct sockaddr*) address
 {
-    return [self initWithReachabilityRef:SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, address)
-                                hostname:nil];
+    SCNetworkReachabilityRef networkReachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, address);
+    id instance = [self initWithReachabilityRef:networkReachability
+                                       hostname:nil];
+    CFRelease(networkReachability);
+    return instance;
 }
 
 - (id) initWithReachabilityRef:(SCNetworkReachabilityRef) reachabilityRef
@@ -149,9 +156,10 @@ static void onReachabilityChanged(SCNetworkReachabilityRef target,
                 goto init_failed;
             }
 
-            if(!SCNetworkReachabilityScheduleWithRunLoop(self.reachabilityRef,
-                                                         CFRunLoopGetMain(),
-                                                         kCFRunLoopDefaultMode))
+            self.scheduled = SCNetworkReachabilityScheduleWithRunLoop(self.reachabilityRef,
+                                                                      CFRunLoopGetMain(),
+                                                                      kCFRunLoopDefaultMode);
+            if(!self.scheduled)
             {
                 KCSLogError(@"KSReachability Error: %s: SCNetworkReachabilityScheduleWithRunLoop failed", __PRETTY_FUNCTION__);
                 goto init_failed;
@@ -184,14 +192,24 @@ init_failed:
     return self;
 }
 
+-(void)setReachabilityRef:(SCNetworkReachabilityRef)reachabilityRef
+{
+    if (_reachabilityRef) {
+        CFRelease(_reachabilityRef);
+    }
+    _reachabilityRef = reachabilityRef ? CFRetain(reachabilityRef) : reachabilityRef;
+}
+
 - (void) dealloc
 {
     if(_reachabilityRef != NULL)
     {
-        SCNetworkReachabilityUnscheduleFromRunLoop(_reachabilityRef,
-                                                   CFRunLoopGetMain(),
-                                                   kCFRunLoopDefaultMode);
-        CFRelease(_reachabilityRef);
+        if (self.scheduled) {
+            self.scheduled = !SCNetworkReachabilityUnscheduleFromRunLoop(_reachabilityRef,
+                                                                         CFRunLoopGetMain(),
+                                                                         kCFRunLoopDefaultMode);
+        }
+        self.reachabilityRef = nil;
     }
     as_release(_hostname);
     as_release(_notificationName);

@@ -40,7 +40,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -323,6 +324,16 @@
                BlueprintIdentifier = "5746AABE1B87E76F00F8DFCE"
                BuildableName = "RequestConfigurationTestsHttpRequestHeaders.xctest"
                BlueprintName = "RequestConfigurationTestsHttpRequestHeaders"
+               ReferencedContainer = "container:KinveyKit.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57B5566B1BB4B0FA0000FF50"
+               BuildableName = "KinveyPlaygroundUITests.xctest"
+               BlueprintName = "KinveyPlaygroundUITests"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
             </BuildableReference>
          </TestableReference>

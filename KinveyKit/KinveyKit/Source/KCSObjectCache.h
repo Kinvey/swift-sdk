@@ -25,6 +25,8 @@
 @protocol KCSOfflineUpdateDelegate;
 @protocol KCSUser2;
 
+typedef void (^KCSObjectDeltaCacheBlock)(NSDictionary*, NSDictionary*, NSTimeInterval);
+
 @interface KCSObjectCache : NSObject
 
 @property (nonatomic, strong) KCSDataModel* dataModel;
@@ -33,11 +35,14 @@
 @property (atomic) BOOL updatesLocalWithUnconfirmedSaves;
 @property (atomic) BOOL offlineUpdateEnabled;
 
++(void)setDeltaCacheBlock:(KCSObjectDeltaCacheBlock)block;
+
 - (void) setOfflineUpdateDelegate:(id<KCSOfflineUpdateDelegate>)offlineUpdateDelegate;
 
+- (NSArray*) computeDelta:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection referenceObjs: (NSDictionary*) refIds;
 - (NSArray*) pullQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 - (NSArray*) pullIds:(NSArray*)ids route:(NSString*)route collection:(NSString*)collection;
-- (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
+- (NSArray*) setObjects:(NSArray*)objArray forQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection persist:(BOOL)shouldPersist;
 - (BOOL) removeQuery:(KCSQuery2*)query route:(NSString*)route collection:(NSString*)collection;
 
 - (void) addObjects:(NSArray*)objects route:(NSString*)route  collection:(NSString*)collection;

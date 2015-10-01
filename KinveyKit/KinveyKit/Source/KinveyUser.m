@@ -237,9 +237,13 @@ void setActive(KCSUser* user)
 {
     UINavigationController* navigationVC = [[UINavigationController alloc] initWithRootViewController:micVC];
     
-    [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:navigationVC
-                                                                                       animated:YES
-                                                                                     completion:nil];
+    UIViewController* viewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    if (viewController.presentedViewController) {
+        viewController = viewController.presentedViewController;
+    }
+    [viewController presentViewController:navigationVC
+                                 animated:YES
+                               completion:nil];
 }
 
 +(BOOL)isValidMICRedirectURI:(NSString *)redirectURI

@@ -117,6 +117,7 @@ typedef enum KCSRefType : NSInteger {
 @interface KCSMetadata ()
 - (instancetype) initWithKMD:(NSDictionary*)kmd acl:(NSDictionary*)acl;
 - (NSDictionary*) aclValue;
+- (NSDictionary*) kmdDict;
 @end
 
 NSDictionary* builderOptions(id object);
@@ -668,8 +669,10 @@ id valueForProperty(NSString* jsonName, id value, BOOL withRefs, id object, NSSt
             //hijack metadata & only save ACLs (kmd can't be overwritten yet)
             if ([value isKindOfClass:[KCSMetadata class]]) {
                 dictionaryToMap[kACLKey] = [(KCSMetadata*)value aclValue];
-            } else if ([value isKindOfClass:[NSDictionary class]] && value[kACLKey]) {
-                dictionaryToMap[kACLKey] = value[kACLKey];
+                dictionaryToMap[kKMDKey] = [(KCSMetadata*)value kmdDict];
+            } else if ([value isKindOfClass:[NSDictionary class]]) {
+                dictionaryToMap[kKMDKey] = value[kKMDKey];
+                //dictionaryToMap[kACLKey] = value[kACLKey];
             }
         } else {
             value = valueForProperty(jsonName, //jsonName
