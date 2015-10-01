@@ -108,6 +108,18 @@ if (completionBlock) { \
     }; \
 }
 
+#define SWITCH_TO_MAIN_THREAD_DELETION_BLOCK(completionBlock) \
+if (completionBlock) { \
+    KCSDeletionBlock completionBlockOriginal = completionBlock; \
+    completionBlock = ^(NSDictionary* deletionDictOrNil, NSError *errorOrNil) { \
+        if ([NSThread isMainThread]) { \
+            completionBlockOriginal(deletionDictOrNil, errorOrNil); \
+        } else { \
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlockOriginal(deletionDictOrNil, errorOrNil)); \
+        } \
+    }; \
+}
+
 #define SWITCH_TO_MAIN_THREAD_FILE_UPLOAD_BLOCK(completionBlock) \
 if (completionBlock) { \
     KCSFileUploadCompletionBlock completionBlockOriginal = completionBlock; \
@@ -176,6 +188,18 @@ if (completionBlock) { \
             completionBlockOriginal(count, error); \
         } else { \
             DISPATCH_ASYNC_MAIN_QUEUE(completionBlockOriginal(count, error)); \
+        } \
+    }; \
+}
+
+#define SWITCH_TO_MAIN_THREAD_DATA_STORE_OBJECT_BLOCK(completionBlock) \
+if (completionBlock) { \
+    KCSDataStoreObjectCompletion completionBlockOriginal = completionBlock; \
+    completionBlock = ^(NSDictionary* object, NSError* error) { \
+        if ([NSThread isMainThread]) { \
+            completionBlockOriginal(object, error); \
+        } else { \
+            DISPATCH_ASYNC_MAIN_QUEUE(completionBlockOriginal(object, error)); \
         } \
     }; \
 }

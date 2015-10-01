@@ -115,25 +115,39 @@
 #pragma mark - Deletion
 
 -(KCSRequest*)deleteEntity:(NSString*)_id
-                completion:(KCSDataStoreCountCompletion)completion
+                completion:(KCSDataStoreCountCompletion)completion;
+{
+    KCSDataStoreObjectCompletion objCompletion = nil;
+    if (completion) {
+        objCompletion = ^(NSDictionary* responseDict, NSError* error) {
+            NSUInteger count = 0;
+            if (responseDict) {
+                count = [responseDict[@"count"] unsignedIntegerValue];
+            }
+            completion(count, error);
+        };
+    }
+    return [self deleteEntity:_id
+             deleteCompletion:objCompletion];
+}
+
+-(KCSRequest*)deleteEntity:(NSString*)_id
+          deleteCompletion:(KCSDataStoreObjectCompletion)completion
 {
     if (!_id) {
         NSError* error = [NSError createKCSErrorWithReason:[NSString stringWithFormat:@"%@ is nil", KCSEntityKeyId]];
         completion(0, error);
         return nil;
     }
-    SWITCH_TO_MAIN_THREAD_DATA_STORE_COUNT_BLOCK(completion);
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_OBJECT_BLOCK(completion);
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-        NSUInteger count = 0;
+        NSDictionary* responseDict = nil;
         if (!error) {
             response.skipValidation = YES;
-            NSDictionary* responseDict = [response jsonObjectError:&error];
-            if (!error) {
-                count = [responseDict[@"count"] unsignedIntegerValue];
-            }
+            responseDict = [response jsonObjectError:&error];
         }
-        completion(count, error);
+        completion(responseDict, error);
     }
                                                         route:self.route
                                                       options:@{KCSRequestLogMethod}
@@ -146,19 +160,33 @@
 -(KCSRequest*)deleteByQuery:(KCSQuery2*)query
                  completion:(KCSDataStoreCountCompletion)completion
 {
-    SWITCH_TO_MAIN_THREAD_DATA_STORE_COUNT_BLOCK(completion);
+    KCSDataStoreObjectCompletion objCompletion = nil;
+    if (completion) {
+        objCompletion = ^(NSDictionary* responseDict, NSError* error) {
+            NSUInteger count = 0;
+            if (responseDict) {
+                count = [responseDict[@"count"] unsignedIntegerValue];
+            }
+            completion(count, error);
+        };
+    }
+    return [self deleteByQuery:query
+              deleteCompletion:objCompletion];
+}
+
+-(KCSRequest*)deleteByQuery:(KCSQuery2*)query
+           deleteCompletion:(KCSDataStoreObjectCompletion)completion
+{
+    SWITCH_TO_MAIN_THREAD_DATA_STORE_OBJECT_BLOCK(completion);
     if (!query) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"query is nil" userInfo:nil] raise];
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-        NSUInteger count = 0;
+        NSDictionary* responseDict = nil;
         if (!error) {
             response.skipValidation = YES;
-            NSDictionary* responseDict = [response jsonObjectError:&error];
-            if (!error) {
-                count = [responseDict[@"count"] unsignedIntegerValue];
-            }
+            responseDict = [response jsonObjectError:&error];
         }
-        completion(count, error);
+        completion(responseDict, error);
     }
                                                         route:self.route
                                                       options:@{KCSRequestLogMethod}

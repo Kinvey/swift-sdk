@@ -20,6 +20,7 @@
 #import "KCSRequest.h"
 
 typedef void(^KCSDataStoreCompletion)(NSArray* objects, NSError* error);
+typedef void(^KCSDataStoreObjectCompletion)(NSDictionary* object, NSError* error);
 typedef void(^KCSDataStoreCountCompletion)(NSUInteger count, NSError* error);
 
 @class KCSQuery2;
@@ -44,7 +45,13 @@ typedef void(^KCSDataStoreCountCompletion)(NSUInteger count, NSError* error);
 -(KCSRequest*)deleteEntity:(NSString*)_id
                 completion:(KCSDataStoreCountCompletion)completion;
 
+-(KCSRequest*)deleteEntity:(NSString*)_id
+          deleteCompletion:(KCSDataStoreObjectCompletion)completion;
+
 -(KCSRequest*)deleteByQuery:(KCSQuery2*)query
                  completion:(KCSDataStoreCountCompletion)completion;
+
+-(KCSRequest*)deleteByQuery:(KCSQuery2*)query
+           deleteCompletion:(KCSDataStoreObjectCompletion)completion;
 
 @end
