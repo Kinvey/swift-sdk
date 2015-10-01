@@ -1457,7 +1457,7 @@ andResaveAfterReferencesSaved:^{
                                                     count:(NSUInteger)_count //an accumulative number to keep track of how many objects were deleted successfully 
                                                       ids:(NSArray*)ids
                                                  requests:(KCSMultipleRequest*)requests
-                                               completion:(KCSDataStoreCountCompletion)completionBlock
+                                               completion:(KCSCountBlock)completionBlock
 {
     __block NSUInteger count = _count;
     KCSQuery2* query2 = [KCSQuery2 queryWithQuery1:query];
