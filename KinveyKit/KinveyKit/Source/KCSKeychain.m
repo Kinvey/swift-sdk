@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 12/11/13.
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -17,9 +17,9 @@
 // contents is a violation of applicable laws.
 //
 
-
 #import "KCSKeychain.h"
 #import "KinveyCoreInternal.h"
+#import "KCSClient.h"
 
 #define KCS_KEYCHAIN_BUG_ERROR_CODE -34018
 

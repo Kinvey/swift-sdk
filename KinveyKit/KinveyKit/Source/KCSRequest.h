@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
+#ifndef KinveyKit_KCSRequest_h
+#define KinveyKit_KCSRequest_h
+
 #import <Foundation/Foundation.h>
 
 typedef void(^KCSRequestCancelationBlock)();
@@ -26,3 +29,5 @@ typedef void(^KCSRequestCancelationBlock)();
 -(void)cancel;
 
 @end
+
+#endif

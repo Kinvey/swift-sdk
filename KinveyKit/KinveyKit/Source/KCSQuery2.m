@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/23/13.
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -21,6 +21,8 @@
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 #import "NSDate+ISO8601.h"
+#import "KinveyErrorCodes.h"
+#import "KCSQuery.h"
 
 #define BadPredicate()  if (error != NULL) { \
                              *error = [NSError errorWithDomain:KCSAppDataErrorDomain code:KCSqueryPredicateNotSupportedError userInfo:nil]; \

@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D32A60C714716EE300F77A3F"
+               BlueprintIdentifier = "57A8C7BA1BBF64C600ADA28F"
                BuildableName = "KinveyKit.framework"
                BlueprintName = "KinveyKit"
                ReferencedContainer = "container:KinveyKit.xcodeproj">
@@ -23,21 +23,11 @@
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "DebugForTest"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D32A60D814716EE300F77A3F"
-               BuildableName = "KinveyKitTests.octest"
-               BlueprintName = "KinveyKitTests"
-               ReferencedContainer = "container:KinveyKit.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <AdditionalOptions>
       </AdditionalOptions>
@@ -55,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D32A60C714716EE300F77A3F"
+            BlueprintIdentifier = "57A8C7BA1BBF64C600ADA28F"
             BuildableName = "KinveyKit.framework"
             BlueprintName = "KinveyKit"
             ReferencedContainer = "container:KinveyKit.xcodeproj">
@@ -70,6 +60,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "57A8C7BA1BBF64C600ADA28F"
+            BuildableName = "KinveyKit.framework"
+            BlueprintName = "KinveyKit"
+            ReferencedContainer = "container:KinveyKit.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

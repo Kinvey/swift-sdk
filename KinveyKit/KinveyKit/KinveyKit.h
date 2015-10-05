@@ -2,7 +2,7 @@
 //  KinveyKit.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2014, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2015, Kinvey, Inc. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,9 +16,15 @@
 // contents is a violation of applicable laws.
 //
 
+#import <UIKit/UIKit.h>
 
-#ifndef KinveyKit_h
-#define KinveyKit_h
+//! Project version number for KinveyKit.
+FOUNDATION_EXPORT double KinveyKitVersionNumber;
+
+//! Project version string for KinveyKit.
+FOUNDATION_EXPORT const unsigned char KinveyKitVersionString[];
+
+// In this header, you should import all the public headers of your framework using statements like #import <KinveyKit/PublicHeader.h>
 
 #import "KinveyVersion.h"
 
@@ -64,4 +70,3 @@
 #import "CLLocation+Kinvey.h"
 #import "KinveyKitExtras.h"
 
-#endif

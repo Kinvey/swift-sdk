@@ -2,7 +2,7 @@
 //  KCSClientConfiguration.h
 //  KinveyKit
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,6 +16,8 @@
 // contents is a violation of applicable laws.
 //
 
+#ifndef KinveyKit_KCSClientConfiguration_h
+#define KinveyKit_KCSClientConfiguration_h
 
 #import <Foundation/Foundation.h>
 
@@ -217,3 +219,5 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
 + (instancetype) configurationFromPlist:(NSString*)plistName;
 
 @end
+
+#endif

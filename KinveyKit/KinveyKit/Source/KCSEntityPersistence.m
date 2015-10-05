@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 5/14/13.
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -21,12 +21,12 @@
 #import "KCSEntityPersistence.h"
 
 #import "KinveyCoreInternal.h"
-
+#import "KCSClient.h"
 #import "KCS_FMDatabase.h"
 #import "KCS_FMDatabaseAdditions.h"
 #import "KCS_FMDatabaseQueue.h"
 #import "KCSMutableOrderedDictionary.h"
-
+#import "KinveyPersistable.h"
 #import "KCSRequest2.h"
 
 //IMPORTANT NOTE: please, always increase this number, never decrease to avoid clear your cache!
