@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 11/12/13.
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -19,13 +19,14 @@
 
 
 #import "KCSOfflineUpdate.h"
-
+#import <UIKit/UIKit.h>
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
-
+#import "KCSReachability.h"
 #import "KCSEntityPersistence.h"
-
+#import "KinveyUser.h"
 #import "KCSDBTools.h"
+#import "KinveyErrorCodes.h"
 
 #define DELEGATEMETHOD(m) if (_delegate != nil && [_delegate respondsToSelector:@selector(m)])
 
