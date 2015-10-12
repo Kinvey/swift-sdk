@@ -37,7 +37,8 @@ typedef void(^KCSProgressBlock)(NSArray *objects, double percentComplete);
  @param count the resulting count of the operation
  @param errorOrNil an non-nil object if an error occurred.
  */
-typedef void(^KCSCountBlock)(unsigned long count, NSError *errorOrNil);
+typedef void (^KCSCountBlock) (unsigned long count, NSError *errorOrNil);
+typedef void (^KCSDeletionBlock) (NSDictionary* deletionDictOrNil, NSError* errorOrNil);
 
 typedef void(^KCSGroupCompletionBlock)(KCSGroup* valuesOrNil, NSError* errorOrNil);
 

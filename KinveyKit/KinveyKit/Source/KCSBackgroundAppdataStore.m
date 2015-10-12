@@ -1389,7 +1389,39 @@ andResaveAfterReferencesSaved:^{
        withCompletionBlock:(KCSCountBlock)completionBlock
          withProgressBlock:(KCSProgressBlock)progressBlock
 {
-    SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(completionBlock);
+    KCSDeletionBlock deletionBlock = nil;
+    if (completionBlock) {
+        deletionBlock = ^(NSDictionary* deletionDictOrNil, NSError* errorOrNil) {
+            unsigned long count = 0;
+            id countNumber = deletionDictOrNil[@"count"];
+            if (countNumber && [countNumber isKindOfClass:[NSNumber class]]) {
+                count = ((NSNumber*) countNumber).unsignedLongValue;
+            }
+            completionBlock(count, errorOrNil);
+        };
+    }
+    return [self removeObject:object
+         requestConfiguration:requestConfiguration
+            withDeletionBlock:deletionBlock
+            withProgressBlock:progressBlock];
+}
+
+-(KCSRequest*)removeObject:(id)object
+         withDeletionBlock:(KCSDeletionBlock)completionBlock
+         withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    return [self removeObject:object
+         requestConfiguration:nil
+            withDeletionBlock:completionBlock
+            withProgressBlock:progressBlock];
+}
+
+-(KCSRequest*)removeObject:(id)object
+      requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+         withDeletionBlock:(KCSDeletionBlock)completionBlock
+         withProgressBlock:(KCSProgressBlock)progressBlock
+{
+    SWITCH_TO_MAIN_THREAD_DELETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     BOOL okayToProceed = [self validatePreconditionsAndSendErrorTo:^(id objs, NSError *error) {
         if (completionBlock) completionBlock(0, error);
@@ -1422,26 +1454,13 @@ andResaveAfterReferencesSaved:^{
     if ([object isKindOfClass:[KCSQuery class]]) {
         op = [self deleteByQueryForStore:store2
                                    query:object
-                                   count:0
+                          responseObject:nil
                                      ids:objects
                                 requests:requests
                               completion:completionBlock];
     } else {
-        op = [store2 deleteEntity:object completion:^(NSUInteger count, NSError *error) {
-            if (error) {
-                if ([self shouldEnqueue:error]) {
-                    //enqueue save
-                    id errorValue = [[KCSAppdataStore caches] addUnsavedDelete:object route:[self.backingCollection route] collection:self.backingCollection.collectionName method:KCSRESTMethodDELETE headers:@{KCSRequestLogMethod} error:error];
-                    if (errorValue != nil) {
-                        error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
-                    }
-                }
-                completionBlock(0, error);
-            } else {
-                completionBlock(count, nil);
-            }
-            
-        }].networkOperation;
+        op = [store2 deleteEntity:object
+                 deleteCompletion:completionBlock].networkOperation;
     }
     if (progressBlock) {
         op.progressBlock = ^(id data, double progress) {
@@ -1454,15 +1473,32 @@ andResaveAfterReferencesSaved:^{
 
 -(NSOperation<KCSNetworkOperation>*)deleteByQueryForStore:(KCSDataStore*)store
                                                     query:(KCSQuery*)query
-                                                    count:(NSUInteger)_count //an accumulative number to keep track of how many objects were deleted successfully 
+                                           responseObject:(NSMutableDictionary*)_object //an accumulative number to keep track of how many objects were deleted successfully
                                                       ids:(NSArray*)ids
                                                  requests:(KCSMultipleRequest*)requests
-                                               completion:(KCSCountBlock)completionBlock
+                                               completion:(KCSDeletionBlock)completionBlock
 {
-    __block NSUInteger count = _count;
+    __block NSMutableDictionary* object = _object;
     KCSQuery2* query2 = [KCSQuery2 queryWithQuery1:query];
-    return [store deleteByQuery:query2 completion:^(NSUInteger _count, NSError *error) {
-        count += _count;
+    return [store deleteByQuery:query2
+               deleteCompletion:^(NSDictionary *_object, NSError *error)
+    {
+        id count = object[@"count"];
+        if (_object) {
+            if (!object) {
+                object = [NSMutableDictionary dictionary];
+            }
+            [object addEntriesFromDictionary:_object];
+            NSUInteger countValue = 0;
+            if (count && [count isKindOfClass:[NSNumber class]]) {
+                countValue = [count unsignedIntegerValue];
+            }
+            id _count = _object[@"count"];
+            if (_count && [_count isKindOfClass:[NSNumber class]]) {
+                count = @(countValue + [_count unsignedIntegerValue]);
+                object[@"count"] = count;
+            }
+        }
         if (error) {
             if ([self shouldEnqueue:error]) {
                 //enqueue save
@@ -1472,18 +1508,18 @@ andResaveAfterReferencesSaved:^{
                     error = [error updateWithInfo:@{KCS_ERROR_UNSAVED_OBJECT_IDS_KEY : @[errorValue]}];
                 }
             }
-            completionBlock(count, error);
+            completionBlock(object, error);
         } else {
-            if (count < ids.count) {
+            if (count && [count isKindOfClass:[NSNumber class]] && [count unsignedIntegerValue] < ids.count) {
                 id<KCSNetworkOperation> op = [self deleteByQueryForStore:store
-                                                                   query:[self queryForObjects:ids skip:count]
-                                                                   count:count
+                                                                   query:[self queryForObjects:ids skip:[count unsignedIntegerValue]]
+                                                          responseObject:object
                                                                      ids:ids
                                                                 requests:requests
                                                               completion:completionBlock];
                 [requests addRequest:[KCSRequest requestWithNetworkOperation:op]];
             } else {
-                completionBlock(count, nil);
+                completionBlock(object, nil);
             }
         }
     }].networkOperation;
