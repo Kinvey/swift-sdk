@@ -69,24 +69,8 @@ class KCSDeltaSetCacheTests: KCSTestCase {
         }
     }
     
-    func removeAndLogoutActiveUser() {
-        if let user = KCSUser.activeUser() {
-            weak var expectationRemove = expectationWithDescription("remove")
-            
-            user.removeWithCompletionBlock({ (results: [AnyObject]!, error: NSError!) -> Void in
-                expectationRemove?.fulfill()
-            })
-            
-            waitForExpectationsWithTimeout(timeout) { (error: NSError?) -> Void in
-                expectationRemove = nil
-            }
-            
-            user.logout()
-        }
-    }
-    
     override func tearDown() {
-        removeAndLogoutActiveUser()
+        removeAndLogoutActiveUser(timeout)
         
         super.tearDown()
     }

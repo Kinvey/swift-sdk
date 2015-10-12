@@ -76,4 +76,22 @@
     return user;
 }
 
+-(void)removeAndLogoutActiveUser:(NSTimeInterval)timeout
+{
+    KCSUser* user = [KCSUser activeUser];
+    if (user) {
+        __block __weak XCTestExpectation* expectationRemove = [self expectationWithDescription:@"remove"];
+        
+        [user removeWithCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
+            [expectationRemove fulfill];
+        }];
+        
+        [self waitForExpectationsWithTimeout:timeout handler:^(NSError * _Nullable error) {
+            expectationRemove = nil;
+        }];
+        
+        [user logout];
+    }
+}
+
 @end
