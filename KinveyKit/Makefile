@@ -2,7 +2,7 @@ CONFIGURATION=Release
 TARGET=Kinvey
 PRODUCT_NAME=$(TARGET)Kit
 MODULE=$(PRODUCT_NAME).framework
-FRAMEWORK=$(PRODUCT_NAME)-NonModule.framework
+FRAMEWORK=NonModule/$(PRODUCT_NAME).framework
 STATIC_LIB=libKinvey.a
 OUTPUT_FOLDER=build
 
