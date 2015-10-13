@@ -16,7 +16,6 @@
 // contents is a violation of applicable laws.
 //
 
-#import "KinveyDataStore.h"
 #import "KCSRequest.h"
 
 typedef void(^KCSDataStoreCompletion)(NSArray* objects, NSError* error);

@@ -18,7 +18,6 @@
 
 
 #import <Foundation/Foundation.h>
-#import "KinveyCore.h"
 #import "KCSRequest.h"
 
 KCS_CONSTANT KCS_PING_KINVEY_VERSION;

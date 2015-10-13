@@ -16,6 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
+#ifndef KinveyKit_KCSClient2_h
+#define KinveyKit_KCSClient2_h
+
 #import <Foundation/Foundation.h>
 
 @class KCSClientConfiguration;
@@ -27,3 +30,5 @@
 @property (nonatomic, strong) KCSClientConfiguration* configuration;
 
 @end
+
+#endif
