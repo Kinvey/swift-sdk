@@ -2,7 +2,7 @@
 //  KCSLinkedAppdataStore.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -15,6 +15,9 @@
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.
 //
+
+#ifndef KinveyKit_KCSLinkedAppdataStore_h
+#define KinveyKit_KCSLinkedAppdataStore_h
 
 #import "KCSCachedStore.h"
 
@@ -33,3 +36,4 @@
 
 @end
 
+#endif

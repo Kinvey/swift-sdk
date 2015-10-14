@@ -2,7 +2,7 @@
 //  KCSBackgroundAppdataStore.h
 //  KinveyKit
 //
-//  Copyright (c) 2014 Kinvey. All rights reserved.
+//  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -15,6 +15,9 @@
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.
 //
+
+#ifndef KinveyKit_KCSBackgroundAppdataStore_h
+#define KinveyKit_KCSBackgroundAppdataStore_h
 
 #import <Foundation/Foundation.h>
 
@@ -59,3 +62,5 @@
                   completion:(KCSCountBlock)countBlock;
 
 @end
+
+#endif

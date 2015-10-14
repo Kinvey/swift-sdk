@@ -2,7 +2,7 @@
 //  KCSStore.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2014 Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2012-2015 Kinvey, Inc. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -15,6 +15,9 @@
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.
 //
+
+#ifndef KinveyKit_KCSStore_h
+#define KinveyKit_KCSStore_h
 
 #import <Foundation/Foundation.h>
 #import "KCSBlockDefs.h"
@@ -280,3 +283,5 @@ KCS_DEPRECATED(use [KCSQuery query] instead, 1.26.0)
 
 
 @end
+
+#endif

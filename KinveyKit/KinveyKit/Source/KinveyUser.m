@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 12/1/11.
-//  Copyright (c) 2011-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -21,7 +21,7 @@
 #import "KinveyUser.h"
 #import "KCSLogManager.h"
 #import "KCSHiddenMethods.h"
-
+#import "KinveyErrorCodes.h"
 #import "KinveyUserService.h"
 #import "KCSKeychain.h"
 #import "KCSNetworkResponse.h"

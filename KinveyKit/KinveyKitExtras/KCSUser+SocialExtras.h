@@ -2,7 +2,7 @@
 //  KCSUser+SocialExtras.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -21,6 +21,7 @@
 #import "KinveyKit.h"
 #import "KCSWebView.h"
 #import "KCSBlockDefs.h"
+#import "KinveyUser.h"
 
 /**
  These are additional helpers for KCSUser to obtain credentials from social services. This requires linking in `Twitter.framework` and `Accounts.framework`.

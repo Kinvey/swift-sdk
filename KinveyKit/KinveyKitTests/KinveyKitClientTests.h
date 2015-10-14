@@ -2,7 +2,7 @@
 //  KinveyKitClientTests.h
 //  KinveyKit
 //
-//  Copyright (c) 2011-2012 Kinvey. All rights reserved.
+//  Copyright (c) 2011-2015 Kinvey. All rights reserved.
 //
 
 //  Logic unit tests contain unit test code that is designed to be linked into an independent test executable.
