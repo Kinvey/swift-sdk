@@ -16,6 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
+#ifndef KinveyKit_KCSRequestConfiguration_h
+#define KinveyKit_KCSRequestConfiguration_h
+
 #import <Foundation/Foundation.h>
 
 /**
@@ -67,3 +70,5 @@
              andCustomRequestProperties:(NSDictionary*)customRequestProperties;
 
 @end
+
+#endif

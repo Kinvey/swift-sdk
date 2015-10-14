@@ -2,7 +2,7 @@
 //  KCSDataStore.h
 //  KinveyKit
 //
-//  Copyright (c) 2013-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2013-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,10 +16,10 @@
 // contents is a violation of applicable laws.
 //
 
-#import "KinveyDataStore.h"
 #import "KCSRequest.h"
 
 typedef void(^KCSDataStoreCompletion)(NSArray* objects, NSError* error);
+typedef void(^KCSDataStoreObjectCompletion)(NSDictionary* object, NSError* error);
 typedef void(^KCSDataStoreCountCompletion)(NSUInteger count, NSError* error);
 
 @class KCSQuery2;
@@ -44,7 +44,13 @@ typedef void(^KCSDataStoreCountCompletion)(NSUInteger count, NSError* error);
 -(KCSRequest*)deleteEntity:(NSString*)_id
                 completion:(KCSDataStoreCountCompletion)completion;
 
+-(KCSRequest*)deleteEntity:(NSString*)_id
+          deleteCompletion:(KCSDataStoreObjectCompletion)completion;
+
 -(KCSRequest*)deleteByQuery:(KCSQuery2*)query
                  completion:(KCSDataStoreCountCompletion)completion;
+
+-(KCSRequest*)deleteByQuery:(KCSQuery2*)query
+           deleteCompletion:(KCSDataStoreObjectCompletion)completion;
 
 @end

@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
+#ifndef KinveyKit_KCSUserActionResult_h
+#define KinveyKit_KCSUserActionResult_h
+
 typedef NS_ENUM(NSInteger, KCSUserActionResult) {
     KCSUserNoInformation = -1,
     KCSUserCreated = 1,
@@ -15,3 +18,5 @@ typedef NS_ENUM(NSInteger, KCSUserActionResult) {
     KCSUserInteractionCancel = 5,
     KCSUserInteractionTimeout = 6
 };
+
+#endif

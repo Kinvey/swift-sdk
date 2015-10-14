@@ -2,7 +2,7 @@
 //  KCSPush.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2013, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2015, Kinvey, Inc. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -15,6 +15,9 @@
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.
 //
+
+#ifndef KinveyKit_KCSPush_h
+#define KinveyKit_KCSPush_h
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
@@ -183,3 +186,5 @@
 - (void)resetPushBadge;
 
 @end
+
+#endif

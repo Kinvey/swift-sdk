@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 10/11/12.
-//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2015 Kinvey. All rights reserved.
 //
 
 #import "KinveyKitNSDictionaryTests.h"

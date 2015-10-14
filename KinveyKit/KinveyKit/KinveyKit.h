@@ -2,7 +2,7 @@
 //  KinveyKit.h
 //  KinveyKit
 //
-//  Copyright (c) 2008-2014, Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2008-2015, Kinvey, Inc. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,52 +16,50 @@
 // contents is a violation of applicable laws.
 //
 
+#import <UIKit/UIKit.h>
 
-#ifndef KinveyKit_h
-#define KinveyKit_h
+//! Project version number for KinveyKit.
+FOUNDATION_EXPORT double KinveyKitVersionNumber;
 
-#import "KinveyVersion.h"
+//! Project version string for KinveyKit.
+FOUNDATION_EXPORT const unsigned char KinveyKitVersionString[];
 
-#import "KCSClientConfiguration.h"
-#import "KCSClient.h"
-
-#import "KCSEntityDict.h"
-#import "KinveyCollection.h"
-#import "KinveyEntity.h"
-#import "KinveyPersistable.h"
-#import "KCSMetadata.h"
-#import "KinveyPing.h"
-#import "KinveyUser.h"
-#import "KCSUserDiscovery.h"
-#import "KCSReachability.h"
-#import "KinveyErrorCodes.h"
-#import "KCSQuery.h"
-#import "KCSStore.h"
-#import "KCSCustomEndpoints.h"
-
-#import "KCSStore.h"
-#import "KCSAppdataStore.h"
-#import "KCSCachedStore.h"
-#import "KCSGroup.h"
-#import "KCSReduceFunction.h"
-#import "KCSLinkedAppdataStore.h"
-#import "KCSOfflineUpdateDelegate.h"
-#import "KCSClient+KinveyDataStore.h"
-
-#import "KCSFile.h"
-#import "KCSFileStore.h"
-
-#import "KCSLogSink.h"
-
-#import "KCSURLProtocol.h"
-
-#if TARGET_OS_IPHONE
-#import "KCSPush.h"
-
-#endif
-
-//UI & Framework Helpers
-#import "CLLocation+Kinvey.h"
-#import "KinveyKitExtras.h"
-
-#endif
+#import <KinveyKit/KCSClient.h>
+#import <KinveyKit/KCSClientConfiguration.h>
+#import <KinveyKit/KinveyPing.h>
+#import <KinveyKit/KinveyPersistable.h>
+#import <KinveyKit/KCSEntityDict.h>
+#import <KinveyKit/KCSPush.h>
+#import <KinveyKit/KinveyUser.h>
+#import <KinveyKit/KCSUser2+KinveyUserService.h>
+#import <KinveyKit/KCSUserDiscovery.h>
+#import <KinveyKit/KCSQuery.h>
+#import <KinveyKit/KCSQuery2.h>
+#import <KinveyKit/KCSRequest.h>
+#import <KinveyKit/KCSStore.h>
+#import <KinveyKit/KCSBackgroundAppdataStore.h>
+#import <KinveyKit/KCSAppdataStore.h>
+#import <KinveyKit/KCSLinkedAppdataStore.h>
+#import <KinveyKit/KCSDataStore.h>
+#import <KinveyKit/KCSCachedStore.h>
+#import <KinveyKit/KCSFile.h>
+#import <KinveyKit/KCSFileStore.h>
+#import <KinveyKit/KCSBlockDefs.h>
+#import <KinveyKit/KinveyBlocks.h>
+#import <KinveyKit/CLLocation+Kinvey.h>
+#import <KinveyKit/KCSClient+KinveyDataStore.h>
+#import <KinveyKit/KCSRequestConfiguration.h>
+#import <KinveyKit/KCSMetadata.h>
+#import <KinveyKit/KCSGroup.h>
+#import <KinveyKit/KCSReduceFunction.h>
+#import <KinveyKit/KCSLogSink.h>
+#import <KinveyKit/KCSOfflineUpdateDelegate.h>
+#import <KinveyKit/KCSCustomEndpoints.h>
+#import <KinveyKit/KCSFacebookHelper.h>
+#import <KinveyKit/KCSUser+SocialExtras.h>
+#import <KinveyKit/KCSReachability.h>
+#import <KinveyKit/KCSURLProtocol.h>
+#import <KinveyKit/KinveyErrorCodes.h>
+#import <KinveyKit/NSString+KinveyAdditions.h>
+#import <KinveyKit/NSURL+KinveyAdditions.h>
+#import <KinveyKit/KinveyVersion.h>

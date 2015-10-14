@@ -2,7 +2,7 @@
 //  KCSStore.h
 //  KinveyKit
 //
-//  Copyright (c) 2012-2014 Kinvey, Inc. All rights reserved.
+//  Copyright (c) 2012-2015 Kinvey, Inc. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -15,6 +15,9 @@
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.
 //
+
+#ifndef KinveyKit_KCSStore_h
+#define KinveyKit_KCSStore_h
 
 #import <Foundation/Foundation.h>
 #import "KCSBlockDefs.h"
@@ -200,6 +203,32 @@ KCS_DEPRECATED(use [KCSQuery query] instead, 1.26.0)
        withCompletionBlock:(KCSCountBlock)completionBlock
          withProgressBlock:(KCSProgressBlock)progressBlock;
 
+/*! Remove an object (or objects) from the store.
+ 
+ @param object An object (or query) to remove from the store (if the object is a NSArray or query, matching objects will be removed)
+ @param completionBlock A block that gets invoked when the remove is "complete" (as defined by the store).
+ @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
+ @updated 1.24.0 completion block is now a count block instead of an object block
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ */
+-(KCSRequest*)removeObject:(id)object
+         withDeletionBlock:(KCSDeletionBlock)completionBlock
+         withProgressBlock:(KCSProgressBlock)progressBlock;
+
+/*! Remove an object (or objects) from the store.
+ 
+ @param object An object (or query) to remove from the store (if the object is a NSArray or query, matching objects will be removed)
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock A block that gets invoked when the remove is "complete" (as defined by the store).
+ @param progressBlock A block that is invoked whenever the store can offer an update on the progress of the operation.
+ @updated 1.24.0 completion block is now a count block instead of an object block
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ */
+-(KCSRequest*)removeObject:(id)object
+      requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+         withDeletionBlock:(KCSDeletionBlock)completionBlock
+         withProgressBlock:(KCSProgressBlock)progressBlock;
+
 
 #pragma mark -
 #pragma mark Configuring
@@ -254,3 +283,5 @@ KCS_DEPRECATED(use [KCSQuery query] instead, 1.26.0)
 
 
 @end
+
+#endif

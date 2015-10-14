@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Brian Wilson on 5/2/12.
-//  Copyright (c) 2012-2013 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -37,7 +37,8 @@ typedef void(^KCSProgressBlock)(NSArray *objects, double percentComplete);
  @param count the resulting count of the operation
  @param errorOrNil an non-nil object if an error occurred.
  */
-typedef void(^KCSCountBlock)(unsigned long count, NSError *errorOrNil);
+typedef void (^KCSCountBlock) (unsigned long count, NSError *errorOrNil);
+typedef void (^KCSDeletionBlock) (NSDictionary* deletionDictOrNil, NSError* errorOrNil);
 
 typedef void(^KCSGroupCompletionBlock)(KCSGroup* valuesOrNil, NSError* errorOrNil);
 
