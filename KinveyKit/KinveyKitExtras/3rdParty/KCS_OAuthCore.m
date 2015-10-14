@@ -89,7 +89,7 @@ NSString *KCS_OAuthorizationHeader(NSURL *url, NSString *method, NSData *body, N
                      (_oAuthTokenSecret) ? [_oAuthTokenSecret ab_RFC3986EncodedString] : @""];
 
     NSData *signature = HMAC_SHA1(signatureBaseString, key);
-    NSString *base64Signature = KCSbase64EncodedStringFromData(signature);
+    NSString *base64Signature = [signature base64EncodedStringWithOptions:0];
 
     NSMutableDictionary *authorizationHeaderDictionary = [oAuthAuthorizationParameters mutableCopy];
     [authorizationHeaderDictionary setObject:base64Signature forKey:@"oauth_signature"];
