@@ -11,6 +11,8 @@
 #import "KCSUser2+KinveyUserService+Private.h"
 #import "KCSClient2.h"
 #import "NSDictionary+KinveyAdditions.h"
+#import "KCSClient.h"
+#import "KCSClientConfiguration.h"
 
 @interface KCSMICRequest2 ()
 

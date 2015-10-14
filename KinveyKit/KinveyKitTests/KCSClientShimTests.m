@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 9/12/13.
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -18,7 +18,7 @@
 //
 
 #import "KCSTestCase.h"
-
+#import "KCSClient.h"
 #import "KinveyCoreInternal.h"
 
 @interface KCSClientShimTests : KCSTestCase

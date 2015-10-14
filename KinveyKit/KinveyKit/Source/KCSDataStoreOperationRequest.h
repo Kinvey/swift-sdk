@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
-#import <KinveyKit/KinveyKit.h>
 #import "DataStoreOperation.h"
+#import "KCSRequest.h"
 
 @interface KCSDataStoreOperationRequest : KCSRequest
 

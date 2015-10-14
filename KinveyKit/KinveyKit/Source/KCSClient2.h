@@ -2,7 +2,7 @@
 //  KCSClient2.h
 //  KinveyKit
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,6 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
+#ifndef KinveyKit_KCSClient2_h
+#define KinveyKit_KCSClient2_h
+
 #import <Foundation/Foundation.h>
 
 @class KCSClientConfiguration;
@@ -27,3 +30,5 @@
 @property (nonatomic, strong) KCSClientConfiguration* configuration;
 
 @end
+
+#endif

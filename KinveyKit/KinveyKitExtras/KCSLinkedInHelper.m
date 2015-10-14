@@ -3,7 +3,7 @@
 //  KinveyKit
 //
 //  Created by Michael Katz on 12/6/12.
-//  Copyright (c) 2012-2014 Kinvey. All rights reserved.
+//  Copyright (c) 2012-2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -22,8 +22,9 @@
 
 #import "KinveyCoreInternal.h"
 #import "KinveySocialInternal.h"
-
+#import "KCSClient.h"
 #import "KCSWebView.h"
+#import "KinveyErrorCodes.h"
 
 @interface KCSLinkedInHelper() <KCSWebViewDelegate> {
     NSString* _tokenSecret;

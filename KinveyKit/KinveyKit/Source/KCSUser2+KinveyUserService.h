@@ -2,7 +2,7 @@
 //  KCSUser2+KinveyUserService.h
 //  KinveyKit
 //
-//  Copyright (c) 2013 Kinvey. All rights reserved.
+//  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 // This software is licensed to you under the Kinvey terms of service located at
 // http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -16,10 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
-#import <KinveyKit/KinveyKit.h>
-
 #import "KCSUser2.h"
 #import "KCSRequest.h"
+#import "KinveyUser.h"
 
 typedef void (^KCSUser2CompletionBlock)(id<KCSUser2>user, NSError* error);
 
