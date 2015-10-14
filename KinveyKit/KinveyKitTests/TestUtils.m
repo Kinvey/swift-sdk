@@ -169,7 +169,7 @@ NSDictionary* wrapResponseDictionary(NSDictionary* originalResponse)
 
 + (void) initKinvey:(NSDictionary*)opts
 {
-    NSString* path = [[NSBundle mainBundle] pathForResource:@"config" ofType:@"plist"];
+    NSString* path = [[NSBundle bundleForClass:[self class]] pathForResource:@"config" ofType:@"plist"];
     NSDictionary *config = [NSDictionary dictionaryWithContentsOfFile:path];
 
     [[KCSClient sharedClient] initializeKinveyServiceForAppKey: config[KCS_APP_KEY]

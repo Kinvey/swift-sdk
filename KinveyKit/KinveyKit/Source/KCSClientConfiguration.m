@@ -215,7 +215,11 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
       forOption:(id)key
 {
     NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:self.options];
-    options[key] = value;
+    if (value) {
+        options[key] = value;
+    } else {
+        [options removeObjectForKey:key];
+    }
     self.options = options;
 }
 
@@ -334,6 +338,21 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
     self.serviceHostname = @"";
     self.hostDomain = url.host;
     self.hostPort = url.port ? url.port.stringValue : @"";
+}
+
+-(NSTimeInterval)connectionTimeout
+{
+    id value = self.options[KCS_CONNECTION_TIMEOUT];
+    if (value && [value isKindOfClass:[NSNumber class]]) {
+        return ((NSNumber*) value).doubleValue;
+    }
+    return -1;
+}
+
+-(void)setConnectionTimeout:(NSTimeInterval)connectionTimeout
+{
+    [self setValue:connectionTimeout > 0 ? @(connectionTimeout) : nil
+         forOption:KCS_CONNECTION_TIMEOUT];
 }
 
 - (BOOL) valid

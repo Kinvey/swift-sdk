@@ -145,6 +145,9 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
 /*! Base URL used to connect to the backend server. Default value: "https://baas.kinvey.com" */
 @property (nonatomic, copy) NSString* baseURL;
 
+/*! Representing in-seconds for connection timeouts */
+@property (nonatomic) NSTimeInterval connectionTimeout;
+
 /** Basic configuration with an app key and secret, no options. Uses the default options.
  
  Usage:
