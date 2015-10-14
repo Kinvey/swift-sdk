@@ -6,7 +6,7 @@ FRAMEWORK=NonModule/$(PRODUCT_NAME).framework
 STATIC_LIB=libKinvey.a
 OUTPUT_FOLDER=build
 
-all: build
+all: build doc
 	
 build:
 	xcodebuild -configuration $(CONFIGURATION) -target $(TARGET) -sdk iphoneos
@@ -29,5 +29,11 @@ build:
 	cp -R $(CONFIGURATION)-iphonesimulator/$(MODULE) $(CONFIGURATION)-universal; \
 	lipo -create $(CONFIGURATION)-iphoneos/$(MODULE)/$(PRODUCT_NAME) $(CONFIGURATION)-iphonesimulator/$(MODULE)/$(PRODUCT_NAME) -output $(CONFIGURATION)-universal/$(MODULE)/$(PRODUCT_NAME)
 	
+doc:
+	cd ..; \
+	cd Tools; \
+	./build-doc ../KinveyKit
+	
 clean:
 	rm -Rf $(OUTPUT_FOLDER)
+	rm -Rf doc
