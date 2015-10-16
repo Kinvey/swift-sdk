@@ -51,6 +51,22 @@ deploy: pkg
 	cd ../Tools/upload-to-amazon-aws-s3; \
 	npm install; \
 	npm start
+	
+deploy-reference:
+	rm -Rf devcenter
+	git clone git@github.com:Kinvey/devcenter.git
+	cd devcenter; \
+	git remote add staging git@heroku.com:v3yk1n-devcenter.git; \
+	git remote add production git@heroku.com:kinvey-devcenter-prod.git
+	rm -R devcenter/content/reference/ios/api
+	cp -R doc/output/html devcenter/content/reference/ios
+	mv devcenter/content/reference/ios/html devcenter/content/reference/ios/api
+	cd devcenter; \
+	git add content/reference/ios/*/*; \
+	git commit -m "iOS Release Version $(VERSION)"; \
+	git push origin master; \
+	git push staging master; \
+	git push production master
 
 clean:
 	rm -Rf $(OUTPUT_FOLDER)

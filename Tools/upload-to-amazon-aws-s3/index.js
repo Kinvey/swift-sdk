@@ -20,6 +20,12 @@ var params = {
 	ContentType: 'application/zip',
 	Body: fileBuffer
 };
+
+console.log('Uploading file ' + fileName);
 s3.upload(params, function(err, data) {
-  console.log(err, data);
+	if (err) {
+		console.error(err);
+	} else {
+		console.log(data);
+	}
 });
