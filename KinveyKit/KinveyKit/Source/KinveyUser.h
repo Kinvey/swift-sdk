@@ -178,6 +178,9 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
 /** Optional email address for the user. Publicly queryable be default. */
 @property (nonatomic, copy) NSString *email;
 
+/** Optional social identity for the user. If the user logged in with a social identity (Facebook, Twitter, Google+, or LinkedIn), this object will contain a representation for the social identity.**/
+@property (nonatomic, strong) NSDictionary *socialIdentity;
+
 /** Checks if the user has verified email (by clicking the link in the email sent via `sendEmailConfirmationForUser:withCompletionBlock:`).
  @see sendEmailConfirmationForUser:withCompletionBlock:
  @since 10.1.0
