@@ -45,6 +45,7 @@ NSString* const KCSUserAttributeUsername = @"username";
 NSString* const KCSUserAttributeSurname = @"last_name";
 NSString* const KCSUserAttributeGivenname = @"first_name";
 NSString* const KCSUserAttributeEmail = @"email";
+NSString* const KCSUserAttributeSocialIdentity = @"_socialIdentity";
 NSString* const KCSUserAttributeFacebookId = @"_socialIdentity.facebook.id";
 
 #pragma mark - defines & functions
@@ -386,6 +387,7 @@ void setActive(KCSUser* user)
                       @"email" : KCSUserAttributeEmail,
                       @"givenName" : KCSUserAttributeGivenname,
                       @"surname" : KCSUserAttributeSurname,
+                      @"socialIdentity": KCSUserAttributeSocialIdentity,
                       @"metadata" : KCSEntityKeyMetadata
         };
     });
