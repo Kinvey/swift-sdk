@@ -46,12 +46,6 @@
         config.URLCache = [[NSURLCache alloc] initWithMemoryCapacity:0
                                                         diskCapacity:0
                                                             diskPath:nil];
-        
-        NSTimeInterval connectionTimeout = [KCSClient sharedClient].connectionTimeout;
-        if (connectionTimeout > 0) {
-            config.timeoutIntervalForRequest = connectionTimeout;
-        }
-        
         self.session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
     });
     return _session;

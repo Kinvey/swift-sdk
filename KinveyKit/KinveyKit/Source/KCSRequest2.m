@@ -220,7 +220,7 @@ static NSOperationQueue* kcsRequestQueue;
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
-                                                       timeoutInterval:[config.options[KCS_CONNECTION_TIMEOUT] doubleValue]];
+                                                       timeoutInterval:config.connectionTimeout];
     if (url.host) {
         [request setValue:url.host
        forHTTPHeaderField:@"Host"];

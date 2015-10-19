@@ -53,10 +53,6 @@
         
         NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
         config.protocolClasses = [KCSURLProtocol protocolClasses];
-        NSTimeInterval connectionTimeout = [KCSClient sharedClient].connectionTimeout;
-        if (connectionTimeout > 0) {
-            config.timeoutIntervalForRequest = connectionTimeout;
-        }
         _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
         
         if (_localFile) {

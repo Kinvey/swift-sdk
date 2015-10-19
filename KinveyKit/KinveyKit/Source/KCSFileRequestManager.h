@@ -20,24 +20,27 @@
 #import <Foundation/Foundation.h>
 
 #import "KCSFileOperation.h"
+#import "KCSRequestConfiguration.h"
 
 @class KCSFile;
 
 @interface KCSFileRequestManager : NSObject
 
 - (NSOperation<KCSFileOperation>*) downloadStream:(KCSFile*)intermediate
-                                fromURL:(NSURL*)url
-                    alreadyWrittenBytes:(NSNumber*)alreadyWritten
-                        completionBlock:(StreamCompletionBlock)completionBlock
-                          progressBlock:(KCSProgressBlock2)progressBlock;
+                                          fromURL:(NSURL*)url
+                              alreadyWrittenBytes:(NSNumber*)alreadyWritten
+                             requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                                  completionBlock:(StreamCompletionBlock)completionBlock
+                                    progressBlock:(KCSProgressBlock2)progressBlock;
 
 - (NSOperation<KCSFileOperation>*) uploadStream:(NSInputStream*)stream
-                               length:(NSUInteger)length
-                          contentType:(NSString*)contentType
-                                toURL:(NSURL*)url
-                      requiredHeaders:(NSDictionary*)requiredHeaders
-                      completionBlock:(StreamCompletionBlock)completionBlock
-                        progressBlock:(KCSProgressBlock2)progressBlock;
+                                         length:(NSUInteger)length
+                                    contentType:(NSString*)contentType
+                                          toURL:(NSURL*)url
+                                requiredHeaders:(NSDictionary*)requiredHeaders
+                           requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                                completionBlock:(StreamCompletionBlock)completionBlock
+                                  progressBlock:(KCSProgressBlock2)progressBlock;
 
 
 @end
