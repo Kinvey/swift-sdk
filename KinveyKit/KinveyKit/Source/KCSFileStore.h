@@ -24,6 +24,7 @@
 #import "KinveyCollection.h"
 #import "KCSBlockDefs.h"
 #import "KCSRequest.h"
+#import "KCSRequestConfiguration.h"
 
 @class KCSFile;
 @class KCSQuery;
@@ -115,6 +116,32 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
            progressBlock:(KCSProgressBlock)progressBlock;
 
 /**
+ Uploads a local file to Kinvey's file store
+ 
+ Available options:
+ 
+ * KCSFileFileName - the destination filename, if absent the source file's name will be used.
+ * KCSFileId - the destination's unique resource id, if absent, one will be generated.
+ * KCSFilePublic - set to `@(YES)` if the file it to be publicly available on the Internet.
+ * KCSFileACL - provide a `KCSMetadata` object to set the read and write permissions. By default the file will only be available to the creating user.
+ * KCSFileMimeType - the file's mime type. If absent, it will be inferred from the file extension.
+ * any other `options` fields will be set as properties on the metadata object
+ 
+ @param fileURL         a url to a local file
+ @param uploadOptions   upload options (see above)
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the upload is complete or error occurs. The `KCSFile` return object will have its `filename` and `fileId` properties set to their new values.
+ @param progressBlock   called 0+ times with intermediate progress as the file is uploaded. This only counts data transferred to the file storage service, and not the intermediate call to Kinvey to obtain the upload location.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)uploadFile:(NSURL*)fileURL
+                 options:(NSDictionary*)uploadOptions
+    requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+         completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+           progressBlock:(KCSProgressBlock)progressBlock;
+
+/**
  Uploads binary data to Kinvey's file store
  
  Available options:
@@ -135,6 +162,32 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  */
 +(KCSRequest*)uploadData:(NSData*)data
                  options:(NSDictionary*)uploadOptions
+         completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+           progressBlock:(KCSProgressBlock)progressBlock;
+
+/**
+ Uploads binary data to Kinvey's file store
+ 
+ Available options:
+ 
+ * KCSFileFileName - the destination filename, if absent, one will be generated.
+ * KCSFileId - the destination's unique resource id, if absent, one will be generated.
+ * KCSFilePublic - set to `@(YES)` if the file it to be publicly available on the Internet.
+ * KCSFileACL - provide a `KCSMetadata` object to set the read and write permissions. By default the file will only be available to the creating user.
+ * KCSFileMimeType - the file's mime type. If absent, it will be `application/octet-stream`.
+ * any other `options` fields will be set as properties on the metadata object
+ 
+ @param data the bytes to upload
+ @param uploadOptions upload options (see above)
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the upload is complete or error occurs. The `KCSFile` return object will have its `filename` and `fileId` properties set to their new values.
+ @param progressBlock called 0+ times with intermediate progress as the file is uploaded. This only counts data transferred to the file storage service, and not the intermediate call to Kinvey to obtain the upload location.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)uploadData:(NSData*)data
+                 options:(NSDictionary*)uploadOptions
+    requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
          completionBlock:(KCSFileUploadCompletionBlock)completionBlock
            progressBlock:(KCSProgressBlock)progressBlock;
 
@@ -165,6 +218,29 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
              progressBlock:(KCSProgressBlock)progressBlock;
 
 /** Downloads the specified file or files.
+ 
+ The file(s) will be saved to the `NSCachesDirectory` and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
+ 
+ Available options:
+ 
+ * KCSFileOnlyIfNewer - set to `@(YES)` to only download if the metadata has been updated after the file was last downloaded (if file exists).
+ * KCSFileFileName - the destination filename. If multiple files are specified, this must be an array with the same number of elements as requested.
+ 
+ @param idOrIds a single string file id or an array of file ids
+ @param options an optional (can be `nil`) options dictionary (see above)
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `localURL`, `filename`, `fileId`, `length`, and `mimeType` properties filled.
+ @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location. This will be represented as a percentage of overall progress.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)downloadFile:(id)idOrIds
+                   options:(NSDictionary*)options
+      requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+             progressBlock:(KCSProgressBlock)progressBlock;
+
+/** Downloads the specified file or files.
 
  __NOTE:__ If there is no matching file by the specified name, the result will be an empty `downloadedResources` array, and NOT a 404 error. This is a change of behavior from previous versions.
  
@@ -180,6 +256,24 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                    progressBlock:(KCSProgressBlock)progressBlock;
 
+/** Downloads the specified file or files.
+ 
+ __NOTE:__ If there is no matching file by the specified name, the result will be an empty `downloadedResources` array, and NOT a 404 error. This is a change of behavior from previous versions.
+ 
+ The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties.
+ 
+ @param nameOrNames a single string file name or an array of file names
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `localURL`, `filename`, `fileId`, `length`, and `mimeType` properties filled. These objects may not be in the same order
+ @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location. This will be represented as a percentage of overall progress.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)downloadFileByName:(id)nameOrNames
+            requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                 completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                   progressBlock:(KCSProgressBlock)progressBlock;
+
 /** Downloads the matching file or files.
  
  The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. 
@@ -191,6 +285,22 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 +(KCSRequest*)downloadFileByQuery:(KCSQuery*)query
+                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                    progressBlock:(KCSProgressBlock)progressBlock;
+
+/** Downloads the matching file or files.
+ 
+ The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties.
+ 
+ @param query a standard Kinvey Query object
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `localURL`, `filename`, `fileId`, `length`, and `mimeType` properties filled.
+ @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location. This will be represented as a percentage of overall progress.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)downloadFileByQuery:(KCSQuery*)query
+             requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                   completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                     progressBlock:(KCSProgressBlock)progressBlock;
 
@@ -216,6 +326,30 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
                           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                             progressBlock:(KCSProgressBlock)progressBlock;
 
+/** Downloads the specified URL.
+ 
+ The file(s) will be saved to the `NSCachesDirectory`and will be named by their `filename` properties. To override this behavior, supply a `KCSFileFileName` option to choose the file name. To keep the file in another directory, such as `NSDocumentsDirectory` (e.g. to have the file backed up) move the file after the download completes.
+ 
+ Available options:
+ 
+ * KCSFileOnlyIfNewer - set to `@(YES)` to only download if the metadata has been updated after the file was last downloaded (if file exists).
+ * KCSFileFileName - the destination filename. If no filename is provided, its name will be dervied from the filename of on the server.
+ * KCSFileResume - set to `@(YES)` to only download the remaining bytes in the file. This assumes that the server file has not changed since the previous partial download.
+ 
+ @param url a resolved GCS file URL. This request must be sucessfully sent before the `expirationTime` or the request will fail.
+ @param options an optional (can be `nil`) options dictionary (see above)
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will have `KCSFile` object with its `localURL`, `filename`, `fileId`, `length`, and `mimeType` properties filled.
+ @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)downloadFileWithResolvedURL:(NSURL*)url
+                                  options:(NSDictionary*)options
+                     requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                            progressBlock:(KCSProgressBlock)progressBlock;
+
 /** Downloads the specified file or files to memory.
  
  @param idOrIds a single string file id or an array of file ids
@@ -225,6 +359,20 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 +(KCSRequest*)downloadData:(id)idOrIds
+           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+             progressBlock:(KCSProgressBlock)progressBlock;
+
+/** Downloads the specified file or files to memory.
+ 
+ @param idOrIds a single string file id or an array of file ids
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `filename`, `fileId`, `length`, and `mimeType` properties filled. The `data` property will contain the corresponing NSData values.
+ @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location. This will be represented as a percentage of overall progress.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)downloadData:(id)idOrIds
+      requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
            completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
              progressBlock:(KCSProgressBlock)progressBlock;
 
@@ -242,6 +390,22 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                    progressBlock:(KCSProgressBlock)progressBlock;
 
+/** Downloads the specified file or files to memory.
+ 
+ __NOTE:__ If there is no matching file by the specified name, the result will be an empty `downloadedResources` array, and NOT a 404 error. This is a change of behavior from previous versions.
+ 
+ @param nameOrNames a single string file name or an array of file names
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `filename`, `fileId`, `length`, and `mimeType` properties filled.  The `data` property will contain the corresponing NSData values.
+ @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location. This will be represented as a percentage of overall progress.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)downloadDataByName:(id)nameOrNames
+            requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                 completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                   progressBlock:(KCSProgressBlock)progressBlock;
+
 /** Downloads the matching file or files to memory.
  
  @param query a standard Kinvey Query object
@@ -254,6 +418,20 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
                   completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                     progressBlock:(KCSProgressBlock)progressBlock;
 
+/** Downloads the matching file or files to memory.
+ 
+ @param query a standard Kinvey Query object
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will be `KCSFile` objects with their `filename`, `fileId`, `length`, and `mimeType` properties filled.  The `data` property will contain the corresponing NSData values.
+ @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location. This will be represented as a percentage of overall progress.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)downloadDataByQuery:(KCSQuery*)query
+             requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                    progressBlock:(KCSProgressBlock)progressBlock;
+
 /** Downloads the specified URL to memory.
  
  @param url a resolved GCS file URL. This request must be sucessfully sent before the `expirationTime` or the request will fail.
@@ -263,6 +441,20 @@ FOUNDATION_EXPORT NSString* const KCSFileStoreCollectionName;
  @since 1.18.0
  */
 +(KCSRequest*)downloadDataWithResolvedURL:(NSURL*)url
+                          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                            progressBlock:(KCSProgressBlock)progressBlock;
+
+/** Downloads the specified URL to memory.
+ 
+ @param url a resolved GCS file URL. This request must be sucessfully sent before the `expirationTime` or the request will fail.
+ @param requestConfiguration defines how the client requests should be set up by default
+ @param completionBlock called when the download(s) are complete or an error occurs. The downloadedResources array will have `KCSFile` object with its `filename`, `fileId`, `length`, and `mimeType` properties filled. The `data` property will contain the corresponing NSData values.
+ @param progressBlock called 0+ times with intermediate progress as the file is downloaded. This only counts data transferred from the file storage service, and not the intermediate call to Kinvey to obtain the drownload location.
+ @return KCSRequest object that represents the pending request made against the store. Since version 1.36.0
+ @since 1.18.0
+ */
++(KCSRequest*)downloadDataWithResolvedURL:(NSURL*)url
+                     requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                             progressBlock:(KCSProgressBlock)progressBlock;
 

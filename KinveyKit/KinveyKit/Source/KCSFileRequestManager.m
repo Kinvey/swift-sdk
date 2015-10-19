@@ -51,6 +51,7 @@ static NSOperationQueue* queue;
 - (NSOperation<KCSFileOperation>*)downloadStream:(KCSFile*)intermediate
                                          fromURL:(NSURL*)url
                              alreadyWrittenBytes:(NSNumber*)alreadyWritten
+                            requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                                  completionBlock:(StreamCompletionBlock)completionBlock
                                    progressBlock:(KCSProgressBlock2)progressBlock
 {
@@ -67,6 +68,13 @@ static NSOperationQueue* queue;
     
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+    
+    if (requestConfiguration.timeout > 0) {
+        request.timeoutInterval = requestConfiguration.timeout;
+    } else {
+        request.timeoutInterval = [KCSClient sharedClient].connectionTimeout;
+    }
+    
     [request setHTTPMethod:KCSRESTMethodGET];
     
 //    if (alreadyWritten != nil) {
@@ -119,12 +127,18 @@ static NSOperationQueue* queue;
                                    contentType:(NSString*)contentType
                                          toURL:(NSURL*)url
                                requiredHeaders:(NSDictionary*)requiredHeaders
+                          requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                                completionBlock:(StreamCompletionBlock)completionBlock
                                  progressBlock:(KCSProgressBlock2)progressBlock
 {
-    
-    
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+    
+    if (requestConfiguration.timeout > 0) {
+        request.timeoutInterval = requestConfiguration.timeout;
+    } else {
+        request.timeoutInterval = [KCSClient sharedClient].connectionTimeout;
+    }
+    
     [request setHTTPMethod:KCSRESTMethodPUT];
     [request setHTTPBodyStream:stream];
     

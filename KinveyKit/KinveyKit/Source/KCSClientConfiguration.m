@@ -55,7 +55,11 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 #define KCS_DEFAULT_HOST_PORT         @""
 #define KCS_DEFAULT_HOST_PROTOCOL     @"https"
 #define KCS_DEFAULT_HOST_DOMAIN       @"kinvey.com"
-#define KCS_DEFAULT_CONNETION_TIMEOUT @10.0 // Default timeout to 10 seconds
+
+// Default timeout to 10 seconds
+#define KCS_DEFAULT_CONNETION_TIMEOUT_RAW 10
+#define KCS_DEFAULT_CONNETION_TIMEOUT @KCS_DEFAULT_CONNETION_TIMEOUT_RAW
+
 #define KCS_DEFAULT_URL_CACHE_POLICY  @(NSURLRequestReloadIgnoringLocalAndRemoteCacheData)
 #define KCS_DEFAULT_DATE_FORMAT       @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
 
@@ -346,7 +350,7 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
     if (value && [value isKindOfClass:[NSNumber class]]) {
         return ((NSNumber*) value).doubleValue;
     }
-    return -1;
+    return KCS_DEFAULT_CONNETION_TIMEOUT_RAW;
 }
 
 -(void)setConnectionTimeout:(NSTimeInterval)connectionTimeout
