@@ -550,6 +550,7 @@
 		5725E7021AD6E2A000B506BB /* KinveyPlaygroundTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5725E7011AD6E2A000B506BB /* KinveyPlaygroundTests.swift */; };
 		5725E70E1AD6E3F100B506BB /* MICLoginPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5725E70D1AD6E3F100B506BB /* MICLoginPageViewController.swift */; };
 		5725E7181AD6E56B00B506BB /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
+		57291BA71BE1579C0066033E /* KCSJsonTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57291BA61BE1579C0066033E /* KCSJsonTest.m */; };
 		5736546F1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5736546E1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m */; };
 		573654711AE1851B00E3982B /* MLIBZ_239_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573654701AE1851B00E3982B /* MLIBZ_239_Tests.swift */; };
 		57405C761B2B9AB600238187 /* MLIBZ_326_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 57405C751B2B9AB600238187 /* MLIBZ_326_Tests.m */; };
@@ -1892,6 +1893,7 @@
 		5725E7011AD6E2A000B506BB /* KinveyPlaygroundTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinveyPlaygroundTests.swift; sourceTree = "<group>"; };
 		5725E70D1AD6E3F100B506BB /* MICLoginPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MICLoginPageViewController.swift; sourceTree = "<group>"; };
 		5725E70F1AD6E48A00B506BB /* KinveyPlayground-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyPlayground-Bridging-Header.h"; sourceTree = "<group>"; };
+		57291BA61BE1579C0066033E /* KCSJsonTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSJsonTest.m; sourceTree = "<group>"; };
 		572ACA4F1B5027F000C098F7 /* KCSFileStoreTestsSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSFileStoreTestsSwift.swift; sourceTree = "<group>"; };
 		5736546D1AE17F3B00E3982B /* MLIBZ_239_DataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLIBZ_239_DataHelper.h; sourceTree = "<group>"; };
 		5736546E1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLIBZ_239_DataHelper.m; sourceTree = "<group>"; };
@@ -2939,6 +2941,7 @@
 				57F6B88B1B1FB0EC00361C18 /* KinveyPlaygroundTests-Bridging-Header.h */,
 				5725E7011AD6E2A000B506BB /* KinveyPlaygroundTests.swift */,
 				5725E6FF1AD6E2A000B506BB /* Supporting Files */,
+				57291BA61BE1579C0066033E /* KCSJsonTest.m */,
 			);
 			path = KinveyPlaygroundTests;
 			sourceTree = "<group>";
@@ -5360,6 +5363,7 @@
 				5725E7021AD6E2A000B506BB /* KinveyPlaygroundTests.swift in Sources */,
 				57E4F1131B28EF330002342E /* KCSTryCatch.m in Sources */,
 				57DF5C361BB37FA20036EF99 /* City.swift in Sources */,
+				57291BA71BE1579C0066033E /* KCSJsonTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
