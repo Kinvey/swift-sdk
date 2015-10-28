@@ -656,6 +656,7 @@
 		57524D0D1BBC5750000D14AC /* KCSBaasAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57155E571BB6120E00A13B97 /* KCSBaasAPI.swift */; settings = {ASSET_TAGS = (); }; };
 		575675011AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575675001AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift */; };
 		575675051AF2E70400A7C0DB /* MLIBZ_256_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575675041AF2E70400A7C0DB /* MLIBZ_256_Tests.swift */; };
+		575D1E901BCED49100C5EF54 /* config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 96FDEE0E1B9F6EE0008CC503 /* config.plist */; settings = {ASSET_TAGS = (); }; };
 		575F925A1B87A56D006FB6FB /* KCSTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5718C8531B7E6EE2008CFE49 /* KCSTestCase.m */; };
 		575F925C1B87A56D006FB6FB /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
 		575F925D1B87A56D006FB6FB /* libKinvey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C8DAF91AB8C968007F2E42 /* libKinvey.a */; };
@@ -5016,6 +5017,7 @@
 			files = (
 				5740AAC01B866B3700F153A2 /* TestConfig.plist in Resources */,
 				5740AAC11B866B3700F153A2 /* mavericks.jpg in Resources */,
+				575D1E901BCED49100C5EF54 /* config.plist in Resources */,
 				5740AAC21B866B3700F153A2 /* InfoPlist.strings in Resources */,
 				5740AAC31B866B3700F153A2 /* video.mp4 in Resources */,
 				5740AAC41B866B3700F153A2 /* 1px.png in Resources */,
