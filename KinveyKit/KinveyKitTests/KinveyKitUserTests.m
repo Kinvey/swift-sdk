@@ -22,7 +22,6 @@
 #import "KinveyUser.h"
 #import "KCSClient.h"
 #import "KinveyHTTPStatusCodes.h"
-#import "KCS_SBJson.h"
 #import "KinveyPing.h"
 #import "KCSLogManager.h"
 #import "KCSAuthCredential.h"
@@ -52,8 +51,6 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
 @property (nonatomic, copy) KCSUserFailureAction onFailure;
 @property (nonatomic, copy) KCSEntitySuccessAction onEntitySuccess;
 @property (nonatomic, copy) KCSEntityFailureAction onEntityFailure;
-@property (nonatomic, retain) KCS_SBJsonParser *parser;
-@property (nonatomic, retain) KCS_SBJsonWriter *writer;
 
 @end
 
@@ -68,9 +65,6 @@ typedef BOOL(^KCSEntityFailureAction)(id, NSError *);
     _onEntitySuccess = [^(id u, NSObject *obj){ return NO; } copy];
     _onEntityFailure = [^(id u, NSError *error){ return NO; } copy];
     [TestUtils justInitServer];
-
-    _parser = [[KCS_SBJsonParser alloc] init];
-    _writer = [[KCS_SBJsonWriter alloc] init];
 }
 
 - (void)tearDown

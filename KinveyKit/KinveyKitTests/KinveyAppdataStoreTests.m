@@ -24,8 +24,6 @@
 
 #import "TestUtils.h"
 
-#import "KCS_SBJson.h"
-
 @implementation KinveyAppdataStoreTests
 
 - (void) setUp

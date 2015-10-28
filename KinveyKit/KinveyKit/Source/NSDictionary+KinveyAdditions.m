@@ -44,7 +44,7 @@
 
 - (NSString*) escapedJSON
 {
-    NSString* jsonStr = [self JSONRepresentation];
+    NSString* jsonStr = [self kcsJSONRepresentation];
     return [NSString stringByPercentEncodingString:jsonStr];
 }
 
@@ -90,6 +90,18 @@
         [result deleteCharactersInRange:NSMakeRange(result.length - 1, 1)];
     }
     return result;
+}
+
+-(NSString *)kcsJSONRepresentation
+{
+    NSData* data = [NSJSONSerialization dataWithJSONObject:self
+                                                   options:0
+                                                     error:nil];
+    if (data) {
+        return [[NSString alloc] initWithData:data
+                                     encoding:NSUTF8StringEncoding];
+    }
+    return nil;
 }
 
 @end
