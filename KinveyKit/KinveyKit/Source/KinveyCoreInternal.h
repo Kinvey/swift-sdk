@@ -54,7 +54,6 @@
 #pragma mark - helpers
 
 #import "EXTScope.h"
-#import "KCS_SBJson.h"
 
 #define KCS_CONST_IMPL NSString* const
 #define KCS_BREAK NSAssert(NO, @"BROKEN");
