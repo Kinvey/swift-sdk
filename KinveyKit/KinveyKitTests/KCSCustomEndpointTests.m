@@ -25,12 +25,6 @@
 
 @implementation KCSCustomEndpointTests
 
-- (void)setUp
-{
-    BOOL loaded = [TestUtils setUpKinveyUnittestBackend:self];
-    XCTAssertTrue(loaded, @"should be loaded");
-}
-
 //- (void) testCustomEndpoint
 //{
 //    XCTestExpectation* expectationCallEndpoint = [self expectationWithDescription:@"callEndpoint"];
@@ -103,6 +97,29 @@
     };
     
     XCTAssertThrowsSpecificNamed(block(), NSException, NSInvalidArgumentException, @"should be an exception");
+}
+
+-(void)testNoUser
+{
+    [self setupKCS];
+    
+    if ([KCSUser activeUser]) {
+        [[KCSUser activeUser] logout];
+    }
+    
+    XCTAssertNil([KCSUser activeUser]);
+    
+    __weak XCTestExpectation* expectationCustomEndpoint = [self expectationWithDescription:@"customEndpoint"];
+    [KCSCustomEndpoints callEndpoint:@"jeppe"
+                              params:nil
+                     completionBlock:^(id results, NSError *error)
+     {
+         XCTAssertNil(results);
+         XCTAssertNotNil(error);
+         
+         [expectationCustomEndpoint fulfill];
+     }];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 -(void)testCustomResponseBody
