@@ -37,8 +37,6 @@
 
 @interface KCSEntityPersistence ()
 @property (nonatomic, strong) KCS_FMDatabaseQueue* db;
-@property (nonatomic, strong) KCS_SBJsonWriter* jsonWriter;
-@property (nonatomic, strong) KCS_SBJsonParser* jsonParser;
 @end
 
 @interface KCSCacheValueDB : NSObject
@@ -76,8 +74,6 @@
     self = [super init];
     if (self) {
         _persistenceId = key;
-        _jsonWriter = [[KCS_SBJsonWriter alloc] init];
-        _jsonParser = [[KCS_SBJsonParser alloc] init];
         
         [self initDB];
     }
@@ -256,11 +252,15 @@
 - (BOOL) setClientMetadata:(NSDictionary*)metadata
 {
     NSError* error = nil;
-    NSString* metaStr = [self.jsonWriter stringWithObject:metadata error:&error];
+    NSData* data = [NSJSONSerialization dataWithJSONObject:metadata
+                                                   options:0
+                                                     error:&error];
     if (error != nil) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", metadata);
         return NO;
     }
+    NSString* metaStr = [[NSString alloc] initWithData:data
+                                              encoding:NSUTF8StringEncoding];
     __block BOOL e;
     [_db inDatabase:^(KCS_FMDatabase *db) {
         e = [db executeUpdate:@"REPLACE INTO clientmetadata VALUES (:key, :metadata)" withArgumentsInArray:@[@"client", metaStr]];
@@ -305,17 +305,25 @@
     }
     
     NSError* error = nil;
-    NSString* entityStr = [self.jsonWriter stringWithObject:entity error:&error];
-    if (error != nil) {
+    NSData* data = [NSJSONSerialization dataWithJSONObject:entity
+                                                   options:0
+                                                     error:&error];
+    if (error) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", entity);
         DBAssert(NO, @"No object");
     }
+    NSString* entityStr = [[NSString alloc] initWithData:data
+                                                encoding:NSUTF8StringEncoding];
 
-    NSString* headerStr = [self.jsonWriter stringWithObject:headers error:&error];
-    if (error != nil) {
+    data = [NSJSONSerialization dataWithJSONObject:headers
+                                           options:0
+                                             error:&error];
+    if (error) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", headers);
         DBAssert(NO, @"No object");
     }
+    NSString* headerStr = [[NSString alloc] initWithData:data
+                                                encoding:NSUTF8StringEncoding];
     
     NSString* routeKey = [self tableForRoute:route collection:collection];
     
@@ -346,11 +354,15 @@
     DBAssert(key, @"should save with a key");
     
     NSError* error = nil;
-    NSString* headerStr = [self.jsonWriter stringWithObject:headers error:&error];
+    NSData* data = [NSJSONSerialization dataWithJSONObject:headers
+                                                   options:0
+                                                     error:&error];
     if (error != nil) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", headers);
         DBAssert(NO, @"No object");
     }
+    NSString* headerStr = [[NSString alloc] initWithData:data
+                                                encoding:NSUTF8StringEncoding];
     
     NSString* routeKey = [self tableForRoute:route collection:collection];
     
@@ -379,7 +391,9 @@
 - (NSDictionary*) dictObjForJson:(NSString*)s
 {
     NSError* error = nil;
-    NSDictionary* obj = [self.jsonParser objectWithString:s error:&error];
+    NSDictionary* obj = [NSJSONSerialization JSONObjectWithData:[s dataUsingEncoding:NSUTF8StringEncoding]
+                                                        options:0
+                                                          error:&error];
     if (error) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"DB deserialization error %@", error);
     }
@@ -490,12 +504,16 @@
         DBAssert(YES, @"No id!");
     }
     NSError* error = nil;
-    NSString* objStr = [self.jsonWriter stringWithObject:entity error:&error];
+    NSData* data = [NSJSONSerialization dataWithJSONObject:entity
+                                                   options:0
+                                                     error:&error];
     if (error != nil) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", entity);
         DBAssert(YES, @"No object");
         return NO;
     }
+    NSString* objStr = [[NSString alloc] initWithData:data
+                                             encoding:NSUTF8StringEncoding];
     
     KCSLogDebug(KCS_LOG_CONTEXT_DATA, @"Insert/update %@/%@", _persistenceId, _id);
     NSDictionary* valDictionary = @{@"id":_id,
@@ -596,7 +614,11 @@
     }
     
     NSError* error = nil;
-    NSString* jsonStr = [self.jsonWriter stringWithObject:theseIds error:&error];
+    NSData* data = [NSJSONSerialization dataWithJSONObject:theseIds
+                                                   options:0
+                                                     error:&error];
+    NSString* jsonStr = [[NSString alloc] initWithData:data
+                                              encoding:NSUTF8StringEncoding];
     if (error) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", theseIds);
     }
@@ -631,7 +653,9 @@
 
     if (result) {
         NSError* error = nil;
-        ids = [self.jsonParser objectWithString:result error:&error];
+        ids = [NSJSONSerialization JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
+                                              options:0
+                                                error:&error];
         if (result != nil && error != nil) {
             KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error converting id array string into array: %@", error);
         }

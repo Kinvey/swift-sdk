@@ -25,8 +25,6 @@
 //TODO: remove core location as dependency injection
 #import <CoreLocation/CoreLocation.h>
 
-#import "KCS_SBJson.h"
-
 #import "KCSPropertyUtil.h"
 
 #import "KinveyPersistable.h"

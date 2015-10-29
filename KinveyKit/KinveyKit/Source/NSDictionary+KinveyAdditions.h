@@ -26,5 +26,6 @@
 - (NSString*)jsonString;
 - (NSDictionary*) invert;
 -(NSString*)queryString;
+-(NSString*)kcsJSONRepresentation;
 
 @end
