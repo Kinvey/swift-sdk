@@ -24,7 +24,6 @@
 #import "KCSFile.h"
 #import "KinveyEntity.h"
 
-#import "KCS_SBJson.h"
 #import "KCSLogManager.h"
 
 
@@ -197,8 +196,9 @@
 double countBytesE(KCSSerializedObject* serializedObj)
 {
     NSDictionary *dictionaryToMap = serializedObj.dataToSerialize;
-    KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
-    NSData* data = [writer dataWithObject:dictionaryToMap];
+    NSData* data = [NSJSONSerialization dataWithJSONObject:dictionaryToMap
+                                                   options:0
+                                                     error:nil];
     double bytecount = [data length];
     return bytecount;
 }
@@ -207,8 +207,9 @@ double countBytesRf(id referenceObj)
 {
     KCSSerializedObject* serializedObj = [KCSObjectMapper makeResourceEntityDictionaryFromObject:referenceObj forCollection:@"" error:NULL];
     NSDictionary *dictionaryToMap = serializedObj.dataToSerialize;
-    KCS_SBJsonWriter *writer = [[KCS_SBJsonWriter alloc] init];
-    NSData* data = [writer dataWithObject:dictionaryToMap];
+    NSData* data = [NSJSONSerialization dataWithJSONObject:dictionaryToMap
+                                                   options:0
+                                                     error:nil];
     double bytecount = [data length];
     return bytecount;
 }

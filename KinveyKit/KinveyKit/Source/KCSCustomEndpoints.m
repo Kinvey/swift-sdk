@@ -23,7 +23,6 @@
 #import "KinveyUser.h"
 
 #import "KCSRequest2.h"
-#import "KCS_SBJson.h"
 #import "KCSNetworkResponse.h"
 #import "KCSRequest+Private.h"
 #import "KinveyErrorCodes.h"
@@ -66,10 +65,12 @@
     
     ifNil(params, @{});
     
-    KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
-    NSData* data = [writer dataWithObject:params];
+    NSError* error = nil;
+    NSData* data = [NSJSONSerialization dataWithJSONObject:params
+                                                   options:0
+                                                     error:&error];
     if (!data) {
-        [[NSException exceptionWithName:NSInvalidArgumentException reason:writer.error userInfo:nil] raise];
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:error.localizedFailureReason userInfo:nil] raise];
     }
     
     request.body = params;
