@@ -204,9 +204,17 @@ return x; \
 
 #pragma mark - Querying/Fetching
 //for overriding by subclasses (simpler than strategy, for now)
-- (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources
+-(id)manufactureNewObject:(NSDictionary*)jsonDict
+           resourcesOrNil:(NSMutableDictionary*)resources
 {
     return [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:jsonDict];
+}
+
+-(id)manufactureNewObject:(NSDictionary*)jsonDict
+           resourcesOrNil:(NSMutableDictionary*)resources
+                   object:(id*)obj
+{
+    return [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:jsonDict object:obj];
 }
 
 - (NSString*) getObjIdFromObject:(id)object completionBlock:(KCSCompletionBlock)completionBlock
@@ -235,8 +243,34 @@ return x; \
     return theId;
 }
 
+-(void)handleLoadResponse:(KCSNetworkResponse*)response
+                    error:(NSError*)error
+          completionBlock:(KCSCompletionBlock)completionBlock
+{
+    [self handleLoadResponse:response
+                       error:error
+             completionBlock:completionBlock
+               requestObject:nil];
+}
 
-- (void) handleLoadResponse:(KCSNetworkResponse*)response error:(NSError*)error completionBlock:(KCSCompletionBlock)completionBlock
+-(BOOL)isMutableObject:(id)object
+{
+    if (object) {
+        if ([object isKindOfClass:[NSDictionary class]] && [object isKindOfClass:[NSMutableDictionary class]]) {
+            return YES;
+        } else if ([object isKindOfClass:[NSArray class]]) {
+            return NO;
+        } else {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+-(void)handleLoadResponse:(KCSNetworkResponse*)response
+                    error:(NSError*)error
+          completionBlock:(KCSCompletionBlock)completionBlock
+            requestObject:(id)requestObject
 {
     if (response) NSAssert(![NSThread isMainThread], @"%s should not run in the main thread", __FUNCTION__);
     if (error) {
@@ -258,7 +292,7 @@ return x; \
             NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:itemCount];
             for (NSDictionary* jsonDict in jsonArray) {
                 NSMutableDictionary* resources = [NSMutableDictionary dictionary];
-                id newobj = [self manufactureNewObject:jsonDict resourcesOrNil:resources];
+                id newobj = [self manufactureNewObject:jsonDict resourcesOrNil:resources object:[self isMutableObject:requestObject] ? &requestObject : nil];
                 [returnObjects addObject:newobj];
                 NSUInteger resourceCount = resources.count;
                 if ( resourceCount > 0 ) {
@@ -391,7 +425,10 @@ return x; \
                 NSString* route = [self.backingCollection route];
                 
                 KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-                    [self handleLoadResponse:response error:error completionBlock:completionBlock];
+                    [self handleLoadResponse:response
+                                       error:error
+                             completionBlock:completionBlock
+                               requestObject:objectID];
                 }
                                                                     route:route
                                                                   options:@{KCSRequestLogMethod}
