@@ -256,8 +256,8 @@ return x; \
 -(BOOL)isMutableObject:(id)object
 {
     if (object) {
-        if ([object isKindOfClass:[NSDictionary class]] && [object isKindOfClass:[NSMutableDictionary class]]) {
-            return YES;
+        if ([object isKindOfClass:[NSDictionary class]]) {
+            return [object isKindOfClass:[NSMutableDictionary class]];
         } else if ([object isKindOfClass:[NSArray class]]) {
             return NO;
         } else {
