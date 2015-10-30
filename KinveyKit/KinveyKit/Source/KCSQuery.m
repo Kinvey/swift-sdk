@@ -20,7 +20,6 @@
 
 #import "KCSQuery.h"
 #import "KCSLogManager.h"
-#import "KCS_SBJson.h"
 #import "NSString+KinveyAdditions.h"
 #import "NSArray+KinveyAdditions.h"
 #import "KinveyPersistable.h"
@@ -31,6 +30,7 @@
 #import "KCSMetadata.h"
 #import "NSDate+ISO8601.h"
 #import "KCSMutableOrderedDictionary.h"
+#import "NSDictionary+KinveyAdditions.h"
 
 //http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24type
 typedef enum KCSQueryType : NSUInteger {
@@ -150,7 +150,6 @@ typedef enum KCSQueryType : NSUInteger {
 // Private interface
 @interface KCSQuery ()
 @property (nonatomic, readwrite, copy) NSMutableDictionary *query;
-@property (nonatomic, strong) KCS_SBJsonWriter *JSONwriter;
 @property (nonatomic, strong, readwrite) NSArray *sortModifiers;
 @property (nonatomic, strong) NSArray* referenceFieldsToResolve;
 @property (nonatomic, strong) KCSQueryTTLModifier* ttlModifier;
@@ -377,7 +376,6 @@ NSString * KCSConditionalStringFromEnum(KCSQueryConditional conditional)
 {
     self = [super init];
     if (self){
-        _JSONwriter = [[KCS_SBJsonWriter alloc] init];
         _query = [NSMutableDictionary dictionary];
         _sortModifiers = @[];
         _referenceFieldsToResolve = @[];
@@ -819,12 +817,14 @@ BOOL kcsIsOperator(NSString* queryField)
     if ([self hasReferences]) {
         [_query append:@"._id" ontoKeySet:self.referenceFieldsToResolve recursive:YES];
     }
-    return [d JSONRepresentation];
+    return [d kcsJSONRepresentation];
 }
 
 - (NSData *)UTF8JSONStringRepresentation
 {
-    return [self.JSONwriter dataWithObject:self.query];
+    return [NSJSONSerialization dataWithJSONObject:self.query
+                                           options:0
+                                             error:nil];
 }
 
 - (NSString *)parameterStringRepresentation
@@ -880,9 +880,9 @@ BOOL kcsIsOperator(NSString* queryField)
         [dict setValue:direction forKey:sortKey.field];
     }
     
-    KCSLogDebug(@"Sort Keys: %@", [NSString stringWithFormat:@"sort=%@", [dict JSONRepresentation]]);
+    KCSLogDebug(@"Sort Keys: %@", [NSString stringWithFormat:@"sort=%@", [dict kcsJSONRepresentation]]);
     
-    return [NSString stringWithFormat:@"sort=%@", [NSString stringByPercentEncodingString:[dict JSONRepresentation]]];
+    return [NSString stringWithFormat:@"sort=%@", [NSString stringByPercentEncodingString:[dict kcsJSONRepresentation]]];
     
 }
 

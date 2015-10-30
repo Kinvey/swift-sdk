@@ -31,7 +31,6 @@
 #import "KCSLogManager.h"
 #import "KCSFile.h"
 #import "KCSFileStore.h"
-#import "KCS_SBJson.h"
 
 @interface HS1789 : NSObject <KCSPersistable>
 @property (nonatomic, copy) NSMutableSet* users;
@@ -276,8 +275,12 @@
     XCTAssertTrue([ffile isKindOfClass:[KCSFile class]], @"");
     KTAssertCount(2, metaObj.resourcesToSave);
     
-    NSData* serialized = [[[KCS_SBJsonWriter alloc] init] dataWithObject:jsonData];
-    id deserialized = [[[KCS_SBJsonParser alloc] init] objectWithData:serialized];
+    NSData* serialized = [NSJSONSerialization dataWithJSONObject:jsonData
+                                                         options:0
+                                                           error:nil];
+    id deserialized = [NSJSONSerialization JSONObjectWithData:serialized
+                                                      options:0
+                                                        error:nil];
     
     NSMutableDictionary* resources = [NSMutableDictionary dictionary];
     TestObject* made = [KCSObjectMapper makeObjectWithResourcesOfType:[TestObject class] withData:deserialized withResourceDictionary:resources];

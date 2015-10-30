@@ -47,7 +47,9 @@
     KCSNetworkResponse* response = [[KCSNetworkResponse alloc] init];
     response.code = code;
     if ([data isKindOfClass:[NSData class]] == NO) {
-        data = [[[KCS_SBJsonWriter alloc] init] dataWithObject:data];
+        data = [NSJSONSerialization dataWithJSONObject:data
+                                               options:0
+                                                 error:nil];
     }
     response.jsonData = data;
     return response;
@@ -91,16 +93,6 @@
     return error;
 }
 
-- (NSError*) errorForParser:(KCS_SBJsonParser*)parser
-{
-    NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
-    setIfValNotNil(userInfo[NSURLErrorFailingURLErrorKey], self.originalURL);
-    setIfValNotNil(userInfo[kKCSRequestId], [self requestId]);
-    setIfValNotNil(userInfo[NSLocalizedDescriptionKey], parser.error);
-    
-    return [NSError createKCSError:KCSServerErrorDomain code:KCSInvalidJSONFormatError userInfo:userInfo];
-}
-
 - (NSString*) stringValue
 {
     return [[NSString alloc] initWithData:self.jsonData encoding:NSUTF8StringEncoding];
@@ -108,13 +100,16 @@
 
 - (id) jsonResponseValue:(NSError**) anError format:(NSStringEncoding)format
 {
-    KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
     NSString* string = [[NSString alloc] initWithData:self.jsonData encoding:format];
-    NSDictionary *jsonResponse = [parser objectWithData:[string dataUsingEncoding:NSUTF8StringEncoding]];
-    if (parser.error) {
-        KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"JSON Serialization retry failed: %@", parser.error);
+    NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSError* error = nil;
+    NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data
+                                                                 options:0
+                                                                   error:&error];
+    if (error) {
+        KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"JSON Serialization retry failed: %@", error);
         if (anError != NULL) {
-            *anError = [self errorForParser:parser];
+            *anError = error;
         }
     }
     return jsonResponse[kResultsKey];
@@ -129,22 +124,19 @@
         return nil;
     }
     //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
-    KCS_SBJsonParser *parser = [[KCS_SBJsonParser alloc] init];
-    NSDictionary *jsonResponse = [[parser objectWithData:self.jsonData] copy];
+    NSError* error = nil;
+    NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:self.jsonData
+                                                                 options:0
+                                                                   error:&error];
     NSObject* jsonObj = nil;
     if (![jsonResponse isKindOfClass:[NSDictionary class]]) {
         if (anError) {
             *anError = [NSError createKCSErrorWithReason:@"Kinvey requires a JSON Object as response body"];
         }
-    } else if (parser.error) {
-        KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"JSON Serialization failed: %@", parser.error);
-        if ([parser.error isEqualToString:@"Broken Unicode encoding"]) {
-            NSObject* reevaluatedObject = [self jsonResponseValue:anError format:NSASCIIStringEncoding];
-            return reevaluatedObject;
-        } else {
-            if (anError != NULL) {
-                *anError = [self errorForParser:parser];
-            }
+    } else if (error) {
+        KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"JSON Serialization failed: %@", error);
+        if (anError != NULL) {
+            *anError = error;
         }
     } else {
         jsonObj = jsonResponse[kResultsKey];

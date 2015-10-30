@@ -7,3 +7,5 @@ devtools
 DocTemplates
 KinveyKit/Documents
 build
+Tools/upload-to-amazon-aws-s3/node_modules
+Tools/kinvey-dump/node_modules

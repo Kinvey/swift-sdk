@@ -23,9 +23,9 @@
 #import "KinveyUser.h"
 
 #import "KCSRequest2.h"
-#import "KCS_SBJson.h"
 #import "KCSNetworkResponse.h"
 #import "KCSRequest+Private.h"
+#import "KinveyErrorCodes.h"
 
 @implementation KCSCustomEndpoints
 
@@ -36,8 +36,14 @@
     NSParameterAssert(endpoint);
     NSParameterAssert(completionBlock);
     SWITCH_TO_MAIN_THREAD_CUSTOM_ENDPOINT_BLOCK(completionBlock);
-    if ([KCSUser activeUser] == nil) {
-        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"Active User is `nil`. Log-in before calling custom endpoints" userInfo:nil] raise];
+    if (![KCSUser activeUser]) {
+        NSString* reason = @"Active User is `nil`. Log-in before calling custom endpoints";
+        NSError* error = [NSError errorWithDomain:KCSErrorDomain
+                                             code:0
+                                         userInfo:@{NSLocalizedDescriptionKey : reason,
+                                                    NSLocalizedFailureReasonErrorKey : reason,
+                                                    NSLocalizedRecoverySuggestionErrorKey : reason}];
+        completionBlock(nil, error);
     }
     
     KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
@@ -59,10 +65,12 @@
     
     ifNil(params, @{});
     
-    KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
-    NSData* data = [writer dataWithObject:params];
+    NSError* error = nil;
+    NSData* data = [NSJSONSerialization dataWithJSONObject:params
+                                                   options:0
+                                                     error:&error];
     if (!data) {
-        [[NSException exceptionWithName:NSInvalidArgumentException reason:writer.error userInfo:nil] raise];
+        [[NSException exceptionWithName:NSInvalidArgumentException reason:error.localizedFailureReason userInfo:nil] raise];
     }
     
     request.body = params;

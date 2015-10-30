@@ -149,11 +149,19 @@ static NSMutableSet* _ongoingDownloads;
                                requiredHeaders:(NSDictionary*)requiredHeaders
                                     uploadFile:(KCSFile*)uploadFile
                                        options:(NSDictionary*)options
+                          requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
                                completionBlock:(KCSFileUploadCompletionBlock)completionBlock
                                  progressBlock:(KCSProgressBlock)progressBlock
 {
     KCSFileRequestManager* fileRequest = [[KCSFileRequestManager alloc] init];
-    return [fileRequest uploadStream:stream length:uploadFile.length contentType:uploadFile.mimeType toURL:url requiredHeaders:requiredHeaders completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
+    return [fileRequest uploadStream:stream
+                              length:uploadFile.length
+                         contentType:uploadFile.mimeType
+                               toURL:url
+                     requiredHeaders:requiredHeaders
+                requestConfiguration:requestConfiguration
+                     completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
+    {
         uploadFile.bytesWritten = [returnInfo[kBytesWritten] longLongValue];
         uploadFile.remoteURL = url;
         completionBlock(uploadFile, error);
@@ -164,16 +172,44 @@ static NSMutableSet* _ongoingDownloads;
     }];
 }
 
-+(NSOperation<KCSFileOperation>*)_uploadData:(NSData*)data toURL:(NSURL*)url requiredHeaders:(NSDictionary*)requiredHeaders uploadFile:(KCSFile*)uploadFile options:(NSDictionary*)options completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++(NSOperation<KCSFileOperation>*)_uploadData:(NSData*)data
+                                       toURL:(NSURL*)url
+                             requiredHeaders:(NSDictionary*)requiredHeaders
+                                  uploadFile:(KCSFile*)uploadFile
+                                     options:(NSDictionary*)options
+                        requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+                             completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+                               progressBlock:(KCSProgressBlock)progressBlock
 {
     NSInputStream* stream = [NSInputStream inputStreamWithData:data];
-    return [self _uploadStream:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
+    return [self _uploadStream:stream
+                         toURL:url
+               requiredHeaders:requiredHeaders
+                    uploadFile:uploadFile
+                       options:options
+          requestConfiguration:requestConfiguration
+               completionBlock:completionBlock
+                 progressBlock:progressBlock];
 }
 
-+(NSOperation<KCSFileOperation>*)_uploadFile:(NSURL*)localFile toURL:(NSURL*)url requiredHeaders:(NSDictionary*)requiredHeaders uploadFile:(KCSFile*)uploadFile options:(NSDictionary*)options completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++(NSOperation<KCSFileOperation>*)_uploadFile:(NSURL*)localFile
+                                       toURL:(NSURL*)url
+                             requiredHeaders:(NSDictionary*)requiredHeaders
+                                  uploadFile:(KCSFile*)uploadFile
+                                     options:(NSDictionary*)options
+                        requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+                             completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+                               progressBlock:(KCSProgressBlock)progressBlock
 {
     NSInputStream* stream = [NSInputStream inputStreamWithURL:localFile];
-    return [self _uploadStream:stream toURL:url requiredHeaders:requiredHeaders uploadFile:uploadFile options:options completionBlock:completionBlock progressBlock:progressBlock];
+    return [self _uploadStream:stream
+                         toURL:url
+               requiredHeaders:requiredHeaders
+                    uploadFile:uploadFile
+                       options:options
+          requestConfiguration:requestConfiguration
+               completionBlock:completionBlock
+                 progressBlock:progressBlock];
 }
 
 + (KCSRequest2*) _getUploadLoc:(NSMutableDictionary *)options completion:(KCSRequestCompletionBlock)completion apiMethod:(NSString*)apiMethod
@@ -233,6 +269,19 @@ KCSFile* fileFromResults(NSDictionary* results)
          completionBlock:(KCSFileUploadCompletionBlock)completionBlock
            progressBlock:(KCSProgressBlock)progressBlock
 {
+    return [self uploadData:data
+                    options:uploadOptions
+       requestConfiguration:nil
+            completionBlock:completionBlock
+              progressBlock:progressBlock];
+}
+
++(KCSRequest*)uploadData:(NSData *)data
+                 options:(NSDictionary *)uploadOptions
+    requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+         completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+           progressBlock:(KCSProgressBlock)progressBlock
+{
     NSParameterAssert(data);
     NSParameterAssert(completionBlock);
     SWITCH_TO_MAIN_THREAD_FILE_UPLOAD_BLOCK(completionBlock);
@@ -260,7 +309,14 @@ KCSFile* fileFromResults(NSDictionary* results)
                 if (url) {
                     KCSFile* uploadFile = fileFromResults(results);
                     NSDictionary* requiredHeaders = results[kRequiredHeaders];
-                    fileRequest.fileOperation = [self _uploadData:data toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
+                    fileRequest.fileOperation = [self _uploadData:data
+                                                            toURL:[NSURL URLWithString:url]
+                                                  requiredHeaders:requiredHeaders
+                                                       uploadFile:uploadFile
+                                                          options:opts
+                                             requestConfiguration:requestConfiguration
+                                                  completionBlock:completionBlock
+                                                    progressBlock:progressBlock];
                 } else {
                     NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:response.requestId];
                     completionBlock(nil, error);
@@ -274,6 +330,19 @@ KCSFile* fileFromResults(NSDictionary* results)
 
 +(KCSRequest*)uploadFile:(NSURL*)fileURL
                  options:(NSDictionary*)uploadOptions
+         completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+           progressBlock:(KCSProgressBlock)progressBlock
+{
+    return [self uploadFile:fileURL
+                    options:uploadOptions
+       requestConfiguration:nil
+            completionBlock:completionBlock
+              progressBlock:progressBlock];
+}
+
++(KCSRequest*)uploadFile:(NSURL*)fileURL
+                 options:(NSDictionary*)uploadOptions
+    requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
          completionBlock:(KCSFileUploadCompletionBlock)completionBlock
            progressBlock:(KCSProgressBlock)progressBlock
 {
@@ -323,7 +392,14 @@ KCSFile* fileFromResults(NSDictionary* results)
                     uploadFile.localURL = fileURL;
                     NSDictionary* requiredHeaders = results[kRequiredHeaders];
                     
-                    fileRequest.fileOperation = [self _uploadFile:fileURL toURL:[NSURL URLWithString:url] requiredHeaders:requiredHeaders uploadFile:uploadFile options:opts completionBlock:completionBlock progressBlock:progressBlock];
+                    fileRequest.fileOperation = [self _uploadFile:fileURL
+                                                            toURL:[NSURL URLWithString:url]
+                                                  requiredHeaders:requiredHeaders
+                                                       uploadFile:uploadFile
+                                                          options:opts
+                                             requestConfiguration:requestConfiguration
+                                                  completionBlock:completionBlock
+                                                    progressBlock:progressBlock];
                 } else {
                     NSError* error = [KCSErrorUtilities createError:nil description:[NSString stringWithFormat:@"Did not get an _uploadURL id:%@", results[KCSFileId]] errorCode:KCSFileStoreLocalFileError domain:KCSFileStoreErrorDomain requestId:response.requestId];
                     completionBlock(nil, error);
@@ -343,6 +419,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                                         mimeType:(NSString*)mimeType
                                      onlyIfNewer:(BOOL)onlyIfNewer
                                  downloadedBytes:(NSNumber*)bytes
+                            requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                                    progressBlock:(KCSProgressBlock)progressBlock
 {
@@ -385,11 +462,28 @@ KCSFile* fileFromResults(NSDictionary* results)
                                 completionBlock(@[intermediateFile], nil);
                             } else {
                                 //redownload the file
-                                [self _downloadToFile:localFile fromURL:url fileId:fileId filename:filename mimeType:mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:completionBlock progressBlock:progressBlock];
+                                [self _downloadToFile:localFile
+                                              fromURL:url
+                                               fileId:fileId
+                                             filename:filename
+                                             mimeType:mimeType
+                                          onlyIfNewer:NO
+                                      downloadedBytes:nil
+                                 requestConfiguration:requestConfiguration
+                                      completionBlock:completionBlock progressBlock:progressBlock];
                             }
                         } else {
                             // do download the whole if we can't determine the server lmt (assume it's new)
-                            [self _downloadToFile:localFile fromURL:url fileId:fileId filename:filename mimeType:mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:completionBlock progressBlock:progressBlock];
+                            [self _downloadToFile:localFile
+                                          fromURL:url
+                                           fileId:fileId
+                                         filename:filename
+                                         mimeType:mimeType
+                                      onlyIfNewer:NO
+                                  downloadedBytes:nil
+                             requestConfiguration:requestConfiguration
+                                  completionBlock:completionBlock
+                                    progressBlock:progressBlock];
                         }
                     }];
                     return nil; // stop here, otherwise keep doing the righteous path
@@ -404,9 +498,10 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     KCSFileRequestManager* fileRequest = [[KCSFileRequestManager alloc] init];
     return [fileRequest downloadStream:intermediateFile
-                        fromURL:url
-            alreadyWrittenBytes:bytes
-                completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
+                               fromURL:url
+                   alreadyWrittenBytes:bytes
+                  requestConfiguration:requestConfiguration
+                       completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
     {
         [_ongoingDownloads removeObject:fileId];
         if (intermediateFile.mimeType == nil && returnInfo[KCSFileMimeType] != nil) {
@@ -440,6 +535,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                                           fileId:(NSString*)fileId
                                         filename:(NSString*)filename
                                         mimeType:(NSString*)mimeType
+                            requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                                    progressBlock:(KCSProgressBlock)progressBlock
 {
@@ -464,7 +560,12 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     KCSLogTrace(@"Download location found, downloading file from: %@", url);
     KCSFileRequestManager* fileRequest = [[KCSFileRequestManager alloc] init];
-    return [fileRequest downloadStream:intermediateFile fromURL:url alreadyWrittenBytes:nil completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error) {
+    return [fileRequest downloadStream:intermediateFile
+                               fromURL:url
+                   alreadyWrittenBytes:nil
+                  requestConfiguration:requestConfiguration
+                       completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
+    {
         [_ongoingDownloads removeObject:fileId];
         
         if (error) {
@@ -521,7 +622,12 @@ KCSFile* fileFromResults(NSDictionary* results)
     }
 }
 
-+(KCSRequest*)_downloadFile:(NSString*)toFilename fileId:(NSString*)fileId options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)_downloadFile:(NSString*)toFilename
+                     fileId:(NSString*)fileId
+                    options:(NSDictionary*)options
+       requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+            completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+              progressBlock:(KCSProgressBlock)progressBlock
 {
     __block NSString* destinationName = toFilename;
     return [self _getDownloadObject:fileId options:options intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
@@ -581,7 +687,16 @@ KCSFile* fileFromResults(NSDictionary* results)
                 }
                 
                 //TODO: handle onlyIfNewer - check time on downloadObject
-                [self _downloadToFile:destinationFile fromURL:file.remoteURL fileId:fileId filename:destinationName mimeType:file.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:completionBlock progressBlock:progressBlock];
+                [self _downloadToFile:destinationFile
+                              fromURL:file.remoteURL
+                               fileId:fileId
+                             filename:destinationName
+                             mimeType:file.mimeType
+                          onlyIfNewer:NO
+                      downloadedBytes:nil
+                 requestConfiguration:requestConfiguration
+                      completionBlock:completionBlock
+                        progressBlock:progressBlock];
             } else {
                 NSError* error = [KCSErrorUtilities createError:nil description:@"No download url provided by Kinvey" errorCode:KCSFileError domain:KCSFileStoreErrorDomain requestId:nil];
                 completionBlock(nil, error);
@@ -590,7 +705,10 @@ KCSFile* fileFromResults(NSDictionary* results)
     }];
 }
 
-+(KCSRequest*)_downloadData:(NSString*)fileId completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)_downloadData:(NSString*)fileId
+       requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+            completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+              progressBlock:(KCSProgressBlock)progressBlock
 {
     return [self _getDownloadObject:fileId options:nil intermediateCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil) {
         if (errorOrNil != nil) {
@@ -608,7 +726,13 @@ KCSFile* fileFromResults(NSDictionary* results)
             
             KCSFile* file = objectsOrNil[0];
             if (file && file.remoteURL) {
-                [self _downloadToData:file.remoteURL fileId:fileId filename:file.filename mimeType:file.mimeType completionBlock:completionBlock progressBlock:progressBlock];
+                [self _downloadToData:file.remoteURL
+                               fileId:fileId
+                             filename:file.filename
+                             mimeType:file.mimeType
+                 requestConfiguration:requestConfiguration
+                      completionBlock:completionBlock
+                        progressBlock:progressBlock];
             } else {
                 NSError* error = [KCSErrorUtilities createError:nil description:@"No download url provided by Kinvey" errorCode:KCSFileError domain:KCSFileStoreErrorDomain requestId:nil];
                 completionBlock(nil, error);
@@ -621,12 +745,33 @@ KCSFile* fileFromResults(NSDictionary* results)
                   completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                     progressBlock:(KCSProgressBlock)progressBlock
 {
-    SWITCH_TO_MAIN_THREAD_FILE_DOWNLOAD_BLOCK(completionBlock);
-    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
-    return [self downloadFileByQuery:query filenames:nil options:nil completionBlock:completionBlock progressBlock:progressBlock];
+    return [self downloadFileByQuery:query
+                requestConfiguration:nil
+                     completionBlock:completionBlock
+                       progressBlock:progressBlock];
 }
 
-+(KCSRequest*)downloadFileByQuery:(KCSQuery *)query filenames:(NSArray*)filenames options:(NSDictionary*)options completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)downloadFileByQuery:(KCSQuery *)query
+             requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                    progressBlock:(KCSProgressBlock)progressBlock
+{
+    SWITCH_TO_MAIN_THREAD_FILE_DOWNLOAD_BLOCK(completionBlock);
+    SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
+    return [self downloadFileByQuery:query
+                           filenames:nil
+                             options:nil
+                requestConfiguration:requestConfiguration
+                     completionBlock:completionBlock
+                       progressBlock:progressBlock];
+}
+
++(KCSRequest*)downloadFileByQuery:(KCSQuery *)query
+                        filenames:(NSArray*)filenames
+                          options:(NSDictionary*)options
+             requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                    progressBlock:(KCSProgressBlock)progressBlock
 {
     NSParameterAssert(query != nil);
     NSParameterAssert(completionBlock != nil);
@@ -684,7 +829,16 @@ KCSFile* fileFromResults(NSDictionary* results)
                     destinationFile = [KCSFileUtils fileURLForName:destinationFilename];
 
                     //TODO: onlyIfNewer check download object
-                    [self _downloadToFile:destinationFile fromURL:thisFile.remoteURL fileId:thisFile.fileId filename:destinationFilename mimeType:thisFile.mimeType onlyIfNewer:NO downloadedBytes:nil completionBlock:^(NSArray *downloadedResources, NSError *error) {
+                    [self _downloadToFile:destinationFile
+                                  fromURL:thisFile.remoteURL
+                                   fileId:thisFile.fileId
+                                 filename:destinationFilename
+                                 mimeType:thisFile.mimeType
+                              onlyIfNewer:NO
+                          downloadedBytes:nil
+                     requestConfiguration:requestConfiguration
+                          completionBlock:^(NSArray *downloadedResources, NSError *error)
+                    {
                         if (error != nil && firstError == nil) {
                             firstError = error;
                         }
@@ -717,6 +871,17 @@ KCSFile* fileFromResults(NSDictionary* results)
                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                    progressBlock:(KCSProgressBlock)progressBlock
 {
+    return [self downloadFileByName:nameOrNames
+               requestConfiguration:nil
+                    completionBlock:completionBlock
+                      progressBlock:progressBlock];
+}
+
++(KCSRequest*)downloadFileByName:(id)nameOrNames
+            requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+                 completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                   progressBlock:(KCSProgressBlock)progressBlock
+{
     NSParameterAssert(nameOrNames != nil);
     NSParameterAssert(completionBlock != nil);
     SWITCH_TO_MAIN_THREAD_FILE_DOWNLOAD_BLOCK(completionBlock);
@@ -724,12 +889,26 @@ KCSFile* fileFromResults(NSDictionary* results)
     NSArray* names = [NSArray wrapIfNotArray:nameOrNames];
     KCSQuery* nameQuery = [KCSQuery queryOnField:KCSFileFileName usingConditional:kKCSIn forValue:names];
     return [self downloadFileByQuery:nameQuery
+                requestConfiguration:requestConfiguration
                      completionBlock:completionBlock
                        progressBlock:progressBlock];
 }
 
 +(KCSRequest*)downloadFile:(id)idOrIds
                    options:(NSDictionary *)options
+           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+             progressBlock:(KCSProgressBlock)progressBlock
+{
+    return [self downloadFile:idOrIds
+                      options:options
+         requestConfiguration:nil
+              completionBlock:completionBlock
+                progressBlock:progressBlock];
+}
+
++(KCSRequest*)downloadFile:(id)idOrIds
+                   options:(NSDictionary *)options
+      requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
            completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
              progressBlock:(KCSProgressBlock)progressBlock
 {
@@ -743,16 +922,37 @@ KCSFile* fileFromResults(NSDictionary* results)
     id filename = (options != nil) ? options[KCSFileFileName] : nil;
     
     if (idIsString || (idIsArray && [idOrIds count] == 1)) {        
-        return [self _downloadFile:filename fileId:idOrIds options:options completionBlock:completionBlock progressBlock:progressBlock];
+        return [self _downloadFile:filename
+                            fileId:idOrIds
+                           options:options
+              requestConfiguration:requestConfiguration
+                   completionBlock:completionBlock
+                     progressBlock:progressBlock];
     } else if (idIsArray) {
         KCSQuery* idQuery = [KCSQuery queryOnField:KCSFileId usingConditional:kKCSIn forValue:idOrIds];
-        return [self downloadFileByQuery:idQuery filenames:filename options:options completionBlock:completionBlock progressBlock:progressBlock];
+        return [self downloadFileByQuery:idQuery
+                               filenames:filename
+                                 options:options
+                    requestConfiguration:requestConfiguration
+                         completionBlock:completionBlock
+                           progressBlock:progressBlock];
     } else {
         @throw [NSException exceptionWithName:@"KCSInvalidParameter" reason:@"idOrIds is not single id or array of ids" userInfo:nil];
     }
 }
 
 +(KCSRequest*)downloadDataByQuery:(KCSQuery *)query
+                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                    progressBlock:(KCSProgressBlock)progressBlock
+{
+    return [self downloadDataByQuery:query
+                requestConfiguration:nil
+                     completionBlock:completionBlock
+                       progressBlock:progressBlock];
+}
+
++(KCSRequest*)downloadDataByQuery:(KCSQuery *)query
+             requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                   completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                     progressBlock:(KCSProgressBlock)progressBlock
 {
@@ -784,7 +984,13 @@ KCSFile* fileFromResults(NSDictionary* results)
             [objectsOrNil enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 KCSFile* thisFile = obj;
                 if (thisFile && thisFile.remoteURL) {
-                    [self _downloadToData:thisFile.remoteURL fileId:thisFile.fileId filename:thisFile.filename mimeType:thisFile.mimeType completionBlock:^(NSArray *downloadedResources, NSError *error) {
+                    [self _downloadToData:thisFile.remoteURL
+                                   fileId:thisFile.fileId
+                                 filename:thisFile.filename
+                                 mimeType:thisFile.mimeType
+                     requestConfiguration:requestConfiguration
+                          completionBlock:^(NSArray *downloadedResources, NSError *error)
+                    {
                         if (error != nil && firstError == nil) {
                             firstError = error;
                         }
@@ -821,6 +1027,17 @@ KCSFile* fileFromResults(NSDictionary* results)
                  completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                    progressBlock:(KCSProgressBlock)progressBlock
 {
+    return [self downloadDataByName:nameOrNames
+               requestConfiguration:nil
+                    completionBlock:completionBlock
+                      progressBlock:progressBlock];
+}
+
++(KCSRequest*)downloadDataByName:(id)nameOrNames
+            requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+                 completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                   progressBlock:(KCSProgressBlock)progressBlock
+{
     NSParameterAssert(nameOrNames != nil);
     NSParameterAssert(completionBlock != nil);
     SWITCH_TO_MAIN_THREAD_FILE_DOWNLOAD_BLOCK(completionBlock);
@@ -828,11 +1045,23 @@ KCSFile* fileFromResults(NSDictionary* results)
     NSArray* names = [NSArray wrapIfNotArray:nameOrNames];
     KCSQuery* nameQuery = [KCSQuery queryOnField:KCSFileFileName usingConditional:kKCSIn forValue:names];
     return [self downloadDataByQuery:nameQuery
+                requestConfiguration:requestConfiguration
                      completionBlock:completionBlock
                        progressBlock:progressBlock];
 }
 
 +(KCSRequest*)downloadData:(id)idOrIds
+           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+             progressBlock:(KCSProgressBlock)progressBlock
+{
+    return [self downloadData:idOrIds
+         requestConfiguration:nil
+              completionBlock:completionBlock
+                progressBlock:progressBlock];
+}
+
++(KCSRequest*)downloadData:(id)idOrIds
+      requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
            completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
              progressBlock:(KCSProgressBlock)progressBlock
 {
@@ -844,7 +1073,10 @@ KCSFile* fileFromResults(NSDictionary* results)
     BOOL idIsArray = [idOrIds isKindOfClass:[NSArray class]];
     
     if (idIsString || (idIsArray && [idOrIds count] == 1)) {
-        return [self _downloadData:idOrIds completionBlock:completionBlock progressBlock:progressBlock];
+        return [self _downloadData:idOrIds
+              requestConfiguration:requestConfiguration
+                   completionBlock:completionBlock
+                     progressBlock:progressBlock];
     } else if (idIsArray) {
         KCSQuery* idQuery = [KCSQuery queryOnField:KCSFileId usingConditional:kKCSIn forValue:idOrIds];
         return [self downloadDataByQuery:idQuery
@@ -857,6 +1089,19 @@ KCSFile* fileFromResults(NSDictionary* results)
 
 +(KCSRequest*)downloadFileWithResolvedURL:(NSURL *)url
                                   options:(NSDictionary *)options
+                          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                            progressBlock:(KCSProgressBlock)progressBlock
+{
+    return [self downloadFileWithResolvedURL:url
+                                     options:options
+                        requestConfiguration:nil
+                             completionBlock:completionBlock
+                               progressBlock:progressBlock];
+}
+
++(KCSRequest*)downloadFileWithResolvedURL:(NSURL *)url
+                                  options:(NSDictionary *)options
+                     requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
                           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                             progressBlock:(KCSProgressBlock)progressBlock
 {
@@ -902,6 +1147,7 @@ KCSFile* fileFromResults(NSDictionary* results)
                                                      mimeType:nil
                                                   onlyIfNewer:onlyIfNewer
                                               downloadedBytes:bytes
+                                         requestConfiguration:requestConfiguration
                                               completionBlock:completionBlock
                                                 progressBlock:progressBlock];
     return [KCSFileRequest requestWithFileOperation:op];
@@ -911,12 +1157,24 @@ KCSFile* fileFromResults(NSDictionary* results)
                           completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
                             progressBlock:(KCSProgressBlock)progressBlock
 {
+    return [self downloadDataWithResolvedURL:url
+                        requestConfiguration:nil
+                             completionBlock:completionBlock
+                               progressBlock:progressBlock];
+}
+
++(KCSRequest*)downloadDataWithResolvedURL:(NSURL *)url
+                     requestConfiguration:(KCSRequestConfiguration *)requestConfiguration
+                          completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                            progressBlock:(KCSProgressBlock)progressBlock
+{
     NSParameterAssert(url);
     NSParameterAssert(completionBlock);
     SWITCH_TO_MAIN_THREAD_FILE_DOWNLOAD_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
     return [self downloadFileWithResolvedURL:url
                                      options:nil
+                        requestConfiguration:requestConfiguration
                              completionBlock:^(NSArray *downloadedResources, NSError *error)
     {
         if (!error && downloadedResources != nil && downloadedResources.count > 0) {

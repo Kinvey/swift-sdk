@@ -165,9 +165,9 @@
 {
     return self.configuration.options[KCS_DATE_FORMAT];
 }
-- (double) connectionTimeout
+- (NSTimeInterval) connectionTimeout
 {
-    return [self.configuration.options[KCS_CONNECTION_TIMEOUT] doubleValue];
+    return self.configuration.connectionTimeout;
 }
 
 #pragma mark INITS

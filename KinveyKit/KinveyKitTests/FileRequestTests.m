@@ -52,7 +52,9 @@
     
     [f downloadStream:file
               fromURL:[NSURL URLWithString:publicFileURL]
-  alreadyWrittenBytes:@0 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
+  alreadyWrittenBytes:@0
+ requestConfiguration:nil
+      completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
     {
         KTAssertNoError
         long bytes = [returnInfo[@"bytesWritten"] longValue];
@@ -85,7 +87,9 @@
     
     [f downloadStream:file
               fromURL:[NSURL URLWithString:publicFileURL]
-  alreadyWrittenBytes:@0 completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
+  alreadyWrittenBytes:@0
+ requestConfiguration:nil
+      completionBlock:^(BOOL done, NSDictionary *returnInfo, NSError *error)
     {
         KTAssertNoError
         long bytes = [returnInfo[@"bytesWritten"] longValue];

@@ -220,7 +220,7 @@ static NSOperationQueue* kcsRequestQueue;
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
-                                                       timeoutInterval:[config.options[KCS_CONNECTION_TIMEOUT] doubleValue]];
+                                                       timeoutInterval:config.connectionTimeout];
     if (url.host) {
         [request setValue:url.host
        forHTTPHeaderField:@"Host"];
@@ -322,8 +322,9 @@ static NSOperationQueue* kcsRequestQueue;
         if (!_body) {
             _body = @{};
         }
-        KCS_SBJsonWriter* writer = [[KCS_SBJsonWriter alloc] init];
-        NSData* bodyData = [writer dataWithObject:_body];
+        NSData* bodyData = [NSJSONSerialization dataWithJSONObject:_body
+                                                           options:0
+                                                             error:nil];
         DBAssert(bodyData != nil, @"should be able to parse body");
         [request setHTTPBody:bodyData];
         [request setValue:_contentType forHTTPHeaderField:kHeaderContentType];

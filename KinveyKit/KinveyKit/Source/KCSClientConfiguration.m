@@ -55,7 +55,11 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
 #define KCS_DEFAULT_HOST_PORT         @""
 #define KCS_DEFAULT_HOST_PROTOCOL     @"https"
 #define KCS_DEFAULT_HOST_DOMAIN       @"kinvey.com"
-#define KCS_DEFAULT_CONNETION_TIMEOUT @10.0 // Default timeout to 10 seconds
+
+// Default timeout to 10 seconds
+#define KCS_DEFAULT_CONNETION_TIMEOUT_RAW 10
+#define KCS_DEFAULT_CONNETION_TIMEOUT @KCS_DEFAULT_CONNETION_TIMEOUT_RAW
+
 #define KCS_DEFAULT_URL_CACHE_POLICY  @(NSURLRequestReloadIgnoringLocalAndRemoteCacheData)
 #define KCS_DEFAULT_DATE_FORMAT       @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
 
@@ -215,7 +219,11 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
       forOption:(id)key
 {
     NSMutableDictionary* options = [NSMutableDictionary dictionaryWithDictionary:self.options];
-    options[key] = value;
+    if (value) {
+        options[key] = value;
+    } else {
+        [options removeObjectForKey:key];
+    }
     self.options = options;
 }
 
@@ -334,6 +342,21 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
     self.serviceHostname = @"";
     self.hostDomain = url.host;
     self.hostPort = url.port ? url.port.stringValue : @"";
+}
+
+-(NSTimeInterval)connectionTimeout
+{
+    id value = self.options[KCS_CONNECTION_TIMEOUT];
+    if (value && [value isKindOfClass:[NSNumber class]]) {
+        return ((NSNumber*) value).doubleValue;
+    }
+    return KCS_DEFAULT_CONNETION_TIMEOUT_RAW;
+}
+
+-(void)setConnectionTimeout:(NSTimeInterval)connectionTimeout
+{
+    [self setValue:connectionTimeout > 0 ? @(connectionTimeout) : nil
+         forOption:KCS_CONNECTION_TIMEOUT];
 }
 
 - (BOOL) valid

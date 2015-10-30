@@ -16,6 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
+#ifndef KinveyKit_KCSUser2_h
+#define KinveyKit_KCSUser2_h
+
 #import <Foundation/Foundation.h>
 
 #import "KinveyPersistable.h"
@@ -55,3 +58,5 @@
 
 
 @end
+
+#endif

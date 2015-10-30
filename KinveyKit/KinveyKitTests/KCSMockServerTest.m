@@ -104,7 +104,9 @@
     NSDictionary* headers = @{@"A":@"B"};
     req.allHTTPHeaderFields = headers;
     id body = @{@"results":@[@"A",@{@"K":@1}]};
-    req.HTTPBody = [[[KCS_SBJsonWriter alloc] init] dataWithObject:body];
+    req.HTTPBody = [NSJSONSerialization dataWithJSONObject:body
+                                                   options:0
+                                                     error:nil];
     
     KCSNetworkResponse* x = [_server responseForRequest:req];
     KTAssertNotNil(x);
