@@ -68,6 +68,10 @@ deploy-reference:
 	git push staging master; \
 	git push production master
 
+deploy-cocoapods:
+	cd ..; \
+	pod trunk push KinveyKit.podspec --verbose
+
 clean:
 	rm -Rf $(OUTPUT_FOLDER)
 	rm -Rf doc

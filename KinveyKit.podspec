@@ -21,14 +21,14 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '7.0'
   s.requires_arc = true
 
-  s.preserve_paths = "KinveyKit-#{s.version}/**"
+  s.preserve_paths = "**"
   s.prepare_command = <<-CMD
-      cp KinveyKit-#{s.version}/KinveyKit.framework/KinveyKit KinveyKit-#{s.version}/libKinveyKit.a
-      mkdir -p KinveyKit-#{s.version}/include/KinveyKit
-      cp KinveyKit-#{s.version}/KinveyKit.framework/Headers/* KinveyKit-#{s.version}/include/KinveyKit
+      cp KinveyKit.framework/KinveyKit libKinveyKit.a
+      mkdir -p include/KinveyKit
+      cp KinveyKit.framework/Headers/* include/KinveyKit
     CMD
-  s.vendored_libraries = "KinveyKit-#{s.version}/libKinveyKit.a"
-  s.public_header_files = "KinveyKit-#{s.version}/include/KinveyKit/*.h"
+  s.vendored_libraries = "libKinveyKit.a"
+  s.public_header_files = "include/KinveyKit/*.h"
   s.frameworks = 'Accounts', 'CoreGraphics', 'CoreLocation', 'MobileCoreServices', 'Security', 'Social', 'SystemConfiguration'
   s.weak_framework = 'WebKit'
   s.libraries = 'sqlite3'
