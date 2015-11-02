@@ -23,7 +23,7 @@
 #import "KCSClient.h"
 #import "KinveyUser.h"
 #import "KCSClientConfiguration.h"
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 #import "KCSAppdataStore.h"
 
 NSString* const KCSUserCollectionName = @"user";

@@ -22,6 +22,7 @@ typedef enum KCSQueryErrors : NSInteger {
     KCSqueryPredicateNotSupportedError = -3000
     } KCSQueryErrors;
 
+KCS_DEPRECATED(Please use KCSQuery instead, 1.41.0)
 @interface KCSQuery2 : NSObject
 
 + (instancetype) allQuery;

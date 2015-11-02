@@ -34,7 +34,7 @@
 {
     SWITCH_TO_MAIN_THREAD_COMPLETION_BLOCK(completionBlock);
     SWITCH_TO_MAIN_THREAD_PROGRESS_BLOCK(progressBlock);
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             completionBlock(nil, error);
         } else {

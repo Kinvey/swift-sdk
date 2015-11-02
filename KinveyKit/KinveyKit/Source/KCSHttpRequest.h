@@ -53,7 +53,7 @@ KCS_CONSTANT KCSRESTMethodPUT;
 
 typedef void(^KCSRequestCompletionBlock)(KCSNetworkResponse* response, NSError*error);
 
-@interface KCSRequest2 : NSObject
+@interface KCSHttpRequest : NSObject
 @property (nonatomic, copy) NSArray* path;
 @property (nonatomic, weak) NSString* method;
 @property (nonatomic, copy) NSDictionary* headers;

@@ -31,7 +31,7 @@
 #import "KCSClientConfiguration.h"
 #import "KCSObjectCache.h"
 #import "KCSFileRequestManager.h"
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 
 #if TARGET_OS_IPHONE
 #import "KCSPush.h"
@@ -84,7 +84,7 @@ NSDictionary* defaultBuilders();
 +(void)cancelAndWaitUntilAllOperationsAreFinished;
 @end
 
-@interface KCSRequest2 (KCSHiddenMethods)
+@interface KCSHttpRequest (KCSHiddenMethods)
 +(void)cancelAndWaitUntilAllOperationsAreFinished;
 @end
 

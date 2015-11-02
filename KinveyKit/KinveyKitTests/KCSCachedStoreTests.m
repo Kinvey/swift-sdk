@@ -27,7 +27,7 @@
 #import "TestUtils.h"
 #import "KCSHiddenMethods.h"
 #import "NSString+KinveyAdditions.h"
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 #import "KCS_DDLog.h"
 
 @interface TestEntity : NSObject
@@ -136,7 +136,7 @@ static float pollTime;
 //#pragma clang diagnostic pop
     
     self.requestArray = [NSMutableArray array];
-    [KCSRequest2 setRequestArray:self.requestArray];
+    [KCSHttpRequest setRequestArray:self.requestArray];
 }
 
 - (void) tearDown

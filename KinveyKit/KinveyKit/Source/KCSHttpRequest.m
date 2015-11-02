@@ -18,7 +18,7 @@
 //
 
 
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 #import "KinveyCoreInternal.h"
 #import "KinveyErrorCodes.h"
 #import "KCSNSURLRequestOperation.h"
@@ -78,9 +78,9 @@ NSString * getLogDate3()
     return [NSString stringWithCString:timestring encoding:NSASCIIStringEncoding];
 }
 
-#import "KCSRequest2+Private.h"
+#import "KCSHttpRequest+Private.h"
 
-@implementation KCSRequest2
+@implementation KCSHttpRequest
 static NSOperationQueue* kcsRequestQueue;
 
 + (void)initialize
@@ -116,7 +116,7 @@ static NSOperationQueue* kcsRequestQueue;
                            credentials:(id)credentials
                   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 {
-    KCSRequest2* request = [[KCSRequest2 alloc] init];
+    KCSHttpRequest* request = [[KCSHttpRequest alloc] init];
     request.useMock = [options[KCSRequestOptionUseMock] boolValue];
     request.completionBlock = completion;
     request.credentials = credentials;
