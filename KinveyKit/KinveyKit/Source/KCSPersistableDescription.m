@@ -32,7 +32,7 @@
 @implementation KCSReferenceDescription
 
 
-- (id<KCSPersistable2>) destinationObjFromObj:(NSObject<KCSPersistable2>*)sourceObj
+- (id<KCSPersistable>) destinationObjFromObj:(NSObject<KCSPersistable>*)sourceObj
 {
     return [sourceObj valueForKeyPath:self.sourceProperty];
 }
@@ -45,7 +45,7 @@
 @property (nonatomic, copy) NSString* collection;
 @property (nonatomic, retain) NSDictionary* fieldToPropertyMapping;
 @property (nonatomic, retain) NSDictionary* propertyToFieldMapping;
-- (NSString*) objectIdFromObject:(id<KCSPersistable2>)obj;
+- (NSString*) objectIdFromObject:(NSObject<KCSPersistable>*)obj;
 @end
 
 @implementation KCSPersistableDescription
@@ -112,7 +112,7 @@ BOOL kcsIsContainerClass(Class aClass)
 
 #pragma mark - Object Helpers
 
-- (NSString *)objectIdFromObject:(id<KCSPersistable2>)obj
+- (NSString *)objectIdFromObject:(NSObject<KCSPersistable>*)obj
 {
     return [obj valueForKey:self.fieldToPropertyMapping[KCSEntityKeyId]];
 }
@@ -180,7 +180,7 @@ BOOL kcsIsContainerClass(Class aClass)
     }
 }
 
-- (BOOL) addObjToTree:(NSMutableDictionary*)tree obj:(id<KCSPersistable2>)obj collection:(NSString*)collection
+- (BOOL) addObjToTree:(NSMutableDictionary*)tree obj:(id<KCSPersistable>)obj collection:(NSString*)collection
 {
     NSParameterAssert(collection);
     if (!tree[collection]) {
@@ -199,7 +199,7 @@ BOOL kcsIsContainerClass(Class aClass)
 //    if (!d[collection]) {
 //        d[collection] = [NSMutableSet setWithCapacity:objects.count];
 //    }
-    for (id<KCSPersistable2> obj in objects) {
+    for (id<KCSPersistable> obj in objects) {
 //        if ([d[collection] containsObject:obj]) {
 //            continue;
 //        }
@@ -208,7 +208,7 @@ BOOL kcsIsContainerClass(Class aClass)
         if (needToWalk) {
             //            NSArray* refs = self.references;
             for (KCSReferenceDescription* rdesc in desc.references) {
-                id<KCSPersistable2> refObj = [rdesc destinationObjFromObj:obj];
+                id<KCSPersistable> refObj = [rdesc destinationObjFromObj:obj];
                 if (refObj) {
 //                    if (!d[rdesc.destinationCollection]) {
 //                        d[rdesc.destinationCollection] = [NSMutableSet set];
@@ -238,7 +238,7 @@ BOOL kcsIsContainerClass(Class aClass)
 - (void) doAdds:(NSArray*)objects graph:(NSMutableDictionary*)graph description:(KCSPersistableDescription*)desc
 {
     NSString* const collection = desc.collection;
-    for (id<KCSPersistable2> obj in objects) {
+    for (id<KCSPersistable> obj in objects) {
         BOOL shouldWalk = [self addObjToTree:graph obj:obj collection:collection];
         if (shouldWalk) {
             for (KCSReferenceDescription* rdesc in desc.references) {

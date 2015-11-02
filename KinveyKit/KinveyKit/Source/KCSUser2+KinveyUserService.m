@@ -101,7 +101,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         createUserBody[KCSUserAttributePassword] = password;
     }
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
             [self setActive:nil];
@@ -127,7 +127,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
 
 + (void) createWithAuthProvider:(KCSUserSocialIdentifyProvider)provider loginBody:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock;
 {
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
             [self setActive:nil];
@@ -160,7 +160,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     if (!username) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"username should not be nil." userInfo:nil] raise];
     if (!password) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"password should not be nil." userInfo:nil] raise];
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
             [self setActive:nil];
@@ -191,7 +191,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     SWITCH_TO_MAIN_THREAD_USER2_BLOCK(completionBlock);
     NSDictionary* loginDict = [self loginDictForProvider:provider accessDictionary:accessDictionary];
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             if (response.isKCSError == YES && response.code == KCSNotFoundError) {
                 //This is new user, create
@@ -298,7 +298,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                         options:(NSDictionary *)optons
                      completion:(KCSUser2CompletionBlock)completionBlock
 {
-    NSMutableURLRequest* request = [KCSRequest2 requestForURL:url];
+    NSMutableURLRequest* request = [KCSHttpRequest requestForURL:url];
     request.HTTPMethod = @"POST";
     request.HTTPBody = [@{
         @"client_id" : [self clientConfiguration].appKey,
@@ -361,7 +361,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     NSURLConnection* connection = [[NSURLConnection alloc] initWithRequest:request
                                                                   delegate:connectionDelegateAdapter
                                                           startImmediately:NO];
-    [connection setDelegateQueue:[KCSRequest2 requestQueue]];
+    [connection setDelegateQueue:[KCSHttpRequest requestQueue]];
     [connection start];
 }
 
@@ -462,7 +462,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                 completion:(KCSUser2CompletionBlock)completionBlock
 {
     NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/token", [self baseMicURL]]];
-    NSMutableURLRequest* request = [KCSRequest2 requestForURL:url];
+    NSMutableURLRequest* request = [KCSHttpRequest requestForURL:url];
     request.HTTPMethod = @"POST";
     
     NSDictionary* bodyParams;
@@ -537,7 +537,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         block(response, data, error);
     } else {
         [NSURLConnection sendAsynchronousRequest:request
-                                           queue:[KCSRequest2 requestQueue]
+                                           queue:[KCSHttpRequest requestQueue]
                                completionHandler:block];
     }
 }
@@ -826,7 +826,7 @@ static NSString* micApiVersion = nil;
         NSDictionary* entity = [[KCSAppdataStore caches].dataModel jsonEntityForObject:user route:[userCollection route] collection:userCollection.collectionName];
         NSDictionary* body = [entity dictionaryByAddingDictionary:@{KCSUserAttributePassword : newPassword}];
         
-        KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             if (error) {
                 KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
                 if (completionBlock) completionBlock(nil, error);
@@ -872,7 +872,7 @@ static NSString* micApiVersion = nil;
         return nil;
     }
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             KCSLogError(KCS_LOG_CONTEXT_USER, @"Error Updating user: %@", error);
             if (completionBlock) completionBlock(user, error);
@@ -923,7 +923,7 @@ static NSString* micApiVersion = nil;
     
     NSDictionary* entity = [[KCSAppdataStore caches].dataModel jsonEntityForObject:user route:KCSRESTRouteUser collection:KCSUserCollectionName];
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             KCSLogError(KCS_LOG_CONTEXT_USER, @"Error Updating user: %@", error);
             if (completionBlock) completionBlock(user, error);
@@ -965,7 +965,7 @@ static NSString* micApiVersion = nil;
         return nil;
     }
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil) {
             [self logoutUser:user];
         }
@@ -988,7 +988,7 @@ static NSString* micApiVersion = nil;
     if (username == nil) {
         [[NSException exceptionWithName:NSInvalidArgumentException reason:@"username cannot be nil" userInfo:nil] raise];
     }
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
         if (completionBlock) completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
     }
@@ -1008,7 +1008,7 @@ static NSString* micApiVersion = nil;
     if (email == nil) {
         [[NSException exceptionWithName:NSInvalidArgumentException reason:@"email cannot be nil" userInfo:nil] raise];
     }
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
         if (completionBlock) completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
     }
@@ -1028,7 +1028,7 @@ static NSString* micApiVersion = nil;
     if (username == nil) {
         [[NSException exceptionWithName:NSInvalidArgumentException reason:@"username cannot be nil" userInfo:nil] raise];
     }
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
         if (completionBlock) completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
     }
@@ -1048,7 +1048,7 @@ static NSString* micApiVersion = nil;
         [[NSException exceptionWithName:NSInvalidArgumentException reason:@"email cannot be nil" userInfo:nil] raise];
     }
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
         if (completionBlock) completionBlock(response.code == KCS_HTTP_STATUS_NO_CONTENT, error);
     }
@@ -1070,7 +1070,7 @@ static NSString* micApiVersion = nil;
     }
     
     // /rpc/:appKey/check-username-exists
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         //response will be a 204 if accepted by server
         if (!error) {
             response.skipValidation = YES;

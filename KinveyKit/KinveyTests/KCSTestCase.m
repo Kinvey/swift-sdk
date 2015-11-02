@@ -17,7 +17,7 @@
 {
     [super setUp];
     
-    [KCSRequest2 cancelAndWaitUntilAllOperationsAreFinished];
+    [KCSHttpRequest cancelAndWaitUntilAllOperationsAreFinished];
     [KCSFileRequestManager cancelAndWaitUntilAllOperationsAreFinished];
     [KCSAppdataStore cancelAndWaitUntilAllOperationsAreFinished];
     
@@ -30,7 +30,7 @@
 
 -(void)tearDown
 {
-    [KCSRequest2 cancelAndWaitUntilAllOperationsAreFinished];
+    [KCSHttpRequest cancelAndWaitUntilAllOperationsAreFinished];
     [KCSFileRequestManager cancelAndWaitUntilAllOperationsAreFinished];
     [KCSAppdataStore cancelAndWaitUntilAllOperationsAreFinished];
     
