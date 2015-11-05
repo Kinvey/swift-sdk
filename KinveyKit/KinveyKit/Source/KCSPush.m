@@ -26,7 +26,7 @@
 #import "KinveyErrorCodes.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
 
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 
 #define UAPushBadgeSettingsKey @"UAPushBadge"
 
@@ -231,7 +231,7 @@
         }
     }
     if (deviceTokenExists) {
-        KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             if (error || deviceTokenString == nil) {
                 KCSLogError(@"Device token did not register");
                 
@@ -271,7 +271,7 @@
     SWITCH_TO_MAIN_THREAD_SUCCESS_BLOCK(completionBlock);
     if (self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == YES) {
         
-        KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             if (error) {
                 KCSLogError(@"Device token did not un-register");
             } else {

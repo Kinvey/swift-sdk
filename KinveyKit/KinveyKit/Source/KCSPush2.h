@@ -19,6 +19,7 @@
 
 #import <Foundation/Foundation.h>
 
+KCS_DEPRECATED(Please use KCSPing instead, 1.41.0)
 @interface KCSPush2 : NSObject
 
 @end

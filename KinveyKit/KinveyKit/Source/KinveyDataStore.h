@@ -20,8 +20,6 @@
 #ifndef KinveyKit_KinveyDataStore_h
 #define KinveyKit_KinveyDataStore_h
 
-#import "KCSPersistable2.h"
-
 #import "KCSDataStore.h"
 #import "KCSDataOperation.h"
 #import "KCSQuery2.h"

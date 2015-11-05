@@ -23,6 +23,7 @@
 
 @class KCSClientConfiguration;
 
+KCS_DEPRECATED(Please use KCSClient instead, 1.41.0)
 @interface KCSClient2 : NSObject
 
 + (instancetype) sharedClient;
