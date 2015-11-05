@@ -41,7 +41,7 @@
 #import "KCSPlatformUtils.h"
 #import "KCSFileUtils.h"
 
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 #import "KCSNetworkResponse.h"
 #import "KCSRequest+Private.h"
 #import "KCSFileRequest.h"
@@ -212,7 +212,7 @@ static NSMutableSet* _ongoingDownloads;
                  progressBlock:progressBlock];
 }
 
-+ (KCSRequest2*) _getUploadLoc:(NSMutableDictionary *)options completion:(KCSRequestCompletionBlock)completion apiMethod:(NSString*)apiMethod
++ (KCSHttpRequest*) _getUploadLoc:(NSMutableDictionary *)options completion:(KCSRequestCompletionBlock)completion apiMethod:(NSString*)apiMethod
 {
     //remove unwanted keys
     NSMutableDictionary* body = [NSMutableDictionary dictionaryWithDictionary:options];
@@ -221,7 +221,7 @@ static NSMutableSet* _ongoingDownloads;
     NSString* fileId = body[KCSFileId];
     
     //KCSNetworkRequest* request = [[KCSNetworkRequest alloc] init];
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:completion
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:completion
                                                         route:KCSRESTRouteBlob
                                                       options:@{KCSRequestOptionClientMethod : apiMethod}
                                                   credentials:[KCSUser activeUser]];
@@ -297,7 +297,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     setIfEmpty(opts, KCSFileMimeType, mimeType);
     
     KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
-    KCSRequest2* request = [self _getUploadLoc:opts completion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [self _getUploadLoc:opts completion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
             completionBlock(nil, error);
         } else {
@@ -378,7 +378,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     setIfEmpty(opts, KCSFileMimeType, mimeType);
 
     KCSFileRequest* fileRequest = [[KCSFileRequest alloc] init];
-    KCSRequest2 * request = [self _getUploadLoc:opts completion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest * request = [self _getUploadLoc:opts completion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
             completionBlock(nil, error);
         } else {
@@ -1278,7 +1278,7 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     SWITCH_TO_MAIN_THREAD_COUNT_BLOCK(completionBlock);
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error != nil){
             error = [KCSErrorUtilities createError:nil
                                        description:[NSString stringWithFormat:@"Error Deleting file, id='%@'", fileId]

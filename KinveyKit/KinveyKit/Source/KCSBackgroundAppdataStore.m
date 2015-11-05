@@ -30,7 +30,7 @@
 #import "KCSHiddenMethods.h"
 #import "KCSSaveGraph.h"
 #import "KCSObjectCache.h"
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 #import "NSError+KinveyKit.h"
 #import "KCSClient+KinveyDataStore.h"
 #import "KinveyDataStore.h"
@@ -390,7 +390,7 @@ return x; \
             } else {
                 NSString* route = [self.backingCollection route];
                 
-                KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+                KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
                     [self handleLoadResponse:response error:error completionBlock:completionBlock];
                 }
                                                                     route:route
@@ -520,7 +520,7 @@ return x; \
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSDictionary* jsonResponse = [response jsonObjectError:&error];
         if (error) {
             completionBlock(nil, error);
@@ -557,7 +557,7 @@ return x; \
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         [self handleLoadResponse:response error:error completionBlock:completionBlock];
     }
                                                         route:route
@@ -910,7 +910,7 @@ NSError* createCacheError(NSString* message)
         [body setObject:[condition query] forKey:@"condition"];
     }
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             completionBlock(nil, error);
         } else {
@@ -1097,7 +1097,7 @@ NSError* createCacheError(NSString* message)
     //Step 3: save entity
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
-    __block KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    __block KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             if ([self shouldEnqueue:error] == YES) {
                 //enqueue save
@@ -1479,7 +1479,7 @@ andResaveAfterReferencesSaved:^{
     
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             countBlock(0, error);
         } else {

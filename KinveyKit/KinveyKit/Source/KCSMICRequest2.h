@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 
-@interface KCSMICRequest2 : KCSRequest2
+@interface KCSMICRequest2 : KCSHttpRequest
 
 +(instancetype)requestWithRedirectURI:(NSString *)redirectURI
                            completion:(KCSRequestCompletionBlock)completion;

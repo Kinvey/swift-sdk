@@ -16,9 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 
-@interface KCSRequest2 ()
+@interface KCSHttpRequest ()
 
 @property (nonatomic) BOOL useMock;
 @property (nonatomic, copy) KCSRequestCompletionBlock completionBlock;

@@ -7,7 +7,7 @@
 //
 
 #import "KCSMICRequest2.h"
-#import "KCSRequest2+Private.h"
+#import "KCSHttpRequest+Private.h"
 #import "KCSUser2+KinveyUserService+Private.h"
 #import "KCSClient2.h"
 #import "NSDictionary+KinveyAdditions.h"
@@ -39,7 +39,7 @@
 {
     NSURL* url = [KCSUser2 URLforLoginWithMICRedirectURI:self.redirectURI
                                              isLoginPage:NO];
-    NSMutableURLRequest* request = [KCSRequest2 requestForURL:url];
+    NSMutableURLRequest* request = [KCSHttpRequest requestForURL:url];
     request.HTTPMethod = @"POST";
     KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
     if (!config) {

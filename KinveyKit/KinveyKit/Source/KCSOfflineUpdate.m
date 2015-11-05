@@ -188,7 +188,7 @@
     }
     
     NSDictionary* options = [self optionsFromHeaders:headers];
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (!error) {
             NSDictionary* updatedEntity = [response jsonObjectError:&error];
             if (error) {
@@ -269,7 +269,7 @@
     }
     
     NSDictionary* options = [self optionsFromHeaders:headers];
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (!error) {
             [self.persitence removeUnsavedEntity:objId
                                            route:route

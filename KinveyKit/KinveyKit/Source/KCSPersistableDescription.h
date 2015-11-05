@@ -21,14 +21,13 @@
 #import <Foundation/Foundation.h>
 
 @protocol KCSPersistable;
-@protocol KCSPersistable2;
 
 @interface KCSReferenceDescription : NSObject
 @property (nonatomic, copy) NSString* sourceField;
 @property (nonatomic, copy) NSString* sourceProperty;
 @property (nonatomic, copy) NSString* destinationCollection;
 
-- (id<KCSPersistable2>) destinationObjFromObj:(id<KCSPersistable2>)sourceObj;
+- (id<KCSPersistable>) destinationObjFromObj:(id<KCSPersistable>)sourceObj;
 @end
 
 

@@ -26,6 +26,7 @@
 
 //TODO: need to handle auth for implementers...
 
+KCS_DEPRECATED(Please use KCSUser instead, 1.41.0)
 @protocol KCSUser2 <NSObject, KCSPersistable>
 /* This is the `KCSEntityKeyId` for the user object */
 @property (nonatomic, copy) NSString* userId;
@@ -38,6 +39,7 @@
 
 @end
 
+KCS_DEPRECATED(Please use KCSUser instead, 1.41.0)
 @interface KCSUser2 : NSObject <KCSUser2>
 /* This is the `KCSEntityKeyId` for the user object */
 @property (nonatomic, copy) NSString* userId;
