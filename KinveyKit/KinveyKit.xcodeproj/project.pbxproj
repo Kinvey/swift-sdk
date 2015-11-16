@@ -549,6 +549,8 @@
 		5725E70E1AD6E3F100B506BB /* MICLoginPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5725E70D1AD6E3F100B506BB /* MICLoginPageViewController.swift */; };
 		5725E7181AD6E56B00B506BB /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D3C5E67F14745EEE002D8F2B /* libsqlite3.dylib */; };
 		57291BA71BE1579C0066033E /* KCSJsonTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57291BA61BE1579C0066033E /* KCSJsonTest.m */; };
+		57291BA91BE19ABF0066033E /* KCSLoadObjectTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57291BA81BE19ABF0066033E /* KCSLoadObjectTest.m */; };
+		57291BAD1BE19AE10066033E /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = 57291BAC1BE19AE10066033E /* Event.m */; };
 		5736546F1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5736546E1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m */; };
 		573654711AE1851B00E3982B /* MLIBZ_239_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573654701AE1851B00E3982B /* MLIBZ_239_Tests.swift */; };
 		57405C761B2B9AB600238187 /* MLIBZ_326_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 57405C751B2B9AB600238187 /* MLIBZ_326_Tests.m */; };
@@ -1890,6 +1892,9 @@
 		5725E70D1AD6E3F100B506BB /* MICLoginPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MICLoginPageViewController.swift; sourceTree = "<group>"; };
 		5725E70F1AD6E48A00B506BB /* KinveyPlayground-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyPlayground-Bridging-Header.h"; sourceTree = "<group>"; };
 		57291BA61BE1579C0066033E /* KCSJsonTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSJsonTest.m; sourceTree = "<group>"; };
+		57291BA81BE19ABF0066033E /* KCSLoadObjectTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLoadObjectTest.m; sourceTree = "<group>"; };
+		57291BAB1BE19AE10066033E /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Event.h; sourceTree = "<group>"; };
+		57291BAC1BE19AE10066033E /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
 		572ACA4F1B5027F000C098F7 /* KCSFileStoreTestsSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSFileStoreTestsSwift.swift; sourceTree = "<group>"; };
 		5736546D1AE17F3B00E3982B /* MLIBZ_239_DataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLIBZ_239_DataHelper.h; sourceTree = "<group>"; };
 		5736546E1AE17F3B00E3982B /* MLIBZ_239_DataHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MLIBZ_239_DataHelper.m; sourceTree = "<group>"; };
@@ -3039,6 +3044,9 @@
 				57DF5C331BB355CE0036EF99 /* KCSDeltaSetCacheTests.swift */,
 				57B556851BB5F7030000FF50 /* KCSManageAPI.swift */,
 				57155E571BB6120E00A13B97 /* KCSBaasAPI.swift */,
+				57291BAB1BE19AE10066033E /* Event.h */,
+				57291BAC1BE19AE10066033E /* Event.m */,
+				57291BA81BE19ABF0066033E /* KCSLoadObjectTest.m */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -5753,6 +5761,7 @@
 				575675011AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift in Sources */,
 				5718273B1AC2F3B50013A653 /* KCSMutableOrderedDictionaryTests.swift in Sources */,
 				5788342F1AB8D25500078CC5 /* KCSOfflineStoreTests.m in Sources */,
+				57291BAD1BE19AE10066033E /* Event.m in Sources */,
 				578834471AB8D25500078CC5 /* PlatformUtilsTest.m in Sources */,
 				579BE41B1B79112F00938988 /* KCSCachedStoreSwiftTests.swift in Sources */,
 				578834351AB8D25500078CC5 /* KinveyKitPushTests.m in Sources */,
@@ -5793,6 +5802,7 @@
 				577ACE061AEAB559006C2469 /* KCSProtocolTests.swift in Sources */,
 				5788342E1AB8D25500078CC5 /* KCSLinkedAppdataStoreTests.m in Sources */,
 				578834481AB8D25500078CC5 /* KCSMockServerTest.m in Sources */,
+				57291BA91BE19ABF0066033E /* KCSLoadObjectTest.m in Sources */,
 				57E4F1111B28E97D0002342E /* MLIBZ_322_ObjC_Tests.m in Sources */,
 				57E40BCA1B20E95C00C37317 /* MLIBZ_371_Tests.m in Sources */,
 				578834381AB8D25500078CC5 /* KinveyKitEntityDictTests.m in Sources */,

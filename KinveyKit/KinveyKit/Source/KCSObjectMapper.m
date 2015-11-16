@@ -444,7 +444,20 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
     return object;
 }
 
-+ (id)makeObjectWithResourcesOfType:(Class)objectClass withData:(NSDictionary *)data withResourceDictionary:(NSMutableDictionary*)resources
++(id)makeObjectWithResourcesOfType:(Class)objectClass
+                           withData:(NSDictionary *)data
+             withResourceDictionary:(NSMutableDictionary*)resources
+{
+    return [self makeObjectWithResourcesOfType:objectClass
+                                      withData:data
+                        withResourceDictionary:resources
+                                        object:nil];
+}
+
++(id)makeObjectWithResourcesOfType:(Class)objectClass
+                          withData:(NSDictionary *)data
+            withResourceDictionary:(NSMutableDictionary*)resources
+                            object:(id*)obj
 {
     
     // Check for special options to building this class
@@ -459,24 +472,34 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
     
     // Actually generate the instance of the class
     id copiedObject = nil;
-    if (hasDesignatedInit){
-        // If we need to use a designated initializer we do so here
-        if ([(id)objectClass respondsToSelector:@selector(kinveyDesignatedInitializer:)]) {
-            copiedObject = [objectClass kinveyDesignatedInitializer:data];
-        } else {
-            copiedObject = [(id)objectClass performSelector:@selector(kinveyDesignatedInitializer)];
-        }
+    if (obj) {
+        copiedObject = *obj;
     } else {
-        // Normal path
-        copiedObject = [[objectClass alloc] init];
+        if (hasDesignatedInit){
+            // If we need to use a designated initializer we do so here
+            if ([(id)objectClass respondsToSelector:@selector(kinveyDesignatedInitializer:)]) {
+                copiedObject = [objectClass kinveyDesignatedInitializer:data];
+            } else {
+                copiedObject = [(id)objectClass performSelector:@selector(kinveyDesignatedInitializer)];
+            }
+        } else {
+            // Normal path
+            copiedObject = [[objectClass alloc] init];
+        }
     }
     
-    return [KCSObjectMapper populateObjectWithLinkedResources:copiedObject withData:data resourceDictionary:resources];
+    copiedObject = [KCSObjectMapper populateObjectWithLinkedResources:copiedObject withData:data resourceDictionary:resources];
+    return copiedObject;
 }
 
 + (id)makeObjectOfType:(Class)objectClass withData:(NSDictionary *)data
 {
     return [self makeObjectWithResourcesOfType:objectClass withData:data withResourceDictionary:nil];
+}
+
++ (id)makeObjectOfType:(Class)objectClass withData:(NSDictionary *)data object:(id*)obj
+{
+    return [self makeObjectWithResourcesOfType:objectClass withData:data withResourceDictionary:nil object:obj];
 }
 
 static NSDictionary* _defaultBuilders;
