@@ -260,8 +260,6 @@ return x; \
             return [object isKindOfClass:[NSMutableDictionary class]];
         } else if ([object isKindOfClass:[NSArray class]]) {
             return NO;
-        } else {
-            return YES;
         }
     }
     return NO;
