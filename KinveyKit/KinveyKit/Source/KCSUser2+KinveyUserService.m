@@ -210,6 +210,8 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                 if (provider == KCSSocialIDKinvey) {
                     NSMutableDictionary* kinveyAuth = [NSMutableDictionary dictionaryWithDictionary:userBody[@"_socialIdentity"][@"kinveyAuth"]];
                     kinveyAuth[kKCSMICRedirectURIKey] = accessDictionary[kKCSMICRedirectURIKey];
+                    NSDictionary *socialIdentity = userBody[@"_socialIdentity"];
+                    userBody[@"_socialIdentity"] = socialIdentity.mutableCopy;
                     userBody[@"_socialIdentity"][@"kinveyAuth"] = kinveyAuth;
                 }
                 [self setupActiveUser:userBody completion:completionBlock checkAuth:YES];
