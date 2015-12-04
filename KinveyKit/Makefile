@@ -45,7 +45,7 @@ pkg: all
 	mkdir -p $(DEPLOY_FOLDER)/Module/$(MODULE)
 	cp -R $(OUTPUT_FOLDER)/$(CONFIGURATION)-universal/$(MODULE) $(DEPLOY_FOLDER)/Module
 	cd $(DEPLOY_FOLDER); \
-	zip -r -X ../$(PRODUCT_NAME)-$(VERSION).zip *
+	cd ..; zip -r $(PRODUCT_NAME)-$(VERSION).zip $(PRODUCT_NAME)-$(VERSION)
 	
 deploy: pkg
 	cd ../Tools/upload-to-amazon-aws-s3; \
