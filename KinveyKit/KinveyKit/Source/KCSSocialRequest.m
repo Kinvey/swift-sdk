@@ -122,7 +122,7 @@
     };
     
     [[KCSNetworkObserver sharedObserver] connectionStart];
-    [[KCSRequest2 requestQueue] addOperation:op];
+    [[KCSHttpRequest requestQueue] addOperation:op];
     return op;
 }
 
@@ -159,7 +159,7 @@
         double delayInSeconds = 0.1 * pow(2, newcount - 1); //exponential backoff
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [[KCSRequest2 requestQueue] addOperation:op];
+            [[KCSHttpRequest requestQueue] addOperation:op];
         });
     }
 }

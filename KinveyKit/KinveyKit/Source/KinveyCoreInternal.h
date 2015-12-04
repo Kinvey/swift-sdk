@@ -23,7 +23,7 @@
 
 #pragma mark - Network
 
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 #import "KCSNetworkOperation.h"
 #import "KCSNetworkResponse.h"
 #import "KCSCredentials.h"

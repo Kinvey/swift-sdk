@@ -22,7 +22,7 @@
 
 #import "KinveyUser.h"
 
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 #import "KCSNetworkResponse.h"
 #import "KCSRequest+Private.h"
 #import "KinveyErrorCodes.h"
@@ -46,7 +46,7 @@
         completionBlock(nil, error);
     }
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             id jsonObject;
             if (error) {

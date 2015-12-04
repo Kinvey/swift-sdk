@@ -75,7 +75,7 @@
     NSDictionary* reqOptions = @{KCSRequestLogMethod}; //start here and add what params are passed in
     reqOptions = [reqOptions dictionaryByAddingDictionary:options];
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             completion(nil, error);
         } else {
@@ -142,7 +142,7 @@
     }
     SWITCH_TO_MAIN_THREAD_DATA_STORE_OBJECT_BLOCK(completion);
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSDictionary* responseDict = nil;
         if (!error) {
             response.skipValidation = YES;
@@ -181,7 +181,7 @@
     SWITCH_TO_MAIN_THREAD_DATA_STORE_OBJECT_BLOCK(completion);
     if (!query) [[NSException exceptionWithName:NSInvalidArgumentException reason:@"query is nil" userInfo:nil] raise];
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSDictionary* responseDict = nil;
         if (!error) {
             response.skipValidation = YES;

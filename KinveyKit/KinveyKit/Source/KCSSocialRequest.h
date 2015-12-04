@@ -18,7 +18,7 @@
 
 
 #import <Foundation/Foundation.h>
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 
 @interface KCSSocialRequest : NSObject
 @property (nonatomic, copy) KCSRequestCompletionBlock completionBlock;

@@ -31,6 +31,7 @@ KCS_CONSTANT KCS_PING_APP_NAME;
 typedef void(^KCSPingBlock2)(NSDictionary* appInfo, NSError* error);
 
 
+KCS_DEPRECATED(Please use KCSPing instead, 1.41.0)
 @interface KCSPing2 : NSObject
 
 /* Ping Kinvey and perform a callback when complete.

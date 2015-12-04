@@ -54,7 +54,7 @@
     id<KCSCredentials> credentails = mockCredentails();
     
     dispatch_async(dispatch_queue_create("testq", 0), ^{
-        KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+        KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             XCTAssertTrue([NSThread isMainThread]);
         } route:KCSRestRouteTestReflection options:@{KCSRequestOptionUseMock: @(YES), KCSRequestLogMethod} credentials:credentails];
         [request start];

@@ -27,7 +27,7 @@
 #import "KCS_FMDatabaseQueue.h"
 #import "KCSMutableOrderedDictionary.h"
 #import "KinveyPersistable.h"
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 
 //IMPORTANT NOTE: please, always increase this number, never decrease to avoid clear your cache!
 //IMPORTANT NOTE: if you changed the version, make sure that you have implemented a method that looks like -(void)upgradeDatabaseSchemaFromVersion5toVersion6:(KCS_FMDatabase*)db

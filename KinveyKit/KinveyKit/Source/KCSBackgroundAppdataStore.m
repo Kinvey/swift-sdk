@@ -30,7 +30,7 @@
 #import "KCSHiddenMethods.h"
 #import "KCSSaveGraph.h"
 #import "KCSObjectCache.h"
-#import "KCSRequest2.h"
+#import "KCSHttpRequest.h"
 #import "NSError+KinveyKit.h"
 #import "KCSClient+KinveyDataStore.h"
 #import "KinveyDataStore.h"
@@ -204,9 +204,17 @@ return x; \
 
 #pragma mark - Querying/Fetching
 //for overriding by subclasses (simpler than strategy, for now)
-- (id) manufactureNewObject:(NSDictionary*)jsonDict resourcesOrNil:(NSMutableDictionary*)resources
+-(id)manufactureNewObject:(NSDictionary*)jsonDict
+           resourcesOrNil:(NSMutableDictionary*)resources
 {
     return [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:jsonDict];
+}
+
+-(id)manufactureNewObject:(NSDictionary*)jsonDict
+           resourcesOrNil:(NSMutableDictionary*)resources
+                   object:(id*)obj
+{
+    return [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:jsonDict object:obj];
 }
 
 - (NSString*) getObjIdFromObject:(id)object completionBlock:(KCSCompletionBlock)completionBlock
@@ -235,8 +243,32 @@ return x; \
     return theId;
 }
 
+-(void)handleLoadResponse:(KCSNetworkResponse*)response
+                    error:(NSError*)error
+          completionBlock:(KCSCompletionBlock)completionBlock
+{
+    [self handleLoadResponse:response
+                       error:error
+             completionBlock:completionBlock
+               requestObject:nil];
+}
 
-- (void) handleLoadResponse:(KCSNetworkResponse*)response error:(NSError*)error completionBlock:(KCSCompletionBlock)completionBlock
+-(BOOL)isMutableObject:(id)object
+{
+    if (object) {
+        if ([object isKindOfClass:[NSDictionary class]]) {
+            return [object isKindOfClass:[NSMutableDictionary class]];
+        } else if ([object isKindOfClass:[NSArray class]]) {
+            return [object isKindOfClass:[NSMutableArray class]];
+        }
+    }
+    return NO;
+}
+
+-(void)handleLoadResponse:(KCSNetworkResponse*)response
+                    error:(NSError*)error
+          completionBlock:(KCSCompletionBlock)completionBlock
+            requestObject:(id)requestObject
 {
     if (response) NSAssert(![NSThread isMainThread], @"%s should not run in the main thread", __FUNCTION__);
     if (error) {
@@ -258,7 +290,7 @@ return x; \
             NSMutableArray* returnObjects = [NSMutableArray arrayWithCapacity:itemCount];
             for (NSDictionary* jsonDict in jsonArray) {
                 NSMutableDictionary* resources = [NSMutableDictionary dictionary];
-                id newobj = [self manufactureNewObject:jsonDict resourcesOrNil:resources];
+                id newobj = [self manufactureNewObject:jsonDict resourcesOrNil:resources object:[self isMutableObject:requestObject] ? &requestObject : nil];
                 [returnObjects addObject:newobj];
                 NSUInteger resourceCount = resources.count;
                 if ( resourceCount > 0 ) {
@@ -390,8 +422,11 @@ return x; \
             } else {
                 NSString* route = [self.backingCollection route];
                 
-                KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
-                    [self handleLoadResponse:response error:error completionBlock:completionBlock];
+                KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+                    [self handleLoadResponse:response
+                                       error:error
+                             completionBlock:completionBlock
+                               requestObject:objectID];
                 }
                                                                     route:route
                                                                   options:@{KCSRequestLogMethod}
@@ -520,7 +555,7 @@ return x; \
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         NSDictionary* jsonResponse = [response jsonObjectError:&error];
         if (error) {
             completionBlock(nil, error);
@@ -557,7 +592,7 @@ return x; \
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         [self handleLoadResponse:response error:error completionBlock:completionBlock];
     }
                                                         route:route
@@ -910,7 +945,7 @@ NSError* createCacheError(NSString* message)
         [body setObject:[condition query] forKey:@"condition"];
     }
     
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             completionBlock(nil, error);
         } else {
@@ -1097,7 +1132,7 @@ NSError* createCacheError(NSString* message)
     //Step 3: save entity
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
-    __block KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    __block KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             if ([self shouldEnqueue:error] == YES) {
                 //enqueue save
@@ -1479,7 +1514,7 @@ andResaveAfterReferencesSaved:^{
     
     KCSCollection* collection = self.backingCollection;
     NSString* route = [collection route];
-    KCSRequest2* request = [KCSRequest2 requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
+    KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
             countBlock(0, error);
         } else {

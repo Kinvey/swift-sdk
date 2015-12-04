@@ -45,7 +45,7 @@ pkg: all
 	mkdir -p $(DEPLOY_FOLDER)/Module/$(MODULE)
 	cp -R $(OUTPUT_FOLDER)/$(CONFIGURATION)-universal/$(MODULE) $(DEPLOY_FOLDER)/Module
 	cd $(DEPLOY_FOLDER); \
-	zip -r -X ../$(PRODUCT_NAME)-$(VERSION).zip *
+	cd ..; zip -r $(PRODUCT_NAME)-$(VERSION).zip $(PRODUCT_NAME)-$(VERSION)
 	
 deploy: pkg
 	cd ../Tools/upload-to-amazon-aws-s3; \
@@ -67,6 +67,50 @@ deploy-reference:
 	git push origin master; \
 	git push staging master; \
 	git push production master
+
+deploy-cocoapods:
+	cd ..; \
+	pod trunk push KinveyKit.podspec --verbose
+	
+show-version:
+	@cat README.md | grep 'KinveyKit ([0-9]*.[0-9]*.[0-9]*, \w* [0-9]* [0-9]*)' | awk {'print $$2'} | sed 's/[(,]//g' | xargs echo 'README.md        '
+	@cat KinveyKit/KinveyVersion.h | grep '#define __KINVEYKIT_VERSION__ @"[0-9]*.[0-9]*.[0-9]*"' | awk {'print $$3'} | sed 's/[@"]//g' | xargs echo 'KinveyVersion.h  '
+	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/KinveyKit/Info.plist" | xargs echo 'Info.plist       '
+	@cat ../KinveyKit.podspec | grep "s.version          = \"[0-9]*.[0-9]*.[0-9]*\"" | awk {'print $$3'} | sed 's/"//g' | xargs echo 'KinveyKit.podspec'
+	@agvtool what-version | awk '0 == NR % 2' | awk {'print $1'} | xargs echo 'Project Version  '
+	
+set-version:
+	@echo 'Current Version:'
+	@echo '----------------------'
+	@$(MAKE) show-version
+	
+	@echo
+	
+	@echo 'New General Version: (Example: 1.xx.x)'
+	@read version; \
+	\
+	echo 'New Project Version: (Example: 1.xxx)'; \
+	read project_version; \
+	\
+	sed -i -e s/KinveyKit\ \([0-9]*.[0-9]*.[0-9]*,\ [a-zA-Z]*\ [0-9]*\ [0-9]*\)/KinveyKit\ \($$version,\ $(shell date '+%B\ %d\ %Y')\)/g README.md; \
+	rm README.md-e; \
+	\
+	sed -i -e "s/#define __KINVEYKIT_VERSION__ @\"[0-9]*.[0-9]*.[0-9]*\"/#define __KINVEYKIT_VERSION__ @\"$$version\"/g" KinveyKit/KinveyVersion.h; \
+	rm KinveyKit/KinveyVersion.h-e; \
+	\
+	/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $$version" "${PWD}/KinveyKit/Info.plist"; \
+	\
+	sed -i -e "s/s.version          = \"[0-9]*.[0-9]*.[0-9]*\"/s.version          = \"$$version\"/g" ../KinveyKit.podspec; \
+	rm ../KinveyKit.podspec-e; \
+	\
+	agvtool new-version $$project_version > /dev/null
+
+	@echo
+	@echo
+
+	@echo 'New Version:'
+	@echo '----------------------'
+	@$(MAKE) show-version
 
 clean:
 	rm -Rf $(OUTPUT_FOLDER)
