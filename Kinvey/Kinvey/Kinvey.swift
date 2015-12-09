@@ -10,6 +10,10 @@ import Foundation
 
 public class Kinvey: NSObject {
     
+    public static let PersistableIdKey = "_id"
+    public static let PersistableAclKey = "_acl"
+    public static let PersistableMetadataKey = "_kmd"
+    
     private override init() {
     }
     
