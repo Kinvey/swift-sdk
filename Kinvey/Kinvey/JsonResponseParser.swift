@@ -10,21 +10,16 @@ import Foundation
 
 class JsonResponseParser: ResponseParser {
     
-    override func parse<T>(data: NSData?, response: NSURLResponse?, error: NSError?, type: T.Type) -> T? {
-        if let data = data, let response = response {
-            if let httpResponse = response as? NSHTTPURLResponse {
-                if (200 <= httpResponse.statusCode && httpResponse.statusCode < 300) {
-                    let result = try! NSJSONSerialization.JSONObjectWithData(data, options: [])
-                    if let result = result as? T {
-                        return result
-                    } else if let result = result as? [String : AnyObject] {
-                        print(T.self is protocol<Persistable>)
-                        print(T.self is Persistable)
-                        print(T.self as? Persistable)
-                        print(T.self as? protocol<Persistable>)
-                        if T.self is protocol<Persistable> {
-//                            persistable.loadFrom(result)
-                        }
+    override func parse<T>(data: NSData?, type: T.Type) -> T? {
+        if let data = data {
+            if (data.length > 0) {
+                let result = try! NSJSONSerialization.JSONObjectWithData(data, options: [])
+                if let result = result as? T {
+                    return result
+                } else if let result = result as? [String : AnyObject] {
+                    if let persistable = type as? Persistable.Type {
+                        let obj = persistable.init(json: result)
+                        return obj as? T
                     }
                 }
             }

@@ -15,5 +15,9 @@ public class Acl: NSObject {
     public init(creator: String) {
         self.creator = creator
     }
+    
+    public convenience init(json: [String : String]) {
+        self.init(creator: json["creator"] as String!)
+    }
 
 }

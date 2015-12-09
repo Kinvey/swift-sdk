@@ -16,7 +16,16 @@ public class ResponseParser: NSObject {
         self.client = client
     }
     
-    func parse<T>(data: NSData?, response: NSURLResponse?, error: NSError?, type: T.Type) -> T? {
+    func isResponseOk(response: NSURLResponse?) -> Bool {
+        if let response = response {
+            if let httpResponse = response as? NSHTTPURLResponse {
+                return 200 <= httpResponse.statusCode && httpResponse.statusCode < 300
+            }
+        }
+        return false
+    }
+    
+    func parse<T>(data: NSData?, type: T.Type) -> T? {
         preconditionFailure("This method must be overridden")
     }
 
