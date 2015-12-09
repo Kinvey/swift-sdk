@@ -18,6 +18,8 @@ public class Client: NSObject {
         }
     }
     
+    internal let urlSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+    
     internal var appKey: String?
     internal var appSecret: String?
     internal var apiHostName: String?
