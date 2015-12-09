@@ -12,7 +12,7 @@ class HttpNetworkTransport: NetworkTransport {
         
     override func execute(request: NSMutableURLRequest, completionHandler: CompletionHandler) {
         var authorization: String?
-        if let authtoken = client.activeUser?.authtoken {
+        if let authtoken = client.activeUser?.metadata?.authtoken {
             authorization = "Kinvey \(authtoken)"
         } else if let appKey = client.appKey, let appSecret = client.appSecret {
             let appKeySecret = "\(appKey):\(appSecret)".dataUsingEncoding(NSUTF8StringEncoding)?.base64EncodedStringWithOptions([])
@@ -24,8 +24,7 @@ class HttpNetworkTransport: NetworkTransport {
             request.addValue(authorization, forHTTPHeaderField: "Authorization")
         }
         
-        let session = NSURLSession.sharedSession()
-        let task = session.dataTaskWithRequest(request, completionHandler: completionHandler)
+        let task = client.urlSession.dataTaskWithRequest(request, completionHandler: completionHandler)
         task.resume()
     }
 

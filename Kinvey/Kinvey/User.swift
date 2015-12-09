@@ -11,6 +11,7 @@ import Foundation
 public class User: NSObject, Persistable {
     
     public typealias UserHandler = (user: User?, error: NSError?) -> Void
+    public typealias VoidHandler = (error: NSError?) -> Void
     
     public let userId: String?
     public let acl: Acl?
@@ -18,8 +19,6 @@ public class User: NSObject, Persistable {
     
     public var username: String?
     public var email: String?
-    
-    internal var authtoken: String?
     
     internal var client: Client?
     
@@ -40,6 +39,10 @@ public class User: NSObject, Persistable {
     }
     
     private class func signup(username username: String?, password: String?, client: Client, completionHandler: UserHandler?) {
+        _signup(username: username, password: password, client: client, completionHandler: dispatchAsyncTo(completionHandler))
+    }
+    
+    internal class func _signup(username username: String?, password: String?, client: Client, completionHandler: UserHandler?) {
         let url = client.buildURL("/user/\(client.appKey!)/")
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "POST"
@@ -55,15 +58,70 @@ public class User: NSObject, Persistable {
         }
         request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         client.networkTransport.execute(request) { (data, response, error) -> Void in
-            client._activeUser = client.responseParser.parse(data, response: response, error: error, type: User.self)
+            if client.responseParser.isResponseOk(response) {
+                client._activeUser = client.responseParser.parse(data, type: User.self)
+            }
             if let completionHandler = completionHandler {
                 completionHandler(user: client._activeUser, error: error)
             }
         }
     }
     
-    public func loadFrom(json: [String : AnyObject]) {
+    //TODO: review the method name for delete a user
+    public func destroy(completionHandler: VoidHandler?) {
+        destroy(hard: true, client: Kinvey.sharedClient(), completionHandler: completionHandler)
+    }
+    
+    public func destroy(client client: Client, completionHandler: VoidHandler?) {
+        destroy(hard: true, client: client, completionHandler: completionHandler)
+    }
+    
+    public func destroy(hard hard: Bool, completionHandler: VoidHandler?) {
+        destroy(hard: hard, client: Kinvey.sharedClient(), completionHandler: completionHandler)
+    }
+    
+    public func destroy(hard hard: Bool, client: Client, completionHandler: VoidHandler?) {
+        if let userId = self.userId {
+            self.dynamicType.destroy(userId: userId, hard: hard, client: client, completionHandler: completionHandler)
+        }
+    }
+    
+    public class func destroy(userId userId: String, completionHandler: VoidHandler?) {
+        destroy(userId: userId, hard: true, client: Kinvey.sharedClient(), completionHandler: completionHandler)
+    }
+    
+    public class func destroy(userId userId: String, hard: Bool, completionHandler: VoidHandler?) {
+        destroy(userId: userId, hard: hard, client: Kinvey.sharedClient(), completionHandler: completionHandler)
+    }
+    
+    public class func destroy(userId userId: String, client: Client, completionHandler: VoidHandler?) {
+        destroy(userId: userId, hard: true, client: client, completionHandler: completionHandler)
+    }
+    
+    public class func destroy(userId userId: String, hard: Bool, client: Client, completionHandler: VoidHandler?) {
+        _destroy(userId: userId, hard: hard, client: client, completionHandler: dispatchAsyncTo(completionHandler))
+    }
+    
+    internal class func _destroy(userId userId: String, hard: Bool, client: Client, completionHandler: VoidHandler?) {
+        let url = client.buildURL("/user/\(client.appKey!)/\(userId)")
+        let request = NSMutableURLRequest(URL: url!)
+        request.HTTPMethod = "DELETE"
         
+        request.addValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
+        
+        var bodyObject: [String : Bool] = [:]
+        if hard {
+            bodyObject["hard"] = true
+        }
+        request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        client.networkTransport.execute(request) { (data, response, error) -> Void in
+            if client.responseParser.isResponseOk(response) {
+                client._activeUser = nil
+            }
+            if let completionHandler = completionHandler {
+                completionHandler(error: error)
+            }
+        }
     }
     
     public class func login(username username: String, password: String) {
@@ -100,11 +158,63 @@ public class User: NSObject, Persistable {
         metadata = nil
     }
     
+    public required init(json: [String : AnyObject]) {
+        userId = json[Kinvey.PersistableIdKey] as? String
+        
+        if let acl = json[Kinvey.PersistableAclKey] as? [String : String] {
+            self.acl = Acl(json: acl)
+        } else {
+            acl = nil
+        }
+        
+        if let kmd = json[Kinvey.PersistableMetadataKey] as? [String : String] {
+            metadata = Metadata(json: kmd)
+        } else {
+            metadata = nil
+        }
+        
+        super.init()
+    }
+    
     public func logout() {
         
     }
     
     public func save() {
+    }
+    
+    //MARK: - Dispatch Async To
+    
+    private class func dispatchAsyncTo(completionHandler: UserHandler?) -> UserHandler? {
+        return dispatchAsyncTo(queue: dispatch_get_main_queue(), completionHandler: completionHandler)
+    }
+    
+    private class func dispatchAsyncTo(queue queue: dispatch_queue_t, completionHandler: UserHandler?) -> UserHandler? {
+        var completionHandler = completionHandler
+        if let originalCompletionHandler = completionHandler {
+            completionHandler = { user, error in
+                dispatch_async(queue, { () -> Void in
+                    originalCompletionHandler(user: user, error: error)
+                })
+            }
+        }
+        return completionHandler
+    }
+    
+    private class func dispatchAsyncTo(completionHandler: VoidHandler?) -> VoidHandler? {
+        return dispatchAsyncTo(queue: dispatch_get_main_queue(), completionHandler: completionHandler)
+    }
+    
+    private class func dispatchAsyncTo(queue queue: dispatch_queue_t, completionHandler: VoidHandler?) -> VoidHandler? {
+        var completionHandler = completionHandler
+        if let originalCompletionHandler = completionHandler {
+            completionHandler = { error in
+                dispatch_async(queue, { () -> Void in
+                    originalCompletionHandler(error: error)
+                })
+            }
+        }
+        return completionHandler
     }
 
 }
