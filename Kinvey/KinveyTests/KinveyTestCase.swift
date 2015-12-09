@@ -31,6 +31,28 @@ class KinveyTestCase: XCTestCase {
         weak var expectationSignUp = expectationWithDescription("Sign Up")
         
         User.signup { user, error in
+            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertNil(error)
+            
+            expectationSignUp?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationSignUp = nil
+        }
+        
+        XCTAssertNotNil(client.activeUser)
+    }
+    
+    func signUp(username username: String, password: String) {
+        XCTAssertNil(client.activeUser)
+        
+        weak var expectationSignUp = expectationWithDescription("Sign Up")
+        
+        User.signup(username: username, password: password) { user, error in
+            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertNil(error)
+            
             expectationSignUp?.fulfill()
         }
         
@@ -43,7 +65,20 @@ class KinveyTestCase: XCTestCase {
     
     override func tearDown() {
         if let user = client?.activeUser {
-            user.logout()
+            weak var expectationDestroyUser = expectationWithDescription("Destroy User")
+            
+            user.destroy { (error) -> Void in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNil(error)
+                
+                expectationDestroyUser?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationDestroyUser = nil
+            }
+            
+            XCTAssertNil(client.activeUser)
         }
         
         super.tearDown()

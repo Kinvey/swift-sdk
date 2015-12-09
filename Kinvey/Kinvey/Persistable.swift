@@ -10,6 +10,6 @@ import Foundation
 
 public protocol Persistable {
     
-    func loadFrom(json: [String : AnyObject])
+    init(json: [String : AnyObject])
     
 }
