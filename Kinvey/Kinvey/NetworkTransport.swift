@@ -8,18 +8,16 @@
 
 import Foundation
 
-public class NetworkTransport: NSObject {
+public protocol NetworkTransport {
     
-    let client: Client
+    func execute(request: NSMutableURLRequest, forceBasicAuthentication: Bool, completionHandler: (NSData?, NSURLResponse?, NSError?) -> Void)
     
-    init(client: Client) {
-        self.client = client
-    }
+}
+
+extension NetworkTransport {
     
-    typealias CompletionHandler = (NSData?, NSURLResponse?, NSError?) -> Void
-    
-    func execute(request: NSMutableURLRequest, completionHandler: CompletionHandler) {
-        preconditionFailure("This method must be overridden")
+    func execute(request: NSMutableURLRequest, completionHandler: (NSData?, NSURLResponse?, NSError?) -> Void) {
+        execute(request, forceBasicAuthentication: false, completionHandler: completionHandler)
     }
     
 }

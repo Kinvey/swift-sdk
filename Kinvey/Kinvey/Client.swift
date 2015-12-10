@@ -22,10 +22,12 @@ public class Client: NSObject {
     
     internal var appKey: String?
     internal var appSecret: String?
-    internal var apiHostName: String?
+    internal var apiHostName: NSURL?
     
     public var networkTransport: NetworkTransport!
     public var responseParser: ResponseParser!
+    
+    public var userType = User.self
     
     public override init() {
         super.init()
@@ -48,25 +50,26 @@ public class Client: NSObject {
     }
     
     public func initialize(apiHostName apiHostName: String, appKey: String, appSecret: String) -> Client {
-        self.apiHostName = apiHostName
+        self.apiHostName = NSURL(string: apiHostName)
         self.appKey = appKey
         self.appSecret = appSecret
         return self
     }
     
-    internal func buildURL(endpoint: String) -> NSURL? {
-        if let _apiHostName = apiHostName {
-            var apiHostName = _apiHostName
-            if (apiHostName.characters.last == "/") {
-                apiHostName = apiHostName.substringToIndex(apiHostName.endIndex.predecessor())
+    enum Endpoint {
+        
+        case User(Client)
+        case UserById(Client, String)
+        
+        func url() -> NSURL? {
+            switch self {
+            case .User(let client):
+                return client.apiHostName?.URLByAppendingPathComponent("/user/\(client.appKey!)")
+            case .UserById(let client, let userId):
+                return client.apiHostName?.URLByAppendingPathComponent("/user/\(client.appKey!)/\(userId)")
             }
-            var endpoint = endpoint
-            if (endpoint.characters.first == "/") {
-                endpoint = endpoint.substringFromIndex(endpoint.startIndex.successor())
-            }
-            return NSURL(string: "\(apiHostName)/\(endpoint)")
         }
-        return nil
+        
     }
 
 }

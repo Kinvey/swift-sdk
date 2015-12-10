@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class User: NSObject, Persistable {
+public class User: NSObject, JsonObject {
     
     public typealias UserHandler = (user: User?, error: NSError?) -> Void
     public typealias VoidHandler = (error: NSError?) -> Void
@@ -43,7 +43,7 @@ public class User: NSObject, Persistable {
     }
     
     internal class func _signup(username username: String?, password: String?, client: Client, completionHandler: UserHandler?) {
-        let url = client.buildURL("/user/\(client.appKey!)/")
+        let url = Client.Endpoint.User(client).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "POST"
         
@@ -59,7 +59,7 @@ public class User: NSObject, Persistable {
         request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         client.networkTransport.execute(request) { (data, response, error) -> Void in
             if client.responseParser.isResponseOk(response) {
-                client._activeUser = client.responseParser.parse(data, type: User.self)
+                client._activeUser = client.responseParser.parse(data, type: client.userType)
             }
             if let completionHandler = completionHandler {
                 completionHandler(user: client._activeUser, error: error)
@@ -103,7 +103,7 @@ public class User: NSObject, Persistable {
     }
     
     internal class func _destroy(userId userId: String, hard: Bool, client: Client, completionHandler: VoidHandler?) {
-        let url = client.buildURL("/user/\(client.appKey!)/\(userId)")
+        let url = Client.Endpoint.UserById(client, userId).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "DELETE"
         
@@ -152,6 +152,30 @@ public class User: NSObject, Persistable {
     public class func exists(username username: String, client: Client) {
     }
     
+    public class func get(userId userId: String, completionHandler: UserHandler?) {
+        get(userId: userId, client: Kinvey.sharedClient(), completionHandler: completionHandler)
+    }
+    
+    public class func get(userId userId: String, client: Client, completionHandler: UserHandler?) {
+        _get(userId: userId, client: client, completionHandler: dispatchAsyncTo(completionHandler))
+    }
+    
+    internal class func _get(userId userId: String, client: Client, completionHandler: UserHandler?) {
+        let url = Client.Endpoint.UserById(client, userId).url()
+        let request = NSMutableURLRequest(URL: url!)
+        request.HTTPMethod = "GET"
+        
+        client.networkTransport.execute(request) { (data, response, error) -> Void in
+            var user: User?
+            if client.responseParser.isResponseOk(response) {
+                user = client.responseParser.parse(data, type: User.self)
+            }
+            if let completionHandler = completionHandler {
+                completionHandler(user: user, error: error)
+            }
+        }
+    }
+    
     public override init() {
         userId = nil
         acl = nil
@@ -176,11 +200,53 @@ public class User: NSObject, Persistable {
         super.init()
     }
     
+    public func toJson() -> [String : AnyObject] {
+        var json: [String : AnyObject] = [:]
+        
+        if let userId = userId {
+            json[Kinvey.PersistableIdKey] = userId
+        }
+        
+        if let acl = acl {
+            json[Kinvey.PersistableAclKey] = acl.toJson()
+        }
+        
+        if let metadata = metadata {
+            json[Kinvey.PersistableMetadataKey] = metadata.toJson()
+        }
+        
+        return json
+    }
+    
     public func logout() {
         
     }
     
-    public func save() {
+    public func save(completionHandler: UserHandler?) {
+        save(client: Kinvey.sharedClient(), completionHandler: completionHandler)
+    }
+    
+    public func save(client client: Client, completionHandler: UserHandler?) {
+        _save(client: client, completionHandler: self.dynamicType.dispatchAsyncTo(completionHandler))
+    }
+    
+    internal func _save(client client: Client, completionHandler: UserHandler?) {
+        let url = Client.Endpoint.UserById(client, userId!).url()
+        let request = NSMutableURLRequest(URL: url!)
+        request.HTTPMethod = "PUT"
+        
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let bodyObject = toJson()
+        request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        client.networkTransport.execute(request) { (data, response, error) -> Void in
+            if client.responseParser.isResponseOk(response) {
+                client._activeUser = client.responseParser.parse(data, type: client.userType)
+            }
+            if let completionHandler = completionHandler {
+                completionHandler(user: client._activeUser, error: error)
+            }
+        }
     }
     
     //MARK: - Dispatch Async To

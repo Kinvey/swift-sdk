@@ -33,6 +33,7 @@ class KinveyTestCase: XCTestCase {
         User.signup { user, error in
             XCTAssertTrue(NSThread.isMainThread())
             XCTAssertNil(error)
+            XCTAssertNotNil(user)
             
             expectationSignUp?.fulfill()
         }
@@ -52,6 +53,7 @@ class KinveyTestCase: XCTestCase {
         User.signup(username: username, password: password) { user, error in
             XCTAssertTrue(NSThread.isMainThread())
             XCTAssertNil(error)
+            XCTAssertNotNil(user)
             
             expectationSignUp?.fulfill()
         }
