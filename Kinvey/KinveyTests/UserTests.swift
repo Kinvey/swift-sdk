@@ -125,5 +125,75 @@ class UserTests: KinveyTestCase {
             XCTAssertNil(client.activeUser)
         }
     }
+    
+    func testGet() {
+        signUp()
+        
+        if let user = client.activeUser, let userId = user.userId {
+            weak var expectationUserExists = expectationWithDescription("User Exists")
+            
+            User.get(userId: userId, completionHandler: { (user, error) -> Void in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNil(error)
+                XCTAssertNotNil(user)
+                
+                expectationUserExists?.fulfill()
+            })
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUserExists = nil
+            }
+        }
+    }
+    
+    func testSave() {
+        class MyUser: User {
+            
+            var foo: String?
+            
+            required init(json: [String : AnyObject]) {
+                super.init(json: json)
+                foo = json["foo"] as? String
+            }
+            
+            private override func toJson() -> [String : AnyObject] {
+                var json = super.toJson()
+                if let foo = foo {
+                    json["foo"] = foo
+                }
+                return json
+            }
+            
+        }
+        
+        client.userType = MyUser.self
+        
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        XCTAssertTrue(client.activeUser is MyUser)
+        
+        if let user = client.activeUser as? MyUser {
+            weak var expectationUserSave = expectationWithDescription("User Save")
+            
+            user.foo = "bar"
+            
+            user.save { (user, error) -> Void in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNil(error)
+                XCTAssertNotNil(user)
+                XCTAssertTrue(user is MyUser)
+                if let myUser = user as? MyUser {
+                    XCTAssertEqual(myUser.foo, "bar")
+                }
+
+                expectationUserSave?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUserSave = nil
+            }
+        }
+    }
 
 }

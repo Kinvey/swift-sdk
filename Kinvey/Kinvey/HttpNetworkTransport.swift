@@ -9,10 +9,18 @@
 import Foundation
 
 class HttpNetworkTransport: NetworkTransport {
-        
-    override func execute(request: NSMutableURLRequest, completionHandler: CompletionHandler) {
+    
+    let client: Client
+    
+    required init(client: Client) {
+        self.client = client
+    }
+    
+    typealias CompletionHandler = (NSData?, NSURLResponse?, NSError?) -> Void
+    
+    func execute(request: NSMutableURLRequest, forceBasicAuthentication: Bool, completionHandler: CompletionHandler) {
         var authorization: String?
-        if let authtoken = client.activeUser?.metadata?.authtoken {
+        if !forceBasicAuthentication, let authtoken = client.activeUser?.metadata?.authtoken {
             authorization = "Kinvey \(authtoken)"
         } else if let appKey = client.appKey, let appSecret = client.appSecret {
             let appKeySecret = "\(appKey):\(appSecret)".dataUsingEncoding(NSUTF8StringEncoding)?.base64EncodedStringWithOptions([])
