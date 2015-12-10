@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
 		57A27C861C178F17000DF951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				57E1C3B01C18156700578974 /* HttpNetworkTransport.swift */,
 				57E1C3B21C1822B100578974 /* ResponseParser.swift */,
 				57E1C3B41C18253B00578974 /* JsonResponseParser.swift */,
+				5783B5061C1910B00077F8A6 /* JsonObject.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -254,6 +257,7 @@
 				57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */,
 				57A27C9C1C178FAC000DF951 /* Kinvey.swift in Sources */,
 				57E1C3B11C18156700578974 /* HttpNetworkTransport.swift in Sources */,
+				5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */,
 				57A27CA01C178FC0000DF951 /* User.swift in Sources */,
 				57E1C3A11C17B39E00578974 /* SyncedStore.swift in Sources */,
 				57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */,

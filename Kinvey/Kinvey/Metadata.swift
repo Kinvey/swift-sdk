@@ -8,7 +8,11 @@
 
 import Foundation
 
-public class Metadata: NSObject {
+public class Metadata: NSObject, JsonObject {
+    
+    private static let LmtKey = "lmt"
+    private static let EctKey = "ect"
+    private static let AuthTokenKey = "authtoken"
     
     public let lmt: String
     public let ect: String
@@ -22,10 +26,21 @@ public class Metadata: NSObject {
     
     public convenience init(json: [String : String]) {
         self.init(
-            lmt: json["lmt"] as String!,
-            ect: json["ect"] as String!,
-            authtoken: json["authtoken"] as String?
+            lmt: json[Metadata.LmtKey] as String!,
+            ect: json[Metadata.EctKey] as String!,
+            authtoken: json[Metadata.AuthTokenKey] as String?
         )
+    }
+    
+    func toJson() -> [String : AnyObject] {
+        var json: [String : AnyObject] = [
+            Metadata.LmtKey : lmt,
+            Metadata.EctKey : ect
+        ]
+        if let authtoken = authtoken {
+            json[Metadata.AuthTokenKey] = authtoken
+        }
+        return json
     }
 
 }
