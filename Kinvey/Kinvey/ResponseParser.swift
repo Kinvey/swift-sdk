@@ -8,13 +8,14 @@
 
 import Foundation
 
-public class ResponseParser: NSObject {
+public protocol ResponseParser {
     
-    private let client: Client
-    
-    init(client: Client) {
-        self.client = client
-    }
+    func parse<T>(data: NSData?, type: T.Type) -> T?
+    func parse<S, T>(source: S?) -> T?
+
+}
+
+extension ResponseParser {
     
     func isResponseOk(response: NSURLResponse?) -> Bool {
         if let response = response {
@@ -25,8 +26,4 @@ public class ResponseParser: NSObject {
         return false
     }
     
-    func parse<T>(data: NSData?, type: T.Type) -> T? {
-        preconditionFailure("This method must be overridden")
-    }
-
 }
