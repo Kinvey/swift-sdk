@@ -17,6 +17,9 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-Wunused-variable"
 
 #import "KCSFileStore.h"
 
@@ -1379,3 +1382,4 @@ NSString* const KCSFileStoreCollectionName = @"_blob";
 
 @end
 
+#pragma clang diagnostic pop

@@ -16,6 +16,9 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
 #import "KCSUser2.h"
 #import "KCSRequest.h"
 #import "KinveyUser.h"
@@ -97,3 +100,5 @@ typedef void (^KCSUser2CompletionBlock)(id<KCSUser2>user, NSError* error);
                  completion:(KCSUserCheckUsernameBlock)completionBlock;
 
 @end
+
+#pragma clang diagnostic pop

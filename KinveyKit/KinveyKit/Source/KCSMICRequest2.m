@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
 #import "KCSMICRequest2.h"
 #import "KCSHttpRequest+Private.h"
 #import "KCSUser2+KinveyUserService+Private.h"
@@ -60,3 +63,5 @@
 }
 
 @end
+
+#pragma clang diagnostic pop

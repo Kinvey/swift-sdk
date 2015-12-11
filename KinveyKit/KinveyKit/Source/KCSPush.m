@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "KCSPush.h"
 #import "KCSClient.h"
@@ -361,3 +363,4 @@
 
 @end
 
+#pragma clang diagnostic pop

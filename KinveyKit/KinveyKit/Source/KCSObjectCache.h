@@ -16,6 +16,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import <Foundation/Foundation.h>
 
@@ -68,3 +70,5 @@ typedef void (^KCSObjectDeltaCacheBlock)(NSDictionary*, NSDictionary*, NSTimeInt
 //destructive
 - (void) clear;
 @end
+
+#pragma clang diagnostic pop

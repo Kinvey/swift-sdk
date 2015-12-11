@@ -28,6 +28,7 @@ withFormat:(format),##__VA_ARGS__]
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kNetworkChannel] file:__FILE__ lineNumber:__LINE__ \
 withFormat:(format),##__VA_ARGS__]
 
+#undef KCSLogDebug
 #define KCSLogDebug(format,...) \
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kDebugChannel] file:__FILE__ lineNumber:__LINE__ \
 withFormat:(format),##__VA_ARGS__]
@@ -57,9 +58,11 @@ if (err) { \
 
 #else
 
+#undef KCSLogError
 #define KCSLogError(format,...) \
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ withFormat:(format), ##__VA_ARGS__]
 
+#undef KCSLogNSError
 #define KCSLogNSError(msg, err) \
 if (err) { \
 [[KCSLogManager sharedLogManager] logChannel:[KCSLogManager kErrorChannel] file:__FILE__ lineNumber:__LINE__ withFormat:(@"%@; error: (%@) "), msg, err]; \
