@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "KinveyUser.h"
 #import "KCSLogManager.h"
@@ -547,3 +549,5 @@ void setActive(KCSUser* user)
 }
 
 @end
+
+#pragma clang diagnostic pop

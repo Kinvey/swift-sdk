@@ -1,0 +1,4 @@
+module KinveyKit {
+    header "../../../KinveyKit/KinveyKit/Source/KCSKeychain.h"
+    export *
+}

@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "KCSBackgroundAppdataStore.h"
 
@@ -1546,3 +1548,5 @@ andResaveAfterReferencesSaved:^{
 }
 
 @end
+
+#pragma clang diagnostic pop
