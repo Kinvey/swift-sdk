@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "KCSObjectCache.h"
 
@@ -633,3 +635,5 @@ static KCSObjectDeltaCacheBlock deltaCacheBlock;
 }
 
 @end
+
+#pragma clang diagnostic pop

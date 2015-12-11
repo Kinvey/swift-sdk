@@ -7,10 +7,31 @@
 //
 
 import Foundation
+import KinveyKit
 
 public class Client: NSObject {
     
-    internal var _activeUser: User?
+    internal var _activeUser: User? {
+        willSet (newActiveUser) {
+            if let activeUser = newActiveUser {
+                let userDefaults = NSUserDefaults.standardUserDefaults()
+                userDefaults.setObject(activeUser.userId, forKey: appKey!)
+                userDefaults.synchronize()
+                
+                KCSKeychain2.setKinveyToken(
+                    activeUser.metadata?.authtoken,
+                    user: activeUser.userId,
+                    appKey: appKey,
+                    accessible: KCSKeychain2.accessibleStringForDataProtectionLevel(KCSDataProtectionLevel.CompleteUntilFirstLogin) //TODO: using default value for now
+                )
+            } else {
+                KCSKeychain2.deleteTokensForUser(
+                    _activeUser?.userId,
+                    appKey: appKey
+                )
+            }
+        }
+    }
     
     public var activeUser: User? {
         get {
@@ -53,6 +74,10 @@ public class Client: NSObject {
         self.apiHostName = NSURL(string: apiHostName)
         self.appKey = appKey
         self.appSecret = appSecret
+        if let userId = NSUserDefaults.standardUserDefaults().objectForKey(appKey) as? String, let authtoken = KCSKeychain2.kinveyTokenForUserId(userId, appKey: appKey) {
+            //FIXME: lmt and act
+            _activeUser = User(userId: userId, acl: nil, metadata: Metadata(lmt: "", ect: "", authtoken: authtoken))
+        }
         return self
     }
     

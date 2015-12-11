@@ -17,6 +17,9 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
 #import "KCSNSURLCxnFileOperation.h"
 #import "KinveyErrorCodes.h"
 #import "KinveyCoreInternal.h"
@@ -233,3 +236,5 @@
 }
 
 @end
+
+#pragma clang diagnostic pop

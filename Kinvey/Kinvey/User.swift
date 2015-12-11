@@ -13,7 +13,7 @@ public class User: NSObject, JsonObject {
     public typealias UserHandler = (user: User?, error: NSError?) -> Void
     public typealias VoidHandler = (error: NSError?) -> Void
     
-    public let userId: String?
+    public let userId: String
     public let acl: Acl?
     public let metadata: Metadata?
     
@@ -81,9 +81,7 @@ public class User: NSObject, JsonObject {
     }
     
     public func destroy(hard hard: Bool, client: Client, completionHandler: VoidHandler?) {
-        if let userId = self.userId {
-            self.dynamicType.destroy(userId: userId, hard: hard, client: client, completionHandler: completionHandler)
-        }
+        self.dynamicType.destroy(userId: userId, hard: hard, client: client, completionHandler: completionHandler)
     }
     
     public class func destroy(userId userId: String, completionHandler: VoidHandler?) {
@@ -176,14 +174,14 @@ public class User: NSObject, JsonObject {
         }
     }
     
-    public override init() {
-        userId = nil
-        acl = nil
-        metadata = nil
+    public init(userId: String, acl: Acl?, metadata: Metadata?) {
+        self.userId = userId
+        self.acl = acl
+        self.metadata = metadata
     }
     
     public required init(json: [String : AnyObject]) {
-        userId = json[Kinvey.PersistableIdKey] as? String
+        userId = json[Kinvey.PersistableIdKey] as! String
         
         if let acl = json[Kinvey.PersistableAclKey] as? [String : String] {
             self.acl = Acl(json: acl)
@@ -203,9 +201,7 @@ public class User: NSObject, JsonObject {
     public func toJson() -> [String : AnyObject] {
         var json: [String : AnyObject] = [:]
         
-        if let userId = userId {
-            json[Kinvey.PersistableIdKey] = userId
-        }
+        json[Kinvey.PersistableIdKey] = userId
         
         if let acl = acl {
             json[Kinvey.PersistableAclKey] = acl.toJson()
@@ -231,7 +227,7 @@ public class User: NSObject, JsonObject {
     }
     
     internal func _save(client client: Client, completionHandler: UserHandler?) {
-        let url = Client.Endpoint.UserById(client, userId!).url()
+        let url = Client.Endpoint.UserById(client, userId).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "PUT"
         

@@ -17,6 +17,9 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-W#warnings"
+
 #import "KCSQuery2.h"
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
@@ -387,3 +390,5 @@ id kcsConvertMongoValToPredicate(id val)
 }
 
 @end
+
+#pragma clang diagnostic pop
