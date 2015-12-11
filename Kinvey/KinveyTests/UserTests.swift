@@ -66,10 +66,10 @@ class UserTests: KinveyTestCase {
     func testSignUpAndDestroyClassFunc() {
         signUp()
         
-        if let user = client.activeUser, let userId = user.userId {
+        if let user = client.activeUser {
             weak var expectationDestroyUser = expectationWithDescription("Destroy User")
             
-            User.destroy(userId: userId, completionHandler: { (error) -> Void in
+            User.destroy(userId: user.userId, completionHandler: { (error) -> Void in
                 XCTAssertTrue(NSThread.isMainThread())
                 XCTAssertNil(error)
                 
@@ -87,10 +87,10 @@ class UserTests: KinveyTestCase {
     func testSignUpAndDestroyHardClassFunc() {
         signUp()
         
-        if let user = client.activeUser, let userId = user.userId {
+        if let user = client.activeUser {
             weak var expectationDestroyUser = expectationWithDescription("Destroy User")
             
-            User.destroy(userId: userId, hard: true, completionHandler: { (error) -> Void in
+            User.destroy(userId: user.userId, hard: true, completionHandler: { (error) -> Void in
                 XCTAssertTrue(NSThread.isMainThread())
                 XCTAssertNil(error)
                 
@@ -108,10 +108,10 @@ class UserTests: KinveyTestCase {
     func testSignUpAndDestroyClientClassFunc() {
         signUp()
         
-        if let user = client.activeUser, let userId = user.userId {
+        if let user = client.activeUser {
             weak var expectationDestroyUser = expectationWithDescription("Destroy User")
             
-            User.destroy(userId: userId, client: client, completionHandler: { (error) -> Void in
+            User.destroy(userId: user.userId, client: client, completionHandler: { (error) -> Void in
                 XCTAssertTrue(NSThread.isMainThread())
                 XCTAssertNil(error)
                 
@@ -129,10 +129,10 @@ class UserTests: KinveyTestCase {
     func testGet() {
         signUp()
         
-        if let user = client.activeUser, let userId = user.userId {
+        if let user = client.activeUser {
             weak var expectationUserExists = expectationWithDescription("User Exists")
             
-            User.get(userId: userId, completionHandler: { (user, error) -> Void in
+            User.get(userId: user.userId, completionHandler: { (user, error) -> Void in
                 XCTAssertTrue(NSThread.isMainThread())
                 XCTAssertNil(error)
                 XCTAssertNotNil(user)

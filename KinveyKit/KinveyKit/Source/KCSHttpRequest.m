@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "KCSHttpRequest.h"
 #import "KinveyCoreInternal.h"
@@ -524,3 +526,5 @@ static NSMutableArray* _sRequestArray;
 }
 
 @end
+
+#pragma clang diagnostic pop

@@ -17,6 +17,10 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-W#warnings"
+
 #import "KCSFileUtils.h"
 #import "KinveyCoreInternal.h"
 #import "KCSClient.h"
@@ -34,7 +38,8 @@ static BOOL _kcsFileUtilsDataUnavailable = NO;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[NSFileManager alloc] init];
-        manager.delegate = self;
+        //TODO: FIXME:
+        manager.delegate = (id<NSFileManagerDelegate>) self;
     });
     return manager;
 }
@@ -251,3 +256,5 @@ static BOOL _kcsFileUtilsDataUnavailable = NO;
 }
 
 @end
+
+#pragma clang diagnostic pop
