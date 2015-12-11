@@ -459,6 +459,10 @@ void setActive(KCSUser* user)
         _push[kDeviceTokensKey] = [NSMutableSet set];
     } else if ([_push[kDeviceTokensKey] isKindOfClass:[NSArray class]]) {
         _push[kDeviceTokensKey] = [NSMutableSet setWithArray:_push[kDeviceTokensKey]];
+    } else if ([_push[kDeviceTokensKey] isKindOfClass:[NSDictionary class]] &&
+               ![_push[kDeviceTokensKey] isKindOfClass:[NSMutableDictionary class]])
+    {
+        _push[kDeviceTokensKey] = ((NSDictionary*) _push[kDeviceTokensKey]).mutableCopy;
     }
     return _push[kDeviceTokensKey];
 }
