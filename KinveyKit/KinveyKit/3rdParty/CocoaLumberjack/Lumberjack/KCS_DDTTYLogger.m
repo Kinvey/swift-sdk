@@ -1,3 +1,7 @@
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
 #import "KCS_DDTTYLogger.h"
 
 #import <unistd.h>
@@ -1493,3 +1497,5 @@ static KCS_DDTTYLogger *sharedInstance;
 }
 
 @end
+
+#pragma clang diagnostic pop
