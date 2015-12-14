@@ -27,7 +27,7 @@ class JsonResponseParser: ResponseParser {
                         let obj = persistableType.init(json: result)
                         return obj as? T
                     } else if let _ = type as? User.Type {
-                        let obj = client.userType.init(json: result)
+                        let obj = client.userType.init(json: result, client: client)
                         return obj as? T
                     }
                 }
