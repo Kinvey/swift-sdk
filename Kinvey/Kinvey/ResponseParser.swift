@@ -10,6 +10,8 @@ import Foundation
 
 public protocol ResponseParser {
     
+    var client: Client { get }
+    
     func parse<T>(data: NSData?, type: T.Type) -> T?
     func parse<S, T>(source: S?) -> T?
 
