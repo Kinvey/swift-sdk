@@ -30,7 +30,7 @@
 #import "KinveyUser+Private.h"
 #import "KCSUser2+KinveyUserService+Private.h"
 #import "KCSLogManager.h"
-#import "KCSClient.h"
+#import "KCSClient+Private.h"
 
 #define kHeaderAuthorization           @"Authorization"
 #define kHeaderDate                    @"Date"
@@ -134,17 +134,16 @@ static NSOperationQueue* kcsRequestQueue;
     if (self) {
         _contentType = kHeaderValueJson;
         _method = KCSRESTMethodGET;
+        _client = [KCSClient sharedClient].client;
     }
     return self;
 }
 
-
 # pragma mark -
 - (NSString*)finalURL
 {
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-    NSString* baseURL = [config baseURL];
-    NSString* kid = config.appKey;
+    NSString* baseURL = self.client.apiHostName.absoluteString;
+    NSString* kid = self.client.appKey;
 
     if (_useMock && kid == nil) {
         kid = @"mock";
@@ -218,11 +217,16 @@ static NSOperationQueue* kcsRequestQueue;
 
 +(NSMutableURLRequest *)requestForURL:(NSURL *)url
 {
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-    
+    return [self requestForURL:url
+                        client:[KCSClient sharedClient].client];
+}
+
++(NSMutableURLRequest *)requestForURL:(NSURL *)url
+                               client:(Client*)client
+{
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
-                                                           cachePolicy:[config.options[KCS_URL_CACHE_POLICY] unsignedIntegerValue]
-                                                       timeoutInterval:config.connectionTimeout];
+                                                           cachePolicy:client.cachePolicy
+                                                       timeoutInterval:client.timeoutInterval];
     if (url.host) {
         [request setValue:url.host
        forHTTPHeaderField:@"Host"];
@@ -237,13 +241,13 @@ static NSOperationQueue* kcsRequestQueue;
     [request setValue:[KCSPlatformUtils platformString]
    forHTTPHeaderField:kHeaderDeviceInfo];
     
-    NSString* clientAppVersion = self.clientAppVersion;
+    NSString* clientAppVersion = client.clientAppVersion;
     if (clientAppVersion) {
         [request setValue:clientAppVersion
        forHTTPHeaderField:kHeaderClientAppVersion];
     }
     
-    NSString* customRequestPropertiesJsonString = self.customRequestProperties && self.customRequestProperties.count > 0 ? self.customRequestProperties.jsonString : nil;
+    NSString* customRequestPropertiesJsonString = client.customRequestProperties && client.customRequestProperties.count > 0 ? client.customRequestProperties.jsonString : nil;
     if (customRequestPropertiesJsonString) {
         [request setValue:customRequestPropertiesJsonString
        forHTTPHeaderField:kHeaderCustomRequestProperties];

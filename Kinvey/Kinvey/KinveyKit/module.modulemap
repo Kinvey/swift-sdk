@@ -1,4 +1,6 @@
 module KinveyKit {
     header "../../../KinveyKit/KinveyKit/Source/KCSKeychain.h"
+    header "../../../KinveyKit/KinveyKit/Source/KinveyUser.h"
+    header "../../../KinveyKit/KinveyKit/Source/KCSMICLoginViewController.h"
     export *
 }

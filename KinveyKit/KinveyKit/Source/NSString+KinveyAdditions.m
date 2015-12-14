@@ -17,6 +17,8 @@
 // contents is a violation of applicable laws.
 //
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 
 #import "NSString+KinveyAdditions.h"
 #import "NSURL+KinveyAdditions.h"
@@ -106,3 +108,5 @@ static inline NSString *NSStringCCHashFunction(unsigned char *(function)(const v
 }
 
 @end
+
+#pragma clang diagnostic pop

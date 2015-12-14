@@ -11,6 +11,8 @@
 
 @interface KCSMICLoginViewController : UIViewController
 
+@property (nonatomic, strong) id client;
+
 -(instancetype)initWithRedirectURI:(NSString*)redirectURI
                withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
