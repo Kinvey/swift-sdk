@@ -151,8 +151,8 @@ class UserTests: KinveyTestCase {
             
             var foo: String?
             
-            required init(json: [String : AnyObject]) {
-                super.init(json: json)
+            required init(json: [String : AnyObject], client: Client) {
+                super.init(json: json, client: client)
                 foo = json["foo"] as? String
             }
             
@@ -192,6 +192,60 @@ class UserTests: KinveyTestCase {
             
             waitForExpectationsWithTimeout(defaultTimeout) { error in
                 expectationUserSave = nil
+            }
+        }
+    }
+    
+    func testLogoutLogin() {
+        let username = NSUUID().UUIDString
+        let password = NSUUID().UUIDString
+        signUp(username: username, password: password)
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            user.logout()
+            
+            XCTAssertNil(client.activeUser)
+            
+            weak var expectationUserLogin = expectationWithDescription("User Login")
+            
+            User.login(username: username, password: password) { user, error in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNil(error)
+                XCTAssertNotNil(user)
+                
+                expectationUserLogin?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUserLogin = nil
+            }
+        }
+    }
+    
+    func testExists() {
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            XCTAssertNotNil(user.username)
+            
+            if let username = user.username {
+                weak var expectationUserExists = expectationWithDescription("User Exists")
+                
+                User.exists(username: username) { (exists, error) -> Void in
+                    XCTAssertTrue(NSThread.isMainThread())
+                    XCTAssertNil(error)
+                    XCTAssertTrue(exists)
+                    
+                    expectationUserExists?.fulfill()
+                }
+                
+                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                    expectationUserExists = nil
+                }
             }
         }
     }

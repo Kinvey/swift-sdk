@@ -19,6 +19,7 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-Wconversion"
 
 #import "KCSNSURLCxnFileOperation.h"
 #import "KinveyErrorCodes.h"

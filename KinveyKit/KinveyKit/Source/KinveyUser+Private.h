@@ -7,9 +7,18 @@
 //
 
 #import "KinveyUser.h"
+#import <Kinvey/Kinvey-Swift.h>
 
 @interface KCSUser()
 
 @property (nonatomic, strong) NSMutableDictionary *userAttributes;
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                                 client:(Client*)client;
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+                    client:(Client*)client
+       withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 @end

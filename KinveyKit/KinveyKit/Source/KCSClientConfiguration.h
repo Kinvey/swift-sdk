@@ -145,6 +145,9 @@ KCS_CONSTANT KCS_ALWAYS_USE_NSURLREQUEST;
 /*! Base URL used to connect to the backend server. Default value: "https://baas.kinvey.com" */
 @property (nonatomic, copy) NSString* baseURL;
 
+/*! Base URL used to connect to the MIC authentication server. Default value: "https://auth.kinvey.com" */
+@property (nonatomic, copy) NSString* baseAuthURL;
+
 /*! Representing in-seconds for connection timeouts */
 @property (nonatomic) NSTimeInterval connectionTimeout;
 
