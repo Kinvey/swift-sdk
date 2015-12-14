@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KCSUser2+KinveyUserService.h"
+#import <Kinvey/Kinvey-Swift.h>
 
 extern NSString* const kKCSMICRefreshTokenKey;
 extern NSString* const kKCSMICRedirectURIKey;
@@ -16,6 +17,18 @@ extern NSString* const kKCSMICRedirectURIKey;
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
                             isLoginPage:(BOOL)isLoginPage;
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                                 client:(Client*)client;
+
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                            isLoginPage:(BOOL)isLoginPage
+                                 client:(Client*)client;
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+                    client:(Client*)client
+       withCompletionBlock:(KCSUser2CompletionBlock)completionBlock;
 
 +(void)oAuthTokenWithRefreshToken:(NSString*)refreshToken
                       redirectURI:(NSString*)redirectURI

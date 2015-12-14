@@ -8,6 +8,7 @@
 
 #import "KCSMICLoginViewController.h"
 #import <WebKit/WebKit.h>
+#import "KinveyUser+Private.h"
 
 @interface KCSMICLoginViewController () <UIWebViewDelegate, WKNavigationDelegate>
 
@@ -175,7 +176,7 @@
 {
     [super viewWillAppear:animated];
     
-    NSURL* url = [KCSUser URLforLoginWithMICRedirectURI:self.redirectURI];
+    NSURL* url = [KCSUser URLforLoginWithMICRedirectURI:self.redirectURI client:self.client];
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
     
     if ([self.webView isKindOfClass:[UIWebView class]]) {
@@ -202,6 +203,7 @@
     
     [KCSUser parseMICRedirectURI:self.redirectURI
                           forURL:url
+                          client:self.client
              withCompletionBlock:^(KCSUser *user, NSError *errorOrNil, KCSUserActionResult result)
      {
          [self.activityIndicatorView stopAnimating];

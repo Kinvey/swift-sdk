@@ -30,6 +30,8 @@
 #import "KCSPush.h"
 #import "KinveyUser+Private.h"
 #import "KCSMICLoginViewController.h"
+#import "KCSUser2+KinveyUserService+Private.h"
+#import "KCSClient+Private.h"
 
 #pragma mark - Constants
 
@@ -216,6 +218,13 @@ void setActive(KCSUser* user)
     return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI];
 }
 
++(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
+                                 client:(Client*)client
+{
+    return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI
+                                            client:client];
+}
+
 +(void)presentMICLoginViewControllerWithRedirectURI:(NSString*)redirectURI
                                 withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
@@ -260,9 +269,21 @@ void setActive(KCSUser* user)
                     forURL:(NSURL *)url
        withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
+    [self parseMICRedirectURI:redirectURI
+                       forURL:url
+                       client:[KCSClient sharedClient].client
+          withCompletionBlock:completionBlock];
+}
+
++(void)parseMICRedirectURI:(NSString *)redirectURI
+                    forURL:(NSURL *)url
+                    client:(Client*)client
+       withCompletionBlock:(KCSUserCompletionBlock)completionBlock
+{
     SWITCH_TO_MAIN_THREAD_USER_BLOCK(completionBlock);
     [KCSUser2 parseMICRedirectURI:redirectURI
                            forURL:url
+                           client:client
               withCompletionBlock:^(id<KCSUser2> user, NSError *error)
     {
         if (completionBlock) {

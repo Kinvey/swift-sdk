@@ -311,11 +311,20 @@ KCS_CONST_IMPL KCS_ALWAYS_USE_NSURLREQUEST = @"KCS_ALWAYS_USE_NSURLREQUEST";
       defaultValue:KCS_DEFAULT_HOST_PORT];
 }
 
+-(NSString *)baseAuthURL
+{
+    return [self baseURLWithHostname:self.authHostname];
+}
+
 -(NSString*)baseURL
+{
+    return [self baseURLWithHostname:self.serviceHostname];
+}
+
+-(NSString*)baseURLWithHostname:(NSString*)hostname
 {
     NSString* protocol = self.hostProtocol;
     
-    NSString* hostname = self.serviceHostname;
     if (hostname.length > 0 && ![hostname hasSuffix:@"."]) {
         hostname = [NSString stringWithFormat:@"%@.", hostname];
     }
