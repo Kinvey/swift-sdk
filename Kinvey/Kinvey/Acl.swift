@@ -22,7 +22,7 @@ public class Acl: NSObject, JsonObject {
         self.init(creator: json[Acl.CreatorKey] as String!)
     }
     
-    func toJson() -> [String : AnyObject] {
+    public func toJson() -> [String : AnyObject] {
         return [
             Acl.CreatorKey : creator
         ]

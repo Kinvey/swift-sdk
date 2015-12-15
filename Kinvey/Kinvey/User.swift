@@ -45,7 +45,7 @@ public class User: NSObject, JsonObject, Credential {
             bodyObject["password"] = password
         }
         request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
-        client.networkTransport.execute(request) { (data, response, error) -> Void in
+        client.networkTransport.execute(request, forceBasicAuthentication: true) { (data, response, error) -> Void in
             if client.responseParser.isResponseOk(response) {
                 client._activeUser = client.responseParser.parse(data, type: client.userType)
             }
