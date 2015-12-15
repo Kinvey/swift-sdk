@@ -9,7 +9,7 @@
 import Foundation
 import KinveyKit
 
-public class User: NSObject, JsonObject {
+public class User: NSObject, JsonObject, Credential {
     
     public static let PersistableUsernameKey = "username"
     
@@ -242,11 +242,30 @@ public class User: NSObject, JsonObject {
         }
     }
     
+    public var authorizationHeader: String? {
+        get {
+            var authorization: String? = nil
+            if let authtoken = metadata?.authtoken {
+                authorization = "Kinvey \(authtoken)"
+            }
+            return authorization
+        }
+    }
+    
     //MARK: MIC
     
     public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, client: Client = Kinvey.sharedClient(), completionHandler: UserHandler? = nil) {
-        let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (user, error, actionResult) -> Void in
-            print("")
+        let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) -> Void in
+            var user: User? = nil
+            if let kcsUser = kcsUser {
+                user = User(userId: kcsUser.userId, metadata: Metadata(authtoken: kcsUser.authString), client: client)
+                user?.username = kcsUser.username
+                user?.email = kcsUser.email
+                client._activeUser = user
+            }
+            if let completionHandler = completionHandler {
+                completionHandler(user: user, error: error)
+            }
         }
         micVC.client = client
         let navigationVC = UINavigationController(rootViewController: micVC)

@@ -18,15 +18,12 @@ class HttpNetworkTransport: NetworkTransport {
     
     typealias CompletionHandler = (NSData?, NSURLResponse?, NSError?) -> Void
     
-    func execute(request: NSMutableURLRequest, forceBasicAuthentication: Bool, completionHandler: CompletionHandler) {
+    func execute(request: NSMutableURLRequest, forceBasicAuthentication: Bool, completionHandler: (NSData?, NSURLResponse?, NSError?) -> Void) {
         var authorization: String?
-        if !forceBasicAuthentication, let authtoken = client.activeUser?.metadata?.authtoken {
-            authorization = "Kinvey \(authtoken)"
-        } else if let appKey = client.appKey, let appSecret = client.appSecret {
-            let appKeySecret = "\(appKey):\(appSecret)".dataUsingEncoding(NSUTF8StringEncoding)?.base64EncodedStringWithOptions([])
-            if let appKeySecret = appKeySecret {
-                authorization = "Basic \(appKeySecret)"
-            }
+        if !forceBasicAuthentication, let credential = client.activeUser as? Credential, let _authorization = credential.authorizationHeader {
+            authorization = _authorization
+        } else if let _authorization = client.authorizationHeader {
+            authorization = _authorization
         }
         if let authorization = authorization {
             request.addValue(authorization, forHTTPHeaderField: "Authorization")
