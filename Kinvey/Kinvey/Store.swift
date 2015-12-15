@@ -34,6 +34,10 @@ public protocol Store {
     
     //MARK: - Delete
     
+    func remove(id: String, completionHandler: IntCompletionHandler?)
+    
+    func remove(ids: [String], completionHandler: IntCompletionHandler?)
+    
     func remove(persistable: CollectionType, completionHandler: IntCompletionHandler?)
     
     func remove(array: [CollectionType], completionHandler: IntCompletionHandler?)
