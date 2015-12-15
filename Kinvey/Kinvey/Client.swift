@@ -8,6 +8,7 @@
 
 import Foundation
 import KinveyKit
+import MongoDBPredicateAdaptor
 
 public class Client: NSObject, Credential {
     
@@ -126,6 +127,9 @@ public class Client: NSObject, Credential {
         case UserLogin(Client)
         case OAuthAuth(Client, NSURL)
         case OAuthToken(Client)
+        case AppData(Client, String)
+        case AppDataById(Client, String, String)
+        case AppDataByQuery(Client, String, Query)
         
         func url() -> NSURL? {
             switch self {
@@ -145,6 +149,18 @@ public class Client: NSObject, Credential {
                 return NSURL(string: client.authHostName.URLByAppendingPathComponent("/oauth/auth").absoluteString + query)
             case .OAuthToken(let client):
                 return client.authHostName.URLByAppendingPathComponent("/oauth/token")
+            case AppData(let client, let collectionName):
+                return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")
+            case AppDataById(let client, let collectionName, let id):
+                return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
+            case AppDataByQuery(let client, let collectionName, let query):
+                let queryObj = try! MongoDBPredicateAdaptor.queryDictFromPredicate(query.predicate)
+                let data = try! NSJSONSerialization.dataWithJSONObject(queryObj, options: [])
+                var queryStr = NSString(data: data, encoding: NSUTF8StringEncoding)
+                queryStr = queryStr!.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())
+                let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
+                let urlQuery = "?query=\(queryStr!)"
+                return NSURL(string: url + urlQuery)
             }
         }
         

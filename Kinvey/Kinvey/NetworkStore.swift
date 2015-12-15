@@ -8,37 +8,22 @@
 
 import Foundation
 
-public class NetworkStore<T: Persistable>: NSObject, Store {
+public class NetworkStore<T: Persistable>: BaseStore<T> {
     
-    public let collectionName: String
-    
-    public let client: Client
-    
-    public required convenience init(collectionName: String) {
-        self.init(collectionName: collectionName, client: Kinvey.sharedClient())
+    public required init(collectionName: String, client: Client = Kinvey.sharedClient()) {
+        super.init(collectionName: collectionName, client: client)
     }
     
-    public required init(collectionName: String, client: Client) {
-        self.collectionName = collectionName
-        self.client = client
+    public override func get(id: String, completionHandler: ObjectCompletionHandler?) {
+        super.get(id, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    public func get(id: String, completionHandler: ((String?, NSError?) -> Void)) {
+    public override func find(query: Query, completionHandler: ArrayCompletionHandler?) {
+        super.find(query, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    public func find(query: Query, completionHandler: (([T]?, NSError?) -> Void)) {
-    }
-    
-    public func save(persistable: T, completionHandler: ((T?, NSError?) -> Void)) {
-    }
-    
-    public func save(persistable: [T], completionHandler: (([T]?, NSError?) -> Void)) {
-    }
-    
-    public func remove(persistable: T, completionHandler: ((Int?, NSError?) -> Void)) {
-    }
-    
-    public func remove(array: [T], completionHandler: ((Int?, NSError?) -> Void)) {
+    public override func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
+        super.save(persistable, completionHandler: dispatchAsyncTo(completionHandler))
     }
 
 }
