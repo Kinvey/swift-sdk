@@ -18,24 +18,28 @@ public class Query: NSObject {
         }
     }
     
-    public override init() {
-        _predicate = NSPredicate()
-    }
-    
     public init(predicate: NSPredicate) {
         _predicate = predicate
     }
     
-    public init(format: String, args: CVarArgType) {
-        _predicate = NSPredicate(format: format, args)
+    public override convenience init() {
+        self.init(predicate: NSPredicate())
     }
     
-    public init(format: String, argumentArray: [AnyObject]?) {
-        _predicate = NSPredicate(format: format, argumentArray: argumentArray)
+    public convenience init(format: String, _ args: AnyObject...) {
+        self.init(format: format, argumentArray: args)
     }
     
-    public init(format: String, arguments: CVaListPointer) {
-        _predicate = NSPredicate(format: format, arguments: arguments)
+    public convenience init(format: String, args: CVarArgType) {
+        self.init(predicate: NSPredicate(format: format, args))
+    }
+    
+    public convenience init(format: String, argumentArray: [AnyObject]?) {
+        self.init(predicate: NSPredicate(format: format, argumentArray: argumentArray))
+    }
+    
+    public convenience init(format: String, arguments: CVaListPointer) {
+        self.init(predicate: NSPredicate(format: format, arguments: arguments))
     }
 
 }
