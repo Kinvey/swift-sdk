@@ -14,11 +14,11 @@ public class Metadata: NSObject, JsonObject {
     private static let EctKey = "ect"
     private static let AuthTokenKey = "authtoken"
     
-    public let lmt: String
-    public let ect: String
+    public let lmt: String?
+    public let ect: String?
     public let authtoken: String?
     
-    public init(lmt: String, ect: String, authtoken: String?) {
+    public init(lmt: String? = nil, ect: String? = nil, authtoken: String? = nil) {
         self.lmt = lmt
         self.ect = ect
         self.authtoken = authtoken
@@ -33,10 +33,13 @@ public class Metadata: NSObject, JsonObject {
     }
     
     func toJson() -> [String : AnyObject] {
-        var json: [String : AnyObject] = [
-            Metadata.LmtKey : lmt,
-            Metadata.EctKey : ect
-        ]
+        var json: [String : AnyObject] = [:]
+        if let lmt = lmt {
+            json[Metadata.LmtKey] = lmt
+        }
+        if let ect = ect {
+            json[Metadata.EctKey] = ect
+        }
         if let authtoken = authtoken {
             json[Metadata.AuthTokenKey] = authtoken
         }

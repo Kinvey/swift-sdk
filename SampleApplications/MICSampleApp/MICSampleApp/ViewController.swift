@@ -33,7 +33,16 @@ class ViewController: UIViewController {
             redirectURI: NSURL(string: textFieldRedirectURI.text!)!,
             client: client
         ) { user, error in
-            
+            let alertVC = UIAlertController()
+            if let user = user {
+                alertVC.title = "Success"
+                alertVC.message = user.userId
+            } else if let error = error {
+                alertVC.title = "Error"
+                alertVC.message = error.localizedDescription
+            }
+            alertVC.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            self.presentViewController(alertVC, animated: true, completion: nil)
         }
     }
 
