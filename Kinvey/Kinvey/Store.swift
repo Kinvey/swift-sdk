@@ -13,35 +13,32 @@ public protocol Store {
     typealias CollectionType
     
     typealias ArrayCompletionHandler = ([CollectionType]?, NSError?) -> Void
-    typealias ObjectCompletionHandler = ([CollectionType]?, NSError?) -> Void
-    typealias StringCompletionHandler = (String?, NSError?) -> Void
+    typealias ObjectCompletionHandler = (CollectionType?, NSError?) -> Void
     typealias IntCompletionHandler = (Int?, NSError?) -> Void
     
     var collectionName: String { get }
     
     var client: Client { get }
     
-    init(collectionName: String)
-    
-    init(collectionName: String, client: Client)
-    
     //MARK: - Read
     
-    func get(id: String, completionHandler: StringCompletionHandler)
+    func get(id: String, completionHandler: ObjectCompletionHandler?)
     
-    func find(query: Query, completionHandler: ArrayCompletionHandler)
+    func find(query: Query, completionHandler: ArrayCompletionHandler?)
     
     //MARK: - Create / Update
     
-    func save(persistable: CollectionType, completionHandler: ObjectCompletionHandler)
+    func save(persistable: CollectionType, completionHandler: ObjectCompletionHandler?)
     
-    func save(array: [CollectionType], completionHandler: ArrayCompletionHandler)
+    func save(array: [CollectionType], completionHandler: ArrayCompletionHandler?)
     
     //MARK: - Delete
     
-    func remove(persistable: CollectionType, completionHandler: IntCompletionHandler)
+    func remove(persistable: CollectionType, completionHandler: IntCompletionHandler?)
     
-    func remove(array: [CollectionType], completionHandler: IntCompletionHandler)
+    func remove(array: [CollectionType], completionHandler: IntCompletionHandler?)
+    
+    func remove(query: Query, completionHandler: IntCompletionHandler?)
     
     //TODO: - aggregation / grouping
 

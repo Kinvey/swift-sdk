@@ -10,6 +10,9 @@
 		5706FEBF1C1F92350037E7D0 /* NSMutableDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B51C19F7150077F8A6 /* NSMutableDictionary+KinveyAdditions.m */; };
 		5706FEC01C1F92990037E7D0 /* KCS_FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B51F1C19F7150077F8A6 /* KCS_FMDatabaseAdditions.m */; };
 		5706FEC11C1F93210037E7D0 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5541C19F7150077F8A6 /* KinveyEntity.m */; };
+		5706FEC31C1F9A6D0037E7D0 /* StoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTests.swift */; };
+		576E95A41C1FB10700258CC3 /* BaseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* BaseStore.swift */; };
+		576E95AA1C1FC2BF00258CC3 /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */; };
 		577C9E711C1EB6BC00BF49EE /* NSDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B31C19F7150077F8A6 /* NSDictionary+KinveyAdditions.m */; };
 		577C9E721C1EB83C00BF49EE /* NSString+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B91C19F7150077F8A6 /* NSString+KinveyAdditions.m */; };
 		577C9E731C1EC85600BF49EE /* KCSClient+ConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5791C19F7150077F8A6 /* KCSClient+ConfigurationTest.m */; };
@@ -117,7 +120,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5706FEC21C1F9A6D0037E7D0 /* StoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTests.swift; sourceTree = "<group>"; };
 		5709608F1C1B96DA00D4AFA5 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		576E95A31C1FB10700258CC3 /* BaseStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseStore.swift; sourceTree = "<group>"; };
+		576E95A61C1FC2B400258CC3 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		576E95A71C1FC2B400258CC3 /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MongoDBPredicateAdaptor.h; sourceTree = "<group>"; };
+		576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MongoDBPredicateAdaptor.m; sourceTree = "<group>"; };
+		576E95A91C1FC2B400258CC3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		576E95AB1C1FC2FE00258CC3 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		577C9E771C1F89C700BF49EE /* Credentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
 		5783B50A1C19F7150077F8A6 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -409,6 +419,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		576E95A51C1FC2B300258CC3 /* NSPredicate-MongoDB-Adaptor */ = {
+			isa = PBXGroup;
+			children = (
+				576E95AB1C1FC2FE00258CC3 /* module.modulemap */,
+				576E95A61C1FC2B400258CC3 /* LICENSE.txt */,
+				576E95A71C1FC2B400258CC3 /* MongoDBPredicateAdaptor.h */,
+				576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */,
+				576E95A91C1FC2B400258CC3 /* README.md */,
+			);
+			name = "NSPredicate-MongoDB-Adaptor";
+			path = "Dependencies/NSPredicate-MongoDB-Adaptor";
+			sourceTree = SOURCE_ROOT;
+		};
 		5783B5081C19F6420077F8A6 /* KinveyKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -991,6 +1014,7 @@
 			isa = PBXGroup;
 			children = (
 				5783B5081C19F6420077F8A6 /* KinveyKit */,
+				576E95A51C1FC2B300258CC3 /* NSPredicate-MongoDB-Adaptor */,
 				57A27C841C178F17000DF951 /* Kinvey.h */,
 				57A27C861C178F17000DF951 /* Info.plist */,
 				57A27C9B1C178FAC000DF951 /* Kinvey.swift */,
@@ -1000,6 +1024,7 @@
 				57A27CA11C17910E000DF951 /* Acl.swift */,
 				57A27CA31C179118000DF951 /* Metadata.swift */,
 				57E1C3A81C17B71100578974 /* Store.swift */,
+				576E95A31C1FB10700258CC3 /* BaseStore.swift */,
 				57E1C39C1C17B37B00578974 /* NetworkStore.swift */,
 				57E1C39E1C17B39400578974 /* CachedStore.swift */,
 				57E1C3A01C17B39E00578974 /* SyncedStore.swift */,
@@ -1020,6 +1045,7 @@
 				57A27C901C178F18000DF951 /* KinveyTestCase.swift */,
 				57A27C921C178F18000DF951 /* Info.plist */,
 				57E1C3AC1C17EC9500578974 /* UserTests.swift */,
+				5706FEC21C1F9A6D0037E7D0 /* StoreTests.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -1158,6 +1184,7 @@
 				5783B62C1C1A08DB0077F8A6 /* KCSBackgroundAppdataStore.m in Sources */,
 				5783B6651C1A13A00077F8A6 /* KCSURLConnectionDelegateAdapter.m in Sources */,
 				5706FEC01C1F92990037E7D0 /* KCS_FMDatabaseAdditions.m in Sources */,
+				576E95AA1C1FC2BF00258CC3 /* MongoDBPredicateAdaptor.m in Sources */,
 				5783B6441C1A10B00077F8A6 /* KCSNSURLSessionFileOperation.m in Sources */,
 				5783B6321C1A0FAF0077F8A6 /* KCSFileStore.m in Sources */,
 				5783B6641C1A133F0077F8A6 /* KCSMICRequest2.m in Sources */,
@@ -1220,6 +1247,7 @@
 				5706FEBF1C1F92350037E7D0 /* NSMutableDictionary+KinveyAdditions.m in Sources */,
 				5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */,
 				5783B65E1C1A12A30077F8A6 /* KCS_DDTTYLogger.m in Sources */,
+				576E95A41C1FB10700258CC3 /* BaseStore.swift in Sources */,
 				5783B64D1C1A11300077F8A6 /* KCSObjectMapper.m in Sources */,
 				57A27CA01C178FC0000DF951 /* User.swift in Sources */,
 				5783B6291C1A08AA0077F8A6 /* KCSBase64.m in Sources */,
@@ -1253,6 +1281,7 @@
 			files = (
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
 				57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */,
+				5706FEC31C1F9A6D0037E7D0 /* StoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1395,7 +1424,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = Kinvey/KinveyKit;
+				SWIFT_INCLUDE_PATHS = "Kinvey/KinveyKit Dependencies/NSPredicate-MongoDB-Adaptor";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -1416,7 +1445,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = Kinvey/KinveyKit;
+				SWIFT_INCLUDE_PATHS = "Kinvey/KinveyKit Dependencies/NSPredicate-MongoDB-Adaptor";
 			};
 			name = Release;
 		};
