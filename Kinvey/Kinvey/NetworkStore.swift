@@ -25,5 +25,9 @@ public class NetworkStore<T: Persistable>: BaseStore<T> {
     public override func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
         super.save(persistable, completionHandler: dispatchAsyncTo(completionHandler))
     }
+    
+    public override func remove(query: Query, completionHandler: IntCompletionHandler?) {
+        super.remove(query, completionHandler: dispatchAsyncTo(completionHandler))
+    }
 
 }
