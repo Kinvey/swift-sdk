@@ -187,6 +187,8 @@ KCS_CONSTANT KCSUserAttributeFacebookId;
  */
 @property (nonatomic) BOOL emailVerified;
 
+@property (nonatomic, readonly) NSString* authString;
+
 /** Checks if credentials have been stored in the keychain. 
  
  This is useful to check if a user will be loaded on the first call to Kinvey, or if an implicit user will be created instead. 
