@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol JsonObject {
+public protocol JsonObject {
     
     func toJson() -> [String : AnyObject]
 

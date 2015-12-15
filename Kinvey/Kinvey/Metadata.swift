@@ -32,7 +32,7 @@ public class Metadata: NSObject, JsonObject {
         )
     }
     
-    func toJson() -> [String : AnyObject] {
+    public func toJson() -> [String : AnyObject] {
         var json: [String : AnyObject] = [:]
         if let lmt = lmt {
             json[Metadata.LmtKey] = lmt

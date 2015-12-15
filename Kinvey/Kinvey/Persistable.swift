@@ -8,8 +8,10 @@
 
 import Foundation
 
-public protocol Persistable {
+public protocol Persistable: JsonObject {
     
     init(json: [String : AnyObject])
+    
+    func merge<T: Persistable>(object: T)
     
 }
