@@ -21,6 +21,14 @@ class StoreTests: KinveyTestCase {
             super.init()
         }
         
+        static func kinveyPropertyMapping() -> [String : String] {
+            return [
+                "personId" : Kinvey.PersistableIdKey,
+                "name" : "name",
+                "age" : "age"
+            ]
+        }
+        
         required convenience init(json: [String : AnyObject]) {
             self.init()
             if let personId = json[Kinvey.PersistableIdKey] as? String {
@@ -63,7 +71,14 @@ class StoreTests: KinveyTestCase {
     }
     
     var store: NetworkStore<Person>!
-    let person = Person()
+    var person:Person {
+        get {
+            let person = Person()
+            person.name = "Victor"
+            person.age = 29
+            return person
+        }
+    }
     
     override func setUp() {
         super.setUp()
@@ -71,12 +86,11 @@ class StoreTests: KinveyTestCase {
         signUp()
         
         store = NetworkStore<Person>(collectionName: "Person", client: client)
-        
-        person.name = "Victor"
-        person.age = 29
     }
     
     func save() -> Person {
+        let person = self.person
+        
         weak var expectationCreate = expectationWithDescription("Create")
         
         store.save(person) { (person, error) -> Void in
@@ -107,7 +121,7 @@ class StoreTests: KinveyTestCase {
     }
     
     func testRetrieve() {
-        save()
+        let person = save()
         
         weak var expectationGet = expectationWithDescription("Get")
         
@@ -125,7 +139,7 @@ class StoreTests: KinveyTestCase {
     }
     
     func testUpdate() {
-        save()
+        let person = save()
         
         weak var expectationUpdate = expectationWithDescription("Update")
         
@@ -174,6 +188,92 @@ class StoreTests: KinveyTestCase {
         
         waitForExpectationsWithTimeout(defaultTimeout) { error in
             expectationUpdate = nil
+        }
+    }
+    
+    func testRemoveById() {
+        let person = save()
+        
+        weak var expectationDelete = expectationWithDescription("Delete")
+        
+        store.remove(person.personId!) { (count, error) -> Void in
+            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
+            if let count = count {
+                XCTAssertGreaterThan(count, 0)
+            }
+            
+            expectationDelete?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationDelete = nil
+        }
+    }
+    
+    func testRemoveByIds() {
+        let person1 = save()
+        let person2 = save()
+        
+        weak var expectationDelete = expectationWithDescription("Delete")
+        
+        store.remove([person1.personId!, person2.personId!]) { (count, error) -> Void in
+            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
+            if let count = count {
+                XCTAssertGreaterThan(count, 0)
+            }
+            
+            expectationDelete?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationDelete = nil
+        }
+    }
+    
+    func testRemoveOneEntity() {
+        let person = save()
+        
+        weak var expectationDelete = expectationWithDescription("Delete")
+        
+        store.remove(person) { (count, error) -> Void in
+            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
+            if let count = count {
+                XCTAssertGreaterThan(count, 0)
+            }
+            
+            expectationDelete?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationDelete = nil
+        }
+    }
+    
+    func testRemoveMultipleEntity() {
+        let person1 = save()
+        let person2 = save()
+        
+        weak var expectationDelete = expectationWithDescription("Delete")
+        
+        store.remove([person1, person2]) { (count, error) -> Void in
+            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
+            if let count = count {
+                XCTAssertGreaterThan(count, 0)
+            }
+            
+            expectationDelete?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationDelete = nil
         }
     }
     
