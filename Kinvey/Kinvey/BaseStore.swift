@@ -78,16 +78,53 @@ public class BaseStore<T: Persistable>: NSObject, Store {
         }
     }
     
-    public func save(persistable: [T], completionHandler: ArrayCompletionHandler?) {
+    public func save(array: [T], completionHandler: ArrayCompletionHandler?) {
+        //TODO: future implementation
     }
     
     public func remove(persistable: T, completionHandler: IntCompletionHandler?) {
+        if let id = persistable.kinveyObjectId {
+            remove(id, completionHandler: completionHandler)
+        }
     }
     
     public func remove(array: [T], completionHandler: IntCompletionHandler?) {
+        var ids: [String] = []
+        for persistable in array {
+            if let id = persistable.kinveyObjectId {
+                ids.append(id)
+            }
+        }
+        remove(ids, completionHandler: completionHandler)
+    }
+    
+    public func remove(id: String, completionHandler: IntCompletionHandler?) {
+        let query = Query(format: "\(Kinvey.PersistableIdKey) == %@", id)
+        remove(query, completionHandler: completionHandler)
+    }
+    
+    public func remove(ids: [String], completionHandler: IntCompletionHandler?) {
+        let query = Query(format: "\(Kinvey.PersistableIdKey) IN %@", ids)
+        remove(query, completionHandler: completionHandler)
     }
     
     public func remove(query: Query, completionHandler: IntCompletionHandler?) {
+        let url = Client.Endpoint.AppDataByQuery(client, collectionName, query).url()
+        let request = NSMutableURLRequest(URL: url!)
+        request.HTTPMethod = "DELETE"
+        
+        client.networkTransport.execute(request) { (data, response, error) -> Void in
+            var count: Int? = nil
+            if self.client.responseParser.isResponseOk(response) {
+                let results = self.client.responseParser.parse(data, type: [String : AnyObject].self)
+                if let results = results, let _count = results["count"] as? Int {
+                    count = _count
+                }
+            }
+            if let completionHandler = completionHandler {
+                completionHandler(count, error)
+            }
+        }
     }
     
     //MARK: - Dispatch Async To
@@ -105,6 +142,18 @@ public class BaseStore<T: Persistable>: NSObject, Store {
     }
     
     internal func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: ArrayCompletionHandler? = nil) -> ArrayCompletionHandler? {
+        var completionHandler = completionHandler
+        if let originalCompletionHandler = completionHandler {
+            completionHandler = { objs, error in
+                dispatch_async(queue, { () -> Void in
+                    originalCompletionHandler(objs, error)
+                })
+            }
+        }
+        return completionHandler
+    }
+    
+    internal func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: IntCompletionHandler? = nil) -> IntCompletionHandler? {
         var completionHandler = completionHandler
         if let originalCompletionHandler = completionHandler {
             completionHandler = { objs, error in
