@@ -142,12 +142,17 @@ static NSOperationQueue* kcsRequestQueue;
 # pragma mark -
 - (NSString*)finalURL
 {
-    NSString* baseURL = self.client.apiHostName.absoluteString;
+    NSMutableString* endpoint = self.client.apiHostName.absoluteString.mutableCopy;
+    if ([endpoint characterAtIndex:endpoint.length - 1] != '/') {
+        [endpoint appendString:@"/"];
+    }
     NSString* kid = self.client.appKey;
 
     if (_useMock && kid == nil) {
         kid = @"mock";
-        baseURL = baseURL ? baseURL : @"https://localhost:2110/";
+        if (!endpoint) {
+            endpoint = @"https://localhost:2110/".mutableCopy;
+        }
     }
     
     NSArray* path = [@[self.route, kid] arrayByAddingObjectsFromArray:[_path arrayByPercentEncoding]];
@@ -159,7 +164,7 @@ static NSOperationQueue* kcsRequestQueue;
             urlStr = [urlStr stringByAppendingFormat:@"/%@",self.queryString];
         }
     }
-    NSString* endpoint = [baseURL stringByAppendingString:urlStr];
+    [endpoint appendString:urlStr];
 
     return endpoint;
 }
@@ -306,7 +311,13 @@ static NSOperationQueue* kcsRequestQueue;
     
     NSMutableDictionary* headers = [NSMutableDictionary dictionaryWithDictionary:request.allHTTPHeaderFields];
     @try {
-        headers[kHeaderAuthorization] = [self.credentials authString];
+        NSString* authorizationHeader;
+        if ([KCSClient sharedClient].appKey && [KCSClient sharedClient].appSecret) {
+            authorizationHeader = [self.credentials authString];
+        } else {
+            authorizationHeader = self.client.authorizationHeader;
+        }
+        headers[kHeaderAuthorization] = authorizationHeader;
     }
     @catch (NSException *exception) {
         KCSLogError(@"Error setting the authorization header: %@", exception);

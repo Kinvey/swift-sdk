@@ -60,7 +60,9 @@ class MICSampleAppUITests: XCTestCase {
         
         webViewsQuery.buttons["Sign On"].tap()
         
-        NSThread.sleepForTimeInterval(60)
+        NSThread.sleepForTimeInterval(5)
+        
+        app.buttons["OK"].tap()
     }
     
     

@@ -9,7 +9,7 @@
 import Foundation
 import KinveyKit
 
-public class Client: NSObject {
+public class Client: NSObject, Credential {
     
     internal var _activeUser: User? {
         willSet (newActiveUser) {
@@ -148,6 +148,19 @@ public class Client: NSObject {
             }
         }
         
+    }
+    
+    public var authorizationHeader: String? {
+        get {
+            var authorization: String? = nil
+            if let appKey = appKey, let appSecret = appSecret {
+                let appKeySecret = "\(appKey):\(appSecret)".dataUsingEncoding(NSUTF8StringEncoding)?.base64EncodedStringWithOptions([])
+                if let appKeySecret = appKeySecret {
+                    authorization = "Basic \(appKeySecret)"
+                }
+            }
+            return authorization
+        }
     }
 
 }
