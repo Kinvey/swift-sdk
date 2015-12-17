@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Metadata: NSObject, JsonObject {
+public class Metadata: NSObject {
     
     private static let LmtKey = "lmt"
     private static let EctKey = "ect"
@@ -16,12 +16,18 @@ public class Metadata: NSObject, JsonObject {
     
     public let lmt: String?
     public let ect: String?
-    public let authtoken: String?
+    
+    internal var _authtoken: String?
+    public var authtoken: String? {
+        get {
+            return _authtoken
+        }
+    }
     
     public init(lmt: String? = nil, ect: String? = nil, authtoken: String? = nil) {
         self.lmt = lmt
         self.ect = ect
-        self.authtoken = authtoken
+        _authtoken = authtoken
     }
     
     public convenience init(json: [String : String]) {

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Acl: NSObject, JsonObject {
+public class Acl: NSObject {
     
     private static let CreatorKey = "creator"
     
@@ -18,8 +18,8 @@ public class Acl: NSObject, JsonObject {
         self.creator = creator
     }
     
-    public convenience init(json: [String : String]) {
-        self.init(creator: json[Acl.CreatorKey] as String!)
+    public convenience init(json: [String : AnyObject]) {
+        self.init(creator: json[Acl.CreatorKey] as! String)
     }
     
     public func toJson() -> [String : AnyObject] {
