@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Kinvey/Dependencies/Realm/Realm.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Kinvey/Kinvey.xcodeproj">
    </FileRef>
    <FileRef

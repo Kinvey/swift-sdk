@@ -1,3 +1,9 @@
 [submodule "Tools/xctool"]
 	path = Tools/xctool
 	url = https://github.com/facebook/xctool.git
+[submodule "Kinvey/Dependencies/NSPredicate-MongoDB-Adaptor"]
+	path = Kinvey/Dependencies/NSPredicate-MongoDB-Adaptor
+	url = git@github.com:tjboneman/NSPredicate-MongoDB-Adaptor.git
+[submodule "Kinvey/Dependencies/Realm"]
+	path = Kinvey/Dependencies/Realm
+	url = git@github.com:realm/realm-cocoa.git
