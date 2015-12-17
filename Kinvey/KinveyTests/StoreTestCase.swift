@@ -9,68 +9,29 @@
 import XCTest
 @testable import Kinvey
 
-class StoreTests: KinveyTestCase {
+class Person: NSObject, Persistable {
     
-    class Person: NSObject, Persistable {
-        
-        var personId: String?
-        var name: String?
-        var age: Int?
-        
-        override init() {
-            super.init()
-        }
-        
-        static func kinveyPropertyMapping() -> [String : String] {
-            return [
-                "personId" : Kinvey.PersistableIdKey,
-                "name" : "name",
-                "age" : "age"
-            ]
-        }
-        
-        required convenience init(json: [String : AnyObject]) {
-            self.init()
-            if let personId = json[Kinvey.PersistableIdKey] as? String {
-                self.personId = personId
-            }
-            if let name = json["name"] as? String {
-                self.name = name
-            }
-            if let age = json["age"] as? Int {
-                self.age = age
-            }
-        }
-        
-        func toJson() -> [String : AnyObject] {
-            var json: [String : AnyObject] = [:]
-            if let personId = personId {
-                json[Kinvey.PersistableIdKey] = personId
-            }
-            if let name = name {
-                json["name"] = name
-            }
-            if let age = age {
-                json["age"] = age
-            }
-            return json
-        }
-        
-        func merge<T : Persistable>(object: T) {
-            if let object = object as? Person {
-                merge(object)
-            }
-        }
-        
-        func merge(object: Person) {
-            personId = object.personId
-            name = object.name
-            age = object.age
-        }
-        
+    dynamic var personId: String?
+    dynamic var name: String?
+    dynamic var age: Int = 0
+    
+    static func kinveyCollectionName() -> String {
+        return "Person"
     }
     
-    var store: NetworkStore<Person>!
+    static func kinveyPropertyMapping() -> [String : String] {
+        return [
+            "personId" : Kinvey.PersistableIdKey,
+            "name" : "name",
+            "age" : "age"
+        ]
+    }
+    
+}
+
+class StoreTestCase: KinveyTestCase {
+    
+    var store: BaseStore<Person>!
     var person:Person {
         get {
             let person = Person()
@@ -85,7 +46,11 @@ class StoreTests: KinveyTestCase {
         
         signUp()
         
-        store = NetworkStore<Person>(collectionName: "Person", client: client)
+        store = BaseStore<Person>(client: client)
+    }
+    
+    func assertThread() {
+        XCTAssertFalse(NSThread.isMainThread())
     }
     
     func save() -> Person {
@@ -94,16 +59,16 @@ class StoreTests: KinveyTestCase {
         weak var expectationCreate = expectationWithDescription("Create")
         
         store.save(person) { (person, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            self.assertThread()
             XCTAssertNotNil(person)
             XCTAssertNil(error)
             
             if let person = person {
                 XCTAssertNotNil(person.personId)
+                XCTAssertNotEqual(person.personId, "")
+                
                 XCTAssertNotNil(person.age)
-                if let age = person.age {
-                    XCTAssertEqual(age, 29)
-                }
+                XCTAssertEqual(person.age, 29)
             }
             
             expectationCreate?.fulfill()
@@ -116,6 +81,13 @@ class StoreTests: KinveyTestCase {
         return person
     }
     
+    func testSubscript() {
+        var person = self.person
+        let age = 30
+        person["age"] = age
+        XCTAssertEqual(person.age, age)
+    }
+    
     func testCreate() {
         save()
     }
@@ -125,8 +97,10 @@ class StoreTests: KinveyTestCase {
         
         weak var expectationGet = expectationWithDescription("Get")
         
+        XCTAssertNotEqual(person.personId, "")
+        
         store.get(person.personId!) { (person, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            self.assertThread()
             XCTAssertNotNil(person)
             XCTAssertNil(error)
             
@@ -146,15 +120,13 @@ class StoreTests: KinveyTestCase {
         person.age = 30
         
         store.save(person) { (person, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            self.assertThread()
             XCTAssertNotNil(person)
             XCTAssertNil(error)
             
             if let person = person {
                 XCTAssertNotNil(person.age)
-                if let age = person.age {
-                    XCTAssertEqual(age, 30)
-                }
+                XCTAssertEqual(person.age, 30)
             }
             
             expectationUpdate?.fulfill()
@@ -175,7 +147,7 @@ class StoreTests: KinveyTestCase {
         XCTAssertNotNil(client._activeUser)
         
         store.find(Query(format: "age == %@ AND _acl.creator == %@", 29, client._activeUser!.acl!.creator)) { (persons, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            self.assertThread()
             XCTAssertNotNil(persons)
             XCTAssertNil(error)
             
@@ -197,7 +169,7 @@ class StoreTests: KinveyTestCase {
         weak var expectationDelete = expectationWithDescription("Delete")
         
         store.remove(person.personId!) { (count, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            self.assertThread()
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             if let count = count {
@@ -219,7 +191,7 @@ class StoreTests: KinveyTestCase {
         weak var expectationDelete = expectationWithDescription("Delete")
         
         store.remove([person1.personId!, person2.personId!]) { (count, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            self.assertThread()
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             if let count = count {
@@ -240,7 +212,7 @@ class StoreTests: KinveyTestCase {
         weak var expectationDelete = expectationWithDescription("Delete")
         
         store.remove(person) { (count, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            self.assertThread()
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             if let count = count {
@@ -262,7 +234,7 @@ class StoreTests: KinveyTestCase {
         weak var expectationDelete = expectationWithDescription("Delete")
         
         store.remove([person1, person2]) { (count, error) -> Void in
-            XCTAssertTrue(NSThread.isMainThread())
+            self.assertThread()
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             if let count = count {
