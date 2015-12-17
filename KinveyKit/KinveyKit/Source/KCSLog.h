@@ -23,6 +23,8 @@
 #import "KCS_DDASLLogger.h"
 #import "KCS_DDTTYLogger.h"
 
+#import "KCSClient.h"
+
 // We want to use the following log levels:
 //
 // Fatal

@@ -6,7 +6,8 @@
 //  Copyright © 2015 Kinvey. All rights reserved.
 //
 
-import UIKit
+import Foundation
+import KinveyKit
 
 public class BaseStore<T: Persistable>: NSObject, Store {
     
@@ -17,12 +18,13 @@ public class BaseStore<T: Persistable>: NSObject, Store {
     public let collectionName: String
     public let client: Client
     
-    public required init(collectionName: String, client: Client = Kinvey.sharedClient()) {
-        self.collectionName = collectionName
+    public init(client: Client = Kinvey.sharedClient()) {
         self.client = client
+        self.collectionName = T.kinveyCollectionName()
     }
     
     public func get(id: String, completionHandler: ObjectCompletionHandler?) {
+        assert(id != "")
         let url = Client.Endpoint.AppDataById(client, collectionName, id).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "GET"
@@ -65,11 +67,10 @@ public class BaseStore<T: Persistable>: NSObject, Store {
         
         request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         client.networkTransport.execute(request) { (data, response, error) -> Void in
-            var obj: T? = nil
             if self.client.responseParser.isResponseOk(response) {
-                obj = self.client.responseParser.parse(data, type: T.self)
-                if let obj = obj {
-                    persistable.merge(obj)
+                let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
+                if let json = json {
+                    persistable.loadFromJson(json)
                 }
             }
             if let completionHandler = completionHandler {
@@ -125,6 +126,10 @@ public class BaseStore<T: Persistable>: NSObject, Store {
                 completionHandler(count, error)
             }
         }
+    }
+    
+    public override class func initialize() {
+        KCSRealmManager.initialize()
     }
     
     //MARK: - Dispatch Async To

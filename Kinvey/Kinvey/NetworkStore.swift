@@ -10,8 +10,8 @@ import Foundation
 
 public class NetworkStore<T: Persistable>: BaseStore<T> {
     
-    public required init(collectionName: String, client: Client = Kinvey.sharedClient()) {
-        super.init(collectionName: collectionName, client: client)
+    internal override init(client: Client = Kinvey.sharedClient()) {
+        super.init(client: client)
     }
     
     public override func get(id: String, completionHandler: ObjectCompletionHandler?) {

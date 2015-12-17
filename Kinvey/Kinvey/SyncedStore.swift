@@ -10,6 +10,10 @@ import Foundation
 
 public class SyncedStore<T: Persistable>: BaseStore<T> {
     
+    internal override init(client: Client = Kinvey.sharedClient()) {
+        super.init(client: client)
+    }
+    
     public func initialize(query: Query) {
     }
     

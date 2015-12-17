@@ -16,7 +16,12 @@ public class Client: NSObject, Credential {
         willSet (newActiveUser) {
             if let activeUser = newActiveUser {
                 let userDefaults = NSUserDefaults.standardUserDefaults()
-                userDefaults.setObject(activeUser.userId, forKey: appKey!)
+                var json = activeUser.toJson()
+                if var kmd = json["_kmd"] as? [String : AnyObject] {
+                    kmd.removeValueForKey("authtoken")
+                    json["_kmd"] = kmd
+                }
+                userDefaults.setObject(json, forKey: appKey!)
                 userDefaults.synchronize()
                 
                 KCSKeychain2.setKinveyToken(
@@ -112,11 +117,26 @@ public class Client: NSObject, Credential {
         _authHostName = authHostName
         _appKey = appKey
         _appSecret = appSecret
-        if let userId = NSUserDefaults.standardUserDefaults().objectForKey(appKey) as? String, let authtoken = KCSKeychain2.kinveyTokenForUserId(userId, appKey: appKey) {
-            //FIXME: lmt and act
-            _activeUser = User(userId: userId, acl: nil, metadata: Metadata(lmt: "", ect: "", authtoken: authtoken))
+        if let json = NSUserDefaults.standardUserDefaults().objectForKey(appKey) as? [String : AnyObject] {
+            let user = User(json: json, client: self)
+            if let metadata = user.metadata, let authtoken = KCSKeychain2.kinveyTokenForUserId(user.userId, appKey: appKey) {
+                metadata._authtoken = authtoken
+                _activeUser = user
+            }
         }
         return self
+    }
+    
+    public func getNetworkStore<T: Persistable>(type: T) -> BaseStore<T> {
+        return NetworkStore<T>(client: self)
+    }
+    
+    public func getCachedStore<T: Persistable>(type: T, expiration: CachedStoreExpiration) -> BaseStore<T> {
+        return CachedStore<T>(expiration: expiration, client: self)
+    }
+    
+    public func getSyncedStore<T: Persistable>(type: T) -> BaseStore<T> {
+        return SyncedStore<T>(client: self)
     }
     
     public enum Endpoint {
