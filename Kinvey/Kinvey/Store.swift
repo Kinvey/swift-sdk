@@ -10,13 +10,11 @@ import Foundation
 
 public protocol Store {
     
-    typealias CollectionType
+    typealias PersistableType
     
     typealias ArrayCompletionHandler = ([CollectionType]?, NSError?) -> Void
     typealias ObjectCompletionHandler = (CollectionType?, NSError?) -> Void
     typealias IntCompletionHandler = (Int?, NSError?) -> Void
-    
-    var collectionName: String { get }
     
     var client: Client { get }
     
@@ -28,9 +26,9 @@ public protocol Store {
     
     //MARK: - Create / Update
     
-    func save(persistable: CollectionType, completionHandler: ObjectCompletionHandler?)
+    func save(persistable: PersistableType, completionHandler: ObjectCompletionHandler?)
     
-    func save(array: [CollectionType], completionHandler: ArrayCompletionHandler?)
+    func save(array: [PersistableType], completionHandler: ArrayCompletionHandler?)
     
     //MARK: - Delete
     
@@ -38,9 +36,9 @@ public protocol Store {
     
     func remove(ids: [String], completionHandler: IntCompletionHandler?)
     
-    func remove(persistable: CollectionType, completionHandler: IntCompletionHandler?)
+    func remove(persistable: PersistableType, completionHandler: IntCompletionHandler?)
     
-    func remove(array: [CollectionType], completionHandler: IntCompletionHandler?)
+    func remove(array: [PersistableType], completionHandler: IntCompletionHandler?)
     
     func remove(query: Query, completionHandler: IntCompletionHandler?)
     

@@ -26,7 +26,9 @@ class KinveyTestCase: XCTestCase {
     }
     
     func signUp() {
-        XCTAssertNil(client.activeUser)
+        if let user = client.activeUser {
+            user.logout()
+        }
         
         weak var expectationSignUp = expectationWithDescription("Sign Up")
         
@@ -46,7 +48,9 @@ class KinveyTestCase: XCTestCase {
     }
     
     func signUp(username username: String, password: String) {
-        XCTAssertNil(client.activeUser)
+        if let user = client.activeUser {
+            user.logout()
+        }
         
         weak var expectationSignUp = expectationWithDescription("Sign Up")
         

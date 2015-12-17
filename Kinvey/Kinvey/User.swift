@@ -9,7 +9,7 @@
 import Foundation
 import KinveyKit
 
-public class User: NSObject, JsonObject, Credential {
+public class User: NSObject, Credential {
     
     public static let PersistableUsernameKey = "username"
     
@@ -17,9 +17,26 @@ public class User: NSObject, JsonObject, Credential {
     public typealias VoidHandler = (error: NSError?) -> Void
     public typealias ExistsHandler = (exists: Bool, error: NSError?) -> Void
     
-    public let userId: String
-    public let acl: Acl?
-    public let metadata: Metadata?
+    private var _userId: String
+    public var userId: String {
+        get {
+            return _userId
+        }
+    }
+    
+    private var _acl: Acl?
+    public var acl: Acl? {
+        get {
+            return _acl
+        }
+    }
+    
+    private var _metadata: Metadata?
+    public var metadata: Metadata? {
+        get {
+            return _metadata
+        }
+    }
     
     public var username: String?
     public var email: String?
@@ -167,34 +184,36 @@ public class User: NSObject, JsonObject, Credential {
     }
     
     public init(userId: String, acl: Acl? = nil, metadata: Metadata? = nil, client: Client = Kinvey.sharedClient()) {
-        self.userId = userId
-        self.acl = acl
-        self.metadata = metadata
+        _userId = userId
+        _acl = acl
+        _metadata = metadata
         self.client = client
     }
     
     public required init(json: [String : AnyObject], client: Client = Kinvey.sharedClient()) {
-        userId = json[Kinvey.PersistableIdKey] as! String
+        _userId = json[Kinvey.PersistableIdKey] as! String
         
-        if let username = json[User.PersistableUsernameKey] as? String {
+        if let username = json["username"] as? String {
             self.username = username
         }
         
+        if let email = json["email"] as? String {
+            self.email = email
+        }
+        
         if let acl = json[Kinvey.PersistableAclKey] as? [String : String] {
-            self.acl = Acl(json: acl)
+            _acl = Acl(json: acl)
         } else {
-            acl = nil
+            _acl = nil
         }
         
         if let kmd = json[Kinvey.PersistableMetadataKey] as? [String : String] {
-            metadata = Metadata(json: kmd)
+            _metadata = Metadata(json: kmd)
         } else {
-            metadata = nil
+            _metadata = nil
         }
         
         self.client = client
-        
-        super.init()
     }
     
     public func toJson() -> [String : AnyObject] {
