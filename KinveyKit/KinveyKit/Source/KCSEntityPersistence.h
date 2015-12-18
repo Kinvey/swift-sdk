@@ -18,6 +18,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "KCSQuery.h"
+
 @interface KCSEntityPersistence : NSObject 
 @property (nonatomic, strong) NSDictionary* saveContext;
 @property (nonatomic, retain) NSString* persistenceId;
@@ -59,3 +61,28 @@
 
 @end
 
+@protocol KCSEntityPersistence <NSObject>
+
++(instancetype)offlineManager;
+
++(instancetype)managerWithPersistenceId:(NSString*)persistenceId;
+
+-(instancetype)initWithPersistenceId:(NSString*)persistenceId;
+
+@property (nonatomic, readonly) NSString* persistenceId;
+
+-(void)saveEntity:(NSDictionary<NSString*, NSObject*>*)entity
+         forClass:(Class)clazz;
+
+-(void)removeEntity:(NSDictionary<NSString*, NSObject*>*)entity
+           forClass:(Class)clazz;
+
+-(void)removeEntitiesByQuery:(id<KCSQuery>)query
+                    forClass:(Class)clazz;
+
+-(NSArray<NSDictionary<NSString*, id>*>*)findEntity:(id<KCSQuery>)query
+                                           forClass:(Class)clazz;
+
+-(void)removeAllEntities;
+
+@end

@@ -35,6 +35,7 @@ public class Client: NSObject, Credential {
                     _activeUser?.userId,
                     appKey: appKey
                 )
+                KCSRealmEntityPersistence.offlineManager().removeAllEntities()
             }
         }
     }
@@ -127,15 +128,15 @@ public class Client: NSObject, Credential {
         return self
     }
     
-    public func getNetworkStore<T: Persistable>(type: T) -> BaseStore<T> {
+    func getNetworkStore<T: Persistable>(type: T) -> BaseStore<T> {
         return NetworkStore<T>(client: self)
     }
     
-    public func getCachedStore<T: Persistable>(type: T, expiration: CachedStoreExpiration) -> BaseStore<T> {
+    func getCachedStore<T: Persistable>(type: T, expiration: CachedStoreExpiration) -> BaseStore<T> {
         return CachedStore<T>(expiration: expiration, client: self)
     }
     
-    public func getSyncedStore<T: Persistable>(type: T) -> BaseStore<T> {
+    func getSyncedStore<T: Persistable>(type: T) -> BaseStore<T> {
         return SyncedStore<T>(client: self)
     }
     
