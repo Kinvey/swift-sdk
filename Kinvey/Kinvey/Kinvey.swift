@@ -13,6 +13,7 @@ public class Kinvey: NSObject {
     public static let PersistableIdKey = "_id"
     public static let PersistableAclKey = "_acl"
     public static let PersistableMetadataKey = "_kmd"
+    public static let PersistableTimeToLiveKey = "_ttl"
     
     private override init() {
     }

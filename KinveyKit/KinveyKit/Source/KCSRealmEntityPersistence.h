@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "KCSEntityPersistence.h"
 
-@interface KCSRealmManager : NSObject
+@interface KCSRealmEntityPersistence : NSObject <KCSEntityPersistence>
 
 @end

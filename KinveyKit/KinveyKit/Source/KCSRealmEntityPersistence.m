@@ -6,7 +6,7 @@
 //  Copyright © 2015 Kinvey. All rights reserved.
 //
 
-#import "KCSRealmManager.h"
+#import "KCSRealmEntityPersistence.h"
 
 @import Realm;
 @import UIKit;
@@ -37,7 +37,10 @@
 
 #import <Kinvey/Kinvey-Swift.h>
 
+#import "KCSQueryAdapter.h"
+
 #define KCSEntityKeyAcl @"_acl"
+#define KCSEntityKeyExpireDate @"_expireDate"
 
 @protocol PersistableSwift <NSObject>
 
@@ -49,7 +52,16 @@
 
 @end
 
-@implementation KCSRealmManager
+@interface KCSRealmEntityPersistence ()
+
+@property (nonatomic, strong) RLMRealmConfiguration* realmConfiguration;
+@property (nonatomic, readonly) RLMRealm* realm;
+
+@end
+
+@implementation KCSRealmEntityPersistence
+
+@synthesize persistenceId = _persistenceId;
 
 static NSMutableDictionary<NSString*, NSString*>* classMapOriginalRealm = nil;
 static NSMutableDictionary<NSString*, NSMutableSet<NSString*>*>* classMapRealmOriginal = nil;
@@ -241,7 +253,7 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
 {
     NSString* className = [NSString stringWithUTF8String:class_getName(class)];
     
-    NSString* realmClassName = [NSString stringWithFormat:@"%@_KinveyRealm", className];
+    NSString* realmClassName = [NSString stringWithFormat:@"KCS_%@Realm", className];
     Class realmClass = objc_allocateClassPair([RLMObject class], realmClassName.UTF8String, 0);
     
     if (classMapOriginalRealm[className]) return NSClassFromString(classMapOriginalRealm[className]);
@@ -251,6 +263,9 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     
     [self copyPropertiesFromClass:class
                           toClass:realmClass];
+    
+    [self createAclToClass:realmClass];
+    [self createExpireDateToClass:realmClass];
     
     objc_registerClassPair(realmClass);
     
@@ -266,9 +281,18 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
 {
     objc_property_attribute_t type = { "T", [NSString stringWithFormat:@"@\"%@\"", NSStringFromClass([KCSAclRealm  class])].UTF8String };
     objc_property_attribute_t ownership = { "C", "" }; // C = copy
-    objc_property_attribute_t backingivar  = { "V", [NSString stringWithFormat:@"_%@", KCSEntityKeyAcl].UTF8String };
+    objc_property_attribute_t backingivar = { "V", [NSString stringWithFormat:@"_%@", KCSEntityKeyAcl].UTF8String };
     objc_property_attribute_t attrs[] = { type, ownership, backingivar };
     BOOL added = class_addProperty(toClass, KCSEntityKeyAcl.UTF8String, attrs, 3);
+    assert(added);
+}
+
++(void)createExpireDateToClass:(Class)toClass
+{
+    objc_property_attribute_t type = { "T", [NSString stringWithFormat:@"@\"%@\"", NSStringFromClass([NSDate class])].UTF8String };
+    objc_property_attribute_t backingivar = { "V", [NSString stringWithFormat:@"_%@", KCSEntityKeyExpireDate].UTF8String };
+    objc_property_attribute_t attrs[] = { type, backingivar };
+    BOOL added = class_addProperty(toClass, KCSEntityKeyExpireDate.UTF8String, attrs, 2);
     assert(added);
 }
 
@@ -371,13 +395,9 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
                                     }
                                     if (realmClassName) {
                                         if (subtypeName) {
-                                            attribute.value = [NSString stringWithFormat:@"@\"%@<%@>\"", realmClassName, classMapOriginalRealm[subtypeName] ? classMapOriginalRealm[subtypeName] : subtypeName].UTF8String;
+                                            attribute.value = [NSString stringWithFormat:@"@\"%@<%@>\"", realmClassName, classMapOriginalRealm[subtypeName] ?  classMapOriginalRealm[subtypeName] : subtypeName].UTF8String;
                                         } else {
                                             attribute.value = [NSString stringWithFormat:@"@\"%@\"", realmClassName].UTF8String;
-                                            if ([realmClassName isEqualToString:NSStringFromClass([KCSMetadataRealm class])])
-                                            {
-                                                [self createAclToClass:toClass];
-                                            }
                                         }
                                         attributes[i] = attribute;
                                     }
@@ -451,6 +471,130 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     Class metaClass = objc_getMetaClass(className);
     BOOL added = class_addMethod(metaClass, sel, imp, method_getTypeEncoding(method));
     assert(added);
+}
+
++(Class)realmClassForClass:(Class)class
+{
+    return NSClassFromString(classMapOriginalRealm[NSStringFromClass(class)]);
+}
+
++(instancetype)offlineManager
+{
+    static KCSRealmEntityPersistence* offlineManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        offlineManager = [self managerWithPersistenceId:@"offline"];
+    });
+    return offlineManager;
+}
+
++(instancetype)managerWithPersistenceId:(NSString *)persistenceId
+{
+    return [[self alloc] initWithPersistenceId:persistenceId];
+}
+
+-(instancetype)initWithPersistenceId:(NSString *)persistenceId
+{
+    self = [super init];
+    if (self) {
+        _persistenceId = persistenceId;
+        
+        RLMRealmConfiguration* realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
+        
+        NSMutableArray<NSString*>* pathComponents = [realmConfiguration.path pathComponents].mutableCopy;
+        pathComponents[pathComponents.count - 1] = [NSString stringWithFormat:@"com.kinvey.%@_cache.realm", self.persistenceId];
+        realmConfiguration.path = [NSString pathWithComponents:pathComponents];
+        
+        self.realmConfiguration = realmConfiguration;
+    }
+    return self;
+}
+
+-(RLMRealm *)realm
+{
+    NSError* error = nil;
+    RLMRealm* realm = [RLMRealm realmWithConfiguration:self.realmConfiguration
+                                                 error:&error];
+    if (error) {
+        @throw error;
+    }
+    return realm;
+}
+
+-(void)saveEntity:(NSDictionary<NSString *,NSObject *> *)entity
+         forClass:(Class)class
+{
+    Class realmClass = [[self class] realmClassForClass:class];
+    RLMRealm* realm = self.realm;
+    [self removeExpiredEntitiesForClass:class];
+    [realm transactionWithBlock:^{
+        RLMObject* obj = [realmClass createOrUpdateInRealm:realm
+                                                 withValue:entity];
+        assert(obj);
+    }];
+}
+
+-(void)removeEntity:(NSDictionary<NSString *,NSObject *> *)entity
+           forClass:(Class)class
+{
+    NSDictionary<NSString*, NSString*>* propertyMapping = [class kinveyPropertyMapping].invert;
+    NSString* keyId = propertyMapping[KCSEntityKeyId];
+    id<KCSQuery> query = [[KCSQueryAdapter alloc] initWithQuery:[[Query alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]]];
+    [self removeEntitiesByQuery:query
+                       forClass:class];
+}
+
+-(void)removeEntitiesByQuery:(id<KCSQuery>)query
+                    forClass:(Class)class
+{
+    Class realmClass = [[self class] realmClassForClass:class];
+    RLMRealm* realm = self.realm;
+    [self removeExpiredEntitiesForClass:class];
+    [realm transactionWithBlock:^{
+        RLMResults* results = [realmClass objectsInRealm:realm
+                                           withPredicate:query.predicate];
+        [realm deleteObjects:results];
+    }];
+}
+
+-(void)removeExpiredEntitiesForClass:(Class)class
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ < %%@", KCSEntityKeyExpireDate], [NSDate date]];
+    Class realmClass = [[self class] realmClassForClass:class];
+    RLMRealm* realm = self.realm;
+    [realm transactionWithBlock:^{
+        RLMResults* results = [realmClass objectsInRealm:realm
+                                           withPredicate:predicate];
+        [realm deleteObjects:results];
+    }];
+}
+
+-(NSArray<NSDictionary<NSString*, id>*>*)findEntity:(id<KCSQuery>)query
+                                           forClass:(Class)class
+{
+    Class realmClass = [[self class] realmClassForClass:class];
+    RLMRealm* realm = self.realm;
+    [self removeExpiredEntitiesForClass:class];
+    NSPredicate* predicate = query ? query.predicate : [NSPredicate predicateWithValue:YES];
+    RLMResults* results = [realmClass objectsInRealm:realm
+                                       withPredicate:predicate];
+    NSDictionary<NSString*, NSString*>* kinveyPropertyMapping = [class kinveyPropertyMapping];
+    NSArray<NSString*>* keys = kinveyPropertyMapping.allKeys;
+    NSMutableArray<NSDictionary<NSString*, NSObject*>*>* array = [NSMutableArray arrayWithCapacity:results.count];
+    NSDictionary<NSString*, NSObject*>* json;
+    for (RLMObject* obj in results) {
+        json = [obj dictionaryWithValuesForKeys:keys];
+        [array addObject:json];
+    }
+    return array;
+}
+
+-(void)removeAllEntities
+{
+    RLMRealm* realm = self.realm;
+    [realm transactionWithBlock:^{
+        [realm deleteAllObjects];
+    }];
 }
 
 @end

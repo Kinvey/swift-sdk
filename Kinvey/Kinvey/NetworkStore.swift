@@ -8,25 +8,25 @@
 
 import Foundation
 
-public class NetworkStore<T: Persistable>: BaseStore<T> {
+class NetworkStore<T: Persistable>: BaseStore<T> {
     
-    internal override init(client: Client = Kinvey.sharedClient()) {
+    internal override init(client: Client) {
         super.init(client: client)
     }
     
-    public override func get(id: String, completionHandler: ObjectCompletionHandler?) {
+    override func get(id: String, completionHandler: ObjectCompletionHandler?) {
         super.get(id, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    public override func find(query: Query, completionHandler: ArrayCompletionHandler?) {
+    override func find(query: Query, completionHandler: ArrayCompletionHandler?) {
         super.find(query, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    public override func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
+    override func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
         super.save(persistable, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    public override func remove(query: Query, completionHandler: IntCompletionHandler?) {
+    override func remove(query: Query, completionHandler: IntCompletionHandler?) {
         super.remove(query, completionHandler: dispatchAsyncTo(completionHandler))
     }
 

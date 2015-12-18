@@ -11,6 +11,10 @@
 		5706FEC01C1F92990037E7D0 /* KCS_FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B51F1C19F7150077F8A6 /* KCS_FMDatabaseAdditions.m */; };
 		5706FEC11C1F93210037E7D0 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5541C19F7150077F8A6 /* KinveyEntity.m */; };
 		5706FEC31C1F9A6D0037E7D0 /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
+		570B1E0A1C2393E00056941F /* KCSQueryAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 570B1E081C2393E00056941F /* KCSQueryAdapter.h */; };
+		570B1E0B1C2393E00056941F /* KCSQueryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 570B1E091C2393E00056941F /* KCSQueryAdapter.m */; };
+		570B1E0D1C23EA6C0056941F /* CachedBaseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570B1E0C1C23EA6C0056941F /* CachedBaseStore.swift */; };
+		5753BB3C1C23F29000EB9D3A /* SyncedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */; };
 		576E95A41C1FB10700258CC3 /* BaseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* BaseStore.swift */; };
 		576E95AA1C1FC2BF00258CC3 /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */; };
 		576E95AD1C20DB7C00258CC3 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
@@ -18,7 +22,7 @@
 		576E95B61C210F5100258CC3 /* KCSObjcRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95B51C210F3C00258CC3 /* KCSObjcRuntime.m */; };
 		576E95BA1C2218C500258CC3 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 576E95B91C2218C500258CC3 /* libstdc++.tbd */; };
 		576E95C71C22295B00258CC3 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 576E95C61C22295B00258CC3 /* Realm.framework */; };
-		576E95CB1C2229F700258CC3 /* KCSRealmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95C91C2229F700258CC3 /* KCSRealmManager.m */; };
+		576E95CB1C2229F700258CC3 /* KCSRealmEntityPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95C91C2229F700258CC3 /* KCSRealmEntityPersistence.m */; };
 		576E95CF1C222B8300258CC3 /* KCS_CLLocation_Realm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95CE1C222B8100258CC3 /* KCS_CLLocation_Realm.m */; };
 		576E95D21C222BD000258CC3 /* KCSUserRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95D11C222BCD00258CC3 /* KCSUserRealm.m */; };
 		576E95D51C222C0800258CC3 /* KCSMetadataRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95D41C222C0600258CC3 /* KCSMetadataRealm.m */; };
@@ -141,6 +145,10 @@
 /* Begin PBXFileReference section */
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		5709608F1C1B96DA00D4AFA5 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		570B1E081C2393E00056941F /* KCSQueryAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryAdapter.h; sourceTree = "<group>"; };
+		570B1E091C2393E00056941F /* KCSQueryAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQueryAdapter.m; sourceTree = "<group>"; };
+		570B1E0C1C23EA6C0056941F /* CachedBaseStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedBaseStore.swift; sourceTree = "<group>"; };
+		5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStoreTests.swift; sourceTree = "<group>"; };
 		576E95A31C1FB10700258CC3 /* BaseStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseStore.swift; sourceTree = "<group>"; };
 		576E95A71C1FC2B400258CC3 /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MongoDBPredicateAdaptor.h; sourceTree = "<group>"; };
 		576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MongoDBPredicateAdaptor.m; sourceTree = "<group>"; };
@@ -151,8 +159,8 @@
 		576E95B51C210F3C00258CC3 /* KCSObjcRuntime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCSObjcRuntime.m; sourceTree = "<group>"; };
 		576E95B91C2218C500258CC3 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		576E95C61C22295B00258CC3 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = "Dependencies/Realm/build/Debug-iphoneos-dynamic/Realm.framework"; sourceTree = "<group>"; };
-		576E95C81C2229F700258CC3 /* KCSRealmManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRealmManager.h; sourceTree = "<group>"; };
-		576E95C91C2229F700258CC3 /* KCSRealmManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRealmManager.m; sourceTree = "<group>"; };
+		576E95C81C2229F700258CC3 /* KCSRealmEntityPersistence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRealmEntityPersistence.h; sourceTree = "<group>"; };
+		576E95C91C2229F700258CC3 /* KCSRealmEntityPersistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRealmEntityPersistence.m; sourceTree = "<group>"; };
 		576E95CD1C222B8100258CC3 /* KCS_CLLocation_Realm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_CLLocation_Realm.h; sourceTree = "<group>"; };
 		576E95CE1C222B8100258CC3 /* KCS_CLLocation_Realm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCS_CLLocation_Realm.m; sourceTree = "<group>"; };
 		576E95D01C222BCD00258CC3 /* KCSUserRealm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSUserRealm.h; sourceTree = "<group>"; };
@@ -484,8 +492,8 @@
 		576E95CC1C222B3600258CC3 /* Realm */ = {
 			isa = PBXGroup;
 			children = (
-				576E95C81C2229F700258CC3 /* KCSRealmManager.h */,
-				576E95C91C2229F700258CC3 /* KCSRealmManager.m */,
+				576E95C81C2229F700258CC3 /* KCSRealmEntityPersistence.h */,
+				576E95C91C2229F700258CC3 /* KCSRealmEntityPersistence.m */,
 				576E95CD1C222B8100258CC3 /* KCS_CLLocation_Realm.h */,
 				576E95CE1C222B8100258CC3 /* KCS_CLLocation_Realm.m */,
 				576E95D01C222BCD00258CC3 /* KCSUserRealm.h */,
@@ -665,6 +673,8 @@
 				5783B5481C19F7150077F8A6 /* KCSReduceFunction.m */,
 				5783B5491C19F7150077F8A6 /* KCSGroup.h */,
 				5783B54A1C19F7150077F8A6 /* KCSGroup.m */,
+				570B1E081C2393E00056941F /* KCSQueryAdapter.h */,
+				570B1E091C2393E00056941F /* KCSQueryAdapter.m */,
 			);
 			name = Query;
 			sourceTree = "<group>";
@@ -1121,6 +1131,7 @@
 				57E1C3A81C17B71100578974 /* Store.swift */,
 				576E95A31C1FB10700258CC3 /* BaseStore.swift */,
 				57E1C39C1C17B37B00578974 /* NetworkStore.swift */,
+				570B1E0C1C23EA6C0056941F /* CachedBaseStore.swift */,
 				57E1C39E1C17B39400578974 /* CachedStore.swift */,
 				57E1C3A01C17B39E00578974 /* SyncedStore.swift */,
 				57E1C3A21C17B3FF00578974 /* Query.swift */,
@@ -1143,6 +1154,7 @@
 				5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */,
 				576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */,
 				576E95AE1C20DC0400258CC3 /* CachedStoreTests.swift */,
+				5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -1155,6 +1167,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57A27C851C178F17000DF951 /* Kinvey.h in Headers */,
+				570B1E0A1C2393E00056941F /* KCSQueryAdapter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1293,6 +1306,7 @@
 				57A27CA21C17910E000DF951 /* Acl.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
 				5783B6541C1A11AF0077F8A6 /* KCSPush.m in Sources */,
+				570B1E0D1C23EA6C0056941F /* CachedBaseStore.swift in Sources */,
 				5783B62E1C1A092D0077F8A6 /* KCSCachedStore.m in Sources */,
 				5783B6391C1A101A0077F8A6 /* KCSGroup.m in Sources */,
 				576E95EB1C222E5800258CC3 /* KCS_CLLocation_Realm_ValueTransformer.m in Sources */,
@@ -1301,10 +1315,11 @@
 				5783B6221C19F73E0077F8A6 /* KCSKeychain.m in Sources */,
 				577C9E761C1EC99E00BF49EE /* NSError+KinveyKit.m in Sources */,
 				5783B6401C1A10740077F8A6 /* KCSMockServer.m in Sources */,
+				570B1E0B1C2393E00056941F /* KCSQueryAdapter.m in Sources */,
 				5783B6471C1A10DA0077F8A6 /* KCSNetworkResponse.m in Sources */,
 				57E1C39F1C17B39400578974 /* CachedStore.swift in Sources */,
 				5783B6491C1A10FE0077F8A6 /* KCSDataModel.m in Sources */,
-				576E95CB1C2229F700258CC3 /* KCSRealmManager.m in Sources */,
+				576E95CB1C2229F700258CC3 /* KCSRealmEntityPersistence.m in Sources */,
 				5783B6531C1A11A40077F8A6 /* KCSPropertyUtil.m in Sources */,
 				5783B6621C1A12DF0077F8A6 /* KCS_KSReachability.m in Sources */,
 				57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */,
@@ -1392,6 +1407,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				576E95AD1C20DB7C00258CC3 /* NetworkStoreTests.swift in Sources */,
+				5753BB3C1C23F29000EB9D3A /* SyncedStoreTests.swift in Sources */,
 				576E95AF1C20DC0400258CC3 /* CachedStoreTests.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
 				57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */,
@@ -1530,10 +1546,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Dependencies/Realm/build/Debug-iphoneos-dynamic",
-				);
 				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1555,10 +1567,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Dependencies/Realm/build/Debug-iphoneos-dynamic",
-				);
 				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
