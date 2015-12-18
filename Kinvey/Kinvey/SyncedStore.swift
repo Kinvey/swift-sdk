@@ -7,23 +7,30 @@
 //
 
 import Foundation
+import KinveyKit
 
-public class SyncedStore<T: Persistable>: BaseStore<T> {
+class SyncedStore<T: Persistable>: CachedBaseStore<T> {
     
-    internal override init(client: Client = Kinvey.sharedClient()) {
+    internal init(client: Client) {
         super.init(client: client)
     }
     
-    public func initialize(query: Query) {
+    internal override var expirationDate: NSDate {
+        get {
+            return NSDate.distantFuture()
+        }
     }
     
-    public func push() {
+    func initialize(query: Query) {
     }
     
-    public func sync(query: Query) {
+    func push() {
     }
     
-    public func purge() {
+    func sync(query: Query) {
+    }
+    
+    func purge() {
     }
 
 }

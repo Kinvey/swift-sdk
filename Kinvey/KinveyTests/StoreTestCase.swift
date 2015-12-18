@@ -9,27 +9,27 @@
 import XCTest
 @testable import Kinvey
 
-class Person: NSObject, Persistable {
-    
-    dynamic var personId: String?
-    dynamic var name: String?
-    dynamic var age: Int = 0
-    
-    static func kinveyCollectionName() -> String {
-        return "Person"
-    }
-    
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "personId" : Kinvey.PersistableIdKey,
-            "name" : "name",
-            "age" : "age"
-        ]
-    }
-    
-}
-
 class StoreTestCase: KinveyTestCase {
+    
+    class Person: NSObject, Persistable {
+        
+        dynamic var personId: String?
+        dynamic var name: String?
+        dynamic var age: Int = 0
+        
+        static func kinveyCollectionName() -> String {
+            return "Person"
+        }
+        
+        static func kinveyPropertyMapping() -> [String : String] {
+            return [
+                "personId" : Kinvey.PersistableIdKey,
+                "name" : "name",
+                "age" : "age"
+            ]
+        }
+        
+    }
     
     var store: BaseStore<Person>!
     var person:Person {

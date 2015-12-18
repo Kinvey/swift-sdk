@@ -9,21 +9,21 @@
 import Foundation
 import KinveyKit
 
-public class BaseStore<T: Persistable>: NSObject, Store {
+class BaseStore<T: Persistable>: NSObject, Store {
     
-    public typealias ArrayCompletionHandler = ([T]?, NSError?) -> Void
-    public typealias ObjectCompletionHandler = (T?, NSError?) -> Void
-    public typealias IntCompletionHandler = (Int?, NSError?) -> Void
+    typealias ArrayCompletionHandler = ([T]?, NSError?) -> Void
+    typealias ObjectCompletionHandler = (T?, NSError?) -> Void
+    typealias IntCompletionHandler = (Int?, NSError?) -> Void
     
-    public let collectionName: String
-    public let client: Client
+    let collectionName: String
+    let client: Client
     
-    public init(client: Client = Kinvey.sharedClient()) {
+    init(client: Client = Kinvey.sharedClient()) {
         self.client = client
         self.collectionName = T.kinveyCollectionName()
     }
     
-    public func get(id: String, completionHandler: ObjectCompletionHandler?) {
+    func get(id: String, completionHandler: ObjectCompletionHandler?) {
         assert(id != "")
         let url = Client.Endpoint.AppDataById(client, collectionName, id).url()
         let request = NSMutableURLRequest(URL: url!)
@@ -40,7 +40,7 @@ public class BaseStore<T: Persistable>: NSObject, Store {
         }
     }
     
-    public func find(query: Query, completionHandler: ArrayCompletionHandler?) {
+    func find(query: Query, completionHandler: ArrayCompletionHandler?) {
         let url = Client.Endpoint.AppDataByQuery(client, collectionName, query).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "GET"
@@ -56,7 +56,7 @@ public class BaseStore<T: Persistable>: NSObject, Store {
         }
     }
     
-    public func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
+    func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
         let url = Client.Endpoint.AppData(client, collectionName).url()
         let request = NSMutableURLRequest(URL: url!)
         let bodyObject = persistable.toJson()
@@ -79,17 +79,17 @@ public class BaseStore<T: Persistable>: NSObject, Store {
         }
     }
     
-    public func save(array: [T], completionHandler: ArrayCompletionHandler?) {
+    func save(array: [T], completionHandler: ArrayCompletionHandler?) {
         //TODO: future implementation
     }
     
-    public func remove(persistable: T, completionHandler: IntCompletionHandler?) {
+    func remove(persistable: T, completionHandler: IntCompletionHandler?) {
         if let id = persistable.kinveyObjectId {
             remove(id, completionHandler: completionHandler)
         }
     }
     
-    public func remove(array: [T], completionHandler: IntCompletionHandler?) {
+    func remove(array: [T], completionHandler: IntCompletionHandler?) {
         var ids: [String] = []
         for persistable in array {
             if let id = persistable.kinveyObjectId {
@@ -99,17 +99,17 @@ public class BaseStore<T: Persistable>: NSObject, Store {
         remove(ids, completionHandler: completionHandler)
     }
     
-    public func remove(id: String, completionHandler: IntCompletionHandler?) {
+    func remove(id: String, completionHandler: IntCompletionHandler?) {
         let query = Query(format: "\(Kinvey.PersistableIdKey) == %@", id)
         remove(query, completionHandler: completionHandler)
     }
     
-    public func remove(ids: [String], completionHandler: IntCompletionHandler?) {
+    func remove(ids: [String], completionHandler: IntCompletionHandler?) {
         let query = Query(format: "\(Kinvey.PersistableIdKey) IN %@", ids)
         remove(query, completionHandler: completionHandler)
     }
     
-    public func remove(query: Query, completionHandler: IntCompletionHandler?) {
+    func remove(query: Query, completionHandler: IntCompletionHandler?) {
         let url = Client.Endpoint.AppDataByQuery(client, collectionName, query).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "DELETE"
@@ -128,8 +128,22 @@ public class BaseStore<T: Persistable>: NSObject, Store {
         }
     }
     
-    public override class func initialize() {
-        KCSRealmManager.initialize()
+    internal func toJson(obj: T) -> [String : AnyObject] {
+        let obj = obj as! AnyObject
+        let keys = T.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
+        return obj.dictionaryWithValuesForKeys(keys)
+    }
+    
+    internal func fromJson(jsonArray: [[String : AnyObject]]) -> [T] {
+        var results: [T] = []
+        for json in jsonArray {
+            if let objectType = T.self as? NSObject.Type {
+                let obj = objectType.init()
+                obj.setValuesForKeysWithDictionary(json)
+                results.append(obj as! T)
+            }
+        }
+        return results
     }
     
     //MARK: - Dispatch Async To
