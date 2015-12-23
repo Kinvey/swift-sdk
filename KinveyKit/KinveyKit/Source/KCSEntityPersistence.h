@@ -80,8 +80,11 @@
 -(void)removeEntitiesByQuery:(id<KCSQuery>)query
                     forClass:(Class)clazz;
 
--(NSArray<NSDictionary<NSString*, id>*>*)findEntity:(id<KCSQuery>)query
-                                           forClass:(Class)clazz;
+-(NSDictionary<NSString*, id>*)findEntity:(NSString*)objectId
+                                 forClass:(Class)clazz;
+
+-(NSArray<NSDictionary<NSString*, id>*>*)findEntityByQuery:(id<KCSQuery>)query
+                                                  forClass:(Class)clazz;
 
 -(void)removeAllEntities;
 

@@ -34,7 +34,7 @@
 
 -(NSArray<NSSortDescriptor *> *)sortDescriptors
 {
-    return nil;
+    return self.query.sortDescriptors;
 }
 
 @end
