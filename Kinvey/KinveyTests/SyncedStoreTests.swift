@@ -9,7 +9,7 @@
 import XCTest
 @testable import Kinvey
 
-class SyncedStoreTests: NetworkStoreTests {
+class SyncedStoreTests: CachedStoreTests {
     
     override func setUp() {
         super.setUp()

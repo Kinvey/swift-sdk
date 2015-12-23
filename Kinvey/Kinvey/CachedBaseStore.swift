@@ -23,7 +23,7 @@ class CachedBaseStore<T: Persistable>: BaseStore<T> {
         let json = toJson(object)
         if var entity = json as? [String : NSObject] {
             entity[Kinvey.PersistableTimeToLiveKey] = expirationDate
-            if let userId = self.client.activeUser?.userId {
+            if let userId = client.activeUser?.userId {
                 entity[Kinvey.PersistableAclKey] = Acl(creator: userId).toJson()
             }
             entityPersistence.saveEntity(entity, forClass: clazz)
@@ -51,13 +51,23 @@ class CachedBaseStore<T: Persistable>: BaseStore<T> {
     }
     
     override func get(id: String, completionHandler: ObjectCompletionHandler?) {
-        super.get(id) { (obj, error) -> Void in
-            self.dispatchAsyncTo(completionHandler)?(obj, error)
+        let json = entityPersistence.findEntity(id, forClass: clazz)
+        if let obj = fromJson(json) {
+            dispatchAsyncTo(completionHandler)?(obj, nil)
+            super.get(id) { (obj, error) -> Void in
+                if let obj = obj {
+                    self.saveEntity(obj)
+                }
+            }
+        } else {
+            super.get(id) { (obj, error) -> Void in
+                self.dispatchAsyncTo(completionHandler)?(obj, error)
+            }
         }
     }
     
     override func find(query: Query, completionHandler: ArrayCompletionHandler?) {
-        let jsonArray = entityPersistence.findEntity(KCSQueryAdapter(query: query), forClass: clazz)
+        let jsonArray = entityPersistence.findEntityByQuery(KCSQueryAdapter(query: query), forClass: clazz)
         let results = fromJson(jsonArray)
         super.find(query) { (results, error) -> Void in
             if let results = results {
@@ -79,6 +89,9 @@ class CachedBaseStore<T: Persistable>: BaseStore<T> {
     override func remove(query: Query, completionHandler: IntCompletionHandler?) {
         super.remove(query) { (count, error) -> Void in
             //TODO: check with backend if we can return the deleted ids
+            if let _ = count {
+                self.entityPersistence.removeEntitiesByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
+            }
             self.dispatchAsyncTo(completionHandler)?(count, error)
         }
     }
