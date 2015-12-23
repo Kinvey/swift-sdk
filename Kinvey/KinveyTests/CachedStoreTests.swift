@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import Kinvey
+@testable import KinveyKit
 
 class CachedStoreTests: NetworkStoreTests {
     

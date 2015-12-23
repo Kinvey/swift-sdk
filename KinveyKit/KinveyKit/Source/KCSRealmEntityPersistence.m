@@ -539,8 +539,9 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
 {
     NSDictionary<NSString*, NSString*>* propertyMapping = [class kinveyPropertyMapping].invert;
     NSString* keyId = propertyMapping[KCSEntityKeyId];
-    id<KCSQuery> query = [[KCSQueryAdapter alloc] initWithQuery:[[Query alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]]];
-    [self removeEntitiesByQuery:query
+    Query* query = [[Query alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]
+                                    sortDescriptors:nil];
+    [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
                        forClass:class];
 }
 
@@ -569,17 +570,40 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     }];
 }
 
--(NSArray<NSDictionary<NSString*, id>*>*)findEntity:(id<KCSQuery>)query
-                                           forClass:(Class)class
+-(NSDictionary<NSString *,id> *)findEntity:(NSString *)objectId
+                                  forClass:(Class)class
+{
+    NSDictionary<NSString*, NSString*>* propertyMapping = [class kinveyPropertyMapping].invert;
+    NSString* keyId = propertyMapping[KCSEntityKeyId];
+    Query* query = [[Query alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], objectId]
+                                    sortDescriptors:nil];
+    NSArray<NSDictionary<NSString*, id>*>* results = [self findEntityByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
+                                                                    forClass:class];
+    return results.count > 0 ? results.firstObject : nil;
+}
+
+-(NSArray<NSDictionary<NSString*, id>*>*)findEntityByQuery:(id<KCSQuery>)query
+                                                  forClass:(Class)class
 {
     Class realmClass = [[self class] realmClassForClass:class];
     RLMRealm* realm = self.realm;
     [self removeExpiredEntitiesForClass:class];
-    NSPredicate* predicate = query ? query.predicate : [NSPredicate predicateWithValue:YES];
-    RLMResults* results = [realmClass objectsInRealm:realm
-                                       withPredicate:predicate];
+    
     NSDictionary<NSString*, NSString*>* kinveyPropertyMapping = [class kinveyPropertyMapping];
     NSArray<NSString*>* keys = kinveyPropertyMapping.allKeys;
+    
+    RLMResults* results = [realmClass objectsInRealm:realm
+                                       withPredicate:query.predicate];
+    
+    if (query.sortDescriptors.count > 0) {
+        NSMutableArray<RLMSortDescriptor*>* realmSortDescriptor = [NSMutableArray arrayWithCapacity:query.sortDescriptors.count];
+        for (NSSortDescriptor* sortDescriptor in query.sortDescriptors) {
+            [realmSortDescriptor addObject:[RLMSortDescriptor sortDescriptorWithProperty:sortDescriptor.key
+                                                                               ascending:sortDescriptor.ascending]];
+        }
+        results = [results sortedResultsUsingDescriptors:realmSortDescriptor];
+    }
+    
     NSMutableArray<NSDictionary<NSString*, NSObject*>*>* array = [NSMutableArray arrayWithCapacity:results.count];
     NSDictionary<NSString*, NSObject*>* json;
     for (RLMObject* obj in results) {
