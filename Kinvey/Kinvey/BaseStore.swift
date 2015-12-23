@@ -9,21 +9,21 @@
 import Foundation
 import KinveyKit
 
-class BaseStore<T: Persistable>: NSObject, Store {
+public class BaseStore<T: Persistable>: NSObject, Store {
     
-    typealias ArrayCompletionHandler = ([T]?, NSError?) -> Void
-    typealias ObjectCompletionHandler = (T?, NSError?) -> Void
-    typealias IntCompletionHandler = (Int?, NSError?) -> Void
+    public typealias ArrayCompletionHandler = ([T]?, NSError?) -> Void
+    public typealias ObjectCompletionHandler = (T?, NSError?) -> Void
+    public typealias IntCompletionHandler = (Int?, NSError?) -> Void
     
-    let collectionName: String
-    let client: Client
+    public let collectionName: String
+    public let client: Client
     
     init(client: Client = Kinvey.sharedClient()) {
         self.client = client
         self.collectionName = T.kinveyCollectionName()
     }
     
-    func get(id: String, completionHandler: ObjectCompletionHandler?) {
+    public func get(id: String, completionHandler: ObjectCompletionHandler?) {
         assert(id != "")
         let url = Client.Endpoint.AppDataById(client, collectionName, id).url()
         let request = NSMutableURLRequest(URL: url!)
@@ -40,7 +40,7 @@ class BaseStore<T: Persistable>: NSObject, Store {
         }
     }
     
-    func find(query: Query, completionHandler: ArrayCompletionHandler?) {
+    public func find(query: Query, completionHandler: ArrayCompletionHandler?) {
         let url = Client.Endpoint.AppDataByQuery(client, collectionName, query).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "GET"
@@ -56,7 +56,7 @@ class BaseStore<T: Persistable>: NSObject, Store {
         }
     }
     
-    func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
+    public func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
         let url = Client.Endpoint.AppData(client, collectionName).url()
         let request = NSMutableURLRequest(URL: url!)
         let bodyObject = persistable.toJson()
@@ -79,17 +79,17 @@ class BaseStore<T: Persistable>: NSObject, Store {
         }
     }
     
-    func save(array: [T], completionHandler: ArrayCompletionHandler?) {
+    public func save(array: [T], completionHandler: ArrayCompletionHandler?) {
         //TODO: future implementation
     }
     
-    func remove(persistable: T, completionHandler: IntCompletionHandler?) {
+    public func remove(persistable: T, completionHandler: IntCompletionHandler?) {
         if let id = persistable.kinveyObjectId {
             remove(id, completionHandler: completionHandler)
         }
     }
     
-    func remove(array: [T], completionHandler: IntCompletionHandler?) {
+    public func remove(array: [T], completionHandler: IntCompletionHandler?) {
         var ids: [String] = []
         for persistable in array {
             if let id = persistable.kinveyObjectId {
@@ -99,17 +99,17 @@ class BaseStore<T: Persistable>: NSObject, Store {
         remove(ids, completionHandler: completionHandler)
     }
     
-    func remove(id: String, completionHandler: IntCompletionHandler?) {
-        let query = Query(format: "\(Kinvey.PersistableIdKey) == %@", id)
+    public func remove(id: String, completionHandler: IntCompletionHandler?) {
+        let query = Query(format: "\(T.idKey) == %@", id)
         remove(query, completionHandler: completionHandler)
     }
     
-    func remove(ids: [String], completionHandler: IntCompletionHandler?) {
-        let query = Query(format: "\(Kinvey.PersistableIdKey) IN %@", ids)
+    public func remove(ids: [String], completionHandler: IntCompletionHandler?) {
+        let query = Query(format: "\(T.idKey) IN %@", ids)
         remove(query, completionHandler: completionHandler)
     }
     
-    func remove(query: Query, completionHandler: IntCompletionHandler?) {
+    public func remove(query: Query, completionHandler: IntCompletionHandler?) {
         let url = Client.Endpoint.AppDataByQuery(client, collectionName, query).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "DELETE"
@@ -134,10 +134,19 @@ class BaseStore<T: Persistable>: NSObject, Store {
         return obj.dictionaryWithValuesForKeys(keys)
     }
     
+    internal func fromJson(json: [String : AnyObject]) -> T? {
+        if let objectType = T.self as? NSObject.Type {
+            let obj = objectType.init()
+            obj.setValuesForKeysWithDictionary(json)
+            return obj as? T
+        }
+        return nil
+    }
+    
     internal func fromJson(jsonArray: [[String : AnyObject]]) -> [T] {
         var results: [T] = []
-        for json in jsonArray {
-            if let objectType = T.self as? NSObject.Type {
+        if let objectType = T.self as? NSObject.Type {
+            for json in jsonArray {
                 let obj = objectType.init()
                 obj.setValuesForKeysWithDictionary(json)
                 results.append(obj as! T)

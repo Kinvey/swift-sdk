@@ -173,7 +173,7 @@ class StoreTestCase: KinveyTestCase {
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             if let count = count {
-                XCTAssertGreaterThan(count, 0)
+                XCTAssertEqual(count, 0)
             }
             
             expectationDelete?.fulfill()
@@ -195,7 +195,7 @@ class StoreTestCase: KinveyTestCase {
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             if let count = count {
-                XCTAssertGreaterThan(count, 0)
+                XCTAssertEqual(count, 0)
             }
             
             expectationDelete?.fulfill()
@@ -216,7 +216,7 @@ class StoreTestCase: KinveyTestCase {
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             if let count = count {
-                XCTAssertGreaterThan(count, 0)
+                XCTAssertEqual(count, 0)
             }
             
             expectationDelete?.fulfill()
@@ -238,7 +238,7 @@ class StoreTestCase: KinveyTestCase {
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             if let count = count {
-                XCTAssertGreaterThan(count, 0)
+                XCTAssertEqual(count, 0)
             }
             
             expectationDelete?.fulfill()

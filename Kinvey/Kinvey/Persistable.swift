@@ -19,14 +19,19 @@ public protocol Persistable: JsonObject {
 
 extension Persistable {
     
+    public static var idKey: String {
+        get {
+            let idKey = kinveyPropertyMapping()
+                .filter { keyValuePair in keyValuePair.1 == Kinvey.PersistableIdKey }
+                .reduce(Kinvey.PersistableIdKey) { (_, keyValuePair) in keyValuePair.0 }
+            return idKey
+        }
+    }
+    
     public var kinveyObjectId: String? {
         get {
-            let propertyMap = self.dynamicType.kinveyPropertyMapping()
-                .filter { keyValue in return keyValue.1 == Kinvey.PersistableIdKey }
-                .map { keyValue in keyValue.0 }
-            if let idKey = propertyMap.first,
-                let persistable = self as? AnyObject,
-                let id = persistable.valueForKey(idKey) as? String
+            if let persistable = self as? AnyObject,
+                let id = persistable.valueForKey(self.dynamicType.idKey) as? String
             {
                 return id
             }
@@ -54,13 +59,7 @@ extension Persistable {
             let propertyMap = self.dynamicType.kinveyPropertyMapping()
             for keyValuePair in propertyMap {
                 if let value = obj.valueForKey(keyValuePair.0) {
-                    if keyValuePair.1 == Kinvey.PersistableIdKey {
-                        if value as? String != "" {
-                            json[keyValuePair.1] = value
-                        }
-                    } else {
-                        json[keyValuePair.1] = value
-                    }
+                    json[keyValuePair.1] = value
                 }
             }
         }
