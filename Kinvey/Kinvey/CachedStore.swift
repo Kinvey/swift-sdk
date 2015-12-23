@@ -9,7 +9,7 @@
 import Foundation
 import KinveyKit
 
-enum CachedStoreExpiration {
+public enum CachedStoreExpiration {
     
     enum Time {
         case Second
