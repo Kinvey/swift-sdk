@@ -450,23 +450,35 @@ void setActive(KCSUser* user)
     return user;
 }
 
+-(void)setPush:(NSMutableDictionary *)push
+{
+    @synchronized(self) {
+        if (![push isKindOfClass:[NSMutableDictionary class]]) {
+            push = push.mutableCopy;
+        }
+        _push = push;
+    }
+}
+
 - (NSMutableSet*) deviceTokens
 {
-    if (_push == nil) {
-        self.push = [NSMutableDictionary dictionary];
-    } else if (![_push isKindOfClass:[NSMutableDictionary class]]) {
-        self.push = _push.mutableCopy;
+    @synchronized(self) {
+        if (_push == nil) {
+            self.push = [NSMutableDictionary dictionary];
+        } else if (![_push isKindOfClass:[NSMutableDictionary class]]) {
+            self.push = _push.mutableCopy;
+        }
+        if (_push[kDeviceTokensKey] == nil) {
+            _push[kDeviceTokensKey] = [NSMutableSet set];
+        } else if ([_push[kDeviceTokensKey] isKindOfClass:[NSArray class]]) {
+            _push[kDeviceTokensKey] = [NSMutableSet setWithArray:_push[kDeviceTokensKey]];
+        } else if ([_push[kDeviceTokensKey] isKindOfClass:[NSDictionary class]] &&
+                   ![_push[kDeviceTokensKey] isKindOfClass:[NSMutableDictionary class]])
+        {
+            _push[kDeviceTokensKey] = ((NSDictionary*) _push[kDeviceTokensKey]).mutableCopy;
+        }
+        return _push[kDeviceTokensKey];
     }
-    if (_push[kDeviceTokensKey] == nil) {
-        _push[kDeviceTokensKey] = [NSMutableSet set];
-    } else if ([_push[kDeviceTokensKey] isKindOfClass:[NSArray class]]) {
-        _push[kDeviceTokensKey] = [NSMutableSet setWithArray:_push[kDeviceTokensKey]];
-    } else if ([_push[kDeviceTokensKey] isKindOfClass:[NSDictionary class]] &&
-               ![_push[kDeviceTokensKey] isKindOfClass:[NSMutableDictionary class]])
-    {
-        _push[kDeviceTokensKey] = ((NSDictionary*) _push[kDeviceTokensKey]).mutableCopy;
-    }
-    return _push[kDeviceTokensKey];
 }
 
 -(KCSRequest*)changePassword:(NSString*)newPassword
