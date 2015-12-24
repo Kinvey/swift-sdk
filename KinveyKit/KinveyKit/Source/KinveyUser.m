@@ -454,6 +454,8 @@ void setActive(KCSUser* user)
 {
     if (_push == nil) {
         self.push = [NSMutableDictionary dictionary];
+    } else if (![_push isKindOfClass:[NSMutableDictionary class]]) {
+        self.push = _push.mutableCopy;
     }
     if (_push[kDeviceTokensKey] == nil) {
         _push[kDeviceTokensKey] = [NSMutableSet set];
