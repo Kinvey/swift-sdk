@@ -41,14 +41,20 @@
         
         Event* event = [[Event alloc] init];
         event.name = @"Event 1";
+        event.descriptionEvent = [NSMutableString stringWithString:@"test"];
         
-        [store saveObject:event
+        NSMutableArray* events = [NSMutableArray arrayWithObject:event];
+        
+        [store saveObject:events
       withCompletionBlock:^(NSArray<Event*> *objectsOrNil, NSError *errorOrNil)
         {
             XCTAssertNotNil(objectsOrNil);
             XCTAssertNil(errorOrNil);
             XCTAssertEqual(objectsOrNil.firstObject, event);
             XCTAssertNotNil(event.entityId);
+            
+            XCTAssertTrue([event.descriptionEvent isKindOfClass:[NSMutableString class]]);
+            XCTAssertTrue([objectsOrNil.firstObject.descriptionEvent isKindOfClass:[NSMutableString class]]);
             
             objectId = event.entityId;
             
