@@ -24,11 +24,14 @@
 
 #import "KCSLogManager.h"
 #import "KinveyErrorCodes.h"
+#import "NSError+KinveyKit.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
 
 #import "KCSHttpRequest.h"
 
 #define UAPushBadgeSettingsKey @"UAPushBadge"
+
+#define KCSValueOrNSNull(value) value ? value : [NSNull null]
 
 @interface KCSPush()
 @property (nonatomic, retain, readwrite) NSData  *deviceToken;
@@ -230,7 +233,7 @@
             deviceTokenString = [self deviceTokenString];
         }
     }
-    if (deviceTokenExists) {
+    if (deviceTokenExists && deviceTokenString && [KCSUser activeUser].userId) {
         KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             if (error || deviceTokenString == nil) {
                 KCSLogError(@"Device token did not register");
@@ -254,14 +257,20 @@
                                                       credentials:[KCSUser activeUser]];
         request.method = KCSRESTMethodPOST;
         request.path = @[@"register-device"];
-        request.body = @{@"userId"   : [KCSUser activeUser].userId,
-                         @"deviceId" : deviceTokenString,
+        request.body = @{@"userId"   : KCSValueOrNSNull([KCSUser activeUser].userId),
+                         @"deviceId" : KCSValueOrNSNull(deviceTokenString),
                          @"platform" : @"ios"};
 //        TODO: request.errorDomain = KCSUserErrorDomain;
         [request start];
     } else {
         if (completionBlock) {
-            completionBlock(NO, nil);
+            NSError* error = nil;
+            if (deviceTokenString == nil) {
+                error = [NSError createKCSErrorWithReason:@"Device token is empty."];
+            } else if ([KCSUser activeUser].userId == nil) {
+                error = [NSError createKCSErrorWithReason:@"No active user at this moment. Please create an user or login with an existing one."];
+            }
+            completionBlock(NO, error);
         }
     }
 }
