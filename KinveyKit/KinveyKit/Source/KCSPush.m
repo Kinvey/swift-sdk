@@ -31,6 +31,8 @@
 
 #define UAPushBadgeSettingsKey @"UAPushBadge"
 
+#define KCSValueOrNSNull(value) value ? value : [NSNull null]
+
 @interface KCSPush()
 @property (nonatomic, retain, readwrite) NSData  *deviceToken;
 @property (nonatomic) BOOL hasToken;
@@ -255,8 +257,8 @@
                                                       credentials:[KCSUser activeUser]];
         request.method = KCSRESTMethodPOST;
         request.path = @[@"register-device"];
-        request.body = @{@"userId"   : [KCSUser activeUser].userId,
-                         @"deviceId" : deviceTokenString,
+        request.body = @{@"userId"   : KCSValueOrNSNull([KCSUser activeUser].userId),
+                         @"deviceId" : KCSValueOrNSNull(deviceTokenString),
                          @"platform" : @"ios"};
 //        TODO: request.errorDomain = KCSUserErrorDomain;
         [request start];
