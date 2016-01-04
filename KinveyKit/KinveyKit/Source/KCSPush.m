@@ -24,6 +24,7 @@
 
 #import "KCSLogManager.h"
 #import "KinveyErrorCodes.h"
+#import "NSError+KinveyKit.h"
 #import "NSMutableDictionary+KinveyAdditions.h"
 
 #import "KCSHttpRequest.h"
@@ -261,7 +262,13 @@
         [request start];
     } else {
         if (completionBlock) {
-            completionBlock(NO, nil);
+            NSError* error = nil;
+            if (deviceTokenString == nil) {
+                error = [NSError createKCSErrorWithReason:@"Device token is empty."];
+            } else if ([KCSUser activeUser].userId == nil) {
+                error = [NSError createKCSErrorWithReason:@"No active user at this moment. Please create an user or login with an existing one."];
+            }
+            completionBlock(NO, error);
         }
     }
 }
