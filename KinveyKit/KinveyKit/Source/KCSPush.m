@@ -230,7 +230,7 @@
             deviceTokenString = [self deviceTokenString];
         }
     }
-    if (deviceTokenExists) {
+    if (deviceTokenExists && deviceTokenString && [KCSUser activeUser].userId) {
         KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
             if (error || deviceTokenString == nil) {
                 KCSLogError(@"Device token did not register");
