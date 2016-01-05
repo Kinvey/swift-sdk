@@ -21,7 +21,8 @@
              @"location" : @"location",
              @"age" : @"Age",
              @"response" : @"response",
-             @"metadata" : KCSEntityKeyMetadata //optional _metadata field
+             @"metadata" : KCSEntityKeyMetadata, //optional _metadata field
+             @"descriptionEvent" : @"descriptionEvent"
              };
 }
 
