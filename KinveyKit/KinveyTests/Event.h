@@ -17,6 +17,7 @@
 @property (nonatomic, copy) NSString* age;
 @property (nonatomic, copy) NSDate* date;
 @property (nonatomic, copy) NSString* location;
+@property (nonatomic, strong) NSMutableString* descriptionEvent;
 @property (nonatomic, retain) KCSMetadata* metadata; //Kinvey metadata, optional
 
 @end
