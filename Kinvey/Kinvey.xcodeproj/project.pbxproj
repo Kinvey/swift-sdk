@@ -119,6 +119,7 @@
 		57A27CA01C178FC0000DF951 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C9F1C178FC0000DF951 /* User.swift */; };
 		57A27CA21C17910E000DF951 /* Acl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27CA11C17910E000DF951 /* Acl.swift */; };
 		57A27CA41C179118000DF951 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27CA31C179118000DF951 /* Metadata.swift */; };
+		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
 		57E1C39D1C17B37B00578974 /* NetworkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C39C1C17B37B00578974 /* NetworkStore.swift */; };
 		57E1C39F1C17B39400578974 /* CachedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C39E1C17B39400578974 /* CachedStore.swift */; };
 		57E1C3A11C17B39E00578974 /* SyncedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A01C17B39E00578974 /* SyncedStore.swift */; };
@@ -443,6 +444,7 @@
 		57A27C9F1C178FC0000DF951 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		57A27CA11C17910E000DF951 /* Acl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Acl.swift; sourceTree = "<group>"; };
 		57A27CA31C179118000DF951 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
+		57C71DC71C3EFBF900B1BEF2 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		57E1C39C1C17B37B00578974 /* NetworkStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkStore.swift; sourceTree = "<group>"; };
 		57E1C39E1C17B39400578974 /* CachedStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedStore.swift; sourceTree = "<group>"; };
 		57E1C3A01C17B39E00578974 /* SyncedStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStore.swift; sourceTree = "<group>"; };
@@ -1141,6 +1143,7 @@
 				57E1C3B21C1822B100578974 /* ResponseParser.swift */,
 				57E1C3B41C18253B00578974 /* JsonResponseParser.swift */,
 				5783B5061C1910B00077F8A6 /* JsonObject.swift */,
+				57C71DC71C3EFBF900B1BEF2 /* Request.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -1369,6 +1372,7 @@
 				576E95F11C222F1400258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m in Sources */,
 				5783B6501C1A11660077F8A6 /* KCSReachability.m in Sources */,
 				577C9E731C1EC85600BF49EE /* KCSClient+ConfigurationTest.m in Sources */,
+				57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */,
 				5706FEBF1C1F92350037E7D0 /* NSMutableDictionary+KinveyAdditions.m in Sources */,
 				5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */,
 				5783B65E1C1A12A30077F8A6 /* KCS_DDTTYLogger.m in Sources */,
