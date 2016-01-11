@@ -30,6 +30,7 @@
 #import "KCSHttpRequest.h"
 
 #define UAPushBadgeSettingsKey @"UAPushBadge"
+#define KCSPushDeviceToken @"KCSPushDeviceToken"
 
 #define KCSValueOrNSNull(value) value ? value : [NSNull null]
 
@@ -40,16 +41,6 @@
 @end
 
 @implementation KCSPush
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        _deviceToken = nil;
-    }
-    return self;
-}
-
 
 #pragma mark - Init
 + (KCSPush *)sharedPush
@@ -228,7 +219,7 @@
     BOOL deviceTokenExists;
     NSString *deviceTokenString = nil;
     @synchronized (self) {
-        deviceTokenExists = self.deviceToken != nil && [KCSUser activeUser] != nil && [KCSUser activeUser].deviceTokens != nil && [[KCSUser activeUser].deviceTokens containsObject:[self deviceTokenString]] == NO;
+        deviceTokenExists = self.deviceToken != nil;
         if (deviceTokenExists) {
             deviceTokenString = [self deviceTokenString];
         }
@@ -260,7 +251,6 @@
         request.body = @{@"userId"   : KCSValueOrNSNull([KCSUser activeUser].userId),
                          @"deviceId" : KCSValueOrNSNull(deviceTokenString),
                          @"platform" : @"ios"};
-//        TODO: request.errorDomain = KCSUserErrorDomain;
         [request start];
     } else {
         if (completionBlock) {
@@ -268,7 +258,7 @@
             if (![[UIDevice currentDevice].name isEqualToString:@"iPhone Simulator"]) {
                 if ([KCSUser activeUser].userId == nil) {
                     error = [NSError createKCSErrorWithReason:@"No active user at this moment. Please create an user or login with an existing one."];
-                } else if (deviceTokenString == nil) {
+                } else if (self.pushEnabled && deviceTokenString == nil) {
                     error = [NSError createKCSErrorWithReason:@"Device token is empty."];
                 }
             }
@@ -330,6 +320,23 @@
 - (void)resetPushBadge
 {
     [self setPushBadgeNumber:0];
+}
+
+-(NSData*)deviceToken
+{
+    return [[NSUserDefaults standardUserDefaults] dataForKey:KCSPushDeviceToken];
+}
+
+-(void)setDeviceToken:(NSData*)deviceToken
+{
+    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    if (deviceToken) {
+        [userDefaults setObject:deviceToken
+                         forKey:KCSPushDeviceToken];
+    } else {
+        [userDefaults removeObjectForKey:KCSPushDeviceToken];
+    }
+    [userDefaults synchronize];
 }
 
 /* TODO
