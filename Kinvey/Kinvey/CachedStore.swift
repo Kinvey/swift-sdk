@@ -56,7 +56,7 @@ class CachedStore<T: Persistable>: CachedBaseStore<T> {
     typealias Expiration = (Int, CachedStoreExpiration.Time)
     
     internal convenience init(expiration: Expiration, calendar: NSCalendar = NSCalendar.currentCalendar(), client: Client = Kinvey.sharedClient()) {
-        var _expiration: CachedStoreExpiration
+        let _expiration: CachedStoreExpiration
         switch expiration.1 {
             case .Second:
                 _expiration = CachedStoreExpiration.Second(expiration.0)

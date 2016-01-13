@@ -12,7 +12,7 @@ import MongoDBPredicateAdaptor
 
 public class Client: NSObject, Credential {
     
-    internal var _activeUser: User? {
+    public internal(set) var activeUser: User? {
         willSet (newActiveUser) {
             if let activeUser = newActiveUser {
                 let userDefaults = NSUserDefaults.standardUserDefaults()
@@ -32,7 +32,7 @@ public class Client: NSObject, Credential {
                 )
             } else {
                 KCSKeychain2.deleteTokensForUser(
-                    _activeUser?.userId,
+                    activeUser?.userId,
                     appKey: appKey
                 )
                 KCSRealmEntityPersistence.offlineManager().removeAllEntities()
@@ -40,42 +40,12 @@ public class Client: NSObject, Credential {
         }
     }
     
-    public var activeUser: User? {
-        get {
-            return _activeUser
-        }
-    }
-    
     internal let urlSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
     
-    internal var _appKey: String?
-    internal var _appSecret: String?
-    internal var _apiHostName: NSURL
-    internal var _authHostName: NSURL
-    
-    public var appKey: String? {
-        get {
-            return _appKey
-        }
-    }
-    
-    public var appSecret: String? {
-        get {
-            return _appSecret
-        }
-    }
-    
-    public var apiHostName: NSURL {
-        get {
-            return _apiHostName
-        }
-    }
-    
-    public var authHostName: NSURL {
-        get {
-            return _authHostName
-        }
-    }
+    public private(set) var appKey: String?
+    public private(set) var appSecret: String?
+    public private(set) var apiHostName: NSURL
+    public private(set) var authHostName: NSURL
     
     public var cachePolicy: NSURLRequestCachePolicy = .UseProtocolCachePolicy
     public var timeoutInterval: NSTimeInterval = 60
@@ -91,8 +61,8 @@ public class Client: NSObject, Credential {
     public var userType = User.self
     
     public override init() {
-        _apiHostName = Client.defaultApiHostName
-        _authHostName = Client.defaultAuthHostName
+        apiHostName = Client.defaultApiHostName
+        authHostName = Client.defaultAuthHostName
         
         super.init()
         
@@ -114,15 +84,15 @@ public class Client: NSObject, Credential {
         if let authHostNameString = authHostName.absoluteString as String? where authHostNameString.characters.last == "/" {
             authHostName = NSURL(string: authHostNameString.substringToIndex(authHostNameString.characters.endIndex.predecessor()))!
         }
-        _apiHostName = apiHostName
-        _authHostName = authHostName
-        _appKey = appKey
-        _appSecret = appSecret
+        self.apiHostName = apiHostName
+        self.authHostName = authHostName
+        self.appKey = appKey
+        self.appSecret = appSecret
         if let json = NSUserDefaults.standardUserDefaults().objectForKey(appKey) as? [String : AnyObject] {
             let user = User(json: json, client: self)
             if let metadata = user.metadata, let authtoken = KCSKeychain2.kinveyTokenForUserId(user.userId, appKey: appKey) {
-                metadata._authtoken = authtoken
-                _activeUser = user
+                metadata.authtoken = authtoken
+                activeUser = user
             }
         }
         return self
