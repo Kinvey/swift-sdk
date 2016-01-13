@@ -17,17 +17,12 @@ public class Metadata: NSObject {
     public let lmt: String?
     public let ect: String?
     
-    internal var _authtoken: String?
-    public var authtoken: String? {
-        get {
-            return _authtoken
-        }
-    }
+    public internal(set) var authtoken: String?
     
     public init(lmt: String? = nil, ect: String? = nil, authtoken: String? = nil) {
         self.lmt = lmt
         self.ect = ect
-        _authtoken = authtoken
+        self.authtoken = authtoken
     }
     
     public convenience init(json: [String : String]) {
