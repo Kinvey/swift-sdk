@@ -17,26 +17,9 @@ public class User: NSObject, Credential {
     public typealias VoidHandler = (error: NSError?) -> Void
     public typealias ExistsHandler = (exists: Bool, error: NSError?) -> Void
     
-    private var _userId: String
-    public var userId: String {
-        get {
-            return _userId
-        }
-    }
-    
-    private var _acl: Acl?
-    public var acl: Acl? {
-        get {
-            return _acl
-        }
-    }
-    
-    private var _metadata: Metadata?
-    public var metadata: Metadata? {
-        get {
-            return _metadata
-        }
-    }
+    public private(set) var userId: String
+    public private(set) var acl: Acl?
+    public private(set) var metadata: Metadata?
     
     public var username: String?
     public var email: String?
@@ -64,10 +47,10 @@ public class User: NSObject, Credential {
         request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         client.networkTransport.execute(request, forceBasicAuthentication: true) { (data, response, error) -> Void in
             if client.responseParser.isResponseOk(response) {
-                client._activeUser = client.responseParser.parse(data, type: client.userType)
+                client.activeUser = client.responseParser.parse(data, type: client.userType)
             }
             if let completionHandler = completionHandler {
-                completionHandler(user: client._activeUser, error: error)
+                completionHandler(user: client.activeUser, error: error)
             }
         }
     }
@@ -97,7 +80,7 @@ public class User: NSObject, Credential {
         request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         client.networkTransport.execute(request) { (data, response, error) -> Void in
             if client.responseParser.isResponseOk(response) {
-                client._activeUser = nil
+                client.activeUser = nil
             }
             if let completionHandler = completionHandler {
                 completionHandler(error: error)
@@ -123,10 +106,10 @@ public class User: NSObject, Credential {
         request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         client.networkTransport.execute(request) { (data, response, error) -> Void in
             if client.responseParser.isResponseOk(response) {
-                client._activeUser = client.responseParser.parse(data, type: client.userType)
+                client.activeUser = client.responseParser.parse(data, type: client.userType)
             }
             if let completionHandler = completionHandler {
-                completionHandler(user: client._activeUser, error: error)
+                completionHandler(user: client.activeUser, error: error)
             }
         }
     }
@@ -184,14 +167,14 @@ public class User: NSObject, Credential {
     }
     
     public init(userId: String, acl: Acl? = nil, metadata: Metadata? = nil, client: Client = Kinvey.sharedClient()) {
-        _userId = userId
-        _acl = acl
-        _metadata = metadata
+        self.userId = userId
+        self.acl = acl
+        self.metadata = metadata
         self.client = client
     }
     
     public required init(json: [String : AnyObject], client: Client = Kinvey.sharedClient()) {
-        _userId = json[Kinvey.PersistableIdKey] as! String
+        userId = json[Kinvey.PersistableIdKey] as! String
         
         if let username = json["username"] as? String {
             self.username = username
@@ -202,15 +185,15 @@ public class User: NSObject, Credential {
         }
         
         if let acl = json[Kinvey.PersistableAclKey] as? [String : String] {
-            _acl = Acl(json: acl)
+            self.acl = Acl(json: acl)
         } else {
-            _acl = nil
+            self.acl = nil
         }
         
         if let kmd = json[Kinvey.PersistableMetadataKey] as? [String : String] {
-            _metadata = Metadata(json: kmd)
+            metadata = Metadata(json: kmd)
         } else {
-            _metadata = nil
+            metadata = nil
         }
         
         self.client = client
@@ -234,7 +217,7 @@ public class User: NSObject, Credential {
     
     public func logout() {
         if self == client.activeUser {
-            client._activeUser = nil
+            client.activeUser = nil
         }
     }
     
@@ -253,10 +236,10 @@ public class User: NSObject, Credential {
         request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         client.networkTransport.execute(request) { (data, response, error) -> Void in
             if client.responseParser.isResponseOk(response) {
-                client._activeUser = client.responseParser.parse(data, type: client.userType)
+                client.activeUser = client.responseParser.parse(data, type: client.userType)
             }
             if let completionHandler = completionHandler {
-                completionHandler(user: client._activeUser, error: error)
+                completionHandler(user: client.activeUser, error: error)
             }
         }
     }
@@ -280,7 +263,7 @@ public class User: NSObject, Credential {
                 user = User(userId: kcsUser.userId, metadata: Metadata(authtoken: kcsUser.authString), client: client)
                 user?.username = kcsUser.username
                 user?.email = kcsUser.email
-                client._activeUser = user
+                client.activeUser = user
             }
             if let completionHandler = completionHandler {
                 completionHandler(user: user, error: error)

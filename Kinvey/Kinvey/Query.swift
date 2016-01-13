@@ -10,23 +10,12 @@ import Foundation
 
 public class Query: NSObject {
     
-    private var _predicate: NSPredicate
-    public var predicate: NSPredicate {
-        get {
-            return _predicate
-        }
-    }
-    
-    private var _sortDescriptors: [NSSortDescriptor]?
-    public var sortDescriptors: [NSSortDescriptor]? {
-        get {
-            return _sortDescriptors
-        }
-    }
+    public private(set) var predicate: NSPredicate
+    public private(set) var sortDescriptors: [NSSortDescriptor]?
     
     public init(predicate: NSPredicate, sortDescriptors: [NSSortDescriptor]? = nil) {
-        _predicate = predicate
-        _sortDescriptors = sortDescriptors
+        self.predicate = predicate
+        self.sortDescriptors = sortDescriptors
     }
     
     public override convenience init() {
