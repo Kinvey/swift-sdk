@@ -14,7 +14,7 @@ class SyncedStoreTests: CachedStoreTests {
     override func setUp() {
         super.setUp()
         
-        store = SyncedStore<Person>(client: client)
+        store = client.getSyncedStore(Person.self)
     }
     
 }

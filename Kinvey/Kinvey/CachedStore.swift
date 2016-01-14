@@ -9,53 +9,15 @@
 import Foundation
 import KinveyKit
 
-public enum CachedStoreExpiration {
-    
-    enum Time {
-        case Second
-        case Minute
-        case Hour
-        case Day
-        case Month
-        case Year
-    }
-    
-    case Second(Int)
-    case Minute(Int)
-    case Hour(Int)
-    case Day(Int)
-    case Month(Int)
-    case Year(Int)
-    
-    func date(calendar: NSCalendar) -> NSDate {
-        let dateComponents = NSDateComponents()
-        switch self {
-            case .Second(let value):
-                dateComponents.day = value
-            case .Minute(let value):
-                dateComponents.minute = value
-            case .Hour(let value):
-                dateComponents.hour = value
-            case .Day(let value):
-                dateComponents.day = value
-            case .Month(let value):
-                dateComponents.month = value
-            case .Year(let value):
-                dateComponents.year = value
-        }
-        let newDate = calendar.dateByAddingComponents(dateComponents, toDate: NSDate(), options: [])
-        return newDate!
-    }
-}
-
-class CachedStore<T: Persistable>: CachedBaseStore<T> {
+class CachedStore<T: Persistable>: Store<T> {
     
     let expiration: CachedStoreExpiration
     let calendar: NSCalendar
     
-    typealias Expiration = (Int, CachedStoreExpiration.Time)
+    private let entityPersistence: KCSEntityPersistenceProtocol
+    private let clazz: AnyClass = T.self as! AnyClass
     
-    internal convenience init(expiration: Expiration, calendar: NSCalendar = NSCalendar.currentCalendar(), client: Client = Kinvey.sharedClient()) {
+    internal convenience init(expiration: Expiration, calendar: NSCalendar = NSCalendar.currentCalendar(), client: Client = Kinvey.sharedClient) {
         let _expiration: CachedStoreExpiration
         switch expiration.1 {
             case .Second:
@@ -74,15 +36,87 @@ class CachedStore<T: Persistable>: CachedBaseStore<T> {
         self.init(expiration: _expiration, client: client)
     }
     
-    internal init(expiration: CachedStoreExpiration, calendar: NSCalendar = NSCalendar.currentCalendar(), client: Client = Kinvey.sharedClient()) {
+    internal init(expiration: CachedStoreExpiration, calendar: NSCalendar = NSCalendar.currentCalendar(), entityPersistence: KCSEntityPersistenceProtocol = KCSRealmEntityPersistence.offlineManager(), client: Client = Kinvey.sharedClient) {
         self.expiration = expiration
         self.calendar = calendar
+        self.entityPersistence = entityPersistence
         super.init(client: client)
     }
     
-    internal override var expirationDate: NSDate {
+    internal var expirationDate: NSDate {
         get {
             return expiration.date(calendar)
+        }
+    }
+    
+    internal func saveEntity(object: T, expirationDate: NSDate) {
+        let json = toJson(object)
+        if var entity = json as? [String : NSObject] {
+            entity[PersistableTimeToLiveKey] = expirationDate
+            if let userId = client.activeUser?.userId {
+                entity[PersistableAclKey] = Acl(creator: userId).toJson()
+            }
+            entityPersistence.saveEntity(entity, forClass: clazz)
+        }
+    }
+    
+    internal func saveEntity(objects: [T], expirationDate: NSDate) {
+        for object in objects {
+            saveEntity(object, expirationDate: expirationDate)
+        }
+    }
+    
+    func saveEntity(object: T) {
+        saveEntity(object, expirationDate: expirationDate)
+    }
+    
+    func saveEntity(objects: [T]) {
+        saveEntity(objects, expirationDate: expirationDate)
+    }
+    
+    override func get(id: String, completionHandler: ObjectCompletionHandler?) {
+        let json = entityPersistence.findEntity(id, forClass: clazz)
+        if let obj = fromJson(json) {
+            dispatchAsyncTo(completionHandler)?(obj, nil)
+            super.get(id) { (obj, error) -> Void in
+                if let obj = obj {
+                    self.saveEntity(obj)
+                }
+            }
+        } else {
+            super.get(id) { (obj, error) -> Void in
+                self.dispatchAsyncTo(completionHandler)?(obj, error)
+            }
+        }
+    }
+    
+    override func find(query: Query, completionHandler: ArrayCompletionHandler?) {
+        let jsonArray = entityPersistence.findEntityByQuery(KCSQueryAdapter(query: query), forClass: clazz)
+        let results = fromJson(jsonArray)
+        super.find(query) { (results, error) -> Void in
+            if let results = results {
+                self.saveEntity(results)
+            }
+        }
+        self.dispatchAsyncTo(completionHandler)?(results, nil)
+    }
+    
+    override func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
+        super.save(persistable) { (obj, error) -> Void in
+            if let obj = obj {
+                self.saveEntity(obj)
+            }
+            self.dispatchAsyncTo(completionHandler)?(obj, error)
+        }
+    }
+    
+    override func remove(query: Query, completionHandler: UIntCompletionHandler?) {
+        super.remove(query) { (count, error) -> Void in
+            //TODO: check with backend if we can return the deleted ids
+            if let _ = count {
+                self.entityPersistence.removeEntitiesByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
+            }
+            self.dispatchAsyncTo(completionHandler)?(count, error)
         }
     }
 

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class NetworkStore<T: Persistable>: BaseStore<T> {
+class NetworkStore<T: Persistable>: Store<T> {
     
     internal override init(client: Client) {
         super.init(client: client)
@@ -26,7 +26,7 @@ class NetworkStore<T: Persistable>: BaseStore<T> {
         super.save(persistable, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    override func remove(query: Query, completionHandler: IntCompletionHandler?) {
+    override func remove(query: Query, completionHandler: UIntCompletionHandler?) {
         super.remove(query, completionHandler: dispatchAsyncTo(completionHandler))
     }
 

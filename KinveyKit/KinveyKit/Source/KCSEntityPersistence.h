@@ -71,21 +71,24 @@
 
 @property (nonatomic, readonly) NSString* persistenceId;
 
--(void)saveEntity:(NSDictionary<NSString*, NSObject*>*)entity
+-(void)saveEntity:(NSDictionary<NSString*, id>*)entity
          forClass:(Class)clazz;
+
+-(void)saveEntities:(NSArray<NSDictionary<NSString*, id>*>*)entities
+           forClass:(Class)clazz;
 
 -(void)removeEntity:(NSDictionary<NSString*, NSObject*>*)entity
            forClass:(Class)clazz;
 
--(void)removeEntitiesByQuery:(id<KCSQuery>)query
-                    forClass:(Class)clazz;
+-(NSUInteger)removeEntitiesByQuery:(id<KCSQuery>)query
+                          forClass:(Class)clazz;
+
+-(void)removeAllEntities;
 
 -(NSDictionary<NSString*, id>*)findEntity:(NSString*)objectId
                                  forClass:(Class)clazz;
 
 -(NSArray<NSDictionary<NSString*, id>*>*)findEntityByQuery:(id<KCSQuery>)query
                                                   forClass:(Class)clazz;
-
--(void)removeAllEntities;
 
 @end
