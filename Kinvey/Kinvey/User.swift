@@ -26,11 +26,11 @@ public class User: NSObject, Credential {
     
     internal let client: Client
     
-    public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient(), completionHandler: UserHandler? = nil) {
+    public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         _signup(username: username, password: password, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient(), completionHandler: UserHandler? = nil) {
+    internal class func _signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         let url = Client.Endpoint.User(client).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "POST"
@@ -57,15 +57,15 @@ public class User: NSObject, Credential {
     
     //TODO: review the method name for delete a user
     
-    public class func destroy(userId userId: String, hard: Bool = true, client: Client = Kinvey.sharedClient(), completionHandler: VoidHandler? = nil) {
+    public class func destroy(userId userId: String, hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) {
         _destroy(userId: userId, hard: hard, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    public func destroy(hard hard: Bool = true, client: Client = Kinvey.sharedClient(), completionHandler: VoidHandler? = nil) {
+    public func destroy(hard hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) {
         User._destroy(userId: userId, hard: hard, client: client, completionHandler: User.dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _destroy(userId userId: String, hard: Bool, client: Client = Kinvey.sharedClient(), completionHandler: VoidHandler? = nil) {
+    internal class func _destroy(userId userId: String, hard: Bool, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) {
         let url = Client.Endpoint.UserById(client, userId).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "DELETE"
@@ -88,11 +88,11 @@ public class User: NSObject, Credential {
         }
     }
     
-    public class func login(username username: String, password: String, client: Client = Kinvey.sharedClient(), completionHandler: UserHandler? = nil) {
+    public class func login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         _login(username: username, password: password, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _login(username username: String, password: String, client: Client = Kinvey.sharedClient(), completionHandler: UserHandler? = nil) {
+    internal class func _login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         let url = Client.Endpoint.UserLogin(client).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "POST"
@@ -114,17 +114,17 @@ public class User: NSObject, Credential {
         }
     }
     
-    public class func resetPassword(username username: String, client: Client = Kinvey.sharedClient()) {
+    public class func resetPassword(username username: String, client: Client = Kinvey.sharedClient) {
     }
     
-    public class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient()) {
+    public class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient) {
     }
     
-    public class func exists(username username: String, client: Client = Kinvey.sharedClient(), completionHandler: ExistsHandler? = nil) {
+    public class func exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) {
         _exists(username: username, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _exists(username username: String, client: Client = Kinvey.sharedClient(), completionHandler: ExistsHandler? = nil) {
+    internal class func _exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) {
         let url = Client.Endpoint.UserExistsByUsername(client).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "POST"
@@ -146,11 +146,11 @@ public class User: NSObject, Credential {
         }
     }
     
-    public class func get(userId userId: String, client: Client = Kinvey.sharedClient(), completionHandler: UserHandler? = nil) {
+    public class func get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         _get(userId: userId, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _get(userId userId: String, client: Client = Kinvey.sharedClient(), completionHandler: UserHandler? = nil) {
+    internal class func _get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         let url = Client.Endpoint.UserById(client, userId).url()
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "GET"
@@ -166,15 +166,15 @@ public class User: NSObject, Credential {
         }
     }
     
-    public init(userId: String, acl: Acl? = nil, metadata: Metadata? = nil, client: Client = Kinvey.sharedClient()) {
+    public init(userId: String, acl: Acl? = nil, metadata: Metadata? = nil, client: Client = Kinvey.sharedClient) {
         self.userId = userId
         self.acl = acl
         self.metadata = metadata
         self.client = client
     }
     
-    public required init(json: [String : AnyObject], client: Client = Kinvey.sharedClient()) {
-        userId = json[Kinvey.PersistableIdKey] as! String
+    public required init(json: [String : AnyObject], client: Client = Kinvey.sharedClient) {
+        userId = json[PersistableIdKey] as! String
         
         if let username = json["username"] as? String {
             self.username = username
@@ -184,13 +184,13 @@ public class User: NSObject, Credential {
             self.email = email
         }
         
-        if let acl = json[Kinvey.PersistableAclKey] as? [String : String] {
+        if let acl = json[PersistableAclKey] as? [String : String] {
             self.acl = Acl(json: acl)
         } else {
             self.acl = nil
         }
         
-        if let kmd = json[Kinvey.PersistableMetadataKey] as? [String : String] {
+        if let kmd = json[PersistableMetadataKey] as? [String : String] {
             metadata = Metadata(json: kmd)
         } else {
             metadata = nil
@@ -221,7 +221,7 @@ public class User: NSObject, Credential {
         }
     }
     
-    public func save(client client: Client = Kinvey.sharedClient(), completionHandler: UserHandler? = nil) {
+    public func save(client client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         _save(client: client, completionHandler: self.dynamicType.dispatchAsyncTo(completionHandler))
     }
     
@@ -256,7 +256,7 @@ public class User: NSObject, Credential {
     
     //MARK: MIC
     
-    public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, client: Client = Kinvey.sharedClient(), completionHandler: UserHandler? = nil) {
+    public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) -> Void in
             var user: User? = nil
             if let kcsUser = kcsUser {

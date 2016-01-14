@@ -8,20 +8,25 @@
 
 import Foundation
 
-public class Kinvey: NSObject {
-    
-    public static let PersistableIdKey = "_id"
-    public static let PersistableAclKey = "_acl"
-    public static let PersistableMetadataKey = "_kmd"
-    public static let PersistableTimeToLiveKey = "_ttl"
-    
-    private override init() {
-    }
-    
-    static let _sharedClient = Client()
-    
-    public class func sharedClient() -> Client {
-        return _sharedClient
-    }
+internal let PersistableIdKey = "_id"
+internal let PersistableAclKey = "_acl"
+internal let PersistableMetadataKey = "_kmd"
+internal let PersistableTimeToLiveKey = "_ttl"
 
+public let sharedClient = Client()
+
+public func getNetworkStore<T: Persistable>(type: T.Type, client: Client = sharedClient) -> Store<T> {
+    return client.getNetworkStore(type)
+}
+
+public func getCachedStore<T: Persistable>(type: T.Type, expiration: CachedStoreExpiration, client: Client = sharedClient) -> Store<T> {
+    return client.getCachedStore(type, expiration: expiration)
+}
+
+public func getCachedStore<T: Persistable>(type: T.Type, expiration: Expiration, client: Client = sharedClient) -> Store<T> {
+    return client.getCachedStore(type, expiration: expiration)
+}
+
+public func getSyncedStore<T: Persistable>(type: T.Type, client: Client = sharedClient) -> Store<T> {
+    return client.getSyncedStore(type)
 }
