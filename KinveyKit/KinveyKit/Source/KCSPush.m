@@ -255,12 +255,12 @@
     } else {
         if (completionBlock) {
             NSError* error = nil;
-            if (![[UIDevice currentDevice].name isEqualToString:@"iPhone Simulator"]) {
-                if ([KCSUser activeUser].userId == nil) {
-                    error = [NSError createKCSErrorWithReason:@"No active user at this moment. Please create an user or login with an existing one."];
-                } else if (self.pushEnabled && deviceTokenString == nil) {
-                    error = [NSError createKCSErrorWithReason:@"Device token is empty."];
-                }
+            if ([KCSUser activeUser].userId == nil) {
+                error = [NSError createKCSErrorWithReason:@"No active user at this moment. Please create an user or login with an existing one."];
+#if !(TARGET_IPHONE_SIMULATOR)
+            } else if (self.pushEnabled && deviceTokenString == nil) {
+                error = [NSError createKCSErrorWithReason:@"Device token is empty."];
+#endif
             }
             completionBlock(NO, error);
         }
