@@ -15,7 +15,7 @@ class CachedStoreTests: NetworkStoreTests {
     override func setUp() {
         super.setUp()
         
-        store = CachedStore<Person>(expiration: (1, .Day), client: client)
+        store = client.getCachedStore(Person.self, expiration: (1, .Day))
     }
     
 }

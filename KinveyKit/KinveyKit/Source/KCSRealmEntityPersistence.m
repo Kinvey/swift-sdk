@@ -521,16 +521,29 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     return realm;
 }
 
--(void)saveEntity:(NSDictionary<NSString *,NSObject *> *)entity
+-(void)saveEntity:(NSDictionary<NSString *,id> *)entity
          forClass:(Class)class
 {
     Class realmClass = [[self class] realmClassForClass:class];
     RLMRealm* realm = self.realm;
-    [self removeExpiredEntitiesForClass:class];
     [realm transactionWithBlock:^{
         RLMObject* obj = [realmClass createOrUpdateInRealm:realm
                                                  withValue:entity];
         assert(obj);
+    }];
+}
+
+-(void)saveEntities:(NSArray<NSDictionary<NSString *,id> *> *)entities
+           forClass:(Class)class
+{
+    Class realmClass = [[self class] realmClassForClass:class];
+    RLMRealm* realm = self.realm;
+    [realm transactionWithBlock:^{
+        for (NSDictionary<NSString*, id>* entity in entities) {
+            RLMObject* obj = [realmClass createOrUpdateInRealm:realm
+                                                     withValue:entity];
+            assert(obj);
+        }
     }];
 }
 
@@ -545,17 +558,19 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
                        forClass:class];
 }
 
--(void)removeEntitiesByQuery:(id<KCSQuery>)query
-                    forClass:(Class)class
+-(NSUInteger)removeEntitiesByQuery:(id<KCSQuery>)query
+                          forClass:(Class)class
 {
     Class realmClass = [[self class] realmClassForClass:class];
     RLMRealm* realm = self.realm;
-    [self removeExpiredEntitiesForClass:class];
+    __block NSUInteger count = 0;
     [realm transactionWithBlock:^{
         RLMResults* results = [realmClass objectsInRealm:realm
                                            withPredicate:query.predicate];
         [realm deleteObjects:results];
+        count = results.count;
     }];
+    return count;
 }
 
 -(void)removeExpiredEntitiesForClass:(Class)class
@@ -587,7 +602,6 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
 {
     Class realmClass = [[self class] realmClassForClass:class];
     RLMRealm* realm = self.realm;
-    [self removeExpiredEntitiesForClass:class];
     
     NSDictionary<NSString*, NSString*>* kinveyPropertyMapping = [class kinveyPropertyMapping];
     NSArray<NSString*>* keys = kinveyPropertyMapping.allKeys;

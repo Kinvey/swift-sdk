@@ -31,7 +31,7 @@ class StoreTestCase: KinveyTestCase {
         
     }
     
-    var store: BaseStore<Person>!
+    var store: Store<Person>!
     var person:Person {
         get {
             let person = Person()
@@ -46,7 +46,7 @@ class StoreTestCase: KinveyTestCase {
         
         signUp()
         
-        store = BaseStore<Person>(client: client)
+        store = Store<Person>(client: client)
     }
     
     func assertThread() {
@@ -95,20 +95,24 @@ class StoreTestCase: KinveyTestCase {
     func testRetrieve() {
         let person = save()
         
-        weak var expectationGet = expectationWithDescription("Get")
+        XCTAssertNotNil(person.personId)
         
-        XCTAssertNotEqual(person.personId, "")
-        
-        store.get(person.personId!) { (person, error) -> Void in
-            self.assertThread()
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
+        if let personId = person.personId {
+            weak var expectationGet = expectationWithDescription("Get")
             
-            expectationGet?.fulfill()
-        }
-        
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationGet = nil
+            XCTAssertNotEqual(personId, "")
+            
+            store.get(personId) { (person, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationGet?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationGet = nil
+            }
         }
     }
     
@@ -144,9 +148,9 @@ class StoreTestCase: KinveyTestCase {
         
         person.age = 30
         
-        XCTAssertNotNil(client._activeUser)
+        XCTAssertNotNil(client.activeUser)
         
-        store.find(Query(format: "age == %@ AND _acl.creator == %@", 29, client._activeUser!.acl!.creator)) { (persons, error) -> Void in
+        store.find(Query(format: "age == %@ AND _acl.creator == %@", 29, client.activeUser!.acl!.creator)) { (persons, error) -> Void in
             self.assertThread()
             XCTAssertNotNil(persons)
             XCTAssertNil(error)
@@ -166,21 +170,24 @@ class StoreTestCase: KinveyTestCase {
     func testRemoveById() {
         let person = save()
         
-        weak var expectationDelete = expectationWithDescription("Delete")
-        
-        store.remove(person.personId!) { (count, error) -> Void in
-            self.assertThread()
-            XCTAssertNotNil(count)
-            XCTAssertNil(error)
-            if let count = count {
-                XCTAssertEqual(count, 0)
+        XCTAssertNotNil(person.personId)
+        if let personId = person.personId {
+            weak var expectationDelete = expectationWithDescription("Delete")
+            
+            store.remove(personId) { (count, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                if let count = count {
+                    XCTAssertEqual(count, 0)
+                }
+                
+                expectationDelete?.fulfill()
             }
             
-            expectationDelete?.fulfill()
-        }
-        
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationDelete = nil
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationDelete = nil
+            }
         }
     }
     
@@ -188,21 +195,26 @@ class StoreTestCase: KinveyTestCase {
         let person1 = save()
         let person2 = save()
         
-        weak var expectationDelete = expectationWithDescription("Delete")
+        XCTAssertNotNil(person1.personId)
+        XCTAssertNotNil(person2.personId)
         
-        store.remove([person1.personId!, person2.personId!]) { (count, error) -> Void in
-            self.assertThread()
-            XCTAssertNotNil(count)
-            XCTAssertNil(error)
-            if let count = count {
-                XCTAssertEqual(count, 0)
+        if let personId1 = person1.personId, personId2 = person2.personId {
+            weak var expectationDelete = expectationWithDescription("Delete")
+            
+            store.remove([personId1, personId2]) { (count, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                if let count = count {
+                    XCTAssertEqual(count, 0)
+                }
+                
+                expectationDelete?.fulfill()
             }
             
-            expectationDelete?.fulfill()
-        }
-        
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationDelete = nil
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationDelete = nil
+            }
         }
     }
     
