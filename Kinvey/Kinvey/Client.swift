@@ -98,16 +98,19 @@ public class Client: NSObject, Credential {
         return self
     }
     
-    public func getNetworkStore<T: Persistable>(type: T) -> BaseStore<T> {
+    public func getNetworkStore<T: Persistable>(type: T.Type) -> Store<T> {
         return NetworkStore<T>(client: self)
     }
     
-    public func getCachedStore<T: Persistable>(type: T, expiration: CachedStoreExpiration) -> BaseStore<T> {
-        
+    public func getCachedStore<T: Persistable>(type: T.Type, expiration: CachedStoreExpiration) -> Store<T> {
         return CachedStore<T>(expiration: expiration, client: self)
     }
     
-    public func getSyncedStore<T: Persistable>(type: T) -> BaseStore<T> {
+    public func getCachedStore<T: Persistable>(type: T.Type, expiration: Expiration) -> Store<T> {
+        return CachedStore<T>(expiration: expiration, client: self)
+    }
+    
+    public func getSyncedStore<T: Persistable>(type: T.Type) -> Store<T> {
         return SyncedStore<T>(client: self)
     }
     

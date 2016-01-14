@@ -13,9 +13,9 @@
 		5706FEC31C1F9A6D0037E7D0 /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
 		570B1E0A1C2393E00056941F /* KCSQueryAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 570B1E081C2393E00056941F /* KCSQueryAdapter.h */; };
 		570B1E0B1C2393E00056941F /* KCSQueryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 570B1E091C2393E00056941F /* KCSQueryAdapter.m */; };
-		570B1E0D1C23EA6C0056941F /* CachedBaseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570B1E0C1C23EA6C0056941F /* CachedBaseStore.swift */; };
 		5753BB3C1C23F29000EB9D3A /* SyncedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */; };
-		576E95A41C1FB10700258CC3 /* BaseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* BaseStore.swift */; };
+		575772861C4728E5001D56F5 /* CachedStoreExpiration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* CachedStoreExpiration.swift */; };
+		576E95A41C1FB10700258CC3 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* Store.swift */; };
 		576E95AA1C1FC2BF00258CC3 /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */; };
 		576E95AD1C20DB7C00258CC3 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
 		576E95AF1C20DC0400258CC3 /* CachedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AE1C20DC0400258CC3 /* CachedStoreTests.swift */; };
@@ -125,7 +125,6 @@
 		57E1C3A11C17B39E00578974 /* SyncedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A01C17B39E00578974 /* SyncedStore.swift */; };
 		57E1C3A31C17B3FF00578974 /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A21C17B3FF00578974 /* Query.swift */; };
 		57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A61C17B4F300578974 /* Persistable.swift */; };
-		57E1C3A91C17B71100578974 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A81C17B71100578974 /* Store.swift */; };
 		57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3AC1C17EC9500578974 /* UserTests.swift */; };
 		57E1C3AF1C18153900578974 /* NetworkTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3AE1C18153900578974 /* NetworkTransport.swift */; };
 		57E1C3B11C18156700578974 /* HttpNetworkTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B01C18156700578974 /* HttpNetworkTransport.swift */; };
@@ -148,9 +147,9 @@
 		5709608F1C1B96DA00D4AFA5 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		570B1E081C2393E00056941F /* KCSQueryAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryAdapter.h; sourceTree = "<group>"; };
 		570B1E091C2393E00056941F /* KCSQueryAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQueryAdapter.m; sourceTree = "<group>"; };
-		570B1E0C1C23EA6C0056941F /* CachedBaseStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedBaseStore.swift; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStoreTests.swift; sourceTree = "<group>"; };
-		576E95A31C1FB10700258CC3 /* BaseStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseStore.swift; sourceTree = "<group>"; };
+		575772851C4728E5001D56F5 /* CachedStoreExpiration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedStoreExpiration.swift; sourceTree = "<group>"; };
+		576E95A31C1FB10700258CC3 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		576E95A71C1FC2B400258CC3 /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MongoDBPredicateAdaptor.h; sourceTree = "<group>"; };
 		576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MongoDBPredicateAdaptor.m; sourceTree = "<group>"; };
 		576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkStoreTests.swift; sourceTree = "<group>"; };
@@ -450,7 +449,6 @@
 		57E1C3A01C17B39E00578974 /* SyncedStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStore.swift; sourceTree = "<group>"; };
 		57E1C3A21C17B3FF00578974 /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
 		57E1C3A61C17B4F300578974 /* Persistable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistable.swift; sourceTree = "<group>"; };
-		57E1C3A81C17B71100578974 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		57E1C3AC1C17EC9500578974 /* UserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTests.swift; sourceTree = "<group>"; };
 		57E1C3AE1C18153900578974 /* NetworkTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkTransport.swift; sourceTree = "<group>"; };
 		57E1C3B01C18156700578974 /* HttpNetworkTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpNetworkTransport.swift; sourceTree = "<group>"; };
@@ -1130,12 +1128,11 @@
 				57A27C9F1C178FC0000DF951 /* User.swift */,
 				57A27CA11C17910E000DF951 /* Acl.swift */,
 				57A27CA31C179118000DF951 /* Metadata.swift */,
-				57E1C3A81C17B71100578974 /* Store.swift */,
-				576E95A31C1FB10700258CC3 /* BaseStore.swift */,
+				576E95A31C1FB10700258CC3 /* Store.swift */,
 				57E1C39C1C17B37B00578974 /* NetworkStore.swift */,
-				570B1E0C1C23EA6C0056941F /* CachedBaseStore.swift */,
-				57E1C39E1C17B39400578974 /* CachedStore.swift */,
 				57E1C3A01C17B39E00578974 /* SyncedStore.swift */,
+				575772851C4728E5001D56F5 /* CachedStoreExpiration.swift */,
+				57E1C39E1C17B39400578974 /* CachedStore.swift */,
 				57E1C3A21C17B3FF00578974 /* Query.swift */,
 				57E1C3A61C17B4F300578974 /* Persistable.swift */,
 				57E1C3AE1C18153900578974 /* NetworkTransport.swift */,
@@ -1305,11 +1302,11 @@
 				576E95F21C223DA500258CC3 /* CLLocation+Kinvey.m in Sources */,
 				5783B6641C1A133F0077F8A6 /* KCSMICRequest2.m in Sources */,
 				5783B6371C1A10010077F8A6 /* KCSFileRequestManager.m in Sources */,
+				575772861C4728E5001D56F5 /* CachedStoreExpiration.swift in Sources */,
 				5783B6431C1A10A20077F8A6 /* KCSNSURLRequestOperation.m in Sources */,
 				57A27CA21C17910E000DF951 /* Acl.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
 				5783B6541C1A11AF0077F8A6 /* KCSPush.m in Sources */,
-				570B1E0D1C23EA6C0056941F /* CachedBaseStore.swift in Sources */,
 				5783B62E1C1A092D0077F8A6 /* KCSCachedStore.m in Sources */,
 				5783B6391C1A101A0077F8A6 /* KCSGroup.m in Sources */,
 				576E95EB1C222E5800258CC3 /* KCS_CLLocation_Realm_ValueTransformer.m in Sources */,
@@ -1334,7 +1331,6 @@
 				5783B6361C1A0FF40077F8A6 /* KCSFileRequest.m in Sources */,
 				5783B6271C1A07980077F8A6 /* KinveyUser.m in Sources */,
 				5783B63C1C1A103D0077F8A6 /* KCSLogManager.m in Sources */,
-				57E1C3A91C17B71100578974 /* Store.swift in Sources */,
 				5783B65D1C1A12970077F8A6 /* KCS_DDLog.m in Sources */,
 				57A27CA41C179118000DF951 /* Metadata.swift in Sources */,
 				577C9E781C1F89C700BF49EE /* Credentials.swift in Sources */,
@@ -1376,7 +1372,7 @@
 				5706FEBF1C1F92350037E7D0 /* NSMutableDictionary+KinveyAdditions.m in Sources */,
 				5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */,
 				5783B65E1C1A12A30077F8A6 /* KCS_DDTTYLogger.m in Sources */,
-				576E95A41C1FB10700258CC3 /* BaseStore.swift in Sources */,
+				576E95A41C1FB10700258CC3 /* Store.swift in Sources */,
 				5783B64D1C1A11300077F8A6 /* KCSObjectMapper.m in Sources */,
 				576E95D81C222C6D00258CC3 /* KCSFileRealm.m in Sources */,
 				57A27CA01C178FC0000DF951 /* User.swift in Sources */,

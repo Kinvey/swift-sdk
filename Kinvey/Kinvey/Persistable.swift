@@ -22,9 +22,21 @@ extension Persistable {
     public static var idKey: String {
         get {
             let idKey = kinveyPropertyMapping()
-                .filter { keyValuePair in keyValuePair.1 == Kinvey.PersistableIdKey }
-                .reduce(Kinvey.PersistableIdKey) { (_, keyValuePair) in keyValuePair.0 }
+                .filter { keyValuePair in keyValuePair.1 == PersistableIdKey }
+                .reduce(PersistableIdKey) { (_, keyValuePair) in keyValuePair.0 }
             return idKey
+        }
+    }
+    
+    public static var aclKey: String? {
+        get {
+            let filtered = kinveyPropertyMapping()
+                .filter { keyValuePair in keyValuePair.1 == PersistableAclKey }
+            if filtered.count > 0 {
+                let idKey = filtered.reduce(PersistableAclKey) { (_, keyValuePair) in keyValuePair.0 }
+                return idKey
+            }
+            return nil
         }
     }
     
@@ -36,6 +48,28 @@ extension Persistable {
                 return id
             }
             return nil
+        }
+        set {
+            if let persistable = self as? AnyObject {
+                persistable.setValue(newValue, forKey: self.dynamicType.idKey)
+            }
+        }
+    }
+    
+    public var kinveyAcl: Acl? {
+        get {
+            if let persistable = self as? AnyObject,
+                let aclKey = self.dynamicType.aclKey,
+                let acl = persistable.valueForKey(aclKey) as? Acl
+            {
+                return acl
+            }
+            return nil
+        }
+        set {
+            if let persistable = self as? AnyObject, let aclKey = self.dynamicType.aclKey {
+                persistable.setValue(newValue, forKey: aclKey)
+            }
         }
     }
     
