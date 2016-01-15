@@ -12,5 +12,6 @@
 
 @property NSString* ect;
 @property NSString* lmt;
+@property NSDate* lrt;
 
 @end

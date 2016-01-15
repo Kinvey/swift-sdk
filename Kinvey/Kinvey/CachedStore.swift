@@ -14,9 +14,6 @@ class CachedStore<T: Persistable>: Store<T> {
     let expiration: CachedStoreExpiration
     let calendar: NSCalendar
     
-    private let entityPersistence: KCSEntityPersistenceProtocol
-    private let clazz: AnyClass = T.self as! AnyClass
-    
     internal convenience init(expiration: Expiration, calendar: NSCalendar = NSCalendar.currentCalendar(), client: Client = Kinvey.sharedClient) {
         let _expiration: CachedStoreExpiration
         switch expiration.1 {
@@ -36,10 +33,9 @@ class CachedStore<T: Persistable>: Store<T> {
         self.init(expiration: _expiration, client: client)
     }
     
-    internal init(expiration: CachedStoreExpiration, calendar: NSCalendar = NSCalendar.currentCalendar(), entityPersistence: KCSEntityPersistenceProtocol = KCSRealmEntityPersistence.offlineManager(), client: Client = Kinvey.sharedClient) {
+    internal init(expiration: CachedStoreExpiration, calendar: NSCalendar = NSCalendar.currentCalendar(), client: Client = Kinvey.sharedClient) {
         self.expiration = expiration
         self.calendar = calendar
-        self.entityPersistence = entityPersistence
         super.init(client: client)
     }
     
@@ -49,25 +45,20 @@ class CachedStore<T: Persistable>: Store<T> {
         }
     }
     
-    internal func saveEntity(object: T, expirationDate: NSDate) {
+    internal func saveEntity(objects: [T], expirationDate: NSDate) {
+        for object in objects {
+            saveEntity(object)
+        }
+    }
+    
+    func saveEntity(object: T) {
         let json = toJson(object)
         if var entity = json as? [String : NSObject] {
-            entity[PersistableTimeToLiveKey] = expirationDate
             if let userId = client.activeUser?.userId {
                 entity[PersistableAclKey] = Acl(creator: userId).toJson()
             }
             entityPersistence.saveEntity(entity, forClass: clazz)
         }
-    }
-    
-    internal func saveEntity(objects: [T], expirationDate: NSDate) {
-        for object in objects {
-            saveEntity(object, expirationDate: expirationDate)
-        }
-    }
-    
-    func saveEntity(object: T) {
-        saveEntity(object, expirationDate: expirationDate)
     }
     
     func saveEntity(objects: [T]) {
