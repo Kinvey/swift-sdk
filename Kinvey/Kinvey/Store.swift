@@ -18,8 +18,17 @@ public class Store<T: Persistable>: NSObject {
     public let collectionName: String
     public let client: Client
     
+    internal let entityPersistence: KCSEntityPersistenceProtocol
+    internal let clazz: AnyClass = T.self as! AnyClass
+    
     init(client: Client = Kinvey.sharedClient) {
         self.client = client
+        if let appKey = client.appKey {
+            let entityPersistence = KCSRealmEntityPersistence(persistenceId: appKey)
+            self.entityPersistence = entityPersistence
+        } else {
+            self.entityPersistence = KCSRealmEntityPersistence.offlineManager()
+        }
         self.collectionName = T.kinveyCollectionName()
     }
     
@@ -132,6 +141,16 @@ public class Store<T: Persistable>: NSObject {
         let obj = obj as! AnyObject
         let keys = T.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
         return obj.dictionaryWithValuesForKeys(keys)
+    }
+    
+    internal func toJson(array: [T]) -> [[String : AnyObject]] {
+        var entities: [[String : AnyObject]] = []
+        for obj in array {
+            let obj = obj as! AnyObject
+            let keys = T.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
+            entities.append(obj.dictionaryWithValuesForKeys(keys))
+        }
+        return entities
     }
     
     internal func fromJson(json: [String : AnyObject]) -> T? {

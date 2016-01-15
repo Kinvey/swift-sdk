@@ -521,15 +521,28 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     return realm;
 }
 
+static inline void saveEntity(NSMutableDictionary<NSString *,id> *entity, RLMRealm* realm, Class realmClass)
+{
+    if (entity[KCSEntityKeyMetadata] == nil) {
+        entity[KCSEntityKeyMetadata] = [NSMutableDictionary dictionary];
+    } else if ([entity[KCSEntityKeyMetadata] isKindOfClass:[NSObject class]] &&
+               ![entity[KCSEntityKeyMetadata] isKindOfClass:[NSMutableDictionary class]])
+    {
+        entity[KCSEntityKeyMetadata] = ((NSObject*) entity[KCSEntityKeyMetadata]).mutableCopy;
+    }
+    entity[KCSEntityKeyMetadata][@"lrt"] = [NSDate date];
+    RLMObject* obj = [realmClass createOrUpdateInRealm:realm
+                                             withValue:entity];
+    assert(obj);
+}
+
 -(void)saveEntity:(NSDictionary<NSString *,id> *)entity
          forClass:(Class)class
 {
     Class realmClass = [[self class] realmClassForClass:class];
     RLMRealm* realm = self.realm;
     [realm transactionWithBlock:^{
-        RLMObject* obj = [realmClass createOrUpdateInRealm:realm
-                                                 withValue:entity];
-        assert(obj);
+        saveEntity(entity.mutableCopy, realm, realmClass);
     }];
 }
 
@@ -540,9 +553,7 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     RLMRealm* realm = self.realm;
     [realm transactionWithBlock:^{
         for (NSDictionary<NSString*, id>* entity in entities) {
-            RLMObject* obj = [realmClass createOrUpdateInRealm:realm
-                                                     withValue:entity];
-            assert(obj);
+            saveEntity(entity.mutableCopy, realm, realmClass);
         }
     }];
 }
