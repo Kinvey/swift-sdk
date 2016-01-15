@@ -11,7 +11,6 @@ import Foundation
 internal let PersistableIdKey = "_id"
 internal let PersistableAclKey = "_acl"
 internal let PersistableMetadataKey = "_kmd"
-internal let PersistableTimeToLiveKey = "_ttl"
 
 public let sharedClient = Client()
 
