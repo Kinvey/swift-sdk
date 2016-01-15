@@ -11,11 +11,7 @@ import KinveyKit
 
 public class SyncedStore<T: Persistable>: Store<T> {
     
-    private let entityPersistence: KCSEntityPersistenceProtocol
-    private let clazz: AnyClass = T.self as! AnyClass
-    
-    internal init(entityPersistence: KCSEntityPersistenceProtocol = KCSRealmEntityPersistence.offlineManager(), client: Client = Kinvey.sharedClient) {
-        self.entityPersistence = entityPersistence
+    internal override init(client: Client = Kinvey.sharedClient) {
         super.init(client: client)
     }
     
