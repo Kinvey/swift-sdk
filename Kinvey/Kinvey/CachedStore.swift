@@ -65,23 +65,23 @@ class CachedStore<T: Persistable>: Store<T> {
         saveEntity(objects, expirationDate: expirationDate)
     }
     
-    override func get(id: String, completionHandler: ObjectCompletionHandler?) {
+    override func get(id: String, completionHandler: ObjectCompletionHandler?) -> Request {
         let json = entityPersistence.findEntity(id, forClass: clazz)
         if let obj = fromJson(json) {
             dispatchAsyncTo(completionHandler)?(obj, nil)
-            super.get(id) { (obj, error) -> Void in
+            return super.get(id) { (obj, error) -> Void in
                 if let obj = obj {
                     self.saveEntity(obj)
                 }
             }
         } else {
-            super.get(id) { (obj, error) -> Void in
+            return super.get(id) { (obj, error) -> Void in
                 self.dispatchAsyncTo(completionHandler)?(obj, error)
             }
         }
     }
     
-    override func find(query: Query, completionHandler: ArrayCompletionHandler?) {
+    override func find(query: Query, completionHandler: ArrayCompletionHandler?) -> Request {
         let filterExpiredQuery = NSPredicate(format: "_kmd.\(PersistableMetadataLastRetrievedTime) < %@", expirationDate)
         let modifiedQuery: Query
         if let predicate = query.predicate {
@@ -91,7 +91,7 @@ class CachedStore<T: Persistable>: Store<T> {
         }
         let jsonArray = entityPersistence.findEntityByQuery(KCSQueryAdapter(query: modifiedQuery), forClass: clazz)
         let results = fromJson(jsonArray)
-        super.find(query) { (results, error) -> Void in
+        return super.find(query) { (results, error) -> Void in
             if let results = results {
                 self.saveEntity(results)
             }
@@ -99,8 +99,8 @@ class CachedStore<T: Persistable>: Store<T> {
         self.dispatchAsyncTo(completionHandler)?(results, nil)
     }
     
-    override func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
-        super.save(persistable) { (obj, error) -> Void in
+    override func save(persistable: T, completionHandler: ObjectCompletionHandler?) -> Request {
+        return super.save(persistable) { (obj, error) -> Void in
             if let obj = obj {
                 self.saveEntity(obj)
             }
@@ -108,8 +108,8 @@ class CachedStore<T: Persistable>: Store<T> {
         }
     }
     
-    override func remove(query: Query, completionHandler: UIntCompletionHandler?) {
-        super.remove(query) { (count, error) -> Void in
+    override func remove(query: Query, completionHandler: UIntCompletionHandler?) -> Request {
+        return super.remove(query) { (count, error) -> Void in
             //TODO: check with backend if we can return the deleted ids
             if let _ = count {
                 self.entityPersistence.removeEntitiesByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
