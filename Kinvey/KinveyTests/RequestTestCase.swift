@@ -21,7 +21,7 @@ class RequestTestCase: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let activeUser = client.activeUser {
-            let request = GetRequest(endpoint: Endpoint.UserById(client: client, userId: activeUser.userId))
+            let request = GetHttpRequest(endpoint: Endpoint.UserById(client: client, userId: activeUser.userId))
             request.execute()
             XCTAssertFalse(request.canceled)
             request.cancel()
@@ -38,7 +38,7 @@ class RequestTestCase: KinveyTestCase {
             
             var json: [String : AnyObject]?
             
-            let request = PostRequest(endpoint: Endpoint.Blob(client: client, tls: true), credential: activeUser)
+            let request = PostHttpRequest(endpoint: Endpoint.Blob(client: client, tls: true), credential: activeUser)
             request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(["_public" : true], options: [])
             request.execute() { (data, response, error) in
@@ -66,7 +66,7 @@ class RequestTestCase: KinveyTestCase {
                 weak var expectationFileUpload = expectationWithDescription("FileUpload")
                 
                 let url = NSURL(string: uploadUrl)!
-                let request = PutRequest(endpoint: Endpoint.URL(url: url))
+                let request = PutHttpRequest(endpoint: Endpoint.URL(url: url))
                 if let requiredHeaders = json["_requiredHeaders"] as? [String : String] {
                     for header in requiredHeaders {
                         request.request.addValue(header.1, forHTTPHeaderField: header.0)
