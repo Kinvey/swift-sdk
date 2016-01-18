@@ -72,6 +72,8 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        assert([NSThread isMainThread]);
+        
         classMapOriginalRealm = [NSMutableDictionary dictionary];
         classMapRealmOriginal = [NSMutableDictionary dictionary];
         valueTransformerMap = [NSMutableDictionary dictionary];
@@ -186,9 +188,9 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
         NSString* className = nil;
         for (unsigned int i = 0; i < classesCount; i++) {
             class = classes[i];
-            className = NSStringFromClass(class);
             if (!class_conformsToProtocol(class, @protocol(KCSPersistable)) &&
                 ![self conformsToPersistableSwiftProtocol:class]) continue;
+            className = NSStringFromClass(class);
             if ([ignoreClasses containsObject:className]) continue;
             if (classMapOriginalRealm[className]) continue;
             
