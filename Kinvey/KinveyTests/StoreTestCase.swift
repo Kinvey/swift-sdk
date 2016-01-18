@@ -221,7 +221,7 @@ class StoreTestCase: KinveyTestCase {
         
         weak var expectationDelete = expectationWithDescription("Delete")
         
-        store.remove(person) { (count, error) -> Void in
+        try! store.remove(person) { (count, error) -> Void in
             self.assertThread()
             XCTAssertNotNil(count)
             XCTAssertNil(error)

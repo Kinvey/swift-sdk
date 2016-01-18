@@ -12,8 +12,6 @@ public typealias DataResponseCompletionHandler = (NSData?, Response?, NSError?) 
 
 public protocol Request {
     
-    var endpoint: Endpoint { get }
-    
     var executing: Bool { get }
     var canceled: Bool { get }
     

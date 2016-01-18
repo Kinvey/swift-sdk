@@ -15,14 +15,18 @@ public class SyncedStore<T: Persistable>: Store<T> {
         super.init(client: client)
     }
     
-    public override func get(id: String, completionHandler: ObjectCompletionHandler?) {
-        let json = entityPersistence.findEntity(id, forClass: clazz)
-        dispatchAsyncTo(completionHandler)?(fromJson(json), nil)
+    public override func get(id: String, completionHandler: ObjectCompletionHandler?) -> Request {
+        return LocalRequest() {
+            let json = self.entityPersistence.findEntity(id, forClass: self.clazz)
+            self.dispatchAsyncTo(completionHandler)?(self.fromJson(json), nil)
+        }
     }
     
-    public override func find(query: Query, completionHandler: ArrayCompletionHandler?) {
-        let json = entityPersistence.findEntityByQuery(KCSQueryAdapter(query: query), forClass: clazz)
-        dispatchAsyncTo(completionHandler)?(fromJson(json), nil)
+    public override func find(query: Query, completionHandler: ArrayCompletionHandler?) -> Request {
+        return LocalRequest() {
+            let json = self.entityPersistence.findEntityByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
+            self.dispatchAsyncTo(completionHandler)?(self.fromJson(json), nil)
+        }
     }
     
     private func fillObject(var persistable: T) {
@@ -47,12 +51,14 @@ public class SyncedStore<T: Persistable>: Store<T> {
         return json
     }
     
-    public override func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
-        fillObject(persistable)
-        var json = toJson(persistable)
-        json = fillJson(json)
-        entityPersistence.saveEntity(json, forClass: clazz)
-        dispatchAsyncTo(completionHandler)?(persistable, nil)
+    public override func save(persistable: T, completionHandler: ObjectCompletionHandler?) -> Request {
+        return LocalRequest() {
+            self.fillObject(persistable)
+            var json = self.toJson(persistable)
+            json = self.fillJson(json)
+            self.entityPersistence.saveEntity(json, forClass: self.clazz)
+            self.dispatchAsyncTo(completionHandler)?(persistable, nil)
+        }
     }
     
     public override func save(array: [T], completionHandler: ArrayCompletionHandler?) {
@@ -67,9 +73,11 @@ public class SyncedStore<T: Persistable>: Store<T> {
         dispatchAsyncTo(completionHandler)?(array, nil)
     }
     
-    public override func remove(query: Query, completionHandler: UIntCompletionHandler?) {
-        let count = entityPersistence.removeEntitiesByQuery(KCSQueryAdapter(query: query), forClass: clazz)
-        dispatchAsyncTo(completionHandler)?(count, nil)
+    public override func remove(query: Query, completionHandler: UIntCompletionHandler?) -> Request {
+        return LocalRequest() {
+            let count = self.entityPersistence.removeEntitiesByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
+            self.dispatchAsyncTo(completionHandler)?(count, nil)
+        }
     }
     
     func push() {
