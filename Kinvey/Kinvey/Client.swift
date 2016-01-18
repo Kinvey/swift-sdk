@@ -8,7 +8,6 @@
 
 import Foundation
 import KinveyKit
-import MongoDBPredicateAdaptor
 
 public class Client: NSObject, Credential {
     
@@ -112,53 +111,6 @@ public class Client: NSObject, Credential {
     
     public func getSyncedStore<T: Persistable>(type: T.Type) -> Store<T> {
         return SyncedStore<T>(client: self)
-    }
-    
-    public enum Endpoint {
-        
-        case User(Client)
-        case UserById(Client, String)
-        case UserExistsByUsername(Client)
-        case UserLogin(Client)
-        case OAuthAuth(Client, NSURL)
-        case OAuthToken(Client)
-        case AppData(Client, String)
-        case AppDataById(Client, String, String)
-        case AppDataByQuery(Client, String, Query)
-        
-        func url() -> NSURL? {
-            switch self {
-            case .User(let client):
-                return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)")
-            case .UserById(let client, let userId):
-                return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/\(userId)")
-            case .UserExistsByUsername(let client):
-                return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/check-username-exists")
-            case .UserLogin(let client):
-                return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/login")
-            case .OAuthAuth(let client, let redirectURI):
-                let characterSet = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
-                characterSet.removeCharactersInString(":#[]@!$&'()*+,;=")
-                let redirectURIEncoded = redirectURI.absoluteString.stringByAddingPercentEncodingWithAllowedCharacters(characterSet) ?? redirectURI.absoluteString
-                let query = "?client_id=\(client.appKey!)&redirect_uri=\(redirectURIEncoded)&response_type=code"
-                return NSURL(string: client.authHostName.URLByAppendingPathComponent("/oauth/auth").absoluteString + query)
-            case .OAuthToken(let client):
-                return client.authHostName.URLByAppendingPathComponent("/oauth/token")
-            case AppData(let client, let collectionName):
-                return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")
-            case AppDataById(let client, let collectionName, let id):
-                return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
-            case AppDataByQuery(let client, let collectionName, let query):
-                let queryObj = try! MongoDBPredicateAdaptor.queryDictFromPredicate(query.predicate)
-                let data = try! NSJSONSerialization.dataWithJSONObject(queryObj, options: [])
-                var queryStr = NSString(data: data, encoding: NSUTF8StringEncoding)
-                queryStr = queryStr!.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())
-                let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
-                let urlQuery = "?query=\(queryStr!)"
-                return NSURL(string: url + urlQuery)
-            }
-        }
-        
     }
     
     public var authorizationHeader: String? {
