@@ -18,8 +18,8 @@ class NetworkStore<T: Persistable>: Store<T> {
         super.init(client: client)
     }
     
-    override func get(id: String, completionHandler: ObjectCompletionHandler?) {
-        super.get(id) { (obj, error) -> Void in
+    override func get(id: String, completionHandler: ObjectCompletionHandler?) -> Request {
+        return super.get(id) { (obj, error) -> Void in
             if self.cacheEnabled, let obj = obj {
                 self.entityPersistence.saveEntity(self.toJson(obj), forClass: self.clazz)
             }
@@ -27,8 +27,8 @@ class NetworkStore<T: Persistable>: Store<T> {
         }
     }
     
-    override func find(query: Query, completionHandler: ArrayCompletionHandler?) {
-        super.find(query) { (array, error) -> Void in
+    override func find(query: Query, completionHandler: ArrayCompletionHandler?) -> Request {
+        return super.find(query) { (array, error) -> Void in
             if self.cacheEnabled, let array = array {
                 self.entityPersistence.saveEntities(self.toJson(array), forClass: self.clazz)
             }
@@ -36,8 +36,8 @@ class NetworkStore<T: Persistable>: Store<T> {
         }
     }
     
-    override func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
-        super.save(persistable) { (obj, error) -> Void in
+    override func save(persistable: T, completionHandler: ObjectCompletionHandler?) -> Request {
+        return super.save(persistable) { (obj, error) -> Void in
             if self.cacheEnabled, let obj = obj {
                 self.entityPersistence.saveEntity(self.toJson(obj), forClass: self.clazz)
             }
@@ -45,8 +45,8 @@ class NetworkStore<T: Persistable>: Store<T> {
         }
     }
     
-    override func remove(query: Query, completionHandler: UIntCompletionHandler?) {
-        super.remove(query) { (count, error) -> Void in
+    override func remove(query: Query, completionHandler: UIntCompletionHandler?) -> Request {
+        return super.remove(query) { (count, error) -> Void in
             if self.cacheEnabled && error == nil {
                 self.entityPersistence.removeEntitiesByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
             }

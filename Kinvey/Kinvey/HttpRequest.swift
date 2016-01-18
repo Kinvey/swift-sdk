@@ -8,9 +8,14 @@
 
 import Foundation
 
+enum HttpMethod {
+    case Get, Post, Put, Delete
+}
+
 class HttpRequest: Request {
     
-    var endpoint: Endpoint
+    let httpMethod: HttpMethod
+    let endpoint: Endpoint
     
     let request: NSMutableURLRequest
     let credential: Credential?
@@ -30,13 +35,24 @@ class HttpRequest: Request {
         }
     }
     
-    init(endpoint: Endpoint, credential: Credential? = nil, client: Client = sharedClient) {
+    init(httpMethod: HttpMethod = .Get, endpoint: Endpoint, credential: Credential? = nil, client: Client = sharedClient) {
+        self.httpMethod = httpMethod
         self.endpoint = endpoint
         self.client = client
         self.credential = credential ?? client
         
         let url = endpoint.url()
         request = NSMutableURLRequest(URL: url)
+        switch (httpMethod) {
+        case .Get:
+            request.HTTPMethod = "GET"
+        case .Post:
+            request.HTTPMethod = "POST"
+        case .Put:
+            request.HTTPMethod = "PUT"
+        case .Delete:
+            request.HTTPMethod = "DELETE"
+        }
     }
     
     func execute(completionHandler: DataResponseCompletionHandler? = nil) {

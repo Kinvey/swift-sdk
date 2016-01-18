@@ -31,7 +31,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        let request = PostHttpRequest(endpoint: Endpoint.User(client: client), client: client)
+        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.User(client: client), client: client)
         
         request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -63,7 +63,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _destroy(userId userId: String, hard: Bool, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
-        let request = DeleteHttpRequest(endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
+        let request = HttpRequest(httpMethod: .Delete, endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
         
         //FIXME: make it configurable 
         request.request.addValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
@@ -87,7 +87,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        let request = PostHttpRequest(endpoint: Endpoint.UserLogin(client: client), client: client)
+        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserLogin(client: client), client: client)
         request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = [
@@ -115,7 +115,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) -> Request {
-        let request = PostHttpRequest(endpoint: Endpoint.UserExistsByUsername(client: client), client: client)
+        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserExistsByUsername(client: client), client: client)
         request.request.HTTPMethod = "POST"
         
         request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -139,7 +139,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        let request = GetHttpRequest(endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
+        let request = HttpRequest(endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
         request.execute() { (data, response, error) in
             var user: User?
             if let response = response where response.isResponseOK {
@@ -210,7 +210,7 @@ public class User: NSObject, Credential {
     }
     
     internal func _save(client client: Client, completionHandler: UserHandler? = nil) -> Request {
-        let request = PutHttpRequest(endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
+        let request = HttpRequest(httpMethod: .Put, endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = toJson()
