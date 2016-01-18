@@ -26,16 +26,14 @@ public class User: NSObject, Credential {
     
     internal let client: Client
     
-    public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        _signup(username: username, password: password, client: client, completionHandler: dispatchAsyncTo(completionHandler))
+    public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        return _signup(username: username, password: password, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        let url = Endpoint.User(client: client).url()
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "POST"
+    internal class func _signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        let request = PostHttpRequest(endpoint: Endpoint.User(client: client), client: client)
         
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         var bodyObject: [String : String] = [:]
         if let username = username {
@@ -44,74 +42,66 @@ public class User: NSObject, Credential {
         if let password = password {
             bodyObject["password"] = password
         }
-        request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
-        client.networkTransport.execute(request, forceBasicAuthentication: true) { (data, response, error) -> Void in
-            if client.responseParser.isResponseOk(response) {
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.execute() { (data, response, error) in
+            if let response = response where response.isResponseOK {
                 client.activeUser = client.responseParser.parse(data, type: client.userType)
             }
-            if let completionHandler = completionHandler {
-                completionHandler(user: client.activeUser, error: error)
-            }
+            completionHandler?(user: client.activeUser, error: error)
         }
+        return request
     }
     
     //TODO: review the method name for delete a user
     
-    public class func destroy(userId userId: String, hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) {
-        _destroy(userId: userId, hard: hard, client: client, completionHandler: dispatchAsyncTo(completionHandler))
+    public class func destroy(userId userId: String, hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        return _destroy(userId: userId, hard: hard, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    public func destroy(hard hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) {
-        User._destroy(userId: userId, hard: hard, client: client, completionHandler: User.dispatchAsyncTo(completionHandler))
+    public func destroy(hard hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        return User._destroy(userId: userId, hard: hard, client: client, completionHandler: User.dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _destroy(userId userId: String, hard: Bool, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) {
-        let url = Endpoint.UserById(client: client, userId: userId).url()
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "DELETE"
+    internal class func _destroy(userId userId: String, hard: Bool, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        let request = DeleteHttpRequest(endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
         
         //FIXME: make it configurable 
-        request.addValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
+        request.request.addValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
         
         var bodyObject: [String : Bool] = [:]
         if hard {
             bodyObject["hard"] = true
         }
-        request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
-        client.networkTransport.execute(request) { (data, response, error) -> Void in
-            if client.responseParser.isResponseOk(response) {
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.execute() { (data, response, error) in
+            if let response = response where response.isResponseOK {
                 client.activeUser = nil
             }
-            if let completionHandler = completionHandler {
-                completionHandler(error: error)
-            }
+            completionHandler?(error: error)
         }
+        return request
     }
     
-    public class func login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        _login(username: username, password: password, client: client, completionHandler: dispatchAsyncTo(completionHandler))
+    public class func login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        return _login(username: username, password: password, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        let url = Endpoint.UserLogin(client: client).url()
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "POST"
-        
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+    internal class func _login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        let request = PostHttpRequest(endpoint: Endpoint.UserLogin(client: client), client: client)
+        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = [
             "username" : username,
             "password" : password
         ]
-        request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
-        client.networkTransport.execute(request) { (data, response, error) -> Void in
-            if client.responseParser.isResponseOk(response) {
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.execute() { (data, response, error) in
+            if let response = response where response.isResponseOK {
                 client.activeUser = client.responseParser.parse(data, type: client.userType)
             }
-            if let completionHandler = completionHandler {
-                completionHandler(user: client.activeUser, error: error)
-            }
+            completionHandler?(user: client.activeUser, error: error)
         }
+        return request
     }
     
     public class func resetPassword(username username: String, client: Client = Kinvey.sharedClient) {
@@ -120,30 +110,28 @@ public class User: NSObject, Credential {
     public class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient) {
     }
     
-    public class func exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) {
-        _exists(username: username, client: client, completionHandler: dispatchAsyncTo(completionHandler))
+    public class func exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) -> Request {
+        return _exists(username: username, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) {
-        let url = Endpoint.UserExistsByUsername(client: client).url()
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "POST"
+    internal class func _exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) -> Request {
+        let request = PostHttpRequest(endpoint: Endpoint.UserExistsByUsername(client: client), client: client)
+        request.request.HTTPMethod = "POST"
         
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = ["username" : username]
-        request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
-        client.networkTransport.execute(request, forceBasicAuthentication: true) { (data, response, error) -> Void in
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.execute() { (data, response, error) in
             var usernameExists = false
-            if client.responseParser.isResponseOk(response) {
+            if let response = response where response.isResponseOK {
                 if let json = client.responseParser.parse(data, type: [String : Bool].self), let _usernameExists = json["usernameExists"] {
                     usernameExists = _usernameExists
                 }
             }
-            if let completionHandler = completionHandler {
-                completionHandler(exists: usernameExists, error: error)
-            }
+            completionHandler?(exists: usernameExists, error: error)
         }
+        return request
     }
     
     public class func get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
@@ -151,24 +139,15 @@ public class User: NSObject, Credential {
     }
     
     internal class func _get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        let request = GetRequest(endpoint: Endpoint.UserById(client: client, userId: userId), client: client)
+        let request = GetHttpRequest(endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
         request.execute() { (data, response, error) in
-        }
-        return request
-        
-        let url = Endpoint.UserById(client: client, userId: userId).url()
-        let request2 = NSMutableURLRequest(URL: url)
-        request2.HTTPMethod = "GET"
-        
-        client.networkTransport.execute(request2) { (data, response, error) -> Void in
             var user: User?
-            if client.responseParser.isResponseOk(response) {
+            if let response = response where response.isResponseOK {
                 user = client.responseParser.parse(data, type: User.self)
             }
-            if let completionHandler = completionHandler {
-                completionHandler(user: user, error: error)
-            }
+            completionHandler?(user: user, error: error)
         }
+        return request
     }
     
     public init(userId: String, acl: Acl? = nil, metadata: Metadata? = nil, client: Client = Kinvey.sharedClient) {
@@ -226,27 +205,23 @@ public class User: NSObject, Credential {
         }
     }
     
-    public func save(client client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        _save(client: client, completionHandler: self.dynamicType.dispatchAsyncTo(completionHandler))
+    public func save(client client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        return _save(client: client, completionHandler: self.dynamicType.dispatchAsyncTo(completionHandler))
     }
     
-    internal func _save(client client: Client, completionHandler: UserHandler? = nil) {
-        let url = Endpoint.UserById(client: client, userId: userId).url()
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "PUT"
-        
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    internal func _save(client client: Client, completionHandler: UserHandler? = nil) -> Request {
+        let request = PutHttpRequest(endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = toJson()
-        request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
-        client.networkTransport.execute(request) { (data, response, error) -> Void in
-            if client.responseParser.isResponseOk(response) {
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.execute() { (data, response, error) in
+            if let response = response where response.isResponseOK {
                 client.activeUser = client.responseParser.parse(data, type: client.userType)
             }
-            if let completionHandler = completionHandler {
-                completionHandler(user: client.activeUser, error: error)
-            }
+            completionHandler?(user: client.activeUser, error: error)
         }
+        return request
     }
     
     public var authorizationHeader: String? {
@@ -270,9 +245,7 @@ public class User: NSObject, Credential {
                 user?.email = kcsUser.email
                 client.activeUser = user
             }
-            if let completionHandler = completionHandler {
-                completionHandler(user: user, error: error)
-            }
+            completionHandler?(user: user, error: error)
         }
         micVC.client = client
         let navigationVC = UINavigationController(rootViewController: micVC)

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class GetRequest: HttpRequest {
+class GetHttpRequest: HttpRequest {
     
     override init(endpoint: Endpoint, credential: Credential? = nil, client: Client = sharedClient) {
         super.init(endpoint: endpoint, credential: credential, client: client)
