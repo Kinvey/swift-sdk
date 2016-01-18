@@ -15,6 +15,9 @@ public class Store<T: Persistable>: NSObject {
     public typealias ObjectCompletionHandler = (T?, NSError?) -> Void
     public typealias UIntCompletionHandler = (UInt?, NSError?) -> Void
     
+//    private var ReadPolicy {get set}
+//    private var WritePolicy {get set}
+    
     public let collectionName: String
     public let client: Client
     
@@ -34,8 +37,8 @@ public class Store<T: Persistable>: NSObject {
     
     public func get(id: String, completionHandler: ObjectCompletionHandler?) {
         assert(id != "")
-        let url = Client.Endpoint.AppDataById(client, collectionName, id).url()
-        let request = NSMutableURLRequest(URL: url!)
+        let url = Endpoint.AppDataById(client: client, collectionName: collectionName, id: id).url()
+        let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "GET"
         
         client.networkTransport.execute(request) { (data, response, error) -> Void in
@@ -49,9 +52,9 @@ public class Store<T: Persistable>: NSObject {
         }
     }
     
-    public func find(query: Query, completionHandler: ArrayCompletionHandler?) {
-        let url = Client.Endpoint.AppDataByQuery(client, collectionName, query).url()
-        let request = NSMutableURLRequest(URL: url!)
+    public func find(query: Query = Query(), completionHandler: ArrayCompletionHandler?) {
+        let url = Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query).url()
+        let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "GET"
         
         client.networkTransport.execute(request) { (data, response, error) -> Void in
@@ -65,9 +68,13 @@ public class Store<T: Persistable>: NSObject {
         }
     }
     
+    public func findAll(completionHandler: ArrayCompletionHandler?) {
+        find(completionHandler: completionHandler)
+    }
+    
     public func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
-        let url = Client.Endpoint.AppData(client, collectionName).url()
-        let request = NSMutableURLRequest(URL: url!)
+        let url = Endpoint.AppData(client: client, collectionName: collectionName).url()
+        let request = NSMutableURLRequest(URL: url)
         let bodyObject = persistable.toJson()
         
         request.HTTPMethod = bodyObject[Kinvey.PersistableIdKey] == nil ? "POST" : "PUT"
@@ -118,9 +125,9 @@ public class Store<T: Persistable>: NSObject {
         remove(query, completionHandler: completionHandler)
     }
     
-    public func remove(query: Query, completionHandler: UIntCompletionHandler?) {
-        let url = Client.Endpoint.AppDataByQuery(client, collectionName, query).url()
-        let request = NSMutableURLRequest(URL: url!)
+    public func remove(query: Query = Query(), completionHandler: UIntCompletionHandler?) {
+        let url = Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query).url()
+        let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "DELETE"
         
         client.networkTransport.execute(request) { (data, response, error) -> Void in
@@ -135,6 +142,10 @@ public class Store<T: Persistable>: NSObject {
                 completionHandler(count, error)
             }
         }
+    }
+    
+    public func removeAll(completionHandler: UIntCompletionHandler?) {
+        remove(completionHandler: completionHandler)
     }
     
     internal func toJson(obj: T) -> [String : AnyObject] {

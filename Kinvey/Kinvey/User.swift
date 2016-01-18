@@ -31,8 +31,8 @@ public class User: NSObject, Credential {
     }
     
     internal class func _signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        let url = Client.Endpoint.User(client).url()
-        let request = NSMutableURLRequest(URL: url!)
+        let url = Endpoint.User(client: client).url()
+        let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -66,8 +66,8 @@ public class User: NSObject, Credential {
     }
     
     internal class func _destroy(userId userId: String, hard: Bool, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) {
-        let url = Client.Endpoint.UserById(client, userId).url()
-        let request = NSMutableURLRequest(URL: url!)
+        let url = Endpoint.UserById(client: client, userId: userId).url()
+        let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "DELETE"
         
         //FIXME: make it configurable 
@@ -93,8 +93,8 @@ public class User: NSObject, Credential {
     }
     
     internal class func _login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        let url = Client.Endpoint.UserLogin(client).url()
-        let request = NSMutableURLRequest(URL: url!)
+        let url = Endpoint.UserLogin(client: client).url()
+        let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -125,8 +125,8 @@ public class User: NSObject, Credential {
     }
     
     internal class func _exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) {
-        let url = Client.Endpoint.UserExistsByUsername(client).url()
-        let request = NSMutableURLRequest(URL: url!)
+        let url = Endpoint.UserExistsByUsername(client: client).url()
+        let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -146,16 +146,21 @@ public class User: NSObject, Credential {
         }
     }
     
-    public class func get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        _get(userId: userId, client: client, completionHandler: dispatchAsyncTo(completionHandler))
+    public class func get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        return _get(userId: userId, client: client, completionHandler: dispatchAsyncTo(completionHandler))
     }
     
-    internal class func _get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
-        let url = Client.Endpoint.UserById(client, userId).url()
-        let request = NSMutableURLRequest(URL: url!)
-        request.HTTPMethod = "GET"
+    internal class func _get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        let request = GetRequest(endpoint: Endpoint.UserById(client: client, userId: userId), client: client)
+        request.execute() { (data, response, error) in
+        }
+        return request
         
-        client.networkTransport.execute(request) { (data, response, error) -> Void in
+        let url = Endpoint.UserById(client: client, userId: userId).url()
+        let request2 = NSMutableURLRequest(URL: url)
+        request2.HTTPMethod = "GET"
+        
+        client.networkTransport.execute(request2) { (data, response, error) -> Void in
             var user: User?
             if client.responseParser.isResponseOk(response) {
                 user = client.responseParser.parse(data, type: User.self)
@@ -226,8 +231,8 @@ public class User: NSObject, Credential {
     }
     
     internal func _save(client client: Client, completionHandler: UserHandler? = nil) {
-        let url = Client.Endpoint.UserById(client, userId).url()
-        let request = NSMutableURLRequest(URL: url!)
+        let url = Endpoint.UserById(client: client, userId: userId).url()
+        let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "PUT"
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
