@@ -9,7 +9,7 @@
 #import "KCSRealmEntityPersistence.h"
 
 @import Realm;
-@import UIKit;
+@import Foundation;
 @import MapKit;
 
 #import "KCS_CLLocation_Realm.h"
@@ -40,7 +40,7 @@
 #import "KCSQueryAdapter.h"
 
 #define KCSEntityKeyAcl @"_acl"
-#define KCSEntityKeyExpireDate @"_expireDate"
+#define KCSEntityKeyLastRetrievedTime @"lrt"
 
 @protocol PersistableSwift <NSObject>
 
@@ -186,9 +186,9 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
         NSString* className = nil;
         for (unsigned int i = 0; i < classesCount; i++) {
             class = classes[i];
+            className = NSStringFromClass(class);
             if (!class_conformsToProtocol(class, @protocol(KCSPersistable)) &&
                 ![self conformsToPersistableSwiftProtocol:class]) continue;
-            className = NSStringFromClass(class);
             if ([ignoreClasses containsObject:className]) continue;
             if (classMapOriginalRealm[className]) continue;
             
@@ -265,7 +265,7 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
                           toClass:realmClass];
     
     [self createAclToClass:realmClass];
-    [self createExpireDateToClass:realmClass];
+    [self createKmdToClass:realmClass];
     
     objc_registerClassPair(realmClass);
     
@@ -287,13 +287,16 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     assert(added);
 }
 
-+(void)createExpireDateToClass:(Class)toClass
++(void)createKmdToClass:(Class)toClass
 {
-    objc_property_attribute_t type = { "T", [NSString stringWithFormat:@"@\"%@\"", NSStringFromClass([NSDate class])].UTF8String };
-    objc_property_attribute_t backingivar = { "V", [NSString stringWithFormat:@"_%@", KCSEntityKeyExpireDate].UTF8String };
-    objc_property_attribute_t attrs[] = { type, backingivar };
-    BOOL added = class_addProperty(toClass, KCSEntityKeyExpireDate.UTF8String, attrs, 2);
-    assert(added);
+    NSSet<NSString*> *properties = [KCSObjcRuntime propertyNamesForClass:toClass];
+    if (![properties containsObject:KCSEntityKeyMetadata]) {
+        objc_property_attribute_t type = { "T", [NSString stringWithFormat:@"@\"%@\"", NSStringFromClass([KCSMetadataRealm class])].UTF8String };
+        objc_property_attribute_t backingivar = { "V", [NSString stringWithFormat:@"_%@", KCSEntityKeyMetadata].UTF8String };
+        objc_property_attribute_t attrs[] = { type, backingivar };
+        BOOL added = class_addProperty(toClass, KCSEntityKeyMetadata.UTF8String, attrs, 2);
+        assert(added);
+    }
 }
 
 +(void)copyPropertiesFromClass:(Class)fromClass
@@ -530,7 +533,7 @@ static inline void saveEntity(NSMutableDictionary<NSString *,id> *entity, RLMRea
     {
         entity[KCSEntityKeyMetadata] = ((NSObject*) entity[KCSEntityKeyMetadata]).mutableCopy;
     }
-    entity[KCSEntityKeyMetadata][@"lrt"] = [NSDate date];
+    entity[KCSEntityKeyMetadata][KCSEntityKeyLastRetrievedTime] = [NSDate date];
     RLMObject* obj = [realmClass createOrUpdateInRealm:realm
                                              withValue:entity];
     assert(obj);
@@ -572,28 +575,20 @@ static inline void saveEntity(NSMutableDictionary<NSString *,id> *entity, RLMRea
 -(NSUInteger)removeEntitiesByQuery:(id<KCSQuery>)query
                           forClass:(Class)class
 {
+    NSPredicate* predicate = query.predicate;
+    if (!predicate) {
+        predicate = [NSPredicate predicateWithValue:YES];
+    }
     Class realmClass = [[self class] realmClassForClass:class];
     RLMRealm* realm = self.realm;
     __block NSUInteger count = 0;
     [realm transactionWithBlock:^{
         RLMResults* results = [realmClass objectsInRealm:realm
-                                           withPredicate:query.predicate];
+                                           withPredicate:predicate];
         [realm deleteObjects:results];
         count = results.count;
     }];
     return count;
-}
-
--(void)removeExpiredEntitiesForClass:(Class)class
-{
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ < %%@", KCSEntityKeyExpireDate], [NSDate date]];
-    Class realmClass = [[self class] realmClassForClass:class];
-    RLMRealm* realm = self.realm;
-    [realm transactionWithBlock:^{
-        RLMResults* results = [realmClass objectsInRealm:realm
-                                           withPredicate:predicate];
-        [realm deleteObjects:results];
-    }];
 }
 
 -(NSDictionary<NSString *,id> *)findEntity:(NSString *)objectId

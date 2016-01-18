@@ -144,9 +144,7 @@ class StoreTestCase: KinveyTestCase {
     func testQuery() {
         save()
         
-        weak var expectationUpdate = expectationWithDescription("Update")
-        
-        person.age = 30
+        weak var expectationQuery = expectationWithDescription("Query")
         
         XCTAssertNotNil(client.activeUser)
         
@@ -159,11 +157,11 @@ class StoreTestCase: KinveyTestCase {
                 XCTAssertEqual(persons.count, 1)
             }
             
-            expectationUpdate?.fulfill()
+            expectationQuery?.fulfill()
         }
         
         waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationUpdate = nil
+            expectationQuery = nil
         }
     }
     
@@ -251,6 +249,27 @@ class StoreTestCase: KinveyTestCase {
             XCTAssertNil(error)
             if let count = count {
                 XCTAssertEqual(count, 0)
+            }
+            
+            expectationDelete?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationDelete = nil
+        }
+    }
+    
+    func testRemoveAll() {
+        save()
+        
+        weak var expectationDelete = expectationWithDescription("Delete")
+        
+        store.removeAll() { (count, error) -> Void in
+            self.assertThread()
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
+            if let count = count {
+                XCTAssertGreaterThanOrEqual(count, 1)
             }
             
             expectationDelete?.fulfill()
