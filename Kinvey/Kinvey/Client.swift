@@ -69,6 +69,10 @@ public class Client: NSObject, Credential {
         responseParser = JsonResponseParser(client: self)
     }
     
+    public override class func initialize () {
+        KCSRealmEntityPersistence.initialize()
+    }
+    
     public convenience init(appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) {
         self.init()
         initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)

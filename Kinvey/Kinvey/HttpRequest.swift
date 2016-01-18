@@ -33,7 +33,7 @@ class HttpRequest: Request {
     init(endpoint: Endpoint, credential: Credential? = nil, client: Client = sharedClient) {
         self.endpoint = endpoint
         self.client = client
-        self.credential = credential != nil ? credential! : client
+        self.credential = credential ?? client
         
         let url = endpoint.url()
         request = NSMutableURLRequest(URL: url)
