@@ -39,7 +39,7 @@ class CachedStore<T: Persistable>: Store<T> {
         super.init(client: client)
     }
     
-    internal var expirationDate: NSDate {
+    var expirationDate: NSDate {
         get {
             return expiration.date(calendar)
         }
@@ -82,7 +82,14 @@ class CachedStore<T: Persistable>: Store<T> {
     }
     
     override func find(query: Query, completionHandler: ArrayCompletionHandler?) {
-        let jsonArray = entityPersistence.findEntityByQuery(KCSQueryAdapter(query: query), forClass: clazz)
+        let filterExpiredQuery = NSPredicate(format: "_kmd.\(PersistableMetadataLastRetrievedTime) < %@", expirationDate)
+        let modifiedQuery: Query
+        if let predicate = query.predicate {
+            modifiedQuery = Query(predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [filterExpiredQuery, predicate]))
+        } else {
+            modifiedQuery = Query(predicate: filterExpiredQuery)
+        }
+        let jsonArray = entityPersistence.findEntityByQuery(KCSQueryAdapter(query: modifiedQuery), forClass: clazz)
         let results = fromJson(jsonArray)
         super.find(query) { (results, error) -> Void in
             if let results = results {

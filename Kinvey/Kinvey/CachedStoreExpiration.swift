@@ -32,17 +32,17 @@ public enum CachedStoreExpiration {
         let dateComponents = NSDateComponents()
         switch self {
         case .Second(let value):
-            dateComponents.day = value
+            dateComponents.day = -value
         case .Minute(let value):
-            dateComponents.minute = value
+            dateComponents.minute = -value
         case .Hour(let value):
-            dateComponents.hour = value
+            dateComponents.hour = -value
         case .Day(let value):
-            dateComponents.day = value
+            dateComponents.day = -value
         case .Month(let value):
-            dateComponents.month = value
+            dateComponents.month = -value
         case .Year(let value):
-            dateComponents.year = value
+            dateComponents.year = -value
         }
         let newDate = calendar.dateByAddingComponents(dateComponents, toDate: NSDate(), options: [])
         return newDate!

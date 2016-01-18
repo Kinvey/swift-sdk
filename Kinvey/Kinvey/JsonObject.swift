@@ -6,7 +6,7 @@
 //  Copyright © 2015 Kinvey. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 public protocol JsonObject {
     
