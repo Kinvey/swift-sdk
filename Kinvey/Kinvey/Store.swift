@@ -9,7 +9,7 @@
 import Foundation
 import KinveyKit
 
-public class Store<T: Persistable>: NSObject {
+public class Store<T: Persistable> {
     
     public typealias ArrayCompletionHandler = ([T]?, NSError?) -> Void
     public typealias ObjectCompletionHandler = (T?, NSError?) -> Void
@@ -35,117 +35,112 @@ public class Store<T: Persistable>: NSObject {
         self.collectionName = T.kinveyCollectionName()
     }
     
-    public func get(id: String, completionHandler: ObjectCompletionHandler?) {
+    public func get(id: String, completionHandler: ObjectCompletionHandler?) -> Request {
         assert(id != "")
-        let url = Endpoint.AppDataById(client: client, collectionName: collectionName, id: id).url()
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "GET"
-        
-        client.networkTransport.execute(request) { (data, response, error) -> Void in
+        let request = HttpRequest(endpoint: Endpoint.AppDataById(client: client, collectionName: collectionName, id: id), credential: client.activeUser, client: client)
+        request.execute() { data, response, error in
             var obj: T? = nil
-            if self.client.responseParser.isResponseOk(response) {
+            if let response = response where response.isResponseOK {
                 obj = self.client.responseParser.parse(data, type: T.self)
             }
-            if let completionHandler = completionHandler {
-                completionHandler(obj, error)
-            }
+            completionHandler?(obj, error)
         }
+        return request
     }
     
-    public func find(query: Query = Query(), completionHandler: ArrayCompletionHandler?) {
-        let url = Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query).url()
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "GET"
-        
-        client.networkTransport.execute(request) { (data, response, error) -> Void in
+    public func find(query: Query = Query(), completionHandler: ArrayCompletionHandler?) -> Request {
+        let request = HttpRequest(endpoint: Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query), credential: client.activeUser, client: client)
+        request.execute() { data, response, error in
             var obj: [T]? = nil
-            if self.client.responseParser.isResponseOk(response) {
+            if let response = response where response.isResponseOK {
                 obj = self.client.responseParser.parseArray(data, type: T.self)
             }
-            if let completionHandler = completionHandler {
-                completionHandler(obj, error)
-            }
+            completionHandler?(obj, error)
         }
+        return request
     }
     
-    public func findAll(completionHandler: ArrayCompletionHandler?) {
-        find(completionHandler: completionHandler)
+    public func findAll(completionHandler: ArrayCompletionHandler?) -> Request {
+        return find(completionHandler: completionHandler)
     }
     
-    public func save(persistable: T, completionHandler: ObjectCompletionHandler?) {
-        let url = Endpoint.AppData(client: client, collectionName: collectionName).url()
-        let request = NSMutableURLRequest(URL: url)
+    public func save(persistable: T, completionHandler: ObjectCompletionHandler?) -> Request {
         let bodyObject = persistable.toJson()
+        let request = HttpRequest(
+            httpMethod: bodyObject[Kinvey.PersistableIdKey] == nil ? .Post : .Put,
+            endpoint: Endpoint.AppData(client: client, collectionName: collectionName),
+            credential: client.activeUser,
+            client: client
+        )
         
-        request.HTTPMethod = bodyObject[Kinvey.PersistableIdKey] == nil ? "POST" : "PUT"
+        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
-        client.networkTransport.execute(request) { (data, response, error) -> Void in
-            if self.client.responseParser.isResponseOk(response) {
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.execute() { data, response, error in
+            if let response = response where response.isResponseOK {
                 let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
                 if let json = json {
                     persistable.loadFromJson(json)
                 }
             }
-            if let completionHandler = completionHandler {
-                completionHandler(persistable, error)
-            }
+            completionHandler?(persistable, error)
         }
+        return request
     }
     
     public func save(array: [T], completionHandler: ArrayCompletionHandler?) {
         //TODO: future implementation
     }
     
-    public func remove(persistable: T, completionHandler: UIntCompletionHandler?) {
-        if let id = persistable.kinveyObjectId {
-            remove(id, completionHandler: completionHandler)
+    public func remove(persistable: T, completionHandler: UIntCompletionHandler?) throws -> Request {
+        guard let id = persistable.kinveyObjectId else {
+            throw Error.ObjectIdMissing
         }
+        return remove(id, completionHandler: completionHandler)
     }
     
-    public func remove(array: [T], completionHandler: UIntCompletionHandler?) {
+    public func remove(array: [T], completionHandler: UIntCompletionHandler?) -> Request {
         var ids: [String] = []
         for persistable in array {
             if let id = persistable.kinveyObjectId {
                 ids.append(id)
             }
         }
-        remove(ids, completionHandler: completionHandler)
+        return remove(ids, completionHandler: completionHandler)
     }
     
-    public func remove(id: String, completionHandler: UIntCompletionHandler?) {
+    public func remove(id: String, completionHandler: UIntCompletionHandler?) -> Request {
         let query = Query(format: "\(T.idKey) == %@", id)
-        remove(query, completionHandler: completionHandler)
+        return remove(query, completionHandler: completionHandler)
     }
     
-    public func remove(ids: [String], completionHandler: UIntCompletionHandler?) {
+    public func remove(ids: [String], completionHandler: UIntCompletionHandler?) -> Request {
         let query = Query(format: "\(T.idKey) IN %@", ids)
-        remove(query, completionHandler: completionHandler)
+        return remove(query, completionHandler: completionHandler)
     }
     
-    public func remove(query: Query = Query(), completionHandler: UIntCompletionHandler?) {
-        let url = Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query).url()
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "DELETE"
-        
-        client.networkTransport.execute(request) { (data, response, error) -> Void in
+    public func remove(query: Query = Query(), completionHandler: UIntCompletionHandler?) -> Request {
+        let request = HttpRequest(
+            httpMethod: .Delete,
+            endpoint: Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query),
+            credential: client.activeUser,
+            client: client
+        )
+        request.execute() { data, response, error in
             var count: UInt? = nil
-            if self.client.responseParser.isResponseOk(response) {
+            if let response = response where response.isResponseOK {
                 let results = self.client.responseParser.parse(data, type: [String : AnyObject].self)
                 if let results = results, let _count = results["count"] as? UInt {
                     count = _count
                 }
             }
-            if let completionHandler = completionHandler {
-                completionHandler(count, error)
-            }
+            completionHandler?(count, error)
         }
+        return request
     }
     
-    public func removeAll(completionHandler: UIntCompletionHandler?) {
-        remove(completionHandler: completionHandler)
+    public func removeAll(completionHandler: UIntCompletionHandler?) -> Request {
+        return remove(completionHandler: completionHandler)
     }
     
     internal func toJson(obj: T) -> [String : AnyObject] {
