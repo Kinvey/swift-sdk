@@ -14,6 +14,8 @@
 		570B1E0A1C2393E00056941F /* KCSQueryAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 570B1E081C2393E00056941F /* KCSQueryAdapter.h */; };
 		570B1E0B1C2393E00056941F /* KCSQueryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 570B1E091C2393E00056941F /* KCSQueryAdapter.m */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
+		57403A801C4DB422008ECCD4 /* KCSURLRequestRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57403A7E1C4DB422008ECCD4 /* KCSURLRequestRealm.h */; };
+		57403A811C4DB422008ECCD4 /* KCSURLRequestRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7F1C4DB422008ECCD4 /* KCSURLRequestRealm.m */; };
 		5753BB3C1C23F29000EB9D3A /* SyncedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */; };
 		575772861C4728E5001D56F5 /* CachedStoreExpiration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* CachedStoreExpiration.swift */; };
 		576E95A41C1FB10700258CC3 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* Store.swift */; };
@@ -157,6 +159,8 @@
 		570B1E081C2393E00056941F /* KCSQueryAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryAdapter.h; sourceTree = "<group>"; };
 		570B1E091C2393E00056941F /* KCSQueryAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQueryAdapter.m; sourceTree = "<group>"; };
 		57403A7C1C4D92E3008ECCD4 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		57403A7E1C4DB422008ECCD4 /* KCSURLRequestRealm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSURLRequestRealm.h; sourceTree = "<group>"; };
+		57403A7F1C4DB422008ECCD4 /* KCSURLRequestRealm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSURLRequestRealm.m; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStoreTests.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* CachedStoreExpiration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedStoreExpiration.swift; sourceTree = "<group>"; };
 		576E95A31C1FB10700258CC3 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
@@ -522,6 +526,8 @@
 				576E95D71C222C6B00258CC3 /* KCSFileRealm.m */,
 				576E95D91C222D8700258CC3 /* KCSAclRealm.h */,
 				576E95DA1C222D8700258CC3 /* KCSAclRealm.m */,
+				57403A7E1C4DB422008ECCD4 /* KCSURLRequestRealm.h */,
+				57403A7F1C4DB422008ECCD4 /* KCSURLRequestRealm.m */,
 			);
 			name = Realm;
 			sourceTree = "<group>";
@@ -1195,6 +1201,7 @@
 			files = (
 				57A27C851C178F17000DF951 /* Kinvey.h in Headers */,
 				570B1E0A1C2393E00056941F /* KCSQueryAdapter.h in Headers */,
+				57403A801C4DB422008ECCD4 /* KCSURLRequestRealm.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1349,6 +1356,7 @@
 				5783B6491C1A10FE0077F8A6 /* KCSDataModel.m in Sources */,
 				576E95CB1C2229F700258CC3 /* KCSRealmEntityPersistence.m in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
+				57403A811C4DB422008ECCD4 /* KCSURLRequestRealm.m in Sources */,
 				5783B6531C1A11A40077F8A6 /* KCSPropertyUtil.m in Sources */,
 				5783B6621C1A12DF0077F8A6 /* KCS_KSReachability.m in Sources */,
 				57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */,
