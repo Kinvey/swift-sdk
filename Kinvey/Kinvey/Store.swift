@@ -64,7 +64,7 @@ public class Store<T: Persistable> {
         return find(completionHandler: completionHandler)
     }
     
-    public func save(persistable: T, completionHandler: ObjectCompletionHandler?) -> Request {
+    internal func buildSaveRequest(persistable: T) -> Request {
         let bodyObject = persistable.toJson()
         let request = HttpRequest(
             httpMethod: bodyObject[Kinvey.PersistableIdKey] == nil ? .Post : .Put,
@@ -76,6 +76,11 @@ public class Store<T: Persistable> {
         request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        return request
+    }
+    
+    public func save(persistable: T, completionHandler: ObjectCompletionHandler?) -> Request {
+        let request = buildSaveRequest(persistable)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK {
                 let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
@@ -119,13 +124,18 @@ public class Store<T: Persistable> {
         return remove(query, completionHandler: completionHandler)
     }
     
-    public func remove(query: Query = Query(), completionHandler: UIntCompletionHandler?) -> Request {
+    internal func buildRemoveRequest(query: Query = Query()) -> Request {
         let request = HttpRequest(
             httpMethod: .Delete,
             endpoint: Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query),
             credential: client.activeUser,
             client: client
         )
+        return request
+    }
+    
+    public func remove(query: Query = Query(), completionHandler: UIntCompletionHandler?) -> Request {
+        let request = buildRemoveRequest(query)
         request.execute() { data, response, error in
             var count: UInt? = nil
             if let response = response where response.isResponseOK {

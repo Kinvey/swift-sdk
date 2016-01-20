@@ -45,7 +45,7 @@
 		577C9E741C1EC8BF00BF49EE /* NSArray+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B11C19F7150077F8A6 /* NSArray+KinveyAdditions.m */; };
 		577C9E751C1EC95800BF49EE /* KCSClient2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B59E1C19F7150077F8A6 /* KCSClient2+KCSInternal.m */; };
 		577C9E761C1EC99E00BF49EE /* NSError+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B71C19F7150077F8A6 /* NSError+KinveyKit.m */; };
-		577C9E781C1F89C700BF49EE /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credentials.swift */; };
+		577C9E781C1F89C700BF49EE /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
 		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
 		5783B6221C19F73E0077F8A6 /* KCSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5AF1C19F7150077F8A6 /* KCSKeychain.m */; };
 		5783B6251C1A07800077F8A6 /* KCSClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5751C19F7150077F8A6 /* KCSClient.m */; };
@@ -141,6 +141,7 @@
 		57E1C3B11C18156700578974 /* HttpNetworkTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B01C18156700578974 /* HttpNetworkTransport.swift */; };
 		57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B21C1822B100578974 /* ResponseParser.swift */; };
 		57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B41C18253B00578974 /* JsonResponseParser.swift */; };
+		57E7C78E1C4F0ACE00848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C78D1C4F0ACE00848748 /* HttpHeaderCredential.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -199,7 +200,7 @@
 		576E95ED1C222E9500258CC3 /* NSValueTransformer+Kinvey.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSValueTransformer+Kinvey.m"; sourceTree = "<group>"; };
 		576E95EF1C222F1200258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.h; sourceTree = "<group>"; };
 		576E95F01C222F1200258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m; sourceTree = "<group>"; };
-		577C9E771C1F89C700BF49EE /* Credentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
+		577C9E771C1F89C700BF49EE /* Credential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credential.swift; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
 		5783B50A1C19F7150077F8A6 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		5783B50B1C19F7150077F8A6 /* KCS_DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
@@ -476,6 +477,7 @@
 		57E1C3B01C18156700578974 /* HttpNetworkTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpNetworkTransport.swift; sourceTree = "<group>"; };
 		57E1C3B21C1822B100578974 /* ResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseParser.swift; sourceTree = "<group>"; };
 		57E1C3B41C18253B00578974 /* JsonResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonResponseParser.swift; sourceTree = "<group>"; };
+		57E7C78D1C4F0ACE00848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1147,7 +1149,8 @@
 				57A27C841C178F17000DF951 /* Kinvey.h */,
 				57A27C861C178F17000DF951 /* Info.plist */,
 				57A27C9B1C178FAC000DF951 /* Kinvey.swift */,
-				577C9E771C1F89C700BF49EE /* Credentials.swift */,
+				577C9E771C1F89C700BF49EE /* Credential.swift */,
+				57E7C78D1C4F0ACE00848748 /* HttpHeaderCredential.swift */,
 				57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */,
 				57A27C9D1C178FB5000DF951 /* Client.swift */,
 				57A27C9F1C178FC0000DF951 /* User.swift */,
@@ -1370,7 +1373,7 @@
 				5783B63C1C1A103D0077F8A6 /* KCSLogManager.m in Sources */,
 				5783B65D1C1A12970077F8A6 /* KCS_DDLog.m in Sources */,
 				57A27CA41C179118000DF951 /* Metadata.swift in Sources */,
-				577C9E781C1F89C700BF49EE /* Credentials.swift in Sources */,
+				577C9E781C1F89C700BF49EE /* Credential.swift in Sources */,
 				5783B63F1C1A10640077F8A6 /* KCSMockRequestOperation.m in Sources */,
 				5783B64A1C1A110B0077F8A6 /* KCSEntityPersistence.m in Sources */,
 				57A2ED8E1C49D20B006D26A9 /* HttpRequest.swift in Sources */,
@@ -1396,6 +1399,7 @@
 				576E95DB1C222D8900258CC3 /* KCSAclRealm.m in Sources */,
 				5783B6381C1A100D0077F8A6 /* KCSFileUtils.m in Sources */,
 				5783B62D1C1A09090077F8A6 /* KCSHttpRequest.m in Sources */,
+				57E7C78E1C4F0ACE00848748 /* HttpHeaderCredential.swift in Sources */,
 				5783B6561C1A11C00077F8A6 /* KCSQuery2.m in Sources */,
 				5783B65B1C1A12310077F8A6 /* KCS_DDASLLogger.m in Sources */,
 				57E1C3B11C18156700578974 /* HttpNetworkTransport.swift in Sources */,

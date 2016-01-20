@@ -480,7 +480,11 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
 
 +(Class)realmClassForClass:(Class)class
 {
-    return NSClassFromString(classMapOriginalRealm[NSStringFromClass(class)]);
+    Class clazz = NSClassFromString(classMapOriginalRealm[NSStringFromClass(class)]);
+    if (!clazz && [class isSubclassOfClass:[RLMObject class]]) {
+        clazz = class;
+    }
+    return clazz;
 }
 
 +(instancetype)offlineManager
@@ -563,15 +567,16 @@ static inline void saveEntity(NSMutableDictionary<NSString *,id> *entity, RLMRea
     }];
 }
 
--(void)removeEntity:(NSDictionary<NSString *,NSObject *> *)entity
+-(void)removeEntity:(NSDictionary<NSString *, id> *)entity
            forClass:(Class)class
 {
     NSDictionary<NSString*, NSString*>* propertyMapping = [class kinveyPropertyMapping].invert;
     NSString* keyId = propertyMapping[KCSEntityKeyId];
     Query* query = [[Query alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]
                                     sortDescriptors:nil];
-    [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
-                       forClass:class];
+    NSUInteger count = [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
+                                          forClass:class];
+    assert(count == 1);
 }
 
 -(NSUInteger)removeEntitiesByQuery:(id<KCSQuery>)query
@@ -587,8 +592,8 @@ static inline void saveEntity(NSMutableDictionary<NSString *,id> *entity, RLMRea
     [realm transactionWithBlock:^{
         RLMResults* results = [realmClass objectsInRealm:realm
                                            withPredicate:predicate];
-        [realm deleteObjects:results];
         count = results.count;
+        [realm deleteObjects:results];
     }];
     return count;
 }
@@ -635,11 +640,42 @@ static inline void saveEntity(NSMutableDictionary<NSString *,id> *entity, RLMRea
     return array;
 }
 
+-(NSArray<NSDictionary<NSString *,id> *> *)findAllForClass:(Class)class
+{
+    Class realmClass = [[self class] realmClassForClass:class];
+    RLMRealm* realm = self.realm;
+    
+    NSDictionary<NSString*, NSString*>* kinveyPropertyMapping = [class kinveyPropertyMapping];
+    NSArray<NSString*>* keys = kinveyPropertyMapping.allKeys;
+    
+    RLMResults* results = [realmClass allObjectsInRealm:realm];
+    
+    NSMutableArray<NSDictionary<NSString*, NSObject*>*>* array = [NSMutableArray arrayWithCapacity:results.count];
+    NSDictionary<NSString*, NSObject*>* json;
+    for (RLMObject* obj in results) {
+        json = [obj dictionaryWithValuesForKeys:keys];
+        [array addObject:json];
+    }
+    return array;
+}
+
 -(void)removeAllEntities
 {
     RLMRealm* realm = self.realm;
     [realm transactionWithBlock:^{
         [realm deleteAllObjects];
+    }];
+}
+
+-(void)removeAllEntitiesForClass:(Class)class
+{
+    Class realmClass = [[self class] realmClassForClass:class];
+    RLMRealm* realm = self.realm;
+    [realm transactionWithBlock:^{
+        RLMResults* results = [realmClass allObjectsInRealm:realm];
+        if (results) {
+            [realm deleteObjects:results];
+        }
     }];
 }
 

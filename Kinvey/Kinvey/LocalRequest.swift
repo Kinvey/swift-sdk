@@ -15,14 +15,14 @@ class LocalRequest: Request {
     
     typealias LocalHandler = () -> Void
     
-    let localHandler: LocalHandler
+    let localHandler: LocalHandler?
     
-    init(_ localHandler: LocalHandler) {
+    init(_ localHandler: LocalHandler? = nil) {
         self.localHandler = localHandler
     }
     
     func execute(completionHandler: DataResponseCompletionHandler?) {
-        localHandler()
+        localHandler?()
         completionHandler?(nil, LocalResponse(), nil)
     }
     

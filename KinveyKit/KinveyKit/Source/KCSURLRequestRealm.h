@@ -12,6 +12,7 @@
 @interface KCSURLRequestRealm : RLMObject
 
 @property NSString* requestId;
+@property NSDate* date;
 
 @property NSString* collectionName;
 @property NSString* objectId;
@@ -24,5 +25,8 @@
 -(instancetype)initWithURLRequest:(NSURLRequest*)urlRequest
                    collectionName:(NSString*)collectionName
                          objectId:(NSString*)objectId;
+
+-(NSDictionary<NSString*, id>*)toJson;
+-(NSURLRequest*)buildRequest;
 
 @end
