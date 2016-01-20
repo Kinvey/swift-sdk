@@ -5,6 +5,7 @@ module KinveyKit {
     header "../../../KinveyKit/KinveyKit/Source/KCSObjcRuntime.h"
     header "../../../KinveyKit/KinveyKit/Source/KCSRealmEntityPersistence.h"
     header "../../../KinveyKit/KinveyKit/Source/KCSQueryAdapter.h"
+    header "../../../KinveyKit/KinveyKit/Source/KCSURLRequestRealm.h"
     header "../../../KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.h"
     export *
 }

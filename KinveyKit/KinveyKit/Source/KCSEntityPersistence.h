@@ -77,7 +77,7 @@
 -(void)saveEntities:(NSArray<NSDictionary<NSString*, id>*>*)entities
            forClass:(Class)clazz;
 
--(void)removeEntity:(NSDictionary<NSString*, NSObject*>*)entity
+-(void)removeEntity:(NSDictionary<NSString*, id>*)entity
            forClass:(Class)clazz;
 
 -(NSUInteger)removeEntitiesByQuery:(id<KCSQuery>)query
@@ -85,10 +85,14 @@
 
 -(void)removeAllEntities;
 
+-(void)removeAllEntitiesForClass:(Class)clazz;
+
 -(NSDictionary<NSString*, id>*)findEntity:(NSString*)objectId
                                  forClass:(Class)clazz;
 
 -(NSArray<NSDictionary<NSString*, id>*>*)findEntityByQuery:(id<KCSQuery>)query
                                                   forClass:(Class)clazz;
+
+-(NSArray<NSDictionary<NSString*, id>*>*)findAllForClass:(Class)clazz;
 
 @end
