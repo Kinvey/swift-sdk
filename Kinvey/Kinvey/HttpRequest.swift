@@ -35,6 +35,30 @@ class HttpRequest: Request {
         }
     }
     
+    init(request: NSURLRequest, client: Client = sharedClient) {
+        switch request.HTTPMethod! {
+        case "POST":
+            self.httpMethod = .Post
+        case "PUT":
+            self.httpMethod = .Put
+        case "DELETE":
+            self.httpMethod = .Delete
+        case "GET":
+            fallthrough
+        default:
+            self.httpMethod = .Get
+        }
+        self.endpoint = Endpoint.URL(url: request.URL!)
+        self.client = client
+        
+        if let authorization = request.valueForHTTPHeaderField("Authorization") {
+            self.credential = HttpHeaderCredential(authorization)
+        } else {
+            self.credential = client.activeUser ?? client
+        }
+        self.request = request.mutableCopy() as! NSMutableURLRequest
+    }
+    
     init(httpMethod: HttpMethod = .Get, endpoint: Endpoint, credential: Credential? = nil, client: Client = sharedClient) {
         self.httpMethod = httpMethod
         self.endpoint = endpoint
@@ -56,8 +80,8 @@ class HttpRequest: Request {
     }
     
     func execute(completionHandler: DataResponseCompletionHandler? = nil) {
-        if let credential = credential, let authorizationHeader = credential.authorizationHeader {
-            request.addValue(authorizationHeader, forHTTPHeaderField: "Authorization")
+        if request.valueForHTTPHeaderField("Authorization") == nil, let credential = credential, let authorizationHeader = credential.authorizationHeader {
+            request.setValue(authorizationHeader, forHTTPHeaderField: "Authorization")
         }
         
         task = client.urlSession.dataTaskWithRequest(request) { (data, response, error) -> Void in
