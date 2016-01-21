@@ -14,10 +14,10 @@
 		570B1E0A1C2393E00056941F /* KCSQueryAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 570B1E081C2393E00056941F /* KCSQueryAdapter.h */; };
 		570B1E0B1C2393E00056941F /* KCSQueryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 570B1E091C2393E00056941F /* KCSQueryAdapter.m */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
-		57403A801C4DB422008ECCD4 /* KCSURLRequestRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57403A7E1C4DB422008ECCD4 /* KCSURLRequestRealm.h */; };
-		57403A811C4DB422008ECCD4 /* KCSURLRequestRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7F1C4DB422008ECCD4 /* KCSURLRequestRealm.m */; };
+		57403A801C4DB422008ECCD4 /* KCSPendingOperationRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57403A7E1C4DB422008ECCD4 /* KCSPendingOperationRealm.h */; };
+		57403A811C4DB422008ECCD4 /* KCSPendingOperationRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7F1C4DB422008ECCD4 /* KCSPendingOperationRealm.m */; };
 		5753BB3C1C23F29000EB9D3A /* SyncedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */; };
-		575772861C4728E5001D56F5 /* CachedStoreExpiration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* CachedStoreExpiration.swift */; };
+		575772861C4728E5001D56F5 /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
 		576E95A41C1FB10700258CC3 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* Store.swift */; };
 		576E95AA1C1FC2BF00258CC3 /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */; };
 		576E95AD1C20DB7C00258CC3 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
@@ -142,6 +142,18 @@
 		57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B21C1822B100578974 /* ResponseParser.swift */; };
 		57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B41C18253B00578974 /* JsonResponseParser.swift */; };
 		57E7C78E1C4F0ACE00848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C78D1C4F0ACE00848748 /* HttpHeaderCredential.swift */; };
+		57E7C7941C50070100848748 /* KCSPendingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C7921C50070100848748 /* KCSPendingOperation.h */; };
+		57E7C7981C50089500848748 /* KCSSync.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C7961C50089500848748 /* KCSSync.h */; };
+		57E7C79F1C501DAF00848748 /* KCSCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C79E1C501DAF00848748 /* KCSCache.h */; };
+		57E7C7A21C50228300848748 /* KCSCacheManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C7A01C50228300848748 /* KCSCacheManager.h */; };
+		57E7C7A31C50228300848748 /* KCSCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A11C50228300848748 /* KCSCacheManager.m */; };
+		57E7C7A51C504AC500848748 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A41C504AC500848748 /* Cache.swift */; };
+		57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A61C504B0900848748 /* CacheManager.swift */; };
+		57E7C7A91C504E7B00848748 /* PendingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A81C504E7B00848748 /* PendingOperation.swift */; };
+		57E7C7AC1C5052F400848748 /* KCSSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C7AA1C5052F400848748 /* KCSSyncManager.h */; };
+		57E7C7AD1C5052F400848748 /* KCSSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7AB1C5052F400848748 /* KCSSyncManager.m */; };
+		57E7C7AF1C50539200848748 /* Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7AE1C50539200848748 /* Sync.swift */; };
+		57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B01C50539C00848748 /* SyncManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -160,10 +172,10 @@
 		570B1E081C2393E00056941F /* KCSQueryAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryAdapter.h; sourceTree = "<group>"; };
 		570B1E091C2393E00056941F /* KCSQueryAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQueryAdapter.m; sourceTree = "<group>"; };
 		57403A7C1C4D92E3008ECCD4 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
-		57403A7E1C4DB422008ECCD4 /* KCSURLRequestRealm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSURLRequestRealm.h; sourceTree = "<group>"; };
-		57403A7F1C4DB422008ECCD4 /* KCSURLRequestRealm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSURLRequestRealm.m; sourceTree = "<group>"; };
+		57403A7E1C4DB422008ECCD4 /* KCSPendingOperationRealm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPendingOperationRealm.h; sourceTree = "<group>"; };
+		57403A7F1C4DB422008ECCD4 /* KCSPendingOperationRealm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPendingOperationRealm.m; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStoreTests.swift; sourceTree = "<group>"; };
-		575772851C4728E5001D56F5 /* CachedStoreExpiration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedStoreExpiration.swift; sourceTree = "<group>"; };
+		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
 		576E95A31C1FB10700258CC3 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		576E95A71C1FC2B400258CC3 /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MongoDBPredicateAdaptor.h; sourceTree = "<group>"; };
 		576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MongoDBPredicateAdaptor.m; sourceTree = "<group>"; };
@@ -478,6 +490,18 @@
 		57E1C3B21C1822B100578974 /* ResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseParser.swift; sourceTree = "<group>"; };
 		57E1C3B41C18253B00578974 /* JsonResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonResponseParser.swift; sourceTree = "<group>"; };
 		57E7C78D1C4F0ACE00848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
+		57E7C7921C50070100848748 /* KCSPendingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPendingOperation.h; sourceTree = "<group>"; };
+		57E7C7961C50089500848748 /* KCSSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSync.h; sourceTree = "<group>"; };
+		57E7C79E1C501DAF00848748 /* KCSCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCache.h; sourceTree = "<group>"; };
+		57E7C7A01C50228300848748 /* KCSCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCacheManager.h; sourceTree = "<group>"; };
+		57E7C7A11C50228300848748 /* KCSCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCacheManager.m; sourceTree = "<group>"; };
+		57E7C7A41C504AC500848748 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
+		57E7C7A61C504B0900848748 /* CacheManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
+		57E7C7A81C504E7B00848748 /* PendingOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingOperation.swift; sourceTree = "<group>"; };
+		57E7C7AA1C5052F400848748 /* KCSSyncManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSyncManager.h; sourceTree = "<group>"; };
+		57E7C7AB1C5052F400848748 /* KCSSyncManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSyncManager.m; sourceTree = "<group>"; };
+		57E7C7AE1C50539200848748 /* Sync.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sync.swift; sourceTree = "<group>"; };
+		57E7C7B01C50539C00848748 /* SyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -528,8 +552,8 @@
 				576E95D71C222C6B00258CC3 /* KCSFileRealm.m */,
 				576E95D91C222D8700258CC3 /* KCSAclRealm.h */,
 				576E95DA1C222D8700258CC3 /* KCSAclRealm.m */,
-				57403A7E1C4DB422008ECCD4 /* KCSURLRequestRealm.h */,
-				57403A7F1C4DB422008ECCD4 /* KCSURLRequestRealm.m */,
+				57403A7E1C4DB422008ECCD4 /* KCSPendingOperationRealm.h */,
+				57403A7F1C4DB422008ECCD4 /* KCSPendingOperationRealm.m */,
 			);
 			name = Realm;
 			sourceTree = "<group>";
@@ -997,11 +1021,18 @@
 				5783B5EF1C19F7150077F8A6 /* KCSQuery2+KCSInternal.m */,
 				5783B5F01C19F7150077F8A6 /* KCSEntityPersistence.h */,
 				5783B5F11C19F7150077F8A6 /* KCSEntityPersistence.m */,
+				57E7C79E1C501DAF00848748 /* KCSCache.h */,
+				57E7C7961C50089500848748 /* KCSSync.h */,
+				57E7C7921C50070100848748 /* KCSPendingOperation.h */,
 				5783B5F21C19F7150077F8A6 /* KCSObjectCache.h */,
 				5783B5F31C19F7150077F8A6 /* KCSObjectCache.m */,
 				5783B5F41C19F7150077F8A6 /* KCSOfflineUpdate.h */,
 				5783B5F51C19F7150077F8A6 /* KCSOfflineUpdate.m */,
 				5783B5FC1C19F7150077F8A6 /* Data Modeling */,
+				57E7C7A01C50228300848748 /* KCSCacheManager.h */,
+				57E7C7A11C50228300848748 /* KCSCacheManager.m */,
+				57E7C7AA1C5052F400848748 /* KCSSyncManager.h */,
+				57E7C7AB1C5052F400848748 /* KCSSyncManager.m */,
 			);
 			name = internal;
 			sourceTree = "<group>";
@@ -1159,7 +1190,7 @@
 				576E95A31C1FB10700258CC3 /* Store.swift */,
 				57E1C39C1C17B37B00578974 /* NetworkStore.swift */,
 				57E1C3A01C17B39E00578974 /* SyncedStore.swift */,
-				575772851C4728E5001D56F5 /* CachedStoreExpiration.swift */,
+				575772851C4728E5001D56F5 /* TTL.swift */,
 				57E1C39E1C17B39400578974 /* CachedStore.swift */,
 				57E1C3A21C17B3FF00578974 /* Query.swift */,
 				57E1C3A61C17B4F300578974 /* Persistable.swift */,
@@ -1175,6 +1206,11 @@
 				57A2ED871C49BADD006D26A9 /* HttpResponse.swift */,
 				57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */,
 				57403A7C1C4D92E3008ECCD4 /* Error.swift */,
+				57E7C7A41C504AC500848748 /* Cache.swift */,
+				57E7C7A61C504B0900848748 /* CacheManager.swift */,
+				57E7C7A81C504E7B00848748 /* PendingOperation.swift */,
+				57E7C7AE1C50539200848748 /* Sync.swift */,
+				57E7C7B01C50539C00848748 /* SyncManager.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -1202,9 +1238,14 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57E7C7981C50089500848748 /* KCSSync.h in Headers */,
+				57E7C79F1C501DAF00848748 /* KCSCache.h in Headers */,
+				57E7C7A21C50228300848748 /* KCSCacheManager.h in Headers */,
 				57A27C851C178F17000DF951 /* Kinvey.h in Headers */,
 				570B1E0A1C2393E00056941F /* KCSQueryAdapter.h in Headers */,
-				57403A801C4DB422008ECCD4 /* KCSURLRequestRealm.h in Headers */,
+				57E7C7941C50070100848748 /* KCSPendingOperation.h in Headers */,
+				57403A801C4DB422008ECCD4 /* KCSPendingOperationRealm.h in Headers */,
+				57E7C7AC1C5052F400848748 /* KCSSyncManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1340,7 +1381,7 @@
 				576E95F21C223DA500258CC3 /* CLLocation+Kinvey.m in Sources */,
 				5783B6641C1A133F0077F8A6 /* KCSMICRequest2.m in Sources */,
 				5783B6371C1A10010077F8A6 /* KCSFileRequestManager.m in Sources */,
-				575772861C4728E5001D56F5 /* CachedStoreExpiration.swift in Sources */,
+				575772861C4728E5001D56F5 /* TTL.swift in Sources */,
 				5783B6431C1A10A20077F8A6 /* KCSNSURLRequestOperation.m in Sources */,
 				57A27CA21C17910E000DF951 /* Acl.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
@@ -1356,15 +1397,17 @@
 				570B1E0B1C2393E00056941F /* KCSQueryAdapter.m in Sources */,
 				5783B6471C1A10DA0077F8A6 /* KCSNetworkResponse.m in Sources */,
 				57E1C39F1C17B39400578974 /* CachedStore.swift in Sources */,
+				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
 				5783B6491C1A10FE0077F8A6 /* KCSDataModel.m in Sources */,
 				576E95CB1C2229F700258CC3 /* KCSRealmEntityPersistence.m in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
-				57403A811C4DB422008ECCD4 /* KCSURLRequestRealm.m in Sources */,
+				57403A811C4DB422008ECCD4 /* KCSPendingOperationRealm.m in Sources */,
 				5783B6531C1A11A40077F8A6 /* KCSPropertyUtil.m in Sources */,
 				5783B6621C1A12DF0077F8A6 /* KCS_KSReachability.m in Sources */,
 				57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */,
 				5783B65A1C1A11F20077F8A6 /* KCSUser2.m in Sources */,
 				5783B6281C1A08980077F8A6 /* KCSClientConfiguration.m in Sources */,
+				57E7C7AF1C50539200848748 /* Sync.swift in Sources */,
 				5783B63E1C1A10570077F8A6 /* KCSMetadata.m in Sources */,
 				5783B6351C1A0FEA0077F8A6 /* KCSFile.m in Sources */,
 				57E1C39D1C17B37B00578974 /* NetworkStore.swift in Sources */,
@@ -1372,6 +1415,7 @@
 				5783B6271C1A07980077F8A6 /* KinveyUser.m in Sources */,
 				5783B63C1C1A103D0077F8A6 /* KCSLogManager.m in Sources */,
 				5783B65D1C1A12970077F8A6 /* KCS_DDLog.m in Sources */,
+				57E7C7A91C504E7B00848748 /* PendingOperation.swift in Sources */,
 				57A27CA41C179118000DF951 /* Metadata.swift in Sources */,
 				577C9E781C1F89C700BF49EE /* Credential.swift in Sources */,
 				5783B63F1C1A10640077F8A6 /* KCSMockRequestOperation.m in Sources */,
@@ -1383,6 +1427,7 @@
 				57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */,
 				5783B6601C1A12BD0077F8A6 /* KCS_FMDatabase.m in Sources */,
 				576E95CF1C222B8300258CC3 /* KCS_CLLocation_Realm.m in Sources */,
+				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
 				57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */,
 				576E95B61C210F5100258CC3 /* KCSObjcRuntime.m in Sources */,
 				57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */,
@@ -1391,6 +1436,8 @@
 				576E95E71C222DEF00258CC3 /* KCS_NSURL_NSString_NSValueTransformer.m in Sources */,
 				576E95D51C222C0800258CC3 /* KCSMetadataRealm.m in Sources */,
 				5783B6631C1A132C0077F8A6 /* KCSUser2+KinveyUserService.m in Sources */,
+				57E7C7A31C50228300848748 /* KCSCacheManager.m in Sources */,
+				57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */,
 				5783B62A1C1A08B90077F8A6 /* KCSAppdataStore.m in Sources */,
 				57A27C9C1C178FAC000DF951 /* Kinvey.swift in Sources */,
 				5783B6251C1A07800077F8A6 /* KCSClient.m in Sources */,
@@ -1444,6 +1491,7 @@
 				5783B64F1C1A11510077F8A6 /* KCSOfflineUpdate.m in Sources */,
 				57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */,
 				577C9E711C1EB6BC00BF49EE /* NSDictionary+KinveyAdditions.m in Sources */,
+				57E7C7AD1C5052F400848748 /* KCSSyncManager.m in Sources */,
 				5783B62B1C1A08C50077F8A6 /* DataStoreOperation.m in Sources */,
 				5783B6311C1A09860077F8A6 /* KCSDataStore.m in Sources */,
 			);

@@ -8,14 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import <Realm/Realm.h>
+#import "KCSPendingOperation.h"
 
-@interface KCSURLRequestRealm : RLMObject
+@interface KCSPendingOperationRealm : RLMObject <KCSPendingOperation>
 
 @property NSString* requestId;
 @property NSDate* date;
 
 @property NSString* collectionName;
-@property NSString* objectId;
 
 @property NSString* method;
 @property NSString* url;
@@ -23,10 +23,8 @@
 @property NSData* body;
 
 -(instancetype)initWithURLRequest:(NSURLRequest*)urlRequest
-                   collectionName:(NSString*)collectionName
-                         objectId:(NSString*)objectId;
+                   collectionName:(NSString*)collectionName;
 
 -(NSDictionary<NSString*, id>*)toJson;
--(NSURLRequest*)buildRequest;
 
 @end
