@@ -19,6 +19,7 @@
 #import <Foundation/Foundation.h>
 
 #import "KCSQuery.h"
+#import "KCSPendingOperation.h"
 
 @interface KCSEntityPersistence : NSObject 
 @property (nonatomic, strong) NSDictionary* saveContext;
@@ -63,13 +64,9 @@
 
 @protocol KCSEntityPersistence <NSObject>
 
-+(instancetype)offlineManager;
-
-+(instancetype)managerWithPersistenceId:(NSString*)persistenceId;
+@property (nonatomic, readonly) NSString* persistenceId;
 
 -(instancetype)initWithPersistenceId:(NSString*)persistenceId;
-
-@property (nonatomic, readonly) NSString* persistenceId;
 
 -(void)saveEntity:(NSDictionary<NSString*, id>*)entity
          forClass:(Class)clazz;

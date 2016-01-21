@@ -8,7 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "KCSEntityPersistence.h"
+#import "KCSCache.h"
+#import "KCSSync.h"
 
-@interface KCSRealmEntityPersistence : NSObject <KCSEntityPersistence>
+@interface KCSRealmEntityPersistence : NSObject <KCSCache, KCSSync>
 
 @end

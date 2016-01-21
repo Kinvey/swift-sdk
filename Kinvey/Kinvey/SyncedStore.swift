@@ -16,7 +16,7 @@ public class SyncedStore<T: Persistable>: Store<T> {
     }
     
     public override func get(id: String, completionHandler: ObjectCompletionHandler?) -> Request {
-        let json = self.entityPersistence.findEntity(id, forClass: self.clazz)
+        let json = self.cache.findEntity(id)
         let request = LocalRequest()
         request.execute() { data, response, error in
             self.dispatchAsyncTo(completionHandler)?(self.fromJson(json), error)
@@ -25,7 +25,7 @@ public class SyncedStore<T: Persistable>: Store<T> {
     }
     
     public override func find(query: Query, completionHandler: ArrayCompletionHandler?) -> Request {
-        let json = self.entityPersistence.findEntityByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
+        let json = self.cache.findEntityByQuery(KCSQueryAdapter(query: query))
         let request = LocalRequest()
         request.execute() { data, response, error in
             self.dispatchAsyncTo(completionHandler)?(self.fromJson(json), error)
@@ -60,10 +60,9 @@ public class SyncedStore<T: Persistable>: Store<T> {
             self.fillObject(persistable)
             var json = self.toJson(persistable)
             json = self.fillJson(json)
-            self.entityPersistence.saveEntity(json, forClass: self.clazz)
+            self.cache.saveEntity(json)
             
-            let syncedObject = KCSURLRequestRealm(URLRequest: request!.request, collectionName: T.kinveyCollectionName(), objectId: persistable.kinveyObjectId)
-            self.entityPersistence.saveEntity(syncedObject.toJson(), forClass: KCSURLRequestRealm.self)
+            self.sync.savePendingOperation(self.sync.createPendingOperation(request!.request))
         }
         request.execute { (data, response, error) -> Void in
             self.dispatchAsyncTo(completionHandler)?(persistable, error)
@@ -79,16 +78,15 @@ public class SyncedStore<T: Persistable>: Store<T> {
             fillJson(json)
             serializedArray.append(json)
         }
-        entityPersistence.saveEntities(serializedArray, forClass: clazz)
+        cache.saveEntities(serializedArray)
         dispatchAsyncTo(completionHandler)?(array, nil)
     }
     
     public override func remove(query: Query, completionHandler: UIntCompletionHandler?) -> Request {
-        let count = self.entityPersistence.removeEntitiesByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
+        let count = self.cache.removeEntitiesByQuery(KCSQueryAdapter(query: query))
         let request = LocalRequest() {
             let request = self.buildRemoveRequest(query) as? HttpRequest
-            let syncedObject = KCSURLRequestRealm(URLRequest: request!.request, collectionName: T.kinveyCollectionName(), objectId: nil)
-            self.entityPersistence.saveEntity(syncedObject.toJson(), forClass: KCSURLRequestRealm.self)
+            self.sync.savePendingOperation(self.sync.createPendingOperation(request!.request))
         }
         request.execute() { data, response, error in
             self.dispatchAsyncTo(completionHandler)?(count, error)
@@ -97,24 +95,22 @@ public class SyncedStore<T: Persistable>: Store<T> {
     }
     
     func push(completionHandler: UIntCompletionHandler? = nil) {
-        //TODO wrap this implementation in an abstraction layer
-        let query = Query(format: "method IN %@", ["POST", "PUT", "DELETE"])
-        let entities = entityPersistence.findEntityByQuery(KCSQueryAdapter(query: query), forClass: KCSURLRequestRealm.self)
+        let pendingOperations = self.sync.pendingOperations()
         
         var count = 0
         var successCount = UInt(0)
         let queue = NSOperationQueue()
         queue.maxConcurrentOperationCount = 1
         
-        for entity in entities {
-            let request = HttpRequest(request: KCSURLRequestRealm(value: entity).buildRequest(), client: client)
+        for pendingOperation in pendingOperations {
+            let request = HttpRequest(request: pendingOperation.buildRequest(), client: client)
             request.execute() { data, response, error in
                 if let response = response where response.isResponseOK {
-                    self.entityPersistence.removeEntity(entity, forClass: KCSURLRequestRealm.self)
+                    self.sync.removePendingOperation(pendingOperation)
                     successCount++
                 }
                 queue.addOperationWithBlock() {
-                    if ++count == entities.count {
+                    if ++count == pendingOperations.count {
                         self.dispatchAsyncTo(completionHandler)?(successCount, nil)
                     }
                 }
@@ -141,8 +137,7 @@ public class SyncedStore<T: Persistable>: Store<T> {
     }
     
     func purge() {
-        //TODO wrap this implementation in an abstraction layer
-        self.entityPersistence.removeAllEntitiesForClass(KCSURLRequestRealm.self)
+        sync.removeAllPendingOperations()
     }
     
     internal func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: UIntArrayCompletionHandler? = nil) -> UIntArrayCompletionHandler? {
