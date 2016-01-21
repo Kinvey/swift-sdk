@@ -21,17 +21,22 @@ public class Store<T: Persistable> {
     public let collectionName: String
     public let client: Client
     
-    internal let entityPersistence: KCSEntityPersistenceProtocol
+    internal var cache: Cache {
+        get {
+            return CacheManager.getInstance(client.appKey!).cache(T.kinveyCollectionName())
+        }
+    }
+    
+    internal var sync: Sync {
+        get {
+            return SyncManager.getInstance(client.appKey!).sync(T.kinveyCollectionName())
+        }
+    }
+    
     internal let clazz: AnyClass = T.self as! AnyClass
     
     init(client: Client = Kinvey.sharedClient) {
         self.client = client
-        if let appKey = client.appKey {
-            let entityPersistence = KCSRealmEntityPersistence(persistenceId: appKey)
-            self.entityPersistence = entityPersistence
-        } else {
-            self.entityPersistence = KCSRealmEntityPersistence.offlineManager()
-        }
         self.collectionName = T.kinveyCollectionName()
     }
     

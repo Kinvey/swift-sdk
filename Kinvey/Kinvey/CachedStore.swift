@@ -9,39 +9,18 @@
 import Foundation
 import KinveyKit
 
-class CachedStore<T: Persistable>: Store<T> {
+class CachedStore<T: Persistable>: Store<T> {    
     
-    let expiration: CachedStoreExpiration
-    let calendar: NSCalendar
+    let ttl: TTL
     
-    internal convenience init(expiration: Expiration, calendar: NSCalendar = NSCalendar.currentCalendar(), client: Client = Kinvey.sharedClient) {
-        let _expiration: CachedStoreExpiration
-        switch expiration.1 {
-            case .Second:
-                _expiration = CachedStoreExpiration.Second(expiration.0)
-            case .Minute:
-                _expiration = CachedStoreExpiration.Minute(expiration.0)
-            case .Hour:
-                _expiration = CachedStoreExpiration.Hour(expiration.0)
-            case .Day:
-                _expiration = CachedStoreExpiration.Day(expiration.0)
-            case .Month:
-                _expiration = CachedStoreExpiration.Month(expiration.0)
-            case .Year:
-                _expiration = CachedStoreExpiration.Year(expiration.0)
-        }
-        self.init(expiration: _expiration, client: client)
-    }
-    
-    internal init(expiration: CachedStoreExpiration, calendar: NSCalendar = NSCalendar.currentCalendar(), client: Client = Kinvey.sharedClient) {
-        self.expiration = expiration
-        self.calendar = calendar
+    internal init(ttl: TTL, client: Client = Kinvey.sharedClient) {
+        self.ttl = ttl
         super.init(client: client)
     }
     
     var expirationDate: NSDate {
         get {
-            return expiration.date(calendar)
+            return ttl.0.date(ttl.1)
         }
     }
     
@@ -57,7 +36,7 @@ class CachedStore<T: Persistable>: Store<T> {
             if let userId = client.activeUser?.userId {
                 entity[PersistableAclKey] = Acl(creator: userId).toJson()
             }
-            entityPersistence.saveEntity(entity, forClass: clazz)
+            cache.saveEntity(entity)
         }
     }
     
@@ -66,7 +45,7 @@ class CachedStore<T: Persistable>: Store<T> {
     }
     
     override func get(id: String, completionHandler: ObjectCompletionHandler?) -> Request {
-        let json = entityPersistence.findEntity(id, forClass: clazz)
+        let json = cache.findEntity(id)
         if let obj = fromJson(json) {
             dispatchAsyncTo(completionHandler)?(obj, nil)
             return super.get(id) { (obj, error) -> Void in
@@ -89,7 +68,7 @@ class CachedStore<T: Persistable>: Store<T> {
         } else {
             modifiedQuery = Query(predicate: filterExpiredQuery)
         }
-        let jsonArray = entityPersistence.findEntityByQuery(KCSQueryAdapter(query: modifiedQuery), forClass: clazz)
+        let jsonArray = cache.findEntityByQuery(KCSQueryAdapter(query: modifiedQuery))
         let results = fromJson(jsonArray)
         return super.find(query) { (results, error) -> Void in
             if let results = results {
@@ -112,7 +91,7 @@ class CachedStore<T: Persistable>: Store<T> {
         return super.remove(query) { (count, error) -> Void in
             //TODO: check with backend if we can return the deleted ids
             if let _ = count {
-                self.entityPersistence.removeEntitiesByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
+                self.cache.removeEntitiesByQuery(KCSQueryAdapter(query: query))
             }
             self.dispatchAsyncTo(completionHandler)?(count, error)
         }
