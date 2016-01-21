@@ -21,7 +21,7 @@ class NetworkStore<T: Persistable>: Store<T> {
     override func get(id: String, completionHandler: ObjectCompletionHandler?) -> Request {
         return super.get(id) { (obj, error) -> Void in
             if self.cacheEnabled, let obj = obj {
-                self.entityPersistence.saveEntity(self.toJson(obj), forClass: self.clazz)
+                self.cache.saveEntity(self.toJson(obj))
             }
             self.dispatchAsyncTo(completionHandler)?(obj, error)
         }
@@ -30,7 +30,7 @@ class NetworkStore<T: Persistable>: Store<T> {
     override func find(query: Query, completionHandler: ArrayCompletionHandler?) -> Request {
         return super.find(query) { (array, error) -> Void in
             if self.cacheEnabled, let array = array {
-                self.entityPersistence.saveEntities(self.toJson(array), forClass: self.clazz)
+                self.cache.saveEntities(self.toJson(array))
             }
             self.dispatchAsyncTo(completionHandler)?(array, error)
         }
@@ -39,7 +39,7 @@ class NetworkStore<T: Persistable>: Store<T> {
     override func save(persistable: T, completionHandler: ObjectCompletionHandler?) -> Request {
         return super.save(persistable) { (obj, error) -> Void in
             if self.cacheEnabled, let obj = obj {
-                self.entityPersistence.saveEntity(self.toJson(obj), forClass: self.clazz)
+                self.cache.saveEntity(self.toJson(obj))
             }
             self.dispatchAsyncTo(completionHandler)?(obj, error)
         }
@@ -48,7 +48,7 @@ class NetworkStore<T: Persistable>: Store<T> {
     override func remove(query: Query, completionHandler: UIntCompletionHandler?) -> Request {
         return super.remove(query) { (count, error) -> Void in
             if self.cacheEnabled && error == nil {
-                self.entityPersistence.removeEntitiesByQuery(KCSQueryAdapter(query: query), forClass: self.clazz)
+                self.cache.removeEntitiesByQuery(KCSQueryAdapter(query: query))
             }
             self.dispatchAsyncTo(completionHandler)?(count, error)
         }

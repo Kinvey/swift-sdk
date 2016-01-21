@@ -19,14 +19,6 @@ public func getNetworkStore<T: Persistable>(type: T.Type, client: Client = share
     return client.getNetworkStore(type)
 }
 
-public func getCachedStore<T: Persistable>(type: T.Type, expiration: CachedStoreExpiration, client: Client = sharedClient) -> Store<T> {
-    return client.getCachedStore(type, expiration: expiration)
-}
-
-public func getCachedStore<T: Persistable>(type: T.Type, expiration: Expiration, client: Client = sharedClient) -> Store<T> {
-    return client.getCachedStore(type, expiration: expiration)
-}
-
 public func getSyncedStore<T: Persistable>(type: T.Type, client: Client = sharedClient) -> Store<T> {
     return client.getSyncedStore(type)
 }

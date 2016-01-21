@@ -6,16 +6,15 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-#import "KCSURLRequestRealm.h"
+#import "KCSPendingOperationRealm.h"
 #import "KinveyPersistable.h"
 
 #define kHeaderRequestId @"X-Kinvey-Request-Id"
 
-@implementation KCSURLRequestRealm
+@implementation KCSPendingOperationRealm
 
 -(instancetype)initWithURLRequest:(NSURLRequest *)urlRequest
                    collectionName:(NSString*)collectionName
-                         objectId:(NSString*)objectId
 {
     self = [super init];
     if (self) {
@@ -25,7 +24,6 @@
         self.requestId = requestId ? requestId : [[NSUUID UUID] UUIDString];
         
         self.collectionName = collectionName;
-        self.objectId = objectId;
         
         self.method = urlRequest.HTTPMethod;
         self.url = urlRequest.URL.absoluteString;
@@ -67,9 +65,8 @@
 -(NSDictionary<NSString *,id> *)toJson
 {
     return @{@"requestId" : self.requestId,
-             @"date" : self.date ? self.date : [NSNull null],
+             @"date" : self.date,
              @"collectionName" : self.collectionName,
-             @"objectId" : self.objectId ? self.objectId : [NSNull null],
              @"method" : self.method,
              @"url" : self.url,
              @"headers" : self.headers,
@@ -81,7 +78,6 @@
     return @{@"requestId" : KCSEntityKeyId,
              @"date" : @"date",
              @"collectionName" : @"collectionName",
-             @"objectId" : @"objectId",
              @"method" : @"method",
              @"url" : @"url",
              @"headers" : @"headers",
