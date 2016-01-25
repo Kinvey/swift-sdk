@@ -7,8 +7,29 @@
 //
 
 import Foundation
-import KinveyKit
 
-protocol Cache: KCSCache {
+@objc(KCSCache)
+protocol Cache {
+    
+    var persistenceId: String { get set }
+    var collectionName: String { get set }
+    
+    init!(persistenceId: String, collectionName: String)
+    
+    func saveEntity(entity: [String : AnyObject])
+    
+    func saveEntities(entities: [[String : AnyObject]])
+    
+    func findEntity(objectId: String) -> [String : AnyObject]
+    
+    func findEntityByQuery(query: Query) -> [[String : AnyObject]]
+    
+    func findAll() -> [[String : AnyObject]]
+    
+    func removeEntity(entity: [String : AnyObject])
+    
+    func removeEntitiesByQuery(query: Query) -> UInt
+    
+    func removeAllEntities()
     
 }

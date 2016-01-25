@@ -54,7 +54,7 @@ public class Client: NSObject, Credential {
     public static let defaultApiHostName = NSURL(string: "https://baas.kinvey.com/")!
     public static let defaultAuthHostName = NSURL(string: "https://auth.kinvey.com/")!
     
-    public var networkTransport: NetworkTransport!
+    public var networkRequestFactory: RequestFactory!
     public var responseParser: ResponseParser!
     
     public var userType = User.self
@@ -65,7 +65,7 @@ public class Client: NSObject, Credential {
         
         super.init()
         
-        networkTransport = HttpNetworkTransport(client: self)
+        networkRequestFactory = HttpRequestFactory(client: self)
         responseParser = JsonResponseParser(client: self)
     }
     
@@ -102,11 +102,11 @@ public class Client: NSObject, Credential {
     }
     
     public func getNetworkStore<T: Persistable>(type: T.Type) -> Store<T> {
-        return NetworkStore<T>(client: self)
+        return Store<T>(client: self, readPolicy: .ForceNetwork)
     }
     
     public func getSyncedStore<T: Persistable>(type: T.Type) -> Store<T> {
-        return SyncedStore<T>(client: self)
+        return Store<T>(client: self, readPolicy: .ForceLocal)
     }
     
     public var authorizationHeader: String? {

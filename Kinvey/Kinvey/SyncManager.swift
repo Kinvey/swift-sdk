@@ -9,10 +9,20 @@
 import Foundation
 import KinveyKit
 
-class SyncManager: KCSSyncManager {
+class SyncManager {
     
-    internal func sync(collectionName: String) -> Sync {
-        return super.sync(collectionName) as! Sync
+    private let persistenceId: String
+    
+    class func getInstance(persistenceId: String) -> SyncManager {
+        return SyncManager(persistenceId: persistenceId)
+    }
+    
+    init(persistenceId: String) {
+        self.persistenceId = persistenceId
+    }
+    
+    func sync(collectionName: String) -> Sync {
+        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName) as! Sync
     }
     
 }
