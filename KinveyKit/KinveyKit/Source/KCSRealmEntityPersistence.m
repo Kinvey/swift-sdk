@@ -190,7 +190,7 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
         unsigned int classesCount;
         Class* classes = objc_copyClassList(&classesCount);
         Class class = nil;
-        NSSet<NSString*>* ignoreClasses = [NSSet setWithArray:@[@"NSObject", @"KCSFile", @"KCSUser", @"KCSMetadata"]];
+        NSSet<NSString*>* ignoreClasses = [NSSet setWithArray:@[@"NSObject", @"KCSFile", @"KCSUser", @"KCSUser2", @"KCSMetadata"]];
         NSString* className = nil;
         for (unsigned int i = 0; i < classesCount; i++) {
             class = classes[i];
@@ -648,9 +648,17 @@ static inline void saveEntity(NSMutableDictionary<NSString *,id> *entity, RLMRea
 
 -(void)removeAllEntities
 {
+    Class realmClass = [[self class] realmClassForClass:self.clazz];
     RLMRealm* realm = self.realm;
     [realm transactionWithBlock:^{
-        [realm deleteAllObjects];
+        if (realmClass) {
+            RLMResults* results = [realmClass allObjectsInRealm:realm];
+            if (results) {
+                [realm deleteObjects:results];
+            }
+        } else {
+            [realm deleteAllObjects];
+        }
     }];
 }
 
@@ -682,7 +690,10 @@ static inline void saveEntity(NSMutableDictionary<NSString *,id> *entity, RLMRea
 -(void)savePendingOperation:(id<KCSPendingOperation>)pendingOperation
 {
     NSDictionary<NSString *,id> *entity = [[self pendingOperation:pendingOperation] toJson];
-    [self saveEntity:entity];
+    RLMRealm* realm = self.realm;
+    [realm transactionWithBlock:^{
+        saveEntity(entity.mutableCopy, realm, [KCSPendingOperationRealm class]);
+    }];
 }
 
 -(NSArray<id<KCSPendingOperation>> *)pendingOperations

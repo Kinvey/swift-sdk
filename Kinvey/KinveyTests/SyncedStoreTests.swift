@@ -20,59 +20,51 @@ class SyncedStoreTests: NetworkStoreTests {
     func testPurge() {
         save()
         
-        if let store = store as? SyncedStore {
-            store.purge()
-        }
+        store.purge()
     }
     
     func testSync() {
         save()
         
-        XCTAssertNotNil(store as? SyncedStore)
-        if let store = store as? SyncedStore {
-            weak var expectationPush = expectationWithDescription("Push")
+        weak var expectationPush = expectationWithDescription("Push")
+        
+        store.sync() { count, results, error in
+            self.assertThread()
+            XCTAssertNotNil(count)
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
             
-            store.sync() { count, results, error in
-                self.assertThread()
-                XCTAssertNotNil(count)
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let count = count {
-                    XCTAssertGreaterThanOrEqual(Int(count), 1)
-                }
-                
-                expectationPush?.fulfill()
+            if let count = count {
+                XCTAssertGreaterThanOrEqual(Int(count), 1)
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
-                expectationPush = nil
-            }
+            expectationPush?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationPush = nil
         }
     }
     
     func testPush() {
         save()
         
-        XCTAssertNotNil(store as? SyncedStore)
-        if let store = store as? SyncedStore {
-            weak var expectationPush = expectationWithDescription("Push")
+        weak var expectationPush = expectationWithDescription("Push")
+        
+        store.push() { count, error in
+            self.assertThread()
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
             
-            store.push() { count, error in
-                self.assertThread()
-                XCTAssertNotNil(count)
-                XCTAssertNil(error)
-                
-                if let count = count {
-                    XCTAssertGreaterThanOrEqual(Int(count), 1)
-                }
-                
-                expectationPush?.fulfill()
+            if let count = count {
+                XCTAssertGreaterThanOrEqual(Int(count), 1)
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
-                expectationPush = nil
-            }
+            expectationPush?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationPush = nil
         }
     }
     

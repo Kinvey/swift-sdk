@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import KinveyKit
 
-protocol PendingOperation: KCSPendingOperation {
+@objc(KCSPendingOperation)
+protocol PendingOperation {
     
 }
