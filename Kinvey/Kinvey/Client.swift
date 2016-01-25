@@ -56,6 +56,8 @@ public class Client: NSObject, Credential {
     
     public var networkRequestFactory: RequestFactory!
     public var responseParser: ResponseParser!
+    public private(set) var cacheManager: CacheManager!
+    public private(set) var syncManager: SyncManager!
     
     public var userType = User.self
     
@@ -75,6 +77,8 @@ public class Client: NSObject, Credential {
     
     public convenience init(appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) {
         self.init()
+        cacheManager = CacheManager(persistenceId: appKey)
+        syncManager = SyncManager (persistenceId: appKey)
         initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
     }
     
@@ -100,15 +104,7 @@ public class Client: NSObject, Credential {
         }
         return self
     }
-    
-    public func getNetworkStore<T: Persistable>(type: T.Type) -> Store<T> {
-        return Store<T>(client: self, readPolicy: .ForceNetwork)
-    }
-    
-    public func getSyncedStore<T: Persistable>(type: T.Type) -> Store<T> {
-        return Store<T>(client: self, readPolicy: .ForceLocal)
-    }
-    
+        
     public var authorizationHeader: String? {
         get {
             var authorization: String? = nil
