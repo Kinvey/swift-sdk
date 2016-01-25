@@ -31,18 +31,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.User(client: client), client: client)
-        
-        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        var bodyObject: [String : String] = [:]
-        if let username = username {
-            bodyObject["username"] = username
-        }
-        if let password = password {
-            bodyObject["password"] = password
-        }
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password)
         request.execute() { (data, response, error) in
             if let response = response where response.isResponseOK {
                 client.activeUser = client.responseParser.parse(data, type: client.userType)
@@ -63,16 +52,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _destroy(userId userId: String, hard: Bool, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
-        let request = HttpRequest(httpMethod: .Delete, endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
-        
-        //FIXME: make it configurable 
-        request.request.addValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
-        
-        var bodyObject: [String : Bool] = [:]
-        if hard {
-            bodyObject["hard"] = true
-        }
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        let request = client.networkRequestFactory.buildUserDelete(userId: userId, hard: hard)
         request.execute() { (data, response, error) in
             if let response = response where response.isResponseOK {
                 client.activeUser = nil
@@ -87,14 +67,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserLogin(client: client), client: client)
-        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let bodyObject = [
-            "username" : username,
-            "password" : password
-        ]
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        let request = client.networkRequestFactory.buildUserLogin(username: username, password: password)
         request.execute() { (data, response, error) in
             if let response = response where response.isResponseOK {
                 client.activeUser = client.responseParser.parse(data, type: client.userType)
@@ -115,13 +88,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) -> Request {
-        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserExistsByUsername(client: client), client: client)
-        request.request.HTTPMethod = "POST"
-        
-        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let bodyObject = ["username" : username]
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        let request = client.networkRequestFactory.buildUserExists(username: username)
         request.execute() { (data, response, error) in
             var usernameExists = false
             if let response = response where response.isResponseOK {
@@ -139,7 +106,7 @@ public class User: NSObject, Credential {
     }
     
     internal class func _get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        let request = HttpRequest(endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
+        let request = client.networkRequestFactory.buildUserGet(userId: userId)
         request.execute() { (data, response, error) in
             var user: User?
             if let response = response where response.isResponseOK {
@@ -210,11 +177,7 @@ public class User: NSObject, Credential {
     }
     
     internal func _save(client client: Client, completionHandler: UserHandler? = nil) -> Request {
-        let request = HttpRequest(httpMethod: .Put, endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
-        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let bodyObject = toJson()
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        let request = client.networkRequestFactory.buildUserSave(user: self)
         request.execute() { (data, response, error) in
             if let response = response where response.isResponseOK {
                 client.activeUser = client.responseParser.parse(data, type: client.userType)
