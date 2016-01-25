@@ -70,7 +70,7 @@
              @"method" : self.method,
              @"url" : self.url,
              @"headers" : self.headers,
-             @"body" : self.body};
+             @"body" : self.body ? self.body : [NSNull null]};
 }
 
 +(NSDictionary<NSString *, NSString *> *)kinveyPropertyMapping
