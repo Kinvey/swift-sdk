@@ -15,10 +15,10 @@ internal let PersistableMetadataLastRetrievedTime = "lrt"
 
 public let sharedClient = Client()
 
-public func getNetworkStore<T: Persistable>(type: T.Type, client: Client = sharedClient) -> Store<T> {
-    return client.getNetworkStore(type)
-}
-
-public func getSyncedStore<T: Persistable>(type: T.Type, client: Client = sharedClient) -> Store<T> {
-    return client.getSyncedStore(type)
-}
+//public func getNetworkStore<T: Persistable>(type: T.Type, client: Client = sharedClient) -> Store<T> {
+//    return client.getNetworkStore(type)
+//}
+//
+//public func getSyncedStore<T: Persistable>(type: T.Type, client: Client = sharedClient) -> Store<T> {
+//    return client.getSyncedStore(type)
+//}
