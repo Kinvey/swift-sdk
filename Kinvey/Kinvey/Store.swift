@@ -48,8 +48,8 @@ public class Store<T: Persistable> {
         self.client = client
         self.collectionName = T.kinveyCollectionName()
         self.readPolicy = readPolicy
-        self.cache = CacheManager.getInstance(client.appKey!).cache(T.kinveyCollectionName())
-        self.sync = SyncManager.getInstance(client.appKey!).sync(T.kinveyCollectionName())
+        self.cache = client.cacheManager.cache(T.kinveyCollectionName())
+        self.sync = client.syncManager.sync(T.kinveyCollectionName())
     }
     
     public func get(id: String, completionHandler: ObjectCompletionHandler?) -> Request {

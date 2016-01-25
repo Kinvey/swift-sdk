@@ -9,13 +9,9 @@
 import Foundation
 import KinveyKit
 
-class CacheManager {
+public class CacheManager {
     
     private let persistenceId: String
-    
-    class func getInstance(persistenceId: String) -> CacheManager {
-        return CacheManager(persistenceId: persistenceId)
-    }
     
     init(persistenceId: String) {
         self.persistenceId = persistenceId

@@ -9,13 +9,9 @@
 import Foundation
 import KinveyKit
 
-class SyncManager {
+public class SyncManager {
     
     private let persistenceId: String
-    
-    class func getInstance(persistenceId: String) -> SyncManager {
-        return SyncManager(persistenceId: persistenceId)
-    }
     
     init(persistenceId: String) {
         self.persistenceId = persistenceId
