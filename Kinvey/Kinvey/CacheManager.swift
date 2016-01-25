@@ -9,10 +9,20 @@
 import Foundation
 import KinveyKit
 
-class CacheManager: KCSCacheManager {
+class CacheManager {
     
-    internal func cache(collectionName: String) -> Cache {
-        return super.cache(collectionName) as! Cache
+    private let persistenceId: String
+    
+    class func getInstance(persistenceId: String) -> CacheManager {
+        return CacheManager(persistenceId: persistenceId)
+    }
+    
+    init(persistenceId: String) {
+        self.persistenceId = persistenceId
+    }
+    
+    func cache(collectionName: String) -> Cache {
+        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName) as! Cache
     }
     
 }
