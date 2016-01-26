@@ -6,7 +6,7 @@
 //  Copyright © 2015 Kinvey. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCSEntityPersistence.h"
 #import "KCSCache.h"
 #import "KCSSync.h"

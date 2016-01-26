@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KinveyPing_h
 #define KinveyKit_KinveyPing_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KinveyHeaderInfo.h"
 
 /*! Result returned from the Ping operation.

@@ -8,7 +8,7 @@
 
 #import "KCSObjcRuntime.h"
 
-#import <objc/runtime.h>
+@import ObjectiveC;
 
 @implementation KCSObjcRuntime
 

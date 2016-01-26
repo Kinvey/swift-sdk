@@ -6,8 +6,8 @@
 //  Copyright © 2015 Kinvey. All rights reserved.
 //
 
-#import <Realm/Realm.h>
-#import <MapKit/MapKit.h>
+@import Realm;
+@import MapKit;
 
 @interface KCS_CLLocation_Realm : RLMObject
 

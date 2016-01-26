@@ -6,8 +6,8 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <Realm/Realm.h>
+@import Foundation;
+@import Realm;
 #import "KCSPendingOperation.h"
 
 @interface KCSPendingOperationRealm : RLMObject <KCSPendingOperation>

@@ -19,8 +19,8 @@
 #ifndef KinveyKit_KCSPush_h
 #define KinveyKit_KCSPush_h
 
-#import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
+@import UIKit;
+@import Foundation;
 
 #import "KinveyHeaderInfo.h"
 #import "KCSBlockDefs.h"

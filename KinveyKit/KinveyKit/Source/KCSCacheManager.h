@@ -6,7 +6,7 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCSCache.h"
 
 @interface KCSCacheManager : NSObject

@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSMetadata_h
 #define KinveyKit_KCSMetadata_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 #import "KinveyHeaderInfo.h"
 

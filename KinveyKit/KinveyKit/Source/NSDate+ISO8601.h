@@ -16,7 +16,7 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @interface NSDate (ISO8601)
 

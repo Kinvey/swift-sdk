@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KinveyUser_h
 #define KinveyKit_KinveyUser_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KinveyPersistable.h"
 #import "KinveyEntity.h"
 #import "KinveyHeaderInfo.h"
