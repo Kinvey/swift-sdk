@@ -16,7 +16,8 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+
 @protocol KCSDataTypeBuilder <NSObject>
 + (id) JSONCompatabileValueForObject:(id)object;
 + (id) objectForJSONObject:(id)object;

@@ -19,7 +19,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @class KCSQuery2;
 @class KCSDataModel;

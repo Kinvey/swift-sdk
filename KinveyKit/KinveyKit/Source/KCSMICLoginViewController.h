@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 #import "KinveyUser.h"
 
 @interface KCSMICLoginViewController : UIViewController

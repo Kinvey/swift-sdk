@@ -25,7 +25,7 @@
 #import "KCSFileStore.h"
 
 #if TARGET_OS_IPHONE
-#import <MobileCoreServices/MobileCoreServices.h>
+@import MobileCoreServices;
 #endif
 
 #import "NSMutableDictionary+KinveyAdditions.h"

@@ -31,7 +31,7 @@
 #import "KCS_NSString_NSDate_NSValueTransformer.h"
 
 #import "KCSObjcRuntime.h"
-#import <objc/runtime.h>
+@import ObjectiveC;
 
 #import "KinveyCoreInternal.h"
 

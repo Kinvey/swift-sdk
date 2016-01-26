@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSGroup_h
 #define KinveyKit_KCSGroup_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 /**
  A KCSGroup is the object that wraps the response of a KCSStore's groupBy: call. 

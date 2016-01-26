@@ -8,7 +8,7 @@
 
 #import "NSValueTransformer+Kinvey.h"
 
-#import <objc/runtime.h>
+@import ObjectiveC;
 
 @implementation NSValueTransformer (Kinvey)
 
