@@ -11,7 +11,7 @@ import KinveyKit
 
 extension ReadPolicy {
     
-    private func execute<T: Persistable>(store: Store<T>) -> AppDataExecutorStrategy<T> {
+    private func executor<T: Persistable>(store: Store<T>) -> AppDataExecutorStrategy<T> {
         switch self {
         case .ForceLocal:
             return LocalAppDataExecutorStrategy<T>(client: store.client, cache: store.cache, sync: store.sync)
@@ -54,11 +54,11 @@ public class Store<T: Persistable> {
     
     public func get(id: String, completionHandler: ObjectCompletionHandler?) -> Request {
         assert(id != "")
-        return readPolicy.execute(self).get(id, completionHandler: completionHandler)
+        return readPolicy.executor(self).get(id, completionHandler: completionHandler)
     }
     
     public func find(query: Query = Query(), completionHandler: ArrayCompletionHandler?) -> Request {
-        return readPolicy.execute(self).find(query, completionHandler: completionHandler)
+        return readPolicy.executor(self).find(query, completionHandler: completionHandler)
     }
     
     public func findAll(completionHandler: ArrayCompletionHandler?) -> Request {
@@ -66,7 +66,7 @@ public class Store<T: Persistable> {
     }
     
     public func save(persistable: T, completionHandler: ObjectCompletionHandler?) -> Request {
-        return readPolicy.execute(self).save(persistable, completionHandler: completionHandler)
+        return readPolicy.executor(self).save(persistable, completionHandler: completionHandler)
     }
     
     public func remove(persistable: T, completionHandler: UIntCompletionHandler?) throws -> Request {
@@ -97,7 +97,7 @@ public class Store<T: Persistable> {
     }
     
     public func remove(query: Query = Query(), completionHandler: UIntCompletionHandler?) -> Request {
-        return readPolicy.execute(self).remove(query, completionHandler: completionHandler)
+        return readPolicy.executor(self).remove(query, completionHandler: completionHandler)
     }
     
     public func removeAll(completionHandler: UIntCompletionHandler?) -> Request {
@@ -111,7 +111,7 @@ public class Store<T: Persistable> {
     }
     
     public func purge() throws {
-        try readPolicy.execute(self).purge()
+        try readPolicy.executor(self).purge()
     }
 
 }
