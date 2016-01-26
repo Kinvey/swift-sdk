@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KCSUser2+KinveyUserService.h"
-#import <Kinvey/Kinvey-Swift.h>
+#import <Kinvey-Swift.h>
 
 extern NSString* const kKCSMICRefreshTokenKey;
 extern NSString* const kKCSMICRedirectURIKey;
