@@ -20,7 +20,7 @@ class SyncedStoreTests: NetworkStoreTests {
     func testPurge() {
         save()
         
-        store.purge()
+        try! store.purge()
     }
     
     func testSync() {
@@ -28,7 +28,7 @@ class SyncedStoreTests: NetworkStoreTests {
         
         weak var expectationPush = expectationWithDescription("Push")
         
-        store.sync() { count, results, error in
+        try! store.sync() { count, results, error in
             self.assertThread()
             XCTAssertNotNil(count)
             XCTAssertNotNil(results)
@@ -51,7 +51,7 @@ class SyncedStoreTests: NetworkStoreTests {
         
         weak var expectationPush = expectationWithDescription("Push")
         
-        store.push() { count, error in
+        try! store.push() { count, error in
             self.assertThread()
             XCTAssertNotNil(count)
             XCTAssertNil(error)

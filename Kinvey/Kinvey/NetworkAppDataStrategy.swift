@@ -8,7 +8,7 @@
 
 import Foundation
 
-class NetworkAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStrategy<T> {
+class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
     
     let collectionName: String
     let client: Client
@@ -18,7 +18,6 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStra
         self.client = client
         self.collectionName = T.kinveyCollectionName()
         self.cache = cache
-        super.init(nil)
     }
     
     override func get(id: String, completionHandler: Store<T>.ObjectCompletionHandler?) -> Request {
@@ -31,7 +30,7 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStra
             if let cache = self.cache, let obj = obj where error == nil {
 //                cache.saveEntity(self.toJson(obj))
             }
-            self.dispatchAsyncTo(type: T.self, completionHandler)?(obj, error)
+            self.dispatchAsyncTo(completionHandler)?(obj, error)
         }
         return request
     }
@@ -46,7 +45,7 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStra
             if let cache = self.cache, let array = array where error == nil {
 //                self.cache.saveEntities(self.toJson(array))
             }
-            self.dispatchAsyncTo(type: T.self, completionHandler)?(array, error)
+            self.dispatchAsyncTo(completionHandler)?(array, error)
         }
         return request
     }
@@ -64,7 +63,7 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStra
                     }
                 }
             }
-            self.dispatchAsyncTo(type: T.self, completionHandler)?(persistable, error)
+            self.dispatchAsyncTo(completionHandler)?(persistable, error)
         }
         return request
     }
@@ -82,9 +81,17 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStra
             if let cache = self.cache where error == nil {
 //                self.cache.removeEntitiesByQuery(KCSQueryAdapter(query: query))
             }
-            self.dispatchAsyncTo(type: T.self, completionHandler)?(count, error)
+            self.dispatchAsyncTo(completionHandler)?(count, error)
         }
         return request
+    }
+    
+    override func push(completionHandler: Store<T>.UIntCompletionHandler?) throws {
+        fatalError("Operation not permitted")
+    }
+    
+    override func purge() throws {
+        fatalError("Operation not permitted")
     }
     
 }

@@ -9,7 +9,7 @@
 import Foundation
 import KinveyKit
 
-class LocalAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStrategy<T> {
+class LocalAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
     
     private let client: Client
     private let cache: Cache
@@ -21,14 +21,13 @@ class LocalAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStrate
         self.cache = cache
         self.sync = sync
         self.collectionName = T.kinveyCollectionName()
-        super.init(nil)
     }
     
     override func get(id: String, completionHandler: Store<T>.ObjectCompletionHandler?) -> Request {
         let json = cache.findEntity(id)
         let request = LocalRequest()
         request.execute() { data, response, error in
-            self.dispatchAsyncTo(type: T.self, completionHandler)?(self.fromJson(json), error)
+            self.dispatchAsyncTo(completionHandler)?(self.fromJson(json), error)
         }
         return request
     }
@@ -37,7 +36,7 @@ class LocalAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStrate
         let json = cache.findEntityByQuery(query)
         let request = LocalRequest()
         request.execute() { data, response, error in
-            self.dispatchAsyncTo(type: T.self, completionHandler)?(self.fromJson(json), error)
+            self.dispatchAsyncTo(completionHandler)?(self.fromJson(json), error)
         }
         return request
     }
@@ -54,7 +53,7 @@ class LocalAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStrate
             self.sync.savePendingOperation(self.sync.createPendingOperation(request!.request))
         }
         request.execute { (data, response, error) -> Void in
-            self.dispatchAsyncTo(type: T.self, completionHandler)?(persistable, error)
+            self.dispatchAsyncTo(completionHandler)?(persistable, error)
         }
         return request
     }
@@ -66,7 +65,7 @@ class LocalAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStrate
             self.sync.savePendingOperation(self.sync.createPendingOperation(request!.request))
         }
         request.execute() { data, response, error in
-            self.dispatchAsyncTo(type: T.self, completionHandler)?(count, error)
+            self.dispatchAsyncTo(completionHandler)?(count, error)
         }
         return request
     }
@@ -89,6 +88,34 @@ class LocalAppDataExecutorStrategy<T: Persistable>: GenericAppDataExecutorStrate
             }
         }
         return json
+    }
+    
+    override func push(completionHandler: Store<T>.UIntCompletionHandler?) throws {
+        let pendingOperations = self.sync.pendingOperations()
+        
+        var count = 0
+        var successCount = UInt(0)
+        let queue = NSOperationQueue()
+        queue.maxConcurrentOperationCount = 1
+        
+        for pendingOperation in pendingOperations {
+            let request = HttpRequest(request: pendingOperation.buildRequest(), client: client)
+            request.execute() { data, response, error in
+                if let response = response where response.isResponseOK {
+                    self.sync.removePendingOperation(pendingOperation)
+                    successCount++
+                }
+                queue.addOperationWithBlock() {
+                    if ++count == pendingOperations.count {
+                        self.dispatchAsyncTo(completionHandler)?(successCount, nil)
+                    }
+                }
+            }
+        }
+    }
+    
+    override func purge() throws {
+        sync.removeAllPendingOperations()
     }
     
 }
