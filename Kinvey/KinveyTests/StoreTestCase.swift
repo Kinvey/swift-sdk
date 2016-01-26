@@ -50,7 +50,7 @@ class StoreTestCase: KinveyTestCase {
     }
     
     func assertThread() {
-        XCTAssertFalse(NSThread.isMainThread())
+        XCTAssertTrue(NSThread.isMainThread())
     }
     
     func save() -> Person {

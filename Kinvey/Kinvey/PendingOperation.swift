@@ -11,4 +11,6 @@ import Foundation
 @objc(KCSPendingOperation)
 protocol PendingOperation {
     
+    func buildRequest() -> NSURLRequest
+    
 }
