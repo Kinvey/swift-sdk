@@ -7,7 +7,7 @@
 //
 
 #import "KCSCLient.h"
-#import <Kinvey/Kinvey-Swift.h>
+#import <Kinvey-Swift.h>
 
 @interface KCSClient ()
 
