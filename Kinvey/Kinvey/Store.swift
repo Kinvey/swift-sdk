@@ -11,7 +11,7 @@ import KinveyKit
 
 extension ReadPolicy {
     
-    private func execute<T: Persistable>(store: Store<T>) -> GenericAppDataExecutorStrategy<T> {
+    private func execute<T: Persistable>(store: Store<T>) -> AppDataExecutorStrategy<T> {
         switch self {
         case .ForceLocal:
             return LocalAppDataExecutorStrategy<T>(client: store.client, cache: store.cache, sync: store.sync)
@@ -104,13 +104,14 @@ public class Store<T: Persistable> {
         return remove(completionHandler: completionHandler)
     }
     
-    public func push(completionHandler: UIntCompletionHandler? = nil) {
+    public func push(completionHandler: UIntCompletionHandler? = nil) throws {
     }
     
-    public func sync(query: Query = Query(), completionHandler: UIntArrayCompletionHandler? = nil) {
+    public func sync(query: Query = Query(), completionHandler: UIntArrayCompletionHandler? = nil) throws {
     }
     
-    public func purge() {
+    public func purge() throws {
+        try readPolicy.execute(self).purge()
     }
 
 }
