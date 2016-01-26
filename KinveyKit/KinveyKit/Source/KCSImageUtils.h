@@ -16,10 +16,10 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 #if TARGET_OS_IPHONE
-#import <UIKit/UIKit.h>
+@import UIKit;
 #define ImageClass UIImage
 #else
 #define ImageClass NSImage

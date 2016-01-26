@@ -17,7 +17,7 @@
 //
 
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCS_DDLog.h"
 
 @interface KCSLogFormatter : NSObject <KCS_DDLogFormatter>

@@ -6,6 +6,6 @@
 //  Copyright © 2015 Kinvey. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 typedef void(^KCSDeltaResponseBlock)(NSMutableDictionary* dict, NSError * errorOrNil);

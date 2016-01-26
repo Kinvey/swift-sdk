@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSClient_h
 #define KinveyKit_KCSClient_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KinveyHeaderInfo.h"
 #import "KCSRequestConfiguration.h"
 

@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSQuery_h
 #define KinveyKit_KCSQuery_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KinveyHeaderInfo.h"
 
 typedef NS_ENUM(NSInteger, KCSQueryConditional)

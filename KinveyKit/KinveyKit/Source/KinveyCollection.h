@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KinveyCollection_h
 #define KinveyKit_KinveyCollection_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KinveyPersistable.h"
 #import "KCSBlockDefs.h"
 #import "KinveyHeaderInfo.h"

@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSClient2_h
 #define KinveyKit_KCSClient2_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @class KCSClientConfiguration;
 

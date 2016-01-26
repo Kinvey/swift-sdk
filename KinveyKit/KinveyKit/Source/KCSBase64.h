@@ -16,6 +16,6 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 NSString *KCSbasicAuthString(NSString *username, NSString *password);

@@ -21,7 +21,7 @@
 #import "KCSPlatformUtils.h"
 
 #if TARGET_OS_IPHONE
-#import <UIKit/UIKit.h>
+@import UIKit;
 #endif
 
 // For hardware platform information
