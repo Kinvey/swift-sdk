@@ -5,9 +5,12 @@
       location = "group:Kinvey/Kinvey.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:SampleApplications/MICSampleApp/MICSampleApp.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Pods/Pods.xcodeproj">
+      location = "group:SampleApplications/iPhoneCoreDataRecipes/Recipes.xcodeproj">
    </FileRef>
 </Workspace>
