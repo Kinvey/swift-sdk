@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3DB80D0AE3F2A07B65B0A6D9 /* Pods_Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45E4FF6B1555E0462E77506 /* Pods_Kinvey.framework */; };
 		5706FEBF1C1F92350037E7D0 /* NSMutableDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B51C19F7150077F8A6 /* NSMutableDictionary+KinveyAdditions.m */; };
 		5706FEC01C1F92990037E7D0 /* KCS_FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B51F1C19F7150077F8A6 /* KCS_FMDatabaseAdditions.m */; };
 		5706FEC11C1F93210037E7D0 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5541C19F7150077F8A6 /* KinveyEntity.m */; };
@@ -23,8 +24,6 @@
 		576E95AD1C20DB7C00258CC3 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
 		576E95AF1C20DC0400258CC3 /* CachedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AE1C20DC0400258CC3 /* CachedStoreTests.swift */; };
 		576E95B61C210F5100258CC3 /* KCSObjcRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95B51C210F3C00258CC3 /* KCSObjcRuntime.m */; };
-		576E95BA1C2218C500258CC3 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 576E95B91C2218C500258CC3 /* libstdc++.tbd */; };
-		576E95C71C22295B00258CC3 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 576E95C61C22295B00258CC3 /* Realm.framework */; };
 		576E95CB1C2229F700258CC3 /* KCSRealmEntityPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95C91C2229F700258CC3 /* KCSRealmEntityPersistence.m */; };
 		576E95CF1C222B8300258CC3 /* KCS_CLLocation_Realm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95CE1C222B8100258CC3 /* KCS_CLLocation_Realm.m */; };
 		576E95D21C222BD000258CC3 /* KCSUserRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95D11C222BCD00258CC3 /* KCSUserRealm.m */; };
@@ -172,6 +171,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		01502F9C4CE7FC49AB2C110D /* Pods-Kinvey.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kinvey.debug.xcconfig"; path = "../Pods/Target Support Files/Pods-Kinvey/Pods-Kinvey.debug.xcconfig"; sourceTree = "<group>"; };
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		5709608F1C1B96DA00D4AFA5 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		570B1E081C2393E00056941F /* KCSQueryAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryAdapter.h; sourceTree = "<group>"; };
@@ -189,8 +189,6 @@
 		576E95B01C20EC6400258CC3 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = "Dependencies/modules/NSPredicate-MongoDB-Adaptor/module.modulemap"; sourceTree = SOURCE_ROOT; };
 		576E95B41C210F3C00258CC3 /* KCSObjcRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSObjcRuntime.h; sourceTree = "<group>"; };
 		576E95B51C210F3C00258CC3 /* KCSObjcRuntime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCSObjcRuntime.m; sourceTree = "<group>"; };
-		576E95B91C2218C500258CC3 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
-		576E95C61C22295B00258CC3 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = "Dependencies/Realm/build/Debug-iphoneos-dynamic/Realm.framework"; sourceTree = "<group>"; };
 		576E95C81C2229F700258CC3 /* KCSRealmEntityPersistence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRealmEntityPersistence.h; sourceTree = "<group>"; };
 		576E95C91C2229F700258CC3 /* KCSRealmEntityPersistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRealmEntityPersistence.m; sourceTree = "<group>"; };
 		576E95CD1C222B8100258CC3 /* KCS_CLLocation_Realm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_CLLocation_Realm.h; sourceTree = "<group>"; };
@@ -512,6 +510,8 @@
 		57E7C7B21C51545900848748 /* ReadPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReadPolicy.swift; path = Kinvey/ReadPolicy.swift; sourceTree = SOURCE_ROOT; };
 		57E7C7B41C51981400848748 /* RequestType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestType.swift; sourceTree = "<group>"; };
 		57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
+		BCE50A788E88118CFDD2346D /* Pods-Kinvey.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kinvey.release.xcconfig"; path = "../Pods/Target Support Files/Pods-Kinvey/Pods-Kinvey.release.xcconfig"; sourceTree = "<group>"; };
+		E45E4FF6B1555E0462E77506 /* Pods_Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -519,9 +519,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				576E95C71C22295B00258CC3 /* Realm.framework in Frameworks */,
-				576E95BA1C2218C500258CC3 /* libstdc++.tbd in Frameworks */,
 				5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */,
+				3DB80D0AE3F2A07B65B0A6D9 /* Pods_Kinvey.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1164,12 +1163,12 @@
 		57A27C771C178F17000DF951 = {
 			isa = PBXGroup;
 			children = (
-				576E95C61C22295B00258CC3 /* Realm.framework */,
-				576E95B91C2218C500258CC3 /* libstdc++.tbd */,
 				5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */,
 				57A27C831C178F17000DF951 /* Kinvey */,
 				57A27C8F1C178F18000DF951 /* KinveyTests */,
 				57A27C821C178F17000DF951 /* Products */,
+				61E2DD2F0706218F3CFE58DE /* Pods */,
+				DBD4AA6B25714F7AAA213880 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1246,6 +1245,23 @@
 			path = KinveyTests;
 			sourceTree = "<group>";
 		};
+		61E2DD2F0706218F3CFE58DE /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				01502F9C4CE7FC49AB2C110D /* Pods-Kinvey.debug.xcconfig */,
+				BCE50A788E88118CFDD2346D /* Pods-Kinvey.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		DBD4AA6B25714F7AAA213880 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E45E4FF6B1555E0462E77506 /* Pods_Kinvey.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1287,10 +1303,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57A27C951C178F18000DF951 /* Build configuration list for PBXNativeTarget "Kinvey" */;
 			buildPhases = (
+				AA59CFFDC841BBA42AD97A39 /* Check Pods Manifest.lock */,
 				57A27C7C1C178F17000DF951 /* Sources */,
 				57A27C7D1C178F17000DF951 /* Frameworks */,
 				57A27C7E1C178F17000DF951 /* Headers */,
 				57A27C7F1C178F17000DF951 /* Resources */,
+				C070B5F48FAF3997AF66CB58 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1376,6 +1394,39 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AA59CFFDC841BBA42AD97A39 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C070B5F48FAF3997AF66CB58 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/../Pods/Target Support Files/Pods-Kinvey/Pods-Kinvey-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		57A27C7C1C178F17000DF951 /* Sources */ = {
@@ -1656,6 +1707,7 @@
 		};
 		57A27C961C178F18000DF951 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 01502F9C4CE7FC49AB2C110D /* Pods-Kinvey.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
@@ -1666,7 +1718,6 @@
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1677,6 +1728,7 @@
 		};
 		57A27C971C178F18000DF951 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BCE50A788E88118CFDD2346D /* Pods-Kinvey.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
@@ -1687,7 +1739,6 @@
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
