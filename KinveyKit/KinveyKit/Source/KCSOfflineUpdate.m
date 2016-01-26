@@ -19,7 +19,7 @@
 
 
 #import "KCSOfflineUpdate.h"
-#import <UIKit/UIKit.h>
+@import UIKit;
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 #import "KCSReachability.h"

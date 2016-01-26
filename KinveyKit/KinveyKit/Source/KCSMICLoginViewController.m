@@ -7,7 +7,7 @@
 //
 
 #import "KCSMICLoginViewController.h"
-#import <WebKit/WebKit.h>
+@import WebKit;
 #import "KinveyUser+Private.h"
 
 @interface KCSMICLoginViewController () <UIWebViewDelegate, WKNavigationDelegate>

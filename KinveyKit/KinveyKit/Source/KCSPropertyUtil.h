@@ -17,7 +17,7 @@
 // contents is a violation of applicable laws.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCSPropertyUtil.h"
 
 @interface KCSPropertyUtil : NSObject

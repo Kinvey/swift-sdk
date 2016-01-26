@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSCachedStore_h
 #define KinveyKit_KCSCachedStore_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCSStore.h"
 #import "KCSAppdataStore.h"
 

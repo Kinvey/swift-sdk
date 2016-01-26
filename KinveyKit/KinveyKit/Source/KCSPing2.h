@@ -17,7 +17,7 @@
 //
 
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCSRequest.h"
 
 KCS_CONSTANT KCS_PING_KINVEY_VERSION;

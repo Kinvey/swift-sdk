@@ -6,7 +6,7 @@
 //  Copyright © 2015 Kinvey. All rights reserved.
 //
 
-#import <Realm/Realm.h>
+@import Realm;
 
 @interface KCSMetadataRealm : RLMObject
 

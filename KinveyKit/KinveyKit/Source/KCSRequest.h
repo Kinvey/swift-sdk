@@ -9,7 +9,7 @@
 #ifndef KinveyKit_KCSRequest_h
 #define KinveyKit_KCSRequest_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 typedef void(^KCSRequestCancelationBlock)();
 

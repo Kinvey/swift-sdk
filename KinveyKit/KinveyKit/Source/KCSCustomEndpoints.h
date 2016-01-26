@@ -20,7 +20,7 @@
 #ifndef KinveyKit_KCSCustomEndpoints_h
 #define KinveyKit_KCSCustomEndpoints_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "KCSBlockDefs.h"
 #import "KCSRequest.h"
 

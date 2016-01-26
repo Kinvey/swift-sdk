@@ -6,7 +6,7 @@
 //  Copyright © 2015 Kinvey. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 //! Project version number for Kinvey.
 FOUNDATION_EXPORT double KinveyVersionNumber;

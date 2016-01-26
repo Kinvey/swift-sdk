@@ -19,7 +19,7 @@
 #ifndef KinveyKit_KCSFileStore_h
 #define KinveyKit_KCSFileStore_h
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 #import "KinveyCollection.h"
 #import "KCSBlockDefs.h"

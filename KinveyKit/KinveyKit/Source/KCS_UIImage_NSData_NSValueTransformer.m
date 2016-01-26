@@ -7,7 +7,7 @@
 //
 
 #import "KCS_UIImage_NSData_NSValueTransformer.h"
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 @implementation KCS_UIImage_NSData_NSValueTransformer
 
