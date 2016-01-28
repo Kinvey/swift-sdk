@@ -13,4 +13,7 @@
    <FileRef
       location = "group:SampleApplications/iPhoneCoreDataRecipes/Recipes.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:SampleApplications/TestDrive/TestDrive.xcodeproj">
+   </FileRef>
 </Workspace>

@@ -8,61 +8,100 @@
 
 import Foundation
 import KinveyKit
+import PromiseKit
 
 class LocalAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
     
     private let client: Client
-    private let cache: Cache
-    private let sync: Sync
+    private let cache: Cache?
+    private let sync: Sync?
     private let collectionName: String
     
-    init(client: Client = sharedClient, cache: Cache, sync: Sync) {
+    init(client: Client, cache: Cache?, sync: Sync?) {
         self.client = client
         self.cache = cache
         self.sync = sync
         self.collectionName = T.kinveyCollectionName()
     }
     
-    override func get(id: String, completionHandler: Store<T>.ObjectCompletionHandler?) -> Request {
-        let json = cache.findEntity(id)
+    override func get(id: String, completionHandler: DataStore<T>.ObjectCompletionHandler?) -> Request {
+        let json = cache?.findEntity(id)
         let request = LocalRequest()
-        request.execute() { data, response, error in
-            self.dispatchAsyncTo(completionHandler)?(self.fromJson(json), error)
+        Promise<T> { fulfill, reject in
+            request.execute() { data, response, error in
+                if let json = json, let persistable = self.fromJson(json) {
+                    fulfill(persistable)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    abort()
+                }
+            }
+        }.then { persistable in
+            completionHandler?(persistable, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }
     
-    override func find(query: Query, completionHandler: Store<T>.ArrayCompletionHandler?) -> Request {
-        let json = cache.findEntityByQuery(query)
+    override func find(query: Query, completionHandler: DataStore<T>.ArrayCompletionHandler?) -> Request {
+        let json = cache?.findEntityByQuery(query)
         let request = LocalRequest()
-        request.execute() { data, response, error in
-            self.dispatchAsyncTo(completionHandler)?(self.fromJson(json), error)
+        Promise<[T]> { fulfill, reject in
+            request.execute() { data, response, error in
+                if let json = json {
+                    fulfill(self.fromJson(json))
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    abort()
+                }
+            }
+        }.then { results in
+            completionHandler?(results, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }
     
-    override func save(persistable: T, completionHandler: Store<T>.ObjectCompletionHandler?) -> Request {
-        let request = LocalRequest() {
-            let request = self.client.networkRequestFactory.buildAppDataSave(collectionName: self.collectionName, persistable: persistable) as? HttpRequest
-
-            self.fillObject(persistable)
+    override func save(persistable: T, completionHandler: DataStore<T>.ObjectCompletionHandler?) -> Request {
+        let request = LocalRequest {
+            let request = self.client.networkRequestFactory.buildAppDataSave(collectionName: self.collectionName, persistable: persistable) as! HttpRequest
+            
+            let persistable = self.fillObject(persistable)
             var json = self.toJson(persistable)
             json = self.fillJson(json)
-            self.cache.saveEntity(json)
-
-            self.sync.savePendingOperation(self.sync.createPendingOperation(request!.request))
+            self.cache?.saveEntity(json)
+            
+            if let sync = self.sync {
+                sync.savePendingOperation(sync.createPendingOperation(request.request))
+            }
         }
-        request.execute { (data, response, error) -> Void in
-            self.dispatchAsyncTo(completionHandler)?(persistable, error)
+        Promise<T> { fulfill, reject in
+            request.execute { (data, response, error) -> Void in
+                if let error = error {
+                    reject(error)
+                } else {
+                    fulfill(persistable)
+                }
+            }
+        }.then { persistable in
+            completionHandler?(persistable, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }
     
-    override func remove(query: Query, completionHandler: Store<T>.UIntCompletionHandler?) -> Request {
-        let count = self.cache.removeEntitiesByQuery(query)
+    override func remove(query: Query, completionHandler: DataStore<T>.UIntCompletionHandler?) -> Request {
+        let count = self.cache?.removeEntitiesByQuery(query)
         let request = LocalRequest() {
             let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: self.collectionName, query: query) as? HttpRequest
-            self.sync.savePendingOperation(self.sync.createPendingOperation(request!.request))
+            if let sync = self.sync {
+                sync.savePendingOperation(sync.createPendingOperation(request!.request))
+            }
         }
         request.execute() { data, response, error in
             self.dispatchAsyncTo(completionHandler)?(count, error)
@@ -70,51 +109,74 @@ class LocalAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
         return request
     }
     
-    private func fillObject(var persistable: T) {
+    private func fillObject(var persistable: T) -> T {
         if persistable.kinveyObjectId == nil {
             persistable.kinveyObjectId = NSUUID().UUIDString
         }
         if persistable.kinveyAcl == nil, let activeUser = client.activeUser {
             persistable.kinveyAcl = Acl(creator: activeUser.userId)
         }
+        return persistable
     }
 
     private func fillJson(var json: [String : AnyObject]) -> [String : AnyObject] {
-        if let user = client.activeUser, let acl = json["_acl"] as? [String : AnyObject] where acl["creator"] as? String == nil {
-            if var acl = json["_acl"] as? [String : AnyObject] {
-                acl["creator"] = user.userId
+        if let user = client.activeUser {
+            if var acl = json[PersistableAclKey] as? [String : AnyObject] where acl[Acl.CreatorKey] as? String == nil {
+                acl[Acl.CreatorKey] = user.userId
             } else {
-                json["_acl"] = ["creator" : user.userId]
+                json[PersistableAclKey] = [Acl.CreatorKey : user.userId]
             }
         }
         return json
     }
     
-    override func push(completionHandler: Store<T>.UIntCompletionHandler?) throws {
-        let pendingOperations = self.sync.pendingOperations()
+    override func push(completionHandler: DataStore<T>.UIntCompletionHandler?) throws {
+        guard let pendingOperations = self.sync?.pendingOperations() else {
+            fatalError("Invalid operation")
+        }
         
-        var count = 0
-        var successCount = UInt(0)
-        let queue = NSOperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        
+        var promises: [Promise<NSData>] = []
         for pendingOperation in pendingOperations {
             let request = HttpRequest(request: pendingOperation.buildRequest(), client: client)
-            request.execute() { data, response, error in
-                if let response = response where response.isResponseOK {
-                    self.sync.removePendingOperation(pendingOperation)
-                    successCount++
-                }
-                queue.addOperationWithBlock() {
-                    if ++count == pendingOperations.count {
-                        self.dispatchAsyncTo(completionHandler)?(successCount, nil)
+            promises.append(Promise<NSData> { fulfill, reject in
+                request.execute() { data, response, error in
+                    if let response = response where response.isResponseOK && error == nil {
+                        self.sync?.removePendingOperation(pendingOperation)
+                        fulfill(data!)
+                    } else {
+                        reject(error!)
                     }
+                }
+            })
+        }
+        when(promises).then { results in
+            self.dispatchAsyncTo(completionHandler)?(UInt(results.count), nil)
+        }.error { error in
+            self.dispatchAsyncTo(completionHandler)?(nil, error as NSError)
+        }
+    }
+    
+    override func pull(query: Query, completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) throws {
+    }
+    
+    override func sync(query: Query, completionHandler: DataStore<T>.UIntArrayCompletionHandler?) throws {
+        try push() { count, error in
+            if let count = count where error == nil {
+                do {
+                    try self.pull(query) { results, error in
+                        completionHandler?(count, results, error)
+                    }
+                } catch let error as NSError {
+                    completionHandler?(count, nil, error)
                 }
             }
         }
     }
     
     override func purge() throws {
+        guard let sync = sync else {
+            fatalError("Invalid operation")
+        }
         sync.removeAllPendingOperations()
     }
     

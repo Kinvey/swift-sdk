@@ -14,7 +14,7 @@ class SyncedStoreTests: NetworkStoreTests {
     override func setUp() {
         super.setUp()
         
-        store = client.getSyncedStore(Person.self)
+        store = DataStore<Person>.getInstance()
     }
     
     func testPurge() {

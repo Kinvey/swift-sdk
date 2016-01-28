@@ -31,7 +31,7 @@ class StoreTestCase: KinveyTestCase {
         
     }
     
-    var store: Store<Person>!
+    var store: DataStore<Person>!
     var person:Person {
         get {
             let person = Person()
@@ -46,7 +46,7 @@ class StoreTestCase: KinveyTestCase {
         
         signUp()
         
-        store = Store<Person>(client: client)
+        store = DataStore<Person>(client: client)
     }
     
     func assertThread() {
@@ -102,7 +102,7 @@ class StoreTestCase: KinveyTestCase {
             
             XCTAssertNotEqual(personId, "")
             
-            store.get(personId) { (person, error) -> Void in
+            store.findById(personId) { (person, error) -> Void in
                 self.assertThread()
                 XCTAssertNotNil(person)
                 XCTAssertNil(error)
@@ -172,7 +172,7 @@ class StoreTestCase: KinveyTestCase {
         if let personId = person.personId {
             weak var expectationDelete = expectationWithDescription("Delete")
             
-            store.remove(personId) { (count, error) -> Void in
+            store.removeById(personId) { (count, error) -> Void in
                 self.assertThread()
                 XCTAssertNotNil(count)
                 XCTAssertNil(error)
@@ -199,7 +199,7 @@ class StoreTestCase: KinveyTestCase {
         if let personId1 = person1.personId, personId2 = person2.personId {
             weak var expectationDelete = expectationWithDescription("Delete")
             
-            store.remove([personId1, personId2]) { (count, error) -> Void in
+            store.removeById([personId1, personId2]) { (count, error) -> Void in
                 self.assertThread()
                 XCTAssertNotNil(count)
                 XCTAssertNil(error)
