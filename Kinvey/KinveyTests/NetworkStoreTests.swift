@@ -14,7 +14,7 @@ class NetworkStoreTests: StoreTestCase {
     override func setUp() {
         super.setUp()
         
-        store = client.getNetworkStore(Person.self)
+        store = DataStore<Person>.getInstance()
     }
     
     override func assertThread() {

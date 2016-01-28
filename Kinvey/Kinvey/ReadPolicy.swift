@@ -8,8 +8,8 @@
 
 import Foundation
 
-public enum ReadPolicy {
+enum ReadPolicy {
     
-    case ForceLocal, ForceNetwork//, PreferLocal, PreferNetwork
+    case ForceLocal, ForceNetwork, PreferLocal, PreferNetwork
     
 }

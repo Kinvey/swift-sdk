@@ -8,6 +8,8 @@
 
 import Foundation
 
-enum Error: ErrorType {
-    case ObjectIdMissing
+public enum Error: ErrorType {
+    
+    case ObjectIdMissing, InvalidResponse, NoActiveUser
+    
 }
