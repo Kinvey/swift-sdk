@@ -16,9 +16,9 @@ public class Client: NSObject, Credential {
             if let activeUser = newActiveUser {
                 let userDefaults = NSUserDefaults.standardUserDefaults()
                 var json = activeUser.toJson()
-                if var kmd = json["_kmd"] as? [String : AnyObject] {
-                    kmd.removeValueForKey("authtoken")
-                    json["_kmd"] = kmd
+                if var kmd = json[PersistableMetadataKey] as? [String : AnyObject] {
+                    kmd.removeValueForKey(Metadata.AuthTokenKey)
+                    json[PersistableMetadataKey] = kmd
                 }
                 userDefaults.setObject(json, forKey: appKey!)
                 userDefaults.synchronize()
@@ -77,12 +77,13 @@ public class Client: NSObject, Credential {
     
     public convenience init(appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) {
         self.init()
-        cacheManager = CacheManager(persistenceId: appKey)
-        syncManager = SyncManager (persistenceId: appKey)
         initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
     }
     
     public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) -> Client {
+        cacheManager = CacheManager(persistenceId: appKey)
+        syncManager = SyncManager (persistenceId: appKey)
+        
         var apiHostName = apiHostName
         if let apiHostNameString = apiHostName.absoluteString as String? where apiHostNameString.characters.last == "/" {
             apiHostName = NSURL(string: apiHostNameString.substringToIndex(apiHostNameString.characters.endIndex.predecessor()))!

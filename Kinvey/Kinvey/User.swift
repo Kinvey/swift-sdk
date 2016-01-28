@@ -8,14 +8,15 @@
 
 import Foundation
 import KinveyKit
+import PromiseKit
 
 public class User: NSObject, Credential {
     
     public static let PersistableUsernameKey = "username"
     
-    public typealias UserHandler = (user: User?, error: NSError?) -> Void
-    public typealias VoidHandler = (error: NSError?) -> Void
-    public typealias ExistsHandler = (exists: Bool, error: NSError?) -> Void
+    public typealias UserHandler = (user: User?, error: ErrorType?) -> Void
+    public typealias VoidHandler = (error: ErrorType?) -> Void
+    public typealias ExistsHandler = (exists: Bool, error: ErrorType?) -> Void
     
     public private(set) var userId: String
     public private(set) var acl: Acl?
@@ -63,16 +64,27 @@ public class User: NSObject, Credential {
     }
     
     public class func login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        return _login(username: username, password: password, client: client, completionHandler: dispatchAsyncTo(completionHandler))
-    }
-    
-    internal class func _login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserLogin(username: username, password: password)
-        request.execute() { (data, response, error) in
-            if let response = response where response.isResponseOK {
-                client.activeUser = client.responseParser.parse(data, type: client.userType)
+        Promise<User> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK {
+                    let user = client.responseParser.parse(data, type: client.userType)
+                    if let user = user {
+                        client.activeUser = user
+                        fulfill(user)
+                    } else {
+                        reject(Error.InvalidResponse)
+                    }
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    abort()
+                }
             }
-            completionHandler?(user: client.activeUser, error: error)
+        }.then { user in
+            completionHandler?(user: client.activeUser, error: nil)
+        }.error { error in
+            completionHandler?(user: nil, error: error)
         }
         return request
     }
@@ -141,7 +153,7 @@ public class User: NSObject, Credential {
             self.acl = nil
         }
         
-        if let kmd = json[PersistableMetadataKey] as? [String : String] {
+        if let kmd = json[PersistableMetadataKey] as? [String : AnyObject] {
             metadata = Metadata(json: kmd)
         } else {
             metadata = nil

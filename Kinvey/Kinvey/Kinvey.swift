@@ -8,17 +8,8 @@
 
 import Foundation
 
-internal let PersistableIdKey = "_id"
-internal let PersistableAclKey = "_acl"
-internal let PersistableMetadataKey = "_kmd"
-internal let PersistableMetadataLastRetrievedTime = "lrt"
+public let PersistableIdKey = "_id"
+public let PersistableAclKey = "_acl"
+public let PersistableMetadataKey = "_kmd"
 
 public let sharedClient = Client()
-
-//public func getNetworkStore<T: Persistable>(type: T.Type, client: Client = sharedClient) -> Store<T> {
-//    return client.getNetworkStore(type)
-//}
-//
-//public func getSyncedStore<T: Persistable>(type: T.Type, client: Client = sharedClient) -> Store<T> {
-//    return client.getSyncedStore(type)
-//}

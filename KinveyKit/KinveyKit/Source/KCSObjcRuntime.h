@@ -21,14 +21,16 @@
 
 +(NSSet<NSString*>*)propertyNamesForObject:(id)obj;
 
++(NSSet<NSString*>*)propertyNamesForClassName:(NSString*)className;
+
 +(NSSet<NSString*>*)propertyNamesForClass:(Class)clazz;
 
-+(NSSet<NSString *> *)ivarNamesForObject:(id)obj;
++(NSSet<NSString*>*)ivarNamesForObject:(id)obj;
 
-+(NSSet<NSString *> *)ivarNamesForClass:(Class)clazz;
++(NSSet<NSString*>*)ivarNamesForClass:(Class)clazz;
 
-+(NSSet<NSString *> *)methodsForObject:(id)obj;
++(NSSet<NSString*>*)methodsForObject:(id)obj;
 
-+(NSSet<NSString *> *)methodsForClass:(Class)clazz;
++(NSSet<NSString*>*)methodsForClass:(Class)clazz;
 
 @end

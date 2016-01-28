@@ -10,7 +10,7 @@ import Foundation
 
 public class Acl: NSObject {
     
-    private static let CreatorKey = "creator"
+    public static let CreatorKey = "creator"
     
     public let creator: String
     

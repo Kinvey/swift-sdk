@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
     
@@ -20,7 +21,16 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T>
         self.cache = cache
     }
     
-    override func get(id: String, completionHandler: Store<T>.ObjectCompletionHandler?) -> Request {
+    private func checkRequirements(reject: (ErrorType) -> Void) -> Bool {
+        guard let _ = client.activeUser else {
+            reject(Error.NoActiveUser)
+            return false
+        }
+        
+        return true
+    }
+    
+    override func get(id: String, completionHandler: DataStore<T>.ObjectCompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataGetById(collectionName: collectionName, id: id)
         request.execute() { data, response, error in
             var obj: T? = nil
@@ -35,7 +45,7 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T>
         return request
     }
     
-    override func find(query: Query, completionHandler: Store<T>.ArrayCompletionHandler?) -> Request {
+    override func find(query: Query, completionHandler: DataStore<T>.ArrayCompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: collectionName, query: query)
         request.execute() { data, response, error in
             var array: [T]? = nil
@@ -50,25 +60,40 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T>
         return request
     }
     
-    override func save(persistable: T, completionHandler: Store<T>.ObjectCompletionHandler?) -> Request {
+    override func save(persistable: T, completionHandler: DataStore<T>.ObjectCompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataSave(collectionName: collectionName, persistable: persistable)
-        request.execute() { data, response, error in
-            if let response = response where response.isResponseOK {
-                let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
-                if let json = json {
-                    persistable.loadFromJson(json)
-                    
-                    if let cache = self.cache where error == nil {
-//                        self.cache.saveEntity(json)
+        Promise<T> { fulfill, reject in
+            guard checkRequirements(reject) else {
+                reject(Error.NoActiveUser)
+                return
+            }
+            
+            request.execute() { data, response, error in
+                if let response = response where response.isResponseOK {
+                    let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
+                    if let json = json {
+                        persistable.loadFromJson(json)
+                        
+                        if let cache = self.cache where error == nil {
+//                            self.cache.saveEntity(json)
+                        }
                     }
+                    fulfill(persistable)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
                 }
             }
-            self.dispatchAsyncTo(completionHandler)?(persistable, error)
+        }.then { persistable in
+            completionHandler?(persistable, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }
     
-    override func remove(query: Query, completionHandler: Store<T>.UIntCompletionHandler?) -> Request {
+    override func remove(query: Query, completionHandler: DataStore<T>.UIntCompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: collectionName, query: query)
         request.execute() { data, response, error in
             var count: UInt? = nil
@@ -86,11 +111,19 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T>
         return request
     }
     
-    override func push(completionHandler: Store<T>.UIntCompletionHandler?) throws {
+    override func push(completionHandler: DataStore<T>.UIntCompletionHandler?) throws {
         fatalError("Operation not permitted")
     }
     
     override func purge() throws {
+        fatalError("Operation not permitted")
+    }
+    
+    override func pull(query: Query, completionHandler: DataStore<T>.ArrayCompletionHandler?) throws {
+        fatalError("Operation not permitted")
+    }
+    
+    override func sync(query: Query, completionHandler: DataStore<T>.UIntArrayCompletionHandler?) throws {
         fatalError("Operation not permitted")
     }
     

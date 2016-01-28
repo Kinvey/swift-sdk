@@ -10,9 +10,9 @@ import Foundation
 
 public class Metadata: NSObject {
     
-    private static let LmtKey = "lmt"
-    private static let EctKey = "ect"
-    private static let AuthTokenKey = "authtoken"
+    public static let LmtKey = "lmt"
+    public static let EctKey = "ect"
+    public static let AuthTokenKey = "authtoken"
     
     public let lmt: String?
     public let ect: String?
@@ -25,11 +25,11 @@ public class Metadata: NSObject {
         self.authtoken = authtoken
     }
     
-    public convenience init(json: [String : String]) {
+    public convenience init(json: [String : AnyObject]) {
         self.init(
-            lmt: json[Metadata.LmtKey] as String!,
-            ect: json[Metadata.EctKey] as String!,
-            authtoken: json[Metadata.AuthTokenKey] as String?
+            lmt: json[Metadata.LmtKey] as? String,
+            ect: json[Metadata.EctKey] as? String,
+            authtoken: json[Metadata.AuthTokenKey] as? String
         )
     }
     
