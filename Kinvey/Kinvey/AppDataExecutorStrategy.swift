@@ -10,23 +10,27 @@ import Foundation
 
 class AppDataExecutorStrategy<T: Persistable> {
     
-    func get(id: String, completionHandler: Store<T>.ObjectCompletionHandler?) -> Request {
+    func get(id: String, completionHandler: DataStore<T>.ObjectCompletionHandler?) -> Request {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     
-    func find(query: Query, completionHandler: Store<T>.ArrayCompletionHandler?) -> Request {
+    func find(query: Query, completionHandler: DataStore<T>.ArrayCompletionHandler?) -> Request {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     
-    func save(persistable: T, completionHandler: Store<T>.ObjectCompletionHandler?) -> Request {
+    func save(persistable: T, completionHandler: DataStore<T>.ObjectCompletionHandler?) -> Request {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     
-    func remove(query: Query, completionHandler: Store<T>.UIntCompletionHandler?) -> Request {
+    func remove(query: Query, completionHandler: DataStore<T>.UIntCompletionHandler?) -> Request {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     
-    func push(completionHandler: Store<T>.UIntCompletionHandler?) throws {
+    func push(completionHandler: DataStore<T>.UIntCompletionHandler?) throws {
+        fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
+    }
+    
+    func pull(query: Query, completionHandler: DataStore<T>.ArrayCompletionHandler?) throws {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     
@@ -34,11 +38,11 @@ class AppDataExecutorStrategy<T: Persistable> {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     
-    func sync(query: Query = Query(), completionHandler: Store<T>.UIntArrayCompletionHandler? = nil) throws {
+    func sync(query: Query, completionHandler: DataStore<T>.UIntArrayCompletionHandler?) throws {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     
-    func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: Store<T>.ObjectCompletionHandler? = nil) -> Store<T>.ObjectCompletionHandler? {
+    func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: DataStore<T>.ObjectCompletionHandler? = nil) -> DataStore<T>.ObjectCompletionHandler? {
         var completionHandler = completionHandler
         if let originalCompletionHandler = completionHandler {
             completionHandler = { obj, error in
@@ -50,7 +54,7 @@ class AppDataExecutorStrategy<T: Persistable> {
         return completionHandler
     }
     
-    func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: Store<T>.ArrayCompletionHandler? = nil) -> Store<T>.ArrayCompletionHandler? {
+    func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> DataStore<T>.ArrayCompletionHandler? {
         var completionHandler = completionHandler
         if let originalCompletionHandler = completionHandler {
             completionHandler = { objs, error in
@@ -62,7 +66,7 @@ class AppDataExecutorStrategy<T: Persistable> {
         return completionHandler
     }
     
-    func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: Store<T>.UIntCompletionHandler? = nil) -> Store<T>.UIntCompletionHandler? {
+    func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> DataStore<T>.UIntCompletionHandler? {
         var completionHandler = completionHandler
         if let originalCompletionHandler = completionHandler {
             completionHandler = { objs, error in

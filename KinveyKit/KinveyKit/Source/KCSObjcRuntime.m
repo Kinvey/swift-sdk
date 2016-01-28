@@ -62,6 +62,11 @@
     return [self propertyNamesForClass:[obj class]];
 }
 
++(NSSet<NSString *> *)propertyNamesForClassName:(NSString*)className
+{
+    return [self propertyNamesForClass:NSClassFromString(className)];
+}
+
 +(NSSet<NSString *> *)propertyNamesForClass:(Class)class
 {
     unsigned int propertyCount;

@@ -34,6 +34,7 @@
 		28FCBF0C0DE6A6C6007A15C7 /* RecipeListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FCBF0B0DE6A6C6007A15C7 /* RecipeListTableViewController.m */; };
 		53506710188075A9003726E2 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5350670E188075A9003726E2 /* Storyboard.storyboard */; };
 		53757D0C18AC306A0080EA8D /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 53757D0B18AC306A0080EA8D /* Media.xcassets */; };
+		574912751C594D1000EA4F26 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574912741C594D1000EA4F26 /* Kinvey.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +79,7 @@
 		32CA4F630368D1EE00C91783 /* Recipes_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recipes_Prefix.pch; sourceTree = "<group>"; };
 		5350670F188075A9003726E2 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/Storyboard.storyboard; sourceTree = "<group>"; };
 		53757D0B18AC306A0080EA8D /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		574912741C594D1000EA4F26 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../Kinvey/build/Debug-iphoneos/Kinvey.framework"; sourceTree = "<group>"; };
 		69A0E6140DE92A470087803E /* RecipePhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecipePhotoViewController.h; sourceTree = "<group>"; };
 		69A0E6150DE92A470087803E /* RecipePhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecipePhotoViewController.m; sourceTree = "<group>"; };
 		69D8E9400DE7A5FC0045AF3C /* RecipeAddViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecipeAddViewController.h; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				574912751C594D1000EA4F26 /* Kinvey.framework in Frameworks */,
 				28B35EC40FC5DCD100ED0C40 /* CoreData.framework in Frameworks */,
 				28B35EC60FC5DCD100ED0C40 /* CoreGraphics.framework in Frameworks */,
 				28B35EC80FC5DCD100ED0C40 /* Foundation.framework in Frameworks */,
@@ -209,6 +212,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				574912741C594D1000EA4F26 /* Kinvey.framework */,
 				28B35EC30FC5DCD100ED0C40 /* CoreData.framework */,
 				28B35EC50FC5DCD100ED0C40 /* CoreGraphics.framework */,
 				28B35EC70FC5DCD100ED0C40 /* Foundation.framework */,
