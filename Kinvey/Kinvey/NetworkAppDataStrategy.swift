@@ -9,7 +9,7 @@
 import Foundation
 import PromiseKit
 
-class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
+class NetworkAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExecutorStrategy<T> {
     
     let collectionName: String
     let client: Client
@@ -38,7 +38,7 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T>
                 obj = self.client.responseParser.parse(data, type: T.self)
             }
             if let cache = self.cache, let obj = obj where error == nil {
-//                cache.saveEntity(self.toJson(obj))
+                cache.saveEntity(obj.toJson())
             }
             self.dispatchAsyncTo(completionHandler)?(obj, error)
         }
@@ -53,7 +53,7 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T>
                 array = self.client.responseParser.parseArray(data, type: T.self)
             }
             if let cache = self.cache, let array = array where error == nil {
-//                self.cache.saveEntities(self.toJson(array))
+                cache.saveEntities(self.toJson(array))
             }
             self.dispatchAsyncTo(completionHandler)?(array, error)
         }
@@ -72,10 +72,10 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T>
                 if let response = response where response.isResponseOK {
                     let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
                     if let json = json {
-                        persistable.loadFromJson(json)
+                        persistable.fromJson(json)
                         
                         if let cache = self.cache where error == nil {
-//                            self.cache.saveEntity(json)
+                            cache.saveEntity(json)
                         }
                     }
                     fulfill(persistable)
@@ -104,7 +104,7 @@ class NetworkAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T>
                 }
             }
             if let cache = self.cache where error == nil {
-//                self.cache.removeEntitiesByQuery(KCSQueryAdapter(query: query))
+                cache.removeEntitiesByQuery(query)
             }
             self.dispatchAsyncTo(completionHandler)?(count, error)
         }
