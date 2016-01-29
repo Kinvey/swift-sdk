@@ -8,7 +8,7 @@
 
 import Foundation
 
-class AppDataExecutorStrategy<T: Persistable> {
+class AppDataExecutorStrategy<T: Persistable where T: NSObject> {
     
     func get(id: String, completionHandler: DataStore<T>.ObjectCompletionHandler?) -> Request {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
@@ -78,37 +78,26 @@ class AppDataExecutorStrategy<T: Persistable> {
         return completionHandler
     }
     
-    func fromJson(json: [String : AnyObject]) -> T? {
-        if let objectType = T.self as? NSObject.Type {
-            let obj = objectType.init()
-            obj.setValuesForKeysWithDictionary(json)
-            return obj as? T
+    func fromJson(json: [String : AnyObject]) -> T {
+        let obj = T.self.init()
+        for key in T.kinveyPropertyMapping().keys {
+            obj.setValue(json[key], forKey: key)
         }
-        return nil
+        return obj
     }
     
     func fromJson(jsonArray: [[String : AnyObject]]) -> [T] {
         var results: [T] = []
-        if let objectType = T.self as? NSObject.Type {
-            for json in jsonArray {
-                let obj = objectType.init()
-                obj.setValuesForKeysWithDictionary(json)
-                results.append(obj as! T)
-            }
+        for json in jsonArray {
+            let obj = fromJson(json)
+            results.append(obj)
         }
         return results
-    }
-    
-    func toJson(obj: T) -> [String : AnyObject] {
-        let obj = obj as! AnyObject
-        let keys = T.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
-        return obj.dictionaryWithValuesForKeys(keys)
     }
     
     func toJson(array: [T]) -> [[String : AnyObject]] {
         var entities: [[String : AnyObject]] = []
         for obj in array {
-            let obj = obj as! AnyObject
             let keys = T.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
             entities.append(obj.dictionaryWithValuesForKeys(keys))
         }

@@ -16,6 +16,7 @@
 @property NSDate* date;
 
 @property NSString* collectionName;
+@property NSString* objectId;
 
 @property NSString* method;
 @property NSString* url;
@@ -23,7 +24,8 @@
 @property NSData* body;
 
 -(instancetype)initWithURLRequest:(NSURLRequest*)urlRequest
-                   collectionName:(NSString*)collectionName;
+                   collectionName:(NSString*)collectionName
+                         objectId:(NSString*)objectId;
 
 -(NSDictionary<NSString*, id>*)toJson;
 

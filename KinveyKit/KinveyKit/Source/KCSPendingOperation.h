@@ -10,6 +10,7 @@
 
 @protocol KCSPendingOperation
 
--(NSURLRequest*)buildRequest;
+-(NSURLRequest* _Nonnull)buildRequest;
+-(NSString* _Nullable)objectId;
 
 @end

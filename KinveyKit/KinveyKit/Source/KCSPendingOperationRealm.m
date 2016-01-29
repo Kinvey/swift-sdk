@@ -15,6 +15,7 @@
 
 -(instancetype)initWithURLRequest:(NSURLRequest *)urlRequest
                    collectionName:(NSString*)collectionName
+                         objectId:(NSString*)objectId
 {
     self = [super init];
     if (self) {
@@ -24,6 +25,7 @@
         self.requestId = requestId ? requestId : [[NSUUID UUID] UUIDString];
         
         self.collectionName = collectionName;
+        self.objectId = objectId;
         
         self.method = urlRequest.HTTPMethod;
         self.url = urlRequest.URL.absoluteString;
@@ -64,13 +66,19 @@
 
 -(NSDictionary<NSString *,id> *)toJson
 {
-    return @{@"requestId" : self.requestId,
-             @"date" : self.date,
-             @"collectionName" : self.collectionName,
-             @"method" : self.method,
-             @"url" : self.url,
-             @"headers" : self.headers,
-             @"body" : self.body ? self.body : [NSNull null]};
+    NSMutableDictionary<NSString *,id> *json = [NSMutableDictionary dictionaryWithDictionary:@{@"requestId" : self.requestId,
+                                                                                               @"date" : self.date,
+                                                                                               @"collectionName" : self.collectionName,
+                                                                                               @"method" : self.method,
+                                                                                               @"url" : self.url,
+                                                                                               @"headers" : self.headers}];
+    if (self.body) {
+        json[@"body"] = self.body;
+    }
+    if (self.objectId) {
+        json[@"objectId"] = self.objectId;
+    }
+    return json;
 }
 
 +(NSDictionary<NSString *, NSString *> *)kinveyPropertyMapping
@@ -81,7 +89,8 @@
              @"method" : @"method",
              @"url" : @"url",
              @"headers" : @"headers",
-             @"body" : @"body"};
+             @"body" : @"body",
+             @"objectId" : @"objectId"};
 }
 
 -(NSURLRequest *)buildRequest
@@ -95,6 +104,11 @@
         request.HTTPBody = self.body;
     }
     return request;
+}
+
+-(id)valueForUndefinedKey:(NSString *)key
+{
+    return nil;
 }
 
 @end
