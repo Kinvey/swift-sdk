@@ -17,7 +17,9 @@
 -(instancetype)initWithPersistenceId:(NSString *)persistenceId
                       collectionName:(NSString *)collectionName;
 
--(id<KCSPendingOperation>)createPendingOperation:(NSURLRequest*)request;
+-(id<KCSPendingOperation>)createPendingOperation:(NSURLRequest*)request
+                                        objectId:(NSString*)objectId;
+
 -(void)savePendingOperation:(id<KCSPendingOperation>)pendingOperation;
 
 -(NSArray<id<KCSPendingOperation>>*)pendingOperations;

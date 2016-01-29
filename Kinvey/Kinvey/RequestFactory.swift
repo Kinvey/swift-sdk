@@ -18,7 +18,7 @@ public protocol RequestFactory {
     func buildUserSave(user user: User) -> Request
     func buildAppDataGetById(collectionName collectionName: String, id: String) -> Request
     func buildAppDataFindByQuery(collectionName collectionName: String, query: Query) -> Request
-    func buildAppDataSave<T: Persistable>(collectionName collectionName: String, persistable: T) -> Request
+    func buildAppDataSave<T: Persistable where T: NSObject>(collectionName collectionName: String, persistable: T) -> Request
     func buildAppDataRemoveByQuery(collectionName collectionName: String, query: Query) -> Request
     
 }

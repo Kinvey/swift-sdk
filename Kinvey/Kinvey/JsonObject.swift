@@ -10,7 +10,7 @@ import Foundation
 
 public protocol JsonObject {
     
-    func loadFromJson(json: [String : AnyObject])
+    func fromJson(json: [String : AnyObject])
     func toJson() -> [String : AnyObject]
 
 }

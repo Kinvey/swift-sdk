@@ -37,7 +37,7 @@ extension StoreType {
 
 extension ReadPolicy {
     
-    private func executor<T: Persistable>(store: DataStore<T>) -> AppDataExecutorStrategy<T> {
+    private func executor<T: Persistable where T: NSObject>(store: DataStore<T>) -> AppDataExecutorStrategy<T> {
         switch self {
         case .ForceLocal:
             return LocalAppDataExecutorStrategy<T>(client: store.client, cache: store.cache, sync: nil)
@@ -54,10 +54,10 @@ extension ReadPolicy {
 
 extension WritePolicy {
     
-    private func executor<T: Persistable>(store: DataStore<T>) -> AppDataExecutorStrategy<T> {
+    private func executor<T: Persistable where T: NSObject>(store: DataStore<T>) -> AppDataExecutorStrategy<T> {
         switch self {
         case .ForceLocal:
-            return LocalAppDataExecutorStrategy<T>(client: store.client, cache: store.cache, sync: nil)
+            return LocalAppDataExecutorStrategy<T>(client: store.client, cache: store.cache, sync: store.sync)
         case .ForceNetwork:
             return NetworkAppDataExecutorStrategy<T>(client: store.client, cache: store.cache)
         case .LocalThenNetwork:
@@ -67,7 +67,7 @@ extension WritePolicy {
     
 }
 
-public class DataStore<T: Persistable> {
+public class DataStore<T: Persistable where T: NSObject> {
     
     public typealias ArrayCompletionHandler = ([T]?, ErrorType?) -> Void
     public typealias ObjectCompletionHandler = (T?, ErrorType?) -> Void
@@ -82,8 +82,6 @@ public class DataStore<T: Persistable> {
     
     private let cache: Cache
     private let sync: Sync
-    
-    internal let clazz: AnyClass = T.self as! AnyClass
     
     public class func getInstance(type: StoreType = .Cache, client: Client = sharedClient) -> DataStore {
         return DataStore<T>(readPolicy: type.readPolicy(), writePolicy: type.writePolicy(), client: client)

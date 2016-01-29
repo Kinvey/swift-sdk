@@ -510,6 +510,8 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
         pathComponents[pathComponents.count - 1] = [NSString stringWithFormat:@"com.kinvey.%@_cache.realm", self.persistenceId];
         realmConfiguration.path = [NSString pathWithComponents:pathComponents];
         
+        NSLog(@"Database Path: %@", realmConfiguration.path);
+        
         self.realmConfiguration = realmConfiguration;
     }
     return self;
@@ -596,14 +598,35 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     return count;
 }
 
+-(NSArray<NSString*>*)keysForClass:(Class)class
+{
+    NSDictionary<NSString*, NSString*>* kinveyPropertyMapping = [class kinveyPropertyMapping];
+    NSMutableArray<NSString*>* keys = kinveyPropertyMapping.allKeys.mutableCopy;
+    NSArray<NSString*>* values = kinveyPropertyMapping.allValues;
+    if (![values containsObject:KCSEntityKeyMetadata]) {
+        [keys addObject:KCSEntityKeyMetadata];
+    }
+    if (![values containsObject:KCSEntityKeyAcl]) {
+        [keys addObject:KCSEntityKeyAcl];
+    }
+    return keys;
+}
+
 -(NSDictionary<NSString *,id> *)findEntity:(NSString *)objectId
 {
-    NSDictionary<NSString*, NSString*>* propertyMapping = [self.clazz kinveyPropertyMapping].invert;
-    NSString* keyId = propertyMapping[KCSEntityKeyId];
-    Query* query = [[Query alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], objectId]
-                                    sortDescriptors:nil];
-    NSArray<NSDictionary<NSString*, id>*>* results = [self findEntityByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]];
-    return results.count > 0 ? results.firstObject : nil;
+    return [self findEntity:objectId
+                   forClass:self.clazz];
+}
+
+-(NSDictionary<NSString *,id> *)findEntity:(NSString *)objectId
+                                  forClass:(Class)class
+{
+    Class realmClass = [[self class] realmClassForClass:class];
+    RLMRealm* realm = self.realm;
+    RLMObject* obj = [realmClass objectInRealm:realm
+                                 forPrimaryKey:objectId];
+    
+    return [obj dictionaryWithValuesForKeys:[self keysForClass:class]];
 }
 
 -(NSArray<NSDictionary<NSString*, id>*>*)findEntityByQuery:(id<KCSQuery>)query
@@ -618,8 +641,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     Class realmClass = [[self class] realmClassForClass:class];
     RLMRealm* realm = self.realm;
     
-    NSDictionary<NSString*, NSString*>* kinveyPropertyMapping = [class kinveyPropertyMapping];
-    NSArray<NSString*>* keys = kinveyPropertyMapping.allKeys;
+    
     
     RLMResults* results = [realmClass objectsInRealm:realm
                                        withPredicate:query.predicate];
@@ -632,6 +654,8 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
         }
         results = [results sortedResultsUsingDescriptors:realmSortDescriptor];
     }
+    
+    NSArray<NSString*>* keys = [self keysForClass:class];
     
     NSMutableArray<NSDictionary<NSString*, NSObject*>*>* array = [NSMutableArray arrayWithCapacity:results.count];
     NSDictionary<NSString*, NSObject*>* json;
@@ -714,9 +738,11 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 }
 
 -(id<KCSPendingOperation>)createPendingOperation:(NSURLRequest *)request
+                                        objectId:(NSString*)objectId
 {
     return [[KCSPendingOperationRealm alloc] initWithURLRequest:request
-                                                 collectionName:self.collectionName];
+                                                 collectionName:self.collectionName
+                                                       objectId:objectId];
 }
 
 -(void)savePendingOperation:(id<KCSPendingOperation>)pendingOperation

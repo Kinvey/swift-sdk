@@ -10,7 +10,7 @@ import Foundation
 import KinveyKit
 import PromiseKit
 
-class LocalAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
+class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExecutorStrategy<T> {
     
     private let client: Client
     private let cache: Cache?
@@ -29,7 +29,8 @@ class LocalAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
         let request = LocalRequest()
         Promise<T> { fulfill, reject in
             request.execute() { data, response, error in
-                if let json = json, let persistable = self.fromJson(json) {
+                if let json = json {
+                    let persistable = self.fromJson(json)
                     fulfill(persistable)
                 } else if let error = error {
                     reject(error)
@@ -71,12 +72,12 @@ class LocalAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
             let request = self.client.networkRequestFactory.buildAppDataSave(collectionName: self.collectionName, persistable: persistable) as! HttpRequest
             
             let persistable = self.fillObject(persistable)
-            var json = self.toJson(persistable)
+            var json = persistable.toJson()
             json = self.fillJson(json)
             self.cache?.saveEntity(json)
             
             if let sync = self.sync {
-                sync.savePendingOperation(sync.createPendingOperation(request.request))
+                sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
             }
         }
         Promise<T> { fulfill, reject in
@@ -100,7 +101,7 @@ class LocalAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
         let request = LocalRequest() {
             let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: self.collectionName, query: query) as? HttpRequest
             if let sync = self.sync {
-                sync.savePendingOperation(sync.createPendingOperation(request!.request))
+                sync.savePendingOperation(sync.createPendingOperation(request!.request, objectId: nil))
             }
         }
         request.execute() { data, response, error in
@@ -109,7 +110,7 @@ class LocalAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
         return request
     }
     
-    private func fillObject(var persistable: T) -> T {
+    private func fillObject(persistable: T) -> T {
         if persistable.kinveyObjectId == nil {
             persistable.kinveyObjectId = NSUUID().UUIDString
         }
@@ -140,19 +141,36 @@ class LocalAppDataExecutorStrategy<T: Persistable>: AppDataExecutorStrategy<T> {
             let request = HttpRequest(request: pendingOperation.buildRequest(), client: client)
             promises.append(Promise<NSData> { fulfill, reject in
                 request.execute() { data, response, error in
-                    if let response = response where response.isResponseOK && error == nil {
+                    if let response = response, let data = data where response.isResponseOK && error == nil {
+                        let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
+                        if let cache = self.cache, let json = json, let pendindObjectId = pendingOperation.objectId {
+                            let entity = cache.findEntity(pendindObjectId)
+                            cache.removeEntity(entity)
+                            
+                            let persistable: T = T.fromJson(entity: json)
+                            var persistableJson = persistable.toJson()
+                            if T.kmdKey == nil {
+                                persistableJson[PersistableMetadataKey] = json[PersistableMetadataKey]
+                            }
+                            if T.aclKey == nil {
+                                persistableJson[PersistableAclKey] = json[PersistableAclKey]
+                            }
+                            cache.saveEntity(persistableJson)
+                        }
                         self.sync?.removePendingOperation(pendingOperation)
-                        fulfill(data!)
+                        fulfill(data)
+                    } else if let error = error {
+                        reject(error)
                     } else {
-                        reject(error!)
+                        reject(Error.InvalidResponse)
                     }
                 }
             })
         }
         when(promises).then { results in
-            self.dispatchAsyncTo(completionHandler)?(UInt(results.count), nil)
+            completionHandler?(UInt(results.count), nil)
         }.error { error in
-            self.dispatchAsyncTo(completionHandler)?(nil, error as NSError)
+            completionHandler?(nil, error as NSError)
         }
     }
     
