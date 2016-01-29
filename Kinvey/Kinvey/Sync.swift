@@ -16,7 +16,7 @@ protocol Sync {
     
     init!(persistenceId: String, collectionName: String)
     
-    func createPendingOperation(request: NSURLRequest!) -> PendingOperation
+    func createPendingOperation(request: NSURLRequest!, objectId: String?) -> PendingOperation
     func savePendingOperation(pendingOperation: PendingOperation)
     
     func pendingOperations() -> [PendingOperation]

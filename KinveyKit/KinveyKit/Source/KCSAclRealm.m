@@ -10,4 +10,9 @@
 
 @implementation KCSAclRealm
 
++(NSArray<NSString *> *)requiredProperties
+{
+    return @[@"creator"];
+}
+
 @end

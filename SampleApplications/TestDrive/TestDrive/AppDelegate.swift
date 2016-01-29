@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         client = Kinvey.sharedClient.initialize(appKey: "kid_WJg0WNTX5e", appSecret: "b321ba722b1c4dc4a084ad03a361a45a")
         
-        let store = DataStore<Recipe>.getInstance()
+        let store = DataStore<Recipe>.getInstance(.Sync)
         let chocolateCake = Recipe(name: "Chocolate Cake")
         
         Promise<User> { fulfill, reject in
@@ -83,6 +83,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 store.find() { recipes, error in
                     if let recipes = recipes {
                         print("Recipes found: \(recipes.count)")
+                        for recipe in recipes {
+                            print("Recipe found by ID: \(recipe.toJson())")
+                        }
                         fulfill(recipes)
                     } else if let error = error {
                         reject(error)
