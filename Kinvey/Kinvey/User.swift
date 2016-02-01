@@ -78,7 +78,7 @@ public class User: NSObject, Credential {
                 } else if let error = error {
                     reject(error)
                 } else {
-                    abort()
+                    reject(Error.InvalidResponse)
                 }
             }
         }.then { user in

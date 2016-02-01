@@ -35,7 +35,7 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
                 } else if let error = error {
                     reject(error)
                 } else {
-                    abort()
+                    reject(Error.InvalidResponse)
                 }
             }
         }.then { persistable in
@@ -56,7 +56,7 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
                 } else if let error = error {
                     reject(error)
                 } else {
-                    abort()
+                    reject(Error.InvalidResponse)
                 }
             }
         }.then { results in
@@ -131,33 +131,38 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
         return json
     }
     
+    private func merge(persistable: T, json: [String : AnyObject]) -> [String : AnyObject] {
+        var persistableJson = persistable.toJson()
+        if T.kmdKey == nil {
+            persistableJson[PersistableMetadataKey] = json[PersistableMetadataKey]
+        }
+        if T.aclKey == nil {
+            persistableJson[PersistableAclKey] = json[PersistableAclKey]
+        }
+        return persistableJson
+    }
+    
     override func push(completionHandler: DataStore<T>.UIntCompletionHandler?) throws {
-        guard let pendingOperations = self.sync?.pendingOperations() else {
+        guard let sync = self.sync else {
             fatalError("Invalid operation")
         }
         
         var promises: [Promise<NSData>] = []
-        for pendingOperation in pendingOperations {
+        for pendingOperation in sync.pendingOperations() {
             let request = HttpRequest(request: pendingOperation.buildRequest(), client: client)
             promises.append(Promise<NSData> { fulfill, reject in
                 request.execute() { data, response, error in
-                    if let response = response, let data = data where response.isResponseOK && error == nil {
+                    if let response = response where response.isResponseOK, let data = data {
                         let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
                         if let cache = self.cache, let json = json, let pendindObjectId = pendingOperation.objectId {
                             let entity = cache.findEntity(pendindObjectId)
                             cache.removeEntity(entity)
                             
-                            let persistable: T = T.fromJson(entity: json)
-                            var persistableJson = persistable.toJson()
-                            if T.kmdKey == nil {
-                                persistableJson[PersistableMetadataKey] = json[PersistableMetadataKey]
-                            }
-                            if T.aclKey == nil {
-                                persistableJson[PersistableAclKey] = json[PersistableAclKey]
-                            }
+                            let persistable: T = T.fromJson(json)
+                            let persistableJson = self.merge(persistable, json: json)
                             cache.saveEntity(persistableJson)
                         }
-                        self.sync?.removePendingOperation(pendingOperation)
+                        sync.removePendingOperation(pendingOperation)
                         fulfill(data)
                     } else if let error = error {
                         reject(error)
@@ -170,11 +175,40 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
         when(promises).then { results in
             completionHandler?(UInt(results.count), nil)
         }.error { error in
-            completionHandler?(nil, error as NSError)
+            completionHandler?(nil, error)
         }
     }
     
     override func pull(query: Query, completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) throws {
+        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: collectionName, query: query)
+        Promise<[T]> { fulfill, reject in
+            request.execute { (data, response, error) -> Void in
+                var array: [T]? = nil
+                if let response = response where response.isResponseOK, let jsonArray = self.client.responseParser.parseArray(data, type: [String : AnyObject].self) {
+                    array = T.fromJson(jsonArray)
+                    
+                    if let cache = self.cache, let array = array where error == nil {
+                        var results = self.toJson(array)
+                        for i in 0...array.count - 1 {
+                            let json = jsonArray[i]
+                            results[i] = self.merge(array[i], json: json)
+                        }
+                        cache.saveEntities(results)
+                    }
+                }
+                if let array = array {
+                    fulfill(array)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+        }.then { results in
+            completionHandler?(results, nil)
+        }.error { error in
+            completionHandler?(nil, error)
+        }
     }
     
     override func sync(query: Query, completionHandler: DataStore<T>.UIntArrayCompletionHandler?) throws {
@@ -187,15 +221,63 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
                 } catch let error as NSError {
                     completionHandler?(count, nil, error)
                 }
+            } else {
+                completionHandler?(count, nil, error)
             }
         }
     }
     
-    override func purge() throws {
-        guard let sync = sync else {
+    override func purge(completionHandler: DataStore<T>.UIntCompletionHandler?) throws {
+        guard let sync = self.sync else {
             fatalError("Invalid operation")
         }
-        sync.removeAllPendingOperations()
+        
+        var promises: [Promise<Void>] = []
+        for pendingOperation in sync.pendingOperations() {
+            let urlRequest = pendingOperation.buildRequest()
+            if let httpMethod = urlRequest.HTTPMethod {
+                switch HttpMethod.parse(httpMethod).requestType {
+                case .Update:
+                    if let objectId = pendingOperation.objectId {
+                        promises.append(Promise<Void> { fulfill, reject in
+                            let request = client.networkRequestFactory.buildAppDataGetById(collectionName: collectionName, id: objectId)
+                            request.execute() { data, response, error in
+                                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data, type: [String : AnyObject].self) {
+                                    if let cache = self.cache {
+                                        let persistable: T = T.fromJson(json)
+                                        let persistableJson = self.merge(persistable, json: json)
+                                        cache.saveEntity(persistableJson)
+                                    }
+                                    sync.removePendingOperation(pendingOperation)
+                                    fulfill()
+                                } else if let error = error {
+                                    reject(error)
+                                } else {
+                                    reject(Error.InvalidResponse)
+                                }
+                            }
+                        })
+                    } else {
+                        sync.removePendingOperation(pendingOperation)
+                    }
+                case .Delete:
+                    fallthrough
+                case .Create:
+                    promises.append(Promise<Void> { fulfill, reject in
+                        sync.removePendingOperation(pendingOperation)
+                        fulfill()
+                    })
+                default:
+                    break
+                }
+            }
+        }
+        
+        when(promises).then { results in
+            completionHandler?(UInt(results.count), nil)
+        }.error { error in
+            completionHandler?(nil, error)
+        }
     }
     
 }

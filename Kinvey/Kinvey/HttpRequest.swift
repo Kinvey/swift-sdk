@@ -14,21 +14,23 @@ enum HttpMethod {
     case Get, Post, Put, Delete
     
     var stringValue: String {
-        switch self {
-        case .Post:
-            return "POST"
-        case .Put:
-            return "PUT"
-        case .Delete:
-            return "DELETE"
-        case .Get:
-            fallthrough
-        default:
-            return "GET"
+        get {
+            switch self {
+            case .Post:
+                return "POST"
+            case .Put:
+                return "PUT"
+            case .Delete:
+                return "DELETE"
+            case .Get:
+                fallthrough
+            default:
+                return "GET"
+            }
         }
     }
     
-    internal static func parse(httpMethod: String) -> HttpMethod {
+    static func parse(httpMethod: String) -> HttpMethod {
         switch httpMethod {
         case "POST":
             return .Post
@@ -40,6 +42,23 @@ enum HttpMethod {
             fallthrough
         default:
             return .Get
+        }
+    }
+    
+    var requestType: RequestType {
+        get {
+            switch self {
+            case .Post:
+                return .Create
+            case .Put:
+                return .Update
+            case .Delete:
+                return .Delete
+            case .Get:
+                fallthrough
+            default:
+                return .Read
+            }
         }
     }
     
@@ -76,7 +95,7 @@ enum HttpHeader {
 
 extension RequestType {
     
-    internal var httpMethod: HttpMethod {
+    var httpMethod: HttpMethod {
         get {
             switch self {
             case .Create:

@@ -68,36 +68,6 @@ extension Persistable where Self: NSObject {
         }
     }
     
-    public static func toJson(array: [Persistable]) -> [[String : AnyObject]] {
-        var jsonArray: [[String : AnyObject]] = []
-        for item in array {
-            jsonArray.append(item.toJson())
-        }
-        return jsonArray
-    }
-    
-    static func toJson<T: Persistable where T: NSObject>(persistable obj: T) -> [String : AnyObject] {
-        var json: [String : AnyObject] = [:]
-        let propertyMap = T.kinveyPropertyMapping()
-        for keyValuePair in propertyMap {
-            if let value = obj.valueForKey(keyValuePair.0) {
-                json[keyValuePair.1] = value
-            }
-        }
-        return json
-    }
-    
-    static func fromJson<T: Persistable where T: NSObject>(entity json: [String : AnyObject]) -> T {
-        let obj = T.self.init()
-        let propertyMap = T.self.kinveyPropertyMapping()
-        for keyValuePair in propertyMap {
-            if let value = json[keyValuePair.1] {
-                obj.setValue(value, forKey: keyValuePair.0)
-            }
-        }
-        return obj
-    }
-    
 }
 
 extension Persistable {
@@ -133,6 +103,44 @@ extension Persistable {
             }
             return nil
         }
+    }
+    
+    public static func toJson(array: [Persistable]) -> [[String : AnyObject]] {
+        var jsonArray: [[String : AnyObject]] = []
+        for item in array {
+            jsonArray.append(item.toJson())
+        }
+        return jsonArray
+    }
+    
+    static func toJson<T: Persistable where T: NSObject>(persistable obj: T) -> [String : AnyObject] {
+        var json: [String : AnyObject] = [:]
+        let propertyMap = T.kinveyPropertyMapping()
+        for keyValuePair in propertyMap {
+            if let value = obj.valueForKey(keyValuePair.0) {
+                json[keyValuePair.1] = value
+            }
+        }
+        return json
+    }
+    
+    static func fromJson<T: Persistable where T: NSObject>(json: [String : AnyObject]) -> T {
+        let obj = T.self.init()
+        let propertyMap = T.self.kinveyPropertyMapping()
+        for keyValuePair in propertyMap {
+            if let value = json[keyValuePair.1] {
+                obj.setValue(value, forKey: keyValuePair.0)
+            }
+        }
+        return obj
+    }
+    
+    static func fromJson<T: Persistable where T: NSObject>(array: [[String : AnyObject]]) -> [T] {
+        var results: [T] = []
+        for item in array {
+            results.append(fromJson(item))
+        }
+        return results
     }
     
 }
