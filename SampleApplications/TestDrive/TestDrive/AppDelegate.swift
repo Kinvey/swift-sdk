@@ -79,6 +79,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }.then { recipe in
+            return Promise<Recipe> { fulfill, reject in
+                recipe.name = "Dark \(recipe.name!)"
+                store.save(recipe) { recipe, error in
+                    if let recipe = recipe {
+                        print("Recipe: \(recipe.name!) (\(recipe.id!))")
+                        fulfill(recipe)
+                    } else if let error = error {
+                        reject(error)
+                    } else {
+                        abort()
+                    }
+                }
+            }
+        }.then { _ in
             return Promise<[Recipe]> { fulfill, reject in
                 store.find() { recipes, error in
                     if let recipes = recipes {
@@ -95,17 +109,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }.then { _ in
-            return Promise<UInt> { fulfill, reject in
-                try store.push { count, error in
-                    if let error = error {
+            return Promise<(UInt, [Recipe]?)> { fulfill, reject in
+                try store.sync { count, results, error in
+                    if let count = count {
+                        print("Sync Count: \(count)")
+                        if let results = results {
+                            for result in results {
+                                print("Recipe: \(result.toJson())")
+                            }
+                        }
+                        fulfill(count, results)
+                    } else if let error = error {
                         reject(error)
-                    } else if let count = count {
-                        fulfill(count)
                     } else {
                         abort()
                     }
                 }
             }
+//        }.then { _ in
+//            return Promise<UInt> { fulfill, reject in
+//                try store.push { count, error in
+//                    if let error = error {
+//                        reject(error)
+//                    } else if let count = count {
+//                        fulfill(count)
+//                    } else {
+//                        abort()
+//                    }
+//                }
+//            }
 //        }.then { recipe in
 //            return Promise<UInt> { fulfill, reject in
 //                store.removeAll() { count, error in
