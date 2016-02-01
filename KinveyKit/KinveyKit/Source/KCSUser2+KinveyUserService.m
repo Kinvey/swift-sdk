@@ -825,7 +825,25 @@ static NSString* micApiVersion = nil;
         return nil;
     } else {
         KCSCollection* userCollection = [KCSCollection userCollection];
-        NSDictionary* entity = [[KCSAppdataStore caches].dataModel jsonEntityForObject:user route:[userCollection route] collection:userCollection.collectionName];
+        NSDictionary<NSString*, id>* entity = [[KCSAppdataStore caches].dataModel jsonEntityForObject:user route:[userCollection route] collection:userCollection.collectionName];
+        
+        __weak __block NSMutableDictionary<NSString*, id>* (^transformWeak)(NSMutableDictionary<NSString*, id>* object) = nil;
+        NSMutableDictionary<NSString*, id>* (^transform)(NSMutableDictionary<NSString*, id>* object) = ^(NSMutableDictionary<NSString*, id>* object) {
+            id value;
+            NSMutableDictionary<NSString*, id>* copyObject = object.mutableCopy;
+            for (NSString* key in object) {
+                value = copyObject[key];
+                if ([value isKindOfClass:[NSDictionary class]]) {
+                    copyObject[key] = transformWeak(value);
+                } else if ([value isKindOfClass:[NSSet class]]) {
+                    copyObject[key] = ((NSSet*) value).allObjects;
+                }
+            }
+            return copyObject;
+        };
+        transformWeak = transform;
+        entity = transform(entity);
+        
         NSDictionary* body = [entity dictionaryByAddingDictionary:@{KCSUserAttributePassword : newPassword}];
         
         KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
