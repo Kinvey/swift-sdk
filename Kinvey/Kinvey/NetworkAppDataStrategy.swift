@@ -115,7 +115,7 @@ class NetworkAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataE
         fatalError("Operation not permitted")
     }
     
-    override func purge() throws {
+    override func purge(completionHandler: DataStore<T>.UIntCompletionHandler?) throws {
         fatalError("Operation not permitted")
     }
     

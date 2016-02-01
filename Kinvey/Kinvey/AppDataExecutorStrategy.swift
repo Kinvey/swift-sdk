@@ -34,7 +34,7 @@ class AppDataExecutorStrategy<T: Persistable where T: NSObject> {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     
-    func purge() throws {
+    func purge(completionHandler: DataStore<T>.UIntCompletionHandler?) throws {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     

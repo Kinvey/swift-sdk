@@ -157,8 +157,8 @@ public class DataStore<T: Persistable where T: NSObject> {
         try writePolicy.executor(self).sync(query, completionHandler: completionHandler)
     }
     
-    public func purge() throws {
-        try writePolicy.executor(self).purge()
+    public func purge(completionHandler: DataStore<T>.UIntCompletionHandler?) throws {
+        try writePolicy.executor(self).purge(completionHandler)
     }
 
 }
