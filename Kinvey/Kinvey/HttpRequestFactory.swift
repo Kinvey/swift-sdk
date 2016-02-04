@@ -26,7 +26,7 @@ class HttpRequestFactory: RequestFactory {
             authorization = _authorization
         }
         if let authorization = authorization {
-            request.addValue(authorization, forHTTPHeaderField: "Authorization")
+            request.setValue(authorization, forHTTPHeaderField: "Authorization")
         }
         
         let task = client.urlSession.dataTaskWithRequest(request, completionHandler: completionHandler)
@@ -36,7 +36,7 @@ class HttpRequestFactory: RequestFactory {
     func buildUserSignUp(username username: String? = nil, password: String? = nil) -> Request {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.User(client: client), client: client)
         
-        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         var bodyObject: [String : String] = [:]
         if let username = username {
@@ -53,7 +53,7 @@ class HttpRequestFactory: RequestFactory {
         let request = HttpRequest(httpMethod: .Delete, endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
         
         //FIXME: make it configurable
-        request.request.addValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
+        request.request.setValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
         
         var bodyObject: [String : Bool] = [:]
         if hard {
@@ -65,7 +65,7 @@ class HttpRequestFactory: RequestFactory {
     
     func buildUserLogin(username username: String, password: String) -> Request {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserLogin(client: client), client: client)
-        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = [
             "username" : username,
@@ -79,7 +79,7 @@ class HttpRequestFactory: RequestFactory {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserExistsByUsername(client: client), client: client)
         request.request.HTTPMethod = "POST"
         
-        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = ["username" : username]
         request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
@@ -119,7 +119,7 @@ class HttpRequestFactory: RequestFactory {
             client: client
         )
         
-        request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
@@ -132,6 +132,40 @@ class HttpRequestFactory: RequestFactory {
             credential: client.activeUser,
             client: client
         )
+        return request
+    }
+    
+    func buildPushRegisterDevice(deviceToken: NSData) -> Request {
+        let request = HttpRequest(
+            httpMethod: .Post,
+            endpoint: Endpoint.PushRegisterDevice(client: client),
+            credential: client.activeUser,
+            client: client
+        )
+        
+        let bodyObject = [
+            "platform" : "ios",
+            "deviceId" : deviceToken.hexString()
+        ]
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        return request
+    }
+    
+    func buildPushUnRegisterDevice(deviceToken: NSData) -> Request {
+        let request = HttpRequest(
+            httpMethod: .Post,
+            endpoint: Endpoint.PushUnRegisterDevice(client: client),
+            credential: client.activeUser,
+            client: client
+        )
+        
+        let bodyObject = [
+            "platform" : "ios",
+            "deviceId" : deviceToken.hexString()
+        ]
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
 

@@ -42,42 +42,6 @@ class AppDataExecutorStrategy<T: Persistable where T: NSObject> {
         fatalError("Method \(__FILE__).\(__FUNCTION__):\(__LINE__) not implemented")
     }
     
-    func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: DataStore<T>.ObjectCompletionHandler? = nil) -> DataStore<T>.ObjectCompletionHandler? {
-        var completionHandler = completionHandler
-        if let originalCompletionHandler = completionHandler {
-            completionHandler = { obj, error in
-                dispatch_async(queue, { () -> Void in
-                    originalCompletionHandler(obj, error)
-                })
-            }
-        }
-        return completionHandler
-    }
-    
-    func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> DataStore<T>.ArrayCompletionHandler? {
-        var completionHandler = completionHandler
-        if let originalCompletionHandler = completionHandler {
-            completionHandler = { objs, error in
-                dispatch_async(queue, { () -> Void in
-                    originalCompletionHandler(objs, error)
-                })
-            }
-        }
-        return completionHandler
-    }
-    
-    func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> DataStore<T>.UIntCompletionHandler? {
-        var completionHandler = completionHandler
-        if let originalCompletionHandler = completionHandler {
-            completionHandler = { objs, error in
-                dispatch_async(queue, { () -> Void in
-                    originalCompletionHandler(objs, error)
-                })
-            }
-        }
-        return completionHandler
-    }
-    
     func fromJson(json: [String : AnyObject]) -> T {
         let obj = T.self.init()
         for key in T.kinveyPropertyMapping().keys {

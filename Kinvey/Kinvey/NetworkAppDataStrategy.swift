@@ -32,30 +32,46 @@ class NetworkAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataE
     
     override func get(id: String, completionHandler: DataStore<T>.ObjectCompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataGetById(collectionName: collectionName, id: id)
-        request.execute() { data, response, error in
-            var obj: T? = nil
-            if let response = response where response.isResponseOK {
-                obj = self.client.responseParser.parse(data, type: T.self)
+        Promise<T> { fulfill, reject in
+            request.execute() { data, response, error in
+                if let response = response where response.isResponseOK, let obj = self.client.responseParser.parse(data, type: T.self) {
+                    if let cache = self.cache {
+                        cache.saveEntity(obj.toJson())
+                    }
+                    fulfill(obj)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
             }
-            if let cache = self.cache, let obj = obj where error == nil {
-                cache.saveEntity(obj.toJson())
-            }
-            self.dispatchAsyncTo(completionHandler)?(obj, error)
+        }.then { obj in
+            completionHandler?(obj, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }
     
     override func find(query: Query, completionHandler: DataStore<T>.ArrayCompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: collectionName, query: query)
-        request.execute() { data, response, error in
-            var array: [T]? = nil
-            if let response = response where response.isResponseOK {
-                array = self.client.responseParser.parseArray(data, type: T.self)
+        Promise<[T]> { fulfill, reject in
+            request.execute() { data, response, error in
+                if let response = response where response.isResponseOK, let array = self.client.responseParser.parseArray(data, type: T.self) {
+                    if let cache = self.cache {
+                        cache.saveEntities(self.toJson(array))
+                    }
+                    fulfill(array)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
             }
-            if let cache = self.cache, let array = array where error == nil {
-                cache.saveEntities(self.toJson(array))
-            }
-            self.dispatchAsyncTo(completionHandler)?(array, error)
+        }.then { array in
+            completionHandler?(array, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }
@@ -95,18 +111,26 @@ class NetworkAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataE
     
     override func remove(query: Query, completionHandler: DataStore<T>.UIntCompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: collectionName, query: query)
-        request.execute() { data, response, error in
-            var count: UInt? = nil
-            if let response = response where response.isResponseOK {
-                let results = self.client.responseParser.parse(data, type: [String : AnyObject].self)
-                if let results = results, let _count = results["count"] as? UInt {
-                    count = _count
+        Promise<UInt> { fulfill, reject in
+            request.execute() { data, response, error in
+                if let response = response where response.isResponseOK,
+                    let results = self.client.responseParser.parse(data, type: [String : AnyObject].self),
+                    let count = results["count"] as? UInt
+                {
+                    if let cache = self.cache {
+                        cache.removeEntitiesByQuery(query)
+                    }
+                    fulfill(count)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
                 }
             }
-            if let cache = self.cache where error == nil {
-                cache.removeEntitiesByQuery(query)
-            }
-            self.dispatchAsyncTo(completionHandler)?(count, error)
+        }.then { count in
+            completionHandler?(count, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }

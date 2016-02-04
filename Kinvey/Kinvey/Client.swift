@@ -58,6 +58,7 @@ public class Client: NSObject, Credential {
     public var responseParser: ResponseParser!
     public private(set) var cacheManager: CacheManager!
     public private(set) var syncManager: SyncManager!
+    public private(set) var push: Push!
     
     public var userType = User.self
     
@@ -67,6 +68,7 @@ public class Client: NSObject, Credential {
         
         super.init()
         
+        push = Push(client: self)
         networkRequestFactory = HttpRequestFactory(client: self)
         responseParser = JsonResponseParser(client: self)
     }

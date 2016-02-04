@@ -19,7 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
-        client = Kinvey.sharedClient.initialize(appKey: "kid_WJg0WNTX5e", appSecret: "b321ba722b1c4dc4a084ad03a361a45a")
+//        client = Kinvey.sharedClient.initialize(appKey: "kid_WJg0WNTX5e", appSecret: "b321ba722b1c4dc4a084ad03a361a45a")
+        client = Kinvey.sharedClient.initialize(appKey: "kid_Wy35WH6X9e", appSecret: "2498a81d1e9f4920b977b66ad62815e9", apiHostName: NSURL(string: "https://v3yk1n-kcs.kinvey.com/")!)
+//        client = Kinvey.sharedClient.initialize(appKey: "kid_bycUAdCPTg", appSecret: "a6126fec6fa340c28a3f0eaeecfd234a")
         
         let store = DataStore<Recipe>.getInstance(.Sync)
         let chocolateCake = Recipe(name: "Chocolate Cake")
@@ -48,6 +50,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
             }
+        }.then { user in
+            self.client.push.registerForPush()
         }.then { _ in
             return Promise<Recipe> { fulfill, reject in
                 store.save(chocolateCake) { recipe, error in
@@ -180,7 +184,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
+    
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        client.push.application(application, didReceiveRemoteNotification: userInfo)
+    }
+    
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject], fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
+        client.push.application(application, didReceiveRemoteNotification: userInfo)
+        if UIApplication.sharedApplication().applicationState != .Active, let _ = userInfo["id"] {
+            let notification = UILocalNotification()
+            notification.alertBody = "New recipe available!"
+            UIApplication.sharedApplication().scheduleLocalNotification(notification)
+        }
+        completionHandler(.NewData)
+    }
+    
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        client.push.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) { success, error in
+            print("\(success)")
+            if let error = error {
+                print("\(error)")
+            }
+            
+        }
+    }
+    
+    func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
+        client.push.application(application, didFailToRegisterForRemoteNotificationsWithError: error)
+    }
 
 }
-
