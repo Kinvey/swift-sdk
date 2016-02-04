@@ -225,6 +225,10 @@ extension Endpoint {
             let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
             let urlQuery = "?query=\(queryStr!)"
             return NSURL(string: url + urlQuery)!
+        case .PushRegisterDevice(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")
+        case .PushUnRegisterDevice(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/unregister-device")
         case Blob(let client, let tls):
             let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/").absoluteString
             let urlQuery = tls ? "?tls=true" : ""

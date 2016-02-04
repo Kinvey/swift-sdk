@@ -1,15 +1,14 @@
-ROOT_FOLDER=Kinvey
 CONFIGURATION?=Release
 
-all: clean build
+all: build
 
 clean:
 	rm -Rf build
 
 build:
-	xcodebuild -workspace KinveyKit.xcworkspace -scheme Kinvey -configuration $(CONFIGURATION) -sdk iphoneos ONLY_ACTIVE_ARCH=NO
-	xcodebuild -workspace KinveyKit.xcworkspace -scheme Kinvey -configuration $(CONFIGURATION) -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
-	cd $(ROOT_FOLDER)/build; \
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration $(CONFIGURATION) BUILD_DIR=$(PWD)/build -sdk iphoneos
+	xcodebuild -workspace Kinvey.xcworkspace -scheme Kinvey -configuration $(CONFIGURATION) BUILD_DIR=$(PWD)/build -sdk iphonesimulator
+	cd $(PWD)/build; \
 	mkdir -p $(CONFIGURATION)-universal; \
 	cp -R $(CONFIGURATION)-iphoneos/Kinvey.framework $(CONFIGURATION)-universal; \
 	cp -R $(CONFIGURATION)-iphonesimulator/Kinvey.framework/Modules/Kinvey.swiftmodule/* $(CONFIGURATION)-universal/Kinvey.framework/Modules/Kinvey.swiftmodule; \

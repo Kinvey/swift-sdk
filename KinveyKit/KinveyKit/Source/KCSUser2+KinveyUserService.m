@@ -829,7 +829,9 @@ static NSString* micApiVersion = nil;
 }
 
 #pragma mark - User Object Management
-+ (void) setupActiveUser:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock checkAuth:(BOOL) checkAuth
++(void)setupActiveUser:(NSDictionary*)body
+            completion:(KCSUser2CompletionBlock)completionBlock
+             checkAuth:(BOOL)checkAuth
 {
     if (![body isKindOfClass:[NSDictionary class]]) {
         //check data type in case server is corrupted, yes this has happened
