@@ -97,15 +97,27 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
     }
     
     override func remove(query: Query, completionHandler: DataStore<T>.UIntCompletionHandler?) -> Request {
-        let count = self.cache?.removeEntitiesByQuery(query)
+        let count = self.cache!.removeEntitiesByQuery(query)
         let request = LocalRequest() {
             let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: self.collectionName, query: query) as? HttpRequest
             if let sync = self.sync {
                 sync.savePendingOperation(sync.createPendingOperation(request!.request, objectId: nil))
             }
         }
-        request.execute() { data, response, error in
-            self.dispatchAsyncTo(completionHandler)?(count, error)
+        Promise<UInt> { fulfill, reject in
+            request.execute() { data, response, error in
+                if let response = response where response.isResponseOK {
+                    fulfill(count)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+        }.then { count in
+            completionHandler?(count, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }

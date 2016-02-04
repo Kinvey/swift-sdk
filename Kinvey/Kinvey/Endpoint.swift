@@ -14,11 +14,17 @@ public enum Endpoint {
     case UserById(client: Client, userId: String)
     case UserExistsByUsername(client: Client)
     case UserLogin(client: Client)
+    
     case OAuthAuth(client: Client, redirectURI: NSURL)
     case OAuthToken(client: Client)
+    
     case AppData(client: Client, collectionName: String)
     case AppDataById(client: Client, collectionName: String, id: String)
     case AppDataByQuery(client: Client, collectionName: String, query: Query)
+    
+    case PushRegisterDevice(client: Client)
+    case PushUnRegisterDevice(client: Client)
+    
     case Blob(client: Client, tls: Bool)
     
     case URL(url: NSURL)

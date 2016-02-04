@@ -130,11 +130,13 @@
 		57A2ED8E1C49D20B006D26A9 /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */; };
 		57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */; };
 		57A2ED961C4D5F74006D26A9 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
+		57B0E9501C5FF52200BA984F /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
 		57B6A4F61C56A622000584CC /* AppDataExecutorStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B6A4F51C56A622000584CC /* AppDataExecutorStrategy.swift */; };
 		57B6A4F81C56A9E0000584CC /* LocalAppDataExecutorStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B6A4F71C56A9E0000584CC /* LocalAppDataExecutorStrategy.swift */; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
 		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
+		57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB87E71C62B0F6002BA684 /* NSData.swift */; };
 		57E1C39F1C17B39400578974 /* CachedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C39E1C17B39400578974 /* CachedStore.swift */; };
 		57E1C3A31C17B3FF00578974 /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A21C17B3FF00578974 /* Query.swift */; };
 		57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A61C17B4F300578974 /* Persistable.swift */; };
@@ -482,11 +484,13 @@
 		57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
 		57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		57A2ED951C4D5F74006D26A9 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		57B0E94F1C5FF52200BA984F /* Push.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Push.swift; sourceTree = "<group>"; };
 		57B6A4F51C56A622000584CC /* AppDataExecutorStrategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDataExecutorStrategy.swift; sourceTree = "<group>"; };
 		57B6A4F71C56A9E0000584CC /* LocalAppDataExecutorStrategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalAppDataExecutorStrategy.swift; sourceTree = "<group>"; };
 		57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalRequest.swift; sourceTree = "<group>"; };
 		57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalResponse.swift; sourceTree = "<group>"; };
 		57C71DC71C3EFBF900B1BEF2 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		57DB87E71C62B0F6002BA684 /* NSData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSData.swift; sourceTree = "<group>"; };
 		57E1C39E1C17B39400578974 /* CachedStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedStore.swift; sourceTree = "<group>"; };
 		57E1C3A21C17B3FF00578974 /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
 		57E1C3A61C17B4F300578974 /* Persistable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistable.swift; sourceTree = "<group>"; };
@@ -1186,6 +1190,7 @@
 			children = (
 				5783B5081C19F6420077F8A6 /* KinveyKit */,
 				576E95A51C1FC2B300258CC3 /* NSPredicate-MongoDB-Adaptor */,
+				57DB87E91C62B1CB002BA684 /* Extensions */,
 				57A27C841C178F17000DF951 /* Kinvey.h */,
 				57A27C861C178F17000DF951 /* Info.plist */,
 				57A27C9B1C178FAC000DF951 /* Kinvey.swift */,
@@ -1225,6 +1230,7 @@
 				57B6A4F51C56A622000584CC /* AppDataExecutorStrategy.swift */,
 				578FA7D91C5304D9005C0694 /* NetworkAppDataStrategy.swift */,
 				57B6A4F71C56A9E0000584CC /* LocalAppDataExecutorStrategy.swift */,
+				57B0E94F1C5FF52200BA984F /* Push.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -1243,6 +1249,14 @@
 				57A2ED951C4D5F74006D26A9 /* Media.xcassets */,
 			);
 			path = KinveyTests;
+			sourceTree = "<group>";
+		};
+		57DB87E91C62B1CB002BA684 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				57DB87E71C62B0F6002BA684 /* NSData.swift */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 		61E2DD2F0706218F3CFE58DE /* Pods */ = {
@@ -1494,6 +1508,7 @@
 				57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */,
 				5783B6601C1A12BD0077F8A6 /* KCS_FMDatabase.m in Sources */,
 				576E95CF1C222B8300258CC3 /* KCS_CLLocation_Realm.m in Sources */,
+				57B0E9501C5FF52200BA984F /* Push.swift in Sources */,
 				574912711C59323B00EA4F26 /* StoreType.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
 				57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */,
@@ -1509,6 +1524,7 @@
 				5783B62A1C1A08B90077F8A6 /* KCSAppdataStore.m in Sources */,
 				57A27C9C1C178FAC000DF951 /* Kinvey.swift in Sources */,
 				5783B6251C1A07800077F8A6 /* KCSClient.m in Sources */,
+				57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */,
 				5783B62F1C1A095C0077F8A6 /* KCSClient+KinveyDataStore.m in Sources */,
 				5706FEC11C1F93210037E7D0 /* KinveyEntity.m in Sources */,
 				576E95DB1C222D8900258CC3 /* KCSAclRealm.m in Sources */,
@@ -1597,23 +1613,12 @@
 		577C9E5D1C1CEEC100BF49EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEBUGGING_SYMBOLS = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
 		577C9E5E1C1CEEC100BF49EE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};

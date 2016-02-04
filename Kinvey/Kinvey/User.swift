@@ -14,9 +14,9 @@ public class User: NSObject, Credential {
     
     public static let PersistableUsernameKey = "username"
     
-    public typealias UserHandler = (user: User?, error: ErrorType?) -> Void
-    public typealias VoidHandler = (error: ErrorType?) -> Void
-    public typealias ExistsHandler = (exists: Bool, error: ErrorType?) -> Void
+    public typealias UserHandler = (User?, ErrorType?) -> Void
+    public typealias VoidHandler = (ErrorType?) -> Void
+    public typealias ExistsHandler = (Bool, ErrorType?) -> Void
     
     public private(set) var userId: String
     public private(set) var acl: Acl?
@@ -28,16 +28,22 @@ public class User: NSObject, Credential {
     internal let client: Client
     
     public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        return _signup(username: username, password: password, client: client, completionHandler: dispatchAsyncTo(completionHandler))
-    }
-    
-    internal class func _signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password)
-        request.execute() { (data, response, error) in
-            if let response = response where response.isResponseOK {
-                client.activeUser = client.responseParser.parse(data, type: client.userType)
+        Promise<User> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK {
+                    client.activeUser = client.responseParser.parse(data, type: client.userType)
+                    fulfill(client.activeUser!)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
             }
-            completionHandler?(user: client.activeUser, error: error)
+        }.then { user in
+            completionHandler?(user, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }
@@ -45,22 +51,28 @@ public class User: NSObject, Credential {
     //TODO: review the method name for delete a user
     
     public class func destroy(userId userId: String, hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
-        return _destroy(userId: userId, hard: hard, client: client, completionHandler: dispatchAsyncTo(completionHandler))
+        let request = client.networkRequestFactory.buildUserDelete(userId: userId, hard: hard)
+        Promise<Void> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK {
+                    client.activeUser = nil
+                    fulfill()
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+        }.then { _ in
+            completionHandler?(nil)
+        }.error { error in
+            completionHandler?(error)
+        }
+        return request
     }
     
     public func destroy(hard hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
-        return User._destroy(userId: userId, hard: hard, client: client, completionHandler: User.dispatchAsyncTo(completionHandler))
-    }
-    
-    internal class func _destroy(userId userId: String, hard: Bool, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
-        let request = client.networkRequestFactory.buildUserDelete(userId: userId, hard: hard)
-        request.execute() { (data, response, error) in
-            if let response = response where response.isResponseOK {
-                client.activeUser = nil
-            }
-            completionHandler?(error: error)
-        }
-        return request
+        return User.destroy(userId: userId, hard: hard, client: client, completionHandler: completionHandler)
     }
     
     public class func login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
@@ -82,9 +94,9 @@ public class User: NSObject, Credential {
                 }
             }
         }.then { user in
-            completionHandler?(user: client.activeUser, error: nil)
+            completionHandler?(client.activeUser, nil)
         }.error { error in
-            completionHandler?(user: nil, error: error)
+            completionHandler?(nil, error)
         }
         return request
     }
@@ -96,35 +108,41 @@ public class User: NSObject, Credential {
     }
     
     public class func exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) -> Request {
-        return _exists(username: username, client: client, completionHandler: dispatchAsyncTo(completionHandler))
-    }
-    
-    internal class func _exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserExists(username: username)
-        request.execute() { (data, response, error) in
-            var usernameExists = false
-            if let response = response where response.isResponseOK {
-                if let json = client.responseParser.parse(data, type: [String : Bool].self), let _usernameExists = json["usernameExists"] {
-                    usernameExists = _usernameExists
+        Promise<Bool> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK, let json = client.responseParser.parse(data, type: [String : Bool].self), let usernameExists = json["usernameExists"] {
+                    fulfill(usernameExists)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
                 }
             }
-            completionHandler?(exists: usernameExists, error: error)
+        }.then { exists in
+            completionHandler?(exists, nil)
+        }.error { error in
+            completionHandler?(false, error)
         }
         return request
     }
     
     public class func get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        return _get(userId: userId, client: client, completionHandler: dispatchAsyncTo(completionHandler))
-    }
-    
-    internal class func _get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserGet(userId: userId)
-        request.execute() { (data, response, error) in
-            var user: User?
-            if let response = response where response.isResponseOK {
-                user = client.responseParser.parse(data, type: User.self)
+        Promise<User> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK, let user = client.responseParser.parse(data, type: User.self) {
+                    fulfill(user)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
             }
-            completionHandler?(user: user, error: error)
+        }.then { user in
+            completionHandler?(user, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }
@@ -185,16 +203,22 @@ public class User: NSObject, Credential {
     }
     
     public func save(client client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        return _save(client: client, completionHandler: self.dynamicType.dispatchAsyncTo(completionHandler))
-    }
-    
-    internal func _save(client client: Client, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserSave(user: self)
-        request.execute() { (data, response, error) in
-            if let response = response where response.isResponseOK {
-                client.activeUser = client.responseParser.parse(data, type: client.userType)
+        Promise<User> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK, let user = client.responseParser.parse(data, type: client.userType) {
+                    client.activeUser = user
+                    fulfill(user)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
             }
-            completionHandler?(user: client.activeUser, error: error)
+        }.then { user in
+            completionHandler?(client.activeUser, nil)
+        }.error { error in
+            completionHandler?(nil, error)
         }
         return request
     }
@@ -220,7 +244,7 @@ public class User: NSObject, Credential {
                 user?.email = kcsUser.email
                 client.activeUser = user
             }
-            completionHandler?(user: user, error: error)
+            completionHandler?(user, error)
         }
         micVC.client = client
         let navigationVC = UINavigationController(rootViewController: micVC)
@@ -230,44 +254,6 @@ public class User: NSObject, Credential {
             viewController = presentedViewController;
         }
         viewController?.presentViewController(navigationVC, animated: true, completion: nil)
-    }
-    
-    //MARK: - Dispatch Async To
-    
-    private class func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: UserHandler? = nil) -> UserHandler? {
-        var completionHandler = completionHandler
-        if let originalCompletionHandler = completionHandler {
-            completionHandler = { user, error in
-                dispatch_async(queue, { () -> Void in
-                    originalCompletionHandler(user: user, error: error)
-                })
-            }
-        }
-        return completionHandler
-    }
-    
-    private class func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: VoidHandler? = nil) -> VoidHandler? {
-        var completionHandler = completionHandler
-        if let originalCompletionHandler = completionHandler {
-            completionHandler = { error in
-                dispatch_async(queue, { () -> Void in
-                    originalCompletionHandler(error: error)
-                })
-            }
-        }
-        return completionHandler
-    }
-    
-    private class func dispatchAsyncTo(queue queue: dispatch_queue_t = dispatch_get_main_queue(), _ completionHandler: ExistsHandler? = nil) -> ExistsHandler? {
-        var completionHandler = completionHandler
-        if let originalCompletionHandler = completionHandler {
-            completionHandler = { exists, error in
-                dispatch_async(queue, { () -> Void in
-                    originalCompletionHandler(exists: exists, error: error)
-                })
-            }
-        }
-        return completionHandler
     }
 
 }
