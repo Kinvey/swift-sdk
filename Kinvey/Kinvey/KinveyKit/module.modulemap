@@ -10,6 +10,7 @@ module KinveyKit {
     header "../../../KinveyKit/KinveyKit/Source/KCSCacheManager.h"
     header "../../../KinveyKit/KinveyKit/Source/KCSSync.h"
     header "../../../KinveyKit/KinveyKit/Source/KCSSyncManager.h"
+    header "../../../KinveyKit/KinveyKit/Source/KCSPush.h"
     header "../../../KinveyKit/KinveyKit/3rdParty/Reachability/KCSReachability.h"
     export *
 }
