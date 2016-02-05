@@ -19,9 +19,9 @@ PODS:
     - PromiseKit/CorePromise
   - PromiseKit/UIKit (3.0.2):
     - PromiseKit/CorePromise
-  - Realm (0.97.1):
-    - Realm/Headers (= 0.97.1)
-  - Realm/Headers (0.97.1)
+  - Realm (0.98.0):
+    - Realm/Headers (= 0.98.0)
+  - Realm/Headers (0.98.0)
 
 DEPENDENCIES:
   - KeychainAccess
@@ -32,6 +32,6 @@ SPEC CHECKSUMS:
   KeychainAccess: 9b7e49e48277e329b1b3195e54697ed313d30acf
   OMGHTTPURLRQ: 633f98ee745aeda02345935a52eec1784cddb589
   PromiseKit: ab1a380f7a30cf8cce663a2411e8b3580b10313d
-  Realm: 6854f49cc788171573a0605fe5e55d3224bc39f9
+  Realm: 28efc598b8b1b378d27a222d9fc037a29ae68642
 
 COCOAPODS: 0.39.0
