@@ -25,4 +25,9 @@ public protocol RequestFactory {
     func buildPushRegisterDevice(deviceToken: NSData) -> Request
     func buildPushUnRegisterDevice(deviceToken: NSData) -> Request
     
+    func buildBlobUploadFile(file: File) -> Request
+    func buildBlobDownloadFile(file: File, ttl: TTL?) -> Request
+    func buildBlobDeleteFile(file: File) -> Request
+    func buildBlobQueryFile(query: Query, ttl: TTL?) -> Request
+    
 }

@@ -188,6 +188,23 @@ class HttpRequest: Request {
 
 }
 
+extension Query {
+    
+    func urlQueryStringEncoded() -> String {
+        let queryObj: [NSObject : AnyObject]!
+        do {
+            queryObj = try MongoDBPredicateAdaptor.queryDictFromPredicate(predicate)
+        } catch _ {
+            queryObj = [:]
+        }
+        let data = try! NSJSONSerialization.dataWithJSONObject(queryObj, options: [])
+        var queryStr = String(data: data, encoding: NSUTF8StringEncoding)!
+        queryStr = queryStr.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!
+        return queryStr
+    }
+    
+}
+
 extension Endpoint {
     
     func url() -> NSURL {
@@ -213,26 +230,46 @@ extension Endpoint {
         case AppDataById(let client, let collectionName, let id):
             return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
         case AppDataByQuery(let client, let collectionName, let query):
-            let queryObj: [NSObject : AnyObject]!
-            do {
-                queryObj = try MongoDBPredicateAdaptor.queryDictFromPredicate(query.predicate)
-            } catch _ {
-                queryObj = [:]
-            }
-            let data = try! NSJSONSerialization.dataWithJSONObject(queryObj, options: [])
-            var queryStr = NSString(data: data, encoding: NSUTF8StringEncoding)
-            queryStr = queryStr!.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())
+            let queryStr = query.urlQueryStringEncoded()
             let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
-            let urlQuery = "?query=\(queryStr!)"
+            let urlQuery = "?query=\(queryStr)"
             return NSURL(string: url + urlQuery)!
         case .PushRegisterDevice(let client):
             return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")
         case .PushUnRegisterDevice(let client):
             return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/unregister-device")
-        case Blob(let client, let tls):
-            let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/").absoluteString
-            let urlQuery = tls ? "?tls=true" : ""
+        case .BlobById(let client, let fileId):
+            return BlobDownload(client: client, fileId: fileId, query: nil, tls: false, ttlInSeconds: nil).url()
+        case BlobUpload(let client, let fileId, let tls):
+            return BlobDownload(client: client, fileId: fileId, query: nil, tls: tls, ttlInSeconds: nil).url()
+        case BlobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
+            let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")").absoluteString
+            
+            var queryParams: [String : String] = [:]
+            
+            if let query = query {
+                queryParams["query"] = query.urlQueryStringEncoded()
+            }
+            
+            if tls {
+                queryParams["tls"] = "true"
+            }
+            
+            if let ttlInSeconds = ttlInSeconds {
+                queryParams["ttl_in_seconds"] = String(ttlInSeconds)
+            }
+            
+            var urlQuery = queryParams.count > 0 ? "?" : ""
+            for queryItem in queryParams {
+                urlQuery += "\(queryItem.0)=\(queryItem.1)&"
+            }
+            if urlQuery.characters.count > 0 {
+                urlQuery.removeAtIndex(urlQuery.endIndex.predecessor())
+            }
+            
             return NSURL(string: url + urlQuery)!
+        case .BlobByQuery(let client, let query):
+            return BlobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil).url()
         case URL(let url):
             return url
         }

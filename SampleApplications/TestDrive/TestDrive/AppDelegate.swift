@@ -26,6 +26,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let store = DataStore<Recipe>.getInstance(.Sync)
         let chocolateCake = Recipe(name: "Chocolate Cake")
         
+        let reachability = Reachability.reachabilityForInternetConnection()
+        print("Reachable: \(reachability.isReachable())")
+        print("ReachableViaWiFi: \(reachability.isReachableViaWiFi())")
+        print("ReachableViaWWAN: \(reachability.isReachableViaWWAN())")
+        
         Promise<User> { fulfill, reject in
             if let user = client.activeUser {
                 fulfill(user)
@@ -50,8 +55,58 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
             }
-        }.then { user in
+        }.then { _ in
             self.client.push.registerForPush()
+        }.then { _ in
+            return Promise<File> { fulfill, reject in
+                let image = UIImage(named: "Kinvey")!
+                let file = File()
+                FileStore.getInstance().upload(file, image: image) { file, error in
+                    if let file = file {
+                        fulfill(file)
+                    } else if let error = error {
+                        reject(error)
+                    } else {
+                        abort()
+                    }
+                }
+            }
+        }.then { file in
+            return Promise<File> { fulfill, reject in
+                FileStore.getInstance().download(file) { file, data, error in
+                    if let file = file, let _ = data {
+                        fulfill(file)
+                    } else if let error = error {
+                        reject(error)
+                    } else {
+                        abort()
+                    }
+                }
+            }
+//        }.then { file in
+//            return Promise<UInt> { fulfill, reject in
+//                FileStore.getInstance().remove(file) { count, error in
+//                    if let count = count {
+//                        fulfill(count)
+//                    } else if let error = error {
+//                        reject(error)
+//                    } else {
+//                        abort()
+//                    }
+//                }
+//            }
+        }.then { file in
+            return Promise<[File]> { fulfill, reject in
+                FileStore.getInstance().find() { files, error in
+                    if let files = files {
+                        fulfill(files)
+                    } else if let error = error {
+                        reject(error)
+                    } else {
+                        abort()
+                    }
+                }
+            }
         }.then { _ in
             return Promise<Recipe> { fulfill, reject in
                 store.save(chocolateCake) { recipe, error in
@@ -65,23 +120,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
             }
-        }.then { recipe in
-            return Promise<Recipe> { fulfill, reject in
-                guard let recipeId = recipe.id else {
-                    reject(Kinvey.Error.ObjectIdMissing)
-                    return
-                }
-                store.findById(recipeId) { recipe, error in
-                    if let recipe = recipe {
-                        print("Recipe found by ID: \(recipe.toJson())")
-                        fulfill(recipe)
-                    } else if let error = error {
-                        reject(error)
-                    } else {
-                        abort()
-                    }
-                }
-            }
+//        }.then { recipe in
+//            return Promise<Recipe> { fulfill, reject in
+//                guard let recipeId = recipe.id else {
+//                    reject(Kinvey.Error.ObjectIdMissing)
+//                    return
+//                }
+//                store.findById(recipeId) { recipe, error in
+//                    if let recipe = recipe {
+//                        print("Recipe found by ID: \(recipe.toJson())")
+//                        fulfill(recipe)
+//                    } else if let error = error {
+//                        reject(error)
+//                    } else {
+//                        abort()
+//                    }
+//                }
+//            }
         }.then { recipe in
             return Promise<Recipe> { fulfill, reject in
                 recipe.name = "Dark \(recipe.name!)"
@@ -96,22 +151,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
             }
-        }.then { _ in
-            return Promise<[Recipe]> { fulfill, reject in
-                store.find() { recipes, error in
-                    if let recipes = recipes {
-                        print("Recipes found: \(recipes.count)")
-                        for recipe in recipes {
-                            print("Recipe found by ID: \(recipe.toJson())")
-                        }
-                        fulfill(recipes)
-                    } else if let error = error {
-                        reject(error)
-                    } else {
-                        abort()
-                    }
-                }
-            }
+//        }.then { _ in
+//            return Promise<[Recipe]> { fulfill, reject in
+//                store.find() { recipes, error in
+//                    if let recipes = recipes {
+//                        print("Recipes found: \(recipes.count)")
+//                        for recipe in recipes {
+//                            print("Recipe found by ID: \(recipe.toJson())")
+//                        }
+//                        fulfill(recipes)
+//                    } else if let error = error {
+//                        reject(error)
+//                    } else {
+//                        abort()
+//                    }
+//                }
+//            }
         }.then { _ in
             return Promise<(UInt, [Recipe]?)> { fulfill, reject in
                 try store.sync { count, results, error in

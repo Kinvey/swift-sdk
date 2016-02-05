@@ -11,7 +11,7 @@ import KinveyKit
 import PromiseKit
 import KeychainAccess
 
-public class Push {
+public class Push: NSObject {
     
     public typealias BoolCompletionHandler = (Bool, ErrorType?) -> Void
     
@@ -20,23 +20,23 @@ public class Push {
     private var keychain:Keychain {
         get {
             return Keychain(service: "com.kinvey.KinveyKit.\(client.appKey!)")
+                .accessibility(.AfterFirstUnlockThisDeviceOnly)
         }
     }
     
-    private static let authTokenKey = "authToken"
+    private static let deviceTokenKey = "deviceToken"
     
     private var deviceToken: NSData? {
         get {
-            return keychain[data: Push.authTokenKey]
+            return keychain[data: Push.deviceTokenKey]
         }
         set {
-            keychain[data: Push.authTokenKey] = newValue
+            keychain[data: Push.deviceTokenKey] = newValue
         }
     }
     
     init(client: Client) {
         self.client = client
-        deviceToken = keychain[data: Push.authTokenKey]
     }
     
     public func registerForPush() {
