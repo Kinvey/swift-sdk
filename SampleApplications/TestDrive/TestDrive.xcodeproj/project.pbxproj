@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		571F8B2F1C6286C300855248 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 571F8B2E1C6286C300855248 /* Kinvey.framework */; };
-		571F8B311C62870D00855248 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 571F8B2E1C6286C300855248 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		572821371C64227300373EC8 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 572821361C64227300373EC8 /* Kinvey.framework */; };
 		574912831C59670600EA4F26 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912821C59670600EA4F26 /* AppDelegate.swift */; };
 		574912851C59670600EA4F26 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912841C59670600EA4F26 /* ViewController.swift */; };
 		574912881C59670600EA4F26 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 574912861C59670600EA4F26 /* Main.storyboard */; };
@@ -44,7 +43,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				571F8B311C62870D00855248 /* Kinvey.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,7 +52,7 @@
 		2B0CB47F3A5E540AFD0E3E56 /* Pods-TestDrive.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestDrive.release.xcconfig"; path = "../../Pods/Target Support Files/Pods-TestDrive/Pods-TestDrive.release.xcconfig"; sourceTree = "<group>"; };
 		30BAC4BC4DB005C4186F6673 /* Pods_TestDrive.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestDrive.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		391FC4ACF84E818759287604 /* Pods-TestDrive.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestDrive.debug.xcconfig"; path = "../../Pods/Target Support Files/Pods-TestDrive/Pods-TestDrive.debug.xcconfig"; sourceTree = "<group>"; };
-		571F8B2E1C6286C300855248 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-exffrtwipaykqoebrnepayenmrat/Build/Products/Debug-iphoneos/Kinvey.framework"; sourceTree = "<group>"; };
+		572821361C64227300373EC8 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-exffrtwipaykqoebrnepayenmrat/Build/Products/Debug-iphoneos/Kinvey.framework"; sourceTree = "<group>"; };
 		5749127F1C59670600EA4F26 /* TestDrive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestDrive.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		574912821C59670600EA4F26 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		574912841C59670600EA4F26 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -76,7 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				571F8B2F1C6286C300855248 /* Kinvey.framework in Frameworks */,
+				572821371C64227300373EC8 /* Kinvey.framework in Frameworks */,
 				A2E195F0546AFC6CDA75FC64 /* Pods_TestDrive.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -101,7 +99,7 @@
 		571F8B411C62880600855248 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				571F8B2E1C6286C300855248 /* Kinvey.framework */,
+				572821361C64227300373EC8 /* Kinvey.framework */,
 				30BAC4BC4DB005C4186F6673 /* Pods_TestDrive.framework */,
 			);
 			name = Frameworks;
