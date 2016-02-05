@@ -18,21 +18,6 @@ class HttpRequestFactory: RequestFactory {
     
     typealias CompletionHandler = (NSData?, NSURLResponse?, NSError?) -> Void
     
-    func execute(request: NSMutableURLRequest, forceBasicAuthentication: Bool, completionHandler: (NSData?, NSURLResponse?, NSError?) -> Void) {
-        var authorization: String?
-        if !forceBasicAuthentication, let credential = client.activeUser as? Credential, let _authorization = credential.authorizationHeader {
-            authorization = _authorization
-        } else if let _authorization = client.authorizationHeader {
-            authorization = _authorization
-        }
-        if let authorization = authorization {
-            request.setValue(authorization, forHTTPHeaderField: "Authorization")
-        }
-        
-        let task = client.urlSession.dataTaskWithRequest(request, completionHandler: completionHandler)
-        task.resume()
-    }
-    
     func buildUserSignUp(username username: String? = nil, password: String? = nil) -> Request {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.User(client: client), client: client)
         
@@ -166,6 +151,69 @@ class HttpRequestFactory: RequestFactory {
         ]
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        return request
+    }
+    
+    func buildBlobUploadFile(file: File) -> Request {
+        let request = HttpRequest(
+            httpMethod: file.fileId == nil ? .Post : .Put,
+            endpoint: Endpoint.BlobUpload(client: client, fileId: file.fileId, tls: true),
+            credential: client.activeUser,
+            client: client
+        )
+        
+        var bodyObject: [String : AnyObject] = [
+            "_public" : file.publicAccessible
+        ]
+        
+        if let fileId = file.fileId {
+            bodyObject["_id"] = fileId
+        }
+        
+        if let fileName = file.fileName {
+            bodyObject["_filename"] = fileName
+        }
+        
+        if let size = file.size {
+            bodyObject["size"] = String(size)
+        }
+        
+        if let mimeType = file.mimeType {
+            bodyObject["mimeType"] = mimeType
+        }
+        
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        return request
+    }
+    
+    func buildBlobDownloadFile(file: File, ttl: TTL?) -> Request {
+        let request = HttpRequest(
+            httpMethod: .Get,
+            endpoint: Endpoint.BlobDownload(client: client, fileId: file.fileId!, query: nil, tls: true, ttlInSeconds: nil),
+            credential: client.activeUser,
+            client: client
+        )
+        return request
+    }
+    
+    func buildBlobDeleteFile(file: File) -> Request {
+        let request = HttpRequest(
+            httpMethod: .Delete,
+            endpoint: Endpoint.BlobById(client: client, fileId: file.fileId!),
+            credential: client.activeUser,
+            client: client
+        )
+        return request
+    }
+    
+    func buildBlobQueryFile(query: Query, ttl: TTL?) -> Request {
+        let request = HttpRequest(
+            httpMethod: .Get,
+            endpoint: Endpoint.BlobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil),
+            credential: client.activeUser,
+            client: client
+        )
         return request
     }
 

@@ -25,7 +25,10 @@ public enum Endpoint {
     case PushRegisterDevice(client: Client)
     case PushUnRegisterDevice(client: Client)
     
-    case Blob(client: Client, tls: Bool)
+    case BlobById(client: Client, fileId: String)
+    case BlobUpload(client: Client, fileId: String?, tls: Bool)
+    case BlobDownload(client: Client, fileId: String?, query: Query?, tls: Bool, ttlInSeconds: UInt?)
+    case BlobByQuery(client: Client, query: Query)
     
     case URL(url: NSURL)
     
