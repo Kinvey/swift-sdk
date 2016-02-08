@@ -190,11 +190,40 @@ class HttpRequest: Request {
 
 extension Query {
     
+    private func translateExpression(expression: NSExpression) -> NSExpression {
+        switch expression.expressionType {
+        case .KeyPathExpressionType:
+            return NSExpression(forKeyPath: persistableClass.kinveyPropertyMapping()[expression.keyPath] ?? expression.keyPath)
+        default:
+            return expression
+        }
+    }
+    
+    private func translatePredicate(predicate: NSPredicate) -> NSPredicate {
+        if let predicate = predicate as? NSComparisonPredicate {
+            return NSComparisonPredicate(
+                leftExpression: translateExpression(predicate.leftExpression),
+                rightExpression: translateExpression(predicate.rightExpression),
+                modifier: predicate.comparisonPredicateModifier,
+                type: predicate.predicateOperatorType,
+                options: predicate.options
+            )
+        } else if let predicate = predicate as? NSCompoundPredicate {
+            var subpredicates = [NSPredicate]()
+            for predicate in predicate.subpredicates as! [NSPredicate] {
+                subpredicates.append(translatePredicate(predicate))
+            }
+            return NSCompoundPredicate(type: predicate.compoundPredicateType, subpredicates: subpredicates)
+        }
+        return predicate
+    }
+    
     func urlQueryStringEncoded() -> String {
         let queryObj: [NSObject : AnyObject]!
-        do {
-            queryObj = try MongoDBPredicateAdaptor.queryDictFromPredicate(predicate)
-        } catch _ {
+        if let predicate = predicate {
+            let translatedPredicate = translatePredicate(predicate)
+            queryObj = try! MongoDBPredicateAdaptor.queryDictFromPredicate(translatedPredicate)
+        } else {
             queryObj = [:]
         }
         let data = try! NSJSONSerialization.dataWithJSONObject(queryObj, options: [])

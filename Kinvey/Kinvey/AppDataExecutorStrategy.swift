@@ -45,7 +45,11 @@ class AppDataExecutorStrategy<T: Persistable where T: NSObject> {
     func fromJson(json: [String : AnyObject]) -> T {
         let obj = T.self.init()
         for key in T.kinveyPropertyMapping().keys {
-            obj.setValue(json[key], forKey: key)
+            var value = json[key]
+            if value is NSNull {
+                value = nil
+            }
+            obj[key] = value
         }
         return obj
     }

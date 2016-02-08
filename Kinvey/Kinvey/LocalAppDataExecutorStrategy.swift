@@ -97,6 +97,7 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
     }
     
     override func remove(query: Query, completionHandler: DataStore<T>.UIntCompletionHandler?) -> Request {
+        query.persistableClass = T.self
         let count = self.cache!.removeEntitiesByQuery(query)
         let request = LocalRequest() {
             let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: self.collectionName, query: query) as? HttpRequest
@@ -184,7 +185,7 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
                 }
             })
         }
-        when(promises).then { results in
+        when(promises).thenInBackground { results in
             completionHandler?(UInt(results.count), nil)
         }.error { error in
             completionHandler?(nil, error)
@@ -199,7 +200,7 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
                 if let response = response where response.isResponseOK, let jsonArray = self.client.responseParser.parseArray(data, type: [String : AnyObject].self) {
                     array = T.fromJson(jsonArray)
                     
-                    if let cache = self.cache, let array = array where error == nil {
+                    if let cache = self.cache, let array = array where array.count > 0 {
                         var results = self.toJson(array)
                         for i in 0...array.count - 1 {
                             let json = jsonArray[i]
