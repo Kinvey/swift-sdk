@@ -12,6 +12,7 @@ public class Query: NSObject {
     
     public private(set) var predicate: NSPredicate?
     public private(set) var sortDescriptors: [NSSortDescriptor]?
+    var persistableClass: Persistable.Type!
     
     public init(predicate: NSPredicate?, sortDescriptors: [NSSortDescriptor]? = nil) {
         self.predicate = predicate

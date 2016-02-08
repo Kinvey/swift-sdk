@@ -24,5 +24,14 @@ target 'TestDrive' do
     pod 'Realm'
     pod 'PromiseKit'
     pod 'KeychainAccess'
+end
+
+target 'Bookshelf' do
+    xcodeproj 'SampleApplications/Bookshelf/Bookshelf.xcodeproj'
     
+    pod 'Realm'
+    pod 'PromiseKit'
+    pod 'KeychainAccess'
+    
+    pod 'SVProgressHUD'
 end
