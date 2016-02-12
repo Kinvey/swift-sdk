@@ -5,7 +5,10 @@
       location = "group:Kinvey/Kinvey.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Pods/Pods.xcodeproj">
+      location = "group:KinveyKit/KinveyKit.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Kinvey/Dependencies/modules/MongoDBPredicateAdaptor/MongoDBPredicateAdaptor.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:SampleApplications/MICSampleApp/MICSampleApp.xcodeproj">
@@ -15,8 +18,5 @@
    </FileRef>
    <FileRef
       location = "group:SampleApplications/TestDrive/TestDrive.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:SampleApplications/Bookshelf/Bookshelf.xcodeproj">
    </FileRef>
 </Workspace>

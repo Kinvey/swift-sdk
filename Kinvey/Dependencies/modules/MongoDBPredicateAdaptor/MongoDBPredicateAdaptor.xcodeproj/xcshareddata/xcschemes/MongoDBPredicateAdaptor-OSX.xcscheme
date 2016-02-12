@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "574F62A41C6D53D300765760"
-               BuildableName = "NSPredicateMongoDBAdaptorKit.framework"
+               BuildableName = "MongoDBPredicateAdaptorKit.framework"
                BlueprintName = "MongoDBPredicateAdaptor-OSX"
                ReferencedContainer = "container:MongoDBPredicateAdaptor.xcodeproj">
             </BuildableReference>
@@ -26,8 +26,7 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -44,7 +43,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "574F62A41C6D53D300765760"
-            BuildableName = "NSPredicateMongoDBAdaptorKit.framework"
+            BuildableName = "MongoDBPredicateAdaptorKit.framework"
             BlueprintName = "MongoDBPredicateAdaptor-OSX"
             ReferencedContainer = "container:MongoDBPredicateAdaptor.xcodeproj">
          </BuildableReference>
@@ -66,7 +65,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "574F62A41C6D53D300765760"
-            BuildableName = "NSPredicateMongoDBAdaptorKit.framework"
+            BuildableName = "MongoDBPredicateAdaptorKit.framework"
             BlueprintName = "MongoDBPredicateAdaptor-OSX"
             ReferencedContainer = "container:MongoDBPredicateAdaptor.xcodeproj">
          </BuildableReference>
@@ -84,7 +83,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "574F62A41C6D53D300765760"
-            BuildableName = "NSPredicateMongoDBAdaptorKit.framework"
+            BuildableName = "MongoDBPredicateAdaptorKit.framework"
             BlueprintName = "MongoDBPredicateAdaptor-OSX"
             ReferencedContainer = "container:MongoDBPredicateAdaptor.xcodeproj">
          </BuildableReference>

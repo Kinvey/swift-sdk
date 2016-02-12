@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import MongoDBPredicateAdaptor
+import MongoDBPredicateAdaptorKit
 
 enum HttpMethod {
     
