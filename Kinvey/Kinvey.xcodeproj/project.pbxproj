@@ -15,7 +15,12 @@
 		574912711C59323B00EA4F26 /* StoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* StoreType.swift */; };
 		574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912721C5932A700EA4F26 /* WritePolicy.swift */; };
 		574B0F281C6E64AF00CDC48F /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F271C6E64AF00CDC48F /* KinveyKit.framework */; };
-		574F632F1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574F632E1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework */; };
+		574B0F751C6E7E0E00CDC48F /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
+		574B0F771C6E7F3B00CDC48F /* MongoDBPredicateAdaptorKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F761C6E7F3B00CDC48F /* MongoDBPredicateAdaptorKit.framework */; };
+		574B0F791C6E7FAA00CDC48F /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; };
+		574B0F8C1C6E93B700CDC48F /* MongoDBPredicateAdaptorKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F761C6E7F3B00CDC48F /* MongoDBPredicateAdaptorKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		574B0F8D1C6E93F800CDC48F /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		574B0F8E1C6E941B00CDC48F /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5753BB3C1C23F29000EB9D3A /* SyncedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */; };
 		575772861C4728E5001D56F5 /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
 		576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* DataStore.swift */; };
@@ -88,6 +93,21 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		574B0F8B1C6E93AD00CDC48F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				574B0F8C1C6E93B700CDC48F /* MongoDBPredicateAdaptorKit.framework in CopyFiles */,
+				574B0F8D1C6E93F800CDC48F /* PromiseKit.framework in CopyFiles */,
+				574B0F8E1C6E941B00CDC48F /* KeychainAccess.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -97,7 +117,9 @@
 		574912701C59323B00EA4F26 /* StoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreType.swift; sourceTree = "<group>"; };
 		574912721C5932A700EA4F26 /* WritePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WritePolicy.swift; sourceTree = "<group>"; };
 		574B0F271C6E64AF00CDC48F /* KinveyKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KinveyKit.framework; path = "../KinveyKit/build/Release-universal/KinveyKit.framework"; sourceTree = "<group>"; };
-		574F632E1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MongoDBPredicateAdaptorKit.framework; path = "Dependencies/modules/NSPredicate-MongoDB-Adaptor/build/Release-ios/MongoDBPredicateAdaptorKit.framework"; sourceTree = "<group>"; };
+		574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
+		574B0F761C6E7F3B00CDC48F /* MongoDBPredicateAdaptorKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MongoDBPredicateAdaptorKit.framework; path = "Dependencies/modules/MongoDBPredicateAdaptor/build/Release-ios/MongoDBPredicateAdaptorKit.framework"; sourceTree = "<group>"; };
+		574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStoreTests.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
 		576E95A31C1FB10700258CC3 /* DataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
@@ -154,9 +176,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				574F632F1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework in Frameworks */,
 				574B0F281C6E64AF00CDC48F /* KinveyKit.framework in Frameworks */,
 				5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */,
+				574B0F771C6E7F3B00CDC48F /* MongoDBPredicateAdaptorKit.framework in Frameworks */,
+				574B0F751C6E7E0E00CDC48F /* PromiseKit.framework in Frameworks */,
+				574B0F791C6E7FAA00CDC48F /* KeychainAccess.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,8 +293,10 @@
 			isa = PBXGroup;
 			children = (
 				5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */,
+				574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */,
+				574B0F761C6E7F3B00CDC48F /* MongoDBPredicateAdaptorKit.framework */,
+				574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */,
 				574B0F271C6E64AF00CDC48F /* KinveyKit.framework */,
-				574F632E1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -342,6 +368,7 @@
 				57A27C7D1C178F17000DF951 /* Frameworks */,
 				57A27C7E1C178F17000DF951 /* Headers */,
 				57A27C7F1C178F17000DF951 /* Resources */,
+				574B0F8B1C6E93AD00CDC48F /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -671,6 +698,8 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Dependencies/modules/NSPredicate-MongoDB-Adaptor/build/Release-ios",
 					"$(PROJECT_DIR)Kit/build/Release-universal",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Dependencies/modules/MongoDBPredicateAdaptor/build/Release-ios",
 				);
 				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
@@ -679,7 +708,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = Kinvey/KinveyKit;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -696,6 +724,8 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Dependencies/modules/NSPredicate-MongoDB-Adaptor/build/Release-ios",
 					"$(PROJECT_DIR)Kit/build/Release-universal",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/Dependencies/modules/MongoDBPredicateAdaptor/build/Release-ios",
 				);
 				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
@@ -704,7 +734,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = Kinvey/KinveyKit;
 			};
 			name = Release;
 		};
@@ -738,6 +767,7 @@
 				574B0F311C6E652800CDC48F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		574F62D81C6DC5E500765760 /* Build configuration list for PBXLegacyTarget "MongoDBPredicateAdaptor" */ = {
 			isa = XCConfigurationList;

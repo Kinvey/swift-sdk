@@ -227,7 +227,7 @@ static NSOperationQueue* kcsRequestQueue;
 }
 
 +(NSMutableURLRequest *)requestForURL:(NSURL *)url
-                               client:(Client*)client
+                               client:(id<KNVClient>)client
 {
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:client.cachePolicy

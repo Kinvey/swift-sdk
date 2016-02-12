@@ -283,12 +283,12 @@
     [KCSFileUtils dataDidBecomeUnavailable];
 }
 
--(Client*)client
+-(id<KNVClient>)client
 {
-    Client* client = [[Client alloc] initWithAppKey:self.configuration.appKey
-                                          appSecret:self.configuration.appSecret
-                                        apiHostName:[NSURL URLWithString:self.configuration.baseURL]
-                                       authHostName:[NSURL URLWithString:self.configuration.baseAuthURL]];
+    id<KNVClient> client = [[KNVClient alloc] initWithAppKey:self.configuration.appKey
+                                                   appSecret:self.configuration.appSecret
+                                                 apiHostName:[NSURL URLWithString:self.configuration.baseURL]
+                                                authHostName:[NSURL URLWithString:self.configuration.baseAuthURL]];
     id cachePolicy = self.configuration.options[KCS_URL_CACHE_POLICY];
     if ([cachePolicy isKindOfClass:[NSNumber class]]) {
         client.cachePolicy = [((NSNumber*) cachePolicy) unsignedIntegerValue];

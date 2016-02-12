@@ -219,7 +219,7 @@ void setActive(KCSUser* user)
 }
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
-                                 client:(Client*)client
+                                 client:(id<KNVClient>)client
 {
     return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI
                                             client:client];
@@ -277,7 +277,7 @@ void setActive(KCSUser* user)
 
 +(void)parseMICRedirectURI:(NSString *)redirectURI
                     forURL:(NSURL *)url
-                    client:(Client*)client
+                    client:(id<KNVClient>)client
        withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
     SWITCH_TO_MAIN_THREAD_USER_BLOCK(completionBlock);
