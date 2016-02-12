@@ -35,8 +35,6 @@
 
 #import "KinveyCoreInternal.h"
 
-#import <Kinvey-Swift.h>
-
 #import "KCSQueryAdapter.h"
 #import "KCSCache.h"
 #import "KCSPendingOperationRealm.h"
