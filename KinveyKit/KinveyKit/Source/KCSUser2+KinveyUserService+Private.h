@@ -18,15 +18,15 @@ extern NSString* const kKCSMICRedirectURIKey;
                             isLoginPage:(BOOL)isLoginPage;
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
-                                 client:(Client*)client;
+                                 client:(id<KNVClient>)client;
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
                             isLoginPage:(BOOL)isLoginPage
-                                 client:(Client*)client;
+                                 client:(id<KNVClient>)client;
 
 +(void)parseMICRedirectURI:(NSString *)redirectURI
                     forURL:(NSURL *)url
-                    client:(Client*)client
+                    client:(id<KNVClient>)client
        withCompletionBlock:(KCSUser2CompletionBlock)completionBlock;
 
 +(void)oAuthTokenWithRefreshToken:(NSString*)refreshToken

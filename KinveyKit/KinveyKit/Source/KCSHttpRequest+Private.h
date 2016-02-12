@@ -26,9 +26,9 @@
 @property (nonatomic, weak) id<KCSCredentials> credentials;
 @property (nonatomic, retain) NSString* route;
 @property (nonatomic, copy) NSDictionary* options;
-@property (nonatomic, strong) Client* client;
+@property (nonatomic, strong) id<KNVClient> client;
 
 +(NSMutableURLRequest *)requestForURL:(NSURL *)url
-                               client:(Client*)client;
+                               client:(id<KNVClient>)client;
 
 @end

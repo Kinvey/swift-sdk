@@ -564,8 +564,8 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 {
     NSDictionary<NSString*, NSString*>* propertyMapping = [class kinveyPropertyMapping].invert;
     NSString* keyId = propertyMapping[KCSEntityKeyId];
-    Query* query = [[Query alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]
-                                    sortDescriptors:nil];
+    id<KNVQuery> query = [[KNVQuery alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]
+                                             sortDescriptors:nil];
     NSUInteger count = [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
                                           forClass:class];
     assert(count == 1);
@@ -718,7 +718,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 
 #pragma mark - Sync Table
 
--(Query*)pendingQuery
+-(id<KNVQuery>)pendingQuery
 {
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"method IN %@", @[@"POST", @"PUT", @"DELETE"]];
     if (self.collectionName) {
@@ -726,8 +726,8 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
         predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicateCollectionName, predicate]];
     }
     NSSortDescriptor* sortDescriptorDate = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];
-    return [[Query alloc] initWithPredicate:predicate
-                            sortDescriptors:@[sortDescriptorDate]];
+    return [[KNVQuery alloc] initWithPredicate:predicate
+                               sortDescriptors:@[sortDescriptorDate]];
 }
 
 -(KCSPendingOperationRealm*)pendingOperation:(id<KCSPendingOperation>)pendingOperation
