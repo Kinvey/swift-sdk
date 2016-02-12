@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "07F9A0674E5BFDFFFC8227534C80C3CFAEFB63A0",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "07F9A0674E5BFDFFFC8227534C80C3CFAEFB63A0" : 0,
+    "5637969ED22AE31E0CC12397FCD041C9D84E9545" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "B2810A34-6E7E-4D61-88C2-FA4B3B3C482E",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "07F9A0674E5BFDFFFC8227534C80C3CFAEFB63A0" : "ios-library\/",
+    "5637969ED22AE31E0CC12397FCD041C9D84E9545" : "ios-library\/Kinvey\/Dependencies\/NSPredicate-MongoDB-Adaptor\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "MongoDBPredicateAdaptor",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Kinvey\/Dependencies\/modules\/NSPredicate-MongoDB-Adaptor\/MongoDBPredicateAdaptor.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:Kinvey\/ios-library.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "07F9A0674E5BFDFFFC8227534C80C3CFAEFB63A0"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:tjboneman\/NSPredicate-MongoDB-Adaptor.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5637969ED22AE31E0CC12397FCD041C9D84E9545"
+    }
+  ]
+}
