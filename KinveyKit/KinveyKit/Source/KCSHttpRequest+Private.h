@@ -17,7 +17,6 @@
 //
 
 #import "KCSHttpRequest.h"
-#import <Kinvey-Swift.h>
 
 @interface KCSHttpRequest ()
 

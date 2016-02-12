@@ -8,6 +8,7 @@
 
 import Foundation
 
+@objc
 public class Query: NSObject {
     
     public private(set) var predicate: NSPredicate?

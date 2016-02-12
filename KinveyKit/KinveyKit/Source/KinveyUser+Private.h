@@ -7,7 +7,6 @@
 //
 
 #import "KinveyUser.h"
-#import <Kinvey-Swift.h>
 
 @interface KCSUser()
 

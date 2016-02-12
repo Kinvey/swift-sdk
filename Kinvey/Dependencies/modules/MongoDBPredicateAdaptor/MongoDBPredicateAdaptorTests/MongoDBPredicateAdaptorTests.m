@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <NSPredicateMongoDBAdaptorKit/NSPredicateMongoDBAdaptorKit.h>
+#import <MongoDBPredicateAdaptorKit/MongoDBPredicateAdaptorKit.h>
 
 @interface MongoDBPredicateAdaptorTests : XCTestCase
 
@@ -26,6 +26,7 @@
 }
 
 - (void)testExample {
+    [Test hello];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"name == %@", @"Victor"];
     NSError* error = nil;
     NSDictionary* result = [MongoDBPredicateAdaptor queryDictFromPredicate:predicate
