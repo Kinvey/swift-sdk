@@ -7,7 +7,7 @@
 //
 
 @import Foundation;
-#import "KCSEntityPersistence.h"
+
 #import "KCSCache.h"
 #import "KCSSync.h"
 

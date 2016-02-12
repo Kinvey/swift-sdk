@@ -8,5 +8,5 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Client.h"
-#import "Query.h"
+#import "KNVClient.h"
+#import "KNVQuery.h"

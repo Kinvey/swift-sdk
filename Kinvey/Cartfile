@@ -1,2 +1,3 @@
 github "tjboneman/NSPredicate-MongoDB-Adaptor" "master"
-github "realm/realm-cocoa" "master"
+github "mxcl/PromiseKit"
+github "kishikawakatsumi/KeychainAccess"

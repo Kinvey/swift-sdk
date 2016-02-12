@@ -202,7 +202,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
 
 +(KCSRequest*)connectWithAuthProvider:(KCSUserSocialIdentifyProvider)provider
                      accessDictionary:(NSDictionary*)accessDictionary
-                               client:(Client*)client
+                               client:(id<KNVClient>)client
                            completion:(KCSUser2CompletionBlock)completionBlock
 {
     SWITCH_TO_MAIN_THREAD_USER2_BLOCK(completionBlock);
@@ -435,7 +435,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
 
 +(void)parseMICRedirectURI:(NSString *)redirectURI
                     forURL:(NSURL *)url
-                    client:(Client*)client
+                    client:(id<KNVClient>)client
        withCompletionBlock:(KCSUser2CompletionBlock)completionBlock
 {
     SWITCH_TO_MAIN_THREAD_USER2_BLOCK(completionBlock);
@@ -462,7 +462,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
 
 +(void)oAuthTokenWithCode:(NSString*)code
               redirectURI:(NSString *)redirectURI
-                   client:(Client*)client
+                   client:(id<KNVClient>)client
                completion:(KCSUser2CompletionBlock)completionBlock
 {
     [self oAuthTokenWithToken:code
@@ -499,7 +499,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
 +(void)oAuthTokenWithToken:(NSString*)token
                    refresh:(BOOL)refresh
                redirectURI:(NSString*)redirectURI
-                    client:(Client*)client
+                    client:(id<KNVClient>)client
                 completion:(KCSUser2CompletionBlock)completionBlock
 {
     [self oAuthTokenWithToken:token
@@ -531,7 +531,7 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                    refresh:(BOOL)refresh
                redirectURI:(NSString*)redirectURI
                       sync:(BOOL)sync
-                    client:(Client*)client
+                    client:(id<KNVClient>)client
                 completion:(KCSUser2CompletionBlock)completionBlock
 {
     NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/token", [self baseMicURLForClient:client]]];
@@ -632,7 +632,7 @@ static NSString* micApiVersion = nil;
     return [self baseMicURLForClient:[KCSClient sharedClient].client];
 }
 
-+(NSMutableString*)baseMicURLForClient:(Client*)client
++(NSMutableString*)baseMicURLForClient:(id<KNVClient>)client
 {
     NSString* hostProtocol = client.authHostName.scheme;
     
@@ -658,7 +658,7 @@ static NSString* micApiVersion = nil;
 }
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
-                                 client:(Client *)client
+                                 client:(id<KNVClient>)client
 {
     return [self URLforLoginWithMICRedirectURI:redirectURI
                                    isLoginPage:YES
@@ -675,7 +675,7 @@ static NSString* micApiVersion = nil;
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
                             isLoginPage:(BOOL)isLoginPage
-                                 client:(Client*)client
+                                 client:(id<KNVClient>)client
 {
     if (!client) client = [KCSClient sharedClient].client;
     NSMutableString *url = [NSMutableString stringWithFormat:@"%@/auth", [self baseMicURLForClient:client]];

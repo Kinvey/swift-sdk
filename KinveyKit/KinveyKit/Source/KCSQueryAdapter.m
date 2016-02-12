@@ -10,7 +10,7 @@
 
 @interface KCSQueryAdapter ()
 
-@property (nonatomic, strong) Query* query;
+@property (nonatomic, strong) id<KNVQuery> query;
 
 @end
 
