@@ -9,6 +9,7 @@
 import Foundation
 import KinveyKit
 
+@objc
 public class Client: NSObject, Credential {
     
     public internal(set) var activeUser: User? {

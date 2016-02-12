@@ -8,8 +8,6 @@
 
 #import "KCSQueryAdapter.h"
 
-#import <Kinvey-Swift.h>
-
 @interface KCSQueryAdapter ()
 
 @property (nonatomic, strong) Query* query;

@@ -7,117 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3DB80D0AE3F2A07B65B0A6D9 /* Pods_Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45E4FF6B1555E0462E77506 /* Pods_Kinvey.framework */; };
-		5706FEBF1C1F92350037E7D0 /* NSMutableDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B51C19F7150077F8A6 /* NSMutableDictionary+KinveyAdditions.m */; };
-		5706FEC01C1F92990037E7D0 /* KCS_FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B51F1C19F7150077F8A6 /* KCS_FMDatabaseAdditions.m */; };
-		5706FEC11C1F93210037E7D0 /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5541C19F7150077F8A6 /* KinveyEntity.m */; };
 		5706FEC31C1F9A6D0037E7D0 /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
-		570B1E0A1C2393E00056941F /* KCSQueryAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 570B1E081C2393E00056941F /* KCSQueryAdapter.h */; };
-		570B1E0B1C2393E00056941F /* KCSQueryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 570B1E091C2393E00056941F /* KCSQueryAdapter.m */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
-		57403A801C4DB422008ECCD4 /* KCSPendingOperationRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57403A7E1C4DB422008ECCD4 /* KCSPendingOperationRealm.h */; };
-		57403A811C4DB422008ECCD4 /* KCSPendingOperationRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7F1C4DB422008ECCD4 /* KCSPendingOperationRealm.m */; };
 		574912711C59323B00EA4F26 /* StoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* StoreType.swift */; };
 		574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912721C5932A700EA4F26 /* WritePolicy.swift */; };
+		574B0F281C6E64AF00CDC48F /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F271C6E64AF00CDC48F /* KinveyKit.framework */; };
+		574F632F1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574F632E1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework */; };
 		5753BB3C1C23F29000EB9D3A /* SyncedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */; };
 		575772861C4728E5001D56F5 /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
 		576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* DataStore.swift */; };
-		576E95AA1C1FC2BF00258CC3 /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */; };
 		576E95AD1C20DB7C00258CC3 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
 		576E95AF1C20DC0400258CC3 /* CachedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AE1C20DC0400258CC3 /* CachedStoreTests.swift */; };
-		576E95B61C210F5100258CC3 /* KCSObjcRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95B51C210F3C00258CC3 /* KCSObjcRuntime.m */; };
-		576E95CB1C2229F700258CC3 /* KCSRealmEntityPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95C91C2229F700258CC3 /* KCSRealmEntityPersistence.m */; };
-		576E95CF1C222B8300258CC3 /* KCS_CLLocation_Realm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95CE1C222B8100258CC3 /* KCS_CLLocation_Realm.m */; };
-		576E95D21C222BD000258CC3 /* KCSUserRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95D11C222BCD00258CC3 /* KCSUserRealm.m */; };
-		576E95D51C222C0800258CC3 /* KCSMetadataRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95D41C222C0600258CC3 /* KCSMetadataRealm.m */; };
-		576E95D81C222C6D00258CC3 /* KCSFileRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95D71C222C6B00258CC3 /* KCSFileRealm.m */; };
-		576E95DB1C222D8900258CC3 /* KCSAclRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95DA1C222D8700258CC3 /* KCSAclRealm.m */; };
-		576E95E51C222DEF00258CC3 /* KCS_NSArray_CLLocation_NSValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95DE1C222DE900258CC3 /* KCS_NSArray_CLLocation_NSValueTransformer.m */; };
-		576E95E61C222DEF00258CC3 /* KCS_NSString_NSDate_NSValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95E01C222DE900258CC3 /* KCS_NSString_NSDate_NSValueTransformer.m */; };
-		576E95E71C222DEF00258CC3 /* KCS_NSURL_NSString_NSValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95E21C222DE900258CC3 /* KCS_NSURL_NSString_NSValueTransformer.m */; };
-		576E95E81C222DEF00258CC3 /* KCS_UIImage_NSData_NSValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95E41C222DE900258CC3 /* KCS_UIImage_NSData_NSValueTransformer.m */; };
-		576E95EB1C222E5800258CC3 /* KCS_CLLocation_Realm_ValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95EA1C222E5700258CC3 /* KCS_CLLocation_Realm_ValueTransformer.m */; };
-		576E95EE1C222E9900258CC3 /* NSValueTransformer+Kinvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95ED1C222E9500258CC3 /* NSValueTransformer+Kinvey.m */; };
-		576E95F11C222F1400258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 576E95F01C222F1200258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m */; };
-		576E95F21C223DA500258CC3 /* CLLocation+Kinvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B6131C19F7150077F8A6 /* CLLocation+Kinvey.m */; };
 		57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57757F3D1C652A5600C810E9 /* Reachability.swift */; };
-		577C9E711C1EB6BC00BF49EE /* NSDictionary+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B31C19F7150077F8A6 /* NSDictionary+KinveyAdditions.m */; };
-		577C9E721C1EB83C00BF49EE /* NSString+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B91C19F7150077F8A6 /* NSString+KinveyAdditions.m */; };
-		577C9E731C1EC85600BF49EE /* KCSClient+ConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5791C19F7150077F8A6 /* KCSClient+ConfigurationTest.m */; };
-		577C9E741C1EC8BF00BF49EE /* NSArray+KinveyAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B11C19F7150077F8A6 /* NSArray+KinveyAdditions.m */; };
-		577C9E751C1EC95800BF49EE /* KCSClient2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B59E1C19F7150077F8A6 /* KCSClient2+KCSInternal.m */; };
-		577C9E761C1EC99E00BF49EE /* NSError+KinveyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5B71C19F7150077F8A6 /* NSError+KinveyKit.m */; };
 		577C9E781C1F89C700BF49EE /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
 		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
-		5783B6221C19F73E0077F8A6 /* KCSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5AF1C19F7150077F8A6 /* KCSKeychain.m */; };
-		5783B6251C1A07800077F8A6 /* KCSClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5751C19F7150077F8A6 /* KCSClient.m */; };
-		5783B6261C1A07840077F8A6 /* KCSClient2.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5981C19F7150077F8A6 /* KCSClient2.m */; };
-		5783B6271C1A07980077F8A6 /* KinveyUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5691C19F7150077F8A6 /* KinveyUser.m */; };
-		5783B6281C1A08980077F8A6 /* KCSClientConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B59A1C19F7150077F8A6 /* KCSClientConfiguration.m */; };
-		5783B6291C1A08AA0077F8A6 /* KCSBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5AB1C19F7150077F8A6 /* KCSBase64.m */; };
-		5783B62A1C1A08B90077F8A6 /* KCSAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5381C19F7150077F8A6 /* KCSAppdataStore.m */; };
-		5783B62B1C1A08C50077F8A6 /* DataStoreOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B53A1C19F7150077F8A6 /* DataStoreOperation.m */; };
-		5783B62C1C1A08DB0077F8A6 /* KCSBackgroundAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B53C1C19F7150077F8A6 /* KCSBackgroundAppdataStore.m */; };
-		5783B62D1C1A09090077F8A6 /* KCSHttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5C31C19F7150077F8A6 /* KCSHttpRequest.m */; };
-		5783B62E1C1A092D0077F8A6 /* KCSCachedStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B53E1C19F7150077F8A6 /* KCSCachedStore.m */; };
-		5783B62F1C1A095C0077F8A6 /* KCSClient+KinveyDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5EB1C19F7150077F8A6 /* KCSClient+KinveyDataStore.m */; };
-		5783B6301C1A09750077F8A6 /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5521C19F7150077F8A6 /* KinveyCollection.m */; };
-		5783B6311C1A09860077F8A6 /* KCSDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5E61C19F7150077F8A6 /* KCSDataStore.m */; };
-		5783B6321C1A0FAF0077F8A6 /* KCSFileStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5641C19F7150077F8A6 /* KCSFileStore.m */; };
-		5783B6331C1A0FC10077F8A6 /* KCSDataStoreOperationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5801C19F7150077F8A6 /* KCSDataStoreOperationRequest.m */; };
-		5783B6341C1A0FCE0077F8A6 /* KCSErrorUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B58B1C19F7150077F8A6 /* KCSErrorUtilities.m */; };
-		5783B6351C1A0FEA0077F8A6 /* KCSFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5601C19F7150077F8A6 /* KCSFile.m */; };
-		5783B6361C1A0FF40077F8A6 /* KCSFileRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5821C19F7150077F8A6 /* KCSFileRequest.m */; };
-		5783B6371C1A10010077F8A6 /* KCSFileRequestManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B6021C19F7150077F8A6 /* KCSFileRequestManager.m */; };
-		5783B6381C1A100D0077F8A6 /* KCSFileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5A91C19F7150077F8A6 /* KCSFileUtils.m */; };
-		5783B6391C1A101A0077F8A6 /* KCSGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B54A1C19F7150077F8A6 /* KCSGroup.m */; };
-		5783B63A1C1A10250077F8A6 /* KCSImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5621C19F7150077F8A6 /* KCSImageUtils.m */; };
-		5783B63B1C1A10320077F8A6 /* KCSLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5A51C19F7150077F8A6 /* KCSLogFormatter.m */; };
-		5783B63C1C1A103D0077F8A6 /* KCSLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B58E1C19F7150077F8A6 /* KCSLogManager.m */; };
-		5783B63D1C1A104D0077F8A6 /* KCSMICLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5301C19F7150077F8A6 /* KCSMICLoginViewController.m */; };
-		5783B63E1C1A10570077F8A6 /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B55D1C19F7150077F8A6 /* KCSMetadata.m */; };
-		5783B63F1C1A10640077F8A6 /* KCSMockRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5CD1C19F7150077F8A6 /* KCSMockRequestOperation.m */; };
-		5783B6401C1A10740077F8A6 /* KCSMockServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5CF1C19F7150077F8A6 /* KCSMockServer.m */; };
-		5783B6411C1A10870077F8A6 /* KCSMutipleRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B57E1C19F7150077F8A6 /* KCSMutipleRequest.m */; };
-		5783B6421C1A10960077F8A6 /* KCSNSURLCxnFileOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B6051C19F7150077F8A6 /* KCSNSURLCxnFileOperation.m */; };
-		5783B6431C1A10A20077F8A6 /* KCSNSURLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5C91C19F7150077F8A6 /* KCSNSURLRequestOperation.m */; };
-		5783B6441C1A10B00077F8A6 /* KCSNSURLSessionFileOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B6071C19F7150077F8A6 /* KCSNSURLSessionFileOperation.m */; };
-		5783B6451C1A10BF0077F8A6 /* KCSNSURLSessionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5CB1C19F7150077F8A6 /* KCSNSURLSessionOperation.m */; };
-		5783B6461C1A10CD0077F8A6 /* KCSNetworkObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5D11C19F7150077F8A6 /* KCSNetworkObserver.m */; };
-		5783B6471C1A10DA0077F8A6 /* KCSNetworkResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5C71C19F7150077F8A6 /* KCSNetworkResponse.m */; };
-		5783B6481C1A10F10077F8A6 /* KCSObjectCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5F31C19F7150077F8A6 /* KCSObjectCache.m */; };
-		5783B6491C1A10FE0077F8A6 /* KCSDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5F91C19F7150077F8A6 /* KCSDataModel.m */; };
-		5783B64A1C1A110B0077F8A6 /* KCSEntityPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5F11C19F7150077F8A6 /* KCSEntityPersistence.m */; };
-		5783B64B1C1A11170077F8A6 /* KCSDBTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5AD1C19F7150077F8A6 /* KCSDBTools.m */; };
-		5783B64C1C1A11230077F8A6 /* KCSMutableOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5D51C19F7150077F8A6 /* KCSMutableOrderedDictionary.m */; };
-		5783B64D1C1A11300077F8A6 /* KCSObjectMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5591C19F7150077F8A6 /* KCSObjectMapper.m */; };
-		5783B64E1C1A11460077F8A6 /* KCSBuilders.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B55B1C19F7150077F8A6 /* KCSBuilders.m */; };
-		5783B64F1C1A11510077F8A6 /* KCSOfflineUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5F51C19F7150077F8A6 /* KCSOfflineUpdate.m */; };
-		5783B6501C1A11660077F8A6 /* KCSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5771C19F7150077F8A6 /* KCSReachability.m */; };
-		5783B6511C1A11850077F8A6 /* KCSPersistableDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5F71C19F7150077F8A6 /* KCSPersistableDescription.m */; };
-		5783B6521C1A11900077F8A6 /* KCSPlatformUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5A71C19F7150077F8A6 /* KCSPlatformUtils.m */; };
-		5783B6531C1A11A40077F8A6 /* KCSPropertyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5FB1C19F7150077F8A6 /* KCSPropertyUtil.m */; };
-		5783B6541C1A11AF0077F8A6 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B54D1C19F7150077F8A6 /* KCSPush.m */; };
-		5783B6551C1A11BC0077F8A6 /* KCSQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5461C19F7150077F8A6 /* KCSQuery.m */; };
-		5783B6561C1A11C00077F8A6 /* KCSQuery2.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5E81C19F7150077F8A6 /* KCSQuery2.m */; };
-		5783B6571C1A11CE0077F8A6 /* KCSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B57C1C19F7150077F8A6 /* KCSRequest.m */; };
-		5783B6581C1A11D90077F8A6 /* KCSSaveGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5421C19F7150077F8A6 /* KCSSaveGraph.m */; };
-		5783B6591C1A11E60077F8A6 /* KCSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5C01C19F7150077F8A6 /* KCSURLProtocol.m */; };
-		5783B65A1C1A11F20077F8A6 /* KCSUser2.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5DF1C19F7150077F8A6 /* KCSUser2.m */; };
-		5783B65B1C1A12310077F8A6 /* KCS_DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B50E1C19F7150077F8A6 /* KCS_DDASLLogger.m */; };
-		5783B65C1C1A12420077F8A6 /* KCS_DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B50C1C19F7150077F8A6 /* KCS_DDAbstractDatabaseLogger.m */; };
-		5783B65D1C1A12970077F8A6 /* KCS_DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5121C19F7150077F8A6 /* KCS_DDLog.m */; };
-		5783B65E1C1A12A30077F8A6 /* KCS_DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5141C19F7150077F8A6 /* KCS_DDTTYLogger.m */; };
-		5783B65F1C1A12B10077F8A6 /* KCS_FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5251C19F7150077F8A6 /* KCS_FMDatabaseQueue.m */; };
-		5783B6601C1A12BD0077F8A6 /* KCS_FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B51D1C19F7150077F8A6 /* KCS_FMDatabase.m */; };
-		5783B6611C1A12CF0077F8A6 /* KCS_FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5211C19F7150077F8A6 /* KCS_FMResultSet.m */; };
-		5783B6621C1A12DF0077F8A6 /* KCS_KSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5281C19F7150077F8A6 /* KCS_KSReachability.m */; };
-		5783B6631C1A132C0077F8A6 /* KCSUser2+KinveyUserService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5E21C19F7150077F8A6 /* KCSUser2+KinveyUserService.m */; };
-		5783B6641C1A133F0077F8A6 /* KCSMICRequest2.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5D91C19F7150077F8A6 /* KCSMICRequest2.m */; };
-		5783B6651C1A13A00077F8A6 /* KCSURLConnectionDelegateAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5D71C19F7150077F8A6 /* KCSURLConnectionDelegateAdapter.m */; };
 		5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */; };
 		578FA7DA1C5304D9005C0694 /* NetworkAppDataStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578FA7D91C5304D9005C0694 /* NetworkAppDataStrategy.swift */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -148,16 +54,9 @@
 		57E1C3B11C18156700578974 /* HttpRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B01C18156700578974 /* HttpRequestFactory.swift */; };
 		57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B21C1822B100578974 /* ResponseParser.swift */; };
 		57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B41C18253B00578974 /* JsonResponseParser.swift */; };
-		57E7C7941C50070100848748 /* KCSPendingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C7921C50070100848748 /* KCSPendingOperation.h */; };
-		57E7C7981C50089500848748 /* KCSSync.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C7961C50089500848748 /* KCSSync.h */; };
-		57E7C79F1C501DAF00848748 /* KCSCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C79E1C501DAF00848748 /* KCSCache.h */; };
-		57E7C7A21C50228300848748 /* KCSCacheManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C7A01C50228300848748 /* KCSCacheManager.h */; };
-		57E7C7A31C50228300848748 /* KCSCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A11C50228300848748 /* KCSCacheManager.m */; };
 		57E7C7A51C504AC500848748 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A41C504AC500848748 /* Cache.swift */; };
 		57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A61C504B0900848748 /* CacheManager.swift */; };
 		57E7C7A91C504E7B00848748 /* PendingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A81C504E7B00848748 /* PendingOperation.swift */; };
-		57E7C7AC1C5052F400848748 /* KCSSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E7C7AA1C5052F400848748 /* KCSSyncManager.h */; };
-		57E7C7AD1C5052F400848748 /* KCSSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7AB1C5052F400848748 /* KCSSyncManager.m */; };
 		57E7C7AF1C50539200848748 /* Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7AE1C50539200848748 /* Sync.swift */; };
 		57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B01C50539C00848748 /* SyncManager.swift */; };
 		57E7C7B31C51545900848748 /* ReadPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B21C51545900848748 /* ReadPolicy.swift */; };
@@ -166,6 +65,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		574B0F321C6E653D00CDC48F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 574B0F2E1C6E652800CDC48F;
+			remoteInfo = KinveyKit;
+		};
+		574F62DB1C6DC61800765760 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 574F62D71C6DC5E500765760;
+			remoteInfo = MongoDBPredicateAdaptor;
+		};
 		57A27C8D1C178F18000DF951 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
@@ -176,303 +89,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		01502F9C4CE7FC49AB2C110D /* Pods-Kinvey.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kinvey.debug.xcconfig"; path = "../Pods/Target Support Files/Pods-Kinvey/Pods-Kinvey.debug.xcconfig"; sourceTree = "<group>"; };
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
-		5709608F1C1B96DA00D4AFA5 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
-		570B1E081C2393E00056941F /* KCSQueryAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryAdapter.h; sourceTree = "<group>"; };
-		570B1E091C2393E00056941F /* KCSQueryAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQueryAdapter.m; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionDownloadTaskRequest.swift; sourceTree = "<group>"; };
 		57403A7C1C4D92E3008ECCD4 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
-		57403A7E1C4DB422008ECCD4 /* KCSPendingOperationRealm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPendingOperationRealm.h; sourceTree = "<group>"; };
-		57403A7F1C4DB422008ECCD4 /* KCSPendingOperationRealm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPendingOperationRealm.m; sourceTree = "<group>"; };
 		574912701C59323B00EA4F26 /* StoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreType.swift; sourceTree = "<group>"; };
 		574912721C5932A700EA4F26 /* WritePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WritePolicy.swift; sourceTree = "<group>"; };
+		574B0F271C6E64AF00CDC48F /* KinveyKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KinveyKit.framework; path = "../KinveyKit/build/Release-universal/KinveyKit.framework"; sourceTree = "<group>"; };
+		574F632E1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MongoDBPredicateAdaptorKit.framework; path = "Dependencies/modules/NSPredicate-MongoDB-Adaptor/build/Release-ios/MongoDBPredicateAdaptorKit.framework"; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStoreTests.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
 		576E95A31C1FB10700258CC3 /* DataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
-		576E95A71C1FC2B400258CC3 /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MongoDBPredicateAdaptor.h; sourceTree = "<group>"; };
-		576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MongoDBPredicateAdaptor.m; sourceTree = "<group>"; };
 		576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkStoreTests.swift; sourceTree = "<group>"; };
 		576E95AE1C20DC0400258CC3 /* CachedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachedStoreTests.swift; sourceTree = "<group>"; };
-		576E95B01C20EC6400258CC3 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = "Dependencies/modules/NSPredicate-MongoDB-Adaptor/module.modulemap"; sourceTree = SOURCE_ROOT; };
-		576E95B41C210F3C00258CC3 /* KCSObjcRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSObjcRuntime.h; sourceTree = "<group>"; };
-		576E95B51C210F3C00258CC3 /* KCSObjcRuntime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCSObjcRuntime.m; sourceTree = "<group>"; };
-		576E95C81C2229F700258CC3 /* KCSRealmEntityPersistence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRealmEntityPersistence.h; sourceTree = "<group>"; };
-		576E95C91C2229F700258CC3 /* KCSRealmEntityPersistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRealmEntityPersistence.m; sourceTree = "<group>"; };
-		576E95CD1C222B8100258CC3 /* KCS_CLLocation_Realm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_CLLocation_Realm.h; sourceTree = "<group>"; };
-		576E95CE1C222B8100258CC3 /* KCS_CLLocation_Realm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCS_CLLocation_Realm.m; sourceTree = "<group>"; };
-		576E95D01C222BCD00258CC3 /* KCSUserRealm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSUserRealm.h; sourceTree = "<group>"; };
-		576E95D11C222BCD00258CC3 /* KCSUserRealm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCSUserRealm.m; sourceTree = "<group>"; };
-		576E95D31C222C0600258CC3 /* KCSMetadataRealm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSMetadataRealm.h; sourceTree = "<group>"; };
-		576E95D41C222C0600258CC3 /* KCSMetadataRealm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCSMetadataRealm.m; sourceTree = "<group>"; };
-		576E95D61C222C6B00258CC3 /* KCSFileRealm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSFileRealm.h; sourceTree = "<group>"; };
-		576E95D71C222C6B00258CC3 /* KCSFileRealm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCSFileRealm.m; sourceTree = "<group>"; };
-		576E95D91C222D8700258CC3 /* KCSAclRealm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSAclRealm.h; sourceTree = "<group>"; };
-		576E95DA1C222D8700258CC3 /* KCSAclRealm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCSAclRealm.m; sourceTree = "<group>"; };
-		576E95DD1C222DE900258CC3 /* KCS_NSArray_CLLocation_NSValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_NSArray_CLLocation_NSValueTransformer.h; sourceTree = "<group>"; };
-		576E95DE1C222DE900258CC3 /* KCS_NSArray_CLLocation_NSValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCS_NSArray_CLLocation_NSValueTransformer.m; sourceTree = "<group>"; };
-		576E95DF1C222DE900258CC3 /* KCS_NSString_NSDate_NSValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_NSString_NSDate_NSValueTransformer.h; sourceTree = "<group>"; };
-		576E95E01C222DE900258CC3 /* KCS_NSString_NSDate_NSValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCS_NSString_NSDate_NSValueTransformer.m; sourceTree = "<group>"; };
-		576E95E11C222DE900258CC3 /* KCS_NSURL_NSString_NSValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_NSURL_NSString_NSValueTransformer.h; sourceTree = "<group>"; };
-		576E95E21C222DE900258CC3 /* KCS_NSURL_NSString_NSValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCS_NSURL_NSString_NSValueTransformer.m; sourceTree = "<group>"; };
-		576E95E31C222DE900258CC3 /* KCS_UIImage_NSData_NSValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_UIImage_NSData_NSValueTransformer.h; sourceTree = "<group>"; };
-		576E95E41C222DE900258CC3 /* KCS_UIImage_NSData_NSValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCS_UIImage_NSData_NSValueTransformer.m; sourceTree = "<group>"; };
-		576E95E91C222E5700258CC3 /* KCS_CLLocation_Realm_ValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_CLLocation_Realm_ValueTransformer.h; sourceTree = "<group>"; };
-		576E95EA1C222E5700258CC3 /* KCS_CLLocation_Realm_ValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCS_CLLocation_Realm_ValueTransformer.m; sourceTree = "<group>"; };
-		576E95EC1C222E9500258CC3 /* NSValueTransformer+Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSValueTransformer+Kinvey.h"; sourceTree = "<group>"; };
-		576E95ED1C222E9500258CC3 /* NSValueTransformer+Kinvey.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSValueTransformer+Kinvey.m"; sourceTree = "<group>"; };
-		576E95EF1C222F1200258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.h; sourceTree = "<group>"; };
-		576E95F01C222F1200258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m; sourceTree = "<group>"; };
 		57757F3D1C652A5600C810E9 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		577C9E771C1F89C700BF49EE /* Credential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credential.swift; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
-		5783B50A1C19F7150077F8A6 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		5783B50B1C19F7150077F8A6 /* KCS_DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
-		5783B50C1C19F7150077F8A6 /* KCS_DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
-		5783B50D1C19F7150077F8A6 /* KCS_DDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_DDASLLogger.h; sourceTree = "<group>"; };
-		5783B50E1C19F7150077F8A6 /* KCS_DDASLLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_DDASLLogger.m; sourceTree = "<group>"; };
-		5783B50F1C19F7150077F8A6 /* KCS_DDFileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_DDFileLogger.h; sourceTree = "<group>"; };
-		5783B5101C19F7150077F8A6 /* KCS_DDFileLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_DDFileLogger.m; sourceTree = "<group>"; };
-		5783B5111C19F7150077F8A6 /* KCS_DDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_DDLog.h; sourceTree = "<group>"; };
-		5783B5121C19F7150077F8A6 /* KCS_DDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_DDLog.m; sourceTree = "<group>"; };
-		5783B5131C19F7150077F8A6 /* KCS_DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_DDTTYLogger.h; sourceTree = "<group>"; };
-		5783B5141C19F7150077F8A6 /* KCS_DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_DDTTYLogger.m; sourceTree = "<group>"; };
-		5783B5151C19F7150077F8A6 /* KCS_ContextFilterLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_ContextFilterLogFormatter.h; sourceTree = "<group>"; };
-		5783B5161C19F7150077F8A6 /* KCS_ContextFilterLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_ContextFilterLogFormatter.m; sourceTree = "<group>"; };
-		5783B5171C19F7150077F8A6 /* KCS_DispatchQueueLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_DispatchQueueLogFormatter.h; sourceTree = "<group>"; };
-		5783B5181C19F7150077F8A6 /* KCS_DispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_DispatchQueueLogFormatter.m; sourceTree = "<group>"; };
-		5783B51C1C19F7150077F8A6 /* KCS_FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_FMDatabase.h; sourceTree = "<group>"; };
-		5783B51D1C19F7150077F8A6 /* KCS_FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_FMDatabase.m; sourceTree = "<group>"; };
-		5783B51E1C19F7150077F8A6 /* KCS_FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_FMDatabaseAdditions.h; sourceTree = "<group>"; };
-		5783B51F1C19F7150077F8A6 /* KCS_FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_FMDatabaseAdditions.m; sourceTree = "<group>"; };
-		5783B5201C19F7150077F8A6 /* KCS_FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_FMResultSet.h; sourceTree = "<group>"; };
-		5783B5211C19F7150077F8A6 /* KCS_FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_FMResultSet.m; sourceTree = "<group>"; };
-		5783B5221C19F7150077F8A6 /* KCS_FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_FMDatabasePool.h; sourceTree = "<group>"; };
-		5783B5231C19F7150077F8A6 /* KCS_FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_FMDatabasePool.m; sourceTree = "<group>"; };
-		5783B5241C19F7150077F8A6 /* KCS_FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_FMDatabaseQueue.h; sourceTree = "<group>"; };
-		5783B5251C19F7150077F8A6 /* KCS_FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_FMDatabaseQueue.m; sourceTree = "<group>"; };
-		5783B5271C19F7150077F8A6 /* KCS_KSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCS_KSReachability.h; sourceTree = "<group>"; };
-		5783B5281C19F7150077F8A6 /* KCS_KSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCS_KSReachability.m; sourceTree = "<group>"; };
-		5783B52A1C19F7150077F8A6 /* EXTScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTScope.h; sourceTree = "<group>"; };
-		5783B52B1C19F7150077F8A6 /* EXTScope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTScope.m; sourceTree = "<group>"; };
-		5783B52C1C19F7150077F8A6 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metamacros.h; sourceTree = "<group>"; };
-		5783B52F1C19F7150077F8A6 /* KCSMICLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMICLoginViewController.h; sourceTree = "<group>"; };
-		5783B5301C19F7150077F8A6 /* KCSMICLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMICLoginViewController.m; sourceTree = "<group>"; };
-		5783B5321C19F7150077F8A6 /* KinveyBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyBlocks.h; sourceTree = "<group>"; };
-		5783B5331C19F7150077F8A6 /* KinveyErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyErrorCodes.h; sourceTree = "<group>"; };
-		5783B5351C19F7150077F8A6 /* KCSStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSStore.h; sourceTree = "<group>"; };
-		5783B5361C19F7150077F8A6 /* KCSStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSStore.m; sourceTree = "<group>"; };
-		5783B5371C19F7150077F8A6 /* KCSAppdataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAppdataStore.h; sourceTree = "<group>"; };
-		5783B5381C19F7150077F8A6 /* KCSAppdataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSAppdataStore.m; sourceTree = "<group>"; };
-		5783B5391C19F7150077F8A6 /* DataStoreOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStoreOperation.h; sourceTree = "<group>"; };
-		5783B53A1C19F7150077F8A6 /* DataStoreOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataStoreOperation.m; sourceTree = "<group>"; };
-		5783B53B1C19F7150077F8A6 /* KCSBackgroundAppdataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBackgroundAppdataStore.h; sourceTree = "<group>"; };
-		5783B53C1C19F7150077F8A6 /* KCSBackgroundAppdataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBackgroundAppdataStore.m; sourceTree = "<group>"; };
-		5783B53D1C19F7150077F8A6 /* KCSCachedStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCachedStore.h; sourceTree = "<group>"; };
-		5783B53E1C19F7150077F8A6 /* KCSCachedStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCachedStore.m; sourceTree = "<group>"; };
-		5783B53F1C19F7150077F8A6 /* KCSLinkedAppdataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLinkedAppdataStore.h; sourceTree = "<group>"; };
-		5783B5401C19F7150077F8A6 /* KCSLinkedAppdataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLinkedAppdataStore.m; sourceTree = "<group>"; };
-		5783B5411C19F7150077F8A6 /* KCSSaveGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSaveGraph.h; sourceTree = "<group>"; };
-		5783B5421C19F7150077F8A6 /* KCSSaveGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSaveGraph.m; sourceTree = "<group>"; };
-		5783B5431C19F7150077F8A6 /* KCSCacheUpdatePolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCacheUpdatePolicy.h; sourceTree = "<group>"; };
-		5783B5451C19F7150077F8A6 /* KCSQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQuery.h; sourceTree = "<group>"; };
-		5783B5461C19F7150077F8A6 /* KCSQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQuery.m; sourceTree = "<group>"; };
-		5783B5471C19F7150077F8A6 /* KCSReduceFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSReduceFunction.h; sourceTree = "<group>"; };
-		5783B5481C19F7150077F8A6 /* KCSReduceFunction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSReduceFunction.m; sourceTree = "<group>"; };
-		5783B5491C19F7150077F8A6 /* KCSGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSGroup.h; sourceTree = "<group>"; };
-		5783B54A1C19F7150077F8A6 /* KCSGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSGroup.m; sourceTree = "<group>"; };
-		5783B54C1C19F7150077F8A6 /* KCSPush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPush.h; sourceTree = "<group>"; };
-		5783B54D1C19F7150077F8A6 /* KCSPush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPush.m; sourceTree = "<group>"; };
-		5783B54F1C19F7150077F8A6 /* KCSEntityDict.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityDict.h; sourceTree = "<group>"; };
-		5783B5501C19F7150077F8A6 /* KCSEntityDict.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityDict.m; sourceTree = "<group>"; };
-		5783B5511C19F7150077F8A6 /* KinveyCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyCollection.h; sourceTree = "<group>"; };
-		5783B5521C19F7150077F8A6 /* KinveyCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyCollection.m; sourceTree = "<group>"; };
-		5783B5531C19F7150077F8A6 /* KinveyEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyEntity.h; sourceTree = "<group>"; };
-		5783B5541C19F7150077F8A6 /* KinveyEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyEntity.m; sourceTree = "<group>"; };
-		5783B5551C19F7150077F8A6 /* KinveyPersistable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyPersistable.h; sourceTree = "<group>"; };
-		5783B5561C19F7150077F8A6 /* KinveyPing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyPing.h; sourceTree = "<group>"; };
-		5783B5571C19F7150077F8A6 /* KinveyPing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyPing.m; sourceTree = "<group>"; };
-		5783B5581C19F7150077F8A6 /* KCSObjectMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSObjectMapper.h; sourceTree = "<group>"; };
-		5783B5591C19F7150077F8A6 /* KCSObjectMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSObjectMapper.m; sourceTree = "<group>"; };
-		5783B55A1C19F7150077F8A6 /* KCSBuilders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBuilders.h; sourceTree = "<group>"; };
-		5783B55B1C19F7150077F8A6 /* KCSBuilders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBuilders.m; sourceTree = "<group>"; };
-		5783B55C1C19F7150077F8A6 /* KCSMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMetadata.h; sourceTree = "<group>"; };
-		5783B55D1C19F7150077F8A6 /* KCSMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMetadata.m; sourceTree = "<group>"; };
-		5783B55F1C19F7150077F8A6 /* KCSFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFile.h; sourceTree = "<group>"; };
-		5783B5601C19F7150077F8A6 /* KCSFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFile.m; sourceTree = "<group>"; };
-		5783B5611C19F7150077F8A6 /* KCSImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSImageUtils.h; sourceTree = "<group>"; };
-		5783B5621C19F7150077F8A6 /* KCSImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSImageUtils.m; sourceTree = "<group>"; };
-		5783B5631C19F7150077F8A6 /* KCSFileStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFileStore.h; sourceTree = "<group>"; };
-		5783B5641C19F7150077F8A6 /* KCSFileStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFileStore.m; sourceTree = "<group>"; };
-		5783B5661C19F7150077F8A6 /* KCSUserActionResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSUserActionResult.h; sourceTree = "<group>"; };
-		5783B5671C19F7150077F8A6 /* KinveyUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyUser.h; sourceTree = "<group>"; };
-		5783B5681C19F7150077F8A6 /* KinveyUser+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KinveyUser+Private.h"; sourceTree = "<group>"; };
-		5783B5691C19F7150077F8A6 /* KinveyUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KinveyUser.m; sourceTree = "<group>"; };
-		5783B56A1C19F7150077F8A6 /* KCSAuthCredential.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSAuthCredential.h; sourceTree = "<group>"; };
-		5783B56B1C19F7150077F8A6 /* KCSAuthCredential.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSAuthCredential.m; sourceTree = "<group>"; };
-		5783B56C1C19F7150077F8A6 /* KCSUserDiscovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSUserDiscovery.h; sourceTree = "<group>"; };
-		5783B56D1C19F7150077F8A6 /* KCSUserDiscovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSUserDiscovery.m; sourceTree = "<group>"; };
-		5783B56F1C19F7150077F8A6 /* KCSCustomEndpoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCustomEndpoints.h; sourceTree = "<group>"; };
-		5783B5701C19F7150077F8A6 /* KCSCustomEndpoints.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCustomEndpoints.m; sourceTree = "<group>"; };
-		5783B5721C19F7150077F8A6 /* KCSPrivateBlockDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSPrivateBlockDefs.h; sourceTree = "<group>"; };
-		5783B5731C19F7150077F8A6 /* KCSBlockDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBlockDefs.h; sourceTree = "<group>"; };
-		5783B5741C19F7150077F8A6 /* KCSClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSClient.h; sourceTree = "<group>"; };
-		5783B5751C19F7150077F8A6 /* KCSClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSClient.m; sourceTree = "<group>"; };
-		5783B5761C19F7150077F8A6 /* KCSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KCSReachability.h; path = ../3rdParty/Reachability/KCSReachability.h; sourceTree = "<group>"; };
-		5783B5771C19F7150077F8A6 /* KCSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KCSReachability.m; path = ../3rdParty/Reachability/KCSReachability.m; sourceTree = "<group>"; };
-		5783B5781C19F7150077F8A6 /* KCSClient+ConfigurationTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSClient+ConfigurationTest.h"; sourceTree = "<group>"; };
-		5783B5791C19F7150077F8A6 /* KCSClient+ConfigurationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSClient+ConfigurationTest.m"; sourceTree = "<group>"; };
-		5783B57A1C19F7150077F8A6 /* KCSRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRequest.h; sourceTree = "<group>"; };
-		5783B57B1C19F7150077F8A6 /* KCSRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSRequest+Private.h"; sourceTree = "<group>"; };
-		5783B57C1C19F7150077F8A6 /* KCSRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRequest.m; sourceTree = "<group>"; };
-		5783B57D1C19F7150077F8A6 /* KCSMultipleRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMultipleRequest.h; sourceTree = "<group>"; };
-		5783B57E1C19F7150077F8A6 /* KCSMutipleRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMutipleRequest.m; sourceTree = "<group>"; };
-		5783B57F1C19F7150077F8A6 /* KCSDataStoreOperationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDataStoreOperationRequest.h; sourceTree = "<group>"; };
-		5783B5801C19F7150077F8A6 /* KCSDataStoreOperationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSDataStoreOperationRequest.m; sourceTree = "<group>"; };
-		5783B5811C19F7150077F8A6 /* KCSFileRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFileRequest.h; sourceTree = "<group>"; };
-		5783B5821C19F7150077F8A6 /* KCSFileRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFileRequest.m; sourceTree = "<group>"; };
-		5783B5841C19F7150077F8A6 /* NSURL+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+KinveyAdditions.h"; sourceTree = "<group>"; };
-		5783B5851C19F7150077F8A6 /* NSURL+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+KinveyAdditions.m"; sourceTree = "<group>"; };
-		5783B5861C19F7150077F8A6 /* NSDate+ISO8601.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+ISO8601.h"; sourceTree = "<group>"; };
-		5783B5871C19F7150077F8A6 /* NSDate+ISO8601.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+ISO8601.m"; sourceTree = "<group>"; };
-		5783B5881C19F7150077F8A6 /* NSDate+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+KinveyAdditions.h"; sourceTree = "<group>"; };
-		5783B5891C19F7150077F8A6 /* NSDate+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+KinveyAdditions.m"; sourceTree = "<group>"; };
-		5783B58A1C19F7150077F8A6 /* KCSErrorUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSErrorUtilities.h; sourceTree = "<group>"; };
-		5783B58B1C19F7150077F8A6 /* KCSErrorUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSErrorUtilities.m; sourceTree = "<group>"; };
-		5783B58C1C19F7150077F8A6 /* KCSLogSink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLogSink.h; sourceTree = "<group>"; };
-		5783B58D1C19F7150077F8A6 /* KCSLogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLogManager.h; sourceTree = "<group>"; };
-		5783B58E1C19F7150077F8A6 /* KCSLogManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLogManager.m; sourceTree = "<group>"; };
-		5783B58F1C19F7150077F8A6 /* KCSHiddenMethods.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSHiddenMethods.h; sourceTree = "<group>"; };
-		5783B5921C19F7150077F8A6 /* KinveyKit2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyKit2.h; sourceTree = "<group>"; };
-		5783B5931C19F7150077F8A6 /* KinveyVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = KinveyVersion.h; path = ../KinveyVersion.h; sourceTree = "<group>"; };
-		5783B5941C19F7150077F8A6 /* KinveyHeaderInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KinveyHeaderInfo.h; path = ../KinveyHeaderInfo.h; sourceTree = "<group>"; };
-		5783B5951C19F7150077F8A6 /* KinveyCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyCore.h; sourceTree = "<group>"; };
-		5783B5961C19F7150077F8A6 /* KinveyCoreInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyCoreInternal.h; sourceTree = "<group>"; };
-		5783B5971C19F7150077F8A6 /* KCSClient2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSClient2.h; sourceTree = "<group>"; };
-		5783B5981C19F7150077F8A6 /* KCSClient2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSClient2.m; sourceTree = "<group>"; };
-		5783B5991C19F7150077F8A6 /* KCSClientConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSClientConfiguration.h; sourceTree = "<group>"; };
-		5783B59A1C19F7150077F8A6 /* KCSClientConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSClientConfiguration.m; sourceTree = "<group>"; };
-		5783B59B1C19F7150077F8A6 /* KCSPing2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPing2.h; sourceTree = "<group>"; };
-		5783B59C1C19F7150077F8A6 /* KCSPing2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPing2.m; sourceTree = "<group>"; };
-		5783B59D1C19F7150077F8A6 /* KCSClient2+KCSInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSClient2+KCSInternal.h"; sourceTree = "<group>"; };
-		5783B59E1C19F7150077F8A6 /* KCSClient2+KCSInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSClient2+KCSInternal.m"; sourceTree = "<group>"; };
-		5783B59F1C19F7150077F8A6 /* KCSClientConfiguration+KCSInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSClientConfiguration+KCSInternal.h"; sourceTree = "<group>"; };
-		5783B5A01C19F7150077F8A6 /* KCSClientConfiguration+KCSInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSClientConfiguration+KCSInternal.m"; sourceTree = "<group>"; };
-		5783B5A31C19F7150077F8A6 /* KCSLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSLog.h; sourceTree = "<group>"; };
-		5783B5A41C19F7150077F8A6 /* KCSLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSLogFormatter.h; sourceTree = "<group>"; };
-		5783B5A51C19F7150077F8A6 /* KCSLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSLogFormatter.m; sourceTree = "<group>"; };
-		5783B5A61C19F7150077F8A6 /* KCSPlatformUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPlatformUtils.h; sourceTree = "<group>"; };
-		5783B5A71C19F7150077F8A6 /* KCSPlatformUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPlatformUtils.m; sourceTree = "<group>"; };
-		5783B5A81C19F7150077F8A6 /* KCSFileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFileUtils.h; sourceTree = "<group>"; };
-		5783B5A91C19F7150077F8A6 /* KCSFileUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFileUtils.m; sourceTree = "<group>"; };
-		5783B5AA1C19F7150077F8A6 /* KCSBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSBase64.h; sourceTree = "<group>"; };
-		5783B5AB1C19F7150077F8A6 /* KCSBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSBase64.m; sourceTree = "<group>"; };
-		5783B5AC1C19F7150077F8A6 /* KCSDBTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDBTools.h; sourceTree = "<group>"; };
-		5783B5AD1C19F7150077F8A6 /* KCSDBTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSDBTools.m; sourceTree = "<group>"; };
-		5783B5AE1C19F7150077F8A6 /* KCSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSKeychain.h; sourceTree = "<group>"; };
-		5783B5AF1C19F7150077F8A6 /* KCSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSKeychain.m; sourceTree = "<group>"; };
-		5783B5B01C19F7150077F8A6 /* NSArray+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+KinveyAdditions.h"; sourceTree = "<group>"; };
-		5783B5B11C19F7150077F8A6 /* NSArray+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+KinveyAdditions.m"; sourceTree = "<group>"; };
-		5783B5B21C19F7150077F8A6 /* NSDictionary+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+KinveyAdditions.h"; sourceTree = "<group>"; };
-		5783B5B31C19F7150077F8A6 /* NSDictionary+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+KinveyAdditions.m"; sourceTree = "<group>"; };
-		5783B5B41C19F7150077F8A6 /* NSMutableDictionary+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+KinveyAdditions.h"; sourceTree = "<group>"; };
-		5783B5B51C19F7150077F8A6 /* NSMutableDictionary+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+KinveyAdditions.m"; sourceTree = "<group>"; };
-		5783B5B61C19F7150077F8A6 /* NSError+KinveyKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+KinveyKit.h"; sourceTree = "<group>"; };
-		5783B5B71C19F7150077F8A6 /* NSError+KinveyKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+KinveyKit.m"; sourceTree = "<group>"; };
-		5783B5B81C19F7150077F8A6 /* NSString+KinveyAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+KinveyAdditions.h"; sourceTree = "<group>"; };
-		5783B5B91C19F7150077F8A6 /* NSString+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+KinveyAdditions.m"; sourceTree = "<group>"; };
-		5783B5BC1C19F7150077F8A6 /* KCSTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSTask.h; sourceTree = "<group>"; };
-		5783B5BD1C19F7150077F8A6 /* KCSRequestConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSRequestConfiguration.h; sourceTree = "<group>"; };
-		5783B5BE1C19F7150077F8A6 /* KCSRequestConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSRequestConfiguration.m; sourceTree = "<group>"; };
-		5783B5BF1C19F7150077F8A6 /* KCSURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSURLProtocol.h; sourceTree = "<group>"; };
-		5783B5C01C19F7150077F8A6 /* KCSURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSURLProtocol.m; sourceTree = "<group>"; };
-		5783B5C11C19F7150077F8A6 /* KCSHttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSHttpRequest.h; sourceTree = "<group>"; };
-		5783B5C21C19F7150077F8A6 /* KCSHttpRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSHttpRequest+Private.h"; sourceTree = "<group>"; };
-		5783B5C31C19F7150077F8A6 /* KCSHttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSHttpRequest.m; sourceTree = "<group>"; };
-		5783B5C41C19F7150077F8A6 /* KCSCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCredentials.h; sourceTree = "<group>"; };
-		5783B5C51C19F7150077F8A6 /* KCSNetworkOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNetworkOperation.h; sourceTree = "<group>"; };
-		5783B5C61C19F7150077F8A6 /* KCSNetworkResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNetworkResponse.h; sourceTree = "<group>"; };
-		5783B5C71C19F7150077F8A6 /* KCSNetworkResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSNetworkResponse.m; sourceTree = "<group>"; };
-		5783B5C81C19F7150077F8A6 /* KCSNSURLRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNSURLRequestOperation.h; sourceTree = "<group>"; };
-		5783B5C91C19F7150077F8A6 /* KCSNSURLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSNSURLRequestOperation.m; sourceTree = "<group>"; };
-		5783B5CA1C19F7150077F8A6 /* KCSNSURLSessionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNSURLSessionOperation.h; sourceTree = "<group>"; };
-		5783B5CB1C19F7150077F8A6 /* KCSNSURLSessionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSNSURLSessionOperation.m; sourceTree = "<group>"; };
-		5783B5CC1C19F7150077F8A6 /* KCSMockRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMockRequestOperation.h; sourceTree = "<group>"; };
-		5783B5CD1C19F7150077F8A6 /* KCSMockRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMockRequestOperation.m; sourceTree = "<group>"; };
-		5783B5CE1C19F7150077F8A6 /* KCSMockServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMockServer.h; sourceTree = "<group>"; };
-		5783B5CF1C19F7150077F8A6 /* KCSMockServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMockServer.m; sourceTree = "<group>"; };
-		5783B5D01C19F7150077F8A6 /* KCSNetworkObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNetworkObserver.h; sourceTree = "<group>"; };
-		5783B5D11C19F7150077F8A6 /* KCSNetworkObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSNetworkObserver.m; sourceTree = "<group>"; };
-		5783B5D21C19F7150077F8A6 /* KCSNetworkDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSNetworkDefs.h; sourceTree = "<group>"; };
-		5783B5D31C19F7150077F8A6 /* KinveyHTTPStatusCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyHTTPStatusCodes.h; sourceTree = "<group>"; };
-		5783B5D41C19F7150077F8A6 /* KCSMutableOrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMutableOrderedDictionary.h; sourceTree = "<group>"; };
-		5783B5D51C19F7150077F8A6 /* KCSMutableOrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMutableOrderedDictionary.m; sourceTree = "<group>"; };
-		5783B5D61C19F7150077F8A6 /* KCSURLConnectionDelegateAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSURLConnectionDelegateAdapter.h; sourceTree = "<group>"; };
-		5783B5D71C19F7150077F8A6 /* KCSURLConnectionDelegateAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSURLConnectionDelegateAdapter.m; sourceTree = "<group>"; };
-		5783B5D81C19F7150077F8A6 /* KCSMICRequest2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMICRequest2.h; sourceTree = "<group>"; };
-		5783B5D91C19F7150077F8A6 /* KCSMICRequest2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMICRequest2.m; sourceTree = "<group>"; };
-		5783B5DD1C19F7150077F8A6 /* KinveyUserService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyUserService.h; sourceTree = "<group>"; };
-		5783B5DE1C19F7150077F8A6 /* KCSUser2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSUser2.h; sourceTree = "<group>"; };
-		5783B5DF1C19F7150077F8A6 /* KCSUser2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSUser2.m; sourceTree = "<group>"; };
-		5783B5E01C19F7150077F8A6 /* KCSUser2+KinveyUserService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSUser2+KinveyUserService.h"; sourceTree = "<group>"; };
-		5783B5E11C19F7150077F8A6 /* KCSUser2+KinveyUserService+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSUser2+KinveyUserService+Private.h"; sourceTree = "<group>"; };
-		5783B5E21C19F7150077F8A6 /* KCSUser2+KinveyUserService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSUser2+KinveyUserService.m"; sourceTree = "<group>"; };
-		5783B5E41C19F7150077F8A6 /* KinveyDataStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyDataStore.h; sourceTree = "<group>"; };
-		5783B5E51C19F7150077F8A6 /* KCSDataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDataStore.h; sourceTree = "<group>"; };
-		5783B5E61C19F7150077F8A6 /* KCSDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSDataStore.m; sourceTree = "<group>"; };
-		5783B5E71C19F7150077F8A6 /* KCSQuery2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQuery2.h; sourceTree = "<group>"; };
-		5783B5E81C19F7150077F8A6 /* KCSQuery2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSQuery2.m; sourceTree = "<group>"; };
-		5783B5E91C19F7150077F8A6 /* KCSOfflineUpdateDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSOfflineUpdateDelegate.h; sourceTree = "<group>"; };
-		5783B5EA1C19F7150077F8A6 /* KCSClient+KinveyDataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSClient+KinveyDataStore.h"; sourceTree = "<group>"; };
-		5783B5EB1C19F7150077F8A6 /* KCSClient+KinveyDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSClient+KinveyDataStore.m"; sourceTree = "<group>"; };
-		5783B5EC1C19F7150077F8A6 /* KCSDataOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDataOperation.h; sourceTree = "<group>"; };
-		5783B5ED1C19F7150077F8A6 /* KinveyDataStoreInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyDataStoreInternal.h; sourceTree = "<group>"; };
-		5783B5EE1C19F7150077F8A6 /* KCSQuery2+KCSInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSQuery2+KCSInternal.h"; sourceTree = "<group>"; };
-		5783B5EF1C19F7150077F8A6 /* KCSQuery2+KCSInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSQuery2+KCSInternal.m"; sourceTree = "<group>"; };
-		5783B5F01C19F7150077F8A6 /* KCSEntityPersistence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSEntityPersistence.h; sourceTree = "<group>"; };
-		5783B5F11C19F7150077F8A6 /* KCSEntityPersistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSEntityPersistence.m; sourceTree = "<group>"; };
-		5783B5F21C19F7150077F8A6 /* KCSObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSObjectCache.h; sourceTree = "<group>"; };
-		5783B5F31C19F7150077F8A6 /* KCSObjectCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSObjectCache.m; sourceTree = "<group>"; };
-		5783B5F41C19F7150077F8A6 /* KCSOfflineUpdate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSOfflineUpdate.h; sourceTree = "<group>"; };
-		5783B5F51C19F7150077F8A6 /* KCSOfflineUpdate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSOfflineUpdate.m; sourceTree = "<group>"; };
-		5783B5F61C19F7150077F8A6 /* KCSPersistableDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPersistableDescription.h; sourceTree = "<group>"; };
-		5783B5F71C19F7150077F8A6 /* KCSPersistableDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPersistableDescription.m; sourceTree = "<group>"; };
-		5783B5F81C19F7150077F8A6 /* KCSDataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSDataModel.h; sourceTree = "<group>"; };
-		5783B5F91C19F7150077F8A6 /* KCSDataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSDataModel.m; sourceTree = "<group>"; };
-		5783B5FA1C19F7150077F8A6 /* KCSPropertyUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPropertyUtil.h; sourceTree = "<group>"; };
-		5783B5FB1C19F7150077F8A6 /* KCSPropertyUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPropertyUtil.m; sourceTree = "<group>"; };
-		5783B5FF1C19F7150077F8A6 /* KinveyFileStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinveyFileStore.h; sourceTree = "<group>"; };
-		5783B6001C19F7150077F8A6 /* KinveyFileStoreInteral.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyFileStoreInteral.h; sourceTree = "<group>"; };
-		5783B6011C19F7150077F8A6 /* KCSFileRequestManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSFileRequestManager.h; sourceTree = "<group>"; };
-		5783B6021C19F7150077F8A6 /* KCSFileRequestManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSFileRequestManager.m; sourceTree = "<group>"; };
-		5783B6031C19F7150077F8A6 /* KCSFileOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KCSFileOperation.h; sourceTree = "<group>"; };
-		5783B6041C19F7150077F8A6 /* KCSNSURLCxnFileOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNSURLCxnFileOperation.h; sourceTree = "<group>"; };
-		5783B6051C19F7150077F8A6 /* KCSNSURLCxnFileOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSNSURLCxnFileOperation.m; sourceTree = "<group>"; };
-		5783B6061C19F7150077F8A6 /* KCSNSURLSessionFileOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSNSURLSessionFileOperation.h; sourceTree = "<group>"; };
-		5783B6071C19F7150077F8A6 /* KCSNSURLSessionFileOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSNSURLSessionFileOperation.m; sourceTree = "<group>"; };
-		5783B6081C19F7150077F8A6 /* KCSMockFileOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMockFileOperation.h; sourceTree = "<group>"; };
-		5783B6091C19F7150077F8A6 /* KCSMockFileOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMockFileOperation.m; sourceTree = "<group>"; };
-		5783B60A1C19F7150077F8A6 /* KCSFile+KCSInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSFile+KCSInternal.h"; sourceTree = "<group>"; };
-		5783B60B1C19F7150077F8A6 /* KCSFile+KCSInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KCSFile+KCSInternal.m"; sourceTree = "<group>"; };
-		5783B60E1C19F7150077F8A6 /* KCSPush2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPush2.h; sourceTree = "<group>"; };
-		5783B60F1C19F7150077F8A6 /* KCSPush2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSPush2.m; sourceTree = "<group>"; };
-		5783B6111C19F7150077F8A6 /* KinveyLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveyLocation.h; sourceTree = "<group>"; };
-		5783B6121C19F7150077F8A6 /* CLLocation+Kinvey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Kinvey.h"; sourceTree = "<group>"; };
-		5783B6131C19F7150077F8A6 /* CLLocation+Kinvey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CLLocation+Kinvey.m"; sourceTree = "<group>"; };
-		5783B6141C19F7150077F8A6 /* CLCircularRegion+KinveyKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CLCircularRegion+KinveyKit.h"; sourceTree = "<group>"; };
-		5783B6151C19F7150077F8A6 /* CLCircularRegion+KinveyKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CLCircularRegion+KinveyKit.m"; sourceTree = "<group>"; };
-		5783B6171C19F7150077F8A6 /* KinveySocialInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KinveySocialInternal.h; sourceTree = "<group>"; };
-		5783B6181C19F7150077F8A6 /* KCS_OAuth+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "KCS_OAuth+Additions.h"; path = "../../KinveyKitExtras/3rdParty/KCS_OAuth+Additions.h"; sourceTree = "<group>"; };
-		5783B6191C19F7150077F8A6 /* KCS_OAuth+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "KCS_OAuth+Additions.m"; path = "../../KinveyKitExtras/3rdParty/KCS_OAuth+Additions.m"; sourceTree = "<group>"; };
-		5783B61A1C19F7150077F8A6 /* KCS_OAuthCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KCS_OAuthCore.h; path = ../../KinveyKitExtras/3rdParty/KCS_OAuthCore.h; sourceTree = "<group>"; };
-		5783B61B1C19F7150077F8A6 /* KCS_OAuthCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KCS_OAuthCore.m; path = ../../KinveyKitExtras/3rdParty/KCS_OAuthCore.m; sourceTree = "<group>"; };
-		5783B61D1C19F7150077F8A6 /* KCSSocialRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSocialRequest.h; sourceTree = "<group>"; };
-		5783B61E1C19F7150077F8A6 /* KCSSocialRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSocialRequest.m; sourceTree = "<group>"; };
-		5783B6241C19F90E0077F8A6 /* KinveyKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "KinveyKit-Prefix.pch"; path = "../KinveyKit-Prefix.pch"; sourceTree = "<group>"; };
 		5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		5783B66B1C1B7C1C0077F8A6 /* KCSClient+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KCSClient+Private.h"; sourceTree = "<group>"; };
 		578FA7D91C5304D9005C0694 /* NetworkAppDataStrategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkAppDataStrategy.swift; sourceTree = "<group>"; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
@@ -505,23 +139,14 @@
 		57E1C3B01C18156700578974 /* HttpRequestFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequestFactory.swift; sourceTree = "<group>"; };
 		57E1C3B21C1822B100578974 /* ResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseParser.swift; sourceTree = "<group>"; };
 		57E1C3B41C18253B00578974 /* JsonResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonResponseParser.swift; sourceTree = "<group>"; };
-		57E7C7921C50070100848748 /* KCSPendingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSPendingOperation.h; sourceTree = "<group>"; };
-		57E7C7961C50089500848748 /* KCSSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSync.h; sourceTree = "<group>"; };
-		57E7C79E1C501DAF00848748 /* KCSCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCache.h; sourceTree = "<group>"; };
-		57E7C7A01C50228300848748 /* KCSCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCacheManager.h; sourceTree = "<group>"; };
-		57E7C7A11C50228300848748 /* KCSCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSCacheManager.m; sourceTree = "<group>"; };
 		57E7C7A41C504AC500848748 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		57E7C7A61C504B0900848748 /* CacheManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		57E7C7A81C504E7B00848748 /* PendingOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingOperation.swift; sourceTree = "<group>"; };
-		57E7C7AA1C5052F400848748 /* KCSSyncManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSyncManager.h; sourceTree = "<group>"; };
-		57E7C7AB1C5052F400848748 /* KCSSyncManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSyncManager.m; sourceTree = "<group>"; };
 		57E7C7AE1C50539200848748 /* Sync.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sync.swift; sourceTree = "<group>"; };
 		57E7C7B01C50539C00848748 /* SyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
 		57E7C7B21C51545900848748 /* ReadPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReadPolicy.swift; path = Kinvey/ReadPolicy.swift; sourceTree = SOURCE_ROOT; };
 		57E7C7B41C51981400848748 /* RequestType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestType.swift; sourceTree = "<group>"; };
 		57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
-		BCE50A788E88118CFDD2346D /* Pods-Kinvey.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kinvey.release.xcconfig"; path = "../Pods/Target Support Files/Pods-Kinvey/Pods-Kinvey.release.xcconfig"; sourceTree = "<group>"; };
-		E45E4FF6B1555E0462E77506 /* Pods_Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -529,8 +154,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				574F632F1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework in Frameworks */,
+				574B0F281C6E64AF00CDC48F /* KinveyKit.framework in Frameworks */,
 				5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */,
-				3DB80D0AE3F2A07B65B0A6D9 /* Pods_Kinvey.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,639 +171,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		576E95A51C1FC2B300258CC3 /* NSPredicate-MongoDB-Adaptor */ = {
-			isa = PBXGroup;
-			children = (
-				576E95B01C20EC6400258CC3 /* module.modulemap */,
-				576E95A71C1FC2B400258CC3 /* MongoDBPredicateAdaptor.h */,
-				576E95A81C1FC2B400258CC3 /* MongoDBPredicateAdaptor.m */,
-			);
-			name = "NSPredicate-MongoDB-Adaptor";
-			path = "Dependencies/NSPredicate-MongoDB-Adaptor";
-			sourceTree = SOURCE_ROOT;
-		};
-		576E95CC1C222B3600258CC3 /* Realm */ = {
-			isa = PBXGroup;
-			children = (
-				576E95C81C2229F700258CC3 /* KCSRealmEntityPersistence.h */,
-				576E95C91C2229F700258CC3 /* KCSRealmEntityPersistence.m */,
-				576E95CD1C222B8100258CC3 /* KCS_CLLocation_Realm.h */,
-				576E95CE1C222B8100258CC3 /* KCS_CLLocation_Realm.m */,
-				576E95D01C222BCD00258CC3 /* KCSUserRealm.h */,
-				576E95D11C222BCD00258CC3 /* KCSUserRealm.m */,
-				576E95D31C222C0600258CC3 /* KCSMetadataRealm.h */,
-				576E95D41C222C0600258CC3 /* KCSMetadataRealm.m */,
-				576E95D61C222C6B00258CC3 /* KCSFileRealm.h */,
-				576E95D71C222C6B00258CC3 /* KCSFileRealm.m */,
-				576E95D91C222D8700258CC3 /* KCSAclRealm.h */,
-				576E95DA1C222D8700258CC3 /* KCSAclRealm.m */,
-				57403A7E1C4DB422008ECCD4 /* KCSPendingOperationRealm.h */,
-				57403A7F1C4DB422008ECCD4 /* KCSPendingOperationRealm.m */,
-			);
-			name = Realm;
-			sourceTree = "<group>";
-		};
-		576E95DC1C222DDE00258CC3 /* Value Transformer */ = {
-			isa = PBXGroup;
-			children = (
-				576E95E91C222E5700258CC3 /* KCS_CLLocation_Realm_ValueTransformer.h */,
-				576E95EA1C222E5700258CC3 /* KCS_CLLocation_Realm_ValueTransformer.m */,
-				576E95DD1C222DE900258CC3 /* KCS_NSArray_CLLocation_NSValueTransformer.h */,
-				576E95DE1C222DE900258CC3 /* KCS_NSArray_CLLocation_NSValueTransformer.m */,
-				576E95EF1C222F1200258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.h */,
-				576E95F01C222F1200258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m */,
-				576E95DF1C222DE900258CC3 /* KCS_NSString_NSDate_NSValueTransformer.h */,
-				576E95E01C222DE900258CC3 /* KCS_NSString_NSDate_NSValueTransformer.m */,
-				576E95E11C222DE900258CC3 /* KCS_NSURL_NSString_NSValueTransformer.h */,
-				576E95E21C222DE900258CC3 /* KCS_NSURL_NSString_NSValueTransformer.m */,
-				576E95E31C222DE900258CC3 /* KCS_UIImage_NSData_NSValueTransformer.h */,
-				576E95E41C222DE900258CC3 /* KCS_UIImage_NSData_NSValueTransformer.m */,
-			);
-			name = "Value Transformer";
-			sourceTree = "<group>";
-		};
-		5783B5081C19F6420077F8A6 /* KinveyKit */ = {
-			isa = PBXGroup;
-			children = (
-				5709608F1C1B96DA00D4AFA5 /* module.modulemap */,
-				5783B52E1C19F7150077F8A6 /* 3rdParty */,
-				5783B5911C19F7150077F8A6 /* Source */,
-				5783B6211C19F7150077F8A6 /* KinveyKit2 */,
-			);
-			path = KinveyKit;
-			sourceTree = "<group>";
-		};
-		5783B5191C19F7150077F8A6 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5151C19F7150077F8A6 /* KCS_ContextFilterLogFormatter.h */,
-				5783B5161C19F7150077F8A6 /* KCS_ContextFilterLogFormatter.m */,
-				5783B5171C19F7150077F8A6 /* KCS_DispatchQueueLogFormatter.h */,
-				5783B5181C19F7150077F8A6 /* KCS_DispatchQueueLogFormatter.m */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		5783B51A1C19F7150077F8A6 /* Lumberjack */ = {
-			isa = PBXGroup;
-			children = (
-				5783B50B1C19F7150077F8A6 /* KCS_DDAbstractDatabaseLogger.h */,
-				5783B50C1C19F7150077F8A6 /* KCS_DDAbstractDatabaseLogger.m */,
-				5783B50D1C19F7150077F8A6 /* KCS_DDASLLogger.h */,
-				5783B50E1C19F7150077F8A6 /* KCS_DDASLLogger.m */,
-				5783B50F1C19F7150077F8A6 /* KCS_DDFileLogger.h */,
-				5783B5101C19F7150077F8A6 /* KCS_DDFileLogger.m */,
-				5783B5111C19F7150077F8A6 /* KCS_DDLog.h */,
-				5783B5121C19F7150077F8A6 /* KCS_DDLog.m */,
-				5783B5131C19F7150077F8A6 /* KCS_DDTTYLogger.h */,
-				5783B5141C19F7150077F8A6 /* KCS_DDTTYLogger.m */,
-				5783B5191C19F7150077F8A6 /* Extensions */,
-			);
-			path = Lumberjack;
-			sourceTree = "<group>";
-		};
-		5783B51B1C19F7150077F8A6 /* CocoaLumberjack */ = {
-			isa = PBXGroup;
-			children = (
-				5783B50A1C19F7150077F8A6 /* LICENSE.txt */,
-				5783B51A1C19F7150077F8A6 /* Lumberjack */,
-			);
-			path = CocoaLumberjack;
-			sourceTree = "<group>";
-		};
-		5783B5261C19F7150077F8A6 /* fmdb */ = {
-			isa = PBXGroup;
-			children = (
-				5783B51C1C19F7150077F8A6 /* KCS_FMDatabase.h */,
-				5783B51D1C19F7150077F8A6 /* KCS_FMDatabase.m */,
-				5783B51E1C19F7150077F8A6 /* KCS_FMDatabaseAdditions.h */,
-				5783B51F1C19F7150077F8A6 /* KCS_FMDatabaseAdditions.m */,
-				5783B5201C19F7150077F8A6 /* KCS_FMResultSet.h */,
-				5783B5211C19F7150077F8A6 /* KCS_FMResultSet.m */,
-				5783B5221C19F7150077F8A6 /* KCS_FMDatabasePool.h */,
-				5783B5231C19F7150077F8A6 /* KCS_FMDatabasePool.m */,
-				5783B5241C19F7150077F8A6 /* KCS_FMDatabaseQueue.h */,
-				5783B5251C19F7150077F8A6 /* KCS_FMDatabaseQueue.m */,
-			);
-			path = fmdb;
-			sourceTree = "<group>";
-		};
-		5783B5291C19F7150077F8A6 /* Reachability */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5271C19F7150077F8A6 /* KCS_KSReachability.h */,
-				5783B5281C19F7150077F8A6 /* KCS_KSReachability.m */,
-			);
-			path = Reachability;
-			sourceTree = "<group>";
-		};
-		5783B52D1C19F7150077F8A6 /* extobjc */ = {
-			isa = PBXGroup;
-			children = (
-				5783B52A1C19F7150077F8A6 /* EXTScope.h */,
-				5783B52B1C19F7150077F8A6 /* EXTScope.m */,
-				5783B52C1C19F7150077F8A6 /* metamacros.h */,
-			);
-			name = extobjc;
-			sourceTree = "<group>";
-		};
-		5783B52E1C19F7150077F8A6 /* 3rdParty */ = {
-			isa = PBXGroup;
-			children = (
-				5783B51B1C19F7150077F8A6 /* CocoaLumberjack */,
-				5783B5261C19F7150077F8A6 /* fmdb */,
-				5783B5291C19F7150077F8A6 /* Reachability */,
-				5783B52D1C19F7150077F8A6 /* extobjc */,
-			);
-			name = 3rdParty;
-			path = ../../../KinveyKit/KinveyKit/3rdParty;
-			sourceTree = "<group>";
-		};
-		5783B5311C19F7150077F8A6 /* User Interface */ = {
-			isa = PBXGroup;
-			children = (
-				5783B52F1C19F7150077F8A6 /* KCSMICLoginViewController.h */,
-				5783B5301C19F7150077F8A6 /* KCSMICLoginViewController.m */,
-			);
-			name = "User Interface";
-			sourceTree = "<group>";
-		};
-		5783B5341C19F7150077F8A6 /* Headers */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5321C19F7150077F8A6 /* KinveyBlocks.h */,
-				5783B5331C19F7150077F8A6 /* KinveyErrorCodes.h */,
-			);
-			name = Headers;
-			sourceTree = "<group>";
-		};
-		5783B5441C19F7150077F8A6 /* KinveyStore */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5351C19F7150077F8A6 /* KCSStore.h */,
-				5783B5361C19F7150077F8A6 /* KCSStore.m */,
-				5783B5371C19F7150077F8A6 /* KCSAppdataStore.h */,
-				5783B5381C19F7150077F8A6 /* KCSAppdataStore.m */,
-				5783B5391C19F7150077F8A6 /* DataStoreOperation.h */,
-				5783B53A1C19F7150077F8A6 /* DataStoreOperation.m */,
-				5783B53B1C19F7150077F8A6 /* KCSBackgroundAppdataStore.h */,
-				5783B53C1C19F7150077F8A6 /* KCSBackgroundAppdataStore.m */,
-				5783B53D1C19F7150077F8A6 /* KCSCachedStore.h */,
-				5783B53E1C19F7150077F8A6 /* KCSCachedStore.m */,
-				5783B53F1C19F7150077F8A6 /* KCSLinkedAppdataStore.h */,
-				5783B5401C19F7150077F8A6 /* KCSLinkedAppdataStore.m */,
-				5783B5411C19F7150077F8A6 /* KCSSaveGraph.h */,
-				5783B5421C19F7150077F8A6 /* KCSSaveGraph.m */,
-				5783B5431C19F7150077F8A6 /* KCSCacheUpdatePolicy.h */,
-			);
-			name = KinveyStore;
-			sourceTree = "<group>";
-		};
-		5783B54B1C19F7150077F8A6 /* Query */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5451C19F7150077F8A6 /* KCSQuery.h */,
-				5783B5461C19F7150077F8A6 /* KCSQuery.m */,
-				5783B5471C19F7150077F8A6 /* KCSReduceFunction.h */,
-				5783B5481C19F7150077F8A6 /* KCSReduceFunction.m */,
-				5783B5491C19F7150077F8A6 /* KCSGroup.h */,
-				5783B54A1C19F7150077F8A6 /* KCSGroup.m */,
-				570B1E081C2393E00056941F /* KCSQueryAdapter.h */,
-				570B1E091C2393E00056941F /* KCSQueryAdapter.m */,
-			);
-			name = Query;
-			sourceTree = "<group>";
-		};
-		5783B54E1C19F7150077F8A6 /* Push */ = {
-			isa = PBXGroup;
-			children = (
-				5783B54C1C19F7150077F8A6 /* KCSPush.h */,
-				5783B54D1C19F7150077F8A6 /* KCSPush.m */,
-			);
-			name = Push;
-			sourceTree = "<group>";
-		};
-		5783B55E1C19F7150077F8A6 /* appdataService */ = {
-			isa = PBXGroup;
-			children = (
-				5783B54F1C19F7150077F8A6 /* KCSEntityDict.h */,
-				5783B5501C19F7150077F8A6 /* KCSEntityDict.m */,
-				5783B5511C19F7150077F8A6 /* KinveyCollection.h */,
-				5783B5521C19F7150077F8A6 /* KinveyCollection.m */,
-				5783B5531C19F7150077F8A6 /* KinveyEntity.h */,
-				5783B5541C19F7150077F8A6 /* KinveyEntity.m */,
-				5783B5551C19F7150077F8A6 /* KinveyPersistable.h */,
-				5783B5561C19F7150077F8A6 /* KinveyPing.h */,
-				5783B5571C19F7150077F8A6 /* KinveyPing.m */,
-				5783B5581C19F7150077F8A6 /* KCSObjectMapper.h */,
-				5783B5591C19F7150077F8A6 /* KCSObjectMapper.m */,
-				5783B55A1C19F7150077F8A6 /* KCSBuilders.h */,
-				5783B55B1C19F7150077F8A6 /* KCSBuilders.m */,
-				5783B55C1C19F7150077F8A6 /* KCSMetadata.h */,
-				5783B55D1C19F7150077F8A6 /* KCSMetadata.m */,
-			);
-			name = appdataService;
-			sourceTree = "<group>";
-		};
-		5783B5651C19F7150077F8A6 /* File Service */ = {
-			isa = PBXGroup;
-			children = (
-				5783B55F1C19F7150077F8A6 /* KCSFile.h */,
-				5783B5601C19F7150077F8A6 /* KCSFile.m */,
-				5783B5611C19F7150077F8A6 /* KCSImageUtils.h */,
-				5783B5621C19F7150077F8A6 /* KCSImageUtils.m */,
-				5783B5631C19F7150077F8A6 /* KCSFileStore.h */,
-				5783B5641C19F7150077F8A6 /* KCSFileStore.m */,
-			);
-			name = "File Service";
-			sourceTree = "<group>";
-		};
-		5783B56E1C19F7150077F8A6 /* UserService */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5661C19F7150077F8A6 /* KCSUserActionResult.h */,
-				5783B5671C19F7150077F8A6 /* KinveyUser.h */,
-				5783B5681C19F7150077F8A6 /* KinveyUser+Private.h */,
-				5783B5691C19F7150077F8A6 /* KinveyUser.m */,
-				5783B56A1C19F7150077F8A6 /* KCSAuthCredential.h */,
-				5783B56B1C19F7150077F8A6 /* KCSAuthCredential.m */,
-				5783B56C1C19F7150077F8A6 /* KCSUserDiscovery.h */,
-				5783B56D1C19F7150077F8A6 /* KCSUserDiscovery.m */,
-			);
-			name = UserService;
-			sourceTree = "<group>";
-		};
-		5783B5711C19F7150077F8A6 /* RPC Service */ = {
-			isa = PBXGroup;
-			children = (
-				5783B56F1C19F7150077F8A6 /* KCSCustomEndpoints.h */,
-				5783B5701C19F7150077F8A6 /* KCSCustomEndpoints.m */,
-			);
-			name = "RPC Service";
-			sourceTree = "<group>";
-		};
-		5783B5831C19F7150077F8A6 /* KCSClient */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5721C19F7150077F8A6 /* KCSPrivateBlockDefs.h */,
-				5783B5731C19F7150077F8A6 /* KCSBlockDefs.h */,
-				5783B5741C19F7150077F8A6 /* KCSClient.h */,
-				5783B66B1C1B7C1C0077F8A6 /* KCSClient+Private.h */,
-				5783B5751C19F7150077F8A6 /* KCSClient.m */,
-				5783B5761C19F7150077F8A6 /* KCSReachability.h */,
-				5783B5771C19F7150077F8A6 /* KCSReachability.m */,
-				5783B5781C19F7150077F8A6 /* KCSClient+ConfigurationTest.h */,
-				5783B5791C19F7150077F8A6 /* KCSClient+ConfigurationTest.m */,
-				5783B57A1C19F7150077F8A6 /* KCSRequest.h */,
-				5783B57B1C19F7150077F8A6 /* KCSRequest+Private.h */,
-				5783B57C1C19F7150077F8A6 /* KCSRequest.m */,
-				5783B57D1C19F7150077F8A6 /* KCSMultipleRequest.h */,
-				5783B57E1C19F7150077F8A6 /* KCSMutipleRequest.m */,
-				5783B57F1C19F7150077F8A6 /* KCSDataStoreOperationRequest.h */,
-				5783B5801C19F7150077F8A6 /* KCSDataStoreOperationRequest.m */,
-				5783B5811C19F7150077F8A6 /* KCSFileRequest.h */,
-				5783B5821C19F7150077F8A6 /* KCSFileRequest.m */,
-			);
-			name = KCSClient;
-			sourceTree = "<group>";
-		};
-		5783B5901C19F7150077F8A6 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				576E95EC1C222E9500258CC3 /* NSValueTransformer+Kinvey.h */,
-				576E95ED1C222E9500258CC3 /* NSValueTransformer+Kinvey.m */,
-				576E95DC1C222DDE00258CC3 /* Value Transformer */,
-				5783B5841C19F7150077F8A6 /* NSURL+KinveyAdditions.h */,
-				5783B5851C19F7150077F8A6 /* NSURL+KinveyAdditions.m */,
-				5783B5861C19F7150077F8A6 /* NSDate+ISO8601.h */,
-				5783B5871C19F7150077F8A6 /* NSDate+ISO8601.m */,
-				5783B5881C19F7150077F8A6 /* NSDate+KinveyAdditions.h */,
-				5783B5891C19F7150077F8A6 /* NSDate+KinveyAdditions.m */,
-				5783B58A1C19F7150077F8A6 /* KCSErrorUtilities.h */,
-				5783B58B1C19F7150077F8A6 /* KCSErrorUtilities.m */,
-				5783B58C1C19F7150077F8A6 /* KCSLogSink.h */,
-				5783B58D1C19F7150077F8A6 /* KCSLogManager.h */,
-				5783B58E1C19F7150077F8A6 /* KCSLogManager.m */,
-				5783B58F1C19F7150077F8A6 /* KCSHiddenMethods.h */,
-				576E95B41C210F3C00258CC3 /* KCSObjcRuntime.h */,
-				576E95B51C210F3C00258CC3 /* KCSObjcRuntime.m */,
-			);
-			name = Utils;
-			sourceTree = "<group>";
-		};
-		5783B5911C19F7150077F8A6 /* Source */ = {
-			isa = PBXGroup;
-			children = (
-				5783B6241C19F90E0077F8A6 /* KinveyKit-Prefix.pch */,
-				5783B5311C19F7150077F8A6 /* User Interface */,
-				5783B5341C19F7150077F8A6 /* Headers */,
-				5783B5441C19F7150077F8A6 /* KinveyStore */,
-				5783B54B1C19F7150077F8A6 /* Query */,
-				5783B54E1C19F7150077F8A6 /* Push */,
-				5783B55E1C19F7150077F8A6 /* appdataService */,
-				5783B5651C19F7150077F8A6 /* File Service */,
-				5783B56E1C19F7150077F8A6 /* UserService */,
-				5783B5711C19F7150077F8A6 /* RPC Service */,
-				5783B5831C19F7150077F8A6 /* KCSClient */,
-				5783B5901C19F7150077F8A6 /* Utils */,
-				576E95CC1C222B3600258CC3 /* Realm */,
-			);
-			name = Source;
-			path = ../../../KinveyKit/KinveyKit/Source;
-			sourceTree = "<group>";
-		};
-		5783B5A11C19F7150077F8A6 /* Internal */ = {
-			isa = PBXGroup;
-			children = (
-				5783B59D1C19F7150077F8A6 /* KCSClient2+KCSInternal.h */,
-				5783B59E1C19F7150077F8A6 /* KCSClient2+KCSInternal.m */,
-				5783B59F1C19F7150077F8A6 /* KCSClientConfiguration+KCSInternal.h */,
-				5783B5A01C19F7150077F8A6 /* KCSClientConfiguration+KCSInternal.m */,
-			);
-			name = Internal;
-			sourceTree = "<group>";
-		};
-		5783B5A21C19F7150077F8A6 /* Configuration */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5971C19F7150077F8A6 /* KCSClient2.h */,
-				5783B5981C19F7150077F8A6 /* KCSClient2.m */,
-				5783B5991C19F7150077F8A6 /* KCSClientConfiguration.h */,
-				5783B59A1C19F7150077F8A6 /* KCSClientConfiguration.m */,
-				5783B59B1C19F7150077F8A6 /* KCSPing2.h */,
-				5783B59C1C19F7150077F8A6 /* KCSPing2.m */,
-				5783B5A11C19F7150077F8A6 /* Internal */,
-			);
-			name = Configuration;
-			sourceTree = "<group>";
-		};
-		5783B5BA1C19F7150077F8A6 /* Internal */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5A31C19F7150077F8A6 /* KCSLog.h */,
-				5783B5A41C19F7150077F8A6 /* KCSLogFormatter.h */,
-				5783B5A51C19F7150077F8A6 /* KCSLogFormatter.m */,
-				5783B5A61C19F7150077F8A6 /* KCSPlatformUtils.h */,
-				5783B5A71C19F7150077F8A6 /* KCSPlatformUtils.m */,
-				5783B5A81C19F7150077F8A6 /* KCSFileUtils.h */,
-				5783B5A91C19F7150077F8A6 /* KCSFileUtils.m */,
-				5783B5AA1C19F7150077F8A6 /* KCSBase64.h */,
-				5783B5AB1C19F7150077F8A6 /* KCSBase64.m */,
-				5783B5AC1C19F7150077F8A6 /* KCSDBTools.h */,
-				5783B5AD1C19F7150077F8A6 /* KCSDBTools.m */,
-				5783B5AE1C19F7150077F8A6 /* KCSKeychain.h */,
-				5783B5AF1C19F7150077F8A6 /* KCSKeychain.m */,
-				5783B5B01C19F7150077F8A6 /* NSArray+KinveyAdditions.h */,
-				5783B5B11C19F7150077F8A6 /* NSArray+KinveyAdditions.m */,
-				5783B5B21C19F7150077F8A6 /* NSDictionary+KinveyAdditions.h */,
-				5783B5B31C19F7150077F8A6 /* NSDictionary+KinveyAdditions.m */,
-				5783B5B41C19F7150077F8A6 /* NSMutableDictionary+KinveyAdditions.h */,
-				5783B5B51C19F7150077F8A6 /* NSMutableDictionary+KinveyAdditions.m */,
-				5783B5B61C19F7150077F8A6 /* NSError+KinveyKit.h */,
-				5783B5B71C19F7150077F8A6 /* NSError+KinveyKit.m */,
-				5783B5B81C19F7150077F8A6 /* NSString+KinveyAdditions.h */,
-				5783B5B91C19F7150077F8A6 /* NSString+KinveyAdditions.m */,
-			);
-			name = Internal;
-			sourceTree = "<group>";
-		};
-		5783B5BB1C19F7150077F8A6 /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5BA1C19F7150077F8A6 /* Internal */,
-			);
-			name = Utilities;
-			sourceTree = "<group>";
-		};
-		5783B5DA1C19F7150077F8A6 /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5C11C19F7150077F8A6 /* KCSHttpRequest.h */,
-				5783B5C21C19F7150077F8A6 /* KCSHttpRequest+Private.h */,
-				5783B5C31C19F7150077F8A6 /* KCSHttpRequest.m */,
-				5783B5C41C19F7150077F8A6 /* KCSCredentials.h */,
-				5783B5C51C19F7150077F8A6 /* KCSNetworkOperation.h */,
-				5783B5C61C19F7150077F8A6 /* KCSNetworkResponse.h */,
-				5783B5C71C19F7150077F8A6 /* KCSNetworkResponse.m */,
-				5783B5C81C19F7150077F8A6 /* KCSNSURLRequestOperation.h */,
-				5783B5C91C19F7150077F8A6 /* KCSNSURLRequestOperation.m */,
-				5783B5CA1C19F7150077F8A6 /* KCSNSURLSessionOperation.h */,
-				5783B5CB1C19F7150077F8A6 /* KCSNSURLSessionOperation.m */,
-				5783B5CC1C19F7150077F8A6 /* KCSMockRequestOperation.h */,
-				5783B5CD1C19F7150077F8A6 /* KCSMockRequestOperation.m */,
-				5783B5CE1C19F7150077F8A6 /* KCSMockServer.h */,
-				5783B5CF1C19F7150077F8A6 /* KCSMockServer.m */,
-				5783B5D01C19F7150077F8A6 /* KCSNetworkObserver.h */,
-				5783B5D11C19F7150077F8A6 /* KCSNetworkObserver.m */,
-				5783B5D21C19F7150077F8A6 /* KCSNetworkDefs.h */,
-				5783B5D31C19F7150077F8A6 /* KinveyHTTPStatusCodes.h */,
-				5783B5D41C19F7150077F8A6 /* KCSMutableOrderedDictionary.h */,
-				5783B5D51C19F7150077F8A6 /* KCSMutableOrderedDictionary.m */,
-				5783B5D61C19F7150077F8A6 /* KCSURLConnectionDelegateAdapter.h */,
-				5783B5D71C19F7150077F8A6 /* KCSURLConnectionDelegateAdapter.m */,
-				5783B5D81C19F7150077F8A6 /* KCSMICRequest2.h */,
-				5783B5D91C19F7150077F8A6 /* KCSMICRequest2.m */,
-			);
-			name = internal;
-			sourceTree = "<group>";
-		};
-		5783B5DB1C19F7150077F8A6 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5BC1C19F7150077F8A6 /* KCSTask.h */,
-				5783B5BD1C19F7150077F8A6 /* KCSRequestConfiguration.h */,
-				5783B5BE1C19F7150077F8A6 /* KCSRequestConfiguration.m */,
-				5783B5BF1C19F7150077F8A6 /* KCSURLProtocol.h */,
-				5783B5C01C19F7150077F8A6 /* KCSURLProtocol.m */,
-				5783B5DA1C19F7150077F8A6 /* internal */,
-			);
-			name = Network;
-			sourceTree = "<group>";
-		};
-		5783B5DC1C19F7150077F8A6 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5951C19F7150077F8A6 /* KinveyCore.h */,
-				5783B5961C19F7150077F8A6 /* KinveyCoreInternal.h */,
-				5783B5A21C19F7150077F8A6 /* Configuration */,
-				5783B5BB1C19F7150077F8A6 /* Utilities */,
-				5783B5DB1C19F7150077F8A6 /* Network */,
-			);
-			name = Core;
-			sourceTree = "<group>";
-		};
-		5783B5E31C19F7150077F8A6 /* User */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5DD1C19F7150077F8A6 /* KinveyUserService.h */,
-				5783B5DE1C19F7150077F8A6 /* KCSUser2.h */,
-				5783B5DF1C19F7150077F8A6 /* KCSUser2.m */,
-				5783B5E01C19F7150077F8A6 /* KCSUser2+KinveyUserService.h */,
-				5783B5E11C19F7150077F8A6 /* KCSUser2+KinveyUserService+Private.h */,
-				5783B5E21C19F7150077F8A6 /* KCSUser2+KinveyUserService.m */,
-			);
-			name = User;
-			sourceTree = "<group>";
-		};
-		5783B5FC1C19F7150077F8A6 /* Data Modeling */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5F61C19F7150077F8A6 /* KCSPersistableDescription.h */,
-				5783B5F71C19F7150077F8A6 /* KCSPersistableDescription.m */,
-				5783B5F81C19F7150077F8A6 /* KCSDataModel.h */,
-				5783B5F91C19F7150077F8A6 /* KCSDataModel.m */,
-				5783B5FA1C19F7150077F8A6 /* KCSPropertyUtil.h */,
-				5783B5FB1C19F7150077F8A6 /* KCSPropertyUtil.m */,
-			);
-			name = "Data Modeling";
-			sourceTree = "<group>";
-		};
-		5783B5FD1C19F7150077F8A6 /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5ED1C19F7150077F8A6 /* KinveyDataStoreInternal.h */,
-				5783B5EE1C19F7150077F8A6 /* KCSQuery2+KCSInternal.h */,
-				5783B5EF1C19F7150077F8A6 /* KCSQuery2+KCSInternal.m */,
-				5783B5F01C19F7150077F8A6 /* KCSEntityPersistence.h */,
-				5783B5F11C19F7150077F8A6 /* KCSEntityPersistence.m */,
-				57E7C79E1C501DAF00848748 /* KCSCache.h */,
-				57E7C7961C50089500848748 /* KCSSync.h */,
-				57E7C7921C50070100848748 /* KCSPendingOperation.h */,
-				5783B5F21C19F7150077F8A6 /* KCSObjectCache.h */,
-				5783B5F31C19F7150077F8A6 /* KCSObjectCache.m */,
-				5783B5F41C19F7150077F8A6 /* KCSOfflineUpdate.h */,
-				5783B5F51C19F7150077F8A6 /* KCSOfflineUpdate.m */,
-				5783B5FC1C19F7150077F8A6 /* Data Modeling */,
-				57E7C7A01C50228300848748 /* KCSCacheManager.h */,
-				57E7C7A11C50228300848748 /* KCSCacheManager.m */,
-				57E7C7AA1C5052F400848748 /* KCSSyncManager.h */,
-				57E7C7AB1C5052F400848748 /* KCSSyncManager.m */,
-			);
-			name = internal;
-			sourceTree = "<group>";
-		};
-		5783B5FE1C19F7150077F8A6 /* Data Store */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5E41C19F7150077F8A6 /* KinveyDataStore.h */,
-				5783B5E51C19F7150077F8A6 /* KCSDataStore.h */,
-				5783B5E61C19F7150077F8A6 /* KCSDataStore.m */,
-				5783B5E71C19F7150077F8A6 /* KCSQuery2.h */,
-				5783B5E81C19F7150077F8A6 /* KCSQuery2.m */,
-				5783B5E91C19F7150077F8A6 /* KCSOfflineUpdateDelegate.h */,
-				5783B5EA1C19F7150077F8A6 /* KCSClient+KinveyDataStore.h */,
-				5783B5EB1C19F7150077F8A6 /* KCSClient+KinveyDataStore.m */,
-				5783B5EC1C19F7150077F8A6 /* KCSDataOperation.h */,
-				5783B5FD1C19F7150077F8A6 /* internal */,
-			);
-			name = "Data Store";
-			sourceTree = "<group>";
-		};
-		5783B60C1C19F7150077F8A6 /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				5783B6001C19F7150077F8A6 /* KinveyFileStoreInteral.h */,
-				5783B6011C19F7150077F8A6 /* KCSFileRequestManager.h */,
-				5783B6021C19F7150077F8A6 /* KCSFileRequestManager.m */,
-				5783B6031C19F7150077F8A6 /* KCSFileOperation.h */,
-				5783B6041C19F7150077F8A6 /* KCSNSURLCxnFileOperation.h */,
-				5783B6051C19F7150077F8A6 /* KCSNSURLCxnFileOperation.m */,
-				5783B6061C19F7150077F8A6 /* KCSNSURLSessionFileOperation.h */,
-				5783B6071C19F7150077F8A6 /* KCSNSURLSessionFileOperation.m */,
-				5783B6081C19F7150077F8A6 /* KCSMockFileOperation.h */,
-				5783B6091C19F7150077F8A6 /* KCSMockFileOperation.m */,
-				5783B60A1C19F7150077F8A6 /* KCSFile+KCSInternal.h */,
-				5783B60B1C19F7150077F8A6 /* KCSFile+KCSInternal.m */,
-			);
-			name = internal;
-			sourceTree = "<group>";
-		};
-		5783B60D1C19F7150077F8A6 /* File Store */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5FF1C19F7150077F8A6 /* KinveyFileStore.h */,
-				5783B60C1C19F7150077F8A6 /* internal */,
-			);
-			name = "File Store";
-			sourceTree = "<group>";
-		};
-		5783B6101C19F7150077F8A6 /* Push */ = {
-			isa = PBXGroup;
-			children = (
-				5783B60E1C19F7150077F8A6 /* KCSPush2.h */,
-				5783B60F1C19F7150077F8A6 /* KCSPush2.m */,
-			);
-			name = Push;
-			sourceTree = "<group>";
-		};
-		5783B6161C19F7150077F8A6 /* Location */ = {
-			isa = PBXGroup;
-			children = (
-				5783B6111C19F7150077F8A6 /* KinveyLocation.h */,
-				5783B6121C19F7150077F8A6 /* CLLocation+Kinvey.h */,
-				5783B6131C19F7150077F8A6 /* CLLocation+Kinvey.m */,
-				5783B6141C19F7150077F8A6 /* CLCircularRegion+KinveyKit.h */,
-				5783B6151C19F7150077F8A6 /* CLCircularRegion+KinveyKit.m */,
-			);
-			name = Location;
-			sourceTree = "<group>";
-		};
-		5783B61C1C19F7150077F8A6 /* 3rdParty */ = {
-			isa = PBXGroup;
-			children = (
-				5783B6181C19F7150077F8A6 /* KCS_OAuth+Additions.h */,
-				5783B6191C19F7150077F8A6 /* KCS_OAuth+Additions.m */,
-				5783B61A1C19F7150077F8A6 /* KCS_OAuthCore.h */,
-				5783B61B1C19F7150077F8A6 /* KCS_OAuthCore.m */,
-			);
-			name = 3rdParty;
-			sourceTree = "<group>";
-		};
-		5783B61F1C19F7150077F8A6 /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				5783B6171C19F7150077F8A6 /* KinveySocialInternal.h */,
-				5783B61C1C19F7150077F8A6 /* 3rdParty */,
-				5783B61D1C19F7150077F8A6 /* KCSSocialRequest.h */,
-				5783B61E1C19F7150077F8A6 /* KCSSocialRequest.m */,
-			);
-			name = internal;
-			sourceTree = "<group>";
-		};
-		5783B6201C19F7150077F8A6 /* Social */ = {
-			isa = PBXGroup;
-			children = (
-				5783B61F1C19F7150077F8A6 /* internal */,
-			);
-			name = Social;
-			sourceTree = "<group>";
-		};
-		5783B6211C19F7150077F8A6 /* KinveyKit2 */ = {
-			isa = PBXGroup;
-			children = (
-				5783B5921C19F7150077F8A6 /* KinveyKit2.h */,
-				5783B5931C19F7150077F8A6 /* KinveyVersion.h */,
-				5783B5941C19F7150077F8A6 /* KinveyHeaderInfo.h */,
-				5783B5DC1C19F7150077F8A6 /* Core */,
-				5783B5E31C19F7150077F8A6 /* User */,
-				5783B5FE1C19F7150077F8A6 /* Data Store */,
-				5783B60D1C19F7150077F8A6 /* File Store */,
-				5783B6101C19F7150077F8A6 /* Push */,
-				5783B6161C19F7150077F8A6 /* Location */,
-				5783B6201C19F7150077F8A6 /* Social */,
-			);
-			name = KinveyKit2;
-			path = ../../../KinveyKit/KinveyKit/Source;
-			sourceTree = "<group>";
-		};
 		57A27C771C178F17000DF951 = {
 			isa = PBXGroup;
 			children = (
-				5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */,
 				57A27C831C178F17000DF951 /* Kinvey */,
 				57A27C8F1C178F18000DF951 /* KinveyTests */,
 				57A27C821C178F17000DF951 /* Products */,
-				61E2DD2F0706218F3CFE58DE /* Pods */,
 				DBD4AA6B25714F7AAA213880 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -1194,8 +193,6 @@
 		57A27C831C178F17000DF951 /* Kinvey */ = {
 			isa = PBXGroup;
 			children = (
-				5783B5081C19F6420077F8A6 /* KinveyKit */,
-				576E95A51C1FC2B300258CC3 /* NSPredicate-MongoDB-Adaptor */,
 				57DB87E91C62B1CB002BA684 /* Extensions */,
 				57A27C841C178F17000DF951 /* Kinvey.h */,
 				57A27C861C178F17000DF951 /* Info.plist */,
@@ -1268,19 +265,12 @@
 			name = Extensions;
 			sourceTree = "<group>";
 		};
-		61E2DD2F0706218F3CFE58DE /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				01502F9C4CE7FC49AB2C110D /* Pods-Kinvey.debug.xcconfig */,
-				BCE50A788E88118CFDD2346D /* Pods-Kinvey.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		DBD4AA6B25714F7AAA213880 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E45E4FF6B1555E0462E77506 /* Pods_Kinvey.framework */,
+				5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */,
+				574B0F271C6E64AF00CDC48F /* KinveyKit.framework */,
+				574F632E1C6DCE4600765760 /* MongoDBPredicateAdaptorKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1292,20 +282,41 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57E7C7981C50089500848748 /* KCSSync.h in Headers */,
-				57E7C79F1C501DAF00848748 /* KCSCache.h in Headers */,
-				57E7C7A21C50228300848748 /* KCSCacheManager.h in Headers */,
 				57A27C851C178F17000DF951 /* Kinvey.h in Headers */,
-				570B1E0A1C2393E00056941F /* KCSQueryAdapter.h in Headers */,
-				57E7C7941C50070100848748 /* KCSPendingOperation.h in Headers */,
-				57403A801C4DB422008ECCD4 /* KCSPendingOperationRealm.h in Headers */,
-				57E7C7AC1C5052F400848748 /* KCSSyncManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXLegacyTarget section */
+		574B0F2E1C6E652800CDC48F /* KinveyKit */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 574B0F2F1C6E652800CDC48F /* Build configuration list for PBXLegacyTarget "KinveyKit" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = ../KinveyKit;
+			dependencies = (
+			);
+			name = KinveyKit;
+			passBuildSettingsInEnvironment = 1;
+			productName = KinveyKit;
+		};
+		574F62D71C6DC5E500765760 /* MongoDBPredicateAdaptor */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 574F62D81C6DC5E500765760 /* Build configuration list for PBXLegacyTarget "MongoDBPredicateAdaptor" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = Dependencies/modules/MongoDBPredicateAdaptor;
+			dependencies = (
+			);
+			name = MongoDBPredicateAdaptor;
+			passBuildSettingsInEnvironment = 0;
+			productName = MongoDBPredicateAdaptor;
+		};
 		577C9E5B1C1CEEC100BF49EE /* Kinvey-Universal */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "$(ACTION)";
@@ -1327,16 +338,16 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57A27C951C178F18000DF951 /* Build configuration list for PBXNativeTarget "Kinvey" */;
 			buildPhases = (
-				AA59CFFDC841BBA42AD97A39 /* Check Pods Manifest.lock */,
 				57A27C7C1C178F17000DF951 /* Sources */,
 				57A27C7D1C178F17000DF951 /* Frameworks */,
 				57A27C7E1C178F17000DF951 /* Headers */,
 				57A27C7F1C178F17000DF951 /* Resources */,
-				C070B5F48FAF3997AF66CB58 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				574B0F331C6E653D00CDC48F /* PBXTargetDependency */,
+				574F62DC1C6DC61800765760 /* PBXTargetDependency */,
 			);
 			name = Kinvey;
 			productName = Kinvey;
@@ -1371,6 +382,12 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = Kinvey;
 				TargetAttributes = {
+					574B0F2E1C6E652800CDC48F = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
+					574F62D71C6DC5E500765760 = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
 					577C9E5B1C1CEEC100BF49EE = {
 						CreatedOnToolsVersion = 7.2;
 					};
@@ -1397,6 +414,8 @@
 				57A27C801C178F17000DF951 /* Kinvey */,
 				57A27C8A1C178F18000DF951 /* KinveyTests */,
 				577C9E5B1C1CEEC100BF49EE /* Kinvey-Universal */,
+				574F62D71C6DC5E500765760 /* MongoDBPredicateAdaptor */,
+				574B0F2E1C6E652800CDC48F /* KinveyKit */,
 			);
 		};
 /* End PBXProject section */
@@ -1419,181 +438,53 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		AA59CFFDC841BBA42AD97A39 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		C070B5F48FAF3997AF66CB58 /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/../Pods/Target Support Files/Pods-Kinvey/Pods-Kinvey-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		57A27C7C1C178F17000DF951 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				57E1C3AF1C18153900578974 /* RequestFactory.swift in Sources */,
-				5783B65C1C1A12420077F8A6 /* KCS_DDAbstractDatabaseLogger.m in Sources */,
-				5783B6571C1A11CE0077F8A6 /* KCSRequest.m in Sources */,
-				5783B62C1C1A08DB0077F8A6 /* KCSBackgroundAppdataStore.m in Sources */,
-				576E95E81C222DEF00258CC3 /* KCS_UIImage_NSData_NSValueTransformer.m in Sources */,
-				5783B6651C1A13A00077F8A6 /* KCSURLConnectionDelegateAdapter.m in Sources */,
-				5706FEC01C1F92990037E7D0 /* KCS_FMDatabaseAdditions.m in Sources */,
 				5728212F1C63E10700373EC8 /* FileStore.swift in Sources */,
 				57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */,
-				576E95AA1C1FC2BF00258CC3 /* MongoDBPredicateAdaptor.m in Sources */,
-				576E95E61C222DEF00258CC3 /* KCS_NSString_NSDate_NSValueTransformer.m in Sources */,
-				5783B6441C1A10B00077F8A6 /* KCSNSURLSessionFileOperation.m in Sources */,
-				5783B6321C1A0FAF0077F8A6 /* KCSFileStore.m in Sources */,
-				576E95F21C223DA500258CC3 /* CLLocation+Kinvey.m in Sources */,
-				5783B6641C1A133F0077F8A6 /* KCSMICRequest2.m in Sources */,
-				5783B6371C1A10010077F8A6 /* KCSFileRequestManager.m in Sources */,
 				575772861C4728E5001D56F5 /* TTL.swift in Sources */,
-				5783B6431C1A10A20077F8A6 /* KCSNSURLRequestOperation.m in Sources */,
 				57A27CA21C17910E000DF951 /* Acl.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
-				5783B6541C1A11AF0077F8A6 /* KCSPush.m in Sources */,
-				5783B62E1C1A092D0077F8A6 /* KCSCachedStore.m in Sources */,
-				5783B6391C1A101A0077F8A6 /* KCSGroup.m in Sources */,
-				576E95EB1C222E5800258CC3 /* KCS_CLLocation_Realm_ValueTransformer.m in Sources */,
-				5783B65F1C1A12B10077F8A6 /* KCS_FMDatabaseQueue.m in Sources */,
 				57A27C9E1C178FB5000DF951 /* Client.swift in Sources */,
-				5783B6221C19F73E0077F8A6 /* KCSKeychain.m in Sources */,
-				577C9E761C1EC99E00BF49EE /* NSError+KinveyKit.m in Sources */,
-				5783B6401C1A10740077F8A6 /* KCSMockServer.m in Sources */,
-				570B1E0B1C2393E00056941F /* KCSQueryAdapter.m in Sources */,
-				5783B6471C1A10DA0077F8A6 /* KCSNetworkResponse.m in Sources */,
 				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
-				5783B6491C1A10FE0077F8A6 /* KCSDataModel.m in Sources */,
-				576E95CB1C2229F700258CC3 /* KCSRealmEntityPersistence.m in Sources */,
 				574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
-				57403A811C4DB422008ECCD4 /* KCSPendingOperationRealm.m in Sources */,
-				5783B6531C1A11A40077F8A6 /* KCSPropertyUtil.m in Sources */,
-				5783B6621C1A12DF0077F8A6 /* KCS_KSReachability.m in Sources */,
 				57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */,
-				5783B65A1C1A11F20077F8A6 /* KCSUser2.m in Sources */,
-				5783B6281C1A08980077F8A6 /* KCSClientConfiguration.m in Sources */,
 				57E7C7AF1C50539200848748 /* Sync.swift in Sources */,
-				5783B63E1C1A10570077F8A6 /* KCSMetadata.m in Sources */,
-				5783B6351C1A0FEA0077F8A6 /* KCSFile.m in Sources */,
-				5783B6361C1A0FF40077F8A6 /* KCSFileRequest.m in Sources */,
-				5783B6271C1A07980077F8A6 /* KinveyUser.m in Sources */,
-				5783B63C1C1A103D0077F8A6 /* KCSLogManager.m in Sources */,
-				5783B65D1C1A12970077F8A6 /* KCS_DDLog.m in Sources */,
 				57E7C7A91C504E7B00848748 /* PendingOperation.swift in Sources */,
 				57A27CA41C179118000DF951 /* Metadata.swift in Sources */,
 				577C9E781C1F89C700BF49EE /* Credential.swift in Sources */,
-				5783B63F1C1A10640077F8A6 /* KCSMockRequestOperation.m in Sources */,
-				5783B64A1C1A110B0077F8A6 /* KCSEntityPersistence.m in Sources */,
 				57A2ED8E1C49D20B006D26A9 /* HttpRequest.swift in Sources */,
-				5783B6591C1A11E60077F8A6 /* KCSURLProtocol.m in Sources */,
-				5783B63B1C1A10320077F8A6 /* KCSLogFormatter.m in Sources */,
-				5783B6511C1A11850077F8A6 /* KCSPersistableDescription.m in Sources */,
 				57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */,
-				5783B6601C1A12BD0077F8A6 /* KCS_FMDatabase.m in Sources */,
-				576E95CF1C222B8300258CC3 /* KCS_CLLocation_Realm.m in Sources */,
 				57B0E9501C5FF52200BA984F /* Push.swift in Sources */,
 				574912711C59323B00EA4F26 /* StoreType.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
 				57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */,
-				576E95B61C210F5100258CC3 /* KCSObjcRuntime.m in Sources */,
 				57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */,
-				5783B6521C1A11900077F8A6 /* KCSPlatformUtils.m in Sources */,
-				576E95E51C222DEF00258CC3 /* KCS_NSArray_CLLocation_NSValueTransformer.m in Sources */,
-				576E95E71C222DEF00258CC3 /* KCS_NSURL_NSString_NSValueTransformer.m in Sources */,
-				576E95D51C222C0800258CC3 /* KCSMetadataRealm.m in Sources */,
 				5728212D1C63E0F500373EC8 /* File.swift in Sources */,
-				5783B6631C1A132C0077F8A6 /* KCSUser2+KinveyUserService.m in Sources */,
-				57E7C7A31C50228300848748 /* KCSCacheManager.m in Sources */,
 				57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */,
-				5783B62A1C1A08B90077F8A6 /* KCSAppdataStore.m in Sources */,
 				57A27C9C1C178FAC000DF951 /* Kinvey.swift in Sources */,
-				5783B6251C1A07800077F8A6 /* KCSClient.m in Sources */,
 				57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */,
-				5783B62F1C1A095C0077F8A6 /* KCSClient+KinveyDataStore.m in Sources */,
-				5706FEC11C1F93210037E7D0 /* KinveyEntity.m in Sources */,
-				576E95DB1C222D8900258CC3 /* KCSAclRealm.m in Sources */,
-				5783B6381C1A100D0077F8A6 /* KCSFileUtils.m in Sources */,
-				5783B62D1C1A09090077F8A6 /* KCSHttpRequest.m in Sources */,
-				5783B6561C1A11C00077F8A6 /* KCSQuery2.m in Sources */,
-				5783B65B1C1A12310077F8A6 /* KCS_DDASLLogger.m in Sources */,
 				57E1C3B11C18156700578974 /* HttpRequestFactory.swift in Sources */,
-				577C9E741C1EC8BF00BF49EE /* NSArray+KinveyAdditions.m in Sources */,
-				5783B6411C1A10870077F8A6 /* KCSMutipleRequest.m in Sources */,
-				5783B6301C1A09750077F8A6 /* KinveyCollection.m in Sources */,
-				5783B64B1C1A11170077F8A6 /* KCSDBTools.m in Sources */,
 				57E7C7B31C51545900848748 /* ReadPolicy.swift in Sources */,
-				576E95EE1C222E9900258CC3 /* NSValueTransformer+Kinvey.m in Sources */,
 				57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */,
 				57E7C7B51C51981400848748 /* RequestType.swift in Sources */,
-				577C9E721C1EB83C00BF49EE /* NSString+KinveyAdditions.m in Sources */,
-				576E95F11C222F1400258CC3 /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m in Sources */,
 				57B6A4F61C56A622000584CC /* AppDataExecutorStrategy.swift in Sources */,
-				5783B6501C1A11660077F8A6 /* KCSReachability.m in Sources */,
-				577C9E731C1EC85600BF49EE /* KCSClient+ConfigurationTest.m in Sources */,
 				57A2ED861C49B9D5006D26A9 /* Response.swift in Sources */,
 				57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */,
-				5706FEBF1C1F92350037E7D0 /* NSMutableDictionary+KinveyAdditions.m in Sources */,
 				5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */,
-				5783B65E1C1A12A30077F8A6 /* KCS_DDTTYLogger.m in Sources */,
 				576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */,
-				5783B64D1C1A11300077F8A6 /* KCSObjectMapper.m in Sources */,
-				576E95D81C222C6D00258CC3 /* KCSFileRealm.m in Sources */,
 				57A27CA01C178FC0000DF951 /* User.swift in Sources */,
 				57A2ED881C49BADD006D26A9 /* HttpResponse.swift in Sources */,
 				57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */,
-				5783B6291C1A08AA0077F8A6 /* KCSBase64.m in Sources */,
-				5783B64C1C1A11230077F8A6 /* KCSMutableOrderedDictionary.m in Sources */,
 				578FA7DA1C5304D9005C0694 /* NetworkAppDataStrategy.swift in Sources */,
-				5783B6261C1A07840077F8A6 /* KCSClient2.m in Sources */,
-				5783B6581C1A11D90077F8A6 /* KCSSaveGraph.m in Sources */,
-				5783B63D1C1A104D0077F8A6 /* KCSMICLoginViewController.m in Sources */,
 				5728213B1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift in Sources */,
-				576E95D21C222BD000258CC3 /* KCSUserRealm.m in Sources */,
-				5783B6331C1A0FC10077F8A6 /* KCSDataStoreOperationRequest.m in Sources */,
-				5783B6341C1A0FCE0077F8A6 /* KCSErrorUtilities.m in Sources */,
-				5783B6461C1A10CD0077F8A6 /* KCSNetworkObserver.m in Sources */,
-				5783B6421C1A10960077F8A6 /* KCSNSURLCxnFileOperation.m in Sources */,
-				5783B6611C1A12CF0077F8A6 /* KCS_FMResultSet.m in Sources */,
-				5783B6451C1A10BF0077F8A6 /* KCSNSURLSessionOperation.m in Sources */,
-				5783B6551C1A11BC0077F8A6 /* KCSQuery.m in Sources */,
-				5783B6481C1A10F10077F8A6 /* KCSObjectCache.m in Sources */,
-				577C9E751C1EC95800BF49EE /* KCSClient2+KCSInternal.m in Sources */,
-				5783B63A1C1A10250077F8A6 /* KCSImageUtils.m in Sources */,
-				5783B64E1C1A11460077F8A6 /* KCSBuilders.m in Sources */,
 				57B6A4F81C56A9E0000584CC /* LocalAppDataExecutorStrategy.swift in Sources */,
-				5783B64F1C1A11510077F8A6 /* KCSOfflineUpdate.m in Sources */,
 				57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */,
-				577C9E711C1EB6BC00BF49EE /* NSDictionary+KinveyAdditions.m in Sources */,
-				57E7C7AD1C5052F400848748 /* KCSSyncManager.m in Sources */,
-				5783B62B1C1A08C50077F8A6 /* DataStoreOperation.m in Sources */,
-				5783B6311C1A09860077F8A6 /* KCSDataStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1614,6 +505,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		574B0F331C6E653D00CDC48F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 574B0F2E1C6E652800CDC48F /* KinveyKit */;
+			targetProxy = 574B0F321C6E653D00CDC48F /* PBXContainerItemProxy */;
+		};
+		574F62DC1C6DC61800765760 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 574F62D71C6DC5E500765760 /* MongoDBPredicateAdaptor */;
+			targetProxy = 574F62DB1C6DC61800765760 /* PBXContainerItemProxy */;
+		};
 		57A27C8E1C178F18000DF951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 57A27C801C178F17000DF951 /* Kinvey */;
@@ -1622,6 +523,41 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		574B0F301C6E652800CDC48F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		574B0F311C6E652800CDC48F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		574F62D91C6DC5E500765760 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		574F62DA1C6DC5E500765760 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
 		577C9E5D1C1CEEC100BF49EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1725,13 +661,17 @@
 		};
 		57A27C961C178F18000DF951 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 01502F9C4CE7FC49AB2C110D /* Pods-Kinvey.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Dependencies/modules/NSPredicate-MongoDB-Adaptor/build/Release-ios",
+					"$(PROJECT_DIR)Kit/build/Release-universal",
+				);
 				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1739,20 +679,24 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = "Kinvey/KinveyKit Dependencies/modules/NSPredicate-MongoDB-Adaptor";
+				SWIFT_INCLUDE_PATHS = Kinvey/KinveyKit;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		57A27C971C178F18000DF951 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BCE50A788E88118CFDD2346D /* Pods-Kinvey.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Dependencies/modules/NSPredicate-MongoDB-Adaptor/build/Release-ios",
+					"$(PROJECT_DIR)Kit/build/Release-universal",
+				);
 				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1760,7 +704,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = "Kinvey/KinveyKit Dependencies/modules/NSPredicate-MongoDB-Adaptor";
+				SWIFT_INCLUDE_PATHS = Kinvey/KinveyKit;
 			};
 			name = Release;
 		};
@@ -1787,6 +731,23 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		574B0F2F1C6E652800CDC48F /* Build configuration list for PBXLegacyTarget "KinveyKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				574B0F301C6E652800CDC48F /* Debug */,
+				574B0F311C6E652800CDC48F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		574F62D81C6DC5E500765760 /* Build configuration list for PBXLegacyTarget "MongoDBPredicateAdaptor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				574F62D91C6DC5E500765760 /* Debug */,
+				574F62DA1C6DC5E500765760 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		577C9E5C1C1CEEC100BF49EE /* Build configuration list for PBXLegacyTarget "Kinvey-Universal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
