@@ -32,21 +32,19 @@ class StoreTestCase: KinveyTestCase {
     }
     
     var store: DataStore<Person>!
-    var person:Person {
-        get {
-            let person = Person()
-            person.name = "Victor"
-            person.age = 29
-            return person
-        }
-    }
+    lazy var person:Person = {
+        let person = Person()
+        person.name = "Victor"
+        person.age = 29
+        return person
+    }()
     
     override func setUp() {
         super.setUp()
         
         signUp()
         
-        store = DataStore<Person>(client: client)
+        store = DataStore<Person>.getInstance(client: client)
     }
     
     func assertThread() {

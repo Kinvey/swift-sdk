@@ -168,8 +168,9 @@ class LocalAppDataExecutorStrategy<T: Persistable where T: NSObject>: AppDataExe
                     if let response = response where response.isResponseOK, let data = data {
                         let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
                         if let cache = self.cache, let json = json, let pendindObjectId = pendingOperation.objectId {
-                            let entity = cache.findEntity(pendindObjectId)
-                            cache.removeEntity(entity)
+                            if let entity = cache.findEntity(pendindObjectId) {
+                                cache.removeEntity(entity)
+                            }
                             
                             let persistable: T = T.fromJson(json)
                             let persistableJson = self.merge(persistable, json: json)
