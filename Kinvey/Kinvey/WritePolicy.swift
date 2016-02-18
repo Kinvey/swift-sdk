@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum WritePolicy {
+public enum WritePolicy {
     
     case LocalThenNetwork, ForceLocal, ForceNetwork
     

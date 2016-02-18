@@ -21,7 +21,7 @@ class LocalRequest: Request {
         self.localHandler = localHandler
     }
     
-    func execute(completionHandler: DataResponseCompletionHandler?) {
+    func execute(completionHandler: DataResponseCompletionHandler? = nil) {
         localHandler?()
         completionHandler?(nil, LocalResponse(), nil)
     }
