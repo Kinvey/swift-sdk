@@ -38,7 +38,7 @@ class RequestTestCase: KinveyTestCase {
             
             var json: [String : AnyObject]?
             
-            let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.Blob(client: client, tls: true), credential: activeUser)
+            let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.BlobUpload(client: client, fileId: nil, tls: true), credential: activeUser)
             request.request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(["_public" : true], options: [])
             request.execute() { (data, response, error) in

@@ -10,6 +10,6 @@ import Foundation
 
 public enum Error: ErrorType {
     
-    case ObjectIdMissing, InvalidResponse, NoActiveUser
+    case ObjectIdMissing, InvalidResponse, NoActiveUser, RequestCanceled
     
 }

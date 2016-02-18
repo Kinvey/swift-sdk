@@ -20,7 +20,7 @@ protocol Cache {
     
     func saveEntities(entities: [[String : AnyObject]])
     
-    func findEntity(objectId: String) -> [String : AnyObject]
+    func findEntity(objectId: String) -> [String : AnyObject]?
     
     func findEntityByQuery(query: Query) -> [[String : AnyObject]]
     
