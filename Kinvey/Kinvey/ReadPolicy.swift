@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ReadPolicy {
+public enum ReadPolicy {
     
     case ForceLocal, ForceNetwork, PreferLocal, PreferNetwork
     

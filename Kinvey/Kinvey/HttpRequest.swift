@@ -165,6 +165,11 @@ class HttpRequest: Request {
     }
     
     func execute(completionHandler: DataResponseCompletionHandler? = nil) {
+        guard !canceled else {
+            completionHandler?(nil, nil, Error.RequestCanceled)
+            return
+        }
+        
         for header in defaultHeaders {
             request.setValue(header.value, forHTTPHeaderField: header.name)
         }

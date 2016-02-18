@@ -68,6 +68,10 @@ extension Persistable where Self: NSObject {
         }
     }
     
+    func merge(obj: Persistable) {
+        fromJson(obj.toJson())
+    }
+    
 }
 
 extension Persistable {

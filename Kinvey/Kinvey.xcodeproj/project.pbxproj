@@ -8,10 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		5706FEC31C1F9A6D0037E7D0 /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
+		5711C46D1C74F52F00073806 /* SaveOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5711C46C1C74F52F00073806 /* SaveOperationTest.swift */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */; };
+		57379DA51C72AAA900E240E9 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
+		57379DA71C72AE7F00E240E9 /* GetOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
+		57470F9D1C759B140096B15F /* RequestDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470F9C1C759B140096B15F /* RequestDecorator.swift */; };
 		574912711C59323B00EA4F26 /* StoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* StoreType.swift */; };
 		574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912721C5932A700EA4F26 /* WritePolicy.swift */; };
 		574B0F281C6E64AF00CDC48F /* KinveyKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F271C6E64AF00CDC48F /* KinveyKit.framework */; };
@@ -21,6 +25,10 @@
 		574B0F8C1C6E93B700CDC48F /* MongoDBPredicateAdaptorKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F761C6E7F3B00CDC48F /* MongoDBPredicateAdaptorKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		574B0F8D1C6E93F800CDC48F /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		574B0F8E1C6E941B00CDC48F /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA61C729EAF00CDC48F /* GetOperation.swift */; };
+		574B0FA91C729EB900CDC48F /* FindOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA81C729EB900CDC48F /* FindOperation.swift */; };
+		574B0FAB1C729EC900CDC48F /* SaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAA1C729EC900CDC48F /* SaveOperation.swift */; };
+		574B0FAD1C729F3300CDC48F /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */; };
 		5753BB3C1C23F29000EB9D3A /* SyncedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */; };
 		575772861C4728E5001D56F5 /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
 		576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* DataStore.swift */; };
@@ -110,16 +118,24 @@
 
 /* Begin PBXFileReference section */
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
+		5711C46C1C74F52F00073806 /* SaveOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperationTest.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionDownloadTaskRequest.swift; sourceTree = "<group>"; };
+		57379DA41C72AAA900E240E9 /* Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
+		57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperationTest.swift; sourceTree = "<group>"; };
 		57403A7C1C4D92E3008ECCD4 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		57470F9C1C759B140096B15F /* RequestDecorator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestDecorator.swift; sourceTree = "<group>"; };
 		574912701C59323B00EA4F26 /* StoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreType.swift; sourceTree = "<group>"; };
 		574912721C5932A700EA4F26 /* WritePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WritePolicy.swift; sourceTree = "<group>"; };
 		574B0F271C6E64AF00CDC48F /* KinveyKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KinveyKit.framework; path = "../KinveyKit/build/Release-universal/KinveyKit.framework"; sourceTree = "<group>"; };
 		574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
 		574B0F761C6E7F3B00CDC48F /* MongoDBPredicateAdaptorKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MongoDBPredicateAdaptorKit.framework; path = "Dependencies/modules/MongoDBPredicateAdaptor/build/Release-ios/MongoDBPredicateAdaptorKit.framework"; sourceTree = "<group>"; };
 		574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
+		574B0FA61C729EAF00CDC48F /* GetOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperation.swift; sourceTree = "<group>"; };
+		574B0FA81C729EB900CDC48F /* FindOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperation.swift; sourceTree = "<group>"; };
+		574B0FAA1C729EC900CDC48F /* SaveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperation.swift; sourceTree = "<group>"; };
+		574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveOperation.swift; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStoreTests.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
 		576E95A31C1FB10700258CC3 /* DataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
@@ -195,6 +211,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		574B0FA51C729E9E00CDC48F /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				57379DA41C72AAA900E240E9 /* Operation.swift */,
+				574B0FA61C729EAF00CDC48F /* GetOperation.swift */,
+				574B0FA81C729EB900CDC48F /* FindOperation.swift */,
+				574B0FAA1C729EC900CDC48F /* SaveOperation.swift */,
+				574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */,
+			);
+			name = Actions;
+			sourceTree = "<group>";
+		};
 		57A27C771C178F17000DF951 = {
 			isa = PBXGroup;
 			children = (
@@ -218,6 +246,7 @@
 			isa = PBXGroup;
 			children = (
 				57DB87E91C62B1CB002BA684 /* Extensions */,
+				574B0FA51C729E9E00CDC48F /* Actions */,
 				57A27C841C178F17000DF951 /* Kinvey.h */,
 				57A27C861C178F17000DF951 /* Info.plist */,
 				57A27C9B1C178FAC000DF951 /* Kinvey.swift */,
@@ -244,6 +273,7 @@
 				57C71DC71C3EFBF900B1BEF2 /* Request.swift */,
 				57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */,
 				57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */,
+				57470F9C1C759B140096B15F /* RequestDecorator.swift */,
 				5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */,
 				57A2ED851C49B9D5006D26A9 /* Response.swift */,
 				57A2ED871C49BADD006D26A9 /* HttpResponse.swift */,
@@ -277,6 +307,8 @@
 				576E95AE1C20DC0400258CC3 /* CachedStoreTests.swift */,
 				5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */,
 				57A2ED951C4D5F74006D26A9 /* Media.xcassets */,
+				57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */,
+				5711C46C1C74F52F00073806 /* SaveOperationTest.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -471,6 +503,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57E1C3AF1C18153900578974 /* RequestFactory.swift in Sources */,
+				574B0FAD1C729F3300CDC48F /* RemoveOperation.swift in Sources */,
 				5728212F1C63E10700373EC8 /* FileStore.swift in Sources */,
 				57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */,
 				575772861C4728E5001D56F5 /* TTL.swift in Sources */,
@@ -482,6 +515,7 @@
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
 				57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */,
 				57E7C7AF1C50539200848748 /* Sync.swift in Sources */,
+				574B0FAB1C729EC900CDC48F /* SaveOperation.swift in Sources */,
 				57E7C7A91C504E7B00848748 /* PendingOperation.swift in Sources */,
 				57A27CA41C179118000DF951 /* Metadata.swift in Sources */,
 				577C9E781C1F89C700BF49EE /* Credential.swift in Sources */,
@@ -501,6 +535,7 @@
 				57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */,
 				57E7C7B51C51981400848748 /* RequestType.swift in Sources */,
 				57B6A4F61C56A622000584CC /* AppDataExecutorStrategy.swift in Sources */,
+				57470F9D1C759B140096B15F /* RequestDecorator.swift in Sources */,
 				57A2ED861C49B9D5006D26A9 /* Response.swift in Sources */,
 				57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */,
 				5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */,
@@ -508,7 +543,10 @@
 				57A27CA01C178FC0000DF951 /* User.swift in Sources */,
 				57A2ED881C49BADD006D26A9 /* HttpResponse.swift in Sources */,
 				57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */,
+				574B0FA91C729EB900CDC48F /* FindOperation.swift in Sources */,
+				57379DA51C72AAA900E240E9 /* Operation.swift in Sources */,
 				578FA7DA1C5304D9005C0694 /* NetworkAppDataStrategy.swift in Sources */,
+				574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */,
 				5728213B1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift in Sources */,
 				57B6A4F81C56A9E0000584CC /* LocalAppDataExecutorStrategy.swift in Sources */,
 				57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */,
@@ -520,7 +558,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				576E95AD1C20DB7C00258CC3 /* NetworkStoreTests.swift in Sources */,
+				5711C46D1C74F52F00073806 /* SaveOperationTest.swift in Sources */,
 				57A2ED8A1C49BDAA006D26A9 /* RequestTestCase.swift in Sources */,
+				57379DA71C72AE7F00E240E9 /* GetOperationTest.swift in Sources */,
 				5753BB3C1C23F29000EB9D3A /* SyncedStoreTests.swift in Sources */,
 				576E95AF1C20DC0400258CC3 /* CachedStoreTests.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
@@ -696,7 +736,6 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Dependencies/modules/NSPredicate-MongoDB-Adaptor/build/Release-ios",
 					"$(PROJECT_DIR)Kit/build/Release-universal",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)/Dependencies/modules/MongoDBPredicateAdaptor/build/Release-ios",
@@ -722,7 +761,6 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Dependencies/modules/NSPredicate-MongoDB-Adaptor/build/Release-ios",
 					"$(PROJECT_DIR)Kit/build/Release-universal",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)/Dependencies/modules/MongoDBPredicateAdaptor/build/Release-ios",

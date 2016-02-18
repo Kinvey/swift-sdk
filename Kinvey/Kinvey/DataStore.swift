@@ -8,6 +8,7 @@
 
 import Foundation
 import KinveyKit
+import PromiseKit
 
 extension StoreType {
     
@@ -97,17 +98,54 @@ public class DataStore<T: Persistable where T: NSObject> {
         self.sync = client.syncManager.sync(T.kinveyCollectionName())
     }
     
-    public func findById(id: String, completionHandler: ObjectCompletionHandler?) -> Request {
+    public func findById(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         assert(id != "")
-        return readPolicy.executor(self).get(id, completionHandler: completionHandler)
+        let readPolicy = readPolicy ?? self.readPolicy
+        let operation = GetOperation<T>(id: id, client: client, cache: cache, readPolicy: readPolicy)
+        var request: Request!
+        Promise<T> { fulfill, reject in
+            request = operation.execute { (obj, error) -> Void in
+                if let obj = obj {
+                    fulfill(obj)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+        }.then { obj in
+            completionHandler?(obj, nil)
+        }.error { error in
+            completionHandler?(nil, error)
+        }
+        return request
     }
     
     public func find(query: Query = Query(), completionHandler: ArrayCompletionHandler?) -> Request {
         return readPolicy.executor(self).find(query, completionHandler: completionHandler)
     }
     
-    public func save(persistable: T, completionHandler: ObjectCompletionHandler?) -> Request {
-        return writePolicy.executor(self).save(persistable, completionHandler: completionHandler)
+    public func save(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
+        let writePolicy = writePolicy ?? self.writePolicy
+        let operation = SaveOperation<T>(persistable: persistable, client: client, cache: cache, sync: sync, writePolicy: writePolicy)
+        var request: Request!
+        let completionHandler = { (obj: T?, error: ErrorType?) -> Void in
+            if let completionHandler = completionHandler {
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    completionHandler(obj, error)
+                })
+            }
+        }
+        request = operation.execute { (obj, error) -> Void in
+            if let obj = obj {
+                completionHandler(obj, nil)
+            } else if let error = error {
+                completionHandler(nil, error)
+            } else {
+                completionHandler(nil, Error.InvalidResponse)
+            }
+        }
+        return request
     }
     
     public func remove(persistable: T, completionHandler: UIntCompletionHandler?) throws -> Request {
@@ -149,7 +187,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         try writePolicy.executor(self).push(completionHandler)
     }
     
-    public func pull(query: Query = Query(), completionHandler: DataStore<T>.ArrayCompletionHandler?) throws {
+    public func pull(query: Query = Query(), completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) throws {
         try writePolicy.executor(self).pull(query, completionHandler: completionHandler)
     }
     
@@ -157,7 +195,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         try writePolicy.executor(self).sync(query, completionHandler: completionHandler)
     }
     
-    public func purge(completionHandler: DataStore<T>.UIntCompletionHandler?) throws {
+    public func purge(completionHandler: DataStore<T>.UIntCompletionHandler? = nil) throws {
         try writePolicy.executor(self).purge(completionHandler)
     }
 

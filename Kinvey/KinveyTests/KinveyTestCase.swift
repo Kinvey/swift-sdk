@@ -13,14 +13,14 @@ class KinveyTestCase: XCTestCase {
     
     var client: Client!
     
-    var defaultTimeout: NSTimeInterval = 30
+    var defaultTimeout: NSTimeInterval = NSTimeInterval(Int8.max)
     
     override func setUp() {
         super.setUp()
         
         client = Kinvey.sharedClient.initialize(
             appKey: "kid_Wy35WH6X9e",
-            appSecret: "2498a81d1e9f4920b977b66ad62815e9",
+            appSecret: "d85f81cad5a649baaa6fdcd99a108ab1",
             apiHostName: NSURL(string: "https://v3yk1n-kcs.kinvey.com")!
         )
     }

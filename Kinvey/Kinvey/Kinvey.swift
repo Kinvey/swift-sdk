@@ -11,5 +11,6 @@ import Foundation
 public let PersistableIdKey = "_id"
 public let PersistableAclKey = "_acl"
 public let PersistableMetadataKey = "_kmd"
+let PersistableMetadataLastRetrievedTimeKey = "lrt"
 
 public let sharedClient = Client()
