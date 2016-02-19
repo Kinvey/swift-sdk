@@ -10,7 +10,7 @@ import XCTest
 
 class SaveOperationTest: StoreTestCase {
     
-    func testForceForceNetwork() {
+    func testForceNetwork() {
         weak var expectationSave = expectationWithDescription("Save")
         
         store.save(person, writePolicy: .ForceNetwork) { (person, error) -> Void in
@@ -30,7 +30,7 @@ class SaveOperationTest: StoreTestCase {
         }
     }
     
-    func testForceForceLocal() {
+    func testForceLocal() {
         weak var expectationSave = expectationWithDescription("Save")
         
         store.save(person, writePolicy: .ForceLocal) { (person, error) -> Void in
@@ -50,7 +50,7 @@ class SaveOperationTest: StoreTestCase {
         }
     }
     
-    func testForceForceLocalThenNetwork() {
+    func testLocalThenNetwork() {
         weak var expectationSaveLocal = expectationWithDescription("SaveLocal")
         weak var expectationSaveNetwork = expectationWithDescription("SaveNetwork")
         

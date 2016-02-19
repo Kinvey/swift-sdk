@@ -10,6 +10,6 @@ import Foundation
 
 public enum ReadPolicy {
     
-    case ForceLocal, ForceNetwork, PreferLocal, PreferNetwork
+    case ForceLocal, ForceNetwork, Both
     
 }

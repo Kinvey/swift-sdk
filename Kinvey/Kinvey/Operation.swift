@@ -17,16 +17,10 @@ class Operation<T: Persistable where T: NSObject> {
     
     let client: Client
     let cache: Cache
-    let sync: Sync?
-    let readPolicy: ReadPolicy?
-    let writePolicy: WritePolicy?
     
-    init(client: Client, cache: Cache, readPolicy: ReadPolicy? = nil, sync: Sync? = nil, writePolicy: WritePolicy? = nil) {
-        self.client = client
+    init(cache: Cache, client: Client) {
         self.cache = cache
-        self.readPolicy = readPolicy
-        self.sync = sync
-        self.writePolicy = writePolicy
+        self.client = client
     }
     
     func fromJson(json: [String : AnyObject]) -> T {
