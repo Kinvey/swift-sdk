@@ -10,6 +10,7 @@ import Foundation
 import KinveyKit
 import CoreData
 
+@objc(KNVPersistable)
 public protocol Persistable: JsonObject, NSObjectProtocol {
     
     static func kinveyCollectionName() -> String
@@ -57,12 +58,12 @@ extension Persistable where Self: NSObject {
         }
     }
     
-    public func toJson() -> [String : AnyObject] {
+    public func toJson() -> JsonDictionary {
         let keys = self.dynamicType.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
         return dictionaryWithValuesForKeys(keys)
     }
     
-    public func fromJson(json: [String : AnyObject]) {
+    public func fromJson(json: JsonDictionary) {
         for key in self.dynamicType.kinveyPropertyMapping().keys {
             setValue(json[key], forKey: key)
         }
@@ -109,7 +110,7 @@ extension Persistable {
         }
     }
     
-    public static func toJson(array: [Persistable]) -> [[String : AnyObject]] {
+    public static func toJson(array: [Persistable]) -> [JsonDictionary] {
         var jsonArray: [[String : AnyObject]] = []
         for item in array {
             jsonArray.append(item.toJson())
@@ -117,7 +118,7 @@ extension Persistable {
         return jsonArray
     }
     
-    static func toJson<T: Persistable where T: NSObject>(persistable obj: T) -> [String : AnyObject] {
+    static func toJson<T: Persistable where T: NSObject>(persistable obj: T) -> JsonDictionary {
         var json: [String : AnyObject] = [:]
         let propertyMap = T.kinveyPropertyMapping()
         for keyValuePair in propertyMap {
@@ -128,7 +129,7 @@ extension Persistable {
         return json
     }
     
-    static func fromJson<T: Persistable where T: NSObject>(json: [String : AnyObject]) -> T {
+    static func fromJson<T: Persistable where T: NSObject>(json: JsonDictionary) -> T {
         let obj = T.self.init()
         let propertyMap = T.self.kinveyPropertyMapping()
         for keyValuePair in propertyMap {
@@ -139,7 +140,7 @@ extension Persistable {
         return obj
     }
     
-    static func fromJson<T: Persistable where T: NSObject>(array: [[String : AnyObject]]) -> [T] {
+    static func fromJson<T: Persistable where T: NSObject>(array: [JsonDictionary]) -> [T] {
         var results: [T] = []
         for item in array {
             results.append(fromJson(item))

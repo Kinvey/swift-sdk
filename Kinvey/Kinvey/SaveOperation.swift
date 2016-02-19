@@ -8,46 +8,32 @@
 
 import Foundation
 
-class SaveOperation<T: Persistable where T: NSObject>: Operation<T> {
+class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T> {
     
     let persistable: T
     
-    init(persistable: T, client: Client, cache: Cache, sync: Sync, writePolicy: WritePolicy) {
+    init(persistable: T, writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
         self.persistable = persistable
-        super.init(client: client, cache: cache, sync: sync, writePolicy: writePolicy)
+        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
-    func execute(completionHandler: ObjectCompletionHandler?) -> Request {
-        switch writePolicy! {
-        case .ForceLocal:
-            let request = LocalRequest()
-            request.execute({ (_, _, _) -> Void in
-                self.executeLocal(completionHandler)
-            })
-            return request
-        case .LocalThenNetwork:
-            self.executeLocal(completionHandler)
-            fallthrough
-        case .ForceNetwork:
-            return executeNetwork(completionHandler)
-        }
+    override func executeLocal(completionHandler: CompletionHandler?) -> Request {
+        let request = LocalRequest()
+        request.execute({ (_, _, _) -> Void in
+            let request = self.client.networkRequestFactory.buildAppDataSave(collectionName: T.kinveyCollectionName(), persistable: self.persistable)
+            
+            let persistable = self.fillObject(self.persistable)
+            var json = persistable.toJson()
+            json = self.fillJson(json)
+            self.cache.saveEntity(json)
+            
+            self.sync.savePendingOperation(self.sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
+            completionHandler?(self.persistable, nil)
+        })
+        return request
     }
     
-    private func executeLocal(completionHandler: ObjectCompletionHandler?) {
-        let request = self.client.networkRequestFactory.buildAppDataSave(collectionName: T.kinveyCollectionName(), persistable: self.persistable) as! HttpRequest
-        
-        let persistable = self.fillObject(self.persistable)
-        var json = persistable.toJson()
-        json = self.fillJson(json)
-        self.cache.saveEntity(json)
-        
-        if let sync = self.sync {
-            sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
-        }
-        completionHandler?(self.persistable, nil)
-    }
-    
-    private func executeNetwork(completionHandler: ObjectCompletionHandler?) -> Request {
+    override func executeNetwork(completionHandler: CompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataSave(collectionName: T.kinveyCollectionName(), persistable: persistable)
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in

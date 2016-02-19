@@ -27,6 +27,7 @@ class LocalRequest: Request {
     }
     
     func cancel() {
+        //do nothing
     }
 
 }

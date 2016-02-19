@@ -10,6 +10,7 @@ import Foundation
 import KinveyKit
 import PromiseKit
 
+@objc(KNVUser)
 public class User: NSObject, Credential {
     
     public static let PersistableUsernameKey = "username"
