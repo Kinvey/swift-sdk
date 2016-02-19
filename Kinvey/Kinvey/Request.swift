@@ -8,14 +8,11 @@
 
 import Foundation
 
-public typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
-
 public protocol Request {
     
     var executing: Bool { get }
     var canceled: Bool { get }
     
-    func execute(completionHandler: DataResponseCompletionHandler?)
     func cancel()
 
 }

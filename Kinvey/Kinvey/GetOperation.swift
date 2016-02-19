@@ -8,60 +8,34 @@
 
 import Foundation
 
-class GetOperation<T: Persistable where T: NSObject>: Operation<T> {
+class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T, T> {
     
     let id: String
     
-    init(id: String, client: Client, cache: Cache, readPolicy: ReadPolicy) {
+    init(id: String, readPolicy: ReadPolicy, client: Client, cache: Cache) {
         self.id = id
-        super.init(client: client, cache: cache, readPolicy: readPolicy)
+        super.init(readPolicy: readPolicy, client: client, cache: cache)
     }
     
-    func execute(completionHandler: ObjectCompletionHandler? = nil) -> Request {
-        switch readPolicy! {
-        case .ForceLocal:
-            let request = LocalRequest()
-            request.execute({ (_, _, _) -> Void in
-                self.executeLocal(completionHandler)
-            })
-            return request
-        case .ForceNetwork:
-            return executeNetwork(completionHandler)
-        case .PreferLocal:
-            let request = RequestDecorator()
-            executeLocal() { obj, error in
-                if let obj = obj {
-                    completionHandler?(obj, nil)
-                } else {
-                    request.request = self.executeNetwork(completionHandler)
-                }
+    override func executeLocal(completionHandler: CompletionHandler?) -> Request {
+        let request = LocalRequest()
+        request.execute({ (_, _, _) -> Void in
+            let json = self.cache.findEntity(self.id)
+            if let json = json {
+                let persistable = self.fromJson(json)
+                completionHandler?(persistable, nil)
+            } else {
+                completionHandler?(nil, nil)
             }
-            return request
-        case .PreferNetwork:
-            return executeNetwork({ (obj, error) -> Void in
-                if let obj = obj {
-                    completionHandler?(obj, nil)
-                } else {
-                    self.executeLocal(completionHandler)
-                }
-            })
-        }
+        })
+        return request
     }
     
-    private func executeLocal(completionHandler: ObjectCompletionHandler?) {
-        let json = cache.findEntity(id)
-        if let json = json {
-            let persistable = fromJson(json)
-            completionHandler?(persistable, nil)
-        } else {
-            completionHandler?(nil, nil)
-        }
-    }
-    
-    private func executeNetwork(completionHandler: ObjectCompletionHandler?) -> Request {
+    override func executeNetwork(completionHandler: CompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName(), id: id)
         request.execute() { data, response, error in
-            if let response = response where response.isResponseOK, let obj = self.client.responseParser.parse(data, type: T.self) {
+            if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data, type: [String : AnyObject].self) {
+                let obj: T = T.fromJson(json)
                 self.cache.saveEntity(obj.toJson())
                 completionHandler?(obj, nil)
             } else if let error = error {

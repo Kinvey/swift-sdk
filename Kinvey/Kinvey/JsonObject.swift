@@ -8,9 +8,12 @@
 
 import Foundation
 
+public typealias JsonDictionary = [String : AnyObject]
+
+@objc(KNVJsonObject)
 public protocol JsonObject {
     
-    func fromJson(json: [String : AnyObject])
-    func toJson() -> [String : AnyObject]
+    func fromJson(json: JsonDictionary)
+    func toJson() -> JsonDictionary
 
 }
