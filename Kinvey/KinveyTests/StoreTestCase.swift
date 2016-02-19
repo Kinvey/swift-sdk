@@ -80,7 +80,7 @@ class StoreTestCase: KinveyTestCase {
     }
     
     func testSubscript() {
-        var person = self.person
+        let person = self.person
         let age = 30
         person["age"] = age
         XCTAssertEqual(person.age, age)

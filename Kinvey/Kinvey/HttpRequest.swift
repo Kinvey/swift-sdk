@@ -112,7 +112,9 @@ extension RequestType {
     
 }
 
-class HttpRequest: Request {
+public typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
+
+public class HttpRequest: Request {
     
     let httpMethod: HttpMethod
     let endpoint: Endpoint
@@ -128,13 +130,13 @@ class HttpRequest: Request {
     
     var task: NSURLSessionTask?
     
-    var executing: Bool {
+    public var executing: Bool {
         get {
             return task?.state == .Running
         }
     }
     
-    var canceled: Bool {
+    public var canceled: Bool {
         get {
             return task?.state == .Canceling || task?.error?.code == NSURLErrorCancelled
         }
@@ -187,7 +189,7 @@ class HttpRequest: Request {
         task!.resume()
     }
     
-    func cancel() {
+    public func cancel() {
         task?.cancel()
     }
 

@@ -18,7 +18,7 @@ class HttpRequestFactory: RequestFactory {
     
     typealias CompletionHandler = (NSData?, NSURLResponse?, NSError?) -> Void
     
-    func buildUserSignUp(username username: String? = nil, password: String? = nil) -> Request {
+    func buildUserSignUp(username username: String? = nil, password: String? = nil) -> HttpRequest {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.User(client: client), client: client)
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -34,7 +34,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserDelete(userId userId: String, hard: Bool) -> Request {
+    func buildUserDelete(userId userId: String, hard: Bool) -> HttpRequest {
         let request = HttpRequest(httpMethod: .Delete, endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
         
         //FIXME: make it configurable
@@ -48,7 +48,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserLogin(username username: String, password: String) -> Request {
+    func buildUserLogin(username username: String, password: String) -> HttpRequest {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserLogin(client: client), client: client)
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -60,7 +60,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserExists(username username: String) -> Request {
+    func buildUserExists(username username: String) -> HttpRequest {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserExistsByUsername(client: client), client: client)
         request.request.HTTPMethod = "POST"
         
@@ -71,12 +71,12 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildUserGet(userId userId: String) -> Request {
+    func buildUserGet(userId userId: String) -> HttpRequest {
         let request = HttpRequest(endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
         return request
     }
     
-    func buildUserSave(user user: User) -> Request {
+    func buildUserSave(user user: User) -> HttpRequest {
         let request = HttpRequest(httpMethod: .Put, endpoint: Endpoint.UserById(client: client, userId: user.userId), credential: client.activeUser, client: client)
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -85,17 +85,17 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataGetById(collectionName collectionName: String, id: String) -> Request {
+    func buildAppDataGetById(collectionName collectionName: String, id: String) -> HttpRequest {
         let request = HttpRequest(endpoint: Endpoint.AppDataById(client: client, collectionName: collectionName, id: id), credential: client.activeUser, client: client)
         return request
     }
     
-    func buildAppDataFindByQuery(collectionName collectionName: String, query: Query) -> Request {
+    func buildAppDataFindByQuery(collectionName collectionName: String, query: Query) -> HttpRequest {
         let request = HttpRequest(endpoint: Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query), credential: client.activeUser, client: client)
         return request
     }
     
-    func buildAppDataSave<T: Persistable where T: NSObject>(collectionName collectionName: String, persistable: T) -> Request {
+    func buildAppDataSave<T: Persistable where T: NSObject>(collectionName collectionName: String, persistable: T) -> HttpRequest {
         let bodyObject = T.toJson(persistable: persistable)
         let objId = bodyObject[Kinvey.PersistableIdKey] as? String
         let isNewObj = objId == nil
@@ -112,7 +112,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataRemoveByQuery(collectionName collectionName: String, query: Query) -> Request {
+    func buildAppDataRemoveByQuery(collectionName collectionName: String, query: Query) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Delete,
             endpoint: Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query),
@@ -122,7 +122,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildPushRegisterDevice(deviceToken: NSData) -> Request {
+    func buildPushRegisterDevice(deviceToken: NSData) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Post,
             endpoint: Endpoint.PushRegisterDevice(client: client),
@@ -139,7 +139,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildPushUnRegisterDevice(deviceToken: NSData) -> Request {
+    func buildPushUnRegisterDevice(deviceToken: NSData) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Post,
             endpoint: Endpoint.PushUnRegisterDevice(client: client),
@@ -156,7 +156,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildBlobUploadFile(file: File) -> Request {
+    func buildBlobUploadFile(file: File) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: file.fileId == nil ? .Post : .Put,
             endpoint: Endpoint.BlobUpload(client: client, fileId: file.fileId, tls: true),
@@ -189,7 +189,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildBlobDownloadFile(file: File, ttl: TTL?) -> Request {
+    func buildBlobDownloadFile(file: File, ttl: TTL?) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Get,
             endpoint: Endpoint.BlobDownload(client: client, fileId: file.fileId!, query: nil, tls: true, ttlInSeconds: nil),
@@ -199,7 +199,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildBlobDeleteFile(file: File) -> Request {
+    func buildBlobDeleteFile(file: File) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Delete,
             endpoint: Endpoint.BlobById(client: client, fileId: file.fileId!),
@@ -209,7 +209,7 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildBlobQueryFile(query: Query, ttl: TTL?) -> Request {
+    func buildBlobQueryFile(query: Query, ttl: TTL?) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Get,
             endpoint: Endpoint.BlobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil),

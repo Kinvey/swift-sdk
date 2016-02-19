@@ -16,17 +16,17 @@ protocol Cache {
     
     init!(persistenceId: String, collectionName: String)
     
-    func saveEntity(entity: [String : AnyObject])
+    func saveEntity(entity: JsonDictionary)
     
-    func saveEntities(entities: [[String : AnyObject]])
+    func saveEntities(entities: [JsonDictionary])
     
-    func findEntity(objectId: String) -> [String : AnyObject]?
+    func findEntity(objectId: String) -> JsonDictionary?
     
-    func findEntityByQuery(query: Query) -> [[String : AnyObject]]
+    func findEntityByQuery(query: Query) -> [JsonDictionary]
     
-    func findAll() -> [[String : AnyObject]]
+    func findAll() -> [JsonDictionary]
     
-    func removeEntity(entity: [String : AnyObject])
+    func removeEntity(entity: JsonDictionary)
     
     func removeEntitiesByQuery(query: Query) -> UInt
     
