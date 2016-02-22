@@ -12,6 +12,8 @@ import KinveyKit
 @objc(KNVClient)
 public class Client: NSObject, Credential {
     
+    public static let sharedClient = Client()
+    
     public internal(set) var activeUser: User? {
         willSet (newActiveUser) {
             if let activeUser = newActiveUser {
@@ -81,7 +83,7 @@ public class Client: NSObject, Credential {
     public convenience init(appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) {
         self.init()
         initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
-    }
+    }    
     
     public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) -> Client {
         cacheManager = CacheManager(persistenceId: appKey)

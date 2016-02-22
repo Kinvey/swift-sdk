@@ -45,7 +45,8 @@ class JsonResponseParser: ResponseParser {
         } else if let result = source as? [String : AnyObject] {
             if let _ = type as? Persistable.Type, let objectType = type as? NSObject.Type {
                 let obj = objectType.init()
-                (obj as! Persistable).fromJson(result)
+                
+                (obj as! Persistable).fromJson!(result)
                 return obj as? T
             } else if let _ = type as? User.Type {
                 let obj = client.userType.init(json: result, client: client)

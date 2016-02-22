@@ -11,6 +11,7 @@ import KinveyKit
 import PromiseKit
 import KeychainAccess
 
+@objc(KNVPush)
 public class Push: NSObject {
     
     public typealias BoolCompletionHandler = (Bool, ErrorType?) -> Void

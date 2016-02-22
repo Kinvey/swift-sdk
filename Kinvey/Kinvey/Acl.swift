@@ -8,6 +8,7 @@
 
 import Foundation
 
+@objc(KNVAcl)
 public class Acl: NSObject {
     
     public static let CreatorKey = "creator"

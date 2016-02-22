@@ -95,7 +95,8 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataSave<T: Persistable where T: NSObject>(collectionName collectionName: String, persistable: T) -> HttpRequest {
+    func buildAppDataSave<T: Persistable where T: NSObject>(persistable: T) -> HttpRequest {
+        let collectionName = T.kinveyCollectionName()
         let bodyObject = T.toJson(persistable: persistable)
         let objId = bodyObject[Kinvey.PersistableIdKey] as? String
         let isNewObj = objId == nil

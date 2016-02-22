@@ -20,7 +20,7 @@ class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T> {
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
         request.execute({ (_, _, _) -> Void in
-            let request = self.client.networkRequestFactory.buildAppDataSave(collectionName: T.kinveyCollectionName(), persistable: self.persistable)
+            let request = self.client.networkRequestFactory.buildAppDataSave(self.persistable)
             
             let persistable = self.fillObject(self.persistable)
             var json = persistable.toJson()
@@ -34,7 +34,7 @@ class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T> {
     }
     
     override func executeNetwork(completionHandler: CompletionHandler?) -> Request {
-        let request = client.networkRequestFactory.buildAppDataSave(collectionName: T.kinveyCollectionName(), persistable: persistable)
+        let request = client.networkRequestFactory.buildAppDataSave(persistable)
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in
                 if let response = response where response.isResponseOK {
