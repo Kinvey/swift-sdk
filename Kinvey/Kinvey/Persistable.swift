@@ -70,7 +70,7 @@ extension Persistable where Self: NSObject {
     }
     
     func merge(obj: Persistable) {
-        fromJson(obj.toJson())
+        fromJson(obj.toJson!())
     }
     
 }
@@ -113,7 +113,7 @@ extension Persistable {
     public static func toJson(array: [Persistable]) -> [JsonDictionary] {
         var jsonArray: [[String : AnyObject]] = []
         for item in array {
-            jsonArray.append(item.toJson())
+            jsonArray.append(item.toJson!())
         }
         return jsonArray
     }

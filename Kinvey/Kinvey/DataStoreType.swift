@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum StoreType {
+public enum DataStoreType {
     
     case Sync, Cache, Network
     

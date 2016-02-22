@@ -8,6 +8,7 @@
 
 import Foundation
 
+@objc(KNVMetadata)
 public class Metadata: NSObject {
     
     public static let LmtKey = "lmt"

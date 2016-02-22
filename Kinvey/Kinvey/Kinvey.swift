@@ -8,9 +8,9 @@
 
 import Foundation
 
-public let PersistableIdKey = "_id"
-public let PersistableAclKey = "_acl"
-public let PersistableMetadataKey = "_kmd"
+public let PersistableIdKey = Constants.PersistableIdKey
+public let PersistableAclKey = Constants.PersistableAclKey
+public let PersistableMetadataKey = Constants.PersistableMetadataKey
 let PersistableMetadataLastRetrievedTimeKey = "lrt"
 
-public let sharedClient = Client()
+public let sharedClient = Client.sharedClient
