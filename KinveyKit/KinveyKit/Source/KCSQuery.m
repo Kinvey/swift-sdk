@@ -817,7 +817,7 @@ BOOL kcsIsOperator(NSString* queryField)
     if ([self hasReferences]) {
         [_query append:@"._id" ontoKeySet:self.referenceFieldsToResolve recursive:YES];
     }
-    return [d kcsJSONRepresentation];
+    return [d kcsJSONStringRepresentation];
 }
 
 - (NSData *)UTF8JSONStringRepresentation
@@ -880,9 +880,9 @@ BOOL kcsIsOperator(NSString* queryField)
         [dict setValue:direction forKey:sortKey.field];
     }
     
-    KCSLogDebug(@"Sort Keys: %@", [NSString stringWithFormat:@"sort=%@", [dict kcsJSONRepresentation]]);
+    KCSLogDebug(@"Sort Keys: %@", [NSString stringWithFormat:@"sort=%@", [dict kcsJSONStringRepresentation]]);
     
-    return [NSString stringWithFormat:@"sort=%@", [NSString stringByPercentEncodingString:[dict kcsJSONRepresentation]]];
+    return [NSString stringWithFormat:@"sort=%@", [NSString stringByPercentEncodingString:[dict kcsJSONStringRepresentation]]];
     
 }
 
