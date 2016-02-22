@@ -804,7 +804,7 @@ static NSString* micApiVersion = nil;
     [[KCSAppdataStore caches] cacheActiveUser:user];
     
     [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
-        if (completionBlock) completionBlock(user, error);
+        if (completionBlock) completionBlock(user, nil);
     }];
 }
 
