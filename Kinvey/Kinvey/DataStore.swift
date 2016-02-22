@@ -21,16 +21,16 @@ public class DataStore<T: Persistable where T: NSObject> {
     public let collectionName: String
     public let client: Client
     
-    public let type: StoreType
+    public let type: DataStoreType
     
     private let cache: Cache
     private let sync: Sync
     
-    public class func getInstance(type: StoreType = .Cache, client: Client = sharedClient) -> DataStore {
+    public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient) -> DataStore {
         return DataStore<T>(type: type, client: client)
     }
     
-    private init(type: StoreType, client: Client) {
+    private init(type: DataStoreType, client: Client) {
         self.type = type
         self.client = client
         collectionName = T.kinveyCollectionName()

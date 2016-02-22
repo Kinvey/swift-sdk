@@ -8,6 +8,7 @@
 
 import Foundation
 
+@objc(KNVFile)
 public class File: NSObject {
     
     public var fileId: String?

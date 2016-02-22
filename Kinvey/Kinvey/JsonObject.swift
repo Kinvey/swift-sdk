@@ -13,7 +13,7 @@ public typealias JsonDictionary = [String : AnyObject]
 @objc(KNVJsonObject)
 public protocol JsonObject {
     
-    func fromJson(json: JsonDictionary)
-    func toJson() -> JsonDictionary
+    optional func fromJson(json: JsonDictionary)
+    optional func toJson() -> JsonDictionary
 
 }
