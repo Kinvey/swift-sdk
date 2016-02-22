@@ -26,16 +26,25 @@
 #import "KCSFileStore.h"
 #import "KCSSaveGraph.h"
 #import "KCSHiddenMethods.h"
+#import "KCSMultipleRequest.h"
 
 @interface KCSAppdataStore ()
 @property (nonatomic, retain) KCSCollection *backingCollection;
-- (void) saveMainEntity:(KCSSerializedObject*)serializedObj progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock;
+-(KCSRequest*)saveMainEntity:(KCSSerializedObject*)serializedObj
+        requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                    progress:(KCSSaveGraph*)progress
+         withCompletionBlock:(KCSCompletionBlock)completionBlock
+           withProgressBlock:(KCSProgressBlock)progressBlock;
 @end
 
 @implementation KCSLinkedAppdataStore
 
 #pragma mark - Saving
-- (void) saveEntityWithReferences:(KCSSerializedObject*)so progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+-(KCSRequest*)saveEntityWithReferences:(KCSSerializedObject*)so
+                  requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                              progress:(KCSSaveGraph*)progress
+                   withCompletionBlock:(KCSCompletionBlock)completionBlock
+                     withProgressBlock:(KCSProgressBlock)progressBlock
 {
     //Step 2: Save References
     NSArray* references = so.referencesToSave;
@@ -43,10 +52,16 @@
     
     if (totalReferences == 0) {
         //no references, go on to saving object
-        [self saveMainEntity:so progress:progress withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+        return [self saveMainEntity:so
+               requestConfiguration:requestConfiguration
+                           progress:progress
+                withCompletionBlock:completionBlock
+                  withProgressBlock:progressBlock];
     } else {
         __block NSError* referenceError = nil;
         __block int completedCount = 0;
+        
+        KCSMultipleRequest* requests = [[KCSMultipleRequest alloc] init];
         
         for (KCSKinveyRef* reference in references) {
             id objKey = [progress addReference:reference.object entity:[so.userInfo objectForKey:@"entityProgress"]];
@@ -68,7 +83,12 @@
                             if (referenceError) {
                                 completionBlock(nil, referenceError);
                             } else {
-                                [self saveMainEntity:so progress:progress withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+                                KCSRequest* request = [self saveMainEntity:so
+                                                      requestConfiguration:requestConfiguration
+                                                                  progress:progress
+                                                       withCompletionBlock:completionBlock
+                                                         withProgressBlock:progressBlock];
+                                [requests addRequest:request];
                             }
                         }
                         
@@ -92,16 +112,27 @@
                     if (referenceError) {
                         completionBlock(nil, referenceError);
                     } else {
-                        [self saveMainEntity:so progress:progress withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+                        KCSRequest* request = [self saveMainEntity:so
+                                              requestConfiguration:requestConfiguration
+                                                          progress:progress
+                                               withCompletionBlock:completionBlock
+                                                 withProgressBlock:progressBlock];
+                        [requests addRequest:request];
                     }
                 }
             }
         }
+        
+        return requests;
     }
 }
 
 //override KCSAppdatastore
-- (void) saveEntityWithResources:(KCSSerializedObject*)so progress:(KCSSaveGraph*)progress withCompletionBlock:(KCSCompletionBlock)completionBlock withProgressBlock:(KCSProgressBlock)progressBlock
+-(KCSRequest*)saveEntityWithResources:(KCSSerializedObject*)so
+                 requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                             progress:(KCSSaveGraph*)progress
+                  withCompletionBlock:(KCSCompletionBlock)completionBlock
+                    withProgressBlock:(KCSProgressBlock)progressBlock
 {
     //Step 1: Save Resources
     NSArray* resources = so.resourcesToSave;
@@ -109,14 +140,20 @@
     
     if (totalResources == 0) {
         //no resources, go on to saving references
-        [self saveEntityWithReferences:so progress:progress withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+        return [self saveEntityWithReferences:so
+                         requestConfiguration:requestConfiguration
+                                     progress:progress
+                          withCompletionBlock:completionBlock
+                            withProgressBlock:progressBlock];
     } else {
         __block NSError* resourceError = nil;
         __block int completedCount = 0;
         
+        KCSMultipleRequest* requests = [[KCSMultipleRequest alloc] init];
+        
         for (KCSFile* resource in resources) {
             id objKey = [progress addResource:resource entity:[so.userInfo objectForKey:@"entityProgress"]];
-            [KCSFileStore uploadKCSFile:resource options:nil completionBlock:^(KCSFile* uploadInfo, NSError *error) {
+            KCSRequest* request = [KCSFileStore uploadKCSFile:resource options:nil completionBlock:^(KCSFile* uploadInfo, NSError *error) {
                 if (error && !resourceError) {
                     resourceError = error;
                 }
@@ -130,7 +167,12 @@
                     if (resourceError) {
                         completionBlock(nil, resourceError);
                     } else {
-                        [self saveEntityWithReferences:so progress:progress withCompletionBlock:completionBlock withProgressBlock:progressBlock];
+                        KCSRequest* request = [self saveEntityWithReferences:so
+                                                        requestConfiguration:requestConfiguration
+                                                                    progress:progress
+                                                         withCompletionBlock:completionBlock
+                                                           withProgressBlock:progressBlock];
+                        [requests addRequest:request];
                     }
                 }
             } progressBlock:^(NSArray *objects, double percentComplete) {
@@ -140,8 +182,10 @@
                     progressBlock(objects, progress.percentDone);
                 }
             }];
-            
+            [requests addRequest:request];
         }
+        
+        return requests;
     }
 }
 

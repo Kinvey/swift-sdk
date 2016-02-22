@@ -21,6 +21,13 @@
 #import "NSDictionary+KinveyAdditions.h"
 #import "KinveyCoreInternal.h"
 #import "KCSMutableOrderedDictionary.h"
+#import "KCSObjectMapper.h"
+
+@interface KCSKinveyRef ()
+
+-(id)proxyForJson;
+
+@end
 
 @implementation NSDictionary (KinveyAdditions)
 
@@ -44,7 +51,7 @@
 
 - (NSString*) escapedJSON
 {
-    NSString* jsonStr = [self kcsJSONRepresentation];
+    NSString* jsonStr = [self kcsJSONStringRepresentation];
     return [NSString stringByPercentEncodingString:jsonStr];
 }
 
@@ -92,11 +99,30 @@
     return result;
 }
 
--(NSString *)kcsJSONRepresentation
+-(NSData *)kcsJSONDataRepresentation
 {
-    NSData* data = [NSJSONSerialization dataWithJSONObject:self
+    NSMutableDictionary *dictionary = self.mutableCopy;
+    id value;
+    for (NSString* key in dictionary) {
+        value = dictionary[key];
+        if ([value isKindOfClass:[KCSKinveyRef class]]) {
+            dictionary[key] = [((KCSKinveyRef*) value) proxyForJson];
+        }
+    }
+    
+    NSError* error = nil;
+    NSData* data = [NSJSONSerialization dataWithJSONObject:dictionary
                                                    options:0
-                                                     error:nil];
+                                                     error:&error];
+    if (error) {
+        @throw error;
+    }
+    return data;
+}
+
+-(NSString *)kcsJSONStringRepresentation
+{
+    NSData* data = self.kcsJSONDataRepresentation;
     if (data) {
         return [[NSString alloc] initWithData:data
                                      encoding:NSUTF8StringEncoding];
