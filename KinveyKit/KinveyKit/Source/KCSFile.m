@@ -183,6 +183,20 @@
     return file;
 }
 
+-(void)setRemoteURL:(NSURL *)remoteURL
+{
+    if (_remoteURL == remoteURL) return;
+    
+    if (remoteURL && [remoteURL.scheme isEqualToString:@"http"]) {
+        NSString* urlString = [remoteURL.absoluteString stringByReplacingOccurrencesOfString:@"http://"
+                                                                                  withString:@"https://"
+                                                                                     options:NSCaseInsensitiveSearch
+                                                                                       range:NSMakeRange(0, @"http://".length)];
+        remoteURL = [NSURL URLWithString: urlString];
+    }
+    _remoteURL = remoteURL;
+}
+
 #pragma mark - kinvey
 - (NSDictionary *)hostToKinveyPropertyMapping
 {
