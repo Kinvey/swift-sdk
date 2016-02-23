@@ -8,20 +8,15 @@
 
 import Foundation
 
-@objc(KNVQuery)
 public class Query: NSObject {
     
-    public private(set) var predicate: NSPredicate?
-    public private(set) var sortDescriptors: [NSSortDescriptor]?
+    public var predicate: NSPredicate?
+    public var sortDescriptors: [NSSortDescriptor]?
     var persistableClass: Persistable.Type!
     
-    public init(predicate: NSPredicate?, sortDescriptors: [NSSortDescriptor]? = nil) {
+    public init(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) {
         self.predicate = predicate
         self.sortDescriptors = sortDescriptors
-    }
-    
-    public override convenience init() {
-        self.init(predicate: nil)
     }
     
     public convenience init(format: String, _ args: AnyObject...) {
