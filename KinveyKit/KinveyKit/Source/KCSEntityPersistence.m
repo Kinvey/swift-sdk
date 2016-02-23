@@ -504,9 +504,7 @@
         DBAssert(YES, @"No id!");
     }
     NSError* error = nil;
-    NSData* data = [NSJSONSerialization dataWithJSONObject:entity
-                                                   options:0
-                                                     error:&error];
+    NSData* data = [entity kcsJSONDataRepresentation:&error];
     if (error != nil) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"could not serialize: %@", entity);
         DBAssert(YES, @"No object");

@@ -522,14 +522,42 @@ void populate(id object, NSDictionary* referencesClasses, NSDictionary* data, NS
     return copiedObject;
 }
 
-+ (id)makeObjectOfType:(Class)objectClass withData:(NSDictionary *)data
++ (id)makeObjectOfType:(Class)objectClass
+              withData:(NSDictionary *)data
 {
-    return [self makeObjectWithResourcesOfType:objectClass withData:data withResourceDictionary:nil];
+    return [self makeObjectWithResourcesOfType:objectClass
+                                      withData:data
+                        withResourceDictionary:nil];
 }
 
-+ (id)makeObjectOfType:(Class)objectClass withData:(NSDictionary *)data object:(id*)obj
++ (id)makeObjectOfType:(Class)objectClass
+              withData:(NSDictionary *)data
+                object:(id*)obj
 {
-    return [self makeObjectWithResourcesOfType:objectClass withData:data withResourceDictionary:nil object:obj];
+    return [self makeObjectWithResourcesOfType:objectClass
+                                      withData:data
+                        withResourceDictionary:nil
+                                        object:obj];
+}
+
++ (id)makeObjectOfType:(Class)objectClass
+              withData:(NSDictionary *)data
+withResourceDictionary:(NSMutableDictionary*)resources
+{
+    return [self makeObjectWithResourcesOfType:objectClass
+                                      withData:data
+                        withResourceDictionary:resources];
+}
+
++ (id)makeObjectOfType:(Class)objectClass
+              withData:(NSDictionary *)data
+withResourceDictionary:(NSMutableDictionary*)resources
+                object:(id*)obj
+{
+    return [self makeObjectWithResourcesOfType:objectClass
+                                      withData:data
+                        withResourceDictionary:resources
+                                        object:obj];
 }
 
 static NSDictionary* _defaultBuilders;

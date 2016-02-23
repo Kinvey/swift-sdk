@@ -214,7 +214,10 @@ return x; \
            resourcesOrNil:(NSMutableDictionary*)resources
                    object:(id*)obj
 {
-    return [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate withData:jsonDict object:obj];
+    return [KCSObjectMapper makeObjectOfType:self.backingCollection.objectTemplate
+                                    withData:jsonDict
+                      withResourceDictionary:resources
+                                      object:obj];
 }
 
 - (NSString*) getObjIdFromObject:(id)object completionBlock:(KCSCompletionBlock)completionBlock
