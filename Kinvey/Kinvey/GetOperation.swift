@@ -19,7 +19,7 @@ class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T, T> {
     
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
-        request.execute({ (_, _, _) -> Void in
+        request.execute { () -> Void in
             let json = self.cache.findEntity(self.id)
             if let json = json {
                 let persistable = self.fromJson(json)
@@ -27,7 +27,7 @@ class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T, T> {
             } else {
                 completionHandler?(nil, nil)
             }
-        })
+        }
         return request
     }
     

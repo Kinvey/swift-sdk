@@ -21,12 +21,12 @@ public typealias TTL = (Int, TimeUnit)
 
 extension Int {
     
-    public var seconds  : NSDate { get { return date(.Second) } }
-    public var minutes  : NSDate { get { return date(.Minute) } }
-    public var hours    : NSDate { get { return date(.Hour) } }
-    public var days     : NSDate { get { return date(.Day) } }
-    public var months   : NSDate { get { return date(.Month) } }
-    public var years    : NSDate { get { return date(.Year) } }
+    var seconds  : NSDate { get { return date(.Second) } }
+    var minutes  : NSDate { get { return date(.Minute) } }
+    var hours    : NSDate { get { return date(.Hour) } }
+    var days     : NSDate { get { return date(.Day) } }
+    var months   : NSDate { get { return date(.Month) } }
+    var years    : NSDate { get { return date(.Year) } }
     
     internal func date(timeUnit: TimeUnit, calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate {
         let dateComponents = NSDateComponents()

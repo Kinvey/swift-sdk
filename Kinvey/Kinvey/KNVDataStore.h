@@ -2,29 +2,27 @@
 //  KNVDataStore.h
 //  Kinvey
 //
-//  Created by Victor Barros on 2016-02-22.
+//  Created by Victor Barros on 2016-02-23.
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
+#import "KNVRequest.h"
 
 @protocol KNVPersistable;
+@class KNVQuery;
 
-typedef NS_ENUM(NSUInteger, KNVDataStoreType) {
-    KNVDataStoreTypeSync = 0,
-    KNVDataStoreTypeCache = 1,
-    KNVDataStoreTypeNetwork = 2,
-};
+#define KNVObjectCompletionHandler(T) void (^ _Nullable)(T _Nullable object, NSError* _Nullable error)
+#define KNVArrayCompletionHandler(T) void (^ _Nullable)(NSArray<T>* _Nullable results, NSError* _Nullable error)
 
-@interface KNVDataStore<T> : NSObject
+@interface KNVDataStore<T : NSObject<KNVPersistable>*> : NSObject
 
-typedef void(^CompletionHandler)(T __nullable, NSError* __nullable);
+-(id<KNVRequest> _Nonnull)findById:(NSString* _Nonnull)objectId
+                 completionHandler:(KNVObjectCompletionHandler(T))completionHandler;
 
-@property (nonatomic, readonly) KNVDataStoreType type;
+-(id<KNVRequest> _Nonnull)find:(KNVArrayCompletionHandler(T))completionHandler;
 
--(instancetype __nonnull)initWithType:(KNVDataStoreType)type
-                             forClass:(Class __nonnull)clazz;
-
--(void)find:(CompletionHandler __nullable)completionHandler;
+-(id<KNVRequest> _Nonnull)find:(KNVQuery* _Nonnull)query
+             completionHandler:(KNVArrayCompletionHandler(T))completionHandler;
 
 @end

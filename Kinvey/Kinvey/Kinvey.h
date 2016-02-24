@@ -15,4 +15,6 @@ FOUNDATION_EXPORT double KinveyVersionNumber;
 FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <Kinvey/PublicHeader.h>
+#import <Kinvey/KNVReadPolicy.h>
+#import <Kinvey/KNVRequest.h>
 #import <Kinvey/KNVDataStore.h>

@@ -114,7 +114,8 @@ extension RequestType {
 
 public typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
 
-public class HttpRequest: Request {
+@objc(KNVHttpRequest)
+public class HttpRequest: NSObject, Request {
     
     let httpMethod: HttpMethod
     let endpoint: Endpoint
