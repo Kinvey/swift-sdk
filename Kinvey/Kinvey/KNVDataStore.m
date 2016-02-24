@@ -2,45 +2,31 @@
 //  KNVDataStore.m
 //  Kinvey
 //
-//  Created by Victor Barros on 2016-02-22.
+//  Created by Victor Barros on 2016-02-23.
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
 #import "KNVDataStore.h"
 #import <Kinvey/Kinvey-Swift.h>
 
-@interface KNVDataStore ()
-
-@property (nonatomic, readwrite) KNVDataStoreType type;
-
-@end
-
 @implementation KNVDataStore
 
--(instancetype)initWithType:(KNVDataStoreType)type
-                   forClass:(Class)clazz
+-(id<KNVRequest>)findById:(NSString *)objectId
+        completionHandler:(void (^)(NSObject<KNVPersistable> * _Nullable, NSError * _Nullable))completionHandler
 {
-    self = [super init];
-    if (self) {
-        self.type = type;
-    }
-    return self;
+    return nil;
 }
 
--(void)find:(void (^)(id _Nullable, NSError * _Nullable))completionHandler
+-(id<KNVRequest>)find:(void (^)(NSArray<NSObject<KNVPersistable>*> * _Nullable, NSError * _Nullable))completionHandler
 {
-    unsigned int classesCount;
-    Class* classes = objc_copyClassList(&classesCount);
-    Class class = nil;
-    NSString* string = nil;
-    for (unsigned int i = 0; i < classesCount; i++) {
-        class = classes[i];
-        string = NSStringFromClass(class);
-        if ([string containsString:@"DataStore"]) {
-            NSLog(@"%@", string);
-        }
-    }
-    free(classes);
+    return [self find:[KNVQuery new]
+    completionHandler:completionHandler];
+}
+
+-(id<KNVRequest>)find:(KNVQuery *)query
+    completionHandler:(void (^)(NSArray<NSObject<KNVPersistable>*>* _Nullable, NSError * _Nullable))completionHandler
+{
+    return nil;
 }
 
 @end

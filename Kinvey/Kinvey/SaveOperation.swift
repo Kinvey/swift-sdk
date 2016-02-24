@@ -19,7 +19,7 @@ class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T> {
     
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
-        request.execute({ (_, _, _) -> Void in
+        request.execute { () -> Void in
             let request = self.client.networkRequestFactory.buildAppDataSave(self.persistable)
             
             let persistable = self.fillObject(self.persistable)
@@ -29,7 +29,7 @@ class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T> {
             
             self.sync.savePendingOperation(self.sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
             completionHandler?(self.persistable, nil)
-        })
+        }
         return request
     }
     

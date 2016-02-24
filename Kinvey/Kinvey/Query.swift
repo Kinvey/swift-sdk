@@ -8,6 +8,7 @@
 
 import Foundation
 
+@objc(KNVQuery)
 public class Query: NSObject {
     
     public var predicate: NSPredicate?

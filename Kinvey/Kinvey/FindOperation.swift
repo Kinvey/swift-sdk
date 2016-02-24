@@ -19,7 +19,7 @@ class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T, [T]> {
     
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
-        request.execute { (_, _, _) -> Void in
+        request.execute { () -> Void in
             let json = self.cache.findEntityByQuery(self.query)
             let array: [T] = T.fromJson(json)
             completionHandler?(array, nil)

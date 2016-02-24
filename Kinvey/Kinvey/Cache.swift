@@ -8,8 +8,8 @@
 
 import Foundation
 
-@objc(KCSCache)
-protocol Cache {
+@objc(KNVCache)
+public protocol Cache {
     
     var persistenceId: String { get set }
     var collectionName: String { get set }
