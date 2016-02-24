@@ -8,6 +8,7 @@
 
 import Foundation
 
+//@objc(KNVRequestFactory)
 public protocol RequestFactory {
     
     func buildUserSignUp(username username: String?, password: String?) -> HttpRequest

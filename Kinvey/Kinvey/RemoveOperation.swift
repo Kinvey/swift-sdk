@@ -19,7 +19,7 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt>
     
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
-        request.execute() { data, response, error in
+        request.execute { () -> Void in
             self.query.persistableClass = T.self
             let count = self.cache.removeEntitiesByQuery(self.query)
             let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: T.kinveyCollectionName(), query: self.query)
