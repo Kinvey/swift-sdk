@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum ReadPolicy {
+public enum ReadPolicy: UInt {
     
     case ForceLocal, ForceNetwork, Both
     
