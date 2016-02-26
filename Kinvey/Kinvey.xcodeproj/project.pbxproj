@@ -277,6 +277,8 @@
 		57B23F7F1C7FB9A3006403CC /* NSValueTransformer+Kinvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D8B1C7F9414006403CC /* NSValueTransformer+Kinvey.m */; };
 		57B23F801C7FB9A5006403CC /* NSValueTransformer+Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D8A1C7F9414006403CC /* NSValueTransformer+Kinvey.h */; };
 		57B23F821C7FBEBE006403CC /* CacheAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B23F811C7FBEBE006403CC /* CacheAdapter.swift */; };
+		57B23FF71C800F40006403CC /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D931C7F9414006403CC /* KCSStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		57B23FF81C800F43006403CC /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D941C7F9414006403CC /* KCSStore.m */; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
 		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
@@ -1549,6 +1551,7 @@
 				57B23E931C7F98C2006403CC /* KCSRequestConfiguration.h in Headers */,
 				57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */,
 				57B23EC21C7FA720006403CC /* KCSDataStoreOperationRequest.h in Headers */,
+				57B23FF71C800F40006403CC /* KCSStore.h in Headers */,
 				57B23F801C7FB9A5006403CC /* NSValueTransformer+Kinvey.h in Headers */,
 				57B23EFE1C7FAEFD006403CC /* KCSOfflineUpdate.h in Headers */,
 				57B23EF71C7FAEE1006403CC /* KCSObjectCache.h in Headers */,
@@ -1639,23 +1642,6 @@
 		};
 /* End PBXHeadersBuildPhase section */
 
-/* Begin PBXLegacyTarget section */
-		577C9E5B1C1CEEC100BF49EE /* Kinvey-Universal */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION)";
-			buildConfigurationList = 577C9E5C1C1CEEC100BF49EE /* Build configuration list for PBXLegacyTarget "Kinvey-Universal" */;
-			buildPhases = (
-			);
-			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = ..;
-			dependencies = (
-			);
-			name = "Kinvey-Universal";
-			passBuildSettingsInEnvironment = 1;
-			productName = "Kinvey-Universal";
-		};
-/* End PBXLegacyTarget section */
-
 /* Begin PBXNativeTarget section */
 		57A27C801C178F17000DF951 /* Kinvey */ = {
 			isa = PBXNativeTarget;
@@ -1704,9 +1690,6 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = Kinvey;
 				TargetAttributes = {
-					577C9E5B1C1CEEC100BF49EE = {
-						CreatedOnToolsVersion = 7.2;
-					};
 					57A27C801C178F17000DF951 = {
 						CreatedOnToolsVersion = 7.2;
 					};
@@ -1729,7 +1712,6 @@
 			targets = (
 				57A27C801C178F17000DF951 /* Kinvey */,
 				57A27C8A1C178F18000DF951 /* KinveyTests */,
-				577C9E5B1C1CEEC100BF49EE /* Kinvey-Universal */,
 			);
 		};
 /* End PBXProject section */
@@ -1904,6 +1886,7 @@
 				57B23F2A1C7FB021006403CC /* KinveyCollection.m in Sources */,
 				57B23F031C7FAF39006403CC /* NSMutableDictionary+KinveyAdditions.m in Sources */,
 				57B23F011C7FAF39006403CC /* NSArray+KinveyAdditions.m in Sources */,
+				57B23FF81C800F43006403CC /* KCSStore.m in Sources */,
 				57470FA51C76926B0096B15F /* PushOperation.swift in Sources */,
 				57D1E7681C7D2D550009834A /* KNVMultiRequest.m in Sources */,
 				57B23EC11C7FA714006403CC /* KCSDataStoreOperationRequest.m in Sources */,
@@ -1946,18 +1929,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		577C9E5D1C1CEEC100BF49EE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Debug;
-		};
-		577C9E5E1C1CEEC100BF49EE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Release;
-		};
 		57A27C931C178F18000DF951 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2132,15 +2103,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		577C9E5C1C1CEEC100BF49EE /* Build configuration list for PBXLegacyTarget "Kinvey-Universal" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				577C9E5D1C1CEEC100BF49EE /* Debug */,
-				577C9E5E1C1CEEC100BF49EE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		57A27C7B1C178F17000DF951 /* Build configuration list for PBXProject "Kinvey" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
