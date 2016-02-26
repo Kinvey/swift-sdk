@@ -333,7 +333,7 @@ id kcsConvertMongoValToPredicate(id val)
             NSString* key = sort.key;
             sortDictionary[key] = direction;
         }
-        sortString = [NSString stringWithFormat:@"&sort=%@", escape ? [sortDictionary escapedJSON] : [sortDictionary kcsJSONStringRepresentation]];
+        sortString = [NSString stringWithFormat:@"&sort=%@", escape ? [sortDictionary escapedJSON] : [sortDictionary kcsJSONStringRepresentation:nil]];
     }
     
     return sortString;
@@ -343,7 +343,7 @@ id kcsConvertMongoValToPredicate(id val)
 
 - (NSString*) queryString:(BOOL)escape
 {
-    NSString* query =  [NSString stringWithFormat:@"?query=%@", escape ? [_internalRepresentation escapedJSON] : [_internalRepresentation kcsJSONStringRepresentation]];
+    NSString* query =  [NSString stringWithFormat:@"?query=%@", escape ? [_internalRepresentation escapedJSON] : [_internalRepresentation kcsJSONStringRepresentation:nil]];
     query = [query stringByAppendingString:[self sortString:escape]];
     if (self.limit > 0 ) {
         query = [query stringByAppendingFormat:@"&limit=%lu", (unsigned long)self.limit];
