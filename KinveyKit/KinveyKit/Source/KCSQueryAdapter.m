@@ -7,10 +7,11 @@
 //
 
 #import "KCSQueryAdapter.h"
+#import <Kinvey/Kinvey-Swift.h>
 
 @interface KCSQueryAdapter ()
 
-@property (nonatomic, strong) id<KNVQuery> query;
+@property (nonatomic, strong) KNVQuery* query;
 
 @end
 

@@ -13,11 +13,11 @@
 @property (nonatomic, strong) NSMutableDictionary *userAttributes;
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
-                                 client:(id<KNVClient>)client;
+                                 client:(id)client;
 
 +(void)parseMICRedirectURI:(NSString *)redirectURI
                     forURL:(NSURL *)url
-                    client:(id<KNVClient>)client
+                    client:(id)client
        withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 @end

@@ -17,6 +17,7 @@
 //
 
 #import "KCSHttpRequest.h"
+#import "KNVClient.h"
 
 @interface KCSHttpRequest ()
 
@@ -29,6 +30,6 @@
 @property (nonatomic, strong) id<KNVClient> client;
 
 +(NSMutableURLRequest *)requestForURL:(NSURL *)url
-                               client:(id<KNVClient>)client;
+                               client:(id)client;
 
 @end

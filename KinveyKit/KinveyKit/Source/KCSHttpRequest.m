@@ -64,6 +64,7 @@ KCS_CONST_IMPL KCSRESTMethodPUT    = @"PUT";
 
 #define KCS_VERSION @"3"
 
+#import <Kinvey/Kinvey-Swift.h>
 
 #define MAX_DATE_STRING_LENGTH_K 40
 KK2(make just 1)
@@ -227,7 +228,7 @@ static NSOperationQueue* kcsRequestQueue;
 }
 
 +(NSMutableURLRequest *)requestForURL:(NSURL *)url
-                               client:(id<KNVClient>)client
+                               client:(KNVClient*)client
 {
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:client.cachePolicy
