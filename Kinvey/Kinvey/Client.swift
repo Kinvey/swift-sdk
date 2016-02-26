@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import KinveyKit
 
 @objc(KNVClient)
 public class Client: NSObject, Credential {
@@ -37,7 +36,7 @@ public class Client: NSObject, Credential {
                     activeUser?.userId,
                     appKey: appKey
                 )
-                KCSCacheManager.getInstance(appKey!).cache(nil).removeAllEntities()
+                CacheManager(persistenceId: appKey!).cache().removeAllEntities()
             }
         }
     }

@@ -14,8 +14,6 @@ public protocol Cache {
     var persistenceId: String { get set }
     var collectionName: String { get set }
     
-    init!(persistenceId: String, collectionName: String)
-    
     func saveEntity(entity: JsonDictionary)
     
     func saveEntities(entities: [JsonDictionary])

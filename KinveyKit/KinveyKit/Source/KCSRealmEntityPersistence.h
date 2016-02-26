@@ -13,4 +13,7 @@
 
 @interface KCSRealmEntityPersistence : NSObject <KCSCache, KCSSync>
 
+-(instancetype)initWithPersistenceId:(NSString *)persistenceId
+                      collectionName:(NSString *)collectionName;
+
 @end

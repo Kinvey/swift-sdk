@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import KinveyKit
 
 public class CacheManager {
     
@@ -17,8 +16,9 @@ public class CacheManager {
         self.persistenceId = persistenceId
     }
     
-    func cache(collectionName: String) -> Cache {
-        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName) as! Cache
+    func cache(collectionName: String? = nil) -> Cache {
+        let cache = KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName)
+        return CacheAdapter(cache: cache)
     }
     
 }

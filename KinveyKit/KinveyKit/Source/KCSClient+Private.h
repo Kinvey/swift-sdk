@@ -10,6 +10,6 @@
 
 @interface KCSClient ()
 
-@property (nonatomic, readonly) id<KNVClient> client;
+@property (nonatomic, readonly) id client;
 
 @end

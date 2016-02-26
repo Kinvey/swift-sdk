@@ -18,6 +18,9 @@
 #ifndef KinveyKit_KCSReachability_h
 #define KinveyKit_KCSReachability_h
 
+@import Foundation;
+#import "KinveyHeaderInfo.h"
+
 @protocol KCSReachability <NSObject>
 
 /** Use to check the reachability to the network */

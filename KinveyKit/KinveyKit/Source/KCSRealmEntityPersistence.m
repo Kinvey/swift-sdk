@@ -38,6 +38,7 @@
 #import "KCSQueryAdapter.h"
 #import "KCSCache.h"
 #import "KCSPendingOperationRealm.h"
+#import <Kinvey/Kinvey-Swift.h>
 
 #define KCSEntityKeyAcl @"_acl"
 #define KCSEntityKeyLastRetrievedTime @"lrt"
@@ -564,8 +565,8 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 {
     NSDictionary<NSString*, NSString*>* propertyMapping = [class kinveyPropertyMapping].invert;
     NSString* keyId = propertyMapping[KCSEntityKeyId];
-    id<KNVQuery> query = [[KNVQuery alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]
-                                             sortDescriptors:nil];
+    KNVQuery* query = [[KNVQuery alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]
+                                          sortDescriptors:nil];
     NSUInteger count = [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
                                           forClass:class];
     assert(count == 1);
@@ -718,7 +719,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 
 #pragma mark - Sync Table
 
--(id<KNVQuery>)pendingQuery
+-(KNVQuery*)pendingQuery
 {
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"method IN %@", @[@"POST", @"PUT", @"DELETE"]];
     if (self.collectionName) {
