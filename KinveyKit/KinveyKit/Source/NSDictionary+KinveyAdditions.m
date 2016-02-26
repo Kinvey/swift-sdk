@@ -59,7 +59,7 @@
 
 - (NSString*) escapedJSON
 {
-    NSString* jsonStr = [self kcsJSONStringRepresentation];
+    NSString* jsonStr = [self kcsJSONStringRepresentation:nil];
     return [NSString stringByPercentEncodingString:jsonStr];
 }
 
@@ -107,16 +107,6 @@
     return result;
 }
 
--(NSData *)kcsJSONDataRepresentation
-{
-    NSError* error = nil;
-    NSData* data = [self kcsJSONDataRepresentation:&error];
-    if (error) {
-        @throw error;
-    }
-    return data;
-}
-
 -(NSData *)kcsJSONDataRepresentation:(NSError *__autoreleasing *)_error
 {
     NSMutableDictionary *dictionary = self.mutableCopy;
@@ -140,16 +130,6 @@
         *_error = error;
     }
     return data;
-}
-
--(NSString *)kcsJSONStringRepresentation
-{
-    NSData* data = self.kcsJSONDataRepresentation;
-    if (data) {
-        return [[NSString alloc] initWithData:data
-                                     encoding:NSUTF8StringEncoding];
-    }
-    return nil;
 }
 
 -(NSString *)kcsJSONStringRepresentation:(NSError *__autoreleasing *)error
