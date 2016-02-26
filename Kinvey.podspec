@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.0"
+  s.version      = "3.0.1"
   s.summary      = "Kinvey iOS SDK Beta."
 
   # This description is used to generate tags and improve search results.
@@ -108,8 +108,8 @@ Pod::Spec.new do |s|
   # s.resource  = "icon.png"
   # s.resources = "Resources/*.png"
 
-  s.preserve_paths = "**"
-  s.vendored_frameworks = "*.framework"
+  s.preserve_paths = "Kinvey-#{s.version}-Beta/Kinvey.framework"
+  s.vendored_frameworks = "Kinvey-#{s.version}-Beta/Kinvey.framework"
 
   # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -132,6 +132,9 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.xcconfig = { "OTHER_LDFLAGS" => "-ObjC" }
-  # s.dependency "JSONKit", "~> 1.4"
+	
+  s.dependency "PromiseKit", "~> 3.0.2"
+	s.dependency "KeychainAccess", "~> 2.3.3"
+	s.dependency "Realm", "~> 0.98.2"
 
 end
