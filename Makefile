@@ -1,6 +1,6 @@
 CONFIGURATION?=Release
 
-all: build
+all: build pack
 
 build: build-ios
 
@@ -15,6 +15,13 @@ build-debug:
 build-ios:
 	cd Kinvey; \
 	carthage build --no-skip-current --platform ios
+
+pack:
+	mkdir -p build/Kinvey-3.0.1-Beta
+	cd Kinvey/Carthage/Build/iOS; \
+	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework ../../../../build/Kinvey-3.0.1-Beta
+	cd build; \
+	zip -r Kinvey-3.0.1-Beta.zip Kinvey-3.0.1-Beta
 
 docs:
 	jazzy --author Kinvey \
