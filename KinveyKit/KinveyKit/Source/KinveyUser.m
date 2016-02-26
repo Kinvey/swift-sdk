@@ -32,6 +32,7 @@
 #import "KCSMICLoginViewController.h"
 #import "KCSUser2+KinveyUserService+Private.h"
 #import "KCSClient+Private.h"
+#import <Kinvey/Kinvey-Swift.h>
 
 #pragma mark - Constants
 
@@ -219,7 +220,7 @@ void setActive(KCSUser* user)
 }
 
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
-                                 client:(id<KNVClient>)client
+                                 client:(KNVClient*)client
 {
     return [KCSUser2 URLforLoginWithMICRedirectURI:redirectURI
                                             client:client];
@@ -277,7 +278,7 @@ void setActive(KCSUser* user)
 
 +(void)parseMICRedirectURI:(NSString *)redirectURI
                     forURL:(NSURL *)url
-                    client:(id<KNVClient>)client
+                    client:(KNVClient*)client
        withCompletionBlock:(KCSUserCompletionBlock)completionBlock
 {
     SWITCH_TO_MAIN_THREAD_USER_BLOCK(completionBlock);

@@ -1,4 +1,0 @@
-module MongoDBPredicateAdaptor {
-    header "../../NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"
-    export *
-}
