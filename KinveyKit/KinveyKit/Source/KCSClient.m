@@ -38,7 +38,7 @@
 #import "KCSFileUtils.h"
 
 #import "KCSClientConfiguration+KCSInternal.h"
-
+#import <Kinvey/Kinvey-Swift.h>
 
 // Anonymous category on KCSClient, used to allow us to redeclare readonly properties
 // readwrite.  This keeps KVO notation, while allowing private mutability.
@@ -283,12 +283,12 @@
     [KCSFileUtils dataDidBecomeUnavailable];
 }
 
--(id<KNVClient>)client
+-(KNVClient*)client
 {
-    id<KNVClient> client = [[KNVClient alloc] initWithAppKey:self.configuration.appKey
-                                                   appSecret:self.configuration.appSecret
-                                                 apiHostName:[NSURL URLWithString:self.configuration.baseURL]
-                                                authHostName:[NSURL URLWithString:self.configuration.baseAuthURL]];
+    KNVClient* client = [[KNVClient alloc] initWithAppKey:self.configuration.appKey
+                                                appSecret:self.configuration.appSecret
+                                              apiHostName:[NSURL URLWithString:self.configuration.baseURL]
+                                             authHostName:[NSURL URLWithString:self.configuration.baseAuthURL]];
     id cachePolicy = self.configuration.options[KCS_URL_CACHE_POLICY];
     if ([cachePolicy isKindOfClass:[NSNumber class]]) {
         client.cachePolicy = [((NSNumber*) cachePolicy) unsignedIntegerValue];

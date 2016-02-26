@@ -1,42 +1,30 @@
 //
-//  Client.h
+//  KNVClient.h
 //  Kinvey
 //
-//  Created by Victor Barros on 2016-02-12.
+//  Created by Victor Barros on 2016-02-25.
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @protocol KNVClient <NSObject>
 
-@property NSString* appKey;
-@property NSString* appSecret;
-@property NSURL* authHostName;
-@property NSURL* apiHostName;
-@property NSUInteger cachePolicy;
-@property NSTimeInterval timeoutInterval;
-@property NSString* clientAppVersion;
-@property NSDictionary<NSString*, NSObject*>* customRequestProperties;
-@property NSString* authorizationHeader;
-
--(instancetype)initWithAppKey:(NSString*)appKey
-                    appSecret:(NSString*)appSecret
-                  apiHostName:(NSURL*)apiHostName
-                 authHostName:(NSURL*)authHostName;
-
-@end
-
-@interface KNVClient : NSObject <KNVClient>
-
-@property NSString* appKey;
-@property NSString* appSecret;
-@property NSURL* authHostName;
-@property NSURL* apiHostName;
-@property NSUInteger cachePolicy;
-@property NSTimeInterval timeoutInterval;
-@property NSString* clientAppVersion;
-@property NSDictionary<NSString*, NSObject*>* customRequestProperties;
-@property NSString* authorizationHeader;
++ (__nonnull instancetype)sharedClient;
+@property (nonatomic, readonly, copy) NSString * __nullable appKey;
+@property (nonatomic, readonly, copy) NSString * __nullable appSecret;
+@property (nonatomic, readonly, strong) NSURL * __nonnull apiHostName;
+@property (nonatomic, readonly, strong) NSURL * __nonnull authHostName;
+@property (nonatomic) NSURLRequestCachePolicy cachePolicy;
+@property (nonatomic) NSTimeInterval timeoutInterval;
+@property (nonatomic, copy) NSString * __nullable clientAppVersion;
+@property (nonatomic, copy) NSDictionary<NSString *, NSString *> * __nonnull customRequestProperties;
++ (NSURL * __nonnull)defaultApiHostName;
++ (NSURL * __nonnull)defaultAuthHostName;
+- (nonnull instancetype)init;
++ (void)initialize;
+- (nonnull instancetype)initWithAppKey:(NSString * __nonnull)appKey appSecret:(NSString * __nonnull)appSecret apiHostName:(NSURL * __nonnull)apiHostName authHostName:(NSURL * __nonnull)authHostName;
+- (__nonnull instancetype)initializeWithAppKey:(NSString * __nonnull)appKey appSecret:(NSString * __nonnull)appSecret apiHostName:(NSURL * __nonnull)apiHostName authHostName:(NSURL * __nonnull)authHostName;
+@property (nonatomic, readonly, copy) NSString * __nullable authorizationHeader;
 
 @end

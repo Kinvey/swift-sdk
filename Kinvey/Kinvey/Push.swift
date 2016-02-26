@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import KinveyKit
 import PromiseKit
 import KeychainAccess
 
