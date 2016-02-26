@@ -91,10 +91,10 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  # s.source_files  = "Classes", "Classes/**/*.{h,m}"
+  s.source_files  = "Kinvey.m", "Kinvey-#{s.version}-Beta/Kinvey.framework/**/*.h"
   # s.exclude_files = "Classes/Exclude"
 
-  # s.public_header_files = "Classes/**/*.h"
+  s.public_header_files = "Kinvey-#{s.version}-Beta/Kinvey.framework/**/*.h"
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -109,7 +109,11 @@ Pod::Spec.new do |s|
   # s.resources = "Resources/*.png"
 
   s.preserve_paths = "Kinvey-#{s.version}-Beta/Kinvey.framework"
-  s.vendored_frameworks = "Kinvey-#{s.version}-Beta/Kinvey.framework"
+  s.prepare_command = <<-CMD
+    touch Kinvey.m
+    cp Kinvey-#{s.version}-Beta/Kinvey.framework/Kinvey libKinvey.a
+  CMD
+  s.vendored_libraries = "libKinvey.a"
 
   # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
