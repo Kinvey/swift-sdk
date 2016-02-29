@@ -45,9 +45,16 @@ class PurgeOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt> 
                         sync.removePendingOperation(pendingOperation)
                     }
                 case .Delete:
-                    fallthrough
+                    promises.append(Promise<Void> { fulfill, reject in
+                        sync.removePendingOperation(pendingOperation)
+                        fulfill()
+                    })
                 case .Create:
                     promises.append(Promise<Void> { fulfill, reject in
+                        if let objectId = pendingOperation.objectId {
+                            let query = Query(format: "\(T.idKey) == %@", objectId)
+                            cache.removeEntitiesByQuery(query)
+                        }
                         sync.removePendingOperation(pendingOperation)
                         fulfill()
                     })
