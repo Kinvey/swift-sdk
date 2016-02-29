@@ -269,7 +269,7 @@
 		57B23F6A1C7FB1D4006403CC /* KCS_KSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D5A1C7F9414006403CC /* KCS_KSReachability.h */; };
 		57B23F6B1C7FB1E3006403CC /* KCSUser2+KinveyUserService.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E401C7F9414006403CC /* KCSUser2+KinveyUserService.m */; };
 		57B23F6C1C7FB1E5006403CC /* KCSUser2+KinveyUserService+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E3F1C7F9414006403CC /* KCSUser2+KinveyUserService+Private.h */; };
-		57B23F6D1C7FB1ED006403CC /* KCSUser2+KinveyUserService.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E3E1C7F9414006403CC /* KCSUser2+KinveyUserService.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		57B23F6D1C7FB1ED006403CC /* KCSUser2+KinveyUserService.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E3E1C7F9414006403CC /* KCSUser2+KinveyUserService.h */; };
 		57B23F6E1C7FB252006403CC /* KCSMICRequest2.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E371C7F9414006403CC /* KCSMICRequest2.m */; };
 		57B23F6F1C7FB254006403CC /* KCSMICRequest2.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E361C7F9414006403CC /* KCSMICRequest2.h */; };
 		57B23F701C7FB264006403CC /* KCSURLConnectionDelegateAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E351C7F9414006403CC /* KCSURLConnectionDelegateAdapter.m */; };
@@ -279,6 +279,7 @@
 		57B23F821C7FBEBE006403CC /* CacheAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B23F811C7FBEBE006403CC /* CacheAdapter.swift */; };
 		57B23FF71C800F40006403CC /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D931C7F9414006403CC /* KCSStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23FF81C800F43006403CC /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D941C7F9414006403CC /* KCSStore.m */; };
+		57B23FF91C80C4D9006403CC /* KCSCacheUpdatePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DA11C7F9414006403CC /* KCSCacheUpdatePolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
 		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
@@ -1562,6 +1563,7 @@
 				57B23EBE1C7FA6A4006403CC /* KCSDataStore.h in Headers */,
 				57B23E841C7F9510006403CC /* KCSSync.h in Headers */,
 				57B23E9F1C7FA2BF006403CC /* KCSHttpRequest.h in Headers */,
+				57B23FF91C80C4D9006403CC /* KCSCacheUpdatePolicy.h in Headers */,
 				57B23E831C7F9510006403CC /* KCSCache.h in Headers */,
 				57B23ED21C7FA810006403CC /* KCSGroup.h in Headers */,
 				57B23EE91C7FA976006403CC /* KCSMockServer.h in Headers */,
