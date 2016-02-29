@@ -20,6 +20,6 @@
 #define KinveyKit_KinveyVersion_h
 
 
-#define __KINVEYKIT_VERSION__ @"1.40.4"
+#define __KINVEYKIT_VERSION__ @"1.40.5"
 
 #endif
