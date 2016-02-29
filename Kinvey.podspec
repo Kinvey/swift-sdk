@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.0.1"
+  s.version      = "3.0.5"
   s.summary      = "Kinvey iOS SDK Beta."
 
   # This description is used to generate tags and improve search results.
@@ -91,10 +91,10 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Kinvey.m", "Kinvey-#{s.version}-Beta/Kinvey.framework/**/*.h"
+  # s.source_files  = "Kinvey.m", "Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/*"
   # s.exclude_files = "Classes/Exclude"
 
-  s.public_header_files = "Kinvey-#{s.version}-Beta/Kinvey.framework/**/*.h"
+  s.public_header_files = "Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/*"
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -108,12 +108,11 @@ Pod::Spec.new do |s|
   # s.resource  = "icon.png"
   # s.resources = "Resources/*.png"
 
-  s.preserve_paths = "Kinvey-#{s.version}-Beta/Kinvey.framework"
-  s.prepare_command = <<-CMD
-    touch Kinvey.m
-    cp Kinvey-#{s.version}-Beta/Kinvey.framework/Kinvey libKinvey.a
-  CMD
-  s.vendored_libraries = "libKinvey.a"
+  s.preserve_paths = "*"
+  # s.prepare_command = <<-CMD
+  #   touch Kinvey.m
+  # CMD
+  s.ios.vendored_frameworks = "Kinvey-#{s.version}-Beta/Kinvey.framework"
 
   # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
