@@ -11,9 +11,9 @@ import PromiseKit
 
 class PullOperation<T: Persistable where T: NSObject>: WriteOperation<T, [T]> {
     
-    let query: Query
+    let query: TypedQuery<T>
     
-    init(query: Query, writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
+    init(query: TypedQuery<T>, writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
         self.query = query
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }

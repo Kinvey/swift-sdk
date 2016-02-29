@@ -50,7 +50,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     public func find(query: Query = Query(), readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
-        let operation = FindOperation<T>(query: query, readPolicy: readPolicy, client: client, cache: cache)
+        let operation = FindOperation<T>(query: TypedQuery(query), readPolicy: readPolicy, client: client, cache: cache)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -91,7 +91,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     public func remove(query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = RemoveOperation<T>(query: query, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let operation = RemoveOperation<T>(query: TypedQuery(query), writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -119,7 +119,7 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PullOperation<T>(query: query, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let operation = PullOperation<T>(query: TypedQuery(query), writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
