@@ -8,12 +8,25 @@
 
 import Foundation
 
+class TypedQuery<T: Persistable where T: NSObject>: Query {
+    
+    override init(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) {
+        super.init(predicate: predicate, sortDescriptors: sortDescriptors)
+        self.persistableClass = T.self
+    }
+    
+    convenience init(_ query: Query) {
+        self.init(predicate: query.predicate, sortDescriptors: query.sortDescriptors)
+    }
+    
+}
+
 @objc(KNVQuery)
 public class Query: NSObject {
     
     public var predicate: NSPredicate?
     public var sortDescriptors: [NSSortDescriptor]?
-    var persistableClass: Persistable.Type!
+    var persistableClass: Persistable.Type?
     
     public init(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) {
         self.predicate = predicate

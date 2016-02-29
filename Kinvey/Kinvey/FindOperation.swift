@@ -10,9 +10,9 @@ import Foundation
 
 class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T, [T]> {
     
-    let query: Query
+    let query: TypedQuery<T>
     
-    init(query: Query, readPolicy: ReadPolicy, client: Client, cache: Cache) {
+    init(query: TypedQuery<T>, readPolicy: ReadPolicy, client: Client, cache: Cache) {
         self.query = query
         super.init(readPolicy: readPolicy, client: client, cache: cache)
     }
@@ -21,7 +21,7 @@ class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T, [T]> {
         let request = LocalRequest()
         request.execute { () -> Void in
             let json = self.cache.findEntityByQuery(self.query)
-            let array: [T] = T.fromJson(json)
+            let array = self.fromJson(json)
             completionHandler?(array, nil)
         }
         return request
