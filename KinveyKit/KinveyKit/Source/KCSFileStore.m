@@ -1308,7 +1308,10 @@ KCSFile* fileFromResults(NSDictionary* results)
 
 #pragma mark - for Linked Data
 
-+ (void)uploadKCSFile:(KCSFile *)file options:(NSDictionary*)options completionBlock:(KCSFileUploadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock)progressBlock
++(KCSRequest*)uploadKCSFile:(KCSFile *)file
+                    options:(NSDictionary*)options
+            completionBlock:(KCSFileUploadCompletionBlock)completionBlock
+              progressBlock:(KCSProgressBlock)progressBlock
 {
     NSMutableDictionary* newOptions = [NSMutableDictionary dictionaryWithDictionary:options];
     setIfValNotNil(newOptions[KCSFileMimeType], file.mimeType);
@@ -1317,16 +1320,18 @@ KCSFile* fileFromResults(NSDictionary* results)
     setIfValNotNil(newOptions[KCSFileACL], file.metadata);
     
     if (file.data != nil) {
-        [self uploadData:file.data options:newOptions completionBlock:completionBlock progressBlock:progressBlock];
+        return [self uploadData:file.data options:newOptions completionBlock:completionBlock progressBlock:progressBlock];
     } else if (file.localURL != nil) {
-        [self uploadFile:file.localURL options:newOptions completionBlock:completionBlock progressBlock:progressBlock];
+        return [self uploadFile:file.localURL options:newOptions completionBlock:completionBlock progressBlock:progressBlock];
     } else {
-        [[NSException exceptionWithName:@"KCSFileStoreInvalidParameter" reason:@"Input file did not specify a data or local URL value" userInfo:nil] raise];
+        @throw [NSException exceptionWithName:@"KCSFileStoreInvalidParameter" reason:@"Input file did not specify a data or local URL value" userInfo:nil];
     }
 }
 
 
-+ (void)downloadKCSFile:(KCSFile*) file completionBlock:(KCSFileDownloadCompletionBlock)completionBlock progressBlock:(KCSProgressBlock) progressBlock
++(KCSRequest*)downloadKCSFile:(KCSFile*)file
+              completionBlock:(KCSFileDownloadCompletionBlock)completionBlock
+                progressBlock:(KCSProgressBlock) progressBlock
 {
     NSMutableDictionary* options = [NSMutableDictionary dictionary];
     setIfValNotNil(options[KCSFileMimeType], file.mimeType);
@@ -1339,15 +1344,15 @@ KCSFile* fileFromResults(NSDictionary* results)
     
     if (file.localURL) {
         if (file.fileId) {
-            [self downloadFile:file.fileId options:options completionBlock:completionBlock progressBlock:progressBlock];
+            return [self downloadFile:file.fileId options:options completionBlock:completionBlock progressBlock:progressBlock];
         } else {
-            [self downloadFileByName:file.filename completionBlock:completionBlock progressBlock:progressBlock];
+            return [self downloadFileByName:file.filename completionBlock:completionBlock progressBlock:progressBlock];
         }
     } else {
         if (file.fileId) {
-            [self downloadData:file.fileId completionBlock:completionBlock progressBlock:progressBlock];
+            return [self downloadData:file.fileId completionBlock:completionBlock progressBlock:progressBlock];
         } else {
-            [self downloadDataByName:file.filename completionBlock:completionBlock progressBlock:progressBlock];
+            return [self downloadDataByName:file.filename completionBlock:completionBlock progressBlock:progressBlock];
         }
     }
 }

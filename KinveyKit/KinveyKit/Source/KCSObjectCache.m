@@ -317,10 +317,12 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
     NSArray* retVal = nil;
     NSString* queryKey = [query keyString];
     NSString* key = [self queryKey:query route:route collection:collection];
-    
+
+    __block NSArray* ids;
+
     if ([objArray count] > 0) {
         NSString* keyPath = [objArray[0] kinveyObjectIdHostProperty];
-        __block NSArray* ids = [objArray valueForKeyPath:keyPath];
+        ids = [objArray valueForKeyPath:keyPath];
         if (ids == nil || ids.count != objArray.count) {
             //something went sideways
             DBAssert(NO, @"Could not get an _id for all entities");
@@ -334,14 +336,17 @@ void setKinveyObjectId(NSObject<KCSPersistable>* obj, NSString* objId)
             NSDictionary* entity = [_dataModel jsonEntityForObject:obj route:route collection:collection];
             [self updateObject:obj entity:entity route:route collection:collection collectionCache:clnCache persist:shouldPersist];
             [objs addObject:obj];
+            retVal = objs;
         }
-        
-        [_queryCache setObject:ids forKey:key];
-        if (shouldPersist) {
-            [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
-        }
-
-        retVal = objs;
+    }
+    else{
+        ids = [NSArray array];
+        retVal = [NSMutableArray array];
+    }
+    
+    [_queryCache setObject:ids forKey:key];
+    if (shouldPersist) {
+        [_persistenceLayer setIds:ids forQuery:queryKey route:route collection:collection];
     }
     
     if (self.offlineUpdateEnabled) {

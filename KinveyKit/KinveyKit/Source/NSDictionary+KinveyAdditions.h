@@ -26,6 +26,8 @@
 - (NSString*)jsonString;
 - (NSDictionary*) invert;
 -(NSString*)queryString;
--(NSString*)kcsJSONRepresentation;
+
+-(NSData*)kcsJSONDataRepresentation:(NSError**)error;
+-(NSString*)kcsJSONStringRepresentation:(NSError**)error;
 
 @end

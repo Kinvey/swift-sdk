@@ -322,10 +322,7 @@ static NSOperationQueue* kcsRequestQueue;
         if (!_body) {
             _body = @{};
         }
-        NSError* error = nil;
-        NSData* bodyData = [NSJSONSerialization dataWithJSONObject:_body
-                                                           options:0
-                                                             error:&error];
+        NSData* bodyData = [_body kcsJSONDataRepresentation:nil];
         DBAssert(bodyData != nil, @"should be able to parse body");
         [request setHTTPBody:bodyData];
         [request setValue:_contentType forHTTPHeaderField:kHeaderContentType];

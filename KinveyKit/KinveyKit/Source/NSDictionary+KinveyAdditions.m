@@ -21,6 +21,21 @@
 #import "NSDictionary+KinveyAdditions.h"
 #import "KinveyCoreInternal.h"
 #import "KCSMutableOrderedDictionary.h"
+#import "KCSObjectMapper.h"
+#import "KCSFile.h"
+#import <UIKit/UIKit.h>
+
+@interface KCSKinveyRef ()
+
+-(id)proxyForJson;
+
+@end
+
+@interface KCSFile ()
+
+-(id)proxyForJson;
+
+@end
 
 @implementation NSDictionary (KinveyAdditions)
 
@@ -44,7 +59,7 @@
 
 - (NSString*) escapedJSON
 {
-    NSString* jsonStr = [self kcsJSONRepresentation];
+    NSString* jsonStr = [self kcsJSONStringRepresentation:nil];
     return [NSString stringByPercentEncodingString:jsonStr];
 }
 
@@ -92,11 +107,34 @@
     return result;
 }
 
--(NSString *)kcsJSONRepresentation
+-(NSData *)kcsJSONDataRepresentation:(NSError *__autoreleasing *)_error
 {
-    NSData* data = [NSJSONSerialization dataWithJSONObject:self
+    NSMutableDictionary *dictionary = self.mutableCopy;
+    id value;
+    for (NSString* key in dictionary.allKeys) {
+        value = dictionary[key];
+        if ([value isKindOfClass:[KCSKinveyRef class]]) {
+            dictionary[key] = [((KCSKinveyRef*) value) proxyForJson];
+        } else if ([value isKindOfClass:[KCSFile class]]) {
+            dictionary[key] = [((KCSFile*) value) proxyForJson];
+        } else if ([value isKindOfClass:[UIImage class]]) {
+            dictionary[key] = [NSNull null];
+        }
+    }
+    
+    NSError* error = nil;
+    NSData* data = [NSJSONSerialization dataWithJSONObject:dictionary
                                                    options:0
-                                                     error:nil];
+                                                     error:&error];
+    if (error && _error) {
+        *_error = error;
+    }
+    return data;
+}
+
+-(NSString *)kcsJSONStringRepresentation:(NSError *__autoreleasing *)error
+{
+    NSData* data = [self kcsJSONDataRepresentation:error];
     if (data) {
         return [[NSString alloc] initWithData:data
                                      encoding:NSUTF8StringEncoding];

@@ -23,7 +23,7 @@
 #import "KCSObjectMapper.h"
 #import "KCSFile.h"
 #import "KinveyEntity.h"
-
+#import "NSDictionary+KinveyAdditions.h"
 #import "KCSLogManager.h"
 
 
@@ -196,9 +196,7 @@
 double countBytesE(KCSSerializedObject* serializedObj)
 {
     NSDictionary *dictionaryToMap = serializedObj.dataToSerialize;
-    NSData* data = [NSJSONSerialization dataWithJSONObject:dictionaryToMap
-                                                   options:0
-                                                     error:nil];
+    NSData* data = [dictionaryToMap kcsJSONDataRepresentation:nil];
     double bytecount = [data length];
     return bytecount;
 }
