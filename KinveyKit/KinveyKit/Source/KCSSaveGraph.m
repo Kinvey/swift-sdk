@@ -196,7 +196,7 @@
 double countBytesE(KCSSerializedObject* serializedObj)
 {
     NSDictionary *dictionaryToMap = serializedObj.dataToSerialize;
-    NSData* data = dictionaryToMap.kcsJSONDataRepresentation;
+    NSData* data = [dictionaryToMap kcsJSONDataRepresentation:nil];
     double bytecount = [data length];
     return bytecount;
 }

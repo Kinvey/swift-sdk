@@ -1,4 +1,4 @@
-CONFIGURATION=Release
+CONFIGURATION?=Release
 TARGET=Kinvey
 PRODUCT_NAME=$(TARGET)Kit
 MODULE=$(PRODUCT_NAME).framework
@@ -12,8 +12,8 @@ DEPLOY_FOLDER=$(OUTPUT_FOLDER)/$(PRODUCT_NAME)-$(VERSION)
 all: build doc
 	
 build:
-	xcodebuild -configuration $(CONFIGURATION) -target $(TARGET) -sdk iphoneos
-	xcodebuild -configuration $(CONFIGURATION) -target $(TARGET) -sdk iphonesimulator
+	xcodebuild -configuration $(CONFIGURATION) -target $(TARGET) ONLY_ACTIVE_ARCH=NO -sdk iphoneos
+	xcodebuild -configuration $(CONFIGURATION) -target $(TARGET) ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator
 	cd $(OUTPUT_FOLDER); \
 	mkdir $(CONFIGURATION)-universal; \
 	cp -R $(CONFIGURATION)-iphoneos/include $(CONFIGURATION)-universal; \
