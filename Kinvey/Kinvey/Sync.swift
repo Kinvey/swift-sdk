@@ -20,9 +20,11 @@ protocol Sync {
     func savePendingOperation(pendingOperation: PendingOperation)
     
     func pendingOperations() -> [PendingOperation]
+    func pendingOperations(objectId: String) -> [PendingOperation]
     
     func removePendingOperation(pendingOperation: PendingOperation)
     
     func removeAllPendingOperations()
+    func removeAllPendingOperations(objectId: String)
     
 }

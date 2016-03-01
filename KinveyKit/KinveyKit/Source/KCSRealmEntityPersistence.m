@@ -592,9 +592,44 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
         RLMResults* results = [realmClass objectsInRealm:realm
                                            withPredicate:predicate];
         count = results.count;
-        [realm deleteObjects:results];
+        [self cascadeDeleteResults:results
+                             realm:realm];
     }];
     return count;
+}
+
+-(void)cascadeDeleteResults:(RLMResults*)results
+                      realm:(RLMRealm*)realm
+{
+    for (RLMObject* obj in results) {
+        [self cascadeDeleteObject:obj
+                            realm:realm];
+    }
+}
+
+-(void)cascadeDeleteObject:(RLMObject*)obj
+                     realm:(RLMRealm*)realm
+{
+    if (!obj) {
+        return;
+    }
+    for (RLMProperty* property in obj.objectSchema.properties) {
+        switch (property.type) {
+            case RLMPropertyTypeObject:
+                [self cascadeDeleteObject:obj[property.name]
+                                    realm:realm];
+                break;
+            case RLMPropertyTypeArray:
+                for (RLMObject* nestedObj in (RLMArray*) obj[property.name]) {
+                    [self cascadeDeleteObject:nestedObj
+                                        realm:realm];
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    [realm deleteObject:obj];
 }
 
 -(NSArray<NSString*>*)keysForClass:(Class)class
@@ -697,7 +732,8 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
         if (realmClass) {
             RLMResults* results = [realmClass allObjectsInRealm:realm];
             if (results) {
-                [realm deleteObjects:results];
+                [self cascadeDeleteResults:results
+                                     realm:realm];
             }
         } else {
             [realm deleteAllObjects];
@@ -712,19 +748,24 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     [realm transactionWithBlock:^{
         RLMResults* results = [realmClass allObjectsInRealm:realm];
         if (results) {
-            [realm deleteObjects:results];
+            [self cascadeDeleteResults:results
+                                 realm:realm];
         }
     }];
 }
 
 #pragma mark - Sync Table
 
--(KNVQuery*)pendingQuery
+-(KNVQuery*)pendingQuery:(NSString*)objectId
 {
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"method IN %@", @[@"POST", @"PUT", @"DELETE"]];
     if (self.collectionName) {
         NSPredicate* predicateCollectionName = [NSPredicate predicateWithFormat:@"collectionName == %@", self.collectionName];
         predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicateCollectionName, predicate]];
+    }
+    if (objectId) {
+        NSPredicate *predicateObjecId = [NSPredicate predicateWithFormat:@"objectId == %@", objectId];
+        predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicate, predicateObjecId]];
     }
     NSSortDescriptor* sortDescriptorDate = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];
     return [[KNVQuery alloc] initWithPredicate:predicate
@@ -755,7 +796,12 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 
 -(NSArray<id<KCSPendingOperation>> *)pendingOperations
 {
-    NSArray<NSDictionary<NSString*, id>*> *entitiesPendingOperations = [self findEntityByQuery:[[KCSQueryAdapter alloc] initWithQuery:[self pendingQuery]]
+    return [self pendingOperations:nil];
+}
+
+-(NSArray<id<KCSPendingOperation>> *)pendingOperations:(NSString*)objectId
+{
+    NSArray<NSDictionary<NSString*, id>*> *entitiesPendingOperations = [self findEntityByQuery:[[KCSQueryAdapter alloc] initWithQuery:[self pendingQuery:objectId]]
                                                                                       forClass:[KCSPendingOperationRealm class]];
     NSMutableArray<id<KCSPendingOperation>> *pendingOperations = [NSMutableArray arrayWithCapacity:entitiesPendingOperations.count];
     for (NSDictionary<NSString*, id>* entityPendingOperations in entitiesPendingOperations) {
@@ -773,7 +819,12 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 
 -(void)removeAllPendingOperations
 {
-    [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:[self pendingQuery]]
+    [self removeAllPendingOperations:nil];
+}
+
+-(void)removeAllPendingOperations:(NSString*)objectId
+{
+    [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:[self pendingQuery:objectId]]
                        forClass:[KCSPendingOperationRealm class]];
 }
 

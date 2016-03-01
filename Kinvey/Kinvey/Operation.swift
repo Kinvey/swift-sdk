@@ -55,7 +55,7 @@ class Operation<T: Persistable where T: NSObject> {
     
     func fillObject(persistable: T) -> T {
         if persistable.kinveyObjectId == nil {
-            persistable.kinveyObjectId = NSUUID().UUIDString
+            persistable.kinveyObjectId = "\(ObjectIdTmpPrefix)\(NSUUID().UUIDString)"
         }
         if persistable.kinveyAcl == nil, let activeUser = client.activeUser {
             persistable.kinveyAcl = Acl(creator: activeUser.userId)

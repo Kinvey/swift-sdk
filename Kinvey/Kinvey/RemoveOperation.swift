@@ -21,9 +21,19 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt>
         let request = LocalRequest()
         request.execute { () -> Void in
             self.query.persistableClass = T.self
+            let objects = self.cache.findEntityByQuery(self.query)
             let count = self.cache.removeEntitiesByQuery(self.query)
             let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: T.kinveyCollectionName(), query: self.query)
-            self.sync.savePendingOperation(self.sync.createPendingOperation(request.request, objectId: nil))
+            let idKey = T.idKey
+            for object in objects {
+                if let objectId = object[idKey] as? String {
+                    if objectId.hasPrefix(ObjectIdTmpPrefix) {
+                        self.sync.removeAllPendingOperations(objectId)
+                    } else {
+                        self.sync.savePendingOperation(self.sync.createPendingOperation(request.request, objectId: objectId))
+                    }
+                }
+            }
             completionHandler?(count, nil)
         }
         return request
