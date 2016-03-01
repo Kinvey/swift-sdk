@@ -12,5 +12,6 @@ public let PersistableIdKey = Constants.PersistableIdKey
 public let PersistableAclKey = Constants.PersistableAclKey
 public let PersistableMetadataKey = Constants.PersistableMetadataKey
 let PersistableMetadataLastRetrievedTimeKey = "lrt"
+let ObjectIdTmpPrefix = "tmp_"
 
 public let sharedClient = Client.sharedClient
