@@ -15,12 +15,12 @@ public class Metadata: NSObject {
     public static let EctKey = "ect"
     public static let AuthTokenKey = "authtoken"
     
-    public let lmt: String?
-    public let ect: String?
+    public let lmt: NSDate?
+    public let ect: NSDate?
     
     public internal(set) var authtoken: String?
     
-    public init(lmt: String? = nil, ect: String? = nil, authtoken: String? = nil) {
+    public init(lmt: NSDate? = nil, ect: NSDate? = nil, authtoken: String? = nil) {
         self.lmt = lmt
         self.ect = ect
         self.authtoken = authtoken
@@ -28,8 +28,8 @@ public class Metadata: NSObject {
     
     public convenience init(json: [String : AnyObject]) {
         self.init(
-            lmt: json[Metadata.LmtKey] as? String,
-            ect: json[Metadata.EctKey] as? String,
+            lmt: (json[Metadata.LmtKey] as? String)?.toDate(),
+            ect: (json[Metadata.EctKey] as? String)?.toDate(),
             authtoken: json[Metadata.AuthTokenKey] as? String
         )
     }
