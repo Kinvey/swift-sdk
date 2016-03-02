@@ -9,18 +9,23 @@
 import Foundation
 import ObjectiveC
 
-class EntitySchema {
+@objc(KNVEntitySchema)
+internal class EntitySchema: NSObject {
     
     static var entitySchemas = [String : EntitySchema]()
     
-    let persistableType: Persistable.Type
-    let anyClass: AnyClass
-    let collectionName: String
+    internal let persistableType: Persistable.Type
+    internal let anyClass: AnyClass
+    internal let collectionName: String
     
-    typealias ClassType = ((String, String?), (AnyClass, AnyClass?))
-    let properties: [String : ClassType]
+    internal typealias ClassType = ((String, String?), (AnyClass, AnyClass?))
+    internal let properties: [String : ClassType]
     
     class func entitySchema<T: Persistable>(type: T.Type) -> EntitySchema? {
+        return entitySchemas[NSStringFromClass(type)]
+    }
+    
+    internal class func entitySchema(type: AnyClass) -> EntitySchema? {
         return entitySchemas[NSStringFromClass(type)]
     }
     

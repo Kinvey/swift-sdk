@@ -39,7 +39,6 @@
 #import "KCSCache.h"
 #import "KCSPendingOperationRealm.h"
 #import <Kinvey/Kinvey-Swift.h>
-#import "KinveyInternal-Swift.h"
 
 #define KCSEntityKeyAcl @"_acl"
 #define KCSEntityKeyLastRetrievedTime @"lrt"
