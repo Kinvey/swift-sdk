@@ -45,9 +45,9 @@ class Operation<T: Persistable where T: NSObject> {
     }
     
     func toJson(array: [T]) -> [[String : AnyObject]] {
-        var entities: [[String : AnyObject]] = []
+        var entities = [[String : AnyObject]]()
+        let keys = T.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
         for obj in array {
-            let keys = T.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
             entities.append(obj.dictionaryWithValuesForKeys(keys))
         }
         return entities
