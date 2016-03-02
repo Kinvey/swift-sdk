@@ -78,6 +78,15 @@ class Operation<T: Persistable where T: NSObject> {
         var persistableJson = persistable.toJson()
         if T.kmdKey == nil {
             persistableJson[PersistableMetadataKey] = json[PersistableMetadataKey]
+            if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] {
+                if let lmt = kmd[Metadata.LmtKey] as? String {
+                    kmd[Metadata.LmtKey] = lmt.toDate()
+                }
+                if let ect = kmd[Metadata.EctKey] as? String {
+                    kmd[Metadata.EctKey] = ect.toDate()
+                }
+                persistableJson[PersistableMetadataKey] = kmd
+            }
         }
         if T.aclKey == nil {
             persistableJson[PersistableAclKey] = json[PersistableAclKey]
