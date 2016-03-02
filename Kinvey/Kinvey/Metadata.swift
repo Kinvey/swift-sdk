@@ -15,21 +15,24 @@ public class Metadata: NSObject {
     public static let EctKey = "ect"
     public static let AuthTokenKey = "authtoken"
     
-    public let lmt: NSDate?
-    public let ect: NSDate?
+    private let lmtString: String?
+    private let ectString: String?
+    
+    public lazy var lmt: NSDate? = self.lmtString?.toDate()
+    public lazy var ect: NSDate? = self.ectString?.toDate()
     
     public internal(set) var authtoken: String?
     
-    public init(lmt: NSDate? = nil, ect: NSDate? = nil, authtoken: String? = nil) {
-        self.lmt = lmt
-        self.ect = ect
+    public init(lmt: String? = nil, ect: String? = nil, authtoken: String? = nil) {
+        self.lmtString = lmt
+        self.ectString = ect
         self.authtoken = authtoken
     }
     
     public convenience init(json: [String : AnyObject]) {
         self.init(
-            lmt: (json[Metadata.LmtKey] as? String)?.toDate(),
-            ect: (json[Metadata.EctKey] as? String)?.toDate(),
+            lmt: json[Metadata.LmtKey] as? String,
+            ect: json[Metadata.EctKey] as? String,
             authtoken: json[Metadata.AuthTokenKey] as? String
         )
     }
