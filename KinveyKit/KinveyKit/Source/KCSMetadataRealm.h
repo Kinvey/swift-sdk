@@ -10,8 +10,8 @@
 
 @interface KCSMetadataRealm : RLMObject
 
-@property NSString* ect;
-@property NSString* lmt;
+@property NSDate* ect;
+@property NSDate* lmt;
 @property NSDate* lrt;
 
 @end
