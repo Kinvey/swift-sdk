@@ -32,6 +32,7 @@ class PullOperation<T: Persistable where T: NSObject>: WriteOperation<T, [T]> {
                             let json = jsonArray[i]
                             results[i] = self.merge(array[i], json: json)
                         }
+                        self.cache.removeEntitiesByQuery(self.query)
                         self.cache.saveEntities(results)
                     }
                 }
