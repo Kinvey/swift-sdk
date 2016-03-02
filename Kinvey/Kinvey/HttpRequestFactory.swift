@@ -23,14 +23,14 @@ class HttpRequestFactory: RequestFactory {
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        var bodyObject: [String : String] = [:]
+        var bodyObject = JsonDictionary()
         if let username = username {
             bodyObject["username"] = username
         }
         if let password = password {
             bodyObject["password"] = password
         }
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.request.HTTPBody = toJson(bodyObject)
         return request
     }
     
@@ -40,11 +40,11 @@ class HttpRequestFactory: RequestFactory {
         //FIXME: make it configurable
         request.request.setValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
         
-        var bodyObject: [String : Bool] = [:]
+        var bodyObject = JsonDictionary()
         if hard {
             bodyObject["hard"] = true
         }
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.request.HTTPBody = toJson(bodyObject)
         return request
     }
     
@@ -56,7 +56,7 @@ class HttpRequestFactory: RequestFactory {
             "username" : username,
             "password" : password
         ]
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.request.HTTPBody = toJson(bodyObject)
         return request
     }
     
@@ -67,7 +67,7 @@ class HttpRequestFactory: RequestFactory {
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = ["username" : username]
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.request.HTTPBody = toJson(bodyObject)
         return request
     }
     
@@ -81,7 +81,7 @@ class HttpRequestFactory: RequestFactory {
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = user.toJson()
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.request.HTTPBody = toJson(bodyObject)
         return request
     }
     
@@ -109,7 +109,7 @@ class HttpRequestFactory: RequestFactory {
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.request.HTTPBody = toJson(bodyObject)
         return request
     }
     
@@ -136,7 +136,7 @@ class HttpRequestFactory: RequestFactory {
             "deviceId" : deviceToken.hexString()
         ]
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.request.HTTPBody = toJson(bodyObject)
         return request
     }
     
@@ -153,7 +153,7 @@ class HttpRequestFactory: RequestFactory {
             "deviceId" : deviceToken.hexString()
         ]
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.request.HTTPBody = toJson(bodyObject)
         return request
     }
     
@@ -186,7 +186,7 @@ class HttpRequestFactory: RequestFactory {
         }
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        request.request.HTTPBody = toJson(bodyObject)
         return request
     }
     

@@ -132,7 +132,21 @@ extension Persistable {
         let obj = T.self.init()
         let propertyMap = T.self.kinveyPropertyMapping()
         for keyValuePair in propertyMap {
-            if let value = json[keyValuePair.1] {
+            var value = json[keyValuePair.1]
+            if let entitySchema = EntitySchema.entitySchema(T.self),
+                let destinationType = entitySchema.properties[keyValuePair.0]
+            {
+                if let valueNonNull = value where !valueNonNull.isKindOfClass(destinationType.1.0),
+                    let valueTransformer = ValueTransformer.valueTransformer(fromClass: valueNonNull.dynamicType, toClass: destinationType.1.0)
+                {
+                    if let destinationType = destinationType.1.0 as? NSDate.Type,
+                        let transformedValue = valueTransformer.transformValue(value, destinationType: destinationType)
+                    {
+                        value = transformedValue
+                    } else {
+                        value = nil
+                    }
+                }
                 obj.setValue(value, forKey: keyValuePair.0)
             }
         }

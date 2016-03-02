@@ -76,6 +76,8 @@ public class Client: NSObject, Credential {
     }
     
     public override class func initialize () {
+        ValueTransformer.setValueTransformer(NSDate2StringValueTransformer())
+        EntitySchema.scanForPersistableEntities()
         KCSRealmEntityPersistence.initialize()
     }
     

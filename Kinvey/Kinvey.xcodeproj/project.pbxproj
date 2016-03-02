@@ -12,6 +12,11 @@
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */; };
+		572C457B1C86690700A41935 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
+		572C458E1C86A70000A41935 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
+		572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
+		572C45921C86C13800A41935 /* EntitySchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C45911C86C13800A41935 /* EntitySchema.swift */; };
+		572C45951C86C29300A41935 /* KinveyInternal-Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 572C45931C86C29300A41935 /* KinveyInternal-Swift.h */; };
 		57379DA51C72AAA900E240E9 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
 		57379DA71C72AE7F00E240E9 /* GetOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
@@ -313,6 +318,7 @@
 		57E7C7B31C51545900848748 /* ReadPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B21C51545900848748 /* ReadPolicy.swift */; };
 		57E7C7B51C51981400848748 /* RequestType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B41C51981400848748 /* RequestType.swift */; };
 		57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */; };
+		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -345,6 +351,11 @@
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionDownloadTaskRequest.swift; sourceTree = "<group>"; };
+		572C457A1C86690700A41935 /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
+		572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate2StringValueTransformer.swift; sourceTree = "<group>"; };
+		572C458F1C86AC7C00A41935 /* ValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTransformer.swift; sourceTree = "<group>"; };
+		572C45911C86C13800A41935 /* EntitySchema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitySchema.swift; sourceTree = "<group>"; };
+		572C45931C86C29300A41935 /* KinveyInternal-Swift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KinveyInternal-Swift.h"; sourceTree = "<group>"; };
 		57379DA41C72AAA900E240E9 /* Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
 		57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperationTest.swift; sourceTree = "<group>"; };
 		57403A7C1C4D92E3008ECCD4 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
@@ -709,6 +720,7 @@
 		57E7C7B21C51545900848748 /* ReadPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReadPolicy.swift; path = Kinvey/ReadPolicy.swift; sourceTree = SOURCE_ROOT; };
 		57E7C7B41C51981400848748 /* RequestType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestType.swift; sourceTree = "<group>"; };
 		57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
+		57FB57D81C86581300AA590F /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -735,10 +747,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		572C458C1C86A6C800A41935 /* Value Transformers */ = {
+			isa = PBXGroup;
+			children = (
+				572C458F1C86AC7C00A41935 /* ValueTransformer.swift */,
+				572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */,
+			);
+			name = "Value Transformers";
+			sourceTree = "<group>";
+		};
 		5747102C1C7B8ECE0096B15F /* ObjC */ = {
 			isa = PBXGroup;
 			children = (
 				57B23CF01C7D6E03006403CC /* Operations */,
+				572C45931C86C29300A41935 /* KinveyInternal-Swift.h */,
 				57D1E75D1C7D21720009834A /* KNVReadPolicy.h */,
 				57D1E7611C7D2C8E0009834A /* KNVRequest.h */,
 				57D1E7691C7D30D20009834A /* KNVLocalRequest.h */,
@@ -794,11 +816,13 @@
 				57B23E801C7F9414006403CC /* KinveyKit */,
 				5747102C1C7B8ECE0096B15F /* ObjC */,
 				57DB87E91C62B1CB002BA684 /* Extensions */,
+				572C458C1C86A6C800A41935 /* Value Transformers */,
 				574B0FA51C729E9E00CDC48F /* Operations */,
 				57A27C841C178F17000DF951 /* Kinvey.h */,
 				57A27C861C178F17000DF951 /* Info.plist */,
 				57A27C9B1C178FAC000DF951 /* Kinvey.swift */,
 				574710211C7B89B60096B15F /* Constants.swift */,
+				572C45911C86C13800A41935 /* EntitySchema.swift */,
 				577C9E771C1F89C700BF49EE /* Credential.swift */,
 				57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */,
 				57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */,
@@ -1490,6 +1514,8 @@
 			isa = PBXGroup;
 			children = (
 				57DB87E71C62B0F6002BA684 /* NSData.swift */,
+				57FB57D81C86581300AA590F /* String.swift */,
+				572C457A1C86690700A41935 /* NSDate.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1571,6 +1597,7 @@
 				57A27C851C178F17000DF951 /* Kinvey.h in Headers */,
 				57B23F6D1C7FB1ED006403CC /* KCSUser2+KinveyUserService.h in Headers */,
 				57D1E74F1C7D1D0E0009834A /* KNVOperation.h in Headers */,
+				572C45951C86C29300A41935 /* KinveyInternal-Swift.h in Headers */,
 				57B23EC01C7FA6CE006403CC /* KCSFileStore.h in Headers */,
 				57D1E75F1C7D21720009834A /* KNVReadPolicy.h in Headers */,
 				57B23F5B1C7FB1B6006403CC /* KCS_DDLog.h in Headers */,
@@ -1763,9 +1790,11 @@
 				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
 				574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
+				572C45921C86C13800A41935 /* EntitySchema.swift in Sources */,
 				57B23F371C7FB082006403CC /* KCSQuery2.m in Sources */,
 				57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */,
 				57B23EFA1C7FAEEE006403CC /* KCSOfflineUpdate.m in Sources */,
+				57FB57D91C86581300AA590F /* String.swift in Sources */,
 				57B23CEF1C7D6DD8006403CC /* KNVFindOperation.m in Sources */,
 				57B23EDF1C7FA91F006403CC /* KCSMockRequestOperation.m in Sources */,
 				57B23F2E1C7FB021006403CC /* KCSBuilders.m in Sources */,
@@ -1840,6 +1869,7 @@
 				57E7C7B51C51981400848748 /* RequestType.swift in Sources */,
 				57B23CF61C7F8C12006403CC /* MongoDBPredicateAdaptor.m in Sources */,
 				57B23F521C7FB187006403CC /* KCS_UIImage_NSData_NSValueTransformer.m in Sources */,
+				572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */,
 				57A2ED861C49B9D5006D26A9 /* Response.swift in Sources */,
 				57B23EC31C7FA732006403CC /* KCSErrorUtilities.m in Sources */,
 				57B23F3D1C7FB14F006403CC /* KCSSaveGraph.m in Sources */,
@@ -1853,6 +1883,8 @@
 				576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */,
 				57B23F6E1C7FB252006403CC /* KCSMICRequest2.m in Sources */,
 				57B23E8A1C7F97ED006403CC /* KCSReachability.m in Sources */,
+				572C457B1C86690700A41935 /* NSDate.swift in Sources */,
+				572C458E1C86A70000A41935 /* NSDate2StringValueTransformer.swift in Sources */,
 				57B23EF91C7FAEEE006403CC /* KCSEntityPersistence.m in Sources */,
 				57A27CA01C178FC0000DF951 /* User.swift in Sources */,
 				57B23EAB1C7FA510006403CC /* KinveyUser.m in Sources */,
