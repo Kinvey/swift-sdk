@@ -35,8 +35,32 @@ docs:
 				--xcodebuild-arguments -workspace,Kinvey.xcworkspace,-scheme,Kinvey \
 				--module Kinvey \
 				--output docs
+				
+deploy-cocoapods:
+	pod trunk push Kinvey.podspec --verbose
 
 show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '
 	@cat Kinvey.podspec | grep "s.version\s*=\s*\"[0-9]*.[0-9]*.[0-9]*\"" | awk {'print $$3'} | sed 's/"//g' | xargs echo 'Kinvey.podspec'
 	@agvtool what-version | awk '0 == NR % 2' | awk {'print $1'} | xargs echo 'Project Version  '
+	
+set-version:
+	@echo 'Current Version:'
+	@echo '----------------------'
+	@$(MAKE) show-version
+	
+	@echo
+	
+	@echo 'New Version:'
+	@read version; \
+	\
+	/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $$version" "${PWD}/Kinvey/Kinvey/Info.plist"; \
+	sed -i -e "s/s.version[ ]*=[ ]*\"[0-9]*.[0-9]*.[0-9]*\"/s.version      = \"$$version\"/g" Kinvey.podspec; \
+	rm Kinvey.podspec-e
+	
+	@echo
+	@echo
+
+	@echo 'New Version:'
+	@echo '----------------------'
+	@$(MAKE) show-version
