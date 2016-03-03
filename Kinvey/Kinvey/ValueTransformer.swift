@@ -54,17 +54,17 @@ class ValueTransformer: NSValueTransformer {
         setValueTransformer(transformer, forName: NSStringFromClass(transformer.dynamicType.self))
     }
     
-    class func valueTransformer<T>(fromClass fromClass: AnyClass, toClass: T.Type) -> NSValueTransformerReverse? {
-        return valueTransformer(fromClass: fromClass, toClass: toClass as! AnyClass)
-    }
-    
     class func valueTransformer(fromClass fromClass: AnyClass, toClass: AnyClass) -> NSValueTransformerReverse? {
         var fromClass = NSStringFromClass(fromClass)
         let toClass = NSStringFromClass(toClass)
         var valueTransformer: NSValueTransformerReverse?
         repeat {
             valueTransformer = classTransformer[valueTransformerName(fromClass: fromClass, toClass: toClass)] ?? reverseClassTransformer[valueTransformerName(fromClass: fromClass, toClass: toClass)]
-            fromClass = NSStringFromClass(class_getSuperclass(NSClassFromString(fromClass)))
+            if let cls = NSClassFromString(fromClass), let superClass = class_getSuperclass(cls) {
+                fromClass = NSStringFromClass(superClass)
+            } else {
+                break
+            }
         } while (valueTransformer == nil)
         return valueTransformer
     }
