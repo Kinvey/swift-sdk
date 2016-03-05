@@ -8,7 +8,8 @@
 
 import Foundation
 
-public class CacheManager {
+@objc(__KNVCacheManager)
+public class CacheManager: NSObject {
     
     private let persistenceId: String
     
@@ -16,7 +17,7 @@ public class CacheManager {
         self.persistenceId = persistenceId
     }
     
-    func cache(collectionName: String? = nil) -> Cache {
+    public func cache(collectionName: String? = nil) -> Cache {
         let cache = KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName)
         return CacheAdapter(cache: cache)
     }

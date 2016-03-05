@@ -86,7 +86,7 @@ public class FileStore {
         let request = self.client.networkRequestFactory.buildBlobDownloadFile(file, ttl: ttl)
         return (request, Promise<File> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
-                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data, type: [String : AnyObject].self) {
+                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
                     self.fillFile(file, json: json)
                     fulfill(file)
                 } else if let error = error {
@@ -102,7 +102,7 @@ public class FileStore {
         let request = client.networkRequestFactory.buildBlobUploadFile(file)
         Promise<File> { fulfill, reject in //creating bucket
             request.execute({ (data, response, error) -> Void in
-                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data, type: [String : AnyObject].self) {
+                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
                     self.fillFile(file, json: json)
                     fulfill(file)
                 } else if let error = error {
@@ -197,7 +197,7 @@ public class FileStore {
         Promise<UInt> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
                 if let response = response where response.isResponseOK,
-                    let json = self.client.responseParser.parse(data, type: [String : AnyObject].self),
+                    let json = self.client.responseParser.parse(data),
                     let count = json["count"] as? UInt
                 {
                     fulfill(count)
@@ -220,7 +220,7 @@ public class FileStore {
         Promise<[File]> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
                 if let response = response where response.isResponseOK,
-                    let jsonArray = self.client.responseParser.parseArray(data, type: [String : AnyObject].self)
+                    let jsonArray = self.client.responseParser.parseArray(data)
                 {
                     var files: [File] = []
                     for json in jsonArray {

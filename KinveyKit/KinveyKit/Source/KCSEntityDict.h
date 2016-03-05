@@ -17,7 +17,7 @@
 //
 
 @import Foundation;
-#import "KinveyPersistable.h"
+@protocol KCSPersistable;
 
 /**
  Category to support using NS(Mutable)Dictionary objects as first-class Kinvey Entities.

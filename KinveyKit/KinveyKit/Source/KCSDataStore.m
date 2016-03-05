@@ -28,6 +28,7 @@
 #import "KCSRequest+Private.h"
 #import "KCSFileStore.h"
 #import "KinveyUser.h"
+#import "KinveyPersistable.h"
 
 #define kKCSMaxReturnSize 10000
 

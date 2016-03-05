@@ -2,7 +2,7 @@
 //  KNVRequest.h
 //  Kinvey
 //
-//  Created by Victor Barros on 2016-02-23.
+//  Created by Victor Barros on 2016-03-04.
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
@@ -10,9 +10,8 @@
 
 @protocol KNVRequest <NSObject>
 
-@property (nonatomic, readonly, getter=isExecuting) BOOL executing;
-@property (nonatomic, readonly, getter=isCanceled) BOOL canceled;
-
--(void)cancel;
+@property (nonatomic, readonly) BOOL executing;
+@property (nonatomic, readonly) BOOL canceled;
+- (void)cancel;
 
 @end

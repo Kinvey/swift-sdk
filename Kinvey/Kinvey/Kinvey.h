@@ -14,9 +14,13 @@ FOUNDATION_EXPORT double KinveyVersionNumber;
 //! Project version string for Kinvey.
 FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
 
-#import <Kinvey/KNVReadPolicy.h>
+#import <Kinvey/KNVKinvey.h>
+#import <Kinvey/KNVClient.h>
+#import <Kinvey/KNVUser.h>
 #import <Kinvey/KNVRequest.h>
 #import <Kinvey/KNVDataStore.h>
+#import <Kinvey/KNVReadPolicy.h>
+#import <Kinvey/KNVWritePolicy.h>
 
 // KinveyKit
 #import <Kinvey/KCSRealmEntityPersistence.h>
@@ -32,7 +36,6 @@ FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
 #import <Kinvey/KCSClient+KinveyDataStore.h>
 #import <Kinvey/KCSClient.h>
 #import <Kinvey/KCSDataStore.h>
-#import <Kinvey/KCSEntityDict.h>
 #import <Kinvey/KCSReduceFunction.h>
 #import <Kinvey/KCSMetadata.h>
 #import <Kinvey/KCSGroup.h>

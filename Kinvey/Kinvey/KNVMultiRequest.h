@@ -7,10 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "KNVRequest.h"
 
-@interface KNVMultiRequest : NSObject <KNVRequest>
+@interface KNVMultiRequest : NSObject <__KNVRequest>
 
--(void)addRequest:(id<KNVRequest>)request;
+-(void)addRequest:(id<__KNVRequest>)request;
 
 @end

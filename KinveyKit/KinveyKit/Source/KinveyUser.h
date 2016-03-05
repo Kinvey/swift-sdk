@@ -20,7 +20,6 @@
 #define KinveyKit_KinveyUser_h
 
 @import Foundation;
-#import "KinveyPersistable.h"
 #import "KinveyEntity.h"
 #import "KinveyHeaderInfo.h"
 #import "KCSBlockDefs.h"

@@ -8,29 +8,37 @@
 
 import Foundation
 
-class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T, [T]> {
+@objc(__KNVFindOperation)
+public class FindOperation: ReadOperation {
     
-    let query: TypedQuery<T>
+    let query: Query
     
-    init(query: TypedQuery<T>, readPolicy: ReadPolicy, client: Client, cache: Cache) {
+    public convenience init(query: Query, readPolicy: ReadPolicy, persistableClass: AnyClass, cache: Cache, client: Client) {
+        self.init(query: query, readPolicy: readPolicy, persistableType: persistableClass as! Persistable.Type, cache: cache, client: client)
+    }
+    
+    init(query: Query, readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.query = query
-        super.init(readPolicy: readPolicy, client: client, cache: cache)
+        super.init(readPolicy: readPolicy, persistableType: persistableType, cache: cache, client: client)
     }
     
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
             let json = self.cache.findEntityByQuery(self.query)
-            let array = self.fromJson(json)
+            let array = self.fromJson(jsonArray: json)
             completionHandler?(array, nil)
         }
         return request
     }
     
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
-        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.kinveyCollectionName(), query: query)
+        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: persistableType.kinveyCollectionName(), query: query)
         request.execute() { data, response, error in
-            if let response = response where response.isResponseOK, let array = self.client.responseParser.parseArray(data, type: T.self) {
+            if let response = response where response.isResponseOK,
+                let jsonArray = self.client.responseParser.parseArray(data)
+            {
+                let array = self.persistableType.fromJson(jsonArray)
                 self.cache.saveEntities(self.toJson(array))
                 completionHandler?(array, nil)
             } else if let error = error {

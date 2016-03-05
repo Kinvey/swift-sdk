@@ -12,8 +12,9 @@ public protocol ResponseParser {
     
     var client: Client { get }
     
-    func parse<S, T>(source: S?, type: T.Type) -> T?
-    func parseArray<S, T>(source: S?, type: T.Type) -> [T]?
+    func parse(data: NSData?) -> JsonDictionary?
+    func parseArray(data: NSData?) -> [JsonDictionary]?
+    func parseUser<U: User>(data: NSData?) -> U?
 
 }
 
