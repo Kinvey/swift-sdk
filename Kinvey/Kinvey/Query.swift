@@ -8,29 +8,37 @@
 
 import Foundation
 
-class TypedQuery<T: Persistable where T: NSObject>: Query {
-    
-    override init(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) {
-        super.init(predicate: predicate, sortDescriptors: sortDescriptors)
-        self.persistableClass = T.self
-    }
-    
-    convenience init(_ query: Query) {
-        self.init(predicate: query.predicate, sortDescriptors: query.sortDescriptors)
-    }
-    
-}
-
 @objc(KNVQuery)
 public class Query: NSObject {
     
     public var predicate: NSPredicate?
     public var sortDescriptors: [NSSortDescriptor]?
-    var persistableClass: Persistable.Type?
+    var persistableType: Persistable.Type?
     
-    public init(predicate: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]? = nil) {
+    init(predicate: NSPredicate?, sortDescriptors: [NSSortDescriptor]?, persistableType: Persistable.Type? = nil) {
         self.predicate = predicate
         self.sortDescriptors = sortDescriptors
+        self.persistableType = persistableType
+    }
+    
+    convenience init(query: Query, persistableType: Persistable.Type) {
+        self.init(predicate: query.predicate, sortDescriptors: query.sortDescriptors, persistableType: persistableType)
+    }
+    
+    public override convenience init() {
+        self.init(predicate: nil, sortDescriptors: nil, persistableType: nil)
+    }
+    
+    public convenience init(predicate: NSPredicate) {
+        self.init(predicate: predicate)
+    }
+    
+    public convenience init(sortDescriptors: [NSSortDescriptor]) {
+        self.init(predicate: nil, sortDescriptors: sortDescriptors, persistableType: nil)
+    }
+    
+    public convenience init(predicate: NSPredicate?, sortDescriptors: [NSSortDescriptor]? = nil) {
+        self.init(predicate: predicate, sortDescriptors: sortDescriptors, persistableType: nil)
     }
     
     public convenience init(format: String, _ args: AnyObject...) {

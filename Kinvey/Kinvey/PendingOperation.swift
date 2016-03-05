@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(KCSPendingOperation)
-protocol PendingOperation {
+public protocol PendingOperation {
     
     var objectId: String? { get }
     

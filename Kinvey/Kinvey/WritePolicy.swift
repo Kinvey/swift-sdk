@@ -8,8 +8,9 @@
 
 import Foundation
 
-public enum WritePolicy {
+@objc
+public enum WritePolicy: UInt {
     
-    case LocalThenNetwork, ForceLocal, ForceNetwork
+    case LocalThenNetwork = 0, ForceLocal, ForceNetwork
     
 }

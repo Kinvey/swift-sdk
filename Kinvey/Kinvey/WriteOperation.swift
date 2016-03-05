@@ -8,17 +8,19 @@
 
 import Foundation
 
-class WriteOperation<T: Persistable, R where T: NSObject>: Operation<T> {
+@objc(__KNVWriteOperation)
+public class WriteOperation: Operation {
     
-    typealias CompletionHandler = (R?, ErrorType?) -> Void
+    typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
+    public typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
     
     let writePolicy: WritePolicy
     let sync: Sync
     
-    init(writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
+    init(writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.writePolicy = writePolicy
         self.sync = sync
-        super.init(cache: cache, client: client)
+        super.init(persistableType: persistableType, cache: cache, client: client)
     }
     
     func execute(completionHandler: CompletionHandler?) -> Request {
@@ -30,6 +32,24 @@ class WriteOperation<T: Persistable, R where T: NSObject>: Operation<T> {
             fallthrough
         case .ForceNetwork:
             return executeNetwork(completionHandler)
+        }
+    }
+    
+    @objc public func execute(completionHandler: CompletionHandlerObjC?) -> Request {
+        switch writePolicy {
+        case .ForceLocal:
+            return executeLocal({ (obj, error) -> Void in
+                completionHandler?(obj, error as? NSError)
+            })
+        case .LocalThenNetwork:
+            executeLocal({ (obj, error) -> Void in
+                completionHandler?(obj, error as? NSError)
+            })
+            fallthrough
+        case .ForceNetwork:
+            return executeNetwork({ (obj, error) -> Void in
+                completionHandler?(obj, error as? NSError)
+            })
         }
     }
     

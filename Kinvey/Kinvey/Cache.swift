@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc(KNVCache)
+@objc(__KNVCache)
 public protocol Cache {
     
     var persistenceId: String { get set }

@@ -8,7 +8,8 @@
 
 import UIKit
 
-class LocalRequest: Request {
+@objc
+class LocalRequest: NSObject, Request {
     
     let executing = false
     let canceled = false

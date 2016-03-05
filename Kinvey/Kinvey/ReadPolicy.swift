@@ -8,8 +8,9 @@
 
 import Foundation
 
+@objc
 public enum ReadPolicy: UInt {
     
-    case ForceLocal, ForceNetwork, Both
+    case ForceLocal = 0, ForceNetwork, Both
     
 }

@@ -27,6 +27,7 @@
 #import "KinveyUser.h"
 #import "KCSDBTools.h"
 #import "KinveyErrorCodes.h"
+#import "KinveyPersistable.h"
 
 #define DELEGATEMETHOD(m) if (_delegate != nil && [_delegate respondsToSelector:@selector(m)])
 

@@ -29,6 +29,7 @@
 #import "KCS_NSURL_NSString_NSValueTransformer.h"
 #import "KCS_UIImage_NSData_NSValueTransformer.h"
 #import "KCS_NSString_NSDate_NSValueTransformer.h"
+#import "KinveyPersistable.h"
 
 #import "KCSObjcRuntime.h"
 @import ObjectiveC;
@@ -53,7 +54,7 @@
 
 @end
 
-@interface KCSRealmEntityPersistence () <KCSCache>
+@interface KCSRealmEntityPersistence () <__KNVCache, __KNVSync>
 
 @property (nonatomic, strong) RLMRealmConfiguration* realmConfiguration;
 @property (nonatomic, readonly) RLMRealm* realm;
@@ -566,7 +567,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     NSDictionary<NSString*, NSString*>* propertyMapping = [class kinveyPropertyMapping].invert;
     NSString* keyId = propertyMapping[KCSEntityKeyId];
     KNVQuery* query = [[KNVQuery alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]
-                                          sortDescriptors:nil];
+                                            sortDescriptors:nil];
     NSUInteger count = [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
                                           forClass:class];
     assert(count == 1);
@@ -769,7 +770,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     }
     NSSortDescriptor* sortDescriptorDate = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];
     return [[KNVQuery alloc] initWithPredicate:predicate
-                               sortDescriptors:@[sortDescriptorDate]];
+                                 sortDescriptors:@[sortDescriptorDate]];
 }
 
 -(KCSPendingOperationRealm*)pendingOperation:(id<KCSPendingOperation>)pendingOperation

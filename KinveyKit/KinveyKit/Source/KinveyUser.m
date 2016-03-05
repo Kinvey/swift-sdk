@@ -33,6 +33,7 @@
 #import "KCSUser2+KinveyUserService+Private.h"
 #import "KCSClient+Private.h"
 #import <Kinvey/Kinvey-Swift.h>
+#import "KNVClient.h"
 
 #pragma mark - Constants
 

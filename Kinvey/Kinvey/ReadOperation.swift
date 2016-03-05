@@ -8,15 +8,17 @@
 
 import Foundation
 
-class ReadOperation<T: Persistable, R where T: NSObject>: Operation<T> {
+@objc(__KNVReadOperation)
+public class ReadOperation: Operation {
     
-    typealias CompletionHandler = (R?, ErrorType?) -> Void
+    typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
+    public typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
     
     let readPolicy: ReadPolicy
     
-    init(readPolicy: ReadPolicy, client: Client, cache: Cache) {
+    init(readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.readPolicy = readPolicy
-        super.init(cache: cache, client: client)
+        super.init(persistableType: persistableType, cache: cache, client: client)
     }
     
     func execute(completionHandler: CompletionHandler? = nil) -> Request {
@@ -31,6 +33,28 @@ class ReadOperation<T: Persistable, R where T: NSObject>: Operation<T> {
                 completionHandler?(obj, nil)
                 request.addRequest(self.executeNetwork(completionHandler))
             }
+            return request
+        }
+    }
+    
+    @objc public func execute(completionHandler: CompletionHandlerObjC? = nil) -> Request {
+        switch readPolicy {
+        case .ForceLocal:
+            return executeLocal({ (obj, error) -> Void in
+                completionHandler?(obj, error as? NSError)
+            })
+        case .ForceNetwork:
+            return executeNetwork({ (obj, error) -> Void in
+                completionHandler?(obj, error as? NSError)
+            })
+        case .Both:
+            let request = MultiRequest()
+            executeLocal({ (obj, error) -> Void in
+                completionHandler?(obj, error as? NSError)
+                request.addRequest(self.executeNetwork({ (obj, error) -> Void in
+                    completionHandler?(obj, error as? NSError)
+                }))
+            })
             return request
         }
     }

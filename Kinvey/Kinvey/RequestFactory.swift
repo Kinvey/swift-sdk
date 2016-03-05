@@ -20,7 +20,7 @@ public protocol RequestFactory {
     
     func buildAppDataGetById(collectionName collectionName: String, id: String) -> HttpRequest
     func buildAppDataFindByQuery(collectionName collectionName: String, query: Query) -> HttpRequest
-    func buildAppDataSave<T: Persistable where T: NSObject>(persistable: T) -> HttpRequest
+    func buildAppDataSave(persistable: Persistable) -> HttpRequest
     func buildAppDataRemoveByQuery(collectionName collectionName: String, query: Query) -> HttpRequest
     
     func buildPushRegisterDevice(deviceToken: NSData) -> HttpRequest

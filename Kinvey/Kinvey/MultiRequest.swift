@@ -8,7 +8,8 @@
 
 import Foundation
 
-class MultiRequest: Request {
+@objc
+class MultiRequest: NSObject, Request {
     
     private var requests = [Request]()
     

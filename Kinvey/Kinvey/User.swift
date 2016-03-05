@@ -9,7 +9,7 @@
 import Foundation
 import PromiseKit
 
-@objc(KNVUser)
+@objc(__KNVUser)
 public class User: NSObject, Credential {
     
     public static let PersistableUsernameKey = "username"
@@ -32,7 +32,7 @@ public class User: NSObject, Credential {
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
                 if let response = response where response.isResponseOK {
-                    client.activeUser = client.responseParser.parse(data, type: client.userType)
+                    client.activeUser = client.responseParser.parseUser(data)
                     fulfill(client.activeUser!)
                 } else if let error = error {
                     reject(error)
@@ -80,7 +80,7 @@ public class User: NSObject, Credential {
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
                 if let response = response where response.isResponseOK {
-                    let user = client.responseParser.parse(data, type: client.userType)
+                    let user = client.responseParser.parseUser(data)
                     if let user = user {
                         client.activeUser = user
                         fulfill(user)
@@ -111,7 +111,7 @@ public class User: NSObject, Credential {
         let request = client.networkRequestFactory.buildUserExists(username: username)
         Promise<Bool> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK, let json = client.responseParser.parse(data, type: [String : Bool].self), let usernameExists = json["usernameExists"] {
+                if let response = response where response.isResponseOK, let json = client.responseParser.parse(data), let usernameExists = json["usernameExists"] as? Bool {
                     fulfill(usernameExists)
                 } else if let error = error {
                     reject(error)
@@ -131,7 +131,7 @@ public class User: NSObject, Credential {
         let request = client.networkRequestFactory.buildUserGet(userId: userId)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK, let user = client.responseParser.parse(data, type: User.self) {
+                if let response = response where response.isResponseOK, let user = client.responseParser.parseUser(data) {
                     fulfill(user)
                 } else if let error = error {
                     reject(error)
@@ -206,7 +206,7 @@ public class User: NSObject, Credential {
         let request = client.networkRequestFactory.buildUserSave(user: self)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK, let user = client.responseParser.parse(data, type: client.userType) {
+                if let response = response where response.isResponseOK, let user = client.responseParser.parseUser(data) {
                     client.activeUser = user
                     fulfill(user)
                 } else if let error = error {

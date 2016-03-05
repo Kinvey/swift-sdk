@@ -8,24 +8,28 @@
 
 import Foundation
 
-class Operation<T: Persistable where T: NSObject> {
+@objc(__KNVOperation)
+public class Operation: NSObject {
     
-    typealias ArrayCompletionHandler = ([T]?, ErrorType?) -> Void
-    typealias ObjectCompletionHandler = (T?, ErrorType?) -> Void
+    typealias ArrayCompletionHandler = ([Persistable]?, ErrorType?) -> Void
+    typealias ObjectCompletionHandler = (Persistable?, ErrorType?) -> Void
     typealias UIntCompletionHandler = (UInt?, ErrorType?) -> Void
-    typealias UIntArrayCompletionHandler = (UInt?, [T]?, ErrorType?) -> Void
+    typealias UIntArrayCompletionHandler = (UInt?, [Persistable]?, ErrorType?) -> Void
     
-    let client: Client
+    let persistableType: Persistable.Type
     let cache: Cache
+    let client: Client
     
-    init(cache: Cache, client: Client) {
+    init(persistableType: Persistable.Type, cache: Cache, client: Client) {
+        self.persistableType = persistableType
         self.cache = cache
         self.client = client
     }
     
-    func fromJson(json: [String : AnyObject]) -> T {
-        let obj = T.self.init()
-        for key in T.kinveyPropertyMapping().keys {
+    func fromJson(json: [String : AnyObject]) -> Persistable {
+        let objType = persistableType as! NSObject.Type
+        let obj = objType.init() as! Persistable
+        for key in persistableType.kinveyPropertyMapping().keys {
             var value = json[key]
             if value is NSNull {
                 value = nil
@@ -35,8 +39,8 @@ class Operation<T: Persistable where T: NSObject> {
         return obj
     }
     
-    func fromJson(jsonArray: [[String : AnyObject]]) -> [T] {
-        var results: [T] = []
+    func fromJson(jsonArray jsonArray: [JsonDictionary]) -> [Persistable] {
+        var results = [Persistable]()
         for json in jsonArray {
             let obj = fromJson(json)
             results.append(obj)
@@ -44,16 +48,16 @@ class Operation<T: Persistable where T: NSObject> {
         return results
     }
     
-    func toJson(array: [T]) -> [[String : AnyObject]] {
+    func toJson(array: [Persistable]) -> [JsonDictionary] {
         var entities = [[String : AnyObject]]()
-        let keys = T.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
+        let keys = persistableType.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
         for obj in array {
             entities.append(obj.dictionaryWithValuesForKeys(keys))
         }
         return entities
     }
     
-    func fillObject(persistable: T) -> T {
+    func fillObject(persistable: Persistable) -> Persistable {
         if persistable.kinveyObjectId == nil {
             persistable.kinveyObjectId = "\(ObjectIdTmpPrefix)\(NSUUID().UUIDString)"
         }
@@ -74,9 +78,9 @@ class Operation<T: Persistable where T: NSObject> {
         return json
     }
     
-    func merge(persistable: T, json: [String : AnyObject]) -> [String : AnyObject] {
+    func merge(persistable: Persistable, json: [String : AnyObject]) -> [String : AnyObject] {
         var persistableJson = persistable.toJson()
-        if T.kmdKey == nil {
+        if persistableType.kmdKey == nil {
             persistableJson[PersistableMetadataKey] = json[PersistableMetadataKey]
             if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] {
                 if let lmt = kmd[Metadata.LmtKey] as? String {
@@ -88,7 +92,7 @@ class Operation<T: Persistable where T: NSObject> {
                 persistableJson[PersistableMetadataKey] = kmd
             }
         }
-        if T.aclKey == nil {
+        if persistableType.aclKey == nil {
             persistableJson[PersistableAclKey] = json[PersistableAclKey]
         }
         return persistableJson

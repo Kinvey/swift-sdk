@@ -8,8 +8,8 @@
 
 import Foundation
 
-@objc(KCSSync)
-protocol Sync {
+@objc(__KNVSync)
+public protocol Sync {
     
     var persistenceId: String { get set }
     var collectionName: String { get set }
