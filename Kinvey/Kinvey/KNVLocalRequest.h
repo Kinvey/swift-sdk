@@ -7,9 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "KNVRequest.h"
 
-@interface KNVLocalRequest : NSObject <KNVRequest>
+@interface KNVLocalRequest : NSObject <__KNVRequest>
 
 -(void)execute:(void (^)())completionHandler;
 

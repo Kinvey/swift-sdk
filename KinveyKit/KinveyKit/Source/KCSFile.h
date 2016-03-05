@@ -21,7 +21,6 @@
 
 @import Foundation;
 
-#import "KinveyPersistable.h"
 #import "KCSMetadata.h"
 
 /**

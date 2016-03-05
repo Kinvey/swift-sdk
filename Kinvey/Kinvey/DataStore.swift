@@ -43,21 +43,21 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func findById(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         assert(id != "")
         let readPolicy = readPolicy ?? self.readPolicy
-        let operation = GetOperation<T>(id: id, readPolicy: readPolicy, client: client, cache: cache)
+        let operation = GetOperation(id: id, readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
     
     public func find(query: Query = Query(), readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
-        let operation = FindOperation<T>(query: TypedQuery(query), readPolicy: readPolicy, client: client, cache: cache)
+        let operation = FindOperation(query: Query(query: query, persistableType: T.self), readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
     
     public func save(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = SaveOperation<T>(persistable: persistable, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let operation = SaveOperation(persistable: persistable, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -91,7 +91,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     public func remove(query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = RemoveOperation<T>(query: TypedQuery(query), writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let operation = RemoveOperation(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -107,7 +107,7 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PushOperation<T>(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let operation = PushOperation(writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
@@ -119,7 +119,7 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PullOperation<T>(query: TypedQuery(query), writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let operation = PullOperation(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
@@ -153,7 +153,7 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PurgeOperation<T>(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let operation = PurgeOperation(writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute { (count, error) -> Void in
             if let count = count {
                 self.pull() { (results, error) -> Void in
@@ -168,11 +168,11 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     //MARK: Dispatch Async Main Queue
     
-    private func dispatchAsyncMainQueue<R>(completionHandler: ((R?, ErrorType?) -> Void)? = nil) -> ((R?, ErrorType?) -> Void)? {
+    private func dispatchAsyncMainQueue<R>(completionHandler: ((R?, ErrorType?) -> Void)? = nil) -> ((AnyObject?, ErrorType?) -> Void)? {
         if let completionHandler = completionHandler {
-            return { (obj: R?, error: ErrorType?) -> Void in
+            return { (obj: AnyObject?, error: ErrorType?) -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    completionHandler(obj, error)
+                    completionHandler(obj as? R, error)
                 })
             }
         }

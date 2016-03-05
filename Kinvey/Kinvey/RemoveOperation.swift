@@ -8,23 +8,22 @@
 
 import Foundation
 
-class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt> {
+class RemoveOperation: WriteOperation {
     
-    let query: TypedQuery<T>
+    let query: Query
     
-    init(query: TypedQuery<T>, writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
+    init(query: Query, writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.query = query
-        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
     }
     
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            self.query.persistableClass = T.self
             let objects = self.cache.findEntityByQuery(self.query)
             let count = self.cache.removeEntitiesByQuery(self.query)
-            let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: T.kinveyCollectionName(), query: self.query)
-            let idKey = T.idKey
+            let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: self.persistableType.kinveyCollectionName(), query: self.query)
+            let idKey = self.persistableType.idKey
             for object in objects {
                 if let objectId = object[idKey] as? String {
                     if objectId.hasPrefix(ObjectIdTmpPrefix) {
@@ -40,10 +39,10 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt>
     }
     
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
-        let request = client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: T.kinveyCollectionName(), query: query)
+        let request = client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: self.persistableType.kinveyCollectionName(), query: query)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK,
-                let results = self.client.responseParser.parse(data, type: [String : AnyObject].self),
+                let results = self.client.responseParser.parse(data),
                 let count = results["count"] as? UInt
             {
                 self.cache.removeEntitiesByQuery(self.query)

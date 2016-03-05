@@ -8,7 +8,6 @@
 
 import Foundation
 import PromiseKit
-import KeychainAccess
 
 @objc(KNVPush)
 public class Push: NSObject {
@@ -17,21 +16,19 @@ public class Push: NSObject {
     
     private let client: Client
     private let push: KCSPush = KCSPush.sharedPush()
-    private var keychain:Keychain {
+    
+    private var keychain: Keychain {
         get {
-            return Keychain(service: "com.kinvey.KinveyKit.\(client.appKey!)")
-                .accessibility(.AfterFirstUnlockThisDeviceOnly)
+            return Keychain(appKey: client.appKey!)
         }
     }
     
-    private static let deviceTokenKey = "deviceToken"
-    
     private var deviceToken: NSData? {
         get {
-            return keychain[data: Push.deviceTokenKey]
+            return keychain.deviceToken
         }
         set {
-            keychain[data: Push.deviceTokenKey] = newValue
+            keychain.deviceToken = newValue
         }
     }
     

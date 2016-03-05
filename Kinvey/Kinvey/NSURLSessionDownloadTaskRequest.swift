@@ -9,7 +9,8 @@
 import Foundation
 import PromiseKit
 
-class NSURLSessionDownloadTaskRequest: Request {
+@objc
+class NSURLSessionDownloadTaskRequest: NSObject, Request {
     
     var downloadTask: NSURLSessionDownloadTask?
     

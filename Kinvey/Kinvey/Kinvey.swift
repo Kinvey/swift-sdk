@@ -8,9 +8,9 @@
 
 import Foundation
 
-public let PersistableIdKey = Constants.PersistableIdKey
-public let PersistableAclKey = Constants.PersistableAclKey
-public let PersistableMetadataKey = Constants.PersistableMetadataKey
+public let PersistableIdKey = "_id"
+public let PersistableAclKey = "_acl"
+public let PersistableMetadataKey = "_kmd"
 let PersistableMetadataLastRetrievedTimeKey = "lrt"
 let ObjectIdTmpPrefix = "tmp_"
 

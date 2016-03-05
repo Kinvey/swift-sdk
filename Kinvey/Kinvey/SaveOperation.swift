@@ -8,13 +8,14 @@
 
 import Foundation
 
-class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T> {
+@objc(__KNVSaveOperation)
+public class SaveOperation: WriteOperation {
     
-    let persistable: T
+    let persistable: Persistable
     
-    init(persistable: T, writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
+    public init(persistable: Persistable, writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
         self.persistable = persistable
-        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistable.dynamicType, cache: cache, client: client)
     }
     
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
@@ -38,9 +39,9 @@ class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T> {
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in
                 if let response = response where response.isResponseOK {
-                    let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
+                    let json = self.client.responseParser.parse(data)
                     if let json = json {
-                        let persistable: T = T.fromJson(json)
+                        let persistable = self.persistable.dynamicType.fromJson(json)
                         var persistableJson = self.merge(persistable, json: json)
                         if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] where kmd[PersistableMetadataLastRetrievedTimeKey] == nil {
                             kmd[PersistableMetadataLastRetrievedTimeKey] = NSDate()

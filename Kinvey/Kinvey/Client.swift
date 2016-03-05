@@ -8,9 +8,9 @@
 
 import Foundation
 
-@objc(KNVClient)
+@objc(__KNVClient)
 public class Client: NSObject, Credential {
-    
+
     public static let sharedClient = Client()
     
     public internal(set) var activeUser: User? {
@@ -31,6 +31,9 @@ public class Client: NSObject, Credential {
                     appKey: appKey,
                     accessible: KCSKeychain2.accessibleStringForDataProtectionLevel(KCSDataProtectionLevel.CompleteUntilFirstLogin) //TODO: using default value for now
                 )
+                if let authtoken = activeUser.metadata?.authtoken {
+                    keychain.authtoken = authtoken
+                }
             } else {
                 KCSKeychain2.deleteTokensForUser(
                     activeUser?.userId,
@@ -38,6 +41,12 @@ public class Client: NSObject, Credential {
                 )
                 CacheManager(persistenceId: appKey!).cache().removeAllEntities()
             }
+        }
+    }
+    
+    private var keychain: Keychain {
+        get {
+            return Keychain(appKey: appKey!)
         }
     }
     
@@ -104,7 +113,7 @@ public class Client: NSObject, Credential {
         self.appSecret = appSecret
         if let json = NSUserDefaults.standardUserDefaults().objectForKey(appKey) as? [String : AnyObject] {
             let user = User(json: json, client: self)
-            if let metadata = user.metadata, let authtoken = KCSKeychain2.kinveyTokenForUserId(user.userId, appKey: appKey) {
+            if let metadata = user.metadata, let authtoken = keychain.authtoken {
                 metadata.authtoken = authtoken
                 activeUser = user
             }

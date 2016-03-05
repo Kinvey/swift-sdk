@@ -2,27 +2,45 @@
 //  KNVDataStore.h
 //  Kinvey
 //
-//  Created by Victor Barros on 2016-02-23.
+//  Created by Victor Barros on 2016-03-04.
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "KNVRequest.h"
+#import "KNVReadPolicy.h"
 
-@protocol KNVPersistable;
 @class KNVQuery;
+@protocol KNVPersistable;
 
-#define KNVObjectCompletionHandler(T) void (^ _Nullable)(T _Nullable object, NSError* _Nullable error)
-#define KNVArrayCompletionHandler(T) void (^ _Nullable)(NSArray<T>* _Nullable results, NSError* _Nullable error)
+NS_SWIFT_UNAVAILABLE("Please use 'DataStoreType' enum")
+typedef NS_ENUM(NSUInteger, KNVDataStoreType) {
+    KNVDataStoreTypeSync,
+    KNVDataStoreTypeCache,
+    KNVDataStoreTypeNetwork
+};
 
-@interface KNVDataStore<T : NSObject<KNVPersistable>*> : NSObject
+#define KNVDataStoreNSUIntegerHandler void(^ _Nullable)(NSUInteger, NSError* _Nullable)
+#define KNVDataStoreHandler(T) void(^ _Nullable)(T _Nullable, NSError* _Nullable)
 
--(id<KNVRequest> _Nonnull)findById:(NSString* _Nonnull)objectId
-                 completionHandler:(KNVObjectCompletionHandler(T))completionHandler;
+NS_SWIFT_UNAVAILABLE("Please use 'DataStore' class")
+@interface KNVDataStore<T: NSObject<KNVPersistable>*> : NSObject
 
--(id<KNVRequest> _Nonnull)find:(KNVArrayCompletionHandler(T))completionHandler;
++(instancetype _Nonnull)getInstance:(KNVDataStoreType)type
+                           forClass:(Class _Nonnull)cls;
 
--(id<KNVRequest> _Nonnull)find:(KNVQuery* _Nonnull)query
-             completionHandler:(KNVArrayCompletionHandler(T))completionHandler;
+-(id<KNVRequest> _Nonnull)remove:(T _Nonnull)username
+               completionHandler:(KNVDataStoreNSUIntegerHandler)completionHandler;
+
+-(id<KNVRequest> _Nonnull)save:(T _Nonnull)persistable
+             completionHandler:(KNVDataStoreHandler(T))completionHandler;
+
+-(id<KNVRequest> _Nonnull)find:(KNVDataStoreHandler(NSArray<T>*))completionHandler;
+
+-(id<KNVRequest> _Nonnull)find:(KNVQuery* _Nullable)query
+             completionHandler:(KNVDataStoreHandler(NSArray<T>*))completionHandler;
+
+-(id<KNVRequest> _Nonnull)find:(KNVQuery* _Nullable)query
+                    readPolicy:(KNVReadPolicy)readPolicy
+             completionHandler:(KNVDataStoreHandler(NSArray<T>*))completionHandler;
 
 @end

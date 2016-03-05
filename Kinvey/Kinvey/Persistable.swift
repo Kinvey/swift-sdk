@@ -17,63 +17,6 @@ public protocol Persistable: JsonObject, NSObjectProtocol {
     
 }
 
-extension Persistable where Self: NSObject {
-    
-    public var kinveyObjectId: String? {
-        get {
-            if let id = valueForKey(self.dynamicType.idKey) as? String
-            {
-                return id
-            }
-            return nil
-        }
-        set {
-            setValue(newValue, forKey: self.dynamicType.idKey)
-        }
-    }
-    
-    public var kinveyAcl: Acl? {
-        get {
-            if let aclKey = self.dynamicType.aclKey,
-                let acl = valueForKey(aclKey) as? Acl
-            {
-                return acl
-            }
-            return nil
-        }
-        set {
-            if let aclKey = self.dynamicType.aclKey {
-                setValue(newValue, forKey: aclKey)
-            }
-        }
-    }
-    
-    subscript(key: String) -> AnyObject? {
-        get {
-            return valueForKey(key)
-        }
-        set {
-            setValue(newValue, forKey: key)
-        }
-    }
-    
-    public func toJson() -> JsonDictionary {
-        let keys = self.dynamicType.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
-        return dictionaryWithValuesForKeys(keys)
-    }
-    
-    public func fromJson(json: JsonDictionary) {
-        for key in self.dynamicType.kinveyPropertyMapping().keys {
-            setValue(json[key], forKey: key)
-        }
-    }
-    
-    func merge(obj: Persistable) {
-        fromJson(obj.toJson!())
-    }
-    
-}
-
 extension Persistable {
     
     public static var idKey: String {
@@ -117,23 +60,26 @@ extension Persistable {
         return jsonArray
     }
     
-    static func toJson<T: Persistable where T: NSObject>(persistable obj: T) -> JsonDictionary {
+    static func toJson(persistable obj: Persistable) -> JsonDictionary {
         var json: [String : AnyObject] = [:]
-        let propertyMap = T.kinveyPropertyMapping()
+        let propertyMap = self.kinveyPropertyMapping()
         for keyValuePair in propertyMap {
-            if let value = obj.valueForKey(keyValuePair.0) {
+            if let value = obj[keyValuePair.0] {
                 json[keyValuePair.1] = value
             }
         }
         return json
     }
     
-    static func fromJson<T: Persistable where T: NSObject>(json: JsonDictionary) -> T {
-        let obj = T.self.init()
-        let propertyMap = T.self.kinveyPropertyMapping()
+    static func fromJson(json: JsonDictionary) -> Persistable {
+        let type = self as! NSObject.Type
+        let obj = type.init()
+        let persistable = obj as! Persistable
+        let persistableType = obj.dynamicType as! Persistable.Type
+        let propertyMap = persistableType.kinveyPropertyMapping()
         for keyValuePair in propertyMap {
             var value = json[keyValuePair.1]
-            if let entitySchema = EntitySchema.entitySchema(T.self),
+            if let entitySchema = EntitySchema.entitySchema(type),
                 let destinationType = entitySchema.properties[keyValuePair.0]
             {
                 if let valueNonNull = value where !valueNonNull.isKindOfClass(destinationType.1.0),
@@ -150,15 +96,85 @@ extension Persistable {
                 obj.setValue(value, forKey: keyValuePair.0)
             }
         }
-        return obj
+        return persistable
     }
     
-    static func fromJson<T: Persistable where T: NSObject>(array: [JsonDictionary]) -> [T] {
-        var results: [T] = []
+    static func fromJson(array: [JsonDictionary]) -> [Persistable] {
+        var results = [Persistable]()
         for item in array {
             results.append(fromJson(item))
         }
         return results
+    }
+    
+    //MARK: NSObject
+    
+    subscript(key: String) -> AnyObject? {
+        get {
+            guard let this = self as? NSObject else {
+                return nil
+            }
+            return this.valueForKey(key)
+        }
+        set {
+            guard let this = self as? NSObject else {
+                return
+            }
+            this.setValue(newValue, forKey: key)
+        }
+    }
+    
+    public func dictionaryWithValuesForKeys(keys: [String]) -> [String : AnyObject] {
+        guard let this = self as? NSObject else {
+            return [:]
+        }
+        return this.dictionaryWithValuesForKeys(keys)
+    }
+    
+    public var kinveyObjectId: String? {
+        get {
+            guard let id = self[self.dynamicType.idKey] as? String else
+            {
+                return nil
+            }
+            return id
+        }
+        set {
+            self[self.dynamicType.idKey] = newValue
+        }
+    }
+    
+    public var kinveyAcl: Acl? {
+        get {
+            guard let aclKey = self.dynamicType.aclKey,
+                let acl = self[aclKey] as? Acl else
+            {
+                return nil
+            }
+            return acl
+        }
+        set {
+            guard let aclKey = self.dynamicType.aclKey else
+            {
+                return
+            }
+            self[aclKey] = newValue
+        }
+    }
+    
+    public func toJson() -> JsonDictionary {
+        let keys = self.dynamicType.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
+        return dictionaryWithValuesForKeys(keys)
+    }
+    
+    public func fromJson(json: JsonDictionary) {
+        for key in self.dynamicType.kinveyPropertyMapping().keys {
+            self[key] = json[key]
+        }
+    }
+    
+    func merge(obj: Persistable) {
+        fromJson(obj.toJson())
     }
     
 }

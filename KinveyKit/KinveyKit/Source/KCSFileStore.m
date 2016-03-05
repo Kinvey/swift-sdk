@@ -49,6 +49,7 @@
 #import "KCSNetworkResponse.h"
 #import "KCSRequest+Private.h"
 #import "KCSFileRequest.h"
+#import "KinveyPersistable.h"
 
 NSString* const KCSFileId = KCSEntityKeyId;
 NSString* const KCSFileACL = KCSEntityKeyMetadata;

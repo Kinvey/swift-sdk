@@ -9,10 +9,10 @@
 import Foundation
 import PromiseKit
 
-class PurgeOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt> {
+class PurgeOperation: WriteOperation {
     
-    override init(writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
-        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+    override init(writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
     }
     
     override func execute(completionHandler: CompletionHandler?) -> Request {
@@ -25,11 +25,11 @@ class PurgeOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt> 
                 case .Update:
                     if let objectId = pendingOperation.objectId {
                         promises.append(Promise<Void> { fulfill, reject in
-                            let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName(), id: objectId)
+                            let request = client.networkRequestFactory.buildAppDataGetById(collectionName: self.persistableType.kinveyCollectionName(), id: objectId)
                             requests.addRequest(request)
                             request.execute() { data, response, error in
-                                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data, type: [String : AnyObject].self) {
-                                    let persistable: T = T.fromJson(json)
+                                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
+                                    let persistable = self.persistableType.fromJson(json)
                                     let persistableJson = self.merge(persistable, json: json)
                                     self.cache.saveEntity(persistableJson)
                                     self.sync.removePendingOperation(pendingOperation)
@@ -52,7 +52,7 @@ class PurgeOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt> 
                 case .Create:
                     promises.append(Promise<Void> { fulfill, reject in
                         if let objectId = pendingOperation.objectId {
-                            let query = Query(format: "\(T.idKey) == %@", objectId)
+                            let query = Query(format: "\(self.persistableType.idKey) == %@", objectId)
                             cache.removeEntitiesByQuery(query)
                         }
                         sync.removePendingOperation(pendingOperation)

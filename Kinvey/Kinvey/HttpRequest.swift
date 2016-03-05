@@ -200,7 +200,7 @@ extension Query {
     private func translateExpression(expression: NSExpression) -> NSExpression {
         switch expression.expressionType {
         case .KeyPathExpressionType:
-            return NSExpression(forKeyPath: persistableClass?.kinveyPropertyMapping()[expression.keyPath] ?? expression.keyPath)
+            return NSExpression(forKeyPath: persistableType?.kinveyPropertyMapping()[expression.keyPath] ?? expression.keyPath)
         default:
             return expression
         }
