@@ -9,10 +9,10 @@
 import Foundation
 import PromiseKit
 
-class PushOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt> {
+class PushOperation: WriteOperation {
     
-    override init(writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
-        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+    override init(writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
     }
     
     override func execute(completionHandler: CompletionHandler?) -> Request {
@@ -24,13 +24,13 @@ class PushOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt> {
             promises.append(Promise<NSData> { fulfill, reject in
                 request.execute() { data, response, error in
                     if let response = response where response.isResponseOK, let data = data {
-                        let json = self.client.responseParser.parse(data, type: [String : AnyObject].self)
+                        let json = self.client.responseParser.parse(data)
                         if let json = json, let pendindObjectId = pendingOperation.objectId {
                             if let entity = self.cache.findEntity(pendindObjectId) {
                                 self.cache.removeEntity(entity)
                             }
                             
-                            let persistable: T = T.fromJson(json)
+                            let persistable = self.persistableType.fromJson(json)
                             let persistableJson = self.merge(persistable, json: json)
                             self.cache.saveEntity(persistableJson)
                         }

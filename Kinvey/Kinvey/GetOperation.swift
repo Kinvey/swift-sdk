@@ -8,13 +8,13 @@
 
 import Foundation
 
-class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T, T> {
+class GetOperation: ReadOperation {
     
     let id: String
     
-    init(id: String, readPolicy: ReadPolicy, client: Client, cache: Cache) {
+    init(id: String, readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.id = id
-        super.init(readPolicy: readPolicy, client: client, cache: cache)
+        super.init(readPolicy: readPolicy, persistableType: persistableType, cache: cache, client: client)
     }
     
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
@@ -32,10 +32,10 @@ class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T, T> {
     }
     
     override func executeNetwork(completionHandler: CompletionHandler?) -> Request {
-        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName(), id: id)
+        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: self.persistableType.kinveyCollectionName(), id: id)
         request.execute() { data, response, error in
-            if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data, type: [String : AnyObject].self) {
-                let obj: T = T.fromJson(json)
+            if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
+                let obj = self.persistableType.fromJson(json)
                 self.cache.saveEntity(obj.toJson())
                 completionHandler?(obj, nil)
             } else if let error = error {
