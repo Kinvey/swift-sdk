@@ -8,8 +8,8 @@
 
 import Foundation
 
-@objc(__KNVRequest)
-public protocol Request: KNVRequest {
+@objc(KNVRequest)
+public protocol Request {
     
     var executing: Bool { get }
     var canceled: Bool { get }

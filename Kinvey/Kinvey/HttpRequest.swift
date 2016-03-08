@@ -124,7 +124,7 @@ public class HttpRequest: NSObject, Request {
     
     var headers: [HttpHeader] = []
     
-    let request: NSMutableURLRequest
+    var request: NSMutableURLRequest
     let credential: Credential?
     let client: Client
     
@@ -166,12 +166,7 @@ public class HttpRequest: NSObject, Request {
         request.HTTPMethod = httpMethod.stringValue
     }
     
-    func execute(completionHandler: DataResponseCompletionHandler? = nil) {
-        guard !canceled else {
-            completionHandler?(nil, nil, Error.RequestCanceled)
-            return
-        }
-        
+    func prepareRequest() {
         for header in defaultHeaders {
             request.setValue(header.value, forHTTPHeaderField: header.name)
         }
@@ -182,6 +177,17 @@ public class HttpRequest: NSObject, Request {
         for header in headers {
             request.setValue(header.value, forHTTPHeaderField: header.name)
         }
+    }
+    
+    func execute(completionHandler: DataResponseCompletionHandler? = nil) {
+        guard !canceled else {
+            completionHandler?(nil, nil, Error.RequestCanceled)
+            return
+        }
+        
+        prepareRequest()
+        
+        print("\(curlCommand)")
         
         task = client.urlSession.dataTaskWithRequest(request) { (data, response, error) -> Void in
             completionHandler?(data, HttpResponse(response: response as! NSHTTPURLResponse), error)
@@ -191,6 +197,20 @@ public class HttpRequest: NSObject, Request {
     
     public func cancel() {
         task?.cancel()
+    }
+    
+    var curlCommand: String {
+        get {
+            prepareRequest()
+            
+            var headers = ""
+            if let allHTTPHeaderFields = request.allHTTPHeaderFields {
+                for header in allHTTPHeaderFields {
+                    headers += "-H \"\(header.0): \(header.1)\" "
+                }
+            }
+            return "curl -X \(request.HTTPMethod) \(headers) \(request.URL!)"
+        }
     }
 
 }

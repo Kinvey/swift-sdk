@@ -9,10 +9,11 @@
 import Foundation
 import PromiseKit
 
-class PushOperation: WriteOperation {
+@objc(__KNVPushOperation)
+public class PushOperation: SyncOperation {
     
-    override init(writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
-        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
+    public init(sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+        super.init(writePolicy: .ForceNetwork, sync: sync, persistableType: persistableType, cache: cache, client: client)
     }
     
     override func execute(completionHandler: CompletionHandler?) -> Request {
@@ -25,8 +26,8 @@ class PushOperation: WriteOperation {
                 request.execute() { data, response, error in
                     if let response = response where response.isResponseOK, let data = data {
                         let json = self.client.responseParser.parse(data)
-                        if let json = json, let pendindObjectId = pendingOperation.objectId {
-                            if let entity = self.cache.findEntity(pendindObjectId) {
+                        if let json = json, let objectId = pendingOperation.objectId where request.request.HTTPMethod != "DELETE" {
+                            if let entity = self.cache.findEntity(objectId) {
                                 self.cache.removeEntity(entity)
                             }
                             
@@ -34,8 +35,15 @@ class PushOperation: WriteOperation {
                             let persistableJson = self.merge(persistable, json: json)
                             self.cache.saveEntity(persistableJson)
                         }
-                        self.sync.removePendingOperation(pendingOperation)
-                        fulfill(data)
+                        if request.request.HTTPMethod != "DELETE" {
+                            self.sync.removePendingOperation(pendingOperation)
+                            fulfill(data)
+                        } else if let json = json, let count = json["count"] as? UInt where count > 0 {
+                            self.sync.removePendingOperation(pendingOperation)
+                            fulfill(data)
+                        } else {
+                            reject(Error.InvalidResponse)
+                        }
                     } else if let error = error {
                         reject(error)
                     } else {

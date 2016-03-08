@@ -10,14 +10,14 @@
 
 @interface KNVMultiRequest ()
 
-@property (nonatomic, strong) NSMutableArray<id<__KNVRequest>>* requests;
+@property (nonatomic, strong) NSMutableArray<id<KNVRequest>>* requests;
 @property (nonatomic) BOOL canceled;
 
 @end
 
 @implementation KNVMultiRequest
 
--(void)addRequest:(id<__KNVRequest>)request
+-(void)addRequest:(id<KNVRequest>)request
 {
     if (self.canceled) {
         [request cancel];
@@ -25,9 +25,9 @@
     [self.requests addObject:request];
 }
 
--(BOOL)isExecuting
+-(BOOL)executing
 {
-    for (id<__KNVRequest> request in self.requests) {
+    for (id<KNVRequest> request in self.requests) {
         if ([request executing]) {
             return YES;
         }
@@ -35,9 +35,9 @@
     return NO;
 }
 
--(BOOL)isCanceled
+-(BOOL)canceled
 {
-    for (id<__KNVRequest> request in self.requests) {
+    for (id<KNVRequest> request in self.requests) {
         if ([request canceled]) {
             return YES;
         }
@@ -48,7 +48,7 @@
 -(void)cancel
 {
     self.canceled = YES;
-    for (id<__KNVRequest> request in self.requests) {
+    for (id<KNVRequest> request in self.requests) {
         [request cancel];
     }
 }

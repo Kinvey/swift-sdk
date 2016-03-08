@@ -17,7 +17,6 @@ FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
 #import <Kinvey/KNVKinvey.h>
 #import <Kinvey/KNVClient.h>
 #import <Kinvey/KNVUser.h>
-#import <Kinvey/KNVRequest.h>
 #import <Kinvey/KNVDataStore.h>
 #import <Kinvey/KNVReadPolicy.h>
 #import <Kinvey/KNVWritePolicy.h>
@@ -39,8 +38,6 @@ FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
 #import <Kinvey/KCSReduceFunction.h>
 #import <Kinvey/KCSMetadata.h>
 #import <Kinvey/KCSGroup.h>
-#import <Kinvey/KCSFileStore.h>
-#import <Kinvey/KCSFile.h>
 #import <Kinvey/KinveyPing.h>
 #import <Kinvey/NSString+KinveyAdditions.h>
 
