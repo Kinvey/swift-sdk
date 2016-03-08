@@ -8,13 +8,34 @@
 
 import Foundation
 
-class RemoveOperation: WriteOperation {
+@objc(__KNVRemoveOperation)
+public class RemoveOperation: WriteOperation {
     
     let query: Query
     
-    init(query: Query, writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    public init(query: Query, writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.query = query
         super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
+    }
+    
+    public typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
+    
+    @objc public func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
+        switch writePolicy {
+        case .ForceLocal:
+            return executeLocal({ (obj, error) -> Void in
+                completionHandler?(obj as! UInt, error as? NSError)
+            })
+        case .LocalThenNetwork:
+            executeLocal({ (obj, error) -> Void in
+                completionHandler?(obj as! UInt, error as? NSError)
+            })
+            fallthrough
+        case .ForceNetwork:
+            return executeNetwork({ (obj, error) -> Void in
+                completionHandler?(obj as! UInt, error as? NSError)
+            })
+        }
     }
     
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {

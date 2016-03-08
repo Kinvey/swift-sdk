@@ -62,31 +62,31 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
-    public func remove(persistable: T, completionHandler: UIntCompletionHandler?) throws -> Request {
+    public func remove(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) throws -> Request {
         guard let id = persistable.kinveyObjectId else {
             throw Error.ObjectIdMissing
         }
-        return removeById(id, completionHandler: completionHandler)
+        return removeById(id, writePolicy:writePolicy, completionHandler: completionHandler)
     }
     
-    public func remove(array: [T], completionHandler: UIntCompletionHandler?) -> Request {
+    public func remove(array: [T], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         var ids: [String] = []
         for persistable in array {
             if let id = persistable.kinveyObjectId {
                 ids.append(id)
             }
         }
-        return removeById(ids, completionHandler: completionHandler)
+        return removeById(ids, writePolicy:writePolicy, completionHandler: completionHandler)
     }
     
-    public func removeById(id: String, completionHandler: UIntCompletionHandler?) -> Request {
+    public func removeById(id: String, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let query = Query(format: "\(T.idKey) == %@", id)
-        return remove(query, completionHandler: completionHandler)
+        return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
-    public func removeById(ids: [String], completionHandler: UIntCompletionHandler?) -> Request {
+    public func removeById(ids: [String], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let query = Query(format: "\(T.idKey) IN %@", ids)
-        return remove(query, completionHandler: completionHandler)
+        return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
     public func remove(query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
@@ -96,8 +96,8 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
-    public func removeAll(completionHandler: UIntCompletionHandler?) -> Request {
-        return remove(completionHandler: completionHandler)
+    public func removeAll(writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+        return remove(writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
     public func push(completionHandler: UIntCompletionHandler? = nil) -> Request {
@@ -107,7 +107,7 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PushOperation(writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = PushOperation(sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
@@ -119,7 +119,7 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PullOperation(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = PullOperation(query: Query(query: query, persistableType: T.self), sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
@@ -153,13 +153,13 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PurgeOperation(writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = PurgeOperation(sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute { (count, error) -> Void in
             if let count = count {
                 self.pull() { (results, error) -> Void in
                     completionHandler?(count, error)
                 }
-            } else if let error = error {
+            } else {
                 completionHandler?(count, error)
             }
         }

@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface KNVMultiRequest : NSObject <__KNVRequest>
+@interface KNVMultiRequest : NSObject <KNVRequest>
 
--(void)addRequest:(id<__KNVRequest>)request;
+-(void)addRequest:(id<KNVRequest>)request;
 
 @end

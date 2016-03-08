@@ -9,10 +9,11 @@
 import Foundation
 import PromiseKit
 
-class PurgeOperation: WriteOperation {
+@objc(__KNVPurgeOperation)
+public class PurgeOperation: SyncOperation {
     
-    override init(writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
-        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
+    public init(sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+        super.init(writePolicy: .ForceNetwork, sync: sync, persistableType: persistableType, cache: cache, client: client)
     }
     
     override func execute(completionHandler: CompletionHandler?) -> Request {
