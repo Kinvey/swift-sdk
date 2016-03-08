@@ -17,6 +17,19 @@ public protocol Persistable: JsonObject, NSObjectProtocol {
     
 }
 
+@objc
+public class __KNVPersistable: NSObject {
+    
+    public class func idKey(type: Persistable.Type) -> String {
+        return type.idKey
+    }
+    
+    public class func kinveyObjectId(persistable: Persistable) -> String? {
+        return persistable.kinveyObjectId
+    }
+    
+}
+
 extension Persistable {
     
     public static var idKey: String {

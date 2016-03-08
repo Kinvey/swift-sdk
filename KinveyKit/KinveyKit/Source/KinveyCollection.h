@@ -23,6 +23,8 @@
 #import "KCSBlockDefs.h"
 #import "KinveyHeaderInfo.h"
 
+@class KCSCollection;
+
 /** The name of the special case user collection
  @since 1.10.2
  */

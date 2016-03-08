@@ -9,13 +9,14 @@
 import Foundation
 import PromiseKit
 
-class PullOperation: WriteOperation {
+@objc(__KNVPullOperation)
+public class PullOperation: SyncOperation {
     
     let query: Query
     
-    init(query: Query, writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    public init(query: Query, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.query = query
-        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
+        super.init(writePolicy: .ForceNetwork, sync: sync, persistableType: persistableType, cache: cache, client: client)
     }
     
     override func execute(completionHandler: CompletionHandler?) -> Request {

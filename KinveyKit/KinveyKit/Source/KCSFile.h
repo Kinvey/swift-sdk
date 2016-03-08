@@ -22,6 +22,7 @@
 @import Foundation;
 
 #import "KCSMetadata.h"
+#import "KinveyPersistable.h"
 
 /**
  This class is a wrapper for file store information.

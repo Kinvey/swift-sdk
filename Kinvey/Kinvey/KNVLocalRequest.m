@@ -10,12 +10,12 @@
 
 @implementation KNVLocalRequest
 
--(BOOL)isExecuting
+-(BOOL)executing
 {
     return NO;
 }
 
--(BOOL)isCanceled
+-(BOOL)canceled
 {
     return NO;
 }
