@@ -30,7 +30,7 @@ public class Query: NSObject {
     }
     
     public convenience init(predicate: NSPredicate) {
-        self.init(predicate: predicate)
+        self.init(predicate: predicate, sortDescriptors: nil, persistableType: nil)
     }
     
     public convenience init(sortDescriptors: [NSSortDescriptor]) {
@@ -57,4 +57,13 @@ public class Query: NSObject {
         self.init(predicate: NSPredicate(format: format, arguments: arguments))
     }
 
+}
+
+@objc
+public class __KNVQuery: NSObject {
+    
+    public class func query(query: Query, persistableType: Persistable.Type) -> Query {
+        return Query(query: query, persistableType: persistableType)
+    }
+    
 }

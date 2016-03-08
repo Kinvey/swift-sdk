@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "KNVRequest.h"
 #import "KNVClient.h"
+
+@protocol KNVRequest;
 
 NS_SWIFT_UNAVAILABLE("Please use 'User' class")
 @interface KNVUser : NSObject

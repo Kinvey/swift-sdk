@@ -8,8 +8,13 @@
 
 #import "KCSPendingOperationRealm.h"
 #import "KinveyPersistable.h"
+#import <Kinvey/Kinvey-Swift.h>
 
 #define kHeaderRequestId @"X-Kinvey-Request-Id"
+
+@interface KCSPendingOperationRealm () <KNVPendingOperation>
+
+@end
 
 @implementation KCSPendingOperationRealm
 
