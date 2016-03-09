@@ -773,12 +773,12 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
                                  sortDescriptors:@[sortDescriptorDate]];
 }
 
--(KCSPendingOperationRealm*)pendingOperation:(id<KCSPendingOperation>)pendingOperation
+-(KCSPendingOperationRealm*)pendingOperation:(id<KNVPendingOperation>)pendingOperation
 {
     return (KCSPendingOperationRealm*) pendingOperation;
 }
 
--(id<KCSPendingOperation>)createPendingOperation:(NSURLRequest *)request
+-(id<KNVPendingOperation>)createPendingOperation:(NSURLRequest *)request
                                         objectId:(NSString*)objectId
 {
     return [[KCSPendingOperationRealm alloc] initWithURLRequest:request
@@ -786,7 +786,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
                                                        objectId:objectId];
 }
 
--(void)savePendingOperation:(id<KCSPendingOperation>)pendingOperation
+-(void)savePendingOperation:(id<KNVPendingOperation>)pendingOperation
 {
     NSDictionary<NSString *,id> *entity = [[self pendingOperation:pendingOperation] toJson];
     RLMRealm* realm = self.realm;
@@ -795,23 +795,23 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     }];
 }
 
--(NSArray<id<KCSPendingOperation>> *)pendingOperations
+-(NSArray<id<KNVPendingOperation>> *)pendingOperations
 {
     return [self pendingOperations:nil];
 }
 
--(NSArray<id<KCSPendingOperation>> *)pendingOperations:(NSString*)objectId
+-(NSArray<id<KNVPendingOperation>> *)pendingOperations:(NSString*)objectId
 {
     NSArray<NSDictionary<NSString*, id>*> *entitiesPendingOperations = [self findEntityByQuery:[[KCSQueryAdapter alloc] initWithQuery:[self pendingQuery:objectId]]
                                                                                       forClass:[KCSPendingOperationRealm class]];
-    NSMutableArray<id<KCSPendingOperation>> *pendingOperations = [NSMutableArray arrayWithCapacity:entitiesPendingOperations.count];
+    NSMutableArray<id<KNVPendingOperation>> *pendingOperations = [NSMutableArray arrayWithCapacity:entitiesPendingOperations.count];
     for (NSDictionary<NSString*, id>* entityPendingOperations in entitiesPendingOperations) {
         [pendingOperations addObject:[[KCSPendingOperationRealm alloc] initWithValue:entityPendingOperations]];
     }
     return pendingOperations;
 }
 
--(void)removePendingOperation:(id<KCSPendingOperation>)pendingOperation
+-(void)removePendingOperation:(id<KNVPendingOperation>)pendingOperation
 {
     NSDictionary<NSString *,id> *entity = [[self pendingOperation:pendingOperation] toJson];
     [self removeEntity:entity
