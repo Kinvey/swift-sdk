@@ -1,7 +1,7 @@
 CONFIGURATION?=Release
 VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist")
 
-all: build pack
+all: build pack docs
 
 build: build-ios
 
@@ -38,6 +38,9 @@ docs:
 				
 deploy-cocoapods:
 	pod trunk push Kinvey.podspec --verbose
+
+test-cocoapods:
+	pod spec lint Kinvey.podspec --verbose --no-clean
 
 show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '
