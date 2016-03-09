@@ -101,10 +101,12 @@ public class User: NSObject, Credential {
         return request
     }
     
-    public class func resetPassword(username username: String, client: Client = Kinvey.sharedClient) {
+    class func resetPassword(username username: String, client: Client = Kinvey.sharedClient) {
+        //TODO:
     }
     
-    public class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient) {
+    class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient) {
+        //TODO:
     }
     
     public class func exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) -> Request {

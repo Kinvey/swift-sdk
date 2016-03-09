@@ -18,26 +18,6 @@ public class RemoveOperation: WriteOperation {
         super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
     }
     
-    public typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
-    
-    @objc public func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
-        switch writePolicy {
-        case .ForceLocal:
-            return executeLocal({ (obj, error) -> Void in
-                completionHandler?(obj as! UInt, error as? NSError)
-            })
-        case .LocalThenNetwork:
-            executeLocal({ (obj, error) -> Void in
-                completionHandler?(obj as! UInt, error as? NSError)
-            })
-            fallthrough
-        case .ForceNetwork:
-            return executeNetwork({ (obj, error) -> Void in
-                completionHandler?(obj as! UInt, error as? NSError)
-            })
-        }
-    }
-    
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in

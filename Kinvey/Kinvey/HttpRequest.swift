@@ -113,7 +113,7 @@ extension RequestType {
 
 public typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
 
-@objc(KNVHttpRequest)
+@objc(__KNVHttpRequest)
 public class HttpRequest: NSObject, Request {
     
     let httpMethod: HttpMethod

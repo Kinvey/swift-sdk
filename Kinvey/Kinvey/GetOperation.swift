@@ -13,10 +13,6 @@ public class GetOperation: ReadOperation {
     
     let id: String
     
-    public convenience init(id: String, readPolicy: ReadPolicy, persistableClass: AnyClass, cache: Cache, client: Client) {
-        self.init(id: id, readPolicy: readPolicy, persistableType: persistableClass as! Persistable.Type, cache: cache, client: client)
-    }
-    
     init(id: String, readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.id = id
         super.init(readPolicy: readPolicy, persistableType: persistableType, cache: cache, client: client)

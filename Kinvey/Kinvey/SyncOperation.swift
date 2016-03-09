@@ -17,12 +17,4 @@ public class SyncOperation: WriteOperation {
         }
     }
     
-    public typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
-    
-    @objc public func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
-        return execute { (obj, error) -> Void in
-            completionHandler?(obj as? UInt ?? 0, error)
-        }
-    }
-    
 }
