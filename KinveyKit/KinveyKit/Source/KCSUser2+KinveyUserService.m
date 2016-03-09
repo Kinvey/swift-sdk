@@ -931,7 +931,7 @@ static NSString* micApiVersion = nil;
             return copyObject;
         };
         transformWeak = transform;
-        entity = transform(entity);
+        entity = transform(entity.mutableCopy);
         
         NSDictionary* body = [entity dictionaryByAddingDictionary:@{KCSUserAttributePassword : newPassword}];
         

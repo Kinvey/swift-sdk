@@ -32,6 +32,7 @@
 // Need to predefine our classes here
 @class KCSUser;
 @class KCSUserResult;
+@protocol KCSPersistable;
 
 /** Social Network login providers supported for log-in
  */

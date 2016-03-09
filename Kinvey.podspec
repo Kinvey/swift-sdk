@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.0.7"
+  s.version      = "3.0.9"
   s.summary      = "Kinvey iOS SDK Beta."
 
   # This description is used to generate tags and improve search results.
@@ -65,7 +65,6 @@ Pod::Spec.new do |s|
   #
 
   s.platform     = :ios, "8.0"
-  # s.platform     = :ios, "5.0"
 
   #  When using multiple platforms
   # s.ios.deployment_target = "5.0"
@@ -108,10 +107,12 @@ Pod::Spec.new do |s|
   # s.resource  = "icon.png"
   # s.resources = "Resources/*.png"
 
-  s.preserve_paths = "*"
-  # s.prepare_command = <<-CMD
-  #   touch Kinvey.m
-  # CMD
+  s.preserve_paths = "Kinvey-#{s.version}-Beta/**"
+  s.prepare_command = <<-CMD
+    cat Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h | sed 's/\<Kinvey[/]/\"/g' | sed 's/\.h\>/\"/g' > Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h_
+		rm Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h
+		mv Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h_ Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h
+  CMD
   s.ios.vendored_frameworks = "Kinvey-#{s.version}-Beta/Kinvey.framework"
 
   # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

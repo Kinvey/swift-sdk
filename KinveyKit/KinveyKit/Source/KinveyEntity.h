@@ -19,7 +19,7 @@
 @import Foundation;
 
 #import "KinveyHeaderInfo.h"
-@protocol KCSPersistable;
+#import "KinveyPersistable.h"
 
 /*!  Add ActiveRecord-style capabilities to the built-in root object (NSObject) of the AppKit/Foundation system.
 *
