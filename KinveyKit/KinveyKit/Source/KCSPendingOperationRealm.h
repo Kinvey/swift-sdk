@@ -8,15 +8,14 @@
 
 @import Foundation;
 @import Realm;
-#import "KCSPendingOperation.h"
 
-@interface KCSPendingOperationRealm : RLMObject <KCSPendingOperation>
+@interface KCSPendingOperationRealm : RLMObject <KNVPendingOperation>
 
 @property NSString* requestId;
 @property NSDate* date;
 
 @property NSString* collectionName;
-@property NSString* objectId;
+@property (nonatomic, copy) NSString* objectId;
 
 @property NSString* method;
 @property NSString* url;
