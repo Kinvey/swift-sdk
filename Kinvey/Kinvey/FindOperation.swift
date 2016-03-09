@@ -13,10 +13,6 @@ public class FindOperation: ReadOperation {
     
     let query: Query
     
-    public convenience init(query: Query, readPolicy: ReadPolicy, persistableClass: AnyClass, cache: Cache, client: Client) {
-        self.init(query: query, readPolicy: readPolicy, persistableType: persistableClass as! Persistable.Type, cache: cache, client: client)
-    }
-    
     init(query: Query, readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.query = query
         super.init(readPolicy: readPolicy, persistableType: persistableType, cache: cache, client: client)
