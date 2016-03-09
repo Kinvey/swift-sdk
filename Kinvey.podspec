@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.0.9"
+  s.version      = "3.0.10"
   s.summary      = "Kinvey iOS SDK Beta."
 
   # This description is used to generate tags and improve search results.
@@ -109,7 +109,7 @@ Pod::Spec.new do |s|
 
   s.preserve_paths = "Kinvey-#{s.version}-Beta/**"
   s.prepare_command = <<-CMD
-    cat Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h | sed 's/\<Kinvey[/]/\"/g' | sed 's/\.h\>/\"/g' > Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h_
+    cat Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h | sed 's/\<Kinvey[/]/\"/g' | sed 's/\.h\>/\.h\"/g' > Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h_
 		rm Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h
 		mv Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h_ Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h
   CMD
