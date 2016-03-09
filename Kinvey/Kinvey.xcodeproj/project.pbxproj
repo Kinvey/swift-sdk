@@ -285,10 +285,6 @@
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
 		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
 		57D1E75F1C7D21720009834A /* KNVReadPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D1E75D1C7D21720009834A /* KNVReadPolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		57D1E7671C7D2D550009834A /* KNVMultiRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D1E7651C7D2D550009834A /* KNVMultiRequest.h */; };
-		57D1E7681C7D2D550009834A /* KNVMultiRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D1E7661C7D2D550009834A /* KNVMultiRequest.m */; };
-		57D1E76B1C7D30D30009834A /* KNVLocalRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D1E7691C7D30D20009834A /* KNVLocalRequest.h */; };
-		57D1E76C1C7D30D30009834A /* KNVLocalRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D1E76A1C7D30D30009834A /* KNVLocalRequest.m */; };
 		57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB87E71C62B0F6002BA684 /* NSData.swift */; };
 		57E1C3A31C17B3FF00578974 /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A21C17B3FF00578974 /* Query.swift */; };
 		57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A61C17B4F300578974 /* Persistable.swift */; };
@@ -689,10 +685,6 @@
 		57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalResponse.swift; sourceTree = "<group>"; };
 		57C71DC71C3EFBF900B1BEF2 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		57D1E75D1C7D21720009834A /* KNVReadPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVReadPolicy.h; sourceTree = "<group>"; };
-		57D1E7651C7D2D550009834A /* KNVMultiRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVMultiRequest.h; sourceTree = "<group>"; };
-		57D1E7661C7D2D550009834A /* KNVMultiRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KNVMultiRequest.m; sourceTree = "<group>"; };
-		57D1E7691C7D30D20009834A /* KNVLocalRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVLocalRequest.h; sourceTree = "<group>"; };
-		57D1E76A1C7D30D30009834A /* KNVLocalRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KNVLocalRequest.m; sourceTree = "<group>"; };
 		57DB87E71C62B0F6002BA684 /* NSData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSData.swift; sourceTree = "<group>"; };
 		57E1C3A21C17B3FF00578974 /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
 		57E1C3A61C17B4F300578974 /* Persistable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistable.swift; sourceTree = "<group>"; };
@@ -762,10 +754,6 @@
 			isa = PBXGroup;
 			children = (
 				572C45931C86C29300A41935 /* KinveyInternal-Swift.h */,
-				57D1E7691C7D30D20009834A /* KNVLocalRequest.h */,
-				57D1E76A1C7D30D30009834A /* KNVLocalRequest.m */,
-				57D1E7651C7D2D550009834A /* KNVMultiRequest.h */,
-				57D1E7661C7D2D550009834A /* KNVMultiRequest.m */,
 				57E4DB101C8A19250017B406 /* ObjC.swift */,
 				57E4DB211C8A49130017B406 /* KNVKinvey.h */,
 				57E4DB221C8A49130017B406 /* KNVKinvey.m */,
@@ -1566,7 +1554,6 @@
 				57B23ECA1C7FA7A0006403CC /* KCSFileRequest.h in Headers */,
 				57B23F091C7FAF58006403CC /* NSError+KinveyKit.h in Headers */,
 				57B23E8E1C7F9853006403CC /* KCSBlockDefs.h in Headers */,
-				57D1E76B1C7D30D30009834A /* KNVLocalRequest.h in Headers */,
 				57B23E8F1C7F9860006403CC /* KCSUserActionResult.h in Headers */,
 				57B23EB41C7FA5D5006403CC /* KCSBackgroundAppdataStore.h in Headers */,
 				57B23E931C7F98C2006403CC /* KCSRequestConfiguration.h in Headers */,
@@ -1648,7 +1635,6 @@
 				57B23F281C7FB00F006403CC /* KCSBuilders.h in Headers */,
 				57B23F101C7FAF8D006403CC /* KCSPropertyUtil.h in Headers */,
 				57B23EC81C7FA782006403CC /* KCSFileRealm.h in Headers */,
-				57D1E7671C7D2D550009834A /* KNVMultiRequest.h in Headers */,
 				57B23EEE1C7FAA04006403CC /* KCSNSURLSessionFileOperation.h in Headers */,
 				57B23EF11C7FAA1E006403CC /* KCSMockFileOperation.h in Headers */,
 				57B23EE21C7FA934006403CC /* KCSNSURLSessionOperation.h in Headers */,
@@ -1917,7 +1903,6 @@
 				57B23F011C7FAF39006403CC /* NSArray+KinveyAdditions.m in Sources */,
 				57B23FF81C800F43006403CC /* KCSStore.m in Sources */,
 				57470FA51C76926B0096B15F /* PushOperation.swift in Sources */,
-				57D1E7681C7D2D550009834A /* KNVMultiRequest.m in Sources */,
 				57B23EC11C7FA714006403CC /* KCSDataStoreOperationRequest.m in Sources */,
 				5728213B1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift in Sources */,
 				57E1C3B31C1822B100578974 /* ResponseParser.swift in Sources */,
@@ -1925,7 +1910,6 @@
 				57B23E941C7F993F006403CC /* KCSMICLoginViewController.m in Sources */,
 				57B23ED31C7FA833006403CC /* KCSImageUtils.m in Sources */,
 				57B23EB51C7FA608006403CC /* KCSCachedStore.m in Sources */,
-				57D1E76C1C7D30D30009834A /* KNVLocalRequest.m in Sources */,
 				57B23F2F1C7FB021006403CC /* KCSMetadata.m in Sources */,
 				57E4DB241C8A49130017B406 /* KNVKinvey.m in Sources */,
 				57B23E861C7F9566006403CC /* KCSQuery.m in Sources */,
