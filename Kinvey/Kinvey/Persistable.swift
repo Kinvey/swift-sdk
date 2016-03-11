@@ -24,6 +24,10 @@ public class __KNVPersistable: NSObject {
         return type.idKey
     }
     
+    public class func kmdKey(type: Persistable.Type) -> String? {
+        return type.kmdKey
+    }
+    
     public class func kinveyObjectId(persistable: Persistable) -> String? {
         return persistable.kinveyObjectId
     }

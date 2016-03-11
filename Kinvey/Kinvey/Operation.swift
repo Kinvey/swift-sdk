@@ -69,11 +69,16 @@ public class Operation: NSObject {
     
     func fillJson(var json: [String : AnyObject]) -> [String : AnyObject] {
         if let user = client.activeUser {
-            if var acl = json[PersistableAclKey] as? [String : AnyObject] where acl[Acl.CreatorKey] as? String == nil {
+            let aclKey = persistableType.aclKey ?? PersistableAclKey
+            if var acl = json[aclKey] as? [String : AnyObject] where acl[Acl.CreatorKey] as? String == nil {
                 acl[Acl.CreatorKey] = user.userId
             } else {
-                json[PersistableAclKey] = [Acl.CreatorKey : user.userId]
+                json[aclKey] = [Acl.CreatorKey : user.userId]
             }
+        }
+        let kmdKey = persistableType.kmdKey ?? PersistableMetadataKey
+        if json[kmdKey] == nil {
+            json[kmdKey] = [Metadata.EctKey : NSDate()]
         }
         return json
     }

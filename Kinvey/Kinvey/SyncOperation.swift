@@ -9,12 +9,19 @@
 import Foundation
 
 @objc(__KNVSyncOperation)
-public class SyncOperation: WriteOperation {
+public class SyncOperation: Operation {
     
-    @objc public override func execute(completionHandler: CompletionHandlerObjC?) -> Request {
-        return execute { (objs, error) -> Void in
-            completionHandler?(objs, error as? NSError)
-        }
+    typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
+    
+    let sync: Sync
+    
+    public init(sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+        self.sync = sync
+        super.init(persistableType: persistableType, cache: cache, client: client)
+    }
+    
+    func execute(completionHandler: CompletionHandler?) -> Request {
+        preconditionFailure("Method needs to be implemented")
     }
     
 }

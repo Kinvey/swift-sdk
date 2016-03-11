@@ -40,6 +40,7 @@
 #import "KCSCache.h"
 #import "KCSPendingOperationRealm.h"
 #import <Kinvey/Kinvey-Swift.h>
+#import "KNVKinvey.h"
 
 #define KCSEntityKeyAcl @"_acl"
 #define KCSEntityKeyLastRetrievedTime @"lrt"
@@ -66,6 +67,7 @@
 
 @synthesize persistenceId = _persistenceId;
 @synthesize collectionName = _collectionName;
+@synthesize ttl = _ttl;
 
 static NSMutableDictionary<NSString*, NSString*>* collectionNamesMap = nil;
 static NSMutableDictionary<NSString*, NSString*>* classMapOriginalRealm = nil;
@@ -495,6 +497,26 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     return clazz;
 }
 
+-(RLMRealm *)realm
+{
+    NSError* error = nil;
+    RLMRealm* realm = [RLMRealm realmWithConfiguration:self.realmConfiguration
+                                                 error:&error];
+    if (error) {
+        @throw error;
+    }
+    return realm;
+}
+
+static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* realm, Class realmClass)
+{
+    RLMObject* obj = [realmClass createOrUpdateInRealm:realm
+                                             withValue:entity];
+    assert(obj);
+}
+
+#pragma mark - Cache
+
 -(instancetype)initWithPersistenceId:(NSString *)persistenceId
                       collectionName:(NSString *)collectionName
 {
@@ -515,24 +537,6 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
         self.realmConfiguration = realmConfiguration;
     }
     return self;
-}
-
--(RLMRealm *)realm
-{
-    NSError* error = nil;
-    RLMRealm* realm = [RLMRealm realmWithConfiguration:self.realmConfiguration
-                                                 error:&error];
-    if (error) {
-        @throw error;
-    }
-    return realm;
-}
-
-static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* realm, Class realmClass)
-{
-    RLMObject* obj = [realmClass createOrUpdateInRealm:realm
-                                             withValue:entity];
-    assert(obj);
 }
 
 -(void)saveEntity:(NSDictionary<NSString *,id> *)entity
@@ -653,6 +657,23 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
                    forClass:self.clazz];
 }
 
+-(RLMObject*)filterExpiredObject:(RLMObject*)obj
+                        forClass:(Class)class
+{
+    if (self.ttl > 0) {
+        NSString* kmdKey = [__KNVPersistable kmdKey:class];
+        if (!kmdKey) {
+            kmdKey = KNVPersistableMetadataKey;
+        }
+        KCSMetadataRealm* kmd = obj[kmdKey];
+        NSDate* date = kmd.lrt != nil ? kmd.lrt : kmd.ect;
+        if (date && [[NSDate date] timeIntervalSinceDate:date] > self.ttl) {
+            obj = nil;
+        }
+    }
+    return obj;
+}
+
 -(NSDictionary<NSString *,id> *)findEntity:(NSString *)objectId
                                   forClass:(Class)class
 {
@@ -660,6 +681,11 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     RLMRealm* realm = self.realm;
     RLMObject* obj = [realmClass objectInRealm:realm
                                  forPrimaryKey:objectId];
+    
+    if (self.ttl > 0) {
+        obj = [self filterExpiredObject:obj
+                               forClass:class];
+    }
     
     return [obj dictionaryWithValuesForKeys:[self keysForClass:class]];
 }
@@ -694,7 +720,14 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     
     NSMutableArray<NSDictionary<NSString*, NSObject*>*>* array = [NSMutableArray arrayWithCapacity:results.count];
     NSDictionary<NSString*, NSObject*>* json;
-    for (RLMObject* obj in results) {
+    RLMObject* obj;
+    for (NSUInteger i = 0; i < results.count; i++) {
+        obj = results[i];
+        if (self.ttl > 0) {
+            obj = [self filterExpiredObject:obj
+                                   forClass:class];
+            if (!obj) continue;
+        }
         json = [obj dictionaryWithValuesForKeys:keys];
         [array addObject:json];
     }
