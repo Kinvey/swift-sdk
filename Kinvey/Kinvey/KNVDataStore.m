@@ -112,6 +112,12 @@ if (self.type != KNVDataStoreTypeSync) { \
     return self;
 }
 
+-(void)setTtl:(NSTimeInterval)ttl
+{
+    _ttl = ttl;
+    self.cache.ttl = ttl;
+}
+
 -(id<KNVRequest>)save:(KNV_PERSISTABLE)persistable
     completionHandler:(KNVDataStoreHandler(KNV_PERSISTABLE))completionHandler
 {

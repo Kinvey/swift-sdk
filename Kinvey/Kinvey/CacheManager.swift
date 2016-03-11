@@ -18,8 +18,7 @@ public class CacheManager: NSObject {
     }
     
     public func cache(collectionName: String? = nil) -> Cache {
-        let cache = KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName)
-        return CacheAdapter(cache: cache)
+        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName) as! Cache
     }
     
 }

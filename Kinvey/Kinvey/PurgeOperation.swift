@@ -12,10 +12,6 @@ import PromiseKit
 @objc(__KNVPurgeOperation)
 public class PurgeOperation: SyncOperation {
     
-    public init(sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
-        super.init(writePolicy: .ForceNetwork, sync: sync, persistableType: persistableType, cache: cache, client: client)
-    }
-    
     override func execute(completionHandler: CompletionHandler?) -> Request {
         let requests = MultiRequest()
         var promises: [Promise<Void>] = []
