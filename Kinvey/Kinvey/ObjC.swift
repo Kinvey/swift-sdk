@@ -118,7 +118,14 @@ extension WriteOperation {
 
 extension SyncOperation {
     
+    public typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
     public typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
+    
+    @objc public func execute(completionHandler: CompletionHandlerObjC?) -> Request {
+        return execute { (objs, error) -> Void in
+            completionHandler?(objs, error as? NSError)
+        }
+    }
     
     @objc public func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
         return execute { (obj, error) -> Void in

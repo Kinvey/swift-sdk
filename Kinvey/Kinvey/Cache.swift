@@ -13,6 +13,7 @@ public protocol Cache {
     
     var persistenceId: String { get set }
     var collectionName: String { get set }
+    var ttl: NSTimeInterval { get set }
     
     func saveEntity(entity: JsonDictionary)
     

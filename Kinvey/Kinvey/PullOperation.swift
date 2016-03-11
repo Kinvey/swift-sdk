@@ -16,7 +16,7 @@ public class PullOperation: SyncOperation {
     
     public init(query: Query, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.query = query
-        super.init(writePolicy: .ForceNetwork, sync: sync, persistableType: persistableType, cache: cache, client: client)
+        super.init(sync: sync, persistableType: persistableType, cache: cache, client: client)
     }
     
     override func execute(completionHandler: CompletionHandler?) -> Request {

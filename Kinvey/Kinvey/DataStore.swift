@@ -26,6 +26,12 @@ public class DataStore<T: Persistable where T: NSObject> {
     private let cache: Cache
     private let sync: Sync
     
+    public var ttl: NSTimeInterval? {
+        didSet {
+            cache.ttl = ttl ?? 0
+        }
+    }
+    
     public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient) -> DataStore {
         return DataStore<T>(type: type, client: client)
     }

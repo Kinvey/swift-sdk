@@ -10,6 +10,11 @@ import XCTest
 
 class GetOperationTest: StoreTestCase {
     
+    override func tearDown() {
+        super.tearDown()
+        store.ttl = nil
+    }
+    
     func testForceNetwork() {
         weak var expectationSave = expectationWithDescription("Save")
         
@@ -71,6 +76,46 @@ class GetOperationTest: StoreTestCase {
             
             store.findById(personId, readPolicy: .ForceLocal) { (person, error) -> Void in
                 XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationGet?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationGet = nil
+            }
+        }
+    }
+    
+    func testForceLocalExpiredTTL() {
+        weak var expectationSave = expectationWithDescription("Save")
+        
+        store.ttl = 1
+        
+        store.save(person, writePolicy: .ForceLocal) { (person, error) -> Void in
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            if let person = person {
+                XCTAssertEqual(person, self.person)
+                XCTAssertNotNil(person.personId)
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationSave = nil
+        }
+        
+        NSThread.sleepForTimeInterval(1)
+        
+        XCTAssertNotNil(person.personId)
+        if let personId = person.personId {
+            weak var expectationGet = expectationWithDescription("Get")
+            
+            store.findById(personId, readPolicy: .ForceLocal) { (person, error) -> Void in
+                XCTAssertNil(person)
                 XCTAssertNil(error)
                 
                 expectationGet?.fulfill()
