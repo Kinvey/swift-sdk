@@ -13,20 +13,38 @@ public enum TimeUnit {
     case Minute
     case Hour
     case Day
-    case Month
-    case Year
+}
+
+extension TimeUnit {
+    
+    var timeInterval: NSTimeInterval {
+        switch self {
+        case .Second: return 1
+        case .Minute: return 60
+        case .Hour: return 60 * Minute.timeInterval
+        case .Day: return 24 * Hour.timeInterval
+        }
+    }
+    
+    func toTimeInterval(value: Int) -> NSTimeInterval {
+        return NSTimeInterval(value) * timeInterval
+    }
+    
 }
 
 public typealias TTL = (Int, TimeUnit)
 
 extension Int {
     
-    var seconds  : NSDate { get { return date(.Second) } }
-    var minutes  : NSDate { get { return date(.Minute) } }
-    var hours    : NSDate { get { return date(.Hour) } }
-    var days     : NSDate { get { return date(.Day) } }
-    var months   : NSDate { get { return date(.Month) } }
-    var years    : NSDate { get { return date(.Year) } }
+    public var seconds: TTL { return TTL(self, .Second) }
+    public var minutes: TTL { return TTL(self, .Minute) }
+    public var hours: TTL { return TTL(self, .Hour) }
+    public var days: TTL { return TTL(self, .Day) }
+    
+    var secondsDate : NSDate { return date(.Second) }
+    var minutesDate : NSDate { return date(.Minute) }
+    var hoursDate   : NSDate { return date(.Hour) }
+    var daysDate    : NSDate { return date(.Day) }
     
     internal func date(timeUnit: TimeUnit, calendar: NSCalendar = NSCalendar.currentCalendar()) -> NSDate {
         let dateComponents = NSDateComponents()
@@ -39,10 +57,6 @@ extension Int {
             dateComponents.hour = -self
         case .Day:
             dateComponents.day = -self
-        case .Month:
-            dateComponents.month = -self
-        case .Year:
-            dateComponents.year = -self
         }
         let newDate = calendar.dateByAddingComponents(dateComponents, toDate: NSDate(), options: [])
         return newDate!
