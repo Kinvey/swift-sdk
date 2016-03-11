@@ -90,7 +90,7 @@ class GetOperationTest: StoreTestCase {
     func testForceLocalExpiredTTL() {
         weak var expectationSave = expectationWithDescription("Save")
         
-        store.ttl = 1
+        store.ttl = 1.seconds
         
         store.save(person, writePolicy: .ForceLocal) { (person, error) -> Void in
             XCTAssertNotNil(person)
