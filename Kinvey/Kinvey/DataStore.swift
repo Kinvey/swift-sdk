@@ -26,9 +26,9 @@ public class DataStore<T: Persistable where T: NSObject> {
     private let cache: Cache
     private let sync: Sync
     
-    public var ttl: NSTimeInterval? {
+    public var ttl: TTL? {
         didSet {
-            cache.ttl = ttl ?? 0
+            cache.ttl = ttl != nil ? ttl!.1.toTimeInterval(ttl!.0) : 0
         }
     }
     
