@@ -259,6 +259,10 @@ extension Query {
         return queryStr
     }
     
+    func isEmpty() -> Bool {
+        return self.predicate == nil && self.sortDescriptors == nil
+    }
+    
 }
 
 extension Endpoint {
@@ -286,8 +290,11 @@ extension Endpoint {
         case AppDataById(let client, let collectionName, let id):
             return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
         case AppDataByQuery(let client, let collectionName, let query):
-            let queryStr = query.urlQueryStringEncoded()
             let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
+            if (query.isEmpty()){
+                return NSURL(string: url)!
+            }
+            let queryStr = query.urlQueryStringEncoded()
             let urlQuery = "?query=\(queryStr)"
             return NSURL(string: url + urlQuery)!
         case .PushRegisterDevice(let client):
