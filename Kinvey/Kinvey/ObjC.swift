@@ -57,7 +57,13 @@ extension User {
     }
     
     public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, client: Client = Kinvey.sharedClient, completionHandler: UserHandlerObjC? = nil) {
-        presentMICViewController(redirectURI: redirectURI, timeout: timeout, client: client) { (user, error) -> Void in
+        presentMICViewController(redirectURI: redirectURI, timeout: timeout, forceUIWebView: false, client: client) { (user, error) -> Void in
+            completionHandler?(user, error as? NSError)
+        }
+    }
+    
+    public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandlerObjC? = nil) {
+        presentMICViewController(redirectURI: redirectURI, timeout: timeout, forceUIWebView: forceUIWebView, client: client) { (user, error) -> Void in
             completionHandler?(user, error as? NSError)
         }
     }

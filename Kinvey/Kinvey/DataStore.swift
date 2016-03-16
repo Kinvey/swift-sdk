@@ -152,7 +152,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return requests
     }
     
-    public func purge(completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
+    public func purge(query: Query = Query(), completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
             completionHandler?(nil, Error.InvalidStoreType)
@@ -162,7 +162,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         let operation = PurgeOperation(sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute { (count, error) -> Void in
             if let count = count {
-                self.pull() { (results, error) -> Void in
+                self.pull(query) { (results, error) -> Void in
                     completionHandler?(count, error)
                 }
             } else {

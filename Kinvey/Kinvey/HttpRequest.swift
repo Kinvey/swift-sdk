@@ -187,10 +187,10 @@ public class HttpRequest: NSObject, Request {
         
         prepareRequest()
         
-        print("\(curlCommand)")
+//        print("\(curlCommand)")
         
         task = client.urlSession.dataTaskWithRequest(request) { (data, response, error) -> Void in
-            completionHandler?(data, HttpResponse(response: response as! NSHTTPURLResponse), error)
+            completionHandler?(data, HttpResponse(response: response as? NSHTTPURLResponse), error)
         }
         task!.resume()
     }
@@ -273,6 +273,10 @@ extension Endpoint {
             return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/check-username-exists")
         case .UserLogin(let client):
             return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/login")
+        case .UserResetPassword(let usernameOrEmail, let client):
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/\(usernameOrEmail)/user-password-reset-initiate")
+        case .UserForgotUsername(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/user-forgot-username")
         case .OAuthAuth(let client, let redirectURI):
             let characterSet = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
             characterSet.removeCharactersInString(":#[]@!$&'()*+,;=")
