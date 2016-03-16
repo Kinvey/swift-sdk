@@ -23,9 +23,12 @@ class KinveyTestCase: XCTestCase {
             appSecret: "d85f81cad5a649baaa6fdcd99a108ab1",
             apiHostName: NSURL(string: "https://v3yk1n-kcs.kinvey.com")!
         )
+        if let activeUser = client.activeUser {
+            activeUser.logout()
+        }
     }
     
-    func signUp() {
+    func signUp(mustHaveAValidUserInTheEnd: Bool = true, completionHandler: ((User?, ErrorType?) -> Void)? = nil) {
         if let user = client.activeUser {
             user.logout()
         }
@@ -33,9 +36,13 @@ class KinveyTestCase: XCTestCase {
         weak var expectationSignUp = expectationWithDescription("Sign Up")
         
         User.signup { user, error in
-            XCTAssertTrue(NSThread.isMainThread())
-            XCTAssertNil(error)
-            XCTAssertNotNil(user)
+            if let completionHandler = completionHandler {
+                completionHandler(user, error)
+            } else {
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNil(error)
+                XCTAssertNotNil(user)
+            }
             
             expectationSignUp?.fulfill()
         }
@@ -44,7 +51,9 @@ class KinveyTestCase: XCTestCase {
             expectationSignUp = nil
         }
         
-        XCTAssertNotNil(client.activeUser)
+        if mustHaveAValidUserInTheEnd {
+            XCTAssertNotNil(client.activeUser)
+        }
     }
     
     func signUp(username username: String, password: String) {
@@ -70,6 +79,8 @@ class KinveyTestCase: XCTestCase {
     }
     
     override func tearDown() {
+        setURLProtocol(nil)
+        
         if let user = client?.activeUser {
             weak var expectationDestroyUser = expectationWithDescription("Destroy User")
             
@@ -88,6 +99,17 @@ class KinveyTestCase: XCTestCase {
         }
         
         super.tearDown()
+    }
+    
+    func setURLProtocol(type: NSURLProtocol.Type?) {
+        if let type = type {
+            let sessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+            sessionConfiguration.protocolClasses = [type]
+            client.urlSession = NSURLSession(configuration: sessionConfiguration)
+            XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
+        } else {
+            client.urlSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        }
     }
     
 }

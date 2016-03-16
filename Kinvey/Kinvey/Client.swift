@@ -34,12 +34,12 @@ public class Client: NSObject, Credential {
                 if let authtoken = activeUser.metadata?.authtoken {
                     keychain.authtoken = authtoken
                 }
-            } else {
+            } else if let appKey = appKey {
                 KCSKeychain2.deleteTokensForUser(
                     activeUser?.userId,
                     appKey: appKey
                 )
-                CacheManager(persistenceId: appKey!).cache().removeAllEntities()
+                CacheManager(persistenceId: appKey).cache().removeAllEntities()
             }
         }
     }
@@ -50,7 +50,11 @@ public class Client: NSObject, Credential {
         }
     }
     
-    internal let urlSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+    internal var urlSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration()) {
+        willSet {
+            urlSession.invalidateAndCancel()
+        }
+    }
     
     public private(set) var appKey: String?
     public private(set) var appSecret: String?
@@ -96,6 +100,7 @@ public class Client: NSObject, Credential {
     }    
     
     public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) -> Client {
+        activeUser = nil
         cacheManager = CacheManager(persistenceId: appKey)
         syncManager = SyncManager (persistenceId: appKey)
         
@@ -113,7 +118,7 @@ public class Client: NSObject, Credential {
         self.appSecret = appSecret
         if let json = NSUserDefaults.standardUserDefaults().objectForKey(appKey) as? [String : AnyObject] {
             let user = User(json: json, client: self)
-            if let metadata = user.metadata, let authtoken = keychain.authtoken {
+            if let user = user, let metadata = user.metadata, let authtoken = keychain.authtoken {
                 metadata.authtoken = authtoken
                 activeUser = user
             }
