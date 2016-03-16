@@ -16,7 +16,7 @@ public class User: NSObject, Credential {
     
     public typealias UserHandler = (User?, ErrorType?) -> Void
     public typealias VoidHandler = (ErrorType?) -> Void
-    public typealias ExistsHandler = (Bool, ErrorType?) -> Void
+    public typealias BoolHandler = (Bool, ErrorType?) -> Void
     
     public private(set) var userId: String
     public private(set) var acl: Acl?
@@ -55,7 +55,9 @@ public class User: NSObject, Credential {
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
                 if let response = response where response.isResponseOK {
-                    client.activeUser = nil
+                    if let activeUser = client.activeUser where activeUser.userId == userId {
+                        client.activeUser = nil
+                    }
                     fulfill()
                 } else if let error = error {
                     reject(error)
@@ -101,15 +103,68 @@ public class User: NSObject, Credential {
         return request
     }
     
-    class func resetPassword(username username: String, client: Client = Kinvey.sharedClient) {
-        //TODO:
+    private class func resetPassword(usernameOrEmail usernameOrEmail: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        let request = client.networkRequestFactory.buildUserResetPassword(usernameOrEmail: usernameOrEmail)
+        Promise<Void> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK {
+                    fulfill()
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+        }.then {
+            completionHandler?(nil)
+        }.error { error in
+            completionHandler?(error)
+        }
+        return request
     }
     
-    class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient) {
-        //TODO:
+    public class func resetPassword(username username: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        return resetPassword(usernameOrEmail: username, client: client, completionHandler:  completionHandler)
     }
     
-    public class func exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: ExistsHandler? = nil) -> Request {
+    public class func resetPassword(email email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        return resetPassword(usernameOrEmail: email, client: client, completionHandler:  completionHandler)
+    }
+    
+    public func resetPassword(client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        if let email = email {
+            return User.resetPassword(email: email, client: client, completionHandler: completionHandler)
+        } else if let username = username  {
+            return User.resetPassword(username: username, client: client, completionHandler: completionHandler)
+        } else if let completionHandler = completionHandler {
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                completionHandler(Error.UserWithoutEmailOrUsername)
+            })
+        }
+        return LocalRequest()
+    }
+    
+    class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        let request = client.networkRequestFactory.buildUserForgotUsername(email: email)
+        Promise<Void> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK {
+                    fulfill()
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+        }.then {
+            completionHandler?(nil)
+        }.error { error in
+            completionHandler?(error)
+        }
+        return request
+    }
+    
+    public class func exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: BoolHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserExists(username: username)
         Promise<Bool> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -156,8 +211,12 @@ public class User: NSObject, Credential {
         self.client = client
     }
     
-    public required init(json: [String : AnyObject], client: Client = Kinvey.sharedClient) {
-        userId = json[PersistableIdKey] as! String
+    public required init?(json: [String : AnyObject], client: Client = Kinvey.sharedClient) {
+        if let userId = json[PersistableIdKey] as? String {
+            self.userId = userId
+        } else {
+            self.userId = ""
+        }
         
         if let username = json["username"] as? String {
             self.username = username
@@ -180,6 +239,12 @@ public class User: NSObject, Credential {
         }
         
         self.client = client
+        
+        super.init()
+        
+        if self.userId.isEmpty {
+            return nil
+        }
     }
     
     public func toJson() -> [String : AnyObject] {
@@ -193,6 +258,14 @@ public class User: NSObject, Credential {
         
         if let metadata = metadata {
             json[Kinvey.PersistableMetadataKey] = metadata.toJson()
+        }
+        
+        if let username = username {
+            json["username"] = username
+        }
+        
+        if let email = email {
+            json["email"] = email
         }
         
         return json
@@ -237,7 +310,7 @@ public class User: NSObject, Credential {
     
     //MARK: MIC
     
-    public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
+    public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) -> Void in
             var user: User? = nil
             if let kcsUser = kcsUser {
@@ -247,6 +320,9 @@ public class User: NSObject, Credential {
                 client.activeUser = user
             }
             completionHandler?(user, error)
+        }
+        if forceUIWebView {
+            micVC.setValue(forceUIWebView, forKey: "forceUIWebView")
         }
         micVC.client = client
         let navigationVC = UINavigationController(rootViewController: micVC)

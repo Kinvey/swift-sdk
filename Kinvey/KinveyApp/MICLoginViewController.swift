@@ -1,0 +1,50 @@
+//
+//  ViewController.swift
+//  KinveyApp
+//
+//  Created by Victor Barros on 2016-03-14.
+//  Copyright © 2016 Kinvey. All rights reserved.
+//
+
+import UIKit
+import Kinvey
+import WebKit
+
+public class MICLoginViewController: UIViewController {
+
+    @IBOutlet weak var userIdLabel: UILabel!
+    @IBOutlet weak var forceUIWebViewSwitch: UISwitch!
+    
+    public var completionHandler: User.UserHandler?
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        
+        Kinvey.sharedClient.initialize(
+            appKey: "kid_W1rPs9qy0",
+            appSecret: "75f94ea7477c4bb7bd28c93b703bd10b"
+        )
+    }
+
+    public override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+    @IBAction func login(sender: UIButton) {
+        NSURLCache.sharedURLCache().removeAllCachedResponses()
+        NSHTTPCookieStorage.sharedHTTPCookieStorage().removeCookiesSinceDate(NSDate(timeIntervalSince1970: 0))
+        WKWebsiteDataStore.defaultDataStore().removeDataOfTypes(WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: NSDate(timeIntervalSince1970: 0), completionHandler: {})
+        
+        let redirectURI = NSURL(string: "kinveyAuthDemo://")!
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: forceUIWebViewSwitch.on) { (user, error) -> Void in
+            if let user = user {
+                self.userIdLabel.text = user.userId
+            }
+            self.completionHandler?(user, error)
+        }
+    }
+
+}
+
