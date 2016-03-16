@@ -39,11 +39,11 @@ public class Metadata: NSObject {
     
     public func toJson() -> [String : AnyObject] {
         var json: [String : AnyObject] = [:]
-        if let lmt = lmt {
-            json[Metadata.LmtKey] = lmt
+        if let lmtString = lmtString {
+            json[Metadata.LmtKey] = lmtString
         }
-        if let ect = ect {
-            json[Metadata.EctKey] = ect
+        if let ectString = ectString {
+            json[Metadata.EctKey] = ectString
         }
         if let authtoken = authtoken {
             json[Metadata.AuthTokenKey] = authtoken

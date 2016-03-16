@@ -11,7 +11,7 @@ import Foundation
 @objc
 public enum Error: UInt, ErrorType {
     
-    case ObjectIdMissing, InvalidResponse, NoActiveUser, RequestCanceled, InvalidStoreType
+    case ObjectIdMissing, InvalidResponse, NoActiveUser, RequestCanceled, InvalidStoreType, UserWithoutEmailOrUsername
     
     var error:NSError {
         get {

@@ -85,6 +85,20 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildUserResetPassword(usernameOrEmail usernameOrEmail: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserResetPassword(usernameOrEmail: usernameOrEmail, client: client), credential: client, client: client)
+        return request
+    }
+    
+    func buildUserForgotUsername(email email: String) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserForgotUsername(client: client), credential: client, client: client)
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let bodyObject = ["email" : email]
+        request.request.HTTPBody = toJson(bodyObject)
+        return request
+    }
+    
     func buildAppDataGetById(collectionName collectionName: String, id: String) -> HttpRequest {
         let request = HttpRequest(endpoint: Endpoint.AppDataById(client: client, collectionName: collectionName, id: id), credential: client.activeUser, client: client)
         return request

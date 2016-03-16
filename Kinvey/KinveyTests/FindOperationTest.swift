@@ -16,7 +16,9 @@ class FindOperationTest: StoreTestCase {
         store.ttl = nil
     }
     
-    func testForceLocal() {
+    override func save() -> Person {
+        let person = self.person
+        
         weak var expectationSave = expectationWithDescription("Save")
         
         store.save(person, writePolicy: .ForceLocal) { (person, error) -> Void in
@@ -34,6 +36,12 @@ class FindOperationTest: StoreTestCase {
         waitForExpectationsWithTimeout(defaultTimeout) { error in
             expectationSave = nil
         }
+        
+        return person
+    }
+    
+    func testForceLocal() {
+        let person = save()
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
@@ -54,25 +62,9 @@ class FindOperationTest: StoreTestCase {
     }
     
     func testForceLocalExpiredTTL() {
-        weak var expectationSave = expectationWithDescription("Save")
-        
         store.ttl = 1.seconds
         
-        store.save(person, writePolicy: .ForceLocal) { (person, error) -> Void in
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
-            
-            if let person = person {
-                XCTAssertEqual(person, self.person)
-                XCTAssertNotNil(person.personId)
-            }
-            
-            expectationSave?.fulfill()
-        }
-        
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationSave = nil
-        }
+        let person = save()
         
         NSThread.sleepForTimeInterval(1)
         
