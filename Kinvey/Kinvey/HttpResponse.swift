@@ -8,12 +8,19 @@
 
 import Foundation
 
-class HttpResponse: Response {
+struct HttpResponse: Response {
     
     let response: NSHTTPURLResponse
     
     init(response: NSHTTPURLResponse) {
         self.response = response
+    }
+    
+    init?(response: NSHTTPURLResponse?) {
+        guard let response = response else {
+            return nil
+        }
+        self.init(response: response)
     }
     
     var isResponseOK: Bool {
