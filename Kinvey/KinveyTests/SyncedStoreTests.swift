@@ -14,13 +14,22 @@ class SyncedStoreTests: NetworkStoreTests {
     override func setUp() {
         super.setUp()
         
-        store = DataStore<Person>.getInstance()
+        store = DataStore<Person>.getInstance(.Sync)
     }
     
     func testPurge() {
         save()
         
-        store.purge()
+        weak var expectationPurge = expectationWithDescription("Purge")
+        
+        let query = Query(format: "_acl.creatorId == %@", client.activeUser!.userId)
+        store.purge(query) { (count, error) -> Void in
+            expectationPurge?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationPurge = nil
+        }
     }
     
     func testSync() {
@@ -65,6 +74,28 @@ class SyncedStoreTests: NetworkStoreTests {
         
         waitForExpectationsWithTimeout(defaultTimeout) { error in
             expectationPush = nil
+        }
+    }
+    
+    func testPull() {
+        save()
+        
+        weak var expectationPull = expectationWithDescription("Pull")
+        
+        store.pull() { results, error in
+            self.assertThread()
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertGreaterThanOrEqual(results.count, 1)
+            }
+            
+            expectationPull?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationPull = nil
         }
     }
     

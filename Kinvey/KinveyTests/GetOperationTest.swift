@@ -15,7 +15,9 @@ class GetOperationTest: StoreTestCase {
         store.ttl = nil
     }
     
-    func testForceNetwork() {
+    override func save() -> Person {
+        let person = self.person
+        
         weak var expectationSave = expectationWithDescription("Save")
         
         store.save(person, writePolicy: .ForceNetwork) { (person, error) -> Void in
@@ -33,6 +35,12 @@ class GetOperationTest: StoreTestCase {
         waitForExpectationsWithTimeout(defaultTimeout) { error in
             expectationSave = nil
         }
+        
+        return person
+    }
+    
+    func testForceNetwork() {
+        let person = save()
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
@@ -52,23 +60,7 @@ class GetOperationTest: StoreTestCase {
     }
     
     func testForceLocal() {
-        weak var expectationSave = expectationWithDescription("Save")
-        
-        store.save(person, writePolicy: .ForceLocal) { (person, error) -> Void in
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
-            
-            if let person = person {
-                XCTAssertEqual(person, self.person)
-                XCTAssertNotNil(person.personId)
-            }
-            
-            expectationSave?.fulfill()
-        }
-        
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationSave = nil
-        }
+        let person = save()
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
@@ -88,25 +80,9 @@ class GetOperationTest: StoreTestCase {
     }
     
     func testForceLocalExpiredTTL() {
-        weak var expectationSave = expectationWithDescription("Save")
+        let person = save()
         
         store.ttl = 1.seconds
-        
-        store.save(person, writePolicy: .ForceLocal) { (person, error) -> Void in
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
-            
-            if let person = person {
-                XCTAssertEqual(person, self.person)
-                XCTAssertNotNil(person.personId)
-            }
-            
-            expectationSave?.fulfill()
-        }
-        
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationSave = nil
-        }
         
         NSThread.sleepForTimeInterval(1)
         

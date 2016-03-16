@@ -16,7 +16,8 @@
 @property (nonatomic, copy) KCSUserCompletionBlock completionBlock;
 @property (nonatomic, assign) NSTimeInterval timeout;
 
-@property (nonatomic, weak) id webView;
+@property (nonatomic, weak) UIView* webView;
+@property (nonatomic, assign) BOOL forceUIWebView;
 @property (nonatomic, weak) UIActivityIndicatorView* activityIndicatorView;
 
 @property (nonatomic, strong) NSTimer *timer;
@@ -51,7 +52,7 @@
     [super viewDidLoad];
     
     Class clazz = NSClassFromString(@"WKWebView");
-    if (clazz) {
+    if (clazz && !self.forceUIWebView) {
         WKWebView* webView = [[WKWebView alloc] init];
         webView.translatesAutoresizingMaskIntoConstraints = NO;
         webView.navigationDelegate = self;
@@ -64,6 +65,8 @@
         [self.view addSubview:webView];
         self.webView = webView;
     }
+    
+    self.webView.accessibilityIdentifier = @"Web View";
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" X "
                                                                              style:UIBarButtonItemStylePlain
@@ -225,6 +228,14 @@
                                          forURL:url])
     {
         [self.activityIndicatorView stopAnimating];
+        
+        [self closeViewController:nil
+                       completion:^
+        {
+            if (self.completionBlock) {
+                self.completionBlock(nil, error, KCSUserNoInformation);
+            }
+        }];
     }
 }
 
