@@ -167,8 +167,8 @@ extension RemoveOperation {
 
 extension FindOperation {
     
-    public convenience init(query: Query, readPolicy: ReadPolicy, persistableClass: AnyClass, cache: Cache, client: Client) {
-        self.init(query: query, readPolicy: readPolicy, persistableType: persistableClass as! Persistable.Type, cache: cache, client: client)
+    public convenience init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, persistableClass: AnyClass, cache: Cache, client: Client) {
+        self.init(query: query, deltaSet: deltaSet, readPolicy: readPolicy, persistableType: persistableClass as! Persistable.Type, cache: cache, client: client)
     }
     
 }

@@ -265,7 +265,7 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     collectionNamesMap[[class kinveyCollectionName]] = className;
     
     NSArray<NSString*>* realmClassNames = [className componentsSeparatedByString:@"."];
-    NSString* realmClassName = realmClassNames.count > 1 ? [NSString stringWithFormat:@"%@_KCS_%@_SwiftRealm", realmClassNames[0], realmClassNames[1]] : [NSString stringWithFormat:@"KCS_%@_Realm", className];
+    NSString* realmClassName = realmClassNames.count > 1 ? [NSString stringWithFormat:@"%@_K%@", realmClassNames[0], realmClassNames[1]] : [NSString stringWithFormat:@"K%@", className];
     Class realmClass = objc_allocateClassPair([RLMObject class], realmClassName.UTF8String, 0);
     
     if (classMapOriginalRealm[className]) return NSClassFromString(classMapOriginalRealm[className]);
@@ -702,8 +702,6 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     Class realmClass = [[self class] realmClassForClass:class];
     RLMRealm* realm = self.realm;
     
-    
-    
     RLMResults* results = [realmClass objectsInRealm:realm
                                        withPredicate:query.predicate];
     
@@ -732,6 +730,44 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
         [array addObject:json];
     }
     return array;
+}
+
+-(NSDictionary<NSString*, NSDate*>*)findIdsLmtsByQuery:(id<KCSQuery>)query
+{
+    Class realmClass = [[self class] realmClassForClass:self.clazz];
+    RLMRealm* realm = self.realm;
+    
+    RLMResults* results = [realmClass objectsInRealm:realm
+                                       withPredicate:query.predicate];
+    
+    if (query.sortDescriptors.count > 0) {
+        NSMutableArray<RLMSortDescriptor*>* realmSortDescriptor = [NSMutableArray arrayWithCapacity:query.sortDescriptors.count];
+        for (NSSortDescriptor* sortDescriptor in query.sortDescriptors) {
+            [realmSortDescriptor addObject:[RLMSortDescriptor sortDescriptorWithProperty:sortDescriptor.key
+                                                                               ascending:sortDescriptor.ascending]];
+        }
+        results = [results sortedResultsUsingDescriptors:realmSortDescriptor];
+    }
+    
+    NSString* idKey = [__KNVPersistable idKey:self.clazz];
+    NSString* kmdKey = [__KNVPersistable kmdKey:self.clazz];
+    if (!kmdKey) {
+        kmdKey = KNVPersistableMetadataKey;
+    }
+    NSString* lmtKey = [KNVMetadata LmtKey];
+    
+    NSMutableDictionary<NSString*, NSObject*>* json = [NSMutableDictionary dictionaryWithCapacity:results.count];
+    RLMObject* obj;
+    for (NSUInteger i = 0; i < results.count; i++) {
+        obj = results[i];
+        if (self.ttl > 0) {
+            obj = [self filterExpiredObject:obj
+                                   forClass:self.clazz];
+            if (!obj) continue;
+        }
+        json[[obj valueForKey:idKey]] = [[obj valueForKey:kmdKey] valueForKey:lmtKey];
+    }
+    return json;
 }
 
 -(NSArray<NSDictionary<NSString *,id> *> *)findAll

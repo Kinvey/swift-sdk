@@ -54,9 +54,9 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
-    public func find(query: Query = Query(), readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
+    public func find(query: Query = Query(), deltaSet: Bool = true, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
-        let operation = FindOperation(query: Query(query: query, persistableType: T.self), readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
+        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
