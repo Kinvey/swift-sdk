@@ -179,7 +179,29 @@ if (self.type != KNVDataStoreTypeSync) { \
            readPolicy:(KNVReadPolicy)readPolicy
     completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
 {
+    return [self find:query
+             deltaSet:YES
+           readPolicy:readPolicy
+    completionHandler:completionHandler];
+}
+
+-(id<KNVRequest>)find:(KNVQuery*)query
+             deltaSet:(BOOL)deltaSet
+    completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
+{
+    return [self find:query
+             deltaSet:deltaSet
+           readPolicy:self.readPolicy
+    completionHandler:completionHandler];
+}
+
+-(id<KNVRequest>)find:(KNVQuery*)query
+             deltaSet:(BOOL)deltaSet
+           readPolicy:(KNVReadPolicy)readPolicy
+    completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
+{
     __KNVFindOperation *operation = [[__KNVFindOperation alloc] initWithQuery:KNV_QUERY(query)
+                                                                     deltaSet:deltaSet
                                                                    readPolicy:(enum ReadPolicy)readPolicy
                                                              persistableClass:self.cls
                                                                         cache:self.cache

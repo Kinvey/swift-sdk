@@ -23,6 +23,8 @@ public protocol Cache {
     
     func findEntityByQuery(query: Query) -> [JsonDictionary]
     
+    func findIdsLmtsByQuery(query: Query) -> [String : NSDate]
+    
     func findAll() -> [JsonDictionary]
     
     func removeEntity(entity: JsonDictionary)

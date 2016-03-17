@@ -22,7 +22,7 @@ public enum Endpoint {
     
     case AppData(client: Client, collectionName: String)
     case AppDataById(client: Client, collectionName: String, id: String)
-    case AppDataByQuery(client: Client, collectionName: String, query: Query)
+    case AppDataByQuery(client: Client, collectionName: String, query: Query, fields: Set<String>?)
     
     case PushRegisterDevice(client: Client)
     case PushUnRegisterDevice(client: Client)

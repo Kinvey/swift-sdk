@@ -50,6 +50,10 @@
 		577C9E781C1F89C700BF49EE /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
 		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
 		5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */; };
+		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
+		578F5C931C99EED100B20F17 /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
+		578F5C951C9A106500B20F17 /* EmptyObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C941C9A106500B20F17 /* EmptyObjects.swift */; };
+		57946A611C9A300F007F1F81 /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57946A601C9A300F007F1F81 /* MemoryCache.swift */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -421,6 +425,10 @@
 		577C9E771C1F89C700BF49EE /* Credential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credential.swift; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
 		5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
+		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
+		578F5C941C9A106500B20F17 /* EmptyObjects.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyObjects.swift; sourceTree = "<group>"; };
+		57946A601C9A300F007F1F81 /* MemoryCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCache.swift; sourceTree = "<group>"; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
 		57A27C861C178F17000DF951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -940,11 +948,15 @@
 		57A27C8F1C178F18000DF951 /* KinveyTests */ = {
 			isa = PBXGroup;
 			children = (
+				578F5C941C9A106500B20F17 /* EmptyObjects.swift */,
 				5765B83C1C972D7000080FFA /* URLProtocols.swift */,
+				578F5C921C99EED100B20F17 /* KIF.swift */,
 				57A27C901C178F18000DF951 /* KinveyTestCase.swift */,
 				57A27C921C178F18000DF951 /* Info.plist */,
-				57A2ED891C49BDAA006D26A9 /* RequestTestCase.swift */,
 				57E1C3AC1C17EC9500578974 /* UserTests.swift */,
+				57946A601C9A300F007F1F81 /* MemoryCache.swift */,
+				578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */,
+				57A2ED891C49BDAA006D26A9 /* RequestTestCase.swift */,
 				5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */,
 				5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */,
 				576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */,
@@ -2059,7 +2071,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				578F5C951C9A106500B20F17 /* EmptyObjects.swift in Sources */,
+				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
+				578F5C931C99EED100B20F17 /* KIF.swift in Sources */,
+				57946A611C9A300F007F1F81 /* MemoryCache.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
 				57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */,
 			);
