@@ -32,6 +32,8 @@ protocol RequestFactory {
     func buildBlobDeleteFile(file: File) -> HttpRequest
     func buildBlobQueryFile(query: Query, ttl: TTL?) -> HttpRequest
     
+    func buildCustomEndpoint() -> HttpRequest
+    
 }
 
 extension RequestFactory {
