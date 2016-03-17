@@ -293,14 +293,18 @@ extension Endpoint {
             return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")
         case AppDataById(let client, let collectionName, let id):
             return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
-        case AppDataByQuery(let client, let collectionName, let query):
+        case AppDataByQuery(let client, let collectionName, let query, let fields):
             let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
             if (query.isEmpty()){
                 return NSURL(string: url)!
             }
             let queryStr = query.urlQueryStringEncoded()
             let urlQuery = "?query=\(queryStr)"
-            return NSURL(string: url + urlQuery)!
+            var fieldsStr = ""
+            if let fields = fields {
+                fieldsStr = "&fields=\(fields.joinWithSeparator(",").stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!)"
+            }
+            return NSURL(string: url + urlQuery + fieldsStr)!
         case .PushRegisterDevice(let client):
             return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")
         case .PushUnRegisterDevice(let client):

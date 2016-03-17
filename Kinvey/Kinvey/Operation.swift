@@ -26,6 +26,19 @@ public class Operation: NSObject {
         self.client = client
     }
     
+    func computeDelta(query: Query, refObjs: [String : NSDate]) -> (created: Set<String>, updated: Set<String>, deleted: Set<String>) {
+        let refKeys = Set<String>(refObjs.keys)
+        let cachedObjs = cache.findIdsLmtsByQuery(query)
+        let cachedKeys = Set<String>(cachedObjs.keys)
+        let createdKeys = refKeys.subtract(cachedKeys)
+        let deletedKeys = cachedKeys.subtract(refKeys)
+        var updatedKeys = refKeys.intersect(cachedKeys)
+        if updatedKeys.count > 0 {
+            updatedKeys = Set<String>(updatedKeys.filter({ cachedObjs[$0] != refObjs[$0] }))
+        }
+        return (created: createdKeys, updated: updatedKeys, deleted: deletedKeys)
+    }
+    
     func fromJson(json: [String : AnyObject]) -> Persistable {
         let objType = persistableType as! NSObject.Type
         let obj = objType.init() as! Persistable
