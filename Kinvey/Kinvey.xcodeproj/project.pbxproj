@@ -372,6 +372,8 @@
 		57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */; };
 		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
+		E9073D011C986D9600475E16 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9073D001C986D9600475E16 /* Command.swift */; };
+		E9073D051C9AF93600475E16 /* CommandOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9073D041C9AF93600475E16 /* CommandOperation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -870,6 +872,8 @@
 		57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
 		57FB57D81C86581300AA590F /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncOperation.swift; sourceTree = "<group>"; };
+		E9073D001C986D9600475E16 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
+		E9073D041C9AF93600475E16 /* CommandOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandOperation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -968,6 +972,7 @@
 		574B0FA51C729E9E00CDC48F /* Operations */ = {
 			isa = PBXGroup;
 			children = (
+				E9073D041C9AF93600475E16 /* CommandOperation.swift */,
 				57379DA41C72AAA900E240E9 /* Operation.swift */,
 				57470FA01C76834B0096B15F /* ReadOperation.swift */,
 				57470FA21C76847F0096B15F /* WriteOperation.swift */,
@@ -1074,6 +1079,7 @@
 				57757F3D1C652A5600C810E9 /* Reachability.swift */,
 				577155BA1CA21CC200C91B4B /* Migration.swift */,
 				57D643471CAB3C8A00F6D16E /* MemoryCache.swift */,
+				E9073D001C986D9600475E16 /* Command.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -2081,6 +2087,7 @@
 				57B23F431C7FB173006403CC /* KCSUserRealm.m in Sources */,
 				574B0FAD1C729F3300CDC48F /* RemoveOperation.swift in Sources */,
 				5728212F1C63E10700373EC8 /* FileStore.swift in Sources */,
+				E9073D051C9AF93600475E16 /* CommandOperation.swift in Sources */,
 				57B23F531C7FB198006403CC /* CLLocation+Kinvey.m in Sources */,
 				57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */,
 				575772861C4728E5001D56F5 /* TTL.swift in Sources */,
@@ -2130,6 +2137,7 @@
 				57D643461CAAFA7C00F6D16E /* KNVError.m in Sources */,
 				574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
+				E9073D011C986D9600475E16 /* Command.swift in Sources */,
 				57B23EA61C7FA465006403CC /* KCSAclRealm.m in Sources */,
 				57B23EF01C7FAA18006403CC /* KCSMockFileOperation.m in Sources */,
 				57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */,
