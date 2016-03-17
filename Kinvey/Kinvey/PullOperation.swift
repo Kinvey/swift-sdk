@@ -20,7 +20,7 @@ public class PullOperation: SyncOperation {
     }
     
     override func execute(completionHandler: CompletionHandler?) -> Request {
-        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: self.persistableType.kinveyCollectionName(), query: query)
+        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: self.persistableType.kinveyCollectionName(), query: query, fields: nil)
         Promise { fulfill, reject in
             request.execute { (data, response, error) -> Void in
                 var array: [Persistable]? = nil

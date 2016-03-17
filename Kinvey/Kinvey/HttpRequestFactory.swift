@@ -104,8 +104,8 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataFindByQuery(collectionName collectionName: String, query: Query) -> HttpRequest {
-        let request = HttpRequest(endpoint: Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query), credential: client.activeUser, client: client)
+    func buildAppDataFindByQuery(collectionName collectionName: String, query: Query, fields: Set<String>?) -> HttpRequest {
+        let request = HttpRequest(endpoint: Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query, fields: fields), credential: client.activeUser, client: client)
         return request
     }
     
@@ -130,7 +130,7 @@ class HttpRequestFactory: RequestFactory {
     func buildAppDataRemoveByQuery(collectionName collectionName: String, query: Query) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Delete,
-            endpoint: Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query),
+            endpoint: Endpoint.AppDataByQuery(client: client, collectionName: collectionName, query: query, fields: nil),
             credential: client.activeUser,
             client: client
         )
