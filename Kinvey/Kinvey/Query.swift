@@ -56,6 +56,29 @@ public class Query: NSObject {
     public convenience init(format: String, arguments: CVaListPointer) {
         self.init(predicate: NSPredicate(format: format, arguments: arguments))
     }
+    
+    let sortLock = NSLock()
+    
+    private func addSort(property: String, ascending: Bool) {
+        sortLock.lock()
+        if sortDescriptors == nil {
+            sortDescriptors = []
+        }
+        sortLock.unlock()
+        sortDescriptors!.append(NSSortDescriptor(key: property, ascending: ascending))
+    }
+    
+    public func ascending(properties: String...) {
+        for property in properties {
+            addSort(property, ascending: true)
+        }
+    }
+    
+    public func descending(properties: String...) {
+        for property in properties {
+            addSort(property, ascending: false)
+        }
+    }
 
 }
 

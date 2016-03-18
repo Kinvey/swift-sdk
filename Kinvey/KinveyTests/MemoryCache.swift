@@ -64,6 +64,10 @@ class MemoryCache: NSObject, Cache {
         return findEntityByQuery(Query())
     }
     
+    func count() -> UInt {
+        return UInt(memory.count)
+    }
+    
     func removeEntity(entity: JsonDictionary) {
         let objId = entity[type.idKey] as! String
         memory.removeValueForKey(objId)
