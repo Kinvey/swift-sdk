@@ -44,6 +44,10 @@ class EmptyCache: NSObject, Cache {
         return []
     }
     
+    func count() -> UInt {
+        return 0
+    }
+    
     func removeEntity(entity: JsonDictionary) {
     }
     

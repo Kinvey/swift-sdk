@@ -794,6 +794,23 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     return array;
 }
 
+-(NSUInteger)count
+{
+    return [self countForClass:self.clazz];
+}
+
+-(NSUInteger)countForClass:(Class)class
+{
+    Class realmClass = [[self class] realmClassForClass:class];
+    RLMRealm* realm = self.realm;
+    
+    NSDictionary<NSString*, NSString*>* kinveyPropertyMapping = [class kinveyPropertyMapping];
+    NSArray<NSString*>* keys = kinveyPropertyMapping.allKeys;
+    
+    RLMResults* results = [realmClass allObjectsInRealm:realm];
+    return results.count;
+}
+
 -(void)removeAllEntities
 {
     Class realmClass = [[self class] realmClassForClass:self.clazz];

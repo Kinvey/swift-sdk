@@ -41,7 +41,7 @@ public class SaveOperation: WriteOperation {
                 if let response = response where response.isResponseOK {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
-                        let persistable = self.persistable.dynamicType.fromJson(json)
+                        let persistable = self.persistableType.fromJson(json)
                         var persistableJson = self.merge(persistable, json: json)
                         if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] where kmd[PersistableMetadataLastRetrievedTimeKey] == nil {
                             kmd[PersistableMetadataLastRetrievedTimeKey] = NSDate()
