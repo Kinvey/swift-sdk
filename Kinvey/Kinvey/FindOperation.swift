@@ -14,9 +14,13 @@ public class FindOperation: ReadOperation {
     let query: Query
     let deltaSet: Bool
     
-    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    typealias ResultsHandler = ([JsonDictionary]) -> Void
+    let resultsHandler: ResultsHandler?
+    
+    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client, resultsHandler: ResultsHandler? = nil) {
         self.query = query
         self.deltaSet = deltaSet
+        self.resultsHandler = resultsHandler
         super.init(readPolicy: readPolicy, persistableType: persistableType, cache: cache, client: client)
     }
     
@@ -37,12 +41,41 @@ public class FindOperation: ReadOperation {
             if let response = response where response.isResponseOK,
                 let jsonArray = self.client.responseParser.parseArray(data)
             {
-                if self.deltaSet {
-//                    self.computeDelta(self.query, jsonArray: jsonArray)
+                self.resultsHandler?(jsonArray)
+                if !self.cache.isEmpty() && self.deltaSet {
+                    let refObjs = self.reduceToIdsLmts(jsonArray)
+                    let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
+                    var allIds = Set<String>()
+                    allIds.unionInPlace(deltaSet.created)
+                    allIds.unionInPlace(deltaSet.updated)
+                    allIds.unionInPlace(deltaSet.deleted)
+                    let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
+                    var newRefObjs: [String : NSDate]? = nil
+                    let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: self.cache, client: self.client) { jsonArray in
+                        newRefObjs = self.reduceToIdsLmts(jsonArray)
+                    }
+                    operation.execute { (results, error) -> Void in
+                        if let _ = results {
+                            if let refObjs = newRefObjs {
+                                let refKeys = Set<String>(refObjs.keys)
+                                let deleted = deltaSet.deleted.subtract(refKeys)
+                                if deleted.count > 0 {
+                                    let query = Query(format: "\(self.persistableType.idKey) IN %@", deleted)
+                                    self.cache.removeEntitiesByQuery(query)
+                                }
+                            }
+                            self.executeLocal(completionHandler)
+                        } else if let error = error {
+                            completionHandler?(nil, error)
+                        } else {
+                            completionHandler?(nil, Error.InvalidResponse)
+                        }
+                    }
                 } else {
-                    let array = self.persistableType.fromJson(jsonArray)
-                    self.cache.saveEntities(self.toJson(array))
-                    completionHandler?(array, nil)
+                    let persistableArray = self.persistableType.fromJson(jsonArray)
+                    let persistableJson = self.merge(persistableArray, jsonArray: jsonArray)
+                    self.cache.saveEntities(persistableJson)
+                    completionHandler?(persistableArray, nil)
                 }
             } else if let error = error {
                 completionHandler?(nil, error)

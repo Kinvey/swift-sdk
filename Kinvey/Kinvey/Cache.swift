@@ -27,10 +27,20 @@ public protocol Cache {
     
     func findAll() -> [JsonDictionary]
     
+    func count() -> UInt
+    
     func removeEntity(entity: JsonDictionary)
     
     func removeEntitiesByQuery(query: Query) -> UInt
     
     func removeAllEntities()
+    
+}
+
+extension Cache {
+    
+    func isEmpty() -> Bool {
+        return count() == 0
+    }
     
 }

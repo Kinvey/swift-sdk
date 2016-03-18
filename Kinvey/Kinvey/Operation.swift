@@ -26,7 +26,20 @@ public class Operation: NSObject {
         self.client = client
     }
     
-    func computeDelta(query: Query, refObjs: [String : NSDate]) -> (created: Set<String>, updated: Set<String>, deleted: Set<String>) {
+    func reduceToIdsLmts(jsonArray: [JsonDictionary]) -> [String : NSDate] {
+        return jsonArray.reduce([String : NSDate]()) { (var items, json) -> [String : NSDate] in
+            if let id = json[PersistableIdKey] as? String,
+                let kmd = json[PersistableMetadataKey] as? JsonDictionary,
+                let lmtString = kmd[Metadata.LmtKey] as? String,
+                let lmt = lmtString.toDate()
+            {
+                items[id] = lmt
+            }
+            return items
+        }
+    }
+    
+    func computeDeltaSet(query: Query, refObjs: [String : NSDate]) -> (created: Set<String>, updated: Set<String>, deleted: Set<String>) {
         let refKeys = Set<String>(refObjs.keys)
         let cachedObjs = cache.findIdsLmtsByQuery(query)
         let cachedKeys = Set<String>(cachedObjs.keys)
@@ -96,11 +109,21 @@ public class Operation: NSObject {
         return json
     }
     
-    func merge(persistable: Persistable, json: [String : AnyObject]) -> [String : AnyObject] {
+    func merge(persistableArray: [Persistable], jsonArray: [JsonDictionary]) -> [JsonDictionary] {
+        var results = [JsonDictionary]()
+        if persistableArray.count == jsonArray.count && persistableArray.count > 0 {
+            for i in 0...persistableArray.count - 1 {
+                results.append(merge(persistableArray[i], json: jsonArray[i]))
+            }
+        }
+        return results
+    }
+    
+    func merge(persistable: Persistable, json: JsonDictionary) -> JsonDictionary {
         var persistableJson = persistable.toJson()
         if persistableType.kmdKey == nil {
             persistableJson[PersistableMetadataKey] = json[PersistableMetadataKey]
-            if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] {
+            if var kmd = persistableJson[PersistableMetadataKey] as? JsonDictionary {
                 if let lmt = kmd[Metadata.LmtKey] as? String {
                     kmd[Metadata.LmtKey] = lmt.toDate()
                 }
