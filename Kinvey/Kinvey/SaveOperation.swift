@@ -44,7 +44,7 @@ public class SaveOperation: WriteOperation {
                         let persistable = self.persistableType.fromJson(json)
                         var persistableJson = self.merge(persistable, json: json)
                         if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] where kmd[PersistableMetadataLastRetrievedTimeKey] == nil {
-                            kmd[PersistableMetadataLastRetrievedTimeKey] = NSDate()
+                            kmd[PersistableMetadataLastRetrievedTimeKey] = NSDate().toString()
                             persistableJson[PersistableMetadataKey] = kmd
                         }
                         self.cache.saveEntity(persistableJson)

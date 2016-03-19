@@ -36,7 +36,7 @@ class EmptyCache: NSObject, Cache {
         return []
     }
     
-    func findIdsLmtsByQuery(query: Query) -> [String : NSDate] {
+    func findIdsLmtsByQuery(query: Query) -> [String : String] {
         return [:]
     }
     

@@ -26,12 +26,11 @@ public class Operation: NSObject {
         self.client = client
     }
     
-    func reduceToIdsLmts(jsonArray: [JsonDictionary]) -> [String : NSDate] {
-        return jsonArray.reduce([String : NSDate]()) { (var items, json) -> [String : NSDate] in
+    func reduceToIdsLmts(jsonArray: [JsonDictionary]) -> [String : String] {
+        return jsonArray.reduce([String : String]()) { (var items, json) -> [String : String] in
             if let id = json[PersistableIdKey] as? String,
                 let kmd = json[PersistableMetadataKey] as? JsonDictionary,
-                let lmtString = kmd[Metadata.LmtKey] as? String,
-                let lmt = lmtString.toDate()
+                let lmt = kmd[Metadata.LmtKey] as? String
             {
                 items[id] = lmt
             }
@@ -39,7 +38,7 @@ public class Operation: NSObject {
         }
     }
     
-    func computeDeltaSet(query: Query, refObjs: [String : NSDate]) -> (created: Set<String>, updated: Set<String>, deleted: Set<String>) {
+    func computeDeltaSet(query: Query, refObjs: [String : String]) -> (created: Set<String>, updated: Set<String>, deleted: Set<String>) {
         let refKeys = Set<String>(refObjs.keys)
         let cachedObjs = cache.findIdsLmtsByQuery(query)
         let cachedKeys = Set<String>(cachedObjs.keys)
@@ -47,7 +46,7 @@ public class Operation: NSObject {
         let deletedKeys = cachedKeys.subtract(refKeys)
         var updatedKeys = refKeys.intersect(cachedKeys)
         if updatedKeys.count > 0 {
-            updatedKeys = Set<String>(updatedKeys.filter({ cachedObjs[$0] != refObjs[$0] }))
+            updatedKeys = Set<String>(updatedKeys.filter({ refObjs[$0] != cachedObjs[$0] }))
         }
         return (created: createdKeys, updated: updatedKeys, deleted: deletedKeys)
     }
@@ -125,10 +124,10 @@ public class Operation: NSObject {
             persistableJson[PersistableMetadataKey] = json[PersistableMetadataKey]
             if var kmd = persistableJson[PersistableMetadataKey] as? JsonDictionary {
                 if let lmt = kmd[Metadata.LmtKey] as? String {
-                    kmd[Metadata.LmtKey] = lmt.toDate()
+                    kmd[Metadata.LmtKey] = lmt
                 }
                 if let ect = kmd[Metadata.EctKey] as? String {
-                    kmd[Metadata.EctKey] = ect.toDate()
+                    kmd[Metadata.EctKey] = ect
                 }
                 persistableJson[PersistableMetadataKey] = kmd
             }
