@@ -118,14 +118,14 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
-    public func pull(query: Query = Query(), deltaSet: Bool = true, completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
+    public func pull(query: Query = Query(), completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
             completionHandler?(nil, Error.InvalidStoreType)
             return LocalRequest()
         }
         
-        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, persistableType: T.self, cache: cache, client: client)
+        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: true, readPolicy: .ForceNetwork, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
