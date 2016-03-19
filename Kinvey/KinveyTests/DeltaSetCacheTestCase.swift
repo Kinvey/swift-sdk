@@ -82,12 +82,29 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         ])
         let operation = Operation(persistableType: Person.self, cache: cache, client: client)
         let query = Query()
-        let refObjs = [
-            "create" : NSDate(timeInterval: 1, sinceDate: date),
-            "update" : NSDate(timeInterval: 1, sinceDate: date),
-            "noChange" : date
+        let refObjs: [JsonDictionary] = [
+            [
+                PersistableIdKey : "create",
+                PersistableMetadataKey : [
+                    Metadata.LmtKey : date.toString(),
+                ]
+            ],
+            [
+                PersistableIdKey : "update",
+                PersistableMetadataKey : [
+                    Metadata.LmtKey : NSDate(timeInterval: 1, sinceDate: date).toString()
+                ]
+            ],
+            [
+                PersistableIdKey : "noChange",
+                PersistableMetadataKey : [
+                    Metadata.LmtKey : date.toString()
+                ]
+            ]
         ]
-        let deltaSet = operation.computeDeltaSet(query, refObjs: refObjs)
+        
+        let idsLmts = operation.reduceToIdsLmts(refObjs)
+        let deltaSet = operation.computeDeltaSet(query, refObjs: idsLmts)
         
         XCTAssertEqual(deltaSet.created.count, 1)
         XCTAssertEqual(deltaSet.created.first, "create")
@@ -391,6 +408,250 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
                 expectationFind = nil
             }
+        }
+    }
+    
+    func testPull() {
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        guard let activeUser = client.activeUser else {
+            return
+        }
+        
+        let save: (Int) -> Void = { i in
+            let person = Person(name: String(format: "Person %02d", i))
+            
+            weak var expectationCreate = self.expectationWithDescription("Create")
+            
+            let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, sync: EmptySync(), cache: EmptyCache(), client: self.client)
+            createOperation.execute { (results, error) -> Void in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                expectationCreate?.fulfill()
+            }
+            
+            self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+                expectationCreate = nil
+            }
+        }
+        
+        let saveAndCache: (Int) -> Void = { i in
+            let person = Person(name: String(format: "Person Cached %02d", i))
+            let store = DataStore<Person>.getInstance(.Network)
+            
+            weak var expectationSave = self.expectationWithDescription("Save")
+            
+            store.save(person) { (person, error) -> Void in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationSave?.fulfill()
+            }
+            
+            self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+                expectationSave = nil
+            }
+        }
+        
+        for i in 1...10 {
+            save(i)
+        }
+        
+        for i in 1...5 {
+            saveAndCache(i)
+        }
+        
+        let store = DataStore<Person>.getInstance(.Sync)
+        
+        let query = Query(format: "_acl.creator == %@", activeUser.userId)
+        query.ascending("name")
+        
+        do {
+            weak var expectationRead = expectationWithDescription("Read")
+            
+            store.find(query, readPolicy: .ForceLocal) { persons, error in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                if let persons = persons {
+                    XCTAssertEqual(persons.count, 5)
+                    
+                    var i = 1
+                    for person in persons {
+                        XCTAssertEqual(person.name, String(format: "Person Cached %02d", i++))
+                    }
+                }
+                
+                expectationRead?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+                expectationRead = nil
+            }
+        }
+        
+        do {
+            weak var expectationPull = expectationWithDescription("Pull")
+            
+            store.pull(query) { (persons, error) -> Void in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                if let persons = persons {
+                    XCTAssertEqual(persons.count, 15)
+                    do {
+                        var i = 1
+                        for person in persons[0..<10] {
+                            XCTAssertEqual(person.name, String(format: "Person %02d", i++))
+                        }
+                    }
+                    do {
+                        var i = 1
+                        for person in persons[10..<persons.count] {
+                            XCTAssertEqual(person.name, String(format: "Person Cached %02d", i++))
+                        }
+                    }
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+                expectationPull = nil
+            }
+        }
+    }
+    
+    func perform(countBackend countBackend: Int, countLocal: Int) {
+        self.signUp()
+        
+        XCTAssertNotNil(self.client.activeUser)
+        guard let activeUser = self.client.activeUser else {
+            return
+        }
+        
+        let save: (Int) -> Void = { n in
+            for i in 1...n {
+                let person = Person(name: String(format: "Person %03d", i))
+                
+                weak var expectationCreate = self.expectationWithDescription("Create")
+                
+                let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, sync: EmptySync(), cache: EmptyCache(), client: self.client)
+                createOperation.execute { (results, error) -> Void in
+                    XCTAssertNotNil(results)
+                    XCTAssertNil(error)
+                    
+                    expectationCreate?.fulfill()
+                }
+                
+                self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+                    expectationCreate = nil
+                }
+            }
+        }
+        
+        let saveAndCache: (Int) -> Void = { n in
+            let store = DataStore<Person>.getInstance(.Network)
+            
+            for i in 1...n {
+                let person = Person(name: String(format: "Person Cached %03d", i))
+                
+                weak var expectationSave = self.expectationWithDescription("Save")
+                
+                store.save(person) { (person, error) -> Void in
+                    XCTAssertNotNil(person)
+                    XCTAssertNil(error)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+                    expectationSave = nil
+                }
+            }
+        }
+        
+        saveAndCache(countLocal)
+        save(countBackend)
+        
+        let store = DataStore<Person>.getInstance(.Sync)
+        
+        let query = Query(format: "_acl.creator == %@", activeUser.userId)
+        query.ascending("name")
+        
+        do {
+            weak var expectationRead = self.expectationWithDescription("Read")
+            
+            store.find(query, readPolicy: .ForceLocal) { persons, error in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                if let persons = persons {
+                    XCTAssertEqual(persons.count, countLocal)
+                    
+                    var i = 1
+                    for person in persons {
+                        XCTAssertEqual(person.name, String(format: "Person Cached %03d", i++))
+                    }
+                }
+                
+                expectationRead?.fulfill()
+            }
+            
+            self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+                expectationRead = nil
+            }
+        }
+        
+        self.startMeasuring()
+        
+        do {
+            weak var expectationFind = self.expectationWithDescription("Find")
+            
+            store.find(query, readPolicy: .ForceNetwork) { (persons, error) -> Void in
+                XCTAssertNotNil(persons)
+                XCTAssertNil(error)
+                
+                if let persons = persons {
+                    XCTAssertEqual(persons.count, countBackend + countLocal)
+                    do {
+                        var i = 1
+                        for person in persons[0..<countBackend] {
+                            XCTAssertEqual(person.name, String(format: "Person %03d", i++))
+                        }
+                    }
+                    do {
+                        var i = 1
+                        for person in persons[countBackend..<persons.count] {
+                            XCTAssertEqual(person.name, String(format: "Person Cached %03d", i++))
+                        }
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+                expectationFind = nil
+            }
+        }
+        
+        self.stopMeasuring()
+        
+        self.tearDown()
+    }
+    
+    func testPerformance_1_9() {
+        measureMetrics(self.dynamicType.defaultPerformanceMetrics(), automaticallyStartMeasuring: false) { () -> Void in
+            self.perform(countBackend: 1, countLocal: 9)
+        }
+    }
+    
+    func testPerformance_9_1() {
+        measureMetrics(self.dynamicType.defaultPerformanceMetrics(), automaticallyStartMeasuring: false) { () -> Void in
+            self.perform(countBackend: 9, countLocal: 1)
         }
     }
     
