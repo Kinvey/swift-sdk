@@ -732,7 +732,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     return array;
 }
 
--(NSDictionary<NSString*, NSDate*>*)findIdsLmtsByQuery:(id<KCSQuery>)query
+-(NSDictionary<NSString*, NSString*>*)findIdsLmtsByQuery:(id<KCSQuery>)query
 {
     Class realmClass = [[self class] realmClassForClass:self.clazz];
     RLMRealm* realm = self.realm;
@@ -756,7 +756,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     }
     NSString* lmtKey = [KNVMetadata LmtKey];
     
-    NSMutableDictionary<NSString*, NSObject*>* json = [NSMutableDictionary dictionaryWithCapacity:results.count];
+    NSMutableDictionary<NSString*, NSString*>* json = [NSMutableDictionary dictionaryWithCapacity:results.count];
     RLMObject* obj;
     for (NSUInteger i = 0; i < results.count; i++) {
         obj = results[i];

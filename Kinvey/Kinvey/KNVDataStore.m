@@ -328,11 +328,42 @@ if (self.type != KNVDataStoreTypeSync) { \
 -(id<KNVRequest>)pullWithQuery:(KNVQuery*)query
              completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
 {
+    return [self pullWithQuery:query
+                      deltaSet:YES
+             completionHandler:completionHandler];
+}
+
+-(id<KNVRequest>)pullWithQuery:(KNVQuery*)query
+                      deltaSet:(BOOL)deltaSet
+             completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
+{
+    return [self pullWithQuery:query
+                      deltaSet:deltaSet
+                    readPolicy:self.readPolicy
+             completionHandler:completionHandler];
+}
+
+-(id<KNVRequest>)pullWithQuery:(KNVQuery*)query
+                    readPolicy:(KNVReadPolicy)readPolicy
+             completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
+{
+    return [self pullWithQuery:query
+                      deltaSet:YES
+                    readPolicy:readPolicy
+             completionHandler:completionHandler];
+}
+
+-(id<KNVRequest>)pullWithQuery:(KNVQuery*)query
+                      deltaSet:(BOOL)deltaSet
+                    readPolicy:(KNVReadPolicy)readPolicy
+             completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
+{
     KNV_CHECK_DATA_STORE_TYPE(NSArray<KNV_PERSISTABLE>*, nil)
     
-    __KNVPullOperation *operation = [[__KNVPullOperation alloc] initWithQuery:KNV_QUERY(query)
-                                                                         sync:self.sync
-                                                              persistableType:self.cls
+    __KNVFindOperation *operation = [[__KNVFindOperation alloc] initWithQuery:KNV_QUERY(query)
+                                                                     deltaSet:deltaSet
+                                                                   readPolicy:(enum ReadPolicy)readPolicy
+                                                             persistableClass:self.cls
                                                                         cache:self.cache
                                                                        client:self.client.client];
     id<KNVRequest> request = [operation execute:KNV_DISPATCH_ASYNC_MAIN_QUEUE(NSArray<KNV_PERSISTABLE>* _Nullable, completionHandler)];

@@ -22,7 +22,6 @@
 		57470FA31C76847F0096B15F /* WriteOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA21C76847F0096B15F /* WriteOperation.swift */; };
 		57470FA51C76926B0096B15F /* PushOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA41C76926B0096B15F /* PushOperation.swift */; };
 		57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA61C7698B30096B15F /* MultiRequest.swift */; };
-		57470FA91C769CAD0096B15F /* PullOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA81C769CAD0096B15F /* PullOperation.swift */; };
 		57470FAB1C769EF00096B15F /* PurgeOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FAA1C769EF00096B15F /* PurgeOperation.swift */; };
 		574710381C7BA29C0096B15F /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; };
 		5747103A1C7BA29D0096B15F /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
@@ -296,6 +295,10 @@
 		57BEAE2D1C98805600479206 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BEAE341C98AB3900479206 /* MainViewController.swift */; };
+		57C563041C9CC7270011FB36 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
+		57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
+		57C563061C9CC7410011FB36 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
+		57C563071C9CC79D0011FB36 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
 		57C71DC81C3EFBF900B1BEF2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
 		57D1E75F1C7D21720009834A /* KNVReadPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D1E75D1C7D21720009834A /* KNVReadPolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB87E71C62B0F6002BA684 /* NSData.swift */; };
@@ -395,7 +398,6 @@
 		57470FA21C76847F0096B15F /* WriteOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WriteOperation.swift; sourceTree = "<group>"; };
 		57470FA41C76926B0096B15F /* PushOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushOperation.swift; sourceTree = "<group>"; };
 		57470FA61C7698B30096B15F /* MultiRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiRequest.swift; sourceTree = "<group>"; };
-		57470FA81C769CAD0096B15F /* PullOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullOperation.swift; sourceTree = "<group>"; };
 		57470FAA1C769EF00096B15F /* PurgeOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurgeOperation.swift; sourceTree = "<group>"; };
 		574912701C59323B00EA4F26 /* DataStoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreType.swift; sourceTree = "<group>"; };
 		574912721C5932A700EA4F26 /* WritePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WritePolicy.swift; sourceTree = "<group>"; };
@@ -847,7 +849,6 @@
 				574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */,
 				57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */,
 				57470FA41C76926B0096B15F /* PushOperation.swift */,
-				57470FA81C769CAD0096B15F /* PullOperation.swift */,
 				57470FAA1C769EF00096B15F /* PurgeOperation.swift */,
 			);
 			name = Operations;
@@ -2028,7 +2029,6 @@
 				57B23F501C7FB187006403CC /* KCS_NSURL_NSString_NSValueTransformer.m in Sources */,
 				574B0FA91C729EB900CDC48F /* FindOperation.swift in Sources */,
 				57A3BF981C8912A900DCD439 /* KNVClient.m in Sources */,
-				57470FA91C769CAD0096B15F /* PullOperation.swift in Sources */,
 				57B23F461C7FB183006403CC /* KCS_CLLocation_Realm.m in Sources */,
 				57B23F0B1C7FAF84006403CC /* KCSPersistableDescription.m in Sources */,
 				57B23F351C7FB061006403CC /* KCSPlatformUtils.m in Sources */,
@@ -2072,12 +2072,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				578F5C951C9A106500B20F17 /* EmptyObjects.swift in Sources */,
+				57C563071C9CC79D0011FB36 /* ValueTransformer.swift in Sources */,
 				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
+				57C563061C9CC7410011FB36 /* String.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
 				578F5C931C99EED100B20F17 /* KIF.swift in Sources */,
 				57946A611C9A300F007F1F81 /* MemoryCache.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
+				57C563041C9CC7270011FB36 /* NSDate.swift in Sources */,
 				57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */,
+				57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

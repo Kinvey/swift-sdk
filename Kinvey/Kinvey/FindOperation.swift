@@ -50,7 +50,7 @@ public class FindOperation: ReadOperation {
                     allIds.unionInPlace(deltaSet.updated)
                     allIds.unionInPlace(deltaSet.deleted)
                     let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
-                    var newRefObjs: [String : NSDate]? = nil
+                    var newRefObjs: [String : String]? = nil
                     let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: self.cache, client: self.client) { jsonArray in
                         newRefObjs = self.reduceToIdsLmts(jsonArray)
                     }
