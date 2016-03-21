@@ -29,7 +29,6 @@ docs:
 				--author_url http://www.kinvey.com \
 				--module-version $(VERSION) \
 				--readme README-API-Reference-Docs.md \
-				--podspec Kinvey.podspec \
 				--min-acl public \
 				--theme apple \
 				--xcodebuild-arguments -workspace,Kinvey.xcworkspace,-scheme,Kinvey \
