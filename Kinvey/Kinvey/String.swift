@@ -22,3 +22,11 @@ extension String {
     }
     
 }
+
+extension NSString {
+    
+    func toDate() -> NSDate? {
+        return (self as String).toDate()
+    }
+    
+}

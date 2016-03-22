@@ -32,7 +32,7 @@ internal class EntitySchema: NSObject {
     class func scanForPersistableEntities() {
         var classCount = UInt32(0)
         let classList = objc_copyClassList(&classCount)
-        for var i = UInt32(0); i < classCount; i++ {
+        for i in UInt32(0) ..< classCount {
             if let aClass = classList[Int(i)] as AnyClass? where class_conformsToProtocol(aClass, Persistable.self),
                 let cls = aClass as? Persistable.Type
             {
@@ -47,13 +47,13 @@ internal class EntitySchema: NSObject {
         let properties = class_copyPropertyList(cls, &propertyCount)
         defer { free(properties) }
         var map = [String : ClassType]()
-        for var i = UInt32(0); i < propertyCount; i++ {
+        for i in UInt32(0) ..< propertyCount {
             let property = properties[Int(i)]
             if let propertyName = String.fromCString(property_getName(property)) {
                 var attributeCount = UInt32(0)
                 let attributes = property_copyAttributeList(property, &attributeCount)
                 defer { free(attributes) }
-                attributeLoop : for var x = UInt32(0); x < attributeCount; x++ {
+                attributeLoop : for x in UInt32(0) ..< attributeCount {
                     let attribute = attributes[Int(x)]
                     if let attributeName = String.fromCString(attribute.name) where attributeName == "T",
                         let attributeValue = String.fromCString(attribute.value),
