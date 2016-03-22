@@ -27,7 +27,8 @@ public class Operation: NSObject {
     }
     
     func reduceToIdsLmts(jsonArray: [JsonDictionary]) -> [String : String] {
-        return jsonArray.reduce([String : String]()) { (var items, json) -> [String : String] in
+        return jsonArray.reduce([String : String]()) { (items, json) -> [String : String] in
+            var items = items
             if let id = json[PersistableIdKey] as? String,
                 let kmd = json[PersistableMetadataKey] as? JsonDictionary,
                 let lmt = kmd[Metadata.LmtKey] as? String
@@ -92,7 +93,8 @@ public class Operation: NSObject {
         return persistable
     }
     
-    func fillJson(var json: [String : AnyObject]) -> [String : AnyObject] {
+    func fillJson(json: [String : AnyObject]) -> [String : AnyObject] {
+        var json = json
         if let user = client.activeUser {
             let aclKey = persistableType.aclKey ?? PersistableAclKey
             if var acl = json[aclKey] as? [String : AnyObject] where acl[Acl.CreatorKey] as? String == nil {
@@ -103,7 +105,7 @@ public class Operation: NSObject {
         }
         let kmdKey = persistableType.kmdKey ?? PersistableMetadataKey
         if json[kmdKey] == nil {
-            json[kmdKey] = [Metadata.EctKey : NSDate()]
+            json[kmdKey] = [Metadata.EctKey : NSDate().toString()]
         }
         return json
     }
