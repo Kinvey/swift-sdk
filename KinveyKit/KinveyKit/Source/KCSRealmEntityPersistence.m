@@ -572,9 +572,8 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     NSString* keyId = propertyMapping[KCSEntityKeyId];
     KNVQuery* query = [[KNVQuery alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]
                                             sortDescriptors:nil];
-    NSUInteger count = [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
-                                          forClass:class];
-    assert(count == 1);
+    [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
+                       forClass:class];
 }
 
 -(NSUInteger)removeEntitiesByQuery:(id<KCSQuery>)query
