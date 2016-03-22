@@ -36,10 +36,10 @@ docs:
 				--output docs
 				
 deploy-cocoapods:
-	pod trunk push Kinvey.podspec --verbose
+	pod trunk push Kinvey.podspec --verbose --allow-warnings
 
 test-cocoapods:
-	pod spec lint Kinvey.podspec --verbose --no-clean
+	pod spec lint Kinvey.podspec --verbose --no-clean --allow-warnings
 
 show-version:
 	@/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${PWD}/Kinvey/Kinvey/Info.plist" | xargs echo 'Info.plist    '
