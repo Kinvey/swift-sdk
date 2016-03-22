@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "Kinvey"
-  s.version      = "3.0.11"
+  s.version      = "3.0.12"
   s.summary      = "Kinvey iOS SDK Beta."
 
   # This description is used to generate tags and improve search results.
@@ -137,8 +137,8 @@ Pod::Spec.new do |s|
 
   s.xcconfig = { "OTHER_LDFLAGS" => "-ObjC" }
 	
-  s.dependency "PromiseKit", "~> 3.0.2"
-	s.dependency "KeychainAccess", "~> 2.3.3"
-	s.dependency "Realm", "~> 0.98.2"
+  s.dependency "PromiseKit", "~> 3.0.3"
+	s.dependency "KeychainAccess", "~> 2.3.4"
+	s.dependency "Realm", "~> 0.98.5"
 
 end
