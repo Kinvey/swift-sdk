@@ -1,5 +1,5 @@
 github "kif-framework/KIF" "v3.4.1"
-github "kishikawakatsumi/KeychainAccess" "v2.3.3"
+github "kishikawakatsumi/KeychainAccess" "v2.3.4"
 github "tjboneman/NSPredicate-MongoDB-Adaptor" "cee92aaaf27b500be4ee6a19f398fe32dfd06e4d"
 github "mxcl/OMGHTTPURLRQ" "3.1.1"
 github "realm/realm-cocoa" "v0.98.5"

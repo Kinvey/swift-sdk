@@ -478,9 +478,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 if let persons = persons {
                     XCTAssertEqual(persons.count, 5)
                     
-                    var i = 1
-                    for person in persons {
-                        XCTAssertEqual(person.name, String(format: "Person Cached %02d", i++))
+                    for (i, person) in persons.enumerate() {
+                        XCTAssertEqual(person.name, String(format: "Person Cached %02d", i + 1))
                     }
                 }
                 
@@ -501,17 +500,11 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 
                 if let persons = persons {
                     XCTAssertEqual(persons.count, 15)
-                    do {
-                        var i = 1
-                        for person in persons[0..<10] {
-                            XCTAssertEqual(person.name, String(format: "Person %02d", i++))
-                        }
+                    for (i, person) in persons[0..<10].enumerate() {
+                        XCTAssertEqual(person.name, String(format: "Person %02d", i + 1))
                     }
-                    do {
-                        var i = 1
-                        for person in persons[10..<persons.count] {
-                            XCTAssertEqual(person.name, String(format: "Person Cached %02d", i++))
-                        }
+                    for (i, person) in persons[10..<persons.count].enumerate() {
+                        XCTAssertEqual(person.name, String(format: "Person Cached %02d", i + 1))
                     }
                 }
                 
@@ -591,9 +584,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 if let persons = persons {
                     XCTAssertEqual(persons.count, countLocal)
                     
-                    var i = 1
-                    for person in persons {
-                        XCTAssertEqual(person.name, String(format: "Person Cached %03d", i++))
+                    for (i, person) in persons.enumerate() {
+                        XCTAssertEqual(person.name, String(format: "Person Cached %03d", i + 1))
                     }
                 }
                 
@@ -616,17 +608,11 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 
                 if let persons = persons {
                     XCTAssertEqual(persons.count, countBackend + countLocal)
-                    do {
-                        var i = 1
-                        for person in persons[0..<countBackend] {
-                            XCTAssertEqual(person.name, String(format: "Person %03d", i++))
-                        }
+                    for (i, person) in persons[0..<countBackend].enumerate() {
+                        XCTAssertEqual(person.name, String(format: "Person %03d", i + 1))
                     }
-                    do {
-                        var i = 1
-                        for person in persons[countBackend..<persons.count] {
-                            XCTAssertEqual(person.name, String(format: "Person Cached %03d", i++))
-                        }
+                    for (i, person) in persons[countBackend..<persons.count].enumerate() {
+                        XCTAssertEqual(person.name, String(format: "Person Cached %03d", i + 1))
                     }
                 }
                 

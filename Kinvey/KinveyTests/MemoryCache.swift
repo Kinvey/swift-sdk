@@ -54,7 +54,8 @@ class MemoryCache: NSObject, Cache {
         return findEntityByQuery(query).map { (entity) -> (String, NSDate) in
             let kmd = entity[type.kmdKey ?? PersistableMetadataKey] as! JsonDictionary
             return (entity[type.idKey] as! String, kmd[Metadata.LmtKey] as! NSDate)
-        }.reduce([String : String](), combine: { (var items, pair) in
+        }.reduce([String : String](), combine: { (items, pair) in
+            var items = items
             items[pair.0] = pair.1.toString()
             return items
         })

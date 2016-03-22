@@ -8,3 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <Kinvey/Kinvey-Swift.h>
+
+@interface NSString ()
+
+-(NSDate* _Nullable)toDate;
+
+@end

@@ -45,6 +45,8 @@
 		5765B8511C9771BC00080FFA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5765B84F1C9771BC00080FFA /* LaunchScreen.storyboard */; };
 		5765B8641C97751000080FFA /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* DataStore.swift */; };
+		577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
+		577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B8351C92365700080FFA /* FindOperationTest.swift */; };
 		57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57757F3D1C652A5600C810E9 /* Reachability.swift */; };
 		577C9E781C1F89C700BF49EE /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
 		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
@@ -2074,9 +2076,11 @@
 				578F5C951C9A106500B20F17 /* EmptyObjects.swift in Sources */,
 				57C563071C9CC79D0011FB36 /* ValueTransformer.swift in Sources */,
 				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
+				577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */,
 				57C563061C9CC7410011FB36 /* String.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
 				578F5C931C99EED100B20F17 /* KIF.swift in Sources */,
+				577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */,
 				57946A611C9A300F007F1F81 /* MemoryCache.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
 				57C563041C9CC7270011FB36 /* NSDate.swift in Sources */,

@@ -18,7 +18,7 @@ class StoreTestCase: KinveyTestCase {
         dynamic var age: Int = 0
         
         static func kinveyCollectionName() -> String {
-            return "Person"
+            return NSStringFromClass(self)
         }
         
         static func kinveyPropertyMapping() -> [String : String] {

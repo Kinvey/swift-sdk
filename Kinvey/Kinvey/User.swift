@@ -215,7 +215,7 @@ public class User: NSObject, Credential {
         if let userId = json[PersistableIdKey] as? String {
             self.userId = userId
         } else {
-            self.userId = ""
+            return nil
         }
         
         if let username = json["username"] as? String {
@@ -241,10 +241,6 @@ public class User: NSObject, Credential {
         self.client = client
         
         super.init()
-        
-        if self.userId.isEmpty {
-            return nil
-        }
     }
     
     public func toJson() -> [String : AnyObject] {
