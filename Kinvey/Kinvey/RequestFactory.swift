@@ -37,7 +37,8 @@ public protocol RequestFactory {
 
 extension RequestFactory {
     
-    func toJson(var jsonObject: JsonDictionary) -> NSData {
+    func toJson(jsonObject: JsonDictionary) -> NSData {
+        var jsonObject = jsonObject
         if !NSJSONSerialization.isValidJSONObject(jsonObject) {
             for keyPair in jsonObject {
                 if let valueTransformer = ValueTransformer.valueTransformer(fromClass: keyPair.1.dynamicType, toClass: NSString.self) {

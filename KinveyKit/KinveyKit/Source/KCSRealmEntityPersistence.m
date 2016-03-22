@@ -666,7 +666,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
             kmdKey = KNVPersistableMetadataKey;
         }
         KCSMetadataRealm* kmd = obj[kmdKey];
-        NSDate* date = kmd.lrt != nil ? kmd.lrt : kmd.ect;
+        NSDate* date = kmd.lrt != nil ? [kmd.lrt toDate] : [kmd.ect toDate];
         if (date && [[NSDate date] timeIntervalSinceDate:date] > self.ttl) {
             obj = nil;
         }
@@ -803,9 +803,6 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 {
     Class realmClass = [[self class] realmClassForClass:class];
     RLMRealm* realm = self.realm;
-    
-    NSDictionary<NSString*, NSString*>* kinveyPropertyMapping = [class kinveyPropertyMapping];
-    NSArray<NSString*>* keys = kinveyPropertyMapping.allKeys;
     
     RLMResults* results = [realmClass allObjectsInRealm:realm];
     return results.count;
