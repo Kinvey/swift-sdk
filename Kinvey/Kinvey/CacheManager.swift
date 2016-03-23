@@ -7,14 +7,22 @@
 //
 
 import Foundation
+import Realm
 
 @objc(__KNVCacheManager)
 public class CacheManager: NSObject {
     
     private let persistenceId: String
     
-    init(persistenceId: String) {
+    init(persistenceId: String, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
         self.persistenceId = persistenceId
+        let realmConfiguration = KCSRealmEntityPersistence.configurationForPersistenceId(persistenceId)
+        realmConfiguration.schemaVersion = schemaVersion
+        realmConfiguration.migrationBlock = { migration, oldSchemaVersion in
+            let migration = Migration(realmMigration: migration)
+            migrationHandler?(migration: migration, schemaVersion: oldSchemaVersion)
+        }
+        let _ = try! RLMRealm(configuration: realmConfiguration)
     }
     
     public func cache(collectionName: String? = nil) -> Cache {

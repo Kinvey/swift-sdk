@@ -7,11 +7,14 @@
 //
 
 @import Foundation;
+@import Realm;
 
 #import "KCSCache.h"
 #import "KCSSync.h"
 
 @interface KCSRealmEntityPersistence : NSObject <KCSCache, KCSSync>
+
++(RLMRealmConfiguration*)configurationForPersistenceId:(NSString *)persistenceId;
 
 -(instancetype)initWithPersistenceId:(NSString *)persistenceId
                       collectionName:(NSString *)collectionName;

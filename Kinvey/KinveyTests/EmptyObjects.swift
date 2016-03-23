@@ -48,7 +48,8 @@ class EmptyCache: NSObject, Cache {
         return 0
     }
     
-    func removeEntity(entity: JsonDictionary) {
+    func removeEntity(entity: JsonDictionary) -> Bool {
+        return false
     }
     
     func removeEntitiesByQuery(query: Query) -> UInt {

@@ -15,10 +15,10 @@ internal class EntitySchema: NSObject {
     static var entitySchemas = [String : EntitySchema]()
     
     internal let persistableType: Persistable.Type
-    internal let anyClass: AnyClass
+    internal let persistableClass: AnyClass
     internal let collectionName: String
     
-    internal typealias ClassType = ((String, String?), (AnyClass, AnyClass?))
+    internal typealias ClassType = (name: (main: String, sub: String?), type: (main: AnyClass, sub: AnyClass?))
     internal let properties: [String : ClassType]
     
     class func entitySchema<T: Persistable>(type: T.Type) -> EntitySchema? {
@@ -36,7 +36,7 @@ internal class EntitySchema: NSObject {
             if let aClass = classList[Int(i)] as AnyClass? where class_conformsToProtocol(aClass, Persistable.self),
                 let cls = aClass as? Persistable.Type
             {
-                entitySchemas[NSStringFromClass(aClass)] = EntitySchema(persistableType: cls, anyClass: aClass, collectionName: cls.kinveyCollectionName(), properties: getProperties(aClass))
+                entitySchemas[NSStringFromClass(aClass)] = EntitySchema(persistableType: cls, persistableClass: aClass, collectionName: cls.kinveyCollectionName(), properties: getProperties(aClass))
             }
         }
     }
@@ -71,8 +71,8 @@ internal class EntitySchema: NSObject {
                         let anyClassType: AnyClass = NSClassFromString(propertyTypeName)!
                         let anyClassSubType: AnyClass? = propertySubTypeName != nil ? NSClassFromString(propertySubTypeName!) : nil
                         map[propertyName] = (
-                            (propertyTypeName, propertySubTypeName),
-                            (anyClassType, anyClassSubType)
+                            name: (main: propertyTypeName, sub: propertySubTypeName),
+                            type: (main: anyClassType, sub: anyClassSubType)
                         )
                         break attributeLoop
                     }
@@ -82,11 +82,22 @@ internal class EntitySchema: NSObject {
         return map
     }
     
-    init(persistableType: Persistable.Type, anyClass: AnyClass, collectionName: String, properties: [String : ClassType]) {
+    init(persistableType: Persistable.Type, persistableClass: AnyClass, collectionName: String, properties: [String : ClassType]) {
         self.persistableType = persistableType
-        self.anyClass = anyClass
+        self.persistableClass = persistableClass
         self.collectionName = collectionName
         self.properties = properties
+    }
+    
+}
+
+@objc(KNVRealmEntitySchema)
+internal class RealmEntitySchema: NSObject {
+    
+    internal class func realmClassNameForClass(cls: AnyClass) -> String {
+        let className = NSStringFromClass(cls)
+        let classNameComponents = className.componentsSeparatedByString(".")
+        return classNameComponents.count > 1 ? "\(classNameComponents[0])_K\(classNameComponents[1])" : "K\(className)"
     }
     
 }

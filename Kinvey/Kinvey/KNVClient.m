@@ -63,11 +63,10 @@
 -(instancetype)initializeWithAppKey:(NSString *)appKey
                           appSecret:(NSString *)appSecret
 {
-    [self.client initializeWithAppKey:appKey
+    return [self initializeWithAppKey:appKey
                             appSecret:appSecret
                           apiHostName:[__KNVClient defaultApiHostName]
                          authHostName:[__KNVClient defaultAuthHostName]];
-    return self;
 }
 
 -(instancetype)initializeWithAppKey:(NSString *)appKey
@@ -75,10 +74,27 @@
                         apiHostName:(NSURL *)apiHostName
                        authHostName:(NSURL *)authHostName
 {
+    return [self initializeWithAppKey:appKey
+                            appSecret:appSecret
+                          apiHostName:apiHostName
+                         authHostName:authHostName
+                        schemaVersion:0
+                     migrationHandler:nil];
+}
+
+-(instancetype)initializeWithAppKey:(NSString *)appKey
+                          appSecret:(NSString *)appSecret
+                        apiHostName:(NSURL *)apiHostName
+                       authHostName:(NSURL *)authHostName
+                      schemaVersion:(unsigned long long)schemaVersion
+                   migrationHandler:(KNVMigrationBlock)migrationHandler
+{
     [self.client initializeWithAppKey:appKey
                             appSecret:appSecret
                           apiHostName:apiHostName
-                         authHostName:authHostName];
+                         authHostName:authHostName
+                        schemaVersion:schemaVersion
+                     migrationHandler:migrationHandler];
     return self;
 }
 

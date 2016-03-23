@@ -14,3 +14,9 @@
 -(NSDate* _Nullable)toDate;
 
 @end
+
+@interface KNVRealmEntitySchema : NSObject
+
++(NSString* _Nullable)realmClassNameForClass:(Class _Nonnull)cls;
+
+@end

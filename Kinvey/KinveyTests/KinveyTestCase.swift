@@ -13,7 +13,10 @@ class KinveyTestCase: XCTestCase {
     
     var client: Client!
     
-    var defaultTimeout: NSTimeInterval = NSTimeInterval(Int8.max)
+    static let defaultTimeout = NSTimeInterval(30)
+    lazy var defaultTimeout: NSTimeInterval = {
+        KinveyTestCase.defaultTimeout
+    }()
     
     override func setUp() {
         super.setUp()
