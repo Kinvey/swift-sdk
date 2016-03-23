@@ -71,6 +71,7 @@ public class Client: NSObject, Credential {
     
     public var networkRequestFactory: RequestFactory!
     public var responseParser: ResponseParser!
+    public private(set) var schemaVersion: CUnsignedLongLong = 0
     public private(set) var cacheManager: CacheManager!
     public private(set) var syncManager: SyncManager!
     public private(set) var push: Push!
@@ -99,10 +100,12 @@ public class Client: NSObject, Credential {
         initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
     }    
     
-    public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) -> Client {
-        activeUser = nil
-        cacheManager = CacheManager(persistenceId: appKey)
+    public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) -> Client {
+        self.schemaVersion = schemaVersion
+        cacheManager = CacheManager(persistenceId: appKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
         syncManager = SyncManager (persistenceId: appKey)
+        
+        activeUser = nil
         
         var apiHostName = apiHostName
         if let apiHostNameString = apiHostName.absoluteString as String? where apiHostNameString.characters.last == "/" {
