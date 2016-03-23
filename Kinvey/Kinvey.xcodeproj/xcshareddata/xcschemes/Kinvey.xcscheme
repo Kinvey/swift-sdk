@@ -39,6 +39,26 @@
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57D642EF1CA3268000F6D16E"
+               BuildableName = "KinveyTests Migration Database Step 1.xctest"
+               BlueprintName = "KinveyTests Migration Database Step 1"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "57D643161CA3268600F6D16E"
+               BuildableName = "KinveyTests Migration Database Step 2.xctest"
+               BlueprintName = "KinveyTests Migration Database Step 2"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

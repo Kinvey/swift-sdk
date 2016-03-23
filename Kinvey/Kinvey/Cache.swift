@@ -29,7 +29,7 @@ public protocol Cache {
     
     func count() -> UInt
     
-    func removeEntity(entity: JsonDictionary)
+    func removeEntity(entity: JsonDictionary) -> Bool
     
     func removeEntitiesByQuery(query: Query) -> UInt
     

@@ -259,21 +259,20 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     propertyMap[propertyName] = valueTransformer;
 }
 
-+(Class)createRealmClass:(Class)class
++(Class)createRealmClass:(Class)clazz
 {
-    NSString* className = [NSString stringWithUTF8String:class_getName(class)];
-    collectionNamesMap[[class kinveyCollectionName]] = className;
+    NSString* className = [NSString stringWithUTF8String:class_getName(clazz)];
+    collectionNamesMap[[clazz kinveyCollectionName]] = className;
     
-    NSArray<NSString*>* realmClassNames = [className componentsSeparatedByString:@"."];
-    NSString* realmClassName = realmClassNames.count > 1 ? [NSString stringWithFormat:@"%@_K%@", realmClassNames[0], realmClassNames[1]] : [NSString stringWithFormat:@"K%@", className];
+    NSString* realmClassName = [KNVRealmEntitySchema realmClassNameForClass:clazz];
     Class realmClass = objc_allocateClassPair([RLMObject class], realmClassName.UTF8String, 0);
     
     if (classMapOriginalRealm[className]) return NSClassFromString(classMapOriginalRealm[className]);
     
-    [self registerOriginalClass:class
+    [self registerOriginalClass:clazz
                      realmClass:realmClass];
     
-    [self copyPropertiesFromClass:class
+    [self copyPropertiesFromClass:clazz
                           toClass:realmClass];
     
     [self createAclToClass:realmClass];
@@ -283,7 +282,7 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     
     [self registerRealmClassProperties:realmClass];
     
-    [self createPrimaryKeyMethodFromClass:class
+    [self createPrimaryKeyMethodFromClass:clazz
                                   toClass:realmClass];
     
     return realmClass;
@@ -517,6 +516,19 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 
 #pragma mark - Cache
 
++(RLMRealmConfiguration*)configurationForPersistenceId:(NSString *)persistenceId
+{
+    RLMRealmConfiguration* realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
+    
+    NSMutableArray<NSString*>* pathComponents = [realmConfiguration.path pathComponents].mutableCopy;
+    pathComponents[pathComponents.count - 1] = [NSString stringWithFormat:@"com.kinvey.%@_cache.realm", persistenceId];
+    realmConfiguration.path = [NSString pathWithComponents:pathComponents];
+    
+    NSLog(@"Database Path: %@", realmConfiguration.path);
+    
+    return realmConfiguration;
+}
+
 -(instancetype)initWithPersistenceId:(NSString *)persistenceId
                       collectionName:(NSString *)collectionName
 {
@@ -526,15 +538,8 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
         self.collectionName = collectionName;
         self.clazz = collectionName ? NSClassFromString(collectionNamesMap[self.collectionName]) : nil;
         
-        RLMRealmConfiguration* realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
-        
-        NSMutableArray<NSString*>* pathComponents = [realmConfiguration.path pathComponents].mutableCopy;
-        pathComponents[pathComponents.count - 1] = [NSString stringWithFormat:@"com.kinvey.%@_cache.realm", self.persistenceId];
-        realmConfiguration.path = [NSString pathWithComponents:pathComponents];
-        
-        NSLog(@"Database Path: %@", realmConfiguration.path);
-        
-        self.realmConfiguration = realmConfiguration;
+        self.realmConfiguration = [self.class configurationForPersistenceId:persistenceId];
+        assert(self.realm);
     }
     return self;
 }
@@ -559,21 +564,22 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     }];
 }
 
--(void)removeEntity:(NSDictionary<NSString *, id> *)entity
+-(BOOL)removeEntity:(NSDictionary<NSString *, id> *)entity
 {
     return [self removeEntity:entity
                      forClass:self.clazz];
 }
 
--(void)removeEntity:(NSDictionary<NSString *, id> *)entity
+-(BOOL)removeEntity:(NSDictionary<NSString *, id> *)entity
            forClass:(Class)class
 {
     NSDictionary<NSString*, NSString*>* propertyMapping = [class kinveyPropertyMapping].invert;
     NSString* keyId = propertyMapping[KCSEntityKeyId];
     KNVQuery* query = [[KNVQuery alloc] initWithPredicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"%@ = %%@", keyId], entity[keyId]]
                                             sortDescriptors:nil];
-    [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
-                       forClass:class];
+    NSUInteger count = [self removeEntitiesByQuery:[[KCSQueryAdapter alloc] initWithQuery:query]
+                                          forClass:class];
+    return count > 0;
 }
 
 -(NSUInteger)removeEntitiesByQuery:(id<KCSQuery>)query
