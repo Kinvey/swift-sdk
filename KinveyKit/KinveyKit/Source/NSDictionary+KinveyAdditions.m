@@ -107,18 +107,53 @@
     return result;
 }
 
+-(id)transformValue:(id)value
+{
+    if ([value isKindOfClass:[KCSKinveyRef class]]) {
+        return [((KCSKinveyRef*) value) proxyForJson];
+    } else if ([value isKindOfClass:[KCSFile class]]) {
+        return [((KCSFile*) value) proxyForJson];
+    } else if ([value isKindOfClass:[UIImage class]]) {
+        return [NSNull null];
+    } else if ([value isKindOfClass:[NSDictionary class]]) {
+        NSMutableDictionary* dictionary = [value isKindOfClass:[NSMutableDictionary class]] ? value : [value mutableCopy];
+        id oldValue, newValue;
+        for (NSString* key in value) {
+            oldValue = value[key];
+            newValue = [self transformValue:oldValue];
+            if (oldValue != newValue) {
+                if (newValue != [NSNull null]) {
+                    dictionary[key] = newValue;
+                } else {
+                    [dictionary removeObjectForKey:key];
+                }
+            }
+        }
+        return dictionary;
+    } else if ([value isKindOfClass:[NSArray class]]) {
+        NSArray* array = (NSArray*) value;
+        NSMutableArray* results = [NSMutableArray arrayWithCapacity:array.count];
+        id oldValue, newValue;
+        for (id oldValue in value) {
+            newValue = [self transformValue:oldValue];
+            if (newValue != [NSNull null]) {
+                [results addObject:newValue];
+            }
+        }
+        return results;
+    }
+    return value;
+}
+
 -(NSData *)kcsJSONDataRepresentation:(NSError *__autoreleasing *)_error
 {
     NSMutableDictionary *dictionary = self.mutableCopy;
-    id value;
+    id oldValue, newValue;
     for (NSString* key in dictionary.allKeys) {
-        value = dictionary[key];
-        if ([value isKindOfClass:[KCSKinveyRef class]]) {
-            dictionary[key] = [((KCSKinveyRef*) value) proxyForJson];
-        } else if ([value isKindOfClass:[KCSFile class]]) {
-            dictionary[key] = [((KCSFile*) value) proxyForJson];
-        } else if ([value isKindOfClass:[UIImage class]]) {
-            dictionary[key] = [NSNull null];
+        oldValue = dictionary[key];
+        newValue = [self transformValue:oldValue];
+        if (oldValue != newValue) {
+            dictionary[key] = newValue;
         }
     }
     
