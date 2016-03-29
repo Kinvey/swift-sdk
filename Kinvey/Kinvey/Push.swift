@@ -9,6 +9,7 @@
 import Foundation
 import PromiseKit
 
+/// Class used to register and unregister a device to receive push notifications.
 @objc(KNVPush)
 public class Push: NSObject {
     
@@ -36,10 +37,12 @@ public class Push: NSObject {
         self.client = client
     }
     
+    /// Call this method as the 1st step to register the current device to receive push notifications.
     public func registerForPush() {
         KCSPush.registerForPush()
     }
     
+    /// Unregister the current device to receive push notifications.
     public func unRegisterDeviceToken(completionHandler: BoolCompletionHandler? = nil) {
         guard let deviceToken = deviceToken else {
             fatalError("Device token not found")
@@ -63,6 +66,7 @@ public class Push: NSObject {
         }
     }
     
+    /// Call this method inside your App Delegate method `application(application:didRegisterForRemoteNotificationsWithDeviceToken:completionHandler:)`.
     public func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData, completionHandler: BoolCompletionHandler? = nil) {
         self.deviceToken = deviceToken
         Promise<Bool> { fulfill, reject in
@@ -83,10 +87,12 @@ public class Push: NSObject {
         }
     }
     
+    /// Call this method inside your App Delegate method `application(application:didFailToRegisterForRemoteNotificationsWithError:)`.
     public func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
         push.application(application, didFailToRegisterForRemoteNotificationsWithError: error)
     }
     
+    /// Call this method inside your App Delegate method `application(application:didReceiveRemoteNotification:)`.
     public func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
         push.application(application, didReceiveRemoteNotification: userInfo)
     }

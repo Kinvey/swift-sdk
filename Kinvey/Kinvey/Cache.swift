@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(__KNVCache)
-public protocol Cache {
+internal protocol Cache {
     
     var persistenceId: String { get set }
     var collectionName: String { get set }

@@ -9,10 +9,14 @@
 import Foundation
 import CoreData
 
+/// Protocol that turns a NSObject into a persistable class to be used in a `DataStore`.
 @objc(KNVPersistable)
 public protocol Persistable: JsonObject, NSObjectProtocol {
     
+    /// Provides the collection name to be matched with the backend.
     static func kinveyCollectionName() -> String
+    
+    /// Provides the property mapping to be matched with the backend.
     static func kinveyPropertyMapping() -> [String : String]
     
 }
@@ -36,6 +40,7 @@ internal class __KNVPersistable: NSObject {
 
 extension Persistable {
     
+    /// Property that matches with the `_id` property.
     public static var idKey: String {
         get {
             let idKey = kinveyPropertyMapping()
@@ -45,6 +50,7 @@ extension Persistable {
         }
     }
     
+    /// Property that matches with the `_acl` property.
     public static var aclKey: String? {
         get {
             let filtered = kinveyPropertyMapping()
@@ -57,6 +63,7 @@ extension Persistable {
         }
     }
     
+    /// Property that matches with the `_kmd` property.
     public static var kmdKey: String? {
         get {
             let filtered = kinveyPropertyMapping()
@@ -69,6 +76,7 @@ extension Persistable {
         }
     }
     
+    /// Converts an array of persistable objects into a JSON array.
     public static func toJson(array: [Persistable]) -> [JsonDictionary] {
         var jsonArray: [[String : AnyObject]] = []
         for item in array {
@@ -124,8 +132,6 @@ extension Persistable {
         return results
     }
     
-    //MARK: NSObject
-    
     subscript(key: String) -> AnyObject? {
         get {
             guard let this = self as? NSObject else {
@@ -141,6 +147,7 @@ extension Persistable {
         }
     }
     
+    /// Converts the object into a `Dictionary<String, AnyObject>`.
     public func dictionaryWithValuesForKeys(keys: [String]) -> [String : AnyObject] {
         guard let this = self as? NSObject else {
             return [:]
@@ -148,6 +155,7 @@ extension Persistable {
         return this.dictionaryWithValuesForKeys(keys)
     }
     
+    /// Property value that matches with the `_id` property.
     public var kinveyObjectId: String? {
         get {
             guard let id = self[self.dynamicType.idKey] as? String else
@@ -161,6 +169,7 @@ extension Persistable {
         }
     }
     
+    /// Property value that matches with the `_acl` property.
     public var kinveyAcl: Acl? {
         get {
             guard let aclKey = self.dynamicType.aclKey,
@@ -179,11 +188,13 @@ extension Persistable {
         }
     }
     
+    /// Serialize the persistable object to a JSON object.
     public func toJson() -> JsonDictionary {
         let keys = self.dynamicType.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
         return dictionaryWithValuesForKeys(keys)
     }
     
+    /// Deserialize a JSON object into the persistable object.
     public func fromJson(json: JsonDictionary) {
         for key in self.dynamicType.kinveyPropertyMapping().keys {
             self[key] = json[key]

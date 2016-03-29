@@ -9,24 +9,35 @@
 import Foundation
 import PromiseKit
 
+/// Class that represents an `User`.
 @objc(__KNVUser)
 public class User: NSObject, Credential {
     
+    /// Username Key.
     public static let PersistableUsernameKey = "username"
     
     public typealias UserHandler = (User?, ErrorType?) -> Void
     public typealias VoidHandler = (ErrorType?) -> Void
     public typealias BoolHandler = (Bool, ErrorType?) -> Void
     
+    /// `_id` property of the user.
     public private(set) var userId: String
+    
+    /// `_acl` property of the user.
     public private(set) var acl: Acl?
+    
+    /// `_kmd` property of the user.
     public private(set) var metadata: Metadata?
     
+    /// `username` property of the user.
     public var username: String?
+    
+    /// `email` property of the user.
     public var email: String?
     
     internal let client: Client
     
+    /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password)
         Promise<User> { fulfill, reject in
@@ -48,8 +59,7 @@ public class User: NSObject, Credential {
         return request
     }
     
-    //TODO: review the method name for delete a user
-    
+    /// Deletes a `User` by the `userId` property.
     public class func destroy(userId userId: String, hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserDelete(userId: userId, hard: hard)
         Promise<Void> { fulfill, reject in
@@ -73,10 +83,12 @@ public class User: NSObject, Credential {
         return request
     }
     
+    /// Deletes the `User`.
     public func destroy(hard hard: Bool = true, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return User.destroy(userId: userId, hard: hard, client: client, completionHandler: completionHandler)
     }
     
+    /// Sign in a user and set as a current active user.
     public class func login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserLogin(username: username, password: password)
         Promise<User> { fulfill, reject in
@@ -123,14 +135,17 @@ public class User: NSObject, Credential {
         return request
     }
     
+    /// Sends an email to the user with a link to reset the password using the `username` property.
     public class func resetPassword(username username: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: username, client: client, completionHandler:  completionHandler)
     }
     
+    /// Sends an email to the user with a link to reset the password using the `email` property.
     public class func resetPassword(email email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         return resetPassword(usernameOrEmail: email, client: client, completionHandler:  completionHandler)
     }
     
+    /// Sends an email to the user with a link to reset the password.
     public func resetPassword(client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         if let email = email {
             return User.resetPassword(email: email, client: client, completionHandler: completionHandler)
@@ -164,6 +179,7 @@ public class User: NSObject, Credential {
         return request
     }
     
+    /// Checks if a `username` already exists or not.
     public class func exists(username username: String, client: Client = Kinvey.sharedClient, completionHandler: BoolHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserExists(username: username)
         Promise<Bool> { fulfill, reject in
@@ -184,6 +200,7 @@ public class User: NSObject, Credential {
         return request
     }
     
+    /// Gets a `User` instance using the `userId` property.
     public class func get(userId userId: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserGet(userId: userId)
         Promise<User> { fulfill, reject in
@@ -204,6 +221,7 @@ public class User: NSObject, Credential {
         return request
     }
     
+    /// Default Constructor.
     public init(userId: String, acl: Acl? = nil, metadata: Metadata? = nil, client: Client = Kinvey.sharedClient) {
         self.userId = userId
         self.acl = acl
@@ -211,7 +229,8 @@ public class User: NSObject, Credential {
         self.client = client
     }
     
-    public required init?(json: [String : AnyObject], client: Client = Kinvey.sharedClient) {
+    /// Constructor used to build a new `User` instance from a JSON object.
+    public required init?(json: JsonDictionary, client: Client = Kinvey.sharedClient) {
         if let userId = json[PersistableIdKey] as? String {
             self.userId = userId
         } else {
@@ -243,6 +262,7 @@ public class User: NSObject, Credential {
         super.init()
     }
     
+    /// The JSON representation for the `User` instance.
     public func toJson() -> [String : AnyObject] {
         var json: [String : AnyObject] = [:]
         
@@ -267,12 +287,14 @@ public class User: NSObject, Credential {
         return json
     }
     
+    /// Sign out the current active user.
     public func logout() {
         if self == client.activeUser {
             client.activeUser = nil
         }
     }
     
+    /// Creates or updates a `User`.
     public func save(client client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserSave(user: self)
         Promise<User> { fulfill, reject in
@@ -294,6 +316,7 @@ public class User: NSObject, Credential {
         return request
     }
     
+    /// Autorization header used for calls that requires a logged `User`.
     public var authorizationHeader: String? {
         get {
             var authorization: String? = nil
@@ -304,8 +327,7 @@ public class User: NSObject, Credential {
         }
     }
     
-    //MARK: MIC
-    
+    /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
     public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) -> Void in
             var user: User? = nil

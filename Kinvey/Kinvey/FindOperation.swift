@@ -27,9 +27,13 @@ internal class FindOperation: ReadOperation {
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            let json = self.cache.findEntityByQuery(self.query)
-            let array = self.fromJson(jsonArray: json)
-            completionHandler?(array, nil)
+            if let cache = self.cache {
+                let json = cache.findEntityByQuery(self.query)
+                let array = self.fromJson(jsonArray: json)
+                completionHandler?(array, nil)
+            } else {
+                completionHandler?([], nil)
+            }
         }
         return request
     }
@@ -42,7 +46,7 @@ internal class FindOperation: ReadOperation {
                 let jsonArray = self.client.responseParser.parseArray(data)
             {
                 self.resultsHandler?(jsonArray)
-                if !self.cache.isEmpty() && self.deltaSet {
+                if let cache = self.cache where !cache.isEmpty() && self.deltaSet {
                     let refObjs = self.reduceToIdsLmts(jsonArray)
                     let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
                     var allIds = Set<String>()
@@ -51,7 +55,7 @@ internal class FindOperation: ReadOperation {
                     allIds.unionInPlace(deltaSet.deleted)
                     let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
                     var newRefObjs: [String : String]? = nil
-                    let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: self.cache, client: self.client) { jsonArray in
+                    let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: cache, client: self.client) { jsonArray in
                         newRefObjs = self.reduceToIdsLmts(jsonArray)
                     }
                     operation.execute { (results, error) -> Void in
@@ -61,7 +65,7 @@ internal class FindOperation: ReadOperation {
                                 let deleted = deltaSet.deleted.subtract(refKeys)
                                 if deleted.count > 0 {
                                     let query = Query(format: "\(self.persistableType.idKey) IN %@", deleted)
-                                    self.cache.removeEntitiesByQuery(query)
+                                    cache.removeEntitiesByQuery(query)
                                 }
                             }
                             self.executeLocal(completionHandler)
@@ -74,7 +78,7 @@ internal class FindOperation: ReadOperation {
                 } else {
                     let persistableArray = self.persistableType.fromJson(jsonArray)
                     let persistableJson = self.merge(persistableArray, jsonArray: jsonArray)
-                    self.cache.saveEntities(persistableJson)
+                    self.cache?.saveEntities(persistableJson)
                     completionHandler?(persistableArray, nil)
                 }
             } else if let error = error {

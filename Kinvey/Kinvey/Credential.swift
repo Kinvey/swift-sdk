@@ -8,8 +8,10 @@
 
 import Foundation
 
+/// Protocol that provides an autorization header used for set the `Authorization` header required by Kinvey calls.
 public protocol Credential {
     
+    /// Autorization header used for set the `Authorization` header required by Kinvey calls.
     var authorizationHeader: String? { get }
 
 }

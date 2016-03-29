@@ -22,14 +22,14 @@ internal class PushOperation: SyncOperation {
                 request.execute() { data, response, error in
                     if let response = response where response.isResponseOK, let data = data {
                         let json = self.client.responseParser.parse(data)
-                        if let json = json, let objectId = pendingOperation.objectId where request.request.HTTPMethod != "DELETE" {
-                            if let entity = self.cache.findEntity(objectId) {
-                                self.cache.removeEntity(entity)
+                        if let cache = self.cache, let json = json, let objectId = pendingOperation.objectId where request.request.HTTPMethod != "DELETE" {
+                            if let entity = cache.findEntity(objectId) {
+                                cache.removeEntity(entity)
                             }
                             
                             let persistable = self.persistableType.fromJson(json)
                             let persistableJson = self.merge(persistable, json: json)
-                            self.cache.saveEntity(persistableJson)
+                            cache.saveEntity(persistableJson)
                         }
                         if request.request.HTTPMethod != "DELETE" {
                             self.sync.removePendingOperation(pendingOperation)

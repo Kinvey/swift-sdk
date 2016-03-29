@@ -150,7 +150,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationCreate = expectationWithDescription("Create")
             
-            let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, sync: EmptySync(), cache: EmptyCache(), client: client)
+            let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, client: client)
             createOperation.execute { (results, error) -> Void in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
@@ -251,7 +251,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationUpdate = expectationWithDescription("Update")
             
-            let updateOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, sync: EmptySync(), cache: EmptyCache(), client: client)
+            let updateOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, client: client)
             updateOperation.execute { (results, error) -> Void in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
@@ -349,7 +349,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             let query = Query(format: "objectId == %@", objectId)
             query.persistableType = Person.self
-            let createRemove = RemoveOperation(query: query, writePolicy: .ForceNetwork, sync: EmptySync(), persistableType: Person.self, cache: EmptyCache(), client: client)
+            let createRemove = RemoveOperation(query: query, writePolicy: .ForceNetwork, persistableType: Person.self, client: client)
             createRemove.execute { (count, error) -> Void in
                 XCTAssertNotNil(count)
                 XCTAssertNil(error)
@@ -424,7 +424,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             weak var expectationCreate = self.expectationWithDescription("Create")
             
-            let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, sync: EmptySync(), cache: EmptyCache(), client: self.client)
+            let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, client: self.client)
             createOperation.execute { (results, error) -> Void in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
@@ -531,7 +531,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 
                 weak var expectationCreate = self.expectationWithDescription("Create")
                 
-                let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, sync: EmptySync(), cache: EmptyCache(), client: self.client)
+                let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, client: self.client)
                 createOperation.execute { (results, error) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)

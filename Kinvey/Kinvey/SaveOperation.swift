@@ -13,7 +13,7 @@ internal class SaveOperation: WriteOperation {
     
     let persistable: Persistable
     
-    init(persistable: Persistable, writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
+    init(persistable: Persistable, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache? = nil, client: Client) {
         self.persistable = persistable
         super.init(writePolicy: writePolicy, sync: sync, persistableType: persistable.dynamicType, cache: cache, client: client)
     }
@@ -24,11 +24,15 @@ internal class SaveOperation: WriteOperation {
             let request = self.client.networkRequestFactory.buildAppDataSave(self.persistable)
             
             let persistable = self.fillObject(self.persistable)
-            var json = persistable.toJson()
-            json = self.fillJson(json)
-            self.cache.saveEntity(json)
+            if let cache = self.cache {
+                var json = persistable.toJson()
+                json = self.fillJson(json)
+                cache.saveEntity(json)
+            }
             
-            self.sync.savePendingOperation(self.sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
+            if let sync = self.sync {
+                sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
+            }
             completionHandler?(self.persistable, nil)
         }
         return request
@@ -42,19 +46,21 @@ internal class SaveOperation: WriteOperation {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
                         let persistable = self.persistableType.fromJson(json)
-                        var persistableJson = self.merge(persistable, json: json)
-                        if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] where kmd[PersistableMetadataLastRetrievedTimeKey] == nil {
-                            kmd[PersistableMetadataLastRetrievedTimeKey] = NSDate().toString()
-                            persistableJson[PersistableMetadataKey] = kmd
+                        if let cache = self.cache {
+                            var persistableJson = self.merge(persistable, json: json)
+                            if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] where kmd[PersistableMetadataLastRetrievedTimeKey] == nil {
+                                kmd[PersistableMetadataLastRetrievedTimeKey] = NSDate().toString()
+                                persistableJson[PersistableMetadataKey] = kmd
+                            }
+                            cache.saveEntity(persistableJson)
                         }
-                        self.cache.saveEntity(persistableJson)
                         self.persistable.merge(persistable)
                     }
                     completionHandler?(self.persistable, nil)
                 } else if let error = error {
                     completionHandler?(nil, error)
                 } else {
-                    completionHandler?(nil, Error.InvalidResponse)
+                    completionHandler?(nil, KinveyError.InvalidResponse)
                 }
             }
         }
@@ -63,7 +69,7 @@ internal class SaveOperation: WriteOperation {
     
     private func checkRequirements(completionHandler: ObjectCompletionHandler?) -> Bool {
         guard let _ = client.activeUser else {
-            completionHandler?(nil, Error.NoActiveUser)
+            completionHandler?(nil, KinveyError.NoActiveUser)
             return false
         }
         
