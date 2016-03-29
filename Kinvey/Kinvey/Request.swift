@@ -8,12 +8,17 @@
 
 import Foundation
 
+/// Protocol that represents a request made to the backend.
 @objc(KNVRequest)
 public protocol Request {
     
+    /// Indicates if a request still executing or not.
     var executing: Bool { get }
-    var canceled: Bool { get }
     
+    /// Indicates if a request was cancelled or not.
+    var cancelled: Bool { get }
+    
+    /// Cancels a request in progress.
     func cancel()
 
 }

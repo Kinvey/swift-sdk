@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum RequestType {
+internal enum RequestType {
     
     case Create, Read, Update, Delete
     

@@ -2,11 +2,11 @@
 //  MemoryCache.swift
 //  Kinvey
 //
-//  Created by Victor Barros on 2016-03-16.
+//  Created by Victor Barros on 2016-03-29.
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-import Kinvey
+import Foundation
 
 @objc
 class MemoryCache: NSObject, Cache {
@@ -54,11 +54,11 @@ class MemoryCache: NSObject, Cache {
         return findEntityByQuery(query).map { (entity) -> (String, NSDate) in
             let kmd = entity[type.kmdKey ?? PersistableMetadataKey] as! JsonDictionary
             return (entity[type.idKey] as! String, kmd[Metadata.LmtKey] as! NSDate)
-        }.reduce([String : String](), combine: { (items, pair) in
-            var items = items
-            items[pair.0] = pair.1.toString()
-            return items
-        })
+            }.reduce([String : String](), combine: { (items, pair) in
+                var items = items
+                items[pair.0] = pair.1.toString()
+                return items
+            })
     }
     
     func findAll() -> [JsonDictionary] {

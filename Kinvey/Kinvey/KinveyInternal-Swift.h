@@ -23,6 +23,14 @@
 
 @end
 
+@protocol KNVPendingOperation
+
+@property (nonatomic, readonly, copy) NSString * _Nullable objectId;
+
+- (NSURLRequest * _Nonnull)buildRequest;
+
+@end
+
 @protocol __KNVSync
 
 @property (nonatomic, copy) NSString * _Nonnull persistenceId;
@@ -40,6 +48,25 @@
 - (void)removePendingOperation:(id <KNVPendingOperation> _Nonnull)pendingOperation;
 - (void)removeAllPendingOperations;
 - (void)removeAllPendingOperations:(NSString * _Nullable)objectId;
+
+@end
+
+@protocol __KNVCache
+
+@property (nonatomic, copy) NSString * _Nonnull persistenceId;
+@property (nonatomic, copy) NSString * _Nonnull collectionName;
+@property (nonatomic) NSTimeInterval ttl;
+
+- (void)saveEntity:(NSDictionary<NSString *, id> * _Nonnull)entity;
+- (void)saveEntities:(NSArray<NSDictionary<NSString *, id> *> * _Nonnull)entities;
+- (NSDictionary<NSString *, id> * _Nullable)findEntity:(NSString * _Nonnull)objectId;
+- (NSArray<NSDictionary<NSString *, id> *> * _Nonnull)findEntityByQuery:(KNVQuery * _Nonnull)query;
+- (NSDictionary<NSString *, NSString *> * _Nonnull)findIdsLmtsByQuery:(KNVQuery * _Nonnull)query;
+- (NSArray<NSDictionary<NSString *, id> *> * _Nonnull)findAll;
+- (NSUInteger)count;
+- (BOOL)removeEntity:(NSDictionary<NSString *, id> * _Nonnull)entity;
+- (NSUInteger)removeEntitiesByQuery:(KNVQuery * _Nonnull)query;
+- (void)removeAllEntities;
 
 @end
 
@@ -165,6 +192,36 @@
 + (KNVQuery * _Nonnull)query:(KNVQuery * _Nonnull)query
              persistableType:(Class <KNVPersistable> _Nonnull)persistableType;
 
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+
+@end
+
+@interface __KNVError : NSObject
+
++ (NSError * _Nonnull)ObjectIdMissing;
++ (NSError * _Nonnull)InvalidResponse;
++ (NSError * _Nonnull)NoActiveUser;
++ (NSError * _Nonnull)RequestCanceled;
++ (NSError * _Nonnull)InvalidStoreType;
+
+@end
+
+@interface __KNVLocalRequest : NSObject <KNVRequest>
+
+@property (nonatomic, readonly) BOOL executing;
+@property (nonatomic, readonly) BOOL canceled;
+
+- (void)cancel;
+
+@end
+
+@interface __KNVMultiRequest : NSObject <KNVRequest>
+
+@property (nonatomic, readonly) BOOL executing;
+@property (nonatomic, readonly) BOOL canceled;
+
+- (void)addRequest:(id <KNVRequest> _Nonnull)request;
+- (void)cancel;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 
 @end

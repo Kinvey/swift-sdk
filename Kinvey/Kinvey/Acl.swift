@@ -22,7 +22,7 @@ public class Acl: NSObject {
         self.creator = creator
     }
     
-    /// Constructor used to build an Acl instance from a JSON object.
+    /// Constructor used to build a new `Acl` instance from a JSON object.
     public convenience init(json: JsonDictionary) {
         self.init(creator: json[Acl.CreatorKey] as! String)
     }

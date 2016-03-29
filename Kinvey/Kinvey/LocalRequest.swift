@@ -9,10 +9,10 @@
 import UIKit
 
 @objc(__KNVLocalRequest)
-public class LocalRequest: NSObject, Request {
+internal class LocalRequest: NSObject, Request {
     
-    public let executing = false
-    public let canceled = false
+    let executing = false
+    let cancelled = false
     
     typealias LocalHandler = () -> Void
     
@@ -27,7 +27,7 @@ public class LocalRequest: NSObject, Request {
         completionHandler?()
     }
     
-    public func cancel() {
+    func cancel() {
         //do nothing
     }
 

@@ -9,18 +9,18 @@
 import Foundation
 
 @objc(__KNVMultiRequest)
-public class MultiRequest: NSObject, Request {
+internal class MultiRequest: NSObject, Request {
     
     private var requests = [Request]()
     
-    public func addRequest(request: Request) {
+    internal func addRequest(request: Request) {
         if _canceled {
             request.cancel()
         }
         requests.append(request)
     }
     
-    public var executing: Bool {
+    internal var executing: Bool {
         get {
             for request in requests {
                 if request.executing {
@@ -32,10 +32,10 @@ public class MultiRequest: NSObject, Request {
     }
     
     var _canceled = false
-    public var canceled: Bool {
+    internal var cancelled: Bool {
         get {
             for request in requests {
-                if request.canceled {
+                if request.cancelled {
                     return true
                 }
             }
@@ -43,7 +43,7 @@ public class MultiRequest: NSObject, Request {
         }
     }
     
-    public func cancel() {
+    internal func cancel() {
         _canceled = true
         for request in requests {
             request.cancel()

@@ -9,6 +9,7 @@
 import Foundation
 import PromiseKit
 
+/// Class to interact with the `Files` collection in the backend.
 public class FileStore {
     
     public typealias FileCompletionHandler = (File?, ErrorType?) -> Void
@@ -18,6 +19,7 @@ public class FileStore {
     
     private let client: Client
     
+    /// Factory method that returns a `FileStore`.
     public class func getInstance(client: Client = sharedClient) -> FileStore {
         return FileStore(client: client)
     }
@@ -27,6 +29,7 @@ public class FileStore {
     }
 
 #if os(iOS)
+    /// Uploads a `UIImage` in a PNG format.
     public func upload(file: File, image: UIImage, completionHandler: FileCompletionHandler? = nil) -> Request {
         let data = UIImagePNGRepresentation(image)!
         file.mimeType = "image/png"
@@ -34,10 +37,12 @@ public class FileStore {
     }
 #endif
     
+    /// Uploads a file using the file path.
     public func upload(file: File, path: String, completionHandler: FileCompletionHandler? = nil) -> Request {
         return upload(file, stream: NSInputStream(fileAtPath: path)!, completionHandler: completionHandler)
     }
     
+    /// Uploads a file using a input stream.
     public func upload(file: File, stream: NSInputStream, completionHandler: FileCompletionHandler? = nil) -> Request {
         let data = NSMutableData()
         stream.open()
@@ -98,6 +103,7 @@ public class FileStore {
         })
     }
     
+    /// Uploads a file using a `NSData`.
     public func upload(file: File, data: NSData, completionHandler: FileCompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobUploadFile(file)
         Promise<File> { fulfill, reject in //creating bucket
@@ -141,6 +147,7 @@ public class FileStore {
         return request
     }
     
+    /// Refresh a `File` instance.
     public func refresh(file: File, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         let fileMetadata = getFileMetadata(file, ttl: ttl)
         let request = fileMetadata.0
@@ -172,6 +179,7 @@ public class FileStore {
         return downloadTaskRequest
     }
     
+    /// Downloads a file using the `downloadURL` of the `File` instance.
     public func download(file: File, ttl: TTL? = nil, completionHandler: FileDataCompletionHandler? = nil) -> Request {
         if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
             return downloadFile(file, downloadURL: downloadURL, completionHandler: completionHandler)
@@ -192,6 +200,7 @@ public class FileStore {
         }
     }
     
+    /// Deletes a file instance in the backend.
     public func remove(file: File, completionHandler: UIntCompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobDeleteFile(file)
         Promise<UInt> { fulfill, reject in
@@ -215,6 +224,7 @@ public class FileStore {
         return request
     }
     
+    /// Gets a list of files that matches with the query passed by parameter.
     public func find(query: Query = Query(), ttl: TTL? = nil, completionHandler: FileArrayCompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildBlobQueryFile(query, ttl: ttl)
         Promise<[File]> { fulfill, reject in

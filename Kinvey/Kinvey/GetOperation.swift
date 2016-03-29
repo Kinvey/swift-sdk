@@ -21,7 +21,7 @@ internal class GetOperation: ReadOperation {
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            let json = self.cache.findEntity(self.id)
+            let json = self.cache?.findEntity(self.id)
             if let json = json {
                 let persistable = self.fromJson(json)
                 completionHandler?(persistable, nil)
@@ -37,7 +37,9 @@ internal class GetOperation: ReadOperation {
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
                 let obj = self.persistableType.fromJson(json)
-                self.cache.saveEntity(obj.toJson())
+                if let cache = self.cache {
+                    cache.saveEntity(obj.toJson())
+                }
                 completionHandler?(obj, nil)
             } else if let error = error {
                 completionHandler?(nil, error)

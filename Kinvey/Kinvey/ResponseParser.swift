@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol ResponseParser {
+internal protocol ResponseParser {
     
     var client: Client { get }
     

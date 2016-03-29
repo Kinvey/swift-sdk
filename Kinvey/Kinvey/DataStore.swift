@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Class to interact with a specific collection in the backend.
 public class DataStore<T: Persistable where T: NSObject> {
     
     public typealias ArrayCompletionHandler = ([T]?, ErrorType?) -> Void
@@ -18,20 +19,26 @@ public class DataStore<T: Persistable where T: NSObject> {
     private let readPolicy: ReadPolicy
     private let writePolicy: WritePolicy
     
+    /// Collection name that matches with the name in the backend.
     public let collectionName: String
+    
+    /// Client instance attached to the DataStore.
     public let client: Client
     
+    /// DataStoreType defines how the DataStore will behave.
     public let type: DataStoreType
     
     private let cache: Cache
     private let sync: Sync
     
+    /// TTL (Time to Live) defines a filter of how old the data returned from the DataStore can be.
     public var ttl: TTL? {
         didSet {
             cache.ttl = ttl != nil ? ttl!.1.toTimeInterval(ttl!.0) : 0
         }
     }
     
+    /// Factory method that returns a `DataStore`.
     public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient) -> DataStore {
         return DataStore<T>(type: type, client: client)
     }
@@ -46,6 +53,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         writePolicy = type.writePolicy
     }
     
+    /// Gets a single record using the `_id` of the record.
     public func findById(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         assert(id != "")
         let readPolicy = readPolicy ?? self.readPolicy
@@ -54,6 +62,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    /// Gets a list of records that matches with the query passed by parameter.
     public func find(query: Query = Query(), deltaSet: Bool = true, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
@@ -61,6 +70,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    /// Creates or updates a record.
     public func save(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
         let operation = SaveOperation(persistable: persistable, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
@@ -68,6 +78,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    /// Deletes a record.
     public func remove(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) throws -> Request {
         guard let id = persistable.kinveyObjectId else {
             throw Error.ObjectIdMissing
@@ -75,6 +86,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return removeById(id, writePolicy:writePolicy, completionHandler: completionHandler)
     }
     
+    /// Deletes a list of records.
     public func remove(array: [T], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         var ids: [String] = []
         for persistable in array {
@@ -85,16 +97,19 @@ public class DataStore<T: Persistable where T: NSObject> {
         return removeById(ids, writePolicy:writePolicy, completionHandler: completionHandler)
     }
     
+    /// Deletes a record using the `_id` of the record.
     public func removeById(id: String, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let query = Query(format: "\(T.idKey) == %@", id)
         return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
+    /// Deletes a list of records using the `_id` of the records.
     public func removeById(ids: [String], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let query = Query(format: "\(T.idKey) IN %@", ids)
         return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
+    /// Deletes a list of records that matches with the query passed by parameter.
     public func remove(query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
         let operation = RemoveOperation(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
@@ -102,14 +117,16 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    /// Deletes all the records.
     public func removeAll(writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         return remove(writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
+    /// Sends to the backend all the pending records in the local cache.
     public func push(completionHandler: UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
-            completionHandler?(nil, Error.InvalidStoreType)
+            completionHandler?(nil, KinveyError.InvalidStoreType)
             return LocalRequest()
         }
         
@@ -118,10 +135,11 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
     public func pull(query: Query = Query(), completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
-            completionHandler?(nil, Error.InvalidStoreType)
+            completionHandler?(nil, KinveyError.InvalidStoreType)
             return LocalRequest()
         }
         
@@ -130,10 +148,11 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
     public func sync(query: Query = Query(), completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
-            completionHandler?(nil, nil, Error.InvalidStoreType)
+            completionHandler?(nil, nil, KinveyError.InvalidStoreType)
             return LocalRequest()
         }
         
@@ -152,6 +171,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return requests
     }
     
+    /// Deletes all the pending chances in the local cache.
     public func purge(query: Query = Query(), completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {

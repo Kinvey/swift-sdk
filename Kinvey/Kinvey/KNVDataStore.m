@@ -8,6 +8,7 @@
 
 #import "KNVDataStore.h"
 #import "KNVClient+Internal.h"
+#import "KNVError.h"
 
 @interface KNVDataStore ()
 
@@ -224,7 +225,7 @@ if (self.type != KNVDataStoreTypeSync) { \
 {
     NSString* objectId = [__KNVPersistable kinveyObjectId:persistable];
     if (!objectId) {
-        @throw [KNVError ObjectIdMissing];
+        @throw [__KNVError ObjectIdMissing];
     }
     return [self removeById:objectId
                 writePolicy:writePolicy

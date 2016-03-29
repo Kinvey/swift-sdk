@@ -13,7 +13,7 @@ internal class RemoveOperation: WriteOperation {
     
     let query: Query
     
-    internal init(query: Query, writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    internal init(query: Query, writePolicy: WritePolicy, sync: Sync? = nil, persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
         self.query = query
         super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
     }
@@ -21,16 +21,18 @@ internal class RemoveOperation: WriteOperation {
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            let objects = self.cache.findEntityByQuery(self.query)
-            let count = self.cache.removeEntitiesByQuery(self.query)
+            let objects = self.cache?.findEntityByQuery(self.query)
+            let count = self.cache?.removeEntitiesByQuery(self.query)
             let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: self.persistableType.kinveyCollectionName(), query: self.query)
             let idKey = self.persistableType.idKey
-            for object in objects {
-                if let objectId = object[idKey] as? String {
-                    if objectId.hasPrefix(ObjectIdTmpPrefix) {
-                        self.sync.removeAllPendingOperations(objectId)
-                    } else {
-                        self.sync.savePendingOperation(self.sync.createPendingOperation(request.request, objectId: objectId))
+            if let objects = objects {
+                for object in objects {
+                    if let objectId = object[idKey] as? String, let sync = self.sync {
+                        if objectId.hasPrefix(ObjectIdTmpPrefix) {
+                            sync.removeAllPendingOperations(objectId)
+                        } else {
+                            sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: objectId))
+                        }
                     }
                 }
             }
@@ -46,7 +48,7 @@ internal class RemoveOperation: WriteOperation {
                 let results = self.client.responseParser.parse(data),
                 let count = results["count"] as? UInt
             {
-                self.cache.removeEntitiesByQuery(self.query)
+                self.cache?.removeEntitiesByQuery(self.query)
                 completionHandler?(count, nil)
             } else if let error = error {
                 completionHandler?(nil, error)

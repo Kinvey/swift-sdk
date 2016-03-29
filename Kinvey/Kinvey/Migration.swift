@@ -10,6 +10,7 @@ import Foundation
 import Realm
 import UIKit
 
+/// Class used to perform migrations in your local cache.
 @objc(KNVMigration)
 public class Migration: NSObject {
     
@@ -22,6 +23,7 @@ public class Migration: NSObject {
         self.realmMigration = realmMigration
     }
     
+    /// Method that performs a migration in a specific collection.
     public func execute(persistableClass: AnyClass, migrationObjectHandler: MigrationObjectHandler? = nil) {
         let realmClassName = RealmEntitySchema.realmClassNameForClass(persistableClass)
         let oldObjectSchema = realmMigration.oldSchema.schemaForClassName(realmClassName)

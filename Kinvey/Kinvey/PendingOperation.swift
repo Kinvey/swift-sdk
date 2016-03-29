@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(KNVPendingOperation)
-public protocol PendingOperation {
+internal protocol PendingOperation {
     
     var objectId: String? { get }
     

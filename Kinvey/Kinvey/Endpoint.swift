@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum Endpoint {
+internal enum Endpoint {
     
     case User(client: Client)
     case UserById(client: Client, userId: String)
