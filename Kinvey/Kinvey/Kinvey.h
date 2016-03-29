@@ -20,6 +20,7 @@ FOUNDATION_EXPORT const unsigned char KinveyVersionString[];
 #import <Kinvey/KNVDataStore.h>
 #import <Kinvey/KNVReadPolicy.h>
 #import <Kinvey/KNVWritePolicy.h>
+#import <Kinvey/KNVError.h>
 
 // KinveyKit
 #import <Kinvey/KCSRealmEntityPersistence.h>

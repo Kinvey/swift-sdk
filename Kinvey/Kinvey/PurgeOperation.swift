@@ -26,9 +26,11 @@ internal class PurgeOperation: SyncOperation {
                             requests.addRequest(request)
                             request.execute() { data, response, error in
                                 if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
-                                    let persistable = self.persistableType.fromJson(json)
-                                    let persistableJson = self.merge(persistable, json: json)
-                                    self.cache.saveEntity(persistableJson)
+                                    if let cache = self.cache {
+                                        let persistable = self.persistableType.fromJson(json)
+                                        let persistableJson = self.merge(persistable, json: json)
+                                        cache.saveEntity(persistableJson)
+                                    }
                                     self.sync.removePendingOperation(pendingOperation)
                                     fulfill()
                                 } else if let error = error {
@@ -50,7 +52,7 @@ internal class PurgeOperation: SyncOperation {
                     promises.append(Promise<Void> { fulfill, reject in
                         if let objectId = pendingOperation.objectId {
                             let query = Query(format: "\(self.persistableType.idKey) == %@", objectId)
-                            cache.removeEntitiesByQuery(query)
+                            cache?.removeEntitiesByQuery(query)
                         }
                         sync.removePendingOperation(pendingOperation)
                         fulfill()

@@ -8,10 +8,19 @@
 
 import Foundation
 
+/// Describes a unit to be used in a time perspective.
 public enum TimeUnit {
+    
+    /// Time unit that represents seconds.
     case Second
+    
+    /// Time unit that represents minutes.
     case Minute
+    
+    /// Time unit that represents hours.
     case Hour
+    
+    /// Time unit that represents days.
     case Day
 }
 
@@ -36,10 +45,10 @@ public typealias TTL = (Int, TimeUnit)
 
 extension Int {
     
-    public var seconds: TTL { return TTL(self, .Second) }
-    public var minutes: TTL { return TTL(self, .Minute) }
-    public var hours: TTL { return TTL(self, .Hour) }
-    public var days: TTL { return TTL(self, .Day) }
+    internal var seconds: TTL { return TTL(self, .Second) }
+    internal var minutes: TTL { return TTL(self, .Minute) }
+    internal var hours: TTL { return TTL(self, .Hour) }
+    internal var days: TTL { return TTL(self, .Day) }
     
     var secondsDate : NSDate { return date(.Second) }
     var minutesDate : NSDate { return date(.Minute) }

@@ -54,8 +54,6 @@
 		5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */; };
 		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
 		578F5C931C99EED100B20F17 /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
-		578F5C951C9A106500B20F17 /* EmptyObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C941C9A106500B20F17 /* EmptyObjects.swift */; };
-		57946A611C9A300F007F1F81 /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57946A601C9A300F007F1F81 /* MemoryCache.swift */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -340,6 +338,9 @@
 		57D643401CA328F800F6D16E /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		57D643411CA32CAF00F6D16E /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
 		57D643421CA32CAF00F6D16E /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
+		57D643451CAAFA7C00F6D16E /* KNVError.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D643431CAAFA7C00F6D16E /* KNVError.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		57D643461CAAFA7C00F6D16E /* KNVError.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D643441CAAFA7C00F6D16E /* KNVError.m */; };
+		57D643481CAB3C8A00F6D16E /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D643471CAB3C8A00F6D16E /* MemoryCache.swift */; };
 		57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB87E71C62B0F6002BA684 /* NSData.swift */; };
 		57E1C3A31C17B3FF00578974 /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A21C17B3FF00578974 /* Query.swift */; };
 		57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A61C17B4F300578974 /* Persistable.swift */; };
@@ -524,8 +525,6 @@
 		5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
-		578F5C941C9A106500B20F17 /* EmptyObjects.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyObjects.swift; sourceTree = "<group>"; };
-		57946A601C9A300F007F1F81 /* MemoryCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCache.swift; sourceTree = "<group>"; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
 		57A27C861C178F17000DF951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -838,6 +837,9 @@
 		57D643141CA3268000F6D16E /* KinveyTests Migration Database Step 1.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Migration Database Step 1.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57D6433B1CA3268600F6D16E /* KinveyTests Migration Database Step 2.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Migration Database Step 2.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheMigrationTestCaseStep2.swift; sourceTree = "<group>"; };
+		57D643431CAAFA7C00F6D16E /* KNVError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVError.h; sourceTree = "<group>"; };
+		57D643441CAAFA7C00F6D16E /* KNVError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KNVError.m; sourceTree = "<group>"; };
+		57D643471CAB3C8A00F6D16E /* MemoryCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCache.swift; sourceTree = "<group>"; };
 		57DB87E71C62B0F6002BA684 /* NSData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSData.swift; sourceTree = "<group>"; };
 		57E1C3A21C17B3FF00578974 /* Query.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Query.swift; sourceTree = "<group>"; };
 		57E1C3A61C17B4F300578974 /* Persistable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistable.swift; sourceTree = "<group>"; };
@@ -957,6 +959,8 @@
 				57E4DB261C8A4B6D0017B406 /* KNVDataStore.m */,
 				57D1E75D1C7D21720009834A /* KNVReadPolicy.h */,
 				57E4DB291C8A5B620017B406 /* KNVWritePolicy.h */,
+				57D643431CAAFA7C00F6D16E /* KNVError.h */,
+				57D643441CAAFA7C00F6D16E /* KNVError.m */,
 			);
 			name = ObjC;
 			sourceTree = "<group>";
@@ -1069,6 +1073,7 @@
 				5728212E1C63E10700373EC8 /* FileStore.swift */,
 				57757F3D1C652A5600C810E9 /* Reachability.swift */,
 				577155BA1CA21CC200C91B4B /* Migration.swift */,
+				57D643471CAB3C8A00F6D16E /* MemoryCache.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -1076,13 +1081,11 @@
 		57A27C8F1C178F18000DF951 /* KinveyTests */ = {
 			isa = PBXGroup;
 			children = (
-				578F5C941C9A106500B20F17 /* EmptyObjects.swift */,
 				5765B83C1C972D7000080FFA /* URLProtocols.swift */,
 				578F5C921C99EED100B20F17 /* KIF.swift */,
 				57A27C901C178F18000DF951 /* KinveyTestCase.swift */,
 				57A27C921C178F18000DF951 /* Info.plist */,
 				57E1C3AC1C17EC9500578974 /* UserTests.swift */,
-				57946A601C9A300F007F1F81 /* MemoryCache.swift */,
 				578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */,
 				5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */,
 				5765B8351C92365700080FFA /* FindOperationTest.swift */,
@@ -1835,6 +1838,7 @@
 				57B23F421C7FB169006403CC /* KCSUser2.h in Headers */,
 				57B23E911C7F9890006403CC /* KCSKeychain.h in Headers */,
 				57A3BF991C8946D200DCD439 /* KNVClient.h in Headers */,
+				57D643451CAAFA7C00F6D16E /* KNVError.h in Headers */,
 				57B23EAE1C7FA565006403CC /* KCSBase64.h in Headers */,
 				57B23F541C7FB19A006403CC /* CLLocation+Kinvey.h in Headers */,
 				57B23F0E1C7FAF8D006403CC /* KCSPersistableDescription.h in Headers */,
@@ -2119,9 +2123,11 @@
 				57B23EAF1C7FA585006403CC /* KCSAppdataStore.m in Sources */,
 				57B23F681C7FB1C6006403CC /* KCS_FMDatabaseQueue.m in Sources */,
 				57B23EC71C7FA780006403CC /* KCSFileRealm.m in Sources */,
+				57D643481CAB3C8A00F6D16E /* MemoryCache.swift in Sources */,
 				57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */,
 				57B23EF21C7FAA23006403CC /* KCSFile+KCSInternal.m in Sources */,
 				57B0E9501C5FF52200BA984F /* Push.swift in Sources */,
+				57D643461CAAFA7C00F6D16E /* KNVError.m in Sources */,
 				574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
 				57B23EA61C7FA465006403CC /* KCSAclRealm.m in Sources */,
@@ -2241,7 +2247,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				578F5C951C9A106500B20F17 /* EmptyObjects.swift in Sources */,
 				57C563071C9CC79D0011FB36 /* ValueTransformer.swift in Sources */,
 				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
 				577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */,
@@ -2249,7 +2254,6 @@
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
 				578F5C931C99EED100B20F17 /* KIF.swift in Sources */,
 				577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */,
-				57946A611C9A300F007F1F81 /* MemoryCache.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
 				57C563041C9CC7270011FB36 /* NSDate.swift in Sources */,
 				57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */,

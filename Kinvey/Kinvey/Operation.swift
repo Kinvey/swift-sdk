@@ -17,10 +17,10 @@ internal class Operation: NSObject {
     typealias UIntArrayCompletionHandler = (UInt?, [Persistable]?, ErrorType?) -> Void
     
     let persistableType: Persistable.Type
-    let cache: Cache
+    let cache: Cache?
     let client: Client
     
-    init(persistableType: Persistable.Type, cache: Cache, client: Client) {
+    init(persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
         self.persistableType = persistableType
         self.cache = cache
         self.client = client
@@ -40,6 +40,9 @@ internal class Operation: NSObject {
     }
     
     func computeDeltaSet(query: Query, refObjs: [String : String]) -> (created: Set<String>, updated: Set<String>, deleted: Set<String>) {
+        guard let cache = cache else {
+            return (created: Set<String>(), updated: Set<String>(), deleted: Set<String>())
+        }
         let refKeys = Set<String>(refObjs.keys)
         let cachedObjs = cache.findIdsLmtsByQuery(query)
         let cachedKeys = Set<String>(cachedObjs.keys)

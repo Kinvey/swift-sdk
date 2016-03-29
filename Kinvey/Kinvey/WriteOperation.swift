@@ -14,9 +14,9 @@ internal class WriteOperation: Operation {
     typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
     
     let writePolicy: WritePolicy
-    let sync: Sync
+    let sync: Sync?
     
-    init(writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    init(writePolicy: WritePolicy, sync: Sync? = nil, persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
         self.writePolicy = writePolicy
         self.sync = sync
         super.init(persistableType: persistableType, cache: cache, client: client)

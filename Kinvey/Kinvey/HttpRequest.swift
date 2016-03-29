@@ -111,10 +111,10 @@ extension RequestType {
     
 }
 
-public typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
+internal typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
 
 @objc(__KNVHttpRequest)
-public class HttpRequest: NSObject, Request {
+internal class HttpRequest: NSObject, Request {
     
     let httpMethod: HttpMethod
     let endpoint: Endpoint
@@ -130,13 +130,13 @@ public class HttpRequest: NSObject, Request {
     
     var task: NSURLSessionTask?
     
-    public var executing: Bool {
+    internal var executing: Bool {
         get {
             return task?.state == .Running
         }
     }
     
-    public var canceled: Bool {
+    internal var cancelled: Bool {
         get {
             return task?.state == .Canceling || task?.error?.code == NSURLErrorCancelled
         }
@@ -180,7 +180,7 @@ public class HttpRequest: NSObject, Request {
     }
     
     func execute(completionHandler: DataResponseCompletionHandler? = nil) {
-        guard !canceled else {
+        guard !cancelled else {
             completionHandler?(nil, nil, Error.RequestCanceled)
             return
         }
@@ -195,7 +195,7 @@ public class HttpRequest: NSObject, Request {
         task!.resume()
     }
     
-    public func cancel() {
+    internal func cancel() {
         task?.cancel()
     }
     

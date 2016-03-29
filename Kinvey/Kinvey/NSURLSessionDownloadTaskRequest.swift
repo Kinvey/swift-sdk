@@ -20,7 +20,7 @@ class NSURLSessionDownloadTaskRequest: NSObject, Request {
         }
     }
     
-    var canceled: Bool {
+    var cancelled: Bool {
         get {
             return downloadTask?.state == .Canceling || downloadTask?.error?.code == NSURLErrorCancelled
         }
