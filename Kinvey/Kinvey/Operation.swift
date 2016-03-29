@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(__KNVOperation)
-public class Operation: NSObject {
+internal class Operation: NSObject {
     
     typealias ArrayCompletionHandler = ([Persistable]?, ErrorType?) -> Void
     typealias ObjectCompletionHandler = (Persistable?, ErrorType?) -> Void

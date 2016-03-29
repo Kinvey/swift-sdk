@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(__KNVFindOperation)
-public class FindOperation: ReadOperation {
+internal class FindOperation: ReadOperation {
     
     let query: Query
     let deltaSet: Bool

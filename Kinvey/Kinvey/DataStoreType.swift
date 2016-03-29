@@ -8,9 +8,17 @@
 
 import Foundation
 
+/// Defines the behavior of a DataStore instance.
 public enum DataStoreType {
     
-    case Sync, Cache, Network
+    /// Ready to work completly offline and synchronize with the server manually calling methods like `pull`, `push`, `sync` (push + pull) and `purge`.
+    case Sync
+    
+    /// Callbacks will be called twice, the 1st call will return data from the local cache in the device and the 2nd call will return the most recent data from the backend.
+    case Cache
+    
+    /// Garanteed that all the data returned will be the most recent data from the backend.
+    case Network
     
     var readPolicy: ReadPolicy {
         get {

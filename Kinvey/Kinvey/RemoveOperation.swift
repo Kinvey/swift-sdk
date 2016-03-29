@@ -9,11 +9,11 @@
 import Foundation
 
 @objc(__KNVRemoveOperation)
-public class RemoveOperation: WriteOperation {
+internal class RemoveOperation: WriteOperation {
     
     let query: Query
     
-    public init(query: Query, writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    internal init(query: Query, writePolicy: WritePolicy, sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.query = query
         super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
     }

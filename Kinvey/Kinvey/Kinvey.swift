@@ -8,10 +8,17 @@
 
 import Foundation
 
+/// Key to map the `_id` column in your Persistable implementation class.
 public let PersistableIdKey = "_id"
+
+/// Key to map the `_acl` column in your Persistable implementation class.
 public let PersistableAclKey = "_acl"
+
+/// Key to map the `_kmd` column in your Persistable implementation class.
 public let PersistableMetadataKey = "_kmd"
+
 let PersistableMetadataLastRetrievedTimeKey = "lrt"
 let ObjectIdTmpPrefix = "tmp_"
 
+/// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
 public let sharedClient = Client.sharedClient

@@ -10,7 +10,7 @@ import Foundation
 import Realm
 
 @objc(__KNVCacheManager)
-public class CacheManager: NSObject {
+internal class CacheManager: NSObject {
     
     private let persistenceId: String
     
@@ -25,7 +25,7 @@ public class CacheManager: NSObject {
         let _ = try! RLMRealm(configuration: realmConfiguration)
     }
     
-    public func cache(collectionName: String? = nil) -> Cache {
+    func cache(collectionName: String? = nil) -> Cache {
         return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName) as! Cache
     }
     

@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(__KNVSyncManager)
-public class SyncManager: NSObject {
+internal class SyncManager: NSObject {
     
     private let persistenceId: String
     
@@ -17,7 +17,7 @@ public class SyncManager: NSObject {
         self.persistenceId = persistenceId
     }
     
-    public func sync(collectionName: String) -> Sync {
+    func sync(collectionName: String) -> Sync {
         return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName) as! Sync
     }
     

@@ -10,7 +10,7 @@ import Foundation
 import PromiseKit
 
 @objc(__KNVPurgeOperation)
-public class PurgeOperation: SyncOperation {
+internal class PurgeOperation: SyncOperation {
     
     override func execute(completionHandler: CompletionHandler?) -> Request {
         let requests = MultiRequest()
