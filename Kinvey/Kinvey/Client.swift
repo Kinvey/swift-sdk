@@ -8,11 +8,14 @@
 
 import Foundation
 
+/// This class provides a representation of a Kinvey environment holding App ID and App Secret. Please *never* use a Master Secret in a client application.
 @objc(__KNVClient)
 public class Client: NSObject, Credential {
 
+    /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
     public static let sharedClient = Client()
     
+    /// It holds the `User` instance after logged in. If this variable is `nil` means that there's no logged user, which is necessary for some calls to in a Kinvey environment.
     public internal(set) var activeUser: User? {
         willSet (newActiveUser) {
             if let activeUser = newActiveUser {
@@ -56,28 +59,52 @@ public class Client: NSObject, Credential {
         }
     }
     
+    /// Holds the App ID for a specific Kinvey environment.
     public private(set) var appKey: String?
+    
+    /// Holds the App Secret for a specific Kinvey environment.
     public private(set) var appSecret: String?
+    
+    /// Holds the `Host` for a specific Kinvey environment. The default value is `https://baas.kinvey.com/`
     public private(set) var apiHostName: NSURL
+    
+    /// Holds the `Authentication Host` for a specific Kinvey environment. The default value is `https://auth.kinvey.com/`
     public private(set) var authHostName: NSURL
     
+    /// Cache policy for this client instance.
     public var cachePolicy: NSURLRequestCachePolicy = .UseProtocolCachePolicy
+    
+    /// Timeout interval for this client instance.
     public var timeoutInterval: NSTimeInterval = 60
+    
+    /// App version for this client instance.
     public var clientAppVersion: String?
+    
+    /// Custom request properties for this client instance.
     public var customRequestProperties: [String : String] = [:]
     
+    /// The default value for `apiHostName` variable.
     public static let defaultApiHostName = NSURL(string: "https://baas.kinvey.com/")!
+    
+    /// The default value for `authHostName` variable.
     public static let defaultAuthHostName = NSURL(string: "https://auth.kinvey.com/")!
     
-    public var networkRequestFactory: RequestFactory!
-    public var responseParser: ResponseParser!
+    var networkRequestFactory: RequestFactory!
+    var responseParser: ResponseParser!
+    
+    /// Set a different schema version to perform migrations in your local cache.
     public private(set) var schemaVersion: CUnsignedLongLong = 0
-    public private(set) var cacheManager: CacheManager!
-    public private(set) var syncManager: SyncManager!
+    
+    internal private(set) var cacheManager: CacheManager!
+    internal private(set) var syncManager: SyncManager!
+    
+    /// Use this variable to handle push notifications.
     public private(set) var push: Push!
     
+    /// Set a different type if you need a custom `User` class. Extends from `User` allows you to have custom properties in your `User` instances.
     public var userType = User.self
     
+    /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public override init() {
         apiHostName = Client.defaultApiHostName
         authHostName = Client.defaultAuthHostName
@@ -89,17 +116,20 @@ public class Client: NSObject, Credential {
         responseParser = JsonResponseParser(client: self)
     }
     
+    /// This method is called automatically before use any usage of the `Client` class.
     public override class func initialize () {
         ValueTransformer.setValueTransformer(NSDate2StringValueTransformer())
         EntitySchema.scanForPersistableEntities()
         KCSRealmEntityPersistence.initialize()
     }
     
+    /// Constructor that already initialize the client. The `initialize` method is called automatically.
     public convenience init(appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) {
         self.init()
         initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
     }    
     
+    /// Initialize a `Client` instance with all the needed parameters.
     public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) -> Client {
         self.schemaVersion = schemaVersion
         cacheManager = CacheManager(persistenceId: appKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
@@ -128,7 +158,8 @@ public class Client: NSObject, Credential {
         }
         return self
     }
-        
+    
+    /// Autorization header used for calls that don't requires a logged `User`.
     public var authorizationHeader: String? {
         get {
             var authorization: String? = nil

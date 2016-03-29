@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(__KNVWriteOperation)
-public class WriteOperation: Operation {
+internal class WriteOperation: Operation {
     
     typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
     

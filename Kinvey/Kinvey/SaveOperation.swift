@@ -9,11 +9,11 @@
 import Foundation
 
 @objc(__KNVSaveOperation)
-public class SaveOperation: WriteOperation {
+internal class SaveOperation: WriteOperation {
     
     let persistable: Persistable
     
-    public init(persistable: Persistable, writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
+    init(persistable: Persistable, writePolicy: WritePolicy, sync: Sync, cache: Cache, client: Client) {
         self.persistable = persistable
         super.init(writePolicy: writePolicy, sync: sync, persistableType: persistable.dynamicType, cache: cache, client: client)
     }

@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(__KNVSync)
-public protocol Sync {
+internal protocol Sync {
     
     var persistenceId: String { get set }
     var collectionName: String { get set }

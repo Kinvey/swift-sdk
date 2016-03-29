@@ -82,10 +82,10 @@ public class Query: NSObject {
 
 }
 
-@objc
-public class __KNVQuery: NSObject {
+@objc(__KNVQuery)
+internal class __KNVQuery: NSObject {
     
-    public class func query(query: Query, persistableType: Persistable.Type) -> Query {
+    class func query(query: Query, persistableType: Persistable.Type) -> Query {
         return Query(query: query, persistableType: persistableType)
     }
     

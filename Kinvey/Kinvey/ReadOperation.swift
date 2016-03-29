@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(__KNVReadOperation)
-public class ReadOperation: Operation {
+internal class ReadOperation: Operation {
     
     typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
     
