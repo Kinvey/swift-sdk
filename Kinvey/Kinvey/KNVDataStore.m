@@ -43,13 +43,13 @@
 
 #define KNV_CHECK_DATA_STORE_TYPE(T, R) \
 if (self.type != KNVDataStoreTypeSync) { \
-    KNV_DISPATCH_ASYNC_MAIN_QUEUE(T, completionHandler)(R, [__KNVError InvalidStoreType]); \
+    KNV_DISPATCH_ASYNC_MAIN_QUEUE(T, completionHandler)(R, [KNVError InvalidStoreType]); \
     return [__KNVLocalRequest new]; \
 }
 
 #define KNV_CHECK_DATA_STORE_TYPE_2(T1, R1, T2, R2) \
 if (self.type != KNVDataStoreTypeSync) { \
-    KNV_DISPATCH_ASYNC_MAIN_QUEUE_2(T1, T2, completionHandler)(R1, R2, [__KNVError InvalidStoreType]); \
+    KNV_DISPATCH_ASYNC_MAIN_QUEUE_2(T1, T2, completionHandler)(R1, R2, [KNVError InvalidStoreType]); \
     return [__KNVLocalRequest new]; \
 }
 
@@ -154,7 +154,7 @@ if (self.type != KNVDataStoreTypeSync) { \
     assert(objectId);
     __KNVGetOperation *operation = [[__KNVGetOperation alloc] initWithId:objectId
                                                               readPolicy:(enum ReadPolicy)readPolicy
-                                                        persistableClass:self.cls
+                                                         persistableType:self.cls
                                                                    cache:self.cache
                                                                   client:self.client.client];
     id<KNVRequest> request = [operation execute:KNV_DISPATCH_ASYNC_MAIN_QUEUE(KNV_PERSISTABLE, completionHandler)];
@@ -203,7 +203,7 @@ if (self.type != KNVDataStoreTypeSync) { \
     __KNVFindOperation *operation = [[__KNVFindOperation alloc] initWithQuery:KNV_QUERY(query)
                                                                      deltaSet:deltaSet
                                                                    readPolicy:(enum ReadPolicy)readPolicy
-                                                             persistableClass:self.cls
+                                                              persistableType:self.cls
                                                                         cache:self.cache
                                                                        client:self.client.client];
     id<KNVRequest> request = [operation execute:KNV_DISPATCH_ASYNC_MAIN_QUEUE(NSArray<KNV_PERSISTABLE>*, completionHandler)];
@@ -224,7 +224,7 @@ if (self.type != KNVDataStoreTypeSync) { \
 {
     NSString* objectId = [__KNVPersistable kinveyObjectId:persistable];
     if (!objectId) {
-        @throw [__KNVError ObjectIdMissing];
+        @throw [KNVError ObjectIdMissing];
     }
     return [self removeById:objectId
                 writePolicy:writePolicy
@@ -298,11 +298,11 @@ if (self.type != KNVDataStoreTypeSync) { \
                completionHandler:(KNVDataStoreHandler(NSUInteger))completionHandler
 {
     __KNVRemoveOperation *operation = [[__KNVRemoveOperation alloc] initWithQuery:KNV_QUERY(query)
-                                                                       writePolicy:(enum WritePolicy)writePolicy
-                                                                              sync:self.sync
-                                                                   persistableType:self.cls
-                                                                             cache:self.cache
-                                                                            client:self.client.client];
+                                                                      writePolicy:(enum WritePolicy)writePolicy
+                                                                             sync:self.sync
+                                                                  persistableType:self.cls
+                                                                            cache:self.cache
+                                                                           client:self.client.client];
     id<KNVRequest> request = [operation executeUInt:KNV_DISPATCH_ASYNC_MAIN_QUEUE(NSUInteger, completionHandler)];
     return request;
 }
@@ -363,7 +363,7 @@ if (self.type != KNVDataStoreTypeSync) { \
     __KNVFindOperation *operation = [[__KNVFindOperation alloc] initWithQuery:KNV_QUERY(query)
                                                                      deltaSet:deltaSet
                                                                    readPolicy:(enum ReadPolicy)readPolicy
-                                                             persistableClass:self.cls
+                                                              persistableType:self.cls
                                                                         cache:self.cache
                                                                        client:self.client.client];
     id<KNVRequest> request = [operation execute:KNV_DISPATCH_ASYNC_MAIN_QUEUE(NSArray<KNV_PERSISTABLE>* _Nullable, completionHandler)];

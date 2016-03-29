@@ -8,22 +8,27 @@
 
 import Foundation
 
+/// This class represents the ACL (Access Control List) for a record.
 @objc(KNVAcl)
 public class Acl: NSObject {
     
-    public static let CreatorKey = "creator"
+    static let CreatorKey = "creator"
     
+    /// The `userId` of the `User` used to create the record.
     public let creator: String
     
+    /// Constructs an Acl instance with the `userId` of the `User` used to create the record.
     public init(creator: String) {
         self.creator = creator
     }
     
-    public convenience init(json: [String : AnyObject]) {
+    /// Constructor used to build an Acl instance from a JSON object.
+    public convenience init(json: JsonDictionary) {
         self.init(creator: json[Acl.CreatorKey] as! String)
     }
     
-    public func toJson() -> [String : AnyObject] {
+    /// The JSON representation for the `Acl` instance.
+    public func toJson() -> JsonDictionary {
         return [
             Acl.CreatorKey : creator
         ]

@@ -22,7 +22,7 @@ public enum Error: UInt, ErrorType {
 }
 
 @objc
-public class __KNVError: NSObject {
+public class KNVError: NSObject {
     
     public static let ObjectIdMissing = Error.ObjectIdMissing.error
     public static let InvalidResponse = Error.InvalidResponse.error

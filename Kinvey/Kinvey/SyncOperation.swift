@@ -9,13 +9,13 @@
 import Foundation
 
 @objc(__KNVSyncOperation)
-public class SyncOperation: Operation {
+internal class SyncOperation: Operation {
     
     typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
     
     let sync: Sync
     
-    public init(sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    internal init(sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
         self.sync = sync
         super.init(persistableType: persistableType, cache: cache, client: client)
     }

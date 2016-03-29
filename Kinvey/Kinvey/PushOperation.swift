@@ -10,7 +10,7 @@ import Foundation
 import PromiseKit
 
 @objc(__KNVPushOperation)
-public class PushOperation: SyncOperation {
+internal class PushOperation: SyncOperation {
     
     override func execute(completionHandler: CompletionHandler?) -> Request {
         let requests = MultiRequest()

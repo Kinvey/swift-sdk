@@ -72,9 +72,10 @@ extension User {
 
 extension ReadOperation {
     
-    public typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
+    internal typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
     
-    @objc public func execute(completionHandler: CompletionHandlerObjC? = nil) -> Request {
+    @objc
+    internal func execute(completionHandler: CompletionHandlerObjC? = nil) -> Request {
         switch readPolicy {
         case .ForceLocal:
             return executeLocal({ (obj, error) -> Void in
@@ -100,9 +101,10 @@ extension ReadOperation {
 
 extension WriteOperation {
     
-    public typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
+    internal typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
     
-    @objc public func execute(completionHandler: CompletionHandlerObjC?) -> Request {
+    @objc
+    internal func execute(completionHandler: CompletionHandlerObjC?) -> Request {
         switch writePolicy {
         case .ForceLocal:
             return executeLocal({ (obj, error) -> Void in
@@ -124,16 +126,18 @@ extension WriteOperation {
 
 extension SyncOperation {
     
-    public typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
-    public typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
+    internal typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
+    internal typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
     
-    @objc public func execute(completionHandler: CompletionHandlerObjC?) -> Request {
+    @objc
+    internal func execute(completionHandler: CompletionHandlerObjC?) -> Request {
         return execute { (objs, error) -> Void in
             completionHandler?(objs, error as? NSError)
         }
     }
     
-    @objc public func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
+    @objc
+    internal func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
         return execute { (obj, error) -> Void in
             completionHandler?(obj as? UInt ?? 0, error)
         }
@@ -143,9 +147,10 @@ extension SyncOperation {
 
 extension RemoveOperation {
     
-    public typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
+    internal typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
     
-    @objc public func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
+    @objc
+    internal func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
         switch writePolicy {
         case .ForceLocal:
             return executeLocal({ (obj, error) -> Void in
@@ -167,16 +172,8 @@ extension RemoveOperation {
 
 extension FindOperation {
     
-    public convenience init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, persistableClass: AnyClass, cache: Cache, client: Client) {
+    internal convenience init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, persistableClass: AnyClass, cache: Cache, client: Client) {
         self.init(query: query, deltaSet: deltaSet, readPolicy: readPolicy, persistableType: persistableClass as! Persistable.Type, cache: cache, client: client)
-    }
-    
-}
-
-extension GetOperation {
-    
-    public convenience init(id: String, readPolicy: ReadPolicy, persistableClass: AnyClass, cache: Cache, client: Client) {
-        self.init(id: id, readPolicy: readPolicy, persistableType: persistableClass as! Persistable.Type, cache: cache, client: client)
     }
     
 }

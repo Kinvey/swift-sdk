@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(__KNVGetOperation)
-public class GetOperation: ReadOperation {
+internal class GetOperation: ReadOperation {
     
     let id: String
     
