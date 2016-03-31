@@ -233,5 +233,15 @@ class HttpRequestFactory: RequestFactory {
         )
         return request
     }
+    
+    func buildCustomEndpoint(name: String) -> HttpRequest {
+        let request = HttpRequest(
+            httpMethod: .Post,
+            endpoint: Endpoint.CustomEndpooint(client: client, name: name),
+            credential: client.activeUser,
+            client: client
+        )
+        return request
+    }
 
 }

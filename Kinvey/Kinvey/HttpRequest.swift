@@ -289,11 +289,11 @@ extension Endpoint {
             return NSURL(string: client.authHostName.URLByAppendingPathComponent("/oauth/auth").absoluteString + query)!
         case .OAuthToken(let client):
             return client.authHostName.URLByAppendingPathComponent("/oauth/token")
-        case AppData(let client, let collectionName):
+        case .AppData(let client, let collectionName):
             return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")
-        case AppDataById(let client, let collectionName, let id):
+        case .AppDataById(let client, let collectionName, let id):
             return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
-        case AppDataByQuery(let client, let collectionName, let query, let fields):
+        case .AppDataByQuery(let client, let collectionName, let query, let fields):
             let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
             if (query.isEmpty()){
                 return NSURL(string: url)!
@@ -311,9 +311,9 @@ extension Endpoint {
             return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/unregister-device")
         case .BlobById(let client, let fileId):
             return BlobDownload(client: client, fileId: fileId, query: nil, tls: false, ttlInSeconds: nil).url()
-        case BlobUpload(let client, let fileId, let tls):
+        case .BlobUpload(let client, let fileId, let tls):
             return BlobDownload(client: client, fileId: fileId, query: nil, tls: tls, ttlInSeconds: nil).url()
-        case BlobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
+        case .BlobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
             let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")").absoluteString
             
             var queryParams: [String : String] = [:]
@@ -341,8 +341,10 @@ extension Endpoint {
             return NSURL(string: url + urlQuery)!
         case .BlobByQuery(let client, let query):
             return BlobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil).url()
-        case URL(let url):
+        case .URL(let url):
             return url
+        case .CustomEndpooint(let client, let name):
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/custom/\(name)")
         }
     }
     
