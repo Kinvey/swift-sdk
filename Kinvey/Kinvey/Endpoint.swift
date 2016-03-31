@@ -33,6 +33,6 @@ internal enum Endpoint {
     case BlobByQuery(client: Client, query: Query)
     
     case URL(url: NSURL)
-    case CustomEndpooint(name: String)
+    case CustomEndpooint(client: Client, name: String)
     
 }
