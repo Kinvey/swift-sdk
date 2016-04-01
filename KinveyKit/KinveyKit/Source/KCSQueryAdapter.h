@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-#import "KCSQuery.h"
+#import "KCSQueryProtocol.h"
 
 @interface KCSQueryAdapter : NSObject <KCSQuery>
 

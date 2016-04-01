@@ -512,11 +512,4 @@ typedef NS_ENUM(NSInteger, KCSSortDirection) {
 
 @end
 
-@protocol KCSQuery <NSObject>
-
-@property (nonatomic, readonly) NSPredicate* predicate;
-@property (nonatomic, readonly) NSArray<NSSortDescriptor*>* sortDescriptors;
-
-@end
-
 #endif
