@@ -17,7 +17,7 @@ public enum DataStoreType {
     /// Callbacks will be called twice, the 1st call will return data from the local cache in the device and the 2nd call will return the most recent data from the backend.
     case Cache
     
-    /// Garanteed that all the data returned will be the most recent data from the backend.
+    /// Guaranteed that all the data returned will be the most recent data from the backend.
     case Network
     
     var readPolicy: ReadPolicy {

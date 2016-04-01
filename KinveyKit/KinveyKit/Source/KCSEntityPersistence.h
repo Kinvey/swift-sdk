@@ -18,7 +18,7 @@
 
 @import Foundation;
 
-#import "KCSQuery.h"
+#import "KCSQueryProtocol.h"
 
 @interface KCSEntityPersistence : NSObject 
 @property (nonatomic, strong) NSDictionary* saveContext;
