@@ -42,6 +42,7 @@ public class Push: NSObject {
     }
 
 #if os(iOS)
+    /// Sets and returns the number for the icon badge for the current running app.
     public var badgeNumber: Int {
         get {
             return UIApplication.sharedApplication().applicationIconBadgeNumber
@@ -190,6 +191,7 @@ public class Push: NSObject {
         }
     }
     
+    /// Resets the badge number to zero.
     public func resetBadgeNumber() {
         badgeNumber = 0
     }
