@@ -326,7 +326,8 @@ public class User: NSObject, Credential {
             return authorization
         }
     }
-    
+
+#if os(iOS)
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
     public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) -> Void in
@@ -351,5 +352,6 @@ public class User: NSObject, Credential {
         }
         viewController?.presentViewController(navigationVC, animated: true, completion: nil)
     }
+#endif
 
 }

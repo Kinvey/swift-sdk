@@ -10,6 +10,10 @@ import Foundation
 import PromiseKit
 import ObjectiveC
 
+#if os(OSX)
+    import Cocoa
+#endif
+
 /// Class used to register and unregister a device to receive push notifications.
 @objc(KNVPush)
 public class Push: NSObject {
@@ -33,6 +37,11 @@ public class Push: NSObject {
         }
     }
     
+    init(client: Client) {
+        self.client = client
+    }
+
+#if os(iOS)
     public var badgeNumber: Int {
         get {
             return UIApplication.sharedApplication().applicationIconBadgeNumber
@@ -46,18 +55,14 @@ public class Push: NSObject {
         }
     }
     
-    init(client: Client) {
-        self.client = client
-    }
-    
     private typealias ApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation = @convention(c) (NSObject, Selector, UIApplication, NSData) -> Void
     private typealias ApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation = @convention(c) (NSObject, Selector, UIApplication, NSError) -> Void
+#endif
     
     private var originalApplicationDidRegisterForRemoteNotificationsWithDeviceTokenImplementation: IMP?
     private var originalApplicationDidFailToRegisterForRemoteNotificationsWithErrorImplementation: IMP?
-    
-    private var initializeToken: dispatch_once_t = 0
-    
+
+#if os(iOS)
     private func replaceAppDelegateMethods(completionHandler: BoolCompletionHandler?) {
         let app = UIApplication.sharedApplication()
         guard let appDelegate = app.delegate else { return }
@@ -102,6 +107,8 @@ public class Push: NSObject {
         }
     }
     
+    private var initializeToken: dispatch_once_t = 0
+    
     /**
      Register for remote notifications.
      Call this in your implementation for updating the registration in case the device tokens change.
@@ -135,6 +142,7 @@ public class Push: NSObject {
         app.registerUserNotificationSettings(userNotificationSettings)
         app.registerForRemoteNotifications()
     }
+#endif
     
     /// Unregister the current device to receive push notifications.
     public func unRegisterDeviceToken(completionHandler: BoolCompletionHandler? = nil) {
@@ -161,6 +169,7 @@ public class Push: NSObject {
     }
     
     /// Call this method inside your App Delegate method `application(application:didRegisterForRemoteNotificationsWithDeviceToken:completionHandler:)`.
+#if os(iOS)
     private func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData, completionHandler: BoolCompletionHandler? = nil) {
         self.deviceToken = deviceToken
         Promise<Bool> { fulfill, reject in
@@ -184,5 +193,7 @@ public class Push: NSObject {
     public func resetBadgeNumber() {
         badgeNumber = 0
     }
+#endif
+    
     
 }

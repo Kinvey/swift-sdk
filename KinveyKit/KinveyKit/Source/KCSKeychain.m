@@ -61,7 +61,9 @@
         case errSecSuccess               : message = @"No error."; break;
         case errSecUnimplemented         : message = @"Function or operation not implemented."; break;
         case errSecIO                    : message = @"I/O error (bummers)"; break;
+#if TARGET_OS_IOS
         case errSecOpWr                  : message = @"File already open with with write permission"; break;
+#endif
         case errSecParam                 : message = @"One or more parameters passed to a function where not valid."; break;
         case errSecAllocate              : message = @"Failed to allocate memory."; break;
         case errSecUserCanceled          : message = @"User canceled the operation."; break;

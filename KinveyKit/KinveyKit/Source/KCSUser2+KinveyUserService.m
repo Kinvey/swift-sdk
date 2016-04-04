@@ -246,6 +246,17 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     return [KCSRequest requestWithNetworkOperation:[request start]];
 }
 
++(KCSClientConfiguration*)clientConfiguration
+{
+    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
+    if (!config) {
+        config = [KCSClient sharedClient].configuration;
+    }
+    return config;
+}
+
+#if TARGET_OS_IOS
+
 +(void)loginWithAuthorizationCodeLoginPage:(NSString *)redirectURI
 {
     NSURL* url = [self URLforLoginWithMICRedirectURI:redirectURI
@@ -300,15 +311,6 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     }];
     req = [KCSRequest requestWithNetworkOperation:[request start]];
     return req;
-}
-
-+(KCSClientConfiguration*)clientConfiguration
-{
-    KCSClientConfiguration* config = [KCSClient2 sharedClient].configuration;
-    if (!config) {
-        config = [KCSClient sharedClient].configuration;
-    }
-    return config;
 }
 
 /**
@@ -693,6 +695,8 @@ static NSString* micApiVersion = nil;
     return [NSURL URLWithString:url];
 }
 
+#endif
+
 + (NSDictionary*) loginDictForProvider:(KCSUserSocialIdentifyProvider)provder accessDictionary:(NSDictionary*)accessDictionary
 {
     NSDictionary* dict = @{};
@@ -818,7 +822,9 @@ static NSString* micApiVersion = nil;
         //                }
         //            } withProgressBlock:nil];
         //        }
+#if TARGET_OS_IOS
         [[KCSPush sharedPush] setDeviceToken:nil];
+#endif
         
         [KCSUser2 clearSavedCredentials];
         [[KCSAppdataStore caches] clear];
@@ -891,10 +897,12 @@ static NSString* micApiVersion = nil;
     }
     [self setActive:user];
     [[KCSAppdataStore caches] cacheActiveUser:user];
-    
+
+#if TARGET_OS_IOS
     [[KCSPush sharedPush] registerDeviceToken:^(BOOL success, NSError *error) {
         if (completionBlock) completionBlock(user, nil);
     }];
+#endif
 }
 
 +(KCSRequest*)changePasswordForUser:(id<KCSUser2>)user

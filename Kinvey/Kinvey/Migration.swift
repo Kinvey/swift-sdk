@@ -8,7 +8,6 @@
 
 import Foundation
 import Realm
-import UIKit
 
 /// Class used to perform migrations in your local cache.
 @objc(KNVMigration)

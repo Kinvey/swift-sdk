@@ -12,6 +12,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *userAttributes;
 
+#if TARGET_OS_IOS
+
 +(NSURL *)URLforLoginWithMICRedirectURI:(NSString *)redirectURI
                                  client:(id)client;
 
@@ -19,5 +21,7 @@
                     forURL:(NSURL *)url
                     client:(id)client
        withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
+
+#endif
 
 @end
