@@ -8,11 +8,14 @@
 
 import Foundation
 
+/// Class to interact with a custom endpoint in the backend.
 @objc(KNVCustomEndpoint)
 public class CustomEndpoint: NSObject {
     
+    /// Completion handler block for execute custom endpoints.
     public typealias CompletionHandler = (JsonDictionary?, ErrorType?) -> Void
     
+    /// Executes a custom endpoint by name and passing the expected parameters. 
     public static func execute(name: String, params: JsonDictionary? = nil, client: Client = sharedClient, completionHandler: CompletionHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildCustomEndpoint(name)
         if let params = params {
