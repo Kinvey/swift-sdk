@@ -6,7 +6,7 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 @objc(__KNVLocalRequest)
 internal class LocalRequest: NSObject, Request {

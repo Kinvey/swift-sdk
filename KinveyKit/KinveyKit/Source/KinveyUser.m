@@ -29,11 +29,14 @@
 #import "KCSNetworkResponse.h"
 #import "KCSPush.h"
 #import "KinveyUser+Private.h"
-#import "KCSMICLoginViewController.h"
 #import "KCSUser2+KinveyUserService+Private.h"
 #import "KCSClient+Private.h"
 #import <Kinvey/Kinvey-Swift.h>
 #import "KNVClient.h"
+
+#if TARGET_OS_IOS
+#import "KCSMICLoginViewController.h"
+#endif
 
 #pragma mark - Constants
 
@@ -195,6 +198,8 @@ void setActive(KCSUser* user)
     }];
 }
 
+#if TARGET_OS_IOS
+
 +(void)loginWithAuthorizationCodeLoginPage:(NSString *)redirectURI
 {
     [KCSUser2 loginWithAuthorizationCodeLoginPage:redirectURI];
@@ -304,6 +309,8 @@ void setActive(KCSUser* user)
     return [KCSUser2 micApiVersion];
 }
 
+#endif
+
 - (void)logout
 {
     if (![self isEqual:[KCSUser activeUser]]){
@@ -316,7 +323,9 @@ void setActive(KCSUser* user)
         // the right thing.  This might be less efficient than just iterating, but these routines have
         // been optimized, we do this now, since there's no other place guarenteed to merge.
         // Login/create store this info
+#if TARGET_OS_IOS
         [[KCSPush sharedPush] setDeviceToken:nil];
+#endif
         
         [KCSUser clearSavedCredentials];
         [[KCSAppdataStore caches] clear];

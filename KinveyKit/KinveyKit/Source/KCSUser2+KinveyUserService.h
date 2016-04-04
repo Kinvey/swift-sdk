@@ -47,6 +47,8 @@ typedef void (^KCSUser2CompletionBlock)(id<KCSUser2>user, NSError* error);
                      accessDictionary:(NSDictionary*)accessDictionary
                            completion:(KCSUser2CompletionBlock)completionBlock;
 
+#if TARGET_OS_IOS
+
 + (void)loginWithAuthorizationCodeLoginPage:(NSString*)redirectURI;
 
 +(KCSRequest*)loginWithAuthorizationCodeAPI:(NSString*)redirectURI
@@ -64,6 +66,8 @@ typedef void (^KCSUser2CompletionBlock)(id<KCSUser2>user, NSError* error);
 
 +(void)setMICApiVersion:(NSString*)micApiVersion;
 +(NSString*)micApiVersion;
+
+#endif
 
 + (void) logoutUser:(id<KCSUser2>)user;
 

@@ -17,9 +17,11 @@
 // contents is a violation of applicable laws.
 //
 
+#if TARGET_OS_IPHONE
+@import UIKit;
+#endif
 
 #import "KCSOfflineUpdate.h"
-@import UIKit;
 #import "KinveyCoreInternal.h"
 #import "KinveyDataStoreInternal.h"
 #import "KCSReachability.h"

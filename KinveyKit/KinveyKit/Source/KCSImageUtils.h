@@ -22,6 +22,7 @@
 @import UIKit;
 #define ImageClass UIImage
 #else
+@import AppKit;
 #define ImageClass NSImage
 #endif
 

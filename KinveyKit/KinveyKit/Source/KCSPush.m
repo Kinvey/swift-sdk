@@ -74,7 +74,9 @@
 - (void) doRegister
 {
     self.pushEnabled = YES;
+#if TARGET_OS_IOS
     [self registerForRemoteNotifications];
+#endif
     
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:UAPushBadgeSettingsKey];
     [self resetPushBadge];//zero badge
@@ -94,6 +96,8 @@
 }
 
 #pragma mark - Events
+
+#if TARGET_OS_IOS
 
 - (void) registerForRemoteNotifications
 {
@@ -198,6 +202,8 @@
     KCSLogNSError(@"Failed to register for remote notifications", error);
     //TODO: simulator error: Error Domain=NSCocoaErrorDomain Code=3010 "remote notifications are not supported in the simulator" UserInfo=0xa6992d0 {NSLocalizedDescription=remote notifications are not supported in the simulator}
 }
+
+#endif
 
 - (void) removeDeviceToken:(void (^)(BOOL success, NSError* error))completionBlock
 
@@ -313,10 +319,12 @@
 
 - (void)setPushBadgeNumber: (int)number
 {
+#if TARGET_OS_IOS
     if ([[UIApplication sharedApplication] applicationIconBadgeNumber] == number) {
         return;
     }
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:number];
+#endif
 }
 
 - (void)resetPushBadge

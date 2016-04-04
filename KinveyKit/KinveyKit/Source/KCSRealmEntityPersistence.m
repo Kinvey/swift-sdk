@@ -128,8 +128,10 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
         [self registerOriginalClass:[NSData class]
                          realmClass:[NSData class]];
         
+#if TARGET_OS_IOS
         [self registerOriginalClass:[UIImage class]
                          realmClass:[NSData class]];
+#endif
         
         //NSDate
         
@@ -180,10 +182,12 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
         [NSValueTransformer setValueTransformer:[KCS_NSURL_NSString_NSValueTransformer sharedInstance]
                                       fromClass:[NSURL class]
                                         toClass:[KCS_NSURL_NSString_NSValueTransformer transformedValueClass]];
-        
+
+#if TARGET_OS_IOS
         [NSValueTransformer setValueTransformer:[KCS_UIImage_NSData_NSValueTransformer sharedInstance]
                                       fromClass:[UIImage class]
                                         toClass:[KCS_UIImage_NSData_NSValueTransformer transformedValueClass]];
+#endif
         
         [NSValueTransformer setValueTransformer:[KCS_NSString_NSDate_NSValueTransformer sharedInstance]
                                       fromClass:[NSString class]

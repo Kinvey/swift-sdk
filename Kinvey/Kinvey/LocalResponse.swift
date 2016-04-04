@@ -6,7 +6,7 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 class LocalResponse: Response {
     
