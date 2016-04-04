@@ -424,11 +424,9 @@
 		57B23EF51C7FAA43006403CC /* KCSNetworkObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E2E1C7F9414006403CC /* KCSNetworkObserver.h */; };
 		57B23EF61C7FAED9006403CC /* KCSObjectCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E511C7F9414006403CC /* KCSObjectCache.m */; };
 		57B23EF71C7FAEE1006403CC /* KCSObjectCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E501C7F9414006403CC /* KCSObjectCache.h */; };
-		57B23EF81C7FAEEE006403CC /* KCSQuery2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E4D1C7F9414006403CC /* KCSQuery2+KCSInternal.m */; };
 		57B23EF91C7FAEEE006403CC /* KCSEntityPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E4F1C7F9414006403CC /* KCSEntityPersistence.m */; };
 		57B23EFA1C7FAEEE006403CC /* KCSOfflineUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E531C7F9414006403CC /* KCSOfflineUpdate.m */; };
 		57B23EFB1C7FAEFD006403CC /* KinveyDataStoreInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E4B1C7F9414006403CC /* KinveyDataStoreInternal.h */; };
-		57B23EFC1C7FAEFD006403CC /* KCSQuery2+KCSInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E4C1C7F9414006403CC /* KCSQuery2+KCSInternal.h */; };
 		57B23EFD1C7FAEFD006403CC /* KCSEntityPersistence.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E4E1C7F9414006403CC /* KCSEntityPersistence.h */; };
 		57B23EFE1C7FAEFD006403CC /* KCSOfflineUpdate.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E521C7F9414006403CC /* KCSOfflineUpdate.h */; };
 		57B23EFF1C7FAF1B006403CC /* KCSDBTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E0B1C7F9414006403CC /* KCSDBTools.m */; };
@@ -455,13 +453,11 @@
 		57B23F221C7FB000006403CC /* KinveyCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAF1C7F9414006403CC /* KinveyCollection.h */; };
 		57B23F231C7FB000006403CC /* KinveyEntity.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DB11C7F9414006403CC /* KinveyEntity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23F241C7FB000006403CC /* KinveyPersistable.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DB31C7F9414006403CC /* KinveyPersistable.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		57B23F251C7FB000006403CC /* KinveyPing.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DB41C7F9414006403CC /* KinveyPing.h */; };
 		57B23F261C7FB000006403CC /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DBA1C7F9414006403CC /* KCSMetadata.h */; };
 		57B23F271C7FB00F006403CC /* KCSObjectMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DB61C7F9414006403CC /* KCSObjectMapper.h */; };
 		57B23F281C7FB00F006403CC /* KCSBuilders.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DB81C7F9414006403CC /* KCSBuilders.h */; };
 		57B23F2A1C7FB021006403CC /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DB01C7F9414006403CC /* KinveyCollection.m */; };
 		57B23F2B1C7FB021006403CC /* KinveyEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DB21C7F9414006403CC /* KinveyEntity.m */; };
-		57B23F2C1C7FB021006403CC /* KinveyPing.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DB51C7F9414006403CC /* KinveyPing.m */; };
 		57B23F2D1C7FB021006403CC /* KCSObjectMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DB71C7F9414006403CC /* KCSObjectMapper.m */; };
 		57B23F2E1C7FB021006403CC /* KCSBuilders.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DB91C7F9414006403CC /* KCSBuilders.m */; };
 		57B23F2F1C7FB021006403CC /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DBB1C7F9414006403CC /* KCSMetadata.m */; };
@@ -2193,7 +2189,6 @@
 				57B23E931C7F98C2006403CC /* KCSRequestConfiguration.h in Headers */,
 				57B23EF31C7FAA29006403CC /* KCSFile+KCSInternal.h in Headers */,
 				57B23FF71C800F40006403CC /* KCSStore.h in Headers */,
-				57B23EFC1C7FAEFD006403CC /* KCSQuery2+KCSInternal.h in Headers */,
 				57B23F231C7FB000006403CC /* KinveyEntity.h in Headers */,
 				57B23E891C7F9734006403CC /* KCSRealmEntityPersistence.h in Headers */,
 				57B23E851C7F9562006403CC /* KCSQuery.h in Headers */,
@@ -2243,7 +2238,6 @@
 				57B23ED61C7FA85C006403CC /* KCSLogFormatter.h in Headers */,
 				57B23F401C7FB15E006403CC /* KCSURLProtocol.h in Headers */,
 				57B23ED41C7FA836006403CC /* KCSImageUtils.h in Headers */,
-				57B23F251C7FB000006403CC /* KinveyPing.h in Headers */,
 				57E4DB2B1C8A5B620017B406 /* KNVWritePolicy.h in Headers */,
 				57B23F5D1C7FB1B6006403CC /* KCS_DDTTYLogger.h in Headers */,
 				57B23F631C7FB1C6006403CC /* KCS_FMResultSet.h in Headers */,
@@ -2781,13 +2775,11 @@
 				57B23F3F1C7FB15C006403CC /* KCSURLProtocol.m in Sources */,
 				57B23E821C7F94B2006403CC /* KCSRealmEntityPersistence.m in Sources */,
 				57B23F691C7FB1D1006403CC /* KCS_KSReachability.m in Sources */,
-				57B23F2C1C7FB021006403CC /* KinveyPing.m in Sources */,
 				57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */,
 				57B23F4A1C7FB187006403CC /* KCS_NSArray_CLLocation_NSValueTransformer.m in Sources */,
 				5728212D1C63E0F500373EC8 /* File.swift in Sources */,
 				57B23F661C7FB1C6006403CC /* KCS_FMDatabasePool.m in Sources */,
 				57B23ECF1C7FA7F8006403CC /* KCSGroup.m in Sources */,
-				57B23EF81C7FAEEE006403CC /* KCSQuery2+KCSInternal.m in Sources */,
 				57B23EE11C7FA930006403CC /* KCSNSURLSessionOperation.m in Sources */,
 				57B23ED01C7FA802006403CC /* KCSReduceFunction.m in Sources */,
 				57B23EE81C7FA96E006403CC /* KCSMockServer.m in Sources */,

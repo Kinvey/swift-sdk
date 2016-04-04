@@ -120,7 +120,7 @@ public class Push: NSObject {
      }
      ```
      */
-    public func registerForPush(completionHandler: BoolCompletionHandler? = nil) {
+    public func registerForPush(forTypes types: UIUserNotificationType = [.Alert, .Badge, .Sound], categories: Set<UIUserNotificationCategory>? = nil, completionHandler: BoolCompletionHandler? = nil) {
         dispatch_once(&self.initializeToken) {
             if NSThread.isMainThread() {
                 self.replaceAppDelegateMethods(completionHandler)
@@ -133,12 +133,8 @@ public class Push: NSObject {
         
         let app = UIApplication.sharedApplication()
         let userNotificationSettings = UIUserNotificationSettings(
-            forTypes: [
-                UIUserNotificationType.Alert,
-                UIUserNotificationType.Badge,
-                UIUserNotificationType.Sound
-            ],
-            categories: nil
+            forTypes: types,
+            categories: categories
         )
         app.registerUserNotificationSettings(userNotificationSettings)
         app.registerForRemoteNotifications()
