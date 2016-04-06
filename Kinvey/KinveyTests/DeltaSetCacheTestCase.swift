@@ -11,32 +11,6 @@ import XCTest
 
 class DeltaSetCacheTestCase: KinveyTestCase {
     
-    class Person: NSObject, Persistable {
-        
-        dynamic var objectId: String?
-        dynamic var name: String?
-        
-        override init() {
-        }
-        
-        init(objectId: String? = nil, name: String?) {
-            self.objectId = objectId
-            self.name = name
-        }
-        
-        static func kinveyCollectionName() -> String {
-            return "Person"
-        }
-        
-        static func kinveyPropertyMapping() -> [String : String] {
-            return [
-                "objectId" : PersistableIdKey,
-                "name" : "name"
-            ]
-        }
-        
-    }
-    
     override func tearDown() {
         if let activeUser = client.activeUser {
             let store = DataStore<Person>.getInstance(.Network)
@@ -63,19 +37,19 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let date = NSDate()
         let cache = MemoryCache(type: Person.self)
         cache.saveEntity([
-            "objectId" : "update",
+            "personId" : "update",
             PersistableMetadataKey : [
                 Metadata.LmtKey : date
             ]
         ])
         cache.saveEntity([
-            "objectId" : "noChange",
+            "personId" : "noChange",
             PersistableMetadataKey : [
                 Metadata.LmtKey : date
             ]
         ])
         cache.saveEntity([
-            "objectId" : "delete",
+            "personId" : "delete",
             PersistableMetadataKey : [
                 Metadata.LmtKey : date
             ]
@@ -143,7 +117,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        XCTAssertNotNil(person.objectId)
+        XCTAssertNotNil(person.personId)
         
         do {
             let person = Person(name: "Victor Barros")
@@ -241,13 +215,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        XCTAssertNotNil(person.objectId)
-        guard let objectId = person.objectId else {
+        XCTAssertNotNil(person.personId)
+        guard let personId = person.personId else {
             return
         }
         
         do {
-            let person = Person(objectId: objectId, name: "Victor Barros")
+            let person = Person(personId: personId, name: "Victor Barros")
             
             weak var expectationUpdate = expectationWithDescription("Update")
             
@@ -339,15 +313,15 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        XCTAssertNotNil(person.objectId)
-        guard let objectId = person.objectId else {
+        XCTAssertNotNil(person.personId)
+        guard let personId = person.personId else {
             return
         }
         
         do {
             weak var expectationDelete = expectationWithDescription("Delete")
             
-            let query = Query(format: "objectId == %@", objectId)
+            let query = Query(format: "personId == %@", personId)
             query.persistableType = Person.self
             let createRemove = RemoveOperation(query: query, writePolicy: .ForceNetwork, persistableType: Person.self, client: client)
             createRemove.execute { (count, error) -> Void in

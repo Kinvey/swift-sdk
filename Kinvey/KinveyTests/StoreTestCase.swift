@@ -11,26 +11,6 @@ import XCTest
 
 class StoreTestCase: KinveyTestCase {
     
-    class Person: NSObject, Persistable {
-        
-        dynamic var personId: String?
-        dynamic var name: String?
-        dynamic var age: Int = 0
-        
-        static func kinveyCollectionName() -> String {
-            return NSStringFromClass(self)
-        }
-        
-        static func kinveyPropertyMapping() -> [String : String] {
-            return [
-                "personId" : Kinvey.PersistableIdKey,
-                "name" : "name",
-                "age" : "age"
-            ]
-        }
-        
-    }
-    
     var store: DataStore<Person>!
     lazy var person:Person = {
         let person = Person()

@@ -7,9 +7,12 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc(__KNVFindOperation)
 internal class FindOperation: ReadOperation {
+    
+    private static let MaxIdsPerQuery = 200
     
     let query: Query
     let deltaSet: Bool
@@ -38,6 +41,8 @@ internal class FindOperation: ReadOperation {
         return request
     }
     
+    typealias ArrayCompletionHandler = ([AnyObject]?, ErrorType?) -> Void
+    
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
         let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: persistableType.kinveyCollectionName(), query: query, fields: fields)
@@ -53,26 +58,65 @@ internal class FindOperation: ReadOperation {
                     allIds.unionInPlace(deltaSet.created)
                     allIds.unionInPlace(deltaSet.updated)
                     allIds.unionInPlace(deltaSet.deleted)
-                    let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
-                    var newRefObjs: [String : String]? = nil
-                    let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: cache, client: self.client) { jsonArray in
-                        newRefObjs = self.reduceToIdsLmts(jsonArray)
-                    }
-                    operation.execute { (results, error) -> Void in
-                        if let _ = results {
-                            if let refObjs = newRefObjs {
-                                let refKeys = Set<String>(refObjs.keys)
-                                let deleted = deltaSet.deleted.subtract(refKeys)
-                                if deleted.count > 0 {
-                                    let query = Query(format: "\(self.persistableType.idKey) IN %@", deleted)
-                                    cache.removeEntitiesByQuery(query)
+                    if allIds.count > self.dynamicType.MaxIdsPerQuery {
+                        let allIds = Array<String>(allIds)
+                        var promises = [Promise<[AnyObject]>]()
+                        var newRefObjs = [String : String]()
+                        for offset in 0.stride(to: allIds.count, by: self.dynamicType.MaxIdsPerQuery) {
+                            let limit = min(offset + self.dynamicType.MaxIdsPerQuery, allIds.count - 1)
+                            let allIds = Set<String>(allIds[offset...limit])
+                            let promise = Promise<[AnyObject]> { fulfill, reject in
+                                let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
+                                let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: cache, client: self.client) { jsonArray in
+                                    for (key, value) in self.reduceToIdsLmts(jsonArray) {
+                                        newRefObjs[key] = value
+                                    }
+                                }
+                                operation.execute { (results, error) -> Void in
+                                    if let results = results as? [AnyObject] {
+                                        fulfill(results)
+                                    } else if let error = error {
+                                        reject(error)
+                                    } else {
+                                        reject(Error.InvalidResponse)
+                                    }
                                 }
                             }
+                            promises.append(promise)
+                        }
+                        when(promises).thenInBackground { results in
+                            let refKeys = Set<String>(refObjs.keys)
+                            let deleted = deltaSet.deleted.subtract(refKeys)
+                            if deleted.count > 0 {
+                                let query = Query(format: "\(self.persistableType.idKey) IN %@", deleted)
+                                cache.removeEntitiesByQuery(query)
+                            }
                             self.executeLocal(completionHandler)
-                        } else if let error = error {
+                        }.error { error in
                             completionHandler?(nil, error)
-                        } else {
-                            completionHandler?(nil, Error.InvalidResponse)
+                        }
+                    } else {
+                        let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
+                        var newRefObjs: [String : String]? = nil
+                        let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: cache, client: self.client) { jsonArray in
+                            newRefObjs = self.reduceToIdsLmts(jsonArray)
+                        }
+                        operation.execute { (results, error) -> Void in
+                            if let _ = results {
+                                if let refObjs = newRefObjs {
+                                    let refKeys = Set<String>(refObjs.keys)
+                                    let deleted = deltaSet.deleted.subtract(refKeys)
+                                    if deleted.count > 0 {
+                                        let query = Query(format: "\(self.persistableType.idKey) IN %@", deleted)
+                                        cache.removeEntitiesByQuery(query)
+                                    }
+                                }
+                                self.executeLocal(completionHandler)
+                            } else if let error = error {
+                                completionHandler?(nil, error)
+                            } else {
+                                completionHandler?(nil, Error.InvalidResponse)
+                            }
                         }
                     }
                 } else {
