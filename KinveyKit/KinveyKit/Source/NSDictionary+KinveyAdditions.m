@@ -115,6 +115,8 @@
         return [((KCSFile*) value) proxyForJson];
     } else if ([value isKindOfClass:[UIImage class]]) {
         return [NSNull null];
+    } else if ([value isKindOfClass:[NSSet class]]) {
+        return [self transformValue:((NSSet*) value).allObjects];
     } else if ([value isKindOfClass:[NSDictionary class]]) {
         NSMutableDictionary* dictionary = [value isKindOfClass:[NSMutableDictionary class]] ? value : [value mutableCopy];
         id oldValue, newValue;
@@ -133,7 +135,7 @@
     } else if ([value isKindOfClass:[NSArray class]]) {
         NSArray* array = (NSArray*) value;
         NSMutableArray* results = [NSMutableArray arrayWithCapacity:array.count];
-        id oldValue, newValue;
+        id newValue;
         for (id oldValue in value) {
             newValue = [self transformValue:oldValue];
             if (newValue != [NSNull null]) {
