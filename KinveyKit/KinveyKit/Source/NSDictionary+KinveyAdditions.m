@@ -107,20 +107,35 @@
     return result;
 }
 
+-(id)transformValue:(id)value
+{
+    if ([value isKindOfClass:[KCSKinveyRef class]]) {
+        return [((KCSKinveyRef*) value) proxyForJson];
+    } else if ([value isKindOfClass:[KCSFile class]]) {
+        return [((KCSFile*) value) proxyForJson];
+    } else if ([value isKindOfClass:[UIImage class]]) {
+        return [NSNull null];
+    } else if ([value isKindOfClass:[NSSet class]]) {
+        return [self transformValue:((NSSet*) value).allObjects];
+    } else if ([value isKindOfClass:[NSDictionary class]]) {
+        NSMutableDictionary* dictionary = ((NSDictionary*) value).mutableCopy;
+        id oldValue, newValue;
+        for (NSString* key in dictionary.allKeys) {
+            oldValue = dictionary[key];
+            newValue = [self transformValue:oldValue];
+            if (oldValue != newValue) {
+                dictionary[key] = newValue;
+            }
+        }
+        return dictionary;
+    } else {
+        return value;
+    }
+}
+
 -(NSData *)kcsJSONDataRepresentation:(NSError *__autoreleasing *)_error
 {
-    NSMutableDictionary *dictionary = self.mutableCopy;
-    id value;
-    for (NSString* key in dictionary.allKeys) {
-        value = dictionary[key];
-        if ([value isKindOfClass:[KCSKinveyRef class]]) {
-            dictionary[key] = [((KCSKinveyRef*) value) proxyForJson];
-        } else if ([value isKindOfClass:[KCSFile class]]) {
-            dictionary[key] = [((KCSFile*) value) proxyForJson];
-        } else if ([value isKindOfClass:[UIImage class]]) {
-            dictionary[key] = [NSNull null];
-        }
-    }
+    NSMutableDictionary *dictionary = [self transformValue:self];
     
     NSError* error = nil;
     NSData* data = [NSJSONSerialization dataWithJSONObject:dictionary
