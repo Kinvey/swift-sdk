@@ -9,10 +9,12 @@
 import XCTest
 @testable import Kinvey
 
-class SyncedStoreTests: NetworkStoreTests {
+class SyncStoreTests: StoreTestCase {
     
     override func setUp() {
         super.setUp()
+        
+        signUp()
         
         store = DataStore<Person>.getInstance(.Sync)
     }
@@ -35,7 +37,7 @@ class SyncedStoreTests: NetworkStoreTests {
     func testSync() {
         save()
         
-        weak var expectationPush = expectationWithDescription("Push")
+        weak var expectationSync = expectationWithDescription("Sync")
         
         store.sync() { count, results, error in
             self.assertThread()
@@ -47,11 +49,11 @@ class SyncedStoreTests: NetworkStoreTests {
                 XCTAssertGreaterThanOrEqual(Int(count), 1)
             }
             
-            expectationPush?.fulfill()
+            expectationSync?.fulfill()
         }
         
         waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationPush = nil
+            expectationSync = nil
         }
     }
     

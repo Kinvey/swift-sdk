@@ -257,6 +257,8 @@
 		571991011CB3195D00070CDA /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DAB1C7F9414006403CC /* KCSPush.m */; };
 		571991021CB3196000070CDA /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAA1C7F9414006403CC /* KCSPush.h */; };
 		571991041CB31DE700070CDA /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 571991031CB31DE700070CDA /* libsqlite3.tbd */; };
+		571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */; };
+		571991091CB45EEE00070CDA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */; };
@@ -743,6 +745,7 @@
 		5719903A1CB2D82A00070CDA /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/Mac/PromiseKit.framework; sourceTree = "<group>"; };
 		5719905A1CB301D500070CDA /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		571991031CB31DE700070CDA /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
+		571991081CB45EEE00070CDA /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionDownloadTaskRequest.swift; sourceTree = "<group>"; };
@@ -769,7 +772,7 @@
 		574B0FAA1C729EC900CDC48F /* SaveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperation.swift; sourceTree = "<group>"; };
 		574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveOperation.swift; sourceTree = "<group>"; };
 		574EB8B91C91FCE400238D2D /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
-		5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedStoreTests.swift; sourceTree = "<group>"; };
+		5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncStoreTests.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
 		5765B8351C92365700080FFA /* FindOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperationTest.swift; sourceTree = "<group>"; };
 		5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicStoreTestCase.swift; sourceTree = "<group>"; };
@@ -1390,14 +1393,16 @@
 		57A27C8F1C178F18000DF951 /* KinveyTests */ = {
 			isa = PBXGroup;
 			children = (
+				57A27C921C178F18000DF951 /* Info.plist */,
 				5765B83C1C972D7000080FFA /* URLProtocols.swift */,
 				578F5C921C99EED100B20F17 /* KIF.swift */,
 				57A27C901C178F18000DF951 /* KinveyTestCase.swift */,
-				57A27C921C178F18000DF951 /* Info.plist */,
 				57E1C3AC1C17EC9500578974 /* UserTests.swift */,
+				571991081CB45EEE00070CDA /* Person.swift */,
 				578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */,
 				5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */,
 				5765B8351C92365700080FFA /* FindOperationTest.swift */,
+				5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */,
 				577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */,
 				57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */,
 				573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */,
@@ -1405,7 +1410,6 @@
 				5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */,
 				576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */,
 				576E95AE1C20DC0400258CC3 /* CachedStoreTests.swift */,
-				5753BB3B1C23F29000EB9D3A /* SyncedStoreTests.swift */,
 				57A2ED951C4D5F74006D26A9 /* Media.xcassets */,
 				57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */,
 				5711C46C1C74F52F00073806 /* SaveOperationTest.swift */,
@@ -2888,8 +2892,10 @@
 				578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */,
 				577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */,
 				573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */,
+				571991091CB45EEE00070CDA /* Person.swift in Sources */,
 				57C563061C9CC7410011FB36 /* String.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
+				571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */,
 				578F5C931C99EED100B20F17 /* KIF.swift in Sources */,
 				577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */,
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
