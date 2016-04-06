@@ -94,7 +94,7 @@ class KCSProtocolTestsBaseURLProtocol: KCSTestCase {
             secret: "2f355bfaa8cb4f7299e914e8e85d8c98",
             options: nil
         )
-        config.setBaseURL("http://10.130.247.253:3000")
+//        config.setBaseURL("http://10.130.247.253:3000")
         
         XCTAssertEqual("http", config.hostProtocol)
         XCTAssertEqual("10.130.247.253", config.hostDomain)
