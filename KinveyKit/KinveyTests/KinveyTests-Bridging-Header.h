@@ -19,6 +19,7 @@
 #import "KCSClientConfiguration.h"
 #import "KCSClientConfiguration+KCSInternal.h"
 #import "KCSObjectCache.h"
+#import "NSDictionary+KinveyAdditions.h"
 
 @interface KCSUser2 ()
 
