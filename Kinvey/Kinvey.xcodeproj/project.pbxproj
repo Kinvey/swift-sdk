@@ -267,6 +267,7 @@
 		572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
 		572C45921C86C13800A41935 /* EntitySchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C45911C86C13800A41935 /* EntitySchema.swift */; };
 		572C45951C86C29300A41935 /* KinveyInternal-Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 572C45931C86C29300A41935 /* KinveyInternal-Swift.h */; };
+		5737721B1CB58AA100EDE2BB /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; };
 		57379DA51C72AAA900E240E9 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
 		573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
@@ -1175,6 +1176,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */,
+				5737721B1CB58AA100EDE2BB /* Realm.framework in Frameworks */,
 				574B0F751C6E7E0E00CDC48F /* PromiseKit.framework in Frameworks */,
 				574B0F791C6E7FAA00CDC48F /* KeychainAccess.framework in Frameworks */,
 			);

@@ -176,11 +176,10 @@ public class Promise<T> {
     /**
      A `typealias` for the return values of `pendingPromise()`. Simplifies declaration of properties that reference the values' containing tuple when this is necessary. For example, when working with multiple `pendingPromise()`s within the same scope, or when the promise initialization must occur outside of the caller's initialization.
 
-         ```
          class Foo: BarDelegate {
-         var pendingPromise: Promise<Int>.PendingPromise?
+            var pendingPromise: Promise<Int>.PendingPromise?
          }
-         ```
+
      - SeeAlso: pendingPromise()
      */
     public typealias PendingPromise = (promise: Promise, fulfill: (T) -> Void, reject: (ErrorType) -> Void)
@@ -251,7 +250,7 @@ public class Promise<T> {
         return Promise<U>(when: self) { resolution, resolve in
             switch resolution {
             case .Rejected(let error):
-                resolve(.Rejected(error))
+                resolve(.Rejected((error.0, error.1)))
             case .Fulfilled(let value):
                 contain_zalgo(q, rejecter: resolve) {
                     resolve(.Fulfilled(try body(value)))
@@ -280,7 +279,7 @@ public class Promise<T> {
         return Promise<U>(when: self) { resolution, resolve in
             switch resolution {
             case .Rejected(let error):
-                resolve(.Rejected(error))
+                resolve(.Rejected((error.0, error.1)))
             case .Fulfilled(let value):
                 contain_zalgo(q, rejecter: resolve) {
                     let promise = try body(value)
@@ -314,7 +313,7 @@ public class Promise<T> {
         return Promise<AnyObject?>(when: self) { resolution, resolve in
             switch resolution {
             case .Rejected(let error):
-                resolve(.Rejected(error))
+                resolve(.Rejected((error.0, error.1)))
             case .Fulfilled(let value):
                 contain_zalgo(q, rejecter: resolve) {
                     try body(value).pipe(resolve)
