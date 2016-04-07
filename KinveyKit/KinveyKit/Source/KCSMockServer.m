@@ -186,7 +186,7 @@ KCSNetworkResponse* createMockErrorResponse(NSString* error, NSString* debug, NS
                     if (request.HTTPBody) {
                         //TODO: add _id if none
                         getresponse.jsonData = [NSJSONSerialization JSONObjectWithData:request.HTTPBody
-                                                                               options:0
+                                                                               options:NSJSONReadingMutableContainers
                                                                                  error:nil];
                     }
                     dictionary[components[components.count-1]] = getresponse;

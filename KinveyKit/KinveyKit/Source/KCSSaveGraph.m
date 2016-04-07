@@ -205,9 +205,7 @@ double countBytesRf(id referenceObj)
 {
     KCSSerializedObject* serializedObj = [KCSObjectMapper makeResourceEntityDictionaryFromObject:referenceObj forCollection:@"" error:NULL];
     NSDictionary *dictionaryToMap = serializedObj.dataToSerialize;
-    NSData* data = [NSJSONSerialization dataWithJSONObject:dictionaryToMap
-                                                   options:0
-                                                     error:nil];
+    NSData* data = [dictionaryToMap kcsJSONDataRepresentation:nil];
     double bytecount = [data length];
     return bytecount;
 }

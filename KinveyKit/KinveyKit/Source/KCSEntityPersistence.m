@@ -391,9 +391,9 @@
 - (NSDictionary*) dictObjForJson:(NSString*)s
 {
     NSError* error = nil;
-    NSDictionary* obj = [NSJSONSerialization JSONObjectWithData:[s dataUsingEncoding:NSUTF8StringEncoding]
-                                                        options:0
-                                                          error:&error];
+    NSMutableDictionary* obj = [NSJSONSerialization JSONObjectWithData:[s dataUsingEncoding:NSUTF8StringEncoding]
+                                                               options:NSJSONReadingMutableContainers
+                                                                 error:&error];
     if (error) {
         KCSLogError(KCS_LOG_CONTEXT_DATA, @"DB deserialization error %@", error);
     }
@@ -647,12 +647,12 @@
             KCSLogError(KCS_LOG_CONTEXT_FILESYSTEM, @"Cache error %d: %@", [db lastErrorCode], [db lastErrorMessage]);
         }
     }];
-    NSArray* ids = nil;
+    NSMutableArray* ids = nil;
 
     if (result) {
         NSError* error = nil;
         ids = [NSJSONSerialization JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
-                                              options:0
+                                              options:NSJSONReadingMutableContainers
                                                 error:&error];
         if (result != nil && error != nil) {
             KCSLogError(KCS_LOG_CONTEXT_DATA, @"Error converting id array string into array: %@", error);

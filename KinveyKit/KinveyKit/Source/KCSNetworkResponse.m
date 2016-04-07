@@ -103,9 +103,9 @@
     NSString* string = [[NSString alloc] initWithData:self.jsonData encoding:format];
     NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
     NSError* error = nil;
-    NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data
-                                                                 options:0
-                                                                   error:&error];
+    NSMutableDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data
+                                                                        options:NSJSONReadingMutableContainers
+                                                                          error:&error];
     if (error) {
         KCSLogError(KCS_LOG_CONTEXT_NETWORK, @"JSON Serialization retry failed: %@", error);
         if (anError != NULL) {
@@ -125,9 +125,9 @@
     }
     //results are now wrapped by request in KCSRESTRequest, and need to unpack them here.
     NSError* error = nil;
-    NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:self.jsonData
-                                                                 options:0
-                                                                   error:&error];
+    NSMutableDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:self.jsonData
+                                                                        options:NSJSONReadingMutableContainers
+                                                                          error:&error];
     NSObject* jsonObj = nil;
     if (![jsonResponse isKindOfClass:[NSDictionary class]]) {
         if (anError) {

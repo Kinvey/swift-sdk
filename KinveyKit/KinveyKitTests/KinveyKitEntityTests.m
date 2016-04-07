@@ -279,7 +279,7 @@
                                                          options:0
                                                            error:nil];
     id deserialized = [NSJSONSerialization JSONObjectWithData:serialized
-                                                      options:0
+                                                      options:NSJSONReadingMutableContainers
                                                         error:nil];
     
     NSMutableDictionary* resources = [NSMutableDictionary dictionary];

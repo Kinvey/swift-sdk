@@ -23,9 +23,9 @@
     [self measureBlock:^{
         for (int i = 0; i < 100; i++) {
             NSError* error = nil;
-            NSArray* entities = [NSJSONSerialization JSONObjectWithData:[cdata dataUsingEncoding:NSUTF8StringEncoding]
-                                                                options:0
-                                                                  error:&error];
+            NSMutableArray* entities = [NSJSONSerialization JSONObjectWithData:[cdata dataUsingEncoding:NSUTF8StringEncoding]
+                                                                       options:NSJSONReadingMutableContainers
+                                                                         error:&error];
             XCTAssertNotNil(entities, @"Should have data to import: %@", error);
         }
     }];
