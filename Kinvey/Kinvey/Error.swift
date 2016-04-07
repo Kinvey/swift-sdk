@@ -24,7 +24,7 @@ public enum Error: ErrorType {
     case RequestCanceled
     
     /// Error when calls a method not available for a specific data store type.
-    case InvalidStoreType
+    case InvalidDataStoreType
     
     /// Error when a `User` doen't have an email or username.
     case UserWithoutEmailOrUsername

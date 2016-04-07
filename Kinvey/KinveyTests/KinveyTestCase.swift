@@ -115,4 +115,8 @@ class KinveyTestCase: XCTestCase {
         }
     }
     
+    override func waitForExpectationsWithTimeout(timeout: NSTimeInterval = defaultTimeout, handler: XCWaitCompletionHandler? = nil) {
+        super.waitForExpectationsWithTimeout(timeout, handler: handler)
+    }
+    
 }

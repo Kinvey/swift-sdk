@@ -62,6 +62,10 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    public func find(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
+        return findById(id, readPolicy: readPolicy, completionHandler: completionHandler)
+    }
+    
     /// Gets a list of records that matches with the query passed by parameter.
     public func find(query: Query = Query(), deltaSet: Bool = true, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
@@ -126,7 +130,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func push(completionHandler: UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
-            completionHandler?(nil, KinveyError.InvalidStoreType)
+            completionHandler?(nil, KinveyError.InvalidDataStoreType)
             return LocalRequest()
         }
         
@@ -139,7 +143,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func pull(query: Query = Query(), completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
-            completionHandler?(nil, KinveyError.InvalidStoreType)
+            completionHandler?(nil, KinveyError.InvalidDataStoreType)
             return LocalRequest()
         }
         
@@ -152,7 +156,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func sync(query: Query = Query(), completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
-            completionHandler?(nil, nil, KinveyError.InvalidStoreType)
+            completionHandler?(nil, nil, KinveyError.InvalidDataStoreType)
             return LocalRequest()
         }
         
@@ -175,7 +179,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func purge(query: Query = Query(), completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
-            completionHandler?(nil, Error.InvalidStoreType)
+            completionHandler?(nil, Error.InvalidDataStoreType)
             return LocalRequest()
         }
         

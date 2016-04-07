@@ -6,20 +6,6 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		577C9E6A1C1E0EB100BF49EE /* Kinvey */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 577C9E6B1C1E0EB100BF49EE /* Build configuration list for PBXAggregateTarget "Kinvey" */;
-			buildPhases = (
-				577C9E701C1E0EC300BF49EE /* ShellScript */,
-			);
-			dependencies = (
-			);
-			name = Kinvey;
-			productName = Kinvey;
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
 		570960601C1B962400D4AFA5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5709605F1C1B962400D4AFA5 /* AppDelegate.swift */; };
 		570960621C1B962400D4AFA5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570960611C1B962400D4AFA5 /* ViewController.swift */; };
@@ -47,13 +33,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 5709605B1C1B962400D4AFA5;
 			remoteInfo = MICSampleApp;
-		};
-		577C9E6E1C1E0EB700BF49EE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 570960541C1B962400D4AFA5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 577C9E6A1C1E0EB100BF49EE;
-			remoteInfo = Kinvey;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -182,7 +161,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				577C9E6F1C1E0EB700BF49EE /* PBXTargetDependency */,
 			);
 			name = MICSampleApp;
 			productName = MICSampleApp;
@@ -246,9 +224,6 @@
 						CreatedOnToolsVersion = 7.2;
 						TestTargetID = 5709605B1C1B962400D4AFA5;
 					};
-					577C9E6A1C1E0EB100BF49EE = {
-						CreatedOnToolsVersion = 7.2;
-					};
 				};
 			};
 			buildConfigurationList = 570960571C1B962400D4AFA5 /* Build configuration list for PBXProject "MICSampleApp" */;
@@ -267,7 +242,6 @@
 				5709605B1C1B962400D4AFA5 /* MICSampleApp */,
 				5709606F1C1B962500D4AFA5 /* MICSampleAppTests */,
 				5709607A1C1B962500D4AFA5 /* MICSampleAppUITests */,
-				577C9E6A1C1E0EB100BF49EE /* Kinvey */,
 			);
 		};
 /* End PBXProject section */
@@ -298,25 +272,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		577C9E701C1E0EC300BF49EE /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../../Kinvey/Kinvey",
-				"$(SRCROOT)/../../KinveyKit/KinveyKit",
-			);
-			outputPaths = (
-				"$(SRCROOT)/../../Kinvey/build/Debug-universal/Kinvey.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cd ../../Kinvey\nmake";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		570960581C1B962400D4AFA5 /* Sources */ = {
@@ -357,11 +312,6 @@
 			isa = PBXTargetDependency;
 			target = 5709605B1C1B962400D4AFA5 /* MICSampleApp */;
 			targetProxy = 5709607C1C1B962500D4AFA5 /* PBXContainerItemProxy */;
-		};
-		577C9E6F1C1E0EB700BF49EE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 577C9E6A1C1E0EB100BF49EE /* Kinvey */;
-			targetProxy = 577C9E6E1C1E0EB700BF49EE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -538,20 +488,6 @@
 			};
 			name = Release;
 		};
-		577C9E6C1C1E0EB100BF49EE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		577C9E6D1C1E0EB100BF49EE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -590,14 +526,6 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
-		};
-		577C9E6B1C1E0EB100BF49EE /* Build configuration list for PBXAggregateTarget "Kinvey" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				577C9E6C1C1E0EB100BF49EE /* Debug */,
-				577C9E6D1C1E0EB100BF49EE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

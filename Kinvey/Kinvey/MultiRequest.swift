@@ -13,11 +13,31 @@ internal class MultiRequest: NSObject, Request {
     
     private var requests = [Request]()
     
+    deinit {
+        for request in requests {
+            if let request = request as? NSObject {
+                request.removeObserver(self, forKeyPath: "executing")
+            }
+        }
+    }
+    
     internal func addRequest(request: Request) {
         if _canceled {
             request.cancel()
         }
+        if let request = request as? NSObject {
+            request.addObserver(self, forKeyPath: "executing", options: [.Old, .New], context: nil)
+        }
         requests.append(request)
+    }
+    
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        if let _ = object as? Request {
+            if let keyPath = keyPath where keyPath == "executing" {
+                self.willChangeValueForKey(keyPath)
+                self.didChangeValueForKey(keyPath)
+            }
+        }
     }
     
     internal var executing: Bool {
