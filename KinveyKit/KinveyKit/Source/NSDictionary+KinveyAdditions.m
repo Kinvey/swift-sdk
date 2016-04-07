@@ -118,27 +118,23 @@
     } else if ([value isKindOfClass:[NSSet class]]) {
         return [self transformValue:((NSSet*) value).allObjects];
     } else if ([value isKindOfClass:[NSDictionary class]]) {
-        NSMutableDictionary* dictionary = [value isKindOfClass:[NSMutableDictionary class]] ? value : [value mutableCopy];
-        id oldValue, newValue;
-        for (NSString* key in value) {
-            oldValue = value[key];
-            newValue = [self transformValue:oldValue];
-            if (oldValue != newValue) {
-                if (newValue != [NSNull null]) {
-                    dictionary[key] = newValue;
-                } else {
-                    [dictionary removeObjectForKey:key];
-                }
+        NSDictionary* dictionary = (NSDictionary*) value;
+        NSMutableDictionary* result = [NSMutableDictionary dictionaryWithCapacity:dictionary.count];
+        id newValue = nil;
+        for (NSString* key in dictionary.allKeys) {
+            newValue = [self transformValue:dictionary[key]];
+            if (newValue) {
+                result[key] = newValue;
             }
         }
-        return dictionary;
+        return result;
     } else if ([value isKindOfClass:[NSArray class]]) {
         NSArray* array = (NSArray*) value;
         NSMutableArray* results = [NSMutableArray arrayWithCapacity:array.count];
-        id newValue;
-        for (id oldValue in value) {
+        id newValue = nil;
+        for (id oldValue in array) {
             newValue = [self transformValue:oldValue];
-            if (newValue != [NSNull null]) {
+            if (newValue) {
                 [results addObject:newValue];
             }
         }
@@ -149,15 +145,7 @@
 
 -(NSData *)kcsJSONDataRepresentation:(NSError *__autoreleasing *)_error
 {
-    NSMutableDictionary *dictionary = self.mutableCopy;
-    id oldValue, newValue;
-    for (NSString* key in dictionary.allKeys) {
-        oldValue = dictionary[key];
-        newValue = [self transformValue:oldValue];
-        if (oldValue != newValue) {
-            dictionary[key] = newValue;
-        }
-    }
+    NSMutableDictionary *dictionary = [self transformValue:self];
     
     NSError* error = nil;
     NSData* data = [NSJSONSerialization dataWithJSONObject:dictionary
