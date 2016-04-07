@@ -8,7 +8,7 @@
 
 import XCTest
 
-class QueryTests: XCTestCase {
+class JsonTests: XCTestCase {
     
     func testPushDeviceTokens() {
         let devicetokens: NSSet = [NSUUID().UUIDString]
