@@ -616,7 +616,6 @@
 		574926EE1B8662A000A8B934 /* KCSCachedStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27302CBF155C66FF00A0183E /* KCSCachedStoreTests.m */; };
 		574926EF1B8662EE00A8B934 /* TestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27223E1B157E7A3200656BCC /* TestUtils.m */; };
 		574D8BA31B1641BB00C114A9 /* MLIBZ_322_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574D8BA21B1641BB00C114A9 /* MLIBZ_322_Tests.swift */; };
-		574FD5551AC1C0BB00CA26CD /* KCSKinveyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */; };
 		57524D0C1BBC5750000D14AC /* KCSManageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B556851BB5F7030000FF50 /* KCSManageAPI.swift */; };
 		57524D0D1BBC5750000D14AC /* KCSBaasAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57155E571BB6120E00A13B97 /* KCSBaasAPI.swift */; };
 		575675011AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575675001AF28D3500A7C0DB /* EmptyRequestConfigurationTests.swift */; };
@@ -684,6 +683,8 @@
 		5762036C1B87E3CD001E2B92 /* 1px.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F3E88D14BABD5F009063DE /* 1px.png */; };
 		576203741B87E403001E2B92 /* RequestConfigurationTestsComplexHttpRequestHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576203591B87E392001E2B92 /* RequestConfigurationTestsComplexHttpRequestHeaders.swift */; };
 		576203751B87E4C6001E2B92 /* RequestConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571200EB1ABB203E002B148D /* RequestConfigurationTests.swift */; };
+		576A2F8A1CB71689008207D9 /* KCSJsonTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 576A2F891CB71689008207D9 /* KCSJsonTests.m */; };
+		576A2F8C1CB71D13008207D9 /* KCSKinveyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 574FD5541AC1C0BB00CA26CD /* KCSKinveyTest.m */; };
 		57728FE21ABF22480043E779 /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */; };
 		57728FE31ABF22480043E779 /* KCSMutableOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 57728FE11ABF22480043E779 /* KCSMutableOrderedDictionary.m */; };
 		57728FE41ABF22EB0043E779 /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */; };
@@ -1929,6 +1930,7 @@
 		576203721B87E3CD001E2B92 /* RequestConfigurationTestsComplexHttpRequestHeaders.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RequestConfigurationTestsComplexHttpRequestHeaders.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		576203761B87E4ED001E2B92 /* RequestConfigurationTestsGlobalHttpRequestHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestConfigurationTestsGlobalHttpRequestHeaders.swift; sourceTree = "<group>"; };
 		576203781B87E511001E2B92 /* RequestConfigurationTestsHttpRequestHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestConfigurationTestsHttpRequestHeaders.swift; sourceTree = "<group>"; };
+		576A2F891CB71689008207D9 /* KCSJsonTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSJsonTests.m; sourceTree = "<group>"; };
 		57728FE01ABF22480043E779 /* KCSMutableOrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMutableOrderedDictionary.h; sourceTree = "<group>"; };
 		57728FE11ABF22480043E779 /* KCSMutableOrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSMutableOrderedDictionary.m; sourceTree = "<group>"; };
 		577ACE051AEAB559006C2469 /* KCSProtocolTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KCSProtocolTests.swift; sourceTree = "<group>"; };
@@ -3050,6 +3052,7 @@
 				57291BAC1BE19AE10066033E /* Event.m */,
 				57291BA81BE19ABF0066033E /* KCSLoadObjectTest.m */,
 				57056BB91CB5853300A214BE /* JsonTests.swift */,
+				576A2F891CB71689008207D9 /* KCSJsonTests.m */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -5757,6 +5760,7 @@
 				579419141AD35A28001CFF5A /* KeychainTests.m in Sources */,
 				578834321AB8D25500078CC5 /* KinveyKitKeyChainTests.m in Sources */,
 				57DF5C341BB355CE0036EF99 /* KCSDeltaSetCacheTests.swift in Sources */,
+				576A2F8C1CB71D13008207D9 /* KCSKinveyTest.m in Sources */,
 				578076771AF7FCD500C220C4 /* KCSMemory.m in Sources */,
 				5788343F1AB8D25500078CC5 /* KinveyKitNSDateTests.m in Sources */,
 				5788342B1AB8D25500078CC5 /* KinveyAppdataStoreTests.m in Sources */,
@@ -5785,6 +5789,7 @@
 				574D8BA31B1641BB00C114A9 /* MLIBZ_322_Tests.swift in Sources */,
 				578834431AB8D25500078CC5 /* KCSClientShimTests.m in Sources */,
 				5788343C1AB8D25500078CC5 /* KinveyKitNSStringTests.m in Sources */,
+				576A2F8A1CB71689008207D9 /* KCSJsonTests.m in Sources */,
 				57056BBA1CB5853300A214BE /* JsonTests.swift in Sources */,
 				5708914E1B28F32000F0D51A /* MLIBZ_322_Ext_Tests.swift in Sources */,
 				578834571AB8D25500078CC5 /* TestThreads.m in Sources */,
@@ -5797,7 +5802,6 @@
 				578834501AB8D25500078CC5 /* Query2Tests.m in Sources */,
 				578834391AB8D25500078CC5 /* KinveyKitEntityTests.m in Sources */,
 				578834341AB8D25500078CC5 /* KinveyUserDiscoveryTests.m in Sources */,
-				574FD5551AC1C0BB00CA26CD /* KCSKinveyTest.m in Sources */,
 				578834541AB8D25500078CC5 /* DataModelTests.m in Sources */,
 				575675051AF2E70400A7C0DB /* MLIBZ_256_Tests.swift in Sources */,
 				578834521AB8D25500078CC5 /* EntityCacheTests.m in Sources */,

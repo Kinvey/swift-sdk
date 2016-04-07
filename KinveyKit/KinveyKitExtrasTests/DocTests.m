@@ -73,7 +73,9 @@
     
     NSString* jsonPath = [[NSBundle mainBundle] pathForResource:@"ACollection" ofType:@"json"]; //include ACollection.json in bundle
     NSData* jsonData = [NSData dataWithContentsOfFile:jsonPath];
-    NSArray* entities = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:NULL];
+    NSMutableArray* entities = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                               options:NSJSONReadingMutableContainers
+                                                                 error:NULL];
     
     [store import:entities];
     
