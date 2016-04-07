@@ -477,7 +477,7 @@
 		27FB2A8416FCEE8F00CD7D5C /* KCSCachedStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 27302CBA155C66B300A0183E /* KCSCachedStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27FEBF3017B26AEB006E7FBD /* KCSCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */; };
 		27FEBF3117B26AEB006E7FBD /* KCSCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */; };
-		57056BBA1CB5853300A214BE /* QueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57056BB91CB5853300A214BE /* QueryTests.swift */; };
+		57056BBA1CB5853300A214BE /* JsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57056BB91CB5853300A214BE /* JsonTests.swift */; };
 		5708914E1B28F32000F0D51A /* MLIBZ_322_Ext_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5708914D1B28F32000F0D51A /* MLIBZ_322_Ext_Tests.swift */; };
 		57097EAD1B62ABE500D06461 /* mavericks.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 271DE7B917728815003541D4 /* mavericks.jpg */; };
 		57097EAF1B62AC7A00D06461 /* FileUploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57097EAE1B62AC7A00D06461 /* FileUploadViewController.swift */; };
@@ -1852,7 +1852,7 @@
 		27F5D7F216F20EC4001828F3 /* NSDictionary+KinveyAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+KinveyAdditions.m"; sourceTree = "<group>"; };
 		27FB2A7616FCEC7400CD7D5C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Accounts.framework; sourceTree = DEVELOPER_DIR; };
 		27FEBF2F17B26AEB006E7FBD /* KCSCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSCredentials.h; sourceTree = "<group>"; };
-		57056BB91CB5853300A214BE /* QueryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTests.swift; sourceTree = "<group>"; };
+		57056BB91CB5853300A214BE /* JsonTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonTests.swift; sourceTree = "<group>"; };
 		5708914D1B28F32000F0D51A /* MLIBZ_322_Ext_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLIBZ_322_Ext_Tests.swift; sourceTree = "<group>"; };
 		57097EAE1B62AC7A00D06461 /* FileUploadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileUploadViewController.swift; sourceTree = "<group>"; };
 		570FA7551B911B6E00F51F4C /* KCSMultipleRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSMultipleRequest.h; sourceTree = "<group>"; };
@@ -3049,7 +3049,7 @@
 				57291BAB1BE19AE10066033E /* Event.h */,
 				57291BAC1BE19AE10066033E /* Event.m */,
 				57291BA81BE19ABF0066033E /* KCSLoadObjectTest.m */,
-				57056BB91CB5853300A214BE /* QueryTests.swift */,
+				57056BB91CB5853300A214BE /* JsonTests.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -5785,7 +5785,7 @@
 				574D8BA31B1641BB00C114A9 /* MLIBZ_322_Tests.swift in Sources */,
 				578834431AB8D25500078CC5 /* KCSClientShimTests.m in Sources */,
 				5788343C1AB8D25500078CC5 /* KinveyKitNSStringTests.m in Sources */,
-				57056BBA1CB5853300A214BE /* QueryTests.swift in Sources */,
+				57056BBA1CB5853300A214BE /* JsonTests.swift in Sources */,
 				5708914E1B28F32000F0D51A /* MLIBZ_322_Ext_Tests.swift in Sources */,
 				578834571AB8D25500078CC5 /* TestThreads.m in Sources */,
 				5788343E1AB8D25500078CC5 /* KinveyKitNSURLTests.m in Sources */,
