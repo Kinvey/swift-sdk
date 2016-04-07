@@ -194,7 +194,7 @@ internal class KinveyError: NSObject {
     internal static let InvalidResponse = Error.InvalidResponse.error
     internal static let NoActiveUser = Error.NoActiveUser.error
     internal static let RequestCanceled = Error.RequestCanceled.error
-    internal static let InvalidStoreType = Error.InvalidStoreType.error
+    internal static let InvalidDataStoreType = Error.InvalidDataStoreType.error
     
     private override init() {
     }

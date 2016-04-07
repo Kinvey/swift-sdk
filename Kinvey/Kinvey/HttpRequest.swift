@@ -166,6 +166,12 @@ internal class HttpRequest: NSObject, Request {
         request.HTTPMethod = httpMethod.stringValue
     }
     
+    deinit {
+        if let task = task {
+            task.removeObserver(self, forKeyPath: "state")
+        }
+    }
+    
     func prepareRequest() {
         for header in defaultHeaders {
             request.setValue(header.value, forHTTPHeaderField: header.name)
@@ -190,9 +196,21 @@ internal class HttpRequest: NSObject, Request {
 //        print("\(curlCommand)")
         
         task = client.urlSession.dataTaskWithRequest(request) { (data, response, error) -> Void in
+            self.willChangeValueForKey("state")
+            self.didChangeValueForKey("state")
             completionHandler?(data, HttpResponse(response: response as? NSHTTPURLResponse), error)
         }
+        task!.addObserver(self, forKeyPath: "state", options: [.Old, .New], context: nil)
         task!.resume()
+    }
+    
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        if let object = object as? NSURLSessionTask where object == task {
+            if let keyPath = keyPath where keyPath == "state" {
+                self.willChangeValueForKey("executing")
+                self.didChangeValueForKey("executing")
+            }
+        }
     }
     
     internal func cancel() {
