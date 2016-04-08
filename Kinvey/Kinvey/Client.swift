@@ -18,8 +18,8 @@ public class Client: NSObject, Credential {
     /// It holds the `User` instance after logged in. If this variable is `nil` means that there's no logged user, which is necessary for some calls to in a Kinvey environment.
     public internal(set) var activeUser: User? {
         willSet (newActiveUser) {
+            let userDefaults = NSUserDefaults.standardUserDefaults()
             if let activeUser = newActiveUser {
-                let userDefaults = NSUserDefaults.standardUserDefaults()
                 var json = activeUser.toJson()
                 if var kmd = json[PersistableMetadataKey] as? [String : AnyObject] {
                     kmd.removeValueForKey(Metadata.AuthTokenKey)
@@ -38,6 +38,9 @@ public class Client: NSObject, Credential {
                     keychain.authtoken = authtoken
                 }
             } else if let appKey = appKey {
+                userDefaults.removeObjectForKey(appKey)
+                userDefaults.synchronize()
+                
                 KCSKeychain2.deleteTokensForUser(
                     activeUser?.userId,
                     appKey: appKey
@@ -134,8 +137,6 @@ public class Client: NSObject, Credential {
         self.schemaVersion = schemaVersion
         cacheManager = CacheManager(persistenceId: appKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
         syncManager = SyncManager (persistenceId: appKey)
-        
-        activeUser = nil
         
         var apiHostName = apiHostName
         if let apiHostNameString = apiHostName.absoluteString as String? where apiHostNameString.characters.last == "/" {
