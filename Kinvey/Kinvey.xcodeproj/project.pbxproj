@@ -57,8 +57,6 @@
 		571990351CB2D45000070CDA /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D643471CAB3C8A00F6D16E /* MemoryCache.swift */; };
 		571990361CB2D45000070CDA /* CustomEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9073D001C986D9600475E16 /* CustomEndpoint.swift */; };
 		571990371CB2D66800070CDA /* ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E4DB101C8A19250017B406 /* ObjC.swift */; };
-		571990391CB2D69500070CDA /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 571990381CB2D69500070CDA /* Realm.framework */; };
-		5719903B1CB2D82A00070CDA /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5719903A1CB2D82A00070CDA /* PromiseKit.framework */; };
 		5719903C1CB2D85000070CDA /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
 		5719903D1CB2D85000070CDA /* ReadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA01C76834B0096B15F /* ReadOperation.swift */; };
 		5719903E1CB2D85000070CDA /* WriteOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA21C76847F0096B15F /* WriteOperation.swift */; };
@@ -620,6 +618,8 @@
 		57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */; };
 		57F717BD1CAF165500DD7750 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DAB1C7F9414006403CC /* KCSPush.m */; };
 		57F717BE1CAF165800DD7750 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAA1C7F9414006403CC /* KCSPush.h */; };
+		57FAC66D1CB820990042FDB3 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5719903A1CB2D82A00070CDA /* PromiseKit.framework */; };
+		57FAC66E1CB820A30042FDB3 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 571990381CB2D69500070CDA /* Realm.framework */; };
 		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
 		E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9073D001C986D9600475E16 /* CustomEndpoint.swift */; };
@@ -1150,8 +1150,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				571991041CB31DE700070CDA /* libsqlite3.tbd in Frameworks */,
-				571990391CB2D69500070CDA /* Realm.framework in Frameworks */,
-				5719903B1CB2D82A00070CDA /* PromiseKit.framework in Frameworks */,
+				57FAC66E1CB820A30042FDB3 /* Realm.framework in Frameworks */,
+				57FAC66D1CB820990042FDB3 /* PromiseKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
