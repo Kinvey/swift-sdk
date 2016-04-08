@@ -322,6 +322,9 @@ class UserTests: KinveyTestCase {
             
             XCTAssertNil(client.activeUser)
             
+            let userDefaults = NSUserDefaults.standardUserDefaults()
+            XCTAssertNil(userDefaults.objectForKey(client.appKey!))
+            
             weak var expectationUserLogin = expectationWithDescription("User Login")
             
             User.login(username: username, password: password) { user, error in
