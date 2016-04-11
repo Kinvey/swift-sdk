@@ -172,9 +172,13 @@ class SyncStoreTests: StoreTestCase {
         
         let request = store.sync()
         
-        keyValueObservingExpectationForObject(request, keyPath: "executing", expectedValue: false)
+        weak var expectationExecuting = keyValueObservingExpectationForObject(request, keyPath: "executing", expectedValue: false)
         
-        waitForExpectationsWithTimeout()
+        XCTAssertNotNil(expectationExecuting)
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationExecuting = nil
+        }
     }
     
     func testPush() {
@@ -228,9 +232,13 @@ class SyncStoreTests: StoreTestCase {
         
         let request = store.push()
         
-        keyValueObservingExpectationForObject(request, keyPath: "executing", expectedValue: false)
+        weak var expectationExecuting = keyValueObservingExpectationForObject(request, keyPath: "executing", expectedValue: false)
         
-        waitForExpectationsWithTimeout()
+        XCTAssertNotNil(expectationExecuting)
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationExecuting = nil
+        }
     }
     
     func testPull() {

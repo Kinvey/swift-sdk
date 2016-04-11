@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		57162EEF1CB83A2400A3C408 /* KCSClient2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DFC1C7F9414006403CC /* KCSClient2+KCSInternal.m */; };
 		57198FEC1CAF33C700070CDA /* KCSQueryProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57198FF61CB2D42C00070CDA /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57198FF51CB2D42C00070CDA /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57198FFD1CB2D42C00070CDA /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57198FF31CB2D42C00070CDA /* Kinvey.framework */; };
@@ -2862,6 +2863,7 @@
 				57B23F581C7FB1B6006403CC /* KCS_DDAbstractDatabaseLogger.m in Sources */,
 				57E4DB0D1C8A13240017B406 /* KCSClient+ConfigurationTest.m in Sources */,
 				57B23F2B1C7FB021006403CC /* KinveyEntity.m in Sources */,
+				57162EEF1CB83A2400A3C408 /* KCSClient2+KCSInternal.m in Sources */,
 				57B23F041C7FAF39006403CC /* NSError+KinveyKit.m in Sources */,
 				57B23EE51C7FA947006403CC /* KCSNetworkResponse.m in Sources */,
 				57B23EC91C7FA79E006403CC /* KCSFileRequest.m in Sources */,
@@ -3198,6 +3200,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -3223,6 +3226,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",

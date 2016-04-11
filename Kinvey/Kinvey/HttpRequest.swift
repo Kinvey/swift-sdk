@@ -130,11 +130,7 @@ internal class HttpRequest: NSObject, Request {
     
     var task: NSURLSessionTask?
     
-    internal var executing: Bool {
-        get {
-            return task?.state == .Running
-        }
-    }
+    internal private(set) var executing = false
     
     internal var cancelled: Bool {
         get {
@@ -196,8 +192,6 @@ internal class HttpRequest: NSObject, Request {
 //        print("\(curlCommand)")
         
         task = client.urlSession.dataTaskWithRequest(request) { (data, response, error) -> Void in
-            self.willChangeValueForKey("state")
-            self.didChangeValueForKey("state")
             completionHandler?(data, HttpResponse(response: response as? NSHTTPURLResponse), error)
         }
         task!.addObserver(self, forKeyPath: "state", options: [.Old, .New], context: nil)
@@ -207,9 +201,15 @@ internal class HttpRequest: NSObject, Request {
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if let object = object as? NSURLSessionTask where object == task {
             if let keyPath = keyPath where keyPath == "state" {
-                self.willChangeValueForKey("executing")
-                self.didChangeValueForKey("executing")
+                let executing = task?.state == .Running
+                if executing != self.executing {
+                    willChangeValueForKey("executing")
+                    self.executing = executing
+                    didChangeValueForKey("executing")
+                }
             }
+        } else {
+            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
         }
     }
     
