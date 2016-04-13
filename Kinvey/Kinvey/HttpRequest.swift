@@ -128,9 +128,13 @@ internal class HttpRequest: NSObject, Request {
     let credential: Credential?
     let client: Client
     
-    var task: NSURLSessionTask?
+    private var task: NSURLSessionTask?
     
-    internal private(set) var executing = false
+    internal var executing: Bool {
+        get {
+            return task?.state == .Running
+        }
+    }
     
     internal var cancelled: Bool {
         get {
@@ -162,12 +166,6 @@ internal class HttpRequest: NSObject, Request {
         request.HTTPMethod = httpMethod.stringValue
     }
     
-    deinit {
-        if let task = task {
-            task.removeObserver(self, forKeyPath: "state")
-        }
-    }
-    
     func prepareRequest() {
         for header in defaultHeaders {
             request.setValue(header.value, forHTTPHeaderField: header.name)
@@ -194,23 +192,7 @@ internal class HttpRequest: NSObject, Request {
         task = client.urlSession.dataTaskWithRequest(request) { (data, response, error) -> Void in
             completionHandler?(data, HttpResponse(response: response as? NSHTTPURLResponse), error)
         }
-        task!.addObserver(self, forKeyPath: "state", options: [.Old, .New], context: nil)
         task!.resume()
-    }
-    
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        if let object = object as? NSURLSessionTask where object == task {
-            if let keyPath = keyPath where keyPath == "state" {
-                let executing = task?.state == .Running
-                if executing != self.executing {
-                    willChangeValueForKey("executing")
-                    self.executing = executing
-                    didChangeValueForKey("executing")
-                }
-            }
-        } else {
-            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
-        }
     }
     
     internal func cancel() {

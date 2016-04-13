@@ -105,9 +105,10 @@ extension Persistable {
         for keyValuePair in propertyMap {
             var value = json[keyValuePair.1]
             if let entitySchema = EntitySchema.entitySchema(type),
-                let destinationType = entitySchema.properties[keyValuePair.0]
+                let destinationTypeDefinition = entitySchema.properties[keyValuePair.0]
             {
-                if let valueNonNull = value where !valueNonNull.isKindOfClass(destinationType.1.0),
+                if let destinationType = destinationTypeDefinition.classType,
+                    let valueNonNull = value where !valueNonNull.isKindOfClass(destinationType.1.0),
                     let valueTransformer = ValueTransformer.valueTransformer(fromClass: valueNonNull.dynamicType, toClass: destinationType.1.0)
                 {
                     if let destinationType = destinationType.1.0 as? NSDate.Type,
@@ -117,6 +118,8 @@ extension Persistable {
                     } else {
                         value = nil
                     }
+                } else if value == nil {
+                    continue
                 }
                 obj.setValue(value, forKey: keyValuePair.0)
             }

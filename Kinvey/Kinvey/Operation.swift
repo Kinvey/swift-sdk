@@ -137,8 +137,9 @@ internal class Operation: NSObject {
                 persistableJson[PersistableMetadataKey] = kmd
             }
         }
-        if persistableType.aclKey == nil {
-            persistableJson[PersistableAclKey] = json[PersistableAclKey]
+        if persistableType.aclKey == nil,
+            let acl = json[PersistableAclKey] where acl.count > 0 {
+            persistableJson[PersistableAclKey] = acl
         }
         return persistableJson
     }
