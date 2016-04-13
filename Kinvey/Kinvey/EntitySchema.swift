@@ -19,7 +19,8 @@ internal class EntitySchema: NSObject {
     internal let collectionName: String
     
     internal typealias ClassType = (name: (main: String, sub: String?), type: (main: AnyClass, sub: AnyClass?))
-    internal let properties: [String : ClassType]
+    internal typealias Type = (encoding: String, classType: ClassType?)
+    internal let properties: [String : Type]
     
     class func entitySchema<T: Persistable>(type: T.Type) -> EntitySchema? {
         return entitySchemas[NSStringFromClass(type)]
@@ -41,12 +42,12 @@ internal class EntitySchema: NSObject {
         }
     }
     
-    private class func getProperties(cls: AnyClass) -> [String : ClassType] {
+    private class func getProperties(cls: AnyClass) -> [String : Type] {
         let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
         var propertyCount = UInt32(0)
         let properties = class_copyPropertyList(cls, &propertyCount)
         defer { free(properties) }
-        var map = [String : ClassType]()
+        var map = [String : Type]()
         for i in UInt32(0) ..< propertyCount {
             let property = properties[Int(i)]
             if let propertyName = String.fromCString(property_getName(property)) {
@@ -56,24 +57,33 @@ internal class EntitySchema: NSObject {
                 attributeLoop : for x in UInt32(0) ..< attributeCount {
                     let attribute = attributes[Int(x)]
                     if let attributeName = String.fromCString(attribute.name) where attributeName == "T",
-                        let attributeValue = String.fromCString(attribute.value),
-                        let textCheckingResult = regexClassName.matchesInString(attributeValue, options: [], range: NSMakeRange(0, attributeValue.characters.count)).first
+                        let attributeValue = String.fromCString(attribute.value)
                     {
-                        let attributeValueNSString = attributeValue as NSString
-                        let propertyTypeName = attributeValueNSString.substringWithRange(textCheckingResult.rangeAtIndex(1))
-                        let propertySubTypeName: String?
-                        if textCheckingResult.numberOfRanges > 2 {
-                            let range = textCheckingResult.rangeAtIndex(2)
-                            propertySubTypeName = range.location != NSNotFound ? attributeValueNSString.substringWithRange(range) : nil
+                        if let textCheckingResult = regexClassName.matchesInString(attributeValue, options: [], range: NSMakeRange(0, attributeValue.characters.count)).first {
+                            let attributeValueNSString = attributeValue as NSString
+                            let propertyTypeName = attributeValueNSString.substringWithRange(textCheckingResult.rangeAtIndex(1))
+                            let propertySubTypeName: String?
+                            if textCheckingResult.numberOfRanges > 2 {
+                                let range = textCheckingResult.rangeAtIndex(2)
+                                propertySubTypeName = range.location != NSNotFound ? attributeValueNSString.substringWithRange(range) : nil
+                            } else {
+                                propertySubTypeName = nil
+                            }
+                            let anyClassType: AnyClass = NSClassFromString(propertyTypeName)!
+                            let anyClassSubType: AnyClass? = propertySubTypeName != nil ? NSClassFromString(propertySubTypeName!) : nil
+                            map[propertyName] = (
+                                encoding: attributeValue,
+                                classType: (
+                                    name: (main: propertyTypeName, sub: propertySubTypeName),
+                                    type: (main: anyClassType, sub: anyClassSubType)
+                                )
+                            )
                         } else {
-                            propertySubTypeName = nil
+                            map[propertyName] = (
+                                encoding: attributeValue,
+                                classType: nil
+                            )
                         }
-                        let anyClassType: AnyClass = NSClassFromString(propertyTypeName)!
-                        let anyClassSubType: AnyClass? = propertySubTypeName != nil ? NSClassFromString(propertySubTypeName!) : nil
-                        map[propertyName] = (
-                            name: (main: propertyTypeName, sub: propertySubTypeName),
-                            type: (main: anyClassType, sub: anyClassSubType)
-                        )
                         break attributeLoop
                     }
                 }
@@ -82,7 +92,7 @@ internal class EntitySchema: NSObject {
         return map
     }
     
-    init(persistableType: Persistable.Type, persistableClass: AnyClass, collectionName: String, properties: [String : ClassType]) {
+    init(persistableType: Persistable.Type, persistableClass: AnyClass, collectionName: String, properties: [String : Type]) {
         self.persistableType = persistableType
         self.persistableClass = persistableClass
         self.collectionName = collectionName

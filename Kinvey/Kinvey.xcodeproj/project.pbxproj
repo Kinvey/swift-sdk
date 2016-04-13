@@ -323,6 +323,7 @@
 		57A2ED961C4D5F74006D26A9 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
 		57A3BF981C8912A900DCD439 /* KNVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 57A3BF961C8912A900DCD439 /* KNVClient.m */; };
 		57A3BF991C8946D200DCD439 /* KNVClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A3BF951C8912A900DCD439 /* KNVClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		57A4656D1CBEF7B6009E7384 /* PersistableTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A4656C1CBEF7B6009E7384 /* PersistableTestCase.swift */; };
 		57B0E9501C5FF52200BA984F /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
 		57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23CF61C7F8C12006403CC /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */; };
@@ -818,6 +819,7 @@
 		57A2ED951C4D5F74006D26A9 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		57A3BF951C8912A900DCD439 /* KNVClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVClient.h; sourceTree = "<group>"; };
 		57A3BF961C8912A900DCD439 /* KNVClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KNVClient.m; sourceTree = "<group>"; };
+		57A4656C1CBEF7B6009E7384 /* PersistableTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistableTestCase.swift; sourceTree = "<group>"; };
 		57B0E94F1C5FF52200BA984F /* Push.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Push.swift; sourceTree = "<group>"; };
 		57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongoDBPredicateAdaptor.h; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"; sourceTree = SOURCE_ROOT; };
 		57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MongoDBPredicateAdaptor.m; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.m"; sourceTree = SOURCE_ROOT; };
@@ -1410,6 +1412,7 @@
 				5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */,
 				57A2ED891C49BDAA006D26A9 /* RequestTestCase.swift */,
 				573150971CBD8D910022A05C /* QueryTest.swift */,
+				57A4656C1CBEF7B6009E7384 /* PersistableTestCase.swift */,
 				577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */,
 				57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */,
 				573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */,
@@ -2909,6 +2912,7 @@
 				57E1C3AD1C17EC9500578974 /* UserTests.swift in Sources */,
 				57C563041C9CC7270011FB36 /* NSDate.swift in Sources */,
 				57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */,
+				57A4656D1CBEF7B6009E7384 /* PersistableTestCase.swift in Sources */,
 				57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
