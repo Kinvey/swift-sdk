@@ -15,6 +15,9 @@ public class Client: NSObject, Credential {
     /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
     public static let sharedClient = Client()
     
+    typealias UserChangedListener = (User?) -> Void
+    var userChangedListener: UserChangedListener?
+    
     /// It holds the `User` instance after logged in. If this variable is `nil` means that there's no logged user, which is necessary for some calls to in a Kinvey environment.
     public internal(set) var activeUser: User? {
         willSet (newActiveUser) {
@@ -47,6 +50,9 @@ public class Client: NSObject, Credential {
                 )
                 CacheManager(persistenceId: appKey).cache().removeAllEntities()
             }
+        }
+        didSet {
+            userChangedListener?(activeUser)
         }
     }
     
