@@ -169,21 +169,33 @@ public class Push: NSObject {
 #if os(iOS)
     private func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData, completionHandler: BoolCompletionHandler? = nil) {
         self.deviceToken = deviceToken
-        Promise<Bool> { fulfill, reject in
-            let request = self.client.networkRequestFactory.buildPushRegisterDevice(deviceToken)
-            request.execute({ (data, response, error) -> Void in
-                if let response = response where response.isResponseOK {
-                    fulfill(true)
-                } else if let error = error {
-                    reject(error)
-                } else {
-                    reject(Error.InvalidResponse)
+        let block: () -> Void = {
+            Promise<Bool> { fulfill, reject in
+                let request = self.client.networkRequestFactory.buildPushRegisterDevice(deviceToken)
+                request.execute({ (data, response, error) -> Void in
+                    if let response = response where response.isResponseOK {
+                        fulfill(true)
+                    } else if let error = error {
+                        reject(error)
+                    } else {
+                        reject(Error.InvalidResponse)
+                    }
+                })
+            }.then { success in
+                completionHandler?(success, nil)
+            }.error { error in
+                completionHandler?(false, error)
+            }
+        }
+        if let user = self.client.activeUser {
+            block()
+        } else {
+            self.client.userChangedListener = { user in
+                if let user = user {
+                    block()
+                    self.client.userChangedListener = nil
                 }
-            })
-        }.then { success in
-            completionHandler?(success, nil)
-        }.error { error in
-            completionHandler?(false, error)
+            }
         }
     }
     
