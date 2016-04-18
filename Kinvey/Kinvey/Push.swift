@@ -187,11 +187,11 @@ public class Push: NSObject {
                 completionHandler?(false, error)
             }
         }
-        if let user = self.client.activeUser {
+        if let _ = self.client.activeUser {
             block()
         } else {
             self.client.userChangedListener = { user in
-                if let user = user {
+                if let _ = user {
                     block()
                     self.client.userChangedListener = nil
                 }
