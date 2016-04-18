@@ -9,6 +9,28 @@
 import XCTest
 @testable import Kinvey
 
+extension XCTestCase {
+    
+    func waitValueForObject<V: Equatable>(obj: NSObject, keyPath: String, expectedValue: V?, timeout: NSTimeInterval = 60) -> Bool {
+        let date = NSDate()
+        let loop = NSRunLoop.currentRunLoop()
+        var result = false
+        repeat {
+            let currentValue = obj.valueForKey(keyPath)
+            if let currentValue = currentValue as? V {
+                result = currentValue == expectedValue
+            } else if currentValue == nil && expectedValue == nil {
+                result = true
+            }
+            if !result {
+                loop.runUntilDate(NSDate(timeIntervalSinceNow: 0.1))
+            }
+        } while !result && date.timeIntervalSinceNow > timeout
+        return result
+    }
+    
+}
+
 class KinveyTestCase: XCTestCase {
     
     var client: Client!
