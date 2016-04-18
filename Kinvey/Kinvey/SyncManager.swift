@@ -17,8 +17,8 @@ internal class SyncManager: NSObject {
         self.persistenceId = persistenceId
     }
     
-    func sync(collectionName: String) -> Sync {
-        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName) as! Sync
+    func sync(collectionName: String, filePath: String? = nil) -> Sync {
+        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName, filePath: filePath) as! Sync
     }
     
 }

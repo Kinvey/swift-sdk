@@ -25,8 +25,8 @@ internal class CacheManager: NSObject {
         let _ = try! RLMRealm(configuration: realmConfiguration)
     }
     
-    func cache(collectionName: String? = nil) -> Cache {
-        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName) as! Cache
+    func cache(collectionName: String? = nil, filePath: String? = nil) -> Cache {
+        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName, filePath: filePath) as! Cache
     }
     
 }
