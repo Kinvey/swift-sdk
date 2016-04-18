@@ -142,7 +142,7 @@ internal class HttpRequest: NSObject, Request {
         }
     }
     
-    init(request: NSURLRequest, client: Client = sharedClient) {
+    init(request: NSURLRequest, timeout: NSTimeInterval? = nil, client: Client = sharedClient) {
         self.httpMethod = HttpMethod.parse(request.HTTPMethod!)
         self.endpoint = Endpoint.URL(url: request.URL!)
         self.client = client
@@ -153,9 +153,12 @@ internal class HttpRequest: NSObject, Request {
             self.credential = client.activeUser ?? client
         }
         self.request = request.mutableCopy() as! NSMutableURLRequest
+        if let timeout = timeout {
+            self.request.timeoutInterval = timeout
+        }
     }
     
-    init(httpMethod: HttpMethod = .Get, endpoint: Endpoint, credential: Credential? = nil, client: Client = sharedClient) {
+    init(httpMethod: HttpMethod = .Get, endpoint: Endpoint, credential: Credential? = nil, timeout: NSTimeInterval? = nil, client: Client = sharedClient) {
         self.httpMethod = httpMethod
         self.endpoint = endpoint
         self.client = client
@@ -164,6 +167,9 @@ internal class HttpRequest: NSObject, Request {
         let url = endpoint.url()
         request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = httpMethod.stringValue
+        if let timeout = timeout {
+            request.timeoutInterval = timeout
+        }
     }
     
     func prepareRequest() {

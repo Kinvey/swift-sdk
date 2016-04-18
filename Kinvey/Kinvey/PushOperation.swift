@@ -12,11 +12,11 @@ import PromiseKit
 @objc(__KNVPushOperation)
 internal class PushOperation: SyncOperation {
     
-    override func execute(completionHandler: CompletionHandler?) -> Request {
+    override func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         let requests = MultiRequest()
         var promises: [Promise<NSData>] = []
         for pendingOperation in sync.pendingOperations() {
-            let request = HttpRequest(request: pendingOperation.buildRequest(), client: client)
+            let request = HttpRequest(request: pendingOperation.buildRequest(), timeout: timeout, client: client)
             requests.addRequest(request)
             promises.append(Promise<NSData> { fulfill, reject in
                 request.execute() { data, response, error in

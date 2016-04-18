@@ -20,7 +20,7 @@ internal class SyncOperation: Operation {
         super.init(persistableType: persistableType, cache: cache, client: client)
     }
     
-    func execute(completionHandler: CompletionHandler?) -> Request {
+    func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         preconditionFailure("Method needs to be implemented")
     }
     

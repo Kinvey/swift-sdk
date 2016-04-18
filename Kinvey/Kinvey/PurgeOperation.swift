@@ -12,54 +12,55 @@ import PromiseKit
 @objc(__KNVPurgeOperation)
 internal class PurgeOperation: SyncOperation {
     
-    override func execute(completionHandler: CompletionHandler?) -> Request {
+    override func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         let requests = MultiRequest()
         var promises: [Promise<Void>] = []
         for pendingOperation in sync.pendingOperations() {
             let urlRequest = pendingOperation.buildRequest()
-            if let httpMethod = urlRequest.HTTPMethod {
-                switch HttpMethod.parse(httpMethod).requestType {
-                case .Update:
-                    if let objectId = pendingOperation.objectId {
-                        promises.append(Promise<Void> { fulfill, reject in
-                            let request = client.networkRequestFactory.buildAppDataGetById(collectionName: self.persistableType.kinveyCollectionName(), id: objectId)
-                            requests.addRequest(request)
-                            request.execute() { data, response, error in
-                                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
-                                    if let cache = self.cache {
-                                        let persistable = self.persistableType.fromJson(json)
-                                        let persistableJson = self.merge(persistable, json: json)
-                                        cache.saveEntity(persistableJson)
-                                    }
-                                    self.sync.removePendingOperation(pendingOperation)
-                                    fulfill()
-                                } else if let error = error {
-                                    reject(error)
-                                } else {
-                                    reject(Error.InvalidResponse)
+            if let timeout = timeout {
+                urlRequest.timeoutInterval = timeout
+            }
+            switch HttpMethod.parse(urlRequest.HTTPMethod).requestType {
+            case .Update:
+                if let objectId = pendingOperation.objectId {
+                    promises.append(Promise<Void> { fulfill, reject in
+                        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: self.persistableType.kinveyCollectionName(), id: objectId)
+                        requests.addRequest(request)
+                        request.execute() { data, response, error in
+                            if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
+                                if let cache = self.cache {
+                                    let persistable = self.persistableType.fromJson(json)
+                                    let persistableJson = self.merge(persistable, json: json)
+                                    cache.saveEntity(persistableJson)
                                 }
+                                self.sync.removePendingOperation(pendingOperation)
+                                fulfill()
+                            } else if let error = error {
+                                reject(error)
+                            } else {
+                                reject(Error.InvalidResponse)
                             }
-                        })
-                    } else {
-                        sync.removePendingOperation(pendingOperation)
-                    }
-                case .Delete:
-                    promises.append(Promise<Void> { fulfill, reject in
-                        sync.removePendingOperation(pendingOperation)
-                        fulfill()
-                    })
-                case .Create:
-                    promises.append(Promise<Void> { fulfill, reject in
-                        if let objectId = pendingOperation.objectId {
-                            let query = Query(format: "\(self.persistableType.idKey) == %@", objectId)
-                            cache?.removeEntitiesByQuery(query)
                         }
-                        sync.removePendingOperation(pendingOperation)
-                        fulfill()
                     })
-                default:
-                    break
+                } else {
+                    sync.removePendingOperation(pendingOperation)
                 }
+            case .Delete:
+                promises.append(Promise<Void> { fulfill, reject in
+                    sync.removePendingOperation(pendingOperation)
+                    fulfill()
+                })
+            case .Create:
+                promises.append(Promise<Void> { fulfill, reject in
+                    if let objectId = pendingOperation.objectId {
+                        let query = Query(format: "\(self.persistableType.idKey) == %@", objectId)
+                        cache?.removeEntitiesByQuery(query)
+                    }
+                    sync.removePendingOperation(pendingOperation)
+                    fulfill()
+                })
+            default:
+                break
             }
         }
         

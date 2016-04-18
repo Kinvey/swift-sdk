@@ -127,7 +127,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Sends to the backend all the pending records in the local cache.
-    public func push(completionHandler: UIntCompletionHandler? = nil) -> Request {
+    public func push(timeout timeout: NSTimeInterval? = nil, completionHandler: UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
             completionHandler?(nil, KinveyError.InvalidDataStoreType)
@@ -135,7 +135,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
         
         let operation = PushOperation(sync: sync, persistableType: T.self, cache: cache, client: client)
-        let request = operation.execute(completionHandler)
+        let request = operation.execute(timeout: timeout, completionHandler: completionHandler)
         return request
     }
     
@@ -184,7 +184,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
         
         let operation = PurgeOperation(sync: sync, persistableType: T.self, cache: cache, client: client)
-        let request = operation.execute { (count, error) -> Void in
+        let request = operation.execute { (count, error: ErrorType?) -> Void in
             if let count = count {
                 self.pull(query) { (results, error) -> Void in
                     completionHandler?(count, error)
