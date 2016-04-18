@@ -25,7 +25,7 @@ extension XCTestCase {
             if !result {
                 loop.runUntilDate(NSDate(timeIntervalSinceNow: 0.1))
             }
-        } while !result && date.timeIntervalSinceNow > timeout
+        } while !result && -date.timeIntervalSinceNow > timeout
         return result
     }
     
