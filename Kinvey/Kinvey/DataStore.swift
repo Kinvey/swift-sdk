@@ -39,16 +39,16 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Factory method that returns a `DataStore`.
-    public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient) -> DataStore {
-        return DataStore<T>(type: type, client: client)
+    public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient, filePath: String? = nil) -> DataStore {
+        return DataStore<T>(type: type, client: client, filePath: filePath)
     }
     
-    private init(type: DataStoreType, client: Client) {
+    private init(type: DataStoreType, client: Client, filePath: String?) {
         self.type = type
         self.client = client
         collectionName = T.kinveyCollectionName()
-        cache = client.cacheManager.cache(collectionName)
-        sync = client.syncManager.sync(collectionName)
+        cache = client.cacheManager.cache(collectionName, filePath: filePath)
+        sync = client.syncManager.sync(collectionName, filePath: filePath)
         readPolicy = type.readPolicy
         writePolicy = type.writePolicy
     }

@@ -14,9 +14,16 @@
 
 @interface KCSRealmEntityPersistence : NSObject <KCSCache, KCSSync>
 
-+(RLMRealmConfiguration*)configurationForPersistenceId:(NSString *)persistenceId;
++(nonnull RLMRealmConfiguration*)configurationForPersistenceId:(nonnull NSString *)persistenceId;
 
--(instancetype)initWithPersistenceId:(NSString *)persistenceId
-                      collectionName:(NSString *)collectionName;
++(nonnull RLMRealmConfiguration*)configurationForPersistenceId:(nonnull NSString *)persistenceId
+                                                      filePath:(nullable NSString *)filePath;
+
+-(nonnull instancetype)initWithPersistenceId:(nonnull NSString *)persistenceId
+                              collectionName:(nullable NSString *)collectionName;
+
+-(nonnull instancetype)initWithPersistenceId:(nonnull NSString *)persistenceId
+                              collectionName:(nullable NSString *)collectionName
+                                    filePath:(nullable NSString *)filePath;
 
 @end
