@@ -13,6 +13,6 @@ internal protocol PendingOperation {
     
     var objectId: String? { get }
     
-    func buildRequest() -> NSURLRequest
+    func buildRequest() -> NSMutableURLRequest
     
 }

@@ -140,7 +140,14 @@ extension SyncOperation {
     
     @objc
     internal func execute(completionHandler: CompletionHandlerObjC?) -> Request {
-        return execute { (objs, error) -> Void in
+        return execute(timeout: nil) { (objs, error) -> Void in
+            completionHandler?(objs, error as? NSError)
+        }
+    }
+    
+    @objc
+    internal func executeWithTimeout(timeout: NSTimeInterval, completionHandler: CompletionHandlerObjC?) -> Request {
+        return execute(timeout: timeout) { (objs, error) -> Void in
             completionHandler?(objs, error as? NSError)
         }
     }
