@@ -86,24 +86,28 @@ extension Persistable {
     }
     
     static func toJson(persistable obj: Persistable) -> JsonDictionary {
-        var json: [String : AnyObject] = [:]
-        let propertyMap = self.kinveyPropertyMapping()
-        for keyValuePair in propertyMap {
-            if let value = obj[keyValuePair.0] {
-                json[keyValuePair.1] = value
+        if let toJson = obj.toJson {
+            return toJson()
+        } else {
+            var json: [String : AnyObject] = [:]
+            let propertyMap = self.kinveyPropertyMapping()
+            for keyValuePair in propertyMap {
+                if let value = obj[keyValuePair.0] {
+                    json[keyValuePair.1] = value
+                }
             }
+            return json
         }
-        return json
     }
     
     static func fromJson(json: JsonDictionary) -> Persistable {
         let type = self as! NSObject.Type
         let obj = type.init()
         let persistable = obj as! Persistable
-        let persistableType = obj.dynamicType as! Persistable.Type
         if let fromJson  = persistable.fromJson {
             fromJson(json)
         } else {
+            let persistableType = obj.dynamicType as! Persistable.Type
             let propertyMap = persistableType.kinveyPropertyMapping()
             for keyValuePair in propertyMap {
                 var value = json[keyValuePair.1]

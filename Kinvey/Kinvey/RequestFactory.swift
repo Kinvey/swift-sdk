@@ -44,6 +44,12 @@ extension RequestFactory {
             for keyPair in jsonObject {
                 if let valueTransformer = ValueTransformer.valueTransformer(fromClass: keyPair.1.dynamicType, toClass: NSString.self) {
                     jsonObject[keyPair.0] = valueTransformer.transformValue(keyPair.1, destinationType: String.self)
+                } else if let persistable = keyPair.1 as? Persistable {
+                    if let toJson = persistable.toJson {
+                        jsonObject[keyPair.0] = toJson()
+                    } else {
+                        jsonObject[keyPair.0] = persistable._toJson()
+                    }
                 }
             }
         }
