@@ -101,27 +101,31 @@ extension Persistable {
         let obj = type.init()
         let persistable = obj as! Persistable
         let persistableType = obj.dynamicType as! Persistable.Type
-        let propertyMap = persistableType.kinveyPropertyMapping()
-        for keyValuePair in propertyMap {
-            var value = json[keyValuePair.1]
-            if let entitySchema = EntitySchema.entitySchema(type),
-                let destinationTypeDefinition = entitySchema.properties[keyValuePair.0]
-            {
-                if let destinationType = destinationTypeDefinition.classType,
-                    let valueNonNull = value where !valueNonNull.isKindOfClass(destinationType.1.0),
-                    let valueTransformer = ValueTransformer.valueTransformer(fromClass: valueNonNull.dynamicType, toClass: destinationType.1.0)
+        if let fromJson  = persistable.fromJson {
+            fromJson(json)
+        } else {
+            let propertyMap = persistableType.kinveyPropertyMapping()
+            for keyValuePair in propertyMap {
+                var value = json[keyValuePair.1]
+                if let entitySchema = EntitySchema.entitySchema(type),
+                    let destinationTypeDefinition = entitySchema.properties[keyValuePair.0]
                 {
-                    if let destinationType = destinationType.1.0 as? NSDate.Type,
-                        let transformedValue = valueTransformer.transformValue(value, destinationType: destinationType)
+                    if let destinationType = destinationTypeDefinition.classType,
+                        let valueNonNull = value where !valueNonNull.isKindOfClass(destinationType.1.0),
+                        let valueTransformer = ValueTransformer.valueTransformer(fromClass: valueNonNull.dynamicType, toClass: destinationType.1.0)
                     {
-                        value = transformedValue
-                    } else {
-                        value = nil
+                        if let destinationType = destinationType.1.0 as? NSDate.Type,
+                            let transformedValue = valueTransformer.transformValue(value, destinationType: destinationType)
+                        {
+                            value = transformedValue
+                        } else {
+                            value = nil
+                        }
+                    } else if value == nil {
+                        continue
                     }
-                } else if value == nil {
-                    continue
+                    obj.setValue(value, forKey: keyValuePair.0)
                 }
-                obj.setValue(value, forKey: keyValuePair.0)
             }
         }
         return persistable
@@ -192,20 +196,20 @@ extension Persistable {
     }
     
     /// Serialize the persistable object to a JSON object.
-    public func toJson() -> JsonDictionary {
+    func _toJson() -> JsonDictionary {
         let keys = self.dynamicType.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
         return dictionaryWithValuesForKeys(keys)
     }
     
     /// Deserialize a JSON object into the persistable object.
-    public func fromJson(json: JsonDictionary) {
+    func _fromJson(json: JsonDictionary) {
         for key in self.dynamicType.kinveyPropertyMapping().keys {
             self[key] = json[key]
         }
     }
     
     func merge(obj: Persistable) {
-        fromJson(obj.toJson())
+        _fromJson(obj._toJson())
     }
     
 }

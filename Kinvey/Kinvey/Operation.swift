@@ -124,7 +124,7 @@ internal class Operation: NSObject {
     }
     
     func merge(persistable: Persistable, json: JsonDictionary) -> JsonDictionary {
-        var persistableJson = persistable.toJson()
+        var persistableJson = persistable._toJson()
         if persistableType.kmdKey == nil {
             persistableJson[PersistableMetadataKey] = json[PersistableMetadataKey]
             if var kmd = persistableJson[PersistableMetadataKey] as? JsonDictionary {

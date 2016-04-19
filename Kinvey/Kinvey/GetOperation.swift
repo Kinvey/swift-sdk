@@ -38,7 +38,7 @@ internal class GetOperation: ReadOperation {
             if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
                 let obj = self.persistableType.fromJson(json)
                 if let cache = self.cache {
-                    cache.saveEntity(obj.toJson())
+                    cache.saveEntity(obj._toJson())
                 }
                 completionHandler?(obj, nil)
             } else if let error = error {
