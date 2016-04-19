@@ -38,6 +38,11 @@
                BlueprintName = "KinveyTests"
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "PerformanceTestCase">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO">
