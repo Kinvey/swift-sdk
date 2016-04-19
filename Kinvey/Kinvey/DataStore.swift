@@ -62,6 +62,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    /// Gets a single record using the `_id` of the record.
     public func find(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         return findById(id, readPolicy: readPolicy, completionHandler: completionHandler)
     }
