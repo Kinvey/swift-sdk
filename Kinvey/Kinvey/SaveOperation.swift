@@ -25,7 +25,7 @@ internal class SaveOperation: WriteOperation {
             
             let persistable = self.fillObject(self.persistable)
             if let cache = self.cache {
-                var json = persistable.toJson()
+                var json = persistable._toJson()
                 json = self.fillJson(json)
                 cache.saveEntity(json)
             }
