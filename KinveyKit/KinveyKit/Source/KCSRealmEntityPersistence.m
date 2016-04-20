@@ -547,10 +547,20 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     if (filePath) {
         realmConfiguration.fileURL = [NSURL fileURLWithPath:filePath];
     } else {
-        NSMutableArray<NSString*>* pathComponents = [realmConfiguration.fileURL.path pathComponents].mutableCopy;
-        pathComponents[pathComponents.count - 1] = [NSString stringWithFormat:@"com.kinvey.%@_cache.realm", persistenceId];
-        NSString* path = [NSString pathWithComponents:pathComponents];
-        realmConfiguration.fileURL = [NSURL fileURLWithPath:path];
+        NSString* path = [realmConfiguration.path.stringByDeletingLastPathComponent stringByAppendingPathComponent:persistenceId];
+        NSFileManager* fileManager = [NSFileManager defaultManager];
+        if (![fileManager fileExistsAtPath:path]) {
+            NSError *error = nil;
+            BOOL created = [fileManager createDirectoryAtPath:path
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+            if (!created && error) {
+                NSLog(@"%@", error);
+            }
+        }
+        path = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.realm", [__KNVClient defaultAlias]]];
+        realmConfiguration.path = path;
     }
     
     NSLog(@"Database Path: %@", realmConfiguration.fileURL.path);
