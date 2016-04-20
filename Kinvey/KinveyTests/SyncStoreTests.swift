@@ -28,24 +28,24 @@ class SyncStoreTests: StoreTestCase {
         store = DataStore<Person>.getInstance(.Sync)
     }
     
-//    func testCustomFilePath() {
-//        let fileManager = NSFileManager.defaultManager()
-//        
-//        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-//        XCTAssertEqual(paths.count, 1)
-//        if let path = paths.first {
-//            let customPath = "\(path)/custom_path.db"
-//            XCTAssertFalse(fileManager.fileExistsAtPath(customPath))
-//            
-//            store = DataStore<Person>.getInstance(.Sync, filePath: customPath)
-//            defer {
-//                if fileManager.fileExistsAtPath(customPath) {
-//                    try! fileManager.removeItemAtPath(customPath)
-//                }
-//            }
-//            XCTAssertTrue(fileManager.fileExistsAtPath(customPath))
-//        }
-//    }
+    func testCustomFilePath() {
+        let fileManager = NSFileManager.defaultManager()
+        
+        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+        XCTAssertEqual(paths.count, 1)
+        if let path = paths.first {
+            let customPath = "\(path)/\(client.appKey!)/custom_path.realm"
+            XCTAssertFalse(fileManager.fileExistsAtPath(customPath))
+            
+            store = DataStore<Person>.getInstance(.Sync, alias: "custom_path")
+            defer {
+                if fileManager.fileExistsAtPath(customPath) {
+                    try! fileManager.removeItemAtPath(customPath)
+                }
+            }
+            XCTAssertTrue(fileManager.fileExistsAtPath(customPath))
+        }
+    }
     
     func testPurge() {
         save()
