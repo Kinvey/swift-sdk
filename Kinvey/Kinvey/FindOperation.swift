@@ -95,7 +95,7 @@ internal class FindOperation: ReadOperation {
                         }.error { error in
                             completionHandler?(nil, error)
                         }
-                    } else {
+                    } else if allIds.count > 0 {
                         let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
                         var newRefObjs: [String : String]? = nil
                         let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: cache, client: self.client) { jsonArray in
@@ -118,12 +118,11 @@ internal class FindOperation: ReadOperation {
                                 completionHandler?(nil, Error.InvalidResponse)
                             }
                         }
+                    } else {
+                        self.cacheAndCallCompletionHandler(jsonArray, completionHandler: completionHandler)
                     }
                 } else {
-                    let persistableArray = self.persistableType.fromJson(jsonArray)
-                    let persistableJson = self.merge(persistableArray, jsonArray: jsonArray)
-                    self.cache?.saveEntities(persistableJson)
-                    completionHandler?(persistableArray, nil)
+                    self.cacheAndCallCompletionHandler(jsonArray, completionHandler: completionHandler)
                 }
             } else if let error = error {
                 completionHandler?(nil, error)
@@ -132,6 +131,13 @@ internal class FindOperation: ReadOperation {
             }
         }
         return request
+    }
+    
+    func cacheAndCallCompletionHandler(jsonArray: [JsonDictionary], completionHandler: CompletionHandler?) {
+        let persistableArray = self.persistableType.fromJson(jsonArray)
+        let persistableJson = self.merge(persistableArray, jsonArray: jsonArray)
+        self.cache?.saveEntities(persistableJson)
+        completionHandler?(persistableArray, nil)
     }
     
 }

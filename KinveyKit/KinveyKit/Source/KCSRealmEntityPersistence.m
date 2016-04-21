@@ -159,6 +159,12 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
         [self registerOriginalClass:[KCSMetadata class]
                          realmClass:[KCSMetadataRealm class]];
         
+        [self registerOriginalClass:[KNVMetadata class]
+                         realmClass:[KCSMetadataRealm class]];
+        
+        [self registerOriginalClass:[KNVAcl class]
+                         realmClass:[KCSAclRealm class]];
+        
         realmClassProperties = [NSMutableDictionary dictionary];
         
         [self registerRealmClassProperties:[KCSUserRealm class]];
