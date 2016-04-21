@@ -291,6 +291,8 @@
 		574B0FAD1C729F3300CDC48F /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */; };
 		574EB8BA1C91FCE900238D2D /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		575772861C4728E5001D56F5 /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
+		5759854E1CC833930054DF08 /* LongData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5759854D1CC833930054DF08 /* LongData.swift */; };
+		575985501CC834FE0054DF08 /* MedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5759854F1CC834FE0054DF08 /* MedData.swift */; };
 		5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B83C1C972D7000080FFA /* URLProtocols.swift */; };
 		5765B8471C9771BC00080FFA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B8461C9771BC00080FFA /* AppDelegate.swift */; };
 		5765B8491C9771BC00080FFA /* MICLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B8481C9771BC00080FFA /* MICLoginViewController.swift */; };
@@ -338,6 +340,9 @@
 		57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9609C1CC6D675005E52A8 /* DirectoryEntry.swift */; };
 		57A9609F1CC6D6A9005E52A8 /* RefProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9609E1CC6D6A9005E52A8 /* RefProject.swift */; };
 		57A960A11CC6D6FE005E52A8 /* JsonTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A01CC6D6FE005E52A8 /* JsonTestCase.swift */; };
+		57A960A41CC8278E005E52A8 /* PerformanceTestLongData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A31CC8278E005E52A8 /* PerformanceTestLongData.swift */; };
+		57A960A61CC827A3005E52A8 /* PerformanceTestMedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */; };
+		57ADC0C41CC95CF4002B517A /* PerformanceTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */; };
 		57B0E9501C5FF52200BA984F /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
 		57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23CF61C7F8C12006403CC /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */; };
@@ -817,6 +822,8 @@
 		574EB8B91C91FCE400238D2D /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncStoreTests.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
+		5759854D1CC833930054DF08 /* LongData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LongData.swift; sourceTree = "<group>"; };
+		5759854F1CC834FE0054DF08 /* MedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MedData.swift; sourceTree = "<group>"; };
 		5765B8351C92365700080FFA /* FindOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperationTest.swift; sourceTree = "<group>"; };
 		5765B8381C93793E00080FFA /* BasicStoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicStoreTestCase.swift; sourceTree = "<group>"; };
 		5765B83C1C972D7000080FFA /* URLProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLProtocols.swift; sourceTree = "<group>"; };
@@ -864,6 +871,9 @@
 		57A9609C1CC6D675005E52A8 /* DirectoryEntry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectoryEntry.swift; sourceTree = "<group>"; };
 		57A9609E1CC6D6A9005E52A8 /* RefProject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefProject.swift; sourceTree = "<group>"; };
 		57A960A01CC6D6FE005E52A8 /* JsonTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonTestCase.swift; sourceTree = "<group>"; };
+		57A960A31CC8278E005E52A8 /* PerformanceTestLongData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestLongData.swift; sourceTree = "<group>"; };
+		57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestMedData.swift; sourceTree = "<group>"; };
+		57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestData.swift; sourceTree = "<group>"; };
 		57B0E94F1C5FF52200BA984F /* Push.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Push.swift; sourceTree = "<group>"; };
 		57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongoDBPredicateAdaptor.h; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"; sourceTree = SOURCE_ROOT; };
 		57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MongoDBPredicateAdaptor.m; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.m"; sourceTree = SOURCE_ROOT; };
@@ -1359,6 +1369,11 @@
 				5765B84D1C9771BC00080FFA /* Assets.xcassets */,
 				5765B84F1C9771BC00080FFA /* LaunchScreen.storyboard */,
 				5765B8521C9771BC00080FFA /* Info.plist */,
+				57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */,
+				57A960A31CC8278E005E52A8 /* PerformanceTestLongData.swift */,
+				57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */,
+				5759854D1CC833930054DF08 /* LongData.swift */,
+				5759854F1CC834FE0054DF08 /* MedData.swift */,
 			);
 			path = KinveyApp;
 			sourceTree = "<group>";
@@ -2821,7 +2836,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57ADC0C41CC95CF4002B517A /* PerformanceTestData.swift in Sources */,
+				575985501CC834FE0054DF08 /* MedData.swift in Sources */,
+				57A960A61CC827A3005E52A8 /* PerformanceTestMedData.swift in Sources */,
+				5759854E1CC833930054DF08 /* LongData.swift in Sources */,
 				57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */,
+				57A960A41CC8278E005E52A8 /* PerformanceTestLongData.swift in Sources */,
 				5765B8491C9771BC00080FFA /* MICLoginViewController.swift in Sources */,
 				5765B8471C9771BC00080FFA /* AppDelegate.swift in Sources */,
 			);

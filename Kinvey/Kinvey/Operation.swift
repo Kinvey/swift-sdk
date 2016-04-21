@@ -27,16 +27,16 @@ internal class Operation: NSObject {
     }
     
     func reduceToIdsLmts(jsonArray: [JsonDictionary]) -> [String : String] {
-        return jsonArray.reduce([String : String]()) { (items, json) -> [String : String] in
-            var items = items
+        var items = [String : String](minimumCapacity: jsonArray.count)
+        for json in jsonArray {
             if let id = json[PersistableIdKey] as? String,
                 let kmd = json[PersistableMetadataKey] as? JsonDictionary,
                 let lmt = kmd[Metadata.LmtKey] as? String
             {
                 items[id] = lmt
             }
-            return items
         }
+        return items
     }
     
     func computeDeltaSet(query: Query, refObjs: [String : String]) -> (created: Set<String>, updated: Set<String>, deleted: Set<String>) {

@@ -39,8 +39,8 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Factory method that returns a `DataStore`.
-    public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient, filePath: String? = nil) -> DataStore {
-        return DataStore<T>(type: type, client: client, filePath: filePath)
+    public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient) -> DataStore {
+        return DataStore<T>(type: type, client: client, filePath: nil)
     }
     
     private init(type: DataStoreType, client: Client, filePath: String?) {
