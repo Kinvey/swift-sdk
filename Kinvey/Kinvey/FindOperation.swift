@@ -119,10 +119,13 @@ internal class FindOperation: ReadOperation {
                             }
                         }
                     } else {
-                        self.cacheAndCallCompletionHandler(jsonArray, completionHandler: completionHandler)
+                        self.executeLocal(completionHandler)
                     }
                 } else {
-                    self.cacheAndCallCompletionHandler(jsonArray, completionHandler: completionHandler)
+                    let persistableArray = self.persistableType.fromJson(jsonArray)
+                    let persistableJson = self.merge(persistableArray, jsonArray: jsonArray)
+                    self.cache?.saveEntities(persistableJson)
+                    completionHandler?(persistableArray, nil)
                 }
             } else if let error = error {
                 completionHandler?(nil, error)
@@ -131,13 +134,6 @@ internal class FindOperation: ReadOperation {
             }
         }
         return request
-    }
-    
-    func cacheAndCallCompletionHandler(jsonArray: [JsonDictionary], completionHandler: CompletionHandler?) {
-        let persistableArray = self.persistableType.fromJson(jsonArray)
-        let persistableJson = self.merge(persistableArray, jsonArray: jsonArray)
-        self.cache?.saveEntities(persistableJson)
-        completionHandler?(persistableArray, nil)
     }
     
 }
