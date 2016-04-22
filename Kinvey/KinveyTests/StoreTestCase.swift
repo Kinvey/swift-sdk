@@ -32,6 +32,32 @@ class StoreTestCase: KinveyTestCase {
         XCTAssertTrue(NSThread.isMainThread())
     }
     
+    func save<T: Persistable where T: NSObject>(persistable: T, store: DataStore<T>) -> (originalPersistable: T, savedPersistable: T?) {
+        weak var expectationCreate = expectationWithDescription("Create")
+        
+        var savedPersistable: T? = nil
+        
+        store.save(persistable) { (persistable, error) -> Void in
+            self.assertThread()
+            XCTAssertNotNil(persistable)
+            XCTAssertNil(error)
+            
+            if let persistable = persistable {
+                XCTAssertNotNil(persistable.kinveyObjectId)
+            }
+            
+            savedPersistable = persistable
+            
+            expectationCreate?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationCreate = nil
+        }
+        
+        return (originalPersistable: persistable, savedPersistable: savedPersistable)
+    }
+    
     func save(person: Person) -> Person {
         let age = person.age
         
