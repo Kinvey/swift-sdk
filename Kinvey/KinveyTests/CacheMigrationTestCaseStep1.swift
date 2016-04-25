@@ -17,7 +17,7 @@ class CacheMigrationTestCaseStep1: XCTestCase {
     
     override func setUp() {
         let realmConfiguration = RLMRealmConfiguration.defaultConfiguration()
-        if var path = realmConfiguration.path {
+        if var path = realmConfiguration.fileURL!.path {
             var pathComponents = (path as NSString).pathComponents
             pathComponents[pathComponents.count - 1] = "com.kinvey.appKey_cache.realm"
             path = NSString.pathWithComponents(pathComponents)

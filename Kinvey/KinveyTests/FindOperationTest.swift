@@ -11,6 +11,12 @@ import XCTest
 
 class FindOperationTest: StoreTestCase {
     
+    override func setUp() {
+        super.setUp()
+        
+        store = DataStore<Person>.getInstance(.Network)
+    }
+    
     override func tearDown() {
         super.tearDown()
         store.ttl = nil
