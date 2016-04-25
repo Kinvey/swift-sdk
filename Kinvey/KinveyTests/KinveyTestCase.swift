@@ -41,11 +41,13 @@ class KinveyTestCase: XCTestCase {
         KinveyTestCase.defaultTimeout
     }()
     
+    static let developmentAppId = "kid_Wy35WH6X9e"
+    
     override func setUp() {
         super.setUp()
         
         client = Kinvey.sharedClient.initialize(
-            appKey: "kid_Wy35WH6X9e",
+            appKey: KinveyTestCase.developmentAppId,
             appSecret: "d85f81cad5a649baaa6fdcd99a108ab1",
             apiHostName: NSURL(string: "https://v3yk1n-kcs.kinvey.com")!,
             encrypted: encrypted
