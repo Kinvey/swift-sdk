@@ -34,6 +34,7 @@ extension XCTestCase {
 class KinveyTestCase: XCTestCase {
     
     var client: Client!
+    var encrypted = false
     
     static let defaultTimeout = NSTimeInterval(Int8.max)
     lazy var defaultTimeout: NSTimeInterval = {
@@ -46,7 +47,8 @@ class KinveyTestCase: XCTestCase {
         client = Kinvey.sharedClient.initialize(
             appKey: "kid_Wy35WH6X9e",
             appSecret: "d85f81cad5a649baaa6fdcd99a108ab1",
-            apiHostName: NSURL(string: "https://v3yk1n-kcs.kinvey.com")!
+            apiHostName: NSURL(string: "https://v3yk1n-kcs.kinvey.com")!,
+            encrypted: encrypted
         )
         if let activeUser = client.activeUser {
             activeUser.logout()

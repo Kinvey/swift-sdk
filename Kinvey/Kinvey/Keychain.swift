@@ -39,4 +39,14 @@ class Keychain {
         }
     }
     
+    private static let defaultEncryptionKeyKey = "defaultEncryptionKey"
+    var defaultEncryptionKey: NSData? {
+        get {
+            return keychain[data: Keychain.defaultEncryptionKeyKey]
+        }
+        set {
+            keychain[data: Keychain.defaultEncryptionKeyKey] = newValue
+        }
+    }
+    
 }

@@ -529,23 +529,29 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 +(RLMRealmConfiguration*)configurationForPersistenceId:(NSString *)persistenceId
 {
     return [self configurationForPersistenceId:persistenceId
-                                      filePath:nil];
+                                      filePath:nil
+                                 encryptionKey:nil];
 }
 
 +(RLMRealmConfiguration*)configurationForPersistenceId:(NSString *)persistenceId
                                               filePath:(NSString *)filePath
+                                         encryptionKey:(NSData*)encryptionKey
 {
-    RLMRealmConfiguration* realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
+    RLMRealmConfiguration* realmConfiguration = [RLMRealmConfiguration defaultConfiguration].copy;
     
     if (filePath) {
-        realmConfiguration.path = filePath;
+        realmConfiguration.fileURL = [NSURL fileURLWithPath:filePath];
     } else {
-        NSMutableArray<NSString*>* pathComponents = [realmConfiguration.path pathComponents].mutableCopy;
+        NSMutableArray<NSString*>* pathComponents = [realmConfiguration.fileURL.path pathComponents].mutableCopy;
         pathComponents[pathComponents.count - 1] = [NSString stringWithFormat:@"com.kinvey.%@_cache.realm", persistenceId];
-        realmConfiguration.path = [NSString pathWithComponents:pathComponents];
+        realmConfiguration.fileURL = [NSURL fileURLWithPath:[NSString pathWithComponents:pathComponents]];
     }
     
-    NSLog(@"Database Path: %@", realmConfiguration.path);
+    NSLog(@"Database Path: %@", realmConfiguration.fileURL);
+    
+    if (encryptionKey) {
+        realmConfiguration.encryptionKey = encryptionKey;
+    }
     
     return realmConfiguration;
 }
@@ -555,12 +561,14 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
 {
     return [self initWithPersistenceId:persistenceId
                         collectionName:collectionName
-                              filePath:nil];
+                              filePath:nil
+                         encryptionKey:nil];
 }
 
 -(instancetype)initWithPersistenceId:(NSString *)persistenceId
                       collectionName:(NSString *)collectionName
                             filePath:(NSString *)filePath
+                       encryptionKey:(NSData*)encryptionKey
 {
     self = [super init];
     if (self) {
@@ -569,7 +577,8 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
         self.clazz = collectionName ? NSClassFromString(collectionNamesMap[self.collectionName]) : nil;
         
         self.realmConfiguration = [self.class configurationForPersistenceId:persistenceId
-                                                                   filePath:filePath];
+                                                                   filePath:filePath
+                                                              encryptionKey:encryptionKey];
         assert(self.realm);
     }
     return self;

@@ -12,13 +12,15 @@ import Foundation
 internal class SyncManager: NSObject {
     
     private let persistenceId: String
+    private let encryptionKey: NSData?
     
-    init(persistenceId: String) {
+    init(persistenceId: String, encryptionKey: NSData? = nil) {
         self.persistenceId = persistenceId
+        self.encryptionKey = encryptionKey
     }
     
     func sync(collectionName: String, filePath: String? = nil) -> Sync {
-        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName, filePath: filePath) as! Sync
+        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName, filePath: filePath, encryptionKey: encryptionKey) as! Sync
     }
     
 }

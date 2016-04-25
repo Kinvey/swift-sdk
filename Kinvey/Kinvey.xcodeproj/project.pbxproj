@@ -281,6 +281,7 @@
 		5747103A1C7BA29D0096B15F /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
 		5747103C1C7BA2CB0096B15F /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5747103E1C7BA2CC0096B15F /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57471A301CCAED1600628933 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
 		574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* DataStoreType.swift */; };
 		574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912721C5932A700EA4F26 /* WritePolicy.swift */; };
 		574B0F751C6E7E0E00CDC48F /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
@@ -812,6 +813,7 @@
 		57470FA41C76926B0096B15F /* PushOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushOperation.swift; sourceTree = "<group>"; };
 		57470FA61C7698B30096B15F /* MultiRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiRequest.swift; sourceTree = "<group>"; };
 		57470FAA1C769EF00096B15F /* PurgeOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurgeOperation.swift; sourceTree = "<group>"; };
+		57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncryptedDataStoreTestCase.swift; sourceTree = "<group>"; };
 		574912701C59323B00EA4F26 /* DataStoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreType.swift; sourceTree = "<group>"; };
 		574912721C5932A700EA4F26 /* WritePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WritePolicy.swift; sourceTree = "<group>"; };
 		574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
@@ -1488,6 +1490,7 @@
 				57A4656C1CBEF7B6009E7384 /* PersistableTestCase.swift */,
 				57A4656E1CC00931009E7384 /* PerformanceTestCase.swift */,
 				576A1D351CCA92CA006B261E /* DataTypeTestCase.swift */,
+				57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */,
 				577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */,
 				57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */,
 				573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */,
@@ -3037,6 +3040,7 @@
 				57A4656F1CC00931009E7384 /* PerformanceTestCase.swift in Sources */,
 				57A9609F1CC6D6A9005E52A8 /* RefProject.swift in Sources */,
 				57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */,
+				57471A301CCAED1600628933 /* EncryptedDataStoreTestCase.swift in Sources */,
 				571991091CB45EEE00070CDA /* Person.swift in Sources */,
 				57C563061C9CC7410011FB36 /* String.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
