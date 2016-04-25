@@ -20,14 +20,6 @@ class StoreTestCase: KinveyTestCase {
     }
     lazy var person: Person = self.newPerson
     
-    override func setUp() {
-        super.setUp()
-        
-        signUp()
-        
-        store = DataStore<Person>.getInstance(client: client)
-    }
-    
     func assertThread() {
         XCTAssertTrue(NSThread.isMainThread())
     }

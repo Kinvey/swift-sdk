@@ -17,13 +17,15 @@
 +(nonnull RLMRealmConfiguration*)configurationForPersistenceId:(nonnull NSString *)persistenceId;
 
 +(nonnull RLMRealmConfiguration*)configurationForPersistenceId:(nonnull NSString *)persistenceId
-                                                      filePath:(nullable NSString *)filePath;
+                                                      filePath:(nullable NSString *)filePath
+                                                 encryptionKey:(nullable NSData*)encryptionKey;
 
 -(nonnull instancetype)initWithPersistenceId:(nonnull NSString *)persistenceId
                               collectionName:(nullable NSString *)collectionName;
 
 -(nonnull instancetype)initWithPersistenceId:(nonnull NSString *)persistenceId
                               collectionName:(nullable NSString *)collectionName
-                                    filePath:(nullable NSString *)filePath;
+                                    filePath:(nullable NSString *)filePath
+                               encryptionKey:(nullable NSData*)encryptionKey;
 
 @end

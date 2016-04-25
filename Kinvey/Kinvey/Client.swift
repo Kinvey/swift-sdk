@@ -8,6 +8,8 @@
 
 import Foundation
 
+private let lockEncryptionKey = NSLock()
+
 /// This class provides a representation of a Kinvey environment holding App ID and App Secret. Please *never* use a Master Secret in a client application.
 @objc(__KNVClient)
 public class Client: NSObject, Credential {
@@ -48,7 +50,7 @@ public class Client: NSObject, Credential {
                     activeUser?.userId,
                     appKey: appKey
                 )
-                CacheManager(persistenceId: appKey).cache().removeAllEntities()
+                CacheManager(persistenceId: appKey, encryptionKey: encryptionKey).cache().removeAllEntities()
             }
         }
         didSet {
@@ -101,6 +103,8 @@ public class Client: NSObject, Credential {
     var networkRequestFactory: RequestFactory!
     var responseParser: ResponseParser!
     
+    var encryptionKey: NSData?
+    
     /// Set a different schema version to perform migrations in your local cache.
     public private(set) var schemaVersion: CUnsignedLongLong = 0
     
@@ -136,13 +140,37 @@ public class Client: NSObject, Credential {
     public convenience init(appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) {
         self.init()
         initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName)
-    }    
+    }
+    
+    public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName, encrypted: Bool, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) -> Client {
+        var encryptionKey: NSData? = nil
+        if encrypted {
+            lockEncryptionKey.lock()
+            
+            let keychain = Keychain(appKey: appKey)
+            if let key = keychain.defaultEncryptionKey {
+                encryptionKey = key
+            } else {
+                let key = NSMutableData(length: 64)!
+                let result = SecRandomCopyBytes(kSecRandomDefault, key.length, unsafeBitCast(key.mutableBytes, UnsafeMutablePointer<UInt8>.self))
+                if result == 0 {
+                    keychain.defaultEncryptionKey = key
+                    encryptionKey = key
+                }
+            }
+            
+            lockEncryptionKey.unlock()
+        }
+        
+        return initialize(appKey: appKey, appSecret: appSecret, apiHostName: apiHostName, authHostName: authHostName, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
+    }
     
     /// Initialize a `Client` instance with all the needed parameters.
-    public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) -> Client {
+    public func initialize(appKey appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName, encryptionKey: NSData? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) -> Client {
+        self.encryptionKey = encryptionKey
         self.schemaVersion = schemaVersion
-        cacheManager = CacheManager(persistenceId: appKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
-        syncManager = SyncManager (persistenceId: appKey)
+        cacheManager = CacheManager(persistenceId: appKey, encryptionKey: encryptionKey, schemaVersion: schemaVersion, migrationHandler: migrationHandler)
+        syncManager = SyncManager(persistenceId: appKey, encryptionKey: encryptionKey)
         
         var apiHostName = apiHostName
         if let apiHostNameString = apiHostName.absoluteString as String? where apiHostNameString.characters.last == "/" {

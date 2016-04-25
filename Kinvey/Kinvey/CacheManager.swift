@@ -13,10 +13,12 @@ import Realm
 internal class CacheManager: NSObject {
     
     private let persistenceId: String
+    private let encryptionKey: NSData?
     
-    init(persistenceId: String, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+    init(persistenceId: String, encryptionKey: NSData? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
         self.persistenceId = persistenceId
-        let realmConfiguration = KCSRealmEntityPersistence.configurationForPersistenceId(persistenceId)
+        self.encryptionKey = encryptionKey
+        let realmConfiguration = KCSRealmEntityPersistence.configurationForPersistenceId(persistenceId, filePath: nil, encryptionKey: encryptionKey)
         realmConfiguration.schemaVersion = schemaVersion
         realmConfiguration.migrationBlock = { migration, oldSchemaVersion in
             let migration = Migration(realmMigration: migration)
@@ -26,7 +28,7 @@ internal class CacheManager: NSObject {
     }
     
     func cache(collectionName: String? = nil, filePath: String? = nil) -> Cache {
-        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName, filePath: filePath) as! Cache
+        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName, filePath: filePath, encryptionKey: encryptionKey) as! Cache
     }
     
 }

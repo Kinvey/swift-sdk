@@ -93,6 +93,7 @@
                             appSecret:appSecret
                           apiHostName:apiHostName
                          authHostName:authHostName
+                        encryptionKey:nil
                         schemaVersion:schemaVersion
                      migrationHandler:migrationHandler];
     return self;
