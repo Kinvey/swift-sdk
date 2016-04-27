@@ -11,5 +11,6 @@ import Foundation
 class LocalResponse: Response {
     
     var isResponseOK = true
+    var isResponseUnauthorized = false
 
 }

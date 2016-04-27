@@ -22,9 +22,9 @@ internal class LocalRequest: NSObject, Request {
         self.localHandler = localHandler
     }
     
-    func execute(completionHandler: LocalHandler? = nil) {
+    func execute(@noescape completionHandler: LocalHandler) {
         localHandler?()
-        completionHandler?()
+        completionHandler()
     }
     
     func cancel() {

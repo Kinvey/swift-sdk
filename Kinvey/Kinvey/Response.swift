@@ -11,5 +11,6 @@ import Foundation
 internal protocol Response {
     
     var isResponseOK: Bool { get }
+    var isResponseUnauthorized: Bool { get }
 
 }

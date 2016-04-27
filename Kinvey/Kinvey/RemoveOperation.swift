@@ -2,20 +2,24 @@
 //  RemoveOperation.swift
 //  Kinvey
 //
-//  Created by Victor Barros on 2016-02-15.
+//  Created by Victor Barros on 2016-04-26.
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
 import Foundation
 
-@objc(__KNVRemoveOperation)
-internal class RemoveOperation: WriteOperation {
+class RemoveOperation: WriteOperation {
     
     let query: Query
+    lazy var request: HttpRequest = self.buildRequest()
     
-    internal init(query: Query, writePolicy: WritePolicy, sync: Sync? = nil, persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
+    init(query: Query, writePolicy: WritePolicy, sync: Sync? = nil, persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
         self.query = query
         super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
+    }
+    
+    func buildRequest() -> HttpRequest {
+        preconditionFailure("Method needs to be implemented")
     }
     
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
@@ -23,7 +27,6 @@ internal class RemoveOperation: WriteOperation {
         request.execute { () -> Void in
             let objects = self.cache?.findEntityByQuery(self.query)
             let count = self.cache?.removeEntitiesByQuery(self.query)
-            let request = self.client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: self.persistableType.kinveyCollectionName(), query: self.query)
             let idKey = self.persistableType.idKey
             if let objects = objects {
                 for object in objects {
@@ -31,7 +34,7 @@ internal class RemoveOperation: WriteOperation {
                         if objectId.hasPrefix(ObjectIdTmpPrefix) {
                             sync.removeAllPendingOperations(objectId)
                         } else {
-                            sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: objectId))
+                            sync.savePendingOperation(sync.createPendingOperation(self.request.request, objectId: objectId))
                         }
                     }
                 }
@@ -42,7 +45,6 @@ internal class RemoveOperation: WriteOperation {
     }
     
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
-        let request = client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: self.persistableType.kinveyCollectionName(), query: query)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK,
                 let results = self.client.responseParser.parse(data),
@@ -50,6 +52,10 @@ internal class RemoveOperation: WriteOperation {
             {
                 self.cache?.removeEntitiesByQuery(self.query)
                 completionHandler?(count, nil)
+            } else if let response = response where response.isResponseUnauthorized,
+                let json = self.client.responseParser.parse(data) as? [String : String]
+            {
+                completionHandler?(nil, Error.buildUnauthorized(json))
             } else if let error = error {
                 completionHandler?(nil, error)
             } else {

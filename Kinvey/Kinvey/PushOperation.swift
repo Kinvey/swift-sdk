@@ -12,15 +12,21 @@ import PromiseKit
 @objc(__KNVPushOperation)
 internal class PushOperation: SyncOperation {
     
-    override func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
-        let requests = MultiRequest()
-        var promises: [Promise<NSData>] = []
+    func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: ((UInt, [ErrorType]?) -> Void)?) -> Request {
+        let requests = OperationQueueRequest()
+        requests.operationQueue.maxConcurrentOperationCount = 1
+        var count = UInt(0)
+        var errors = [ErrorType]()
         for pendingOperation in sync.pendingOperations() {
             let request = HttpRequest(request: pendingOperation.buildRequest(), timeout: timeout, client: client)
-            requests.addRequest(request)
-            promises.append(Promise<NSData> { fulfill, reject in
+            let operation = NSBlockOperation {
+                let condition = NSCondition()
+                condition.lock()
                 request.execute() { data, response, error in
-                    if let response = response where response.isResponseOK, let data = data {
+                    condition.lock()
+                    if let response = response where response.isResponseOK,
+                        let data = data
+                    {
                         let json = self.client.responseParser.parse(data)
                         if let cache = self.cache, let json = json, let objectId = pendingOperation.objectId where request.request.HTTPMethod != "DELETE" {
                             if let entity = cache.findEntity(objectId) {
@@ -33,25 +39,42 @@ internal class PushOperation: SyncOperation {
                         }
                         if request.request.HTTPMethod != "DELETE" {
                             self.sync.removePendingOperation(pendingOperation)
-                            fulfill(data)
-                        } else if let json = json, let count = json["count"] as? UInt where count > 0 {
+                            count += 1
+                        } else if let json = json, let _count = json["count"] as? UInt {
                             self.sync.removePendingOperation(pendingOperation)
-                            fulfill(data)
+                            count += _count
                         } else {
-                            reject(Error.InvalidResponse)
+                            errors.append(Error.InvalidResponse)
                         }
+                    } else if let response = response where response.isResponseUnauthorized,
+                        let data = data,
+                        let json = self.client.responseParser.parse(data) as? [String : String]
+                    {
+                        let error = Error.buildUnauthorized(json)
+                        switch error {
+                        case .Unauthorized(let error, _):
+                            if error == Error.InsufficientCredentials {
+                                self.sync.removePendingOperation(pendingOperation)
+                            }
+                        default:
+                            break
+                        }
+                        errors.append(error)
                     } else if let error = error {
-                        reject(error)
+                        errors.append(error)
                     } else {
-                        reject(Error.InvalidResponse)
+                        errors.append(Error.InvalidResponse)
                     }
+                    condition.signal()
+                    condition.unlock()
                 }
-            })
+                condition.wait()
+                condition.unlock()
+            }
+            requests.operationQueue.addOperation(operation)
         }
-        when(promises).thenInBackground { results in
-            completionHandler?(UInt(results.count), nil)
-        }.error { error in
-            completionHandler?(nil, error)
+        requests.operationQueue.addOperationWithBlock {
+            completionHandler?(count, errors.count > 0 ? errors : nil)
         }
         return requests
     }

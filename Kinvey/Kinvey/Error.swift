@@ -11,11 +11,20 @@ import Foundation
 /// Enum that contains all error types in the library.
 public enum Error: ErrorType {
     
+    /// Constant for 401 responses where the credentials are not enough to complete the request.
+    public static let InsufficientCredentials = "InsufficientCredentials"
+    
+    /// Constant for 401 responses where the credentials are not valid to complete the request.
+    public static let InvalidCredentials = "InvalidCredentials"
+    
     /// Error where Object ID is required.
     case ObjectIdMissing
     
-    /// Error where a Invalid Response coming from the backend.
+    /// Error when a Invalid Response coming from the backend.
     case InvalidResponse
+    
+    /// Error when a Unauthorized Response coming from the backend.
+    case Unauthorized(error: String, description: String)
     
     /// Error when calls a method that requires an active user.
     case NoActiveUser
@@ -33,6 +42,10 @@ public enum Error: ErrorType {
         get {
             return self as NSError
         }
+    }
+    
+    static func buildUnauthorized(json: [String : String]) -> Error {
+        return Unauthorized(error: json["error"]!, description: json["description"]!)
     }
     
 }

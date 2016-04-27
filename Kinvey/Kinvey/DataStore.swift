@@ -14,7 +14,8 @@ public class DataStore<T: Persistable where T: NSObject> {
     public typealias ArrayCompletionHandler = ([T]?, ErrorType?) -> Void
     public typealias ObjectCompletionHandler = (T?, ErrorType?) -> Void
     public typealias UIntCompletionHandler = (UInt?, ErrorType?) -> Void
-    public typealias UIntArrayCompletionHandler = (UInt?, [T]?, ErrorType?) -> Void
+    public typealias UIntErrorTypeArrayCompletionHandler = (UInt?, [ErrorType]?) -> Void
+    public typealias UIntArrayCompletionHandler = (UInt?, [T]?, [ErrorType]?) -> Void
     
     private let readPolicy: ReadPolicy
     private let writePolicy: WritePolicy
@@ -104,8 +105,10 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     /// Deletes a record using the `_id` of the record.
     public func removeById(id: String, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
-        let query = Query(format: "\(T.idKey) == %@", id)
-        return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
+        let writePolicy = writePolicy ?? self.writePolicy
+        let operation = RemoveByIdOperation(objectId: id, writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
+        let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
+        return request
     }
     
     /// Deletes a list of records using the `_id` of the records.
@@ -117,7 +120,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// Deletes a list of records that matches with the query passed by parameter.
     public func remove(query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = RemoveOperation(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = RemoveByQueryOperation(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -128,10 +131,10 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Sends to the backend all the pending records in the local cache.
-    public func push(timeout timeout: NSTimeInterval? = nil, completionHandler: UIntCompletionHandler? = nil) -> Request {
+    public func push(timeout timeout: NSTimeInterval? = nil, completionHandler: UIntErrorTypeArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
-            completionHandler?(nil, KinveyError.InvalidDataStoreType)
+            completionHandler?(nil, [KinveyError.InvalidDataStoreType])
             return LocalRequest()
         }
         
@@ -157,19 +160,19 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func sync(query: Query = Query(), completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
-            completionHandler?(nil, nil, KinveyError.InvalidDataStoreType)
+            completionHandler?(nil, nil, [KinveyError.InvalidDataStoreType])
             return LocalRequest()
         }
         
         let requests = MultiRequest()
-        let request = push() { count, error in
-            if let count = count where error == nil {
+        let request = push() { count, errors in
+            if let count = count where errors == nil || errors!.isEmpty {
                 let request = self.pull(query) { results, error in
-                    completionHandler?(count, results, error)
+                    completionHandler?(count, results, error != nil ? [error!] : nil)
                 }
                 requests.addRequest(request)
             } else {
-                completionHandler?(count, nil, error)
+                completionHandler?(count, nil, errors)
             }
         }
         requests.addRequest(request)
@@ -199,6 +202,17 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     //MARK: Dispatch Async Main Queue
     
+    private func dispatchAsyncMainQueue<R, E>(completionHandler: ((R, E) -> Void)? = nil) -> ((R, E) -> Void)? {
+        if let completionHandler = completionHandler {
+            return { (obj, error) -> Void in
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    completionHandler(obj, error)
+                })
+            }
+        }
+        return nil
+    }
+    
     private func dispatchAsyncMainQueue<R>(completionHandler: ((R?, ErrorType?) -> Void)? = nil) -> ((AnyObject?, ErrorType?) -> Void)? {
         if let completionHandler = completionHandler {
             return { (obj: AnyObject?, error: ErrorType?) -> Void in
@@ -213,6 +227,17 @@ public class DataStore<T: Persistable where T: NSObject> {
     private func dispatchAsyncMainQueue<R1, R2>(completionHandler: ((R1?, R2?, ErrorType?) -> Void)? = nil) -> ((R1?, R2?, ErrorType?) -> Void)? {
         if let completionHandler = completionHandler {
             return { (obj1: R1?, obj2: R2?, error: ErrorType?) -> Void in
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    completionHandler(obj1, obj2, error)
+                })
+            }
+        }
+        return nil
+    }
+    
+    private func dispatchAsyncMainQueue<R1, R2, R3>(completionHandler: ((R1?, R2?, R3?) -> Void)? = nil) -> ((R1?, R2?, R3?) -> Void)? {
+        if let completionHandler = completionHandler {
+            return { (obj1: R1?, obj2: R2?, error: R3?) -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     completionHandler(obj1, obj2, error)
                 })

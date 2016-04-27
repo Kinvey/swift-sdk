@@ -40,6 +40,12 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "DeltaSetCacheTestCase/testPerformance_1_9()">
+               </Test>
+               <Test
+                  Identifier = "DeltaSetCacheTestCase/testPerformance_9_1()">
+               </Test>
+               <Test
                   Identifier = "PerformanceTestCase">
                </Test>
             </SkippedTests>
