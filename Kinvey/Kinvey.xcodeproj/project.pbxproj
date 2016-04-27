@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */; };
+		5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */; };
 		57162EEF1CB83A2400A3C408 /* KCSClient2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DFC1C7F9414006403CC /* KCSClient2+KCSInternal.m */; };
 		57198FEC1CAF33C700070CDA /* KCSQueryProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57198FF61CB2D42C00070CDA /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57198FF51CB2D42C00070CDA /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -64,7 +66,7 @@
 		5719903F1CB2D85000070CDA /* GetOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA61C729EAF00CDC48F /* GetOperation.swift */; };
 		571990401CB2D85000070CDA /* FindOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA81C729EB900CDC48F /* FindOperation.swift */; };
 		571990411CB2D85000070CDA /* SaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAA1C729EC900CDC48F /* SaveOperation.swift */; };
-		571990421CB2D85000070CDA /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */; };
+		571990421CB2D85000070CDA /* RemoveByQueryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */; };
 		571990431CB2D85000070CDA /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
 		571990441CB2D85000070CDA /* PushOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA41C76926B0096B15F /* PushOperation.swift */; };
 		571990451CB2D85000070CDA /* PurgeOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FAA1C769EF00096B15F /* PurgeOperation.swift */; };
@@ -289,7 +291,7 @@
 		574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA61C729EAF00CDC48F /* GetOperation.swift */; };
 		574B0FA91C729EB900CDC48F /* FindOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA81C729EB900CDC48F /* FindOperation.swift */; };
 		574B0FAB1C729EC900CDC48F /* SaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAA1C729EC900CDC48F /* SaveOperation.swift */; };
-		574B0FAD1C729F3300CDC48F /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */; };
+		574B0FAD1C729F3300CDC48F /* RemoveByQueryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */; };
 		574EB8BA1C91FCE900238D2D /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		575772861C4728E5001D56F5 /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
 		5759854E1CC833930054DF08 /* LongData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5759854D1CC833930054DF08 /* LongData.swift */; };
@@ -648,6 +650,8 @@
 		57FAC66E1CB820A30042FDB3 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 571990381CB2D69500070CDA /* Realm.framework */; };
 		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
+		57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */; };
+		57FF4F6F1CD02FF7002947FF /* OperationQueueRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6E1CD02FF7002947FF /* OperationQueueRequest.swift */; };
 		E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9073D001C986D9600475E16 /* CustomEndpoint.swift */; };
 /* End PBXBuildFile section */
 
@@ -783,6 +787,8 @@
 /* Begin PBXFileReference section */
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		5711C46C1C74F52F00073806 /* SaveOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperationTest.swift; sourceTree = "<group>"; };
+		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
+		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
 		57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryProtocol.h; sourceTree = "<group>"; };
 		57198FF31CB2D42C00070CDA /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57198FF51CB2D42C00070CDA /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
@@ -821,7 +827,7 @@
 		574B0FA61C729EAF00CDC48F /* GetOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperation.swift; sourceTree = "<group>"; };
 		574B0FA81C729EB900CDC48F /* FindOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperation.swift; sourceTree = "<group>"; };
 		574B0FAA1C729EC900CDC48F /* SaveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperation.swift; sourceTree = "<group>"; };
-		574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveOperation.swift; sourceTree = "<group>"; };
+		574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByQueryOperation.swift; sourceTree = "<group>"; };
 		574EB8B91C91FCE400238D2D /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncStoreTests.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
@@ -1204,6 +1210,8 @@
 		57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
 		57FB57D81C86581300AA590F /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncOperation.swift; sourceTree = "<group>"; };
+		57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveOperation.swift; sourceTree = "<group>"; };
+		57FF4F6E1CD02FF7002947FF /* OperationQueueRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperationQueueRequest.swift; sourceTree = "<group>"; };
 		E9073D001C986D9600475E16 /* CustomEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomEndpoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1355,7 +1363,9 @@
 				574B0FA61C729EAF00CDC48F /* GetOperation.swift */,
 				574B0FA81C729EB900CDC48F /* FindOperation.swift */,
 				574B0FAA1C729EC900CDC48F /* SaveOperation.swift */,
-				574B0FAC1C729F3300CDC48F /* RemoveOperation.swift */,
+				57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */,
+				574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */,
+				5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */,
 				57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */,
 				57470FA41C76926B0096B15F /* PushOperation.swift */,
 				57470FAA1C769EF00096B15F /* PurgeOperation.swift */,
@@ -1450,6 +1460,7 @@
 				57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */,
 				57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */,
 				57470FA61C7698B30096B15F /* MultiRequest.swift */,
+				57FF4F6E1CD02FF7002947FF /* OperationQueueRequest.swift */,
 				5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */,
 				57A2ED851C49B9D5006D26A9 /* Response.swift */,
 				57A2ED871C49BADD006D26A9 /* HttpResponse.swift */,
@@ -1491,6 +1502,7 @@
 				57A4656E1CC00931009E7384 /* PerformanceTestCase.swift */,
 				576A1D351CCA92CA006B261E /* DataTypeTestCase.swift */,
 				57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */,
+				5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */,
 				577155531CA1D65D00C91B4B /* CacheMigrationTestCaseStep1.swift */,
 				57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */,
 				573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */,
@@ -2748,7 +2760,7 @@
 				571990C11CB3164900070CDA /* KCSObjectMapper.m in Sources */,
 				571990DC1CB3177B00070CDA /* KCSUser2.m in Sources */,
 				571990661CB3035500070CDA /* KNVDataStore.m in Sources */,
-				571990421CB2D85000070CDA /* RemoveOperation.swift in Sources */,
+				571990421CB2D85000070CDA /* RemoveByQueryOperation.swift in Sources */,
 				571990A11CB3151D00070CDA /* KCSMetadataRealm.m in Sources */,
 				571990AD1CB3159A00070CDA /* KCSNSURLSessionFileOperation.m in Sources */,
 				5719906D1CB3037A00070CDA /* KCSFileRealm.m in Sources */,
@@ -2862,7 +2874,7 @@
 				57B23F4C1C7FB187006403CC /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m in Sources */,
 				57E4DB111C8A19250017B406 /* ObjC.swift in Sources */,
 				57B23F431C7FB173006403CC /* KCSUserRealm.m in Sources */,
-				574B0FAD1C729F3300CDC48F /* RemoveOperation.swift in Sources */,
+				574B0FAD1C729F3300CDC48F /* RemoveByQueryOperation.swift in Sources */,
 				5728212F1C63E10700373EC8 /* FileStore.swift in Sources */,
 				57B23F531C7FB198006403CC /* CLLocation+Kinvey.m in Sources */,
 				57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */,
@@ -2881,6 +2893,7 @@
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
 				572C45921C86C13800A41935 /* EntitySchema.swift in Sources */,
 				57B23F371C7FB082006403CC /* KCSQuery2.m in Sources */,
+				57FF4F6F1CD02FF7002947FF /* OperationQueueRequest.swift in Sources */,
 				57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */,
 				57B23EFA1C7FAEEE006403CC /* KCSOfflineUpdate.m in Sources */,
 				57FB57D91C86581300AA590F /* String.swift in Sources */,
@@ -2951,6 +2964,7 @@
 				57B23F2D1C7FB021006403CC /* KCSObjectMapper.m in Sources */,
 				57470FAB1C769EF00096B15F /* PurgeOperation.swift in Sources */,
 				57E7C7B31C51545900848748 /* ReadPolicy.swift in Sources */,
+				5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */,
 				57B23F331C7FB046006403CC /* KCSPing2.m in Sources */,
 				57B23EEA1C7FA9AC006403CC /* KCSMutipleRequest.m in Sources */,
 				57B23EBF1C7FA6C0006403CC /* KCSFileStore.m in Sources */,
@@ -3023,6 +3037,7 @@
 				57B23F2F1C7FB021006403CC /* KCSMetadata.m in Sources */,
 				57E4DB241C8A49130017B406 /* KNVKinvey.m in Sources */,
 				57B23E861C7F9566006403CC /* KCSQuery.m in Sources */,
+				57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3042,6 +3057,7 @@
 				57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */,
 				57471A301CCAED1600628933 /* EncryptedDataStoreTestCase.swift in Sources */,
 				571991091CB45EEE00070CDA /* Person.swift in Sources */,
+				5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */,
 				57C563061C9CC7410011FB36 /* String.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,
 				571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */,

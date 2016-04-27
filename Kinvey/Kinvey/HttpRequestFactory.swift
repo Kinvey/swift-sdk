@@ -137,6 +137,16 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildAppDataRemoveById(collectionName collectionName: String, objectId: String) -> HttpRequest {
+        let request = HttpRequest(
+            httpMethod: .Delete,
+            endpoint: Endpoint.AppDataById(client: client, collectionName: collectionName, id: objectId),
+            credential: client.activeUser,
+            client: client
+        )
+        return request
+    }
+    
     func buildPushRegisterDevice(deviceToken: NSData) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Post,

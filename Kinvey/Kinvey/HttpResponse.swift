@@ -28,5 +28,11 @@ struct HttpResponse: Response {
             return 200 <= response.statusCode && response.statusCode < 300
         }
     }
+    
+    var isResponseUnauthorized: Bool {
+        get {
+            return response.statusCode == 401
+        }
+    }
 
 }

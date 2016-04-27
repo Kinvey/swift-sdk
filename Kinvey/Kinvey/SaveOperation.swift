@@ -58,7 +58,7 @@ internal class SaveOperation: WriteOperation {
                     }
                     completionHandler?(self.persistable, nil)
                 } else if let error = error {
-                    completionHandler?(nil, error)
+                    completionHandler?(nil, error as NSError)
                 } else {
                     completionHandler?(nil, KinveyError.InvalidResponse)
                 }

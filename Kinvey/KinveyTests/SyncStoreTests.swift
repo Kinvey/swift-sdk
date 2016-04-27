@@ -145,13 +145,20 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationSync = expectationWithDescription("Sync")
         
-        store.sync() { count, results, error in
+        store.sync() { count, results, errors in
             self.assertThread()
             XCTAssertNil(count)
-            XCTAssertNotNil(error)
+            XCTAssertNotNil(errors)
             
-            if let error = error as? NSError {
-                XCTAssertEqual(error, Error.InvalidDataStoreType.error)
+            if let errors = errors {
+                if let error = errors.first as? Error {
+                    switch error {
+                    case .InvalidDataStoreType:
+                        break
+                    default:
+                        XCTFail()
+                    }
+                }
             }
             
             expectationSync?.fulfill()
@@ -174,7 +181,7 @@ class SyncStoreTests: StoreTestCase {
         
         store.sync() { count, results, error in
             self.assertThread()
-            XCTAssertNil(count)
+            XCTAssertEqual(count, 0)
             XCTAssertNil(results)
             XCTAssertNotNil(error)
             
@@ -226,13 +233,20 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationPush = expectationWithDescription("Push")
         
-        store.push() { count, error in
+        store.push() { count, errors in
             self.assertThread()
             XCTAssertNil(count)
-            XCTAssertNotNil(error)
+            XCTAssertNotNil(errors)
             
-            if let error = error as? NSError {
-                XCTAssertEqual(error, Error.InvalidDataStoreType.error)
+            if let errors = errors {
+                if let error = errors.first as? Error {
+                    switch error {
+                    case .InvalidDataStoreType:
+                        break
+                    default:
+                        XCTFail()
+                    }
+                }
             }
             
             expectationPush?.fulfill()

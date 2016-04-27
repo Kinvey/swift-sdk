@@ -514,6 +514,7 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     if (error) {
         @throw error;
     }
+    [realm refresh];
     return realm;
 }
 
@@ -537,17 +538,17 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
                                               filePath:(NSString *)filePath
                                          encryptionKey:(NSData*)encryptionKey
 {
-    RLMRealmConfiguration* realmConfiguration = [RLMRealmConfiguration defaultConfiguration].copy;
+    RLMRealmConfiguration* realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
     
     if (filePath) {
-        realmConfiguration.fileURL = [NSURL fileURLWithPath:filePath];
+        realmConfiguration.path = filePath;
     } else {
-        NSMutableArray<NSString*>* pathComponents = [realmConfiguration.fileURL.path pathComponents].mutableCopy;
+        NSMutableArray<NSString*>* pathComponents = [realmConfiguration.path pathComponents].mutableCopy;
         pathComponents[pathComponents.count - 1] = [NSString stringWithFormat:@"com.kinvey.%@_cache.realm", persistenceId];
-        realmConfiguration.fileURL = [NSURL fileURLWithPath:[NSString pathWithComponents:pathComponents]];
+        realmConfiguration.path = [NSString pathWithComponents:pathComponents];
     }
     
-    NSLog(@"Database Path: %@", realmConfiguration.fileURL);
+    NSLog(@"Database Path: %@", realmConfiguration.path);
     
     if (encryptionKey) {
         realmConfiguration.encryptionKey = encryptionKey;
@@ -898,7 +899,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     }
     NSSortDescriptor* sortDescriptorDate = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];
     return [[KNVQuery alloc] initWithPredicate:predicate
-                                 sortDescriptors:@[sortDescriptorDate]];
+                               sortDescriptors:@[sortDescriptorDate]];
 }
 
 -(KCSPendingOperationRealm*)pendingOperation:(id<KNVPendingOperation>)pendingOperation

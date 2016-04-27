@@ -323,7 +323,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             let query = Query(format: "personId == %@", personId)
             query.persistableType = Person.self
-            let createRemove = RemoveOperation(query: query, writePolicy: .ForceNetwork, persistableType: Person.self, client: client)
+            let createRemove = RemoveByQueryOperation(query: query, writePolicy: .ForceNetwork, persistableType: Person.self, client: client)
             createRemove.execute { (count, error) -> Void in
                 XCTAssertNotNil(count)
                 XCTAssertNil(error)
