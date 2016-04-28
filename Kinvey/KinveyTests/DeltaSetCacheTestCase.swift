@@ -615,4 +615,103 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
+    func testFindEmpty() {
+        signUp()
+        
+        let store = DataStore<Person>.getInstance(.Network)
+        let query = Query(format: "_acl.creator == %@", client.activeUser!.userId)
+        
+        weak var expectationFind = expectationWithDescription("Find")
+        
+        store.find(query) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertEqual(results.count, 0)
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            expectationFind = nil
+        }
+    }
+    
+    func testFindOneRecord() {
+        signUp()
+        
+        let store = DataStore<Person>.getInstance(.Network)
+        let query = Query(format: "_acl.creator == %@", client.activeUser!.userId)
+        
+        class OnePersonURLProtocol: NSURLProtocol {
+            
+            static var userId = ""
+            
+            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                
+                let object = [
+                    [
+                        "_id": NSUUID().UUIDString,
+                        "name": "Person 1",
+                        "_acl": [
+                            "creator": OnePersonURLProtocol.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-03-18T17:48:14.875Z",
+                            "ect": "2016-03-18T17:48:14.875Z"
+                        ]
+                    ]
+                ]
+                let data = try! NSJSONSerialization.dataWithJSONObject(object, options: [])
+                client!.URLProtocol(self, didLoadData: data)
+                
+                client!.URLProtocolDidFinishLoading(self)
+            }
+            
+            override func stopLoading() {
+            }
+            
+        }
+        
+        OnePersonURLProtocol.userId = client.activeUser!.userId
+        
+        setURLProtocol(OnePersonURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectationWithDescription("Find")
+        
+        store.find(query) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertEqual(results.count, 1)
+                
+                if let person = results.first {
+                    XCTAssertEqual(person.name, "Person 1")
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            expectationFind = nil
+        }
+    }
+    
 }

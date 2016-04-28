@@ -44,6 +44,7 @@ internal class FindOperation: ReadOperation {
     typealias ArrayCompletionHandler = ([AnyObject]?, ErrorType?) -> Void
     
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
+        let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
         let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: persistableType.kinveyCollectionName(), query: query, fields: fields)
         request.execute() { data, response, error in
@@ -51,7 +52,7 @@ internal class FindOperation: ReadOperation {
                 let jsonArray = self.client.responseParser.parseArray(data)
             {
                 self.resultsHandler?(jsonArray)
-                if let cache = self.cache where !cache.isEmpty() && self.deltaSet {
+                if let cache = self.cache where deltaSet {
                     let refObjs = self.reduceToIdsLmts(jsonArray)
                     let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
                     var allIds = Set<String>()
