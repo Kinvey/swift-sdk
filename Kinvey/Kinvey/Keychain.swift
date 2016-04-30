@@ -49,4 +49,8 @@ class Keychain {
         }
     }
     
+    func removeAll() {
+        try! keychain.removeAll()
+    }
+    
 }
