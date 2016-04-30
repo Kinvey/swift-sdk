@@ -28,20 +28,47 @@ class SyncStoreTests: StoreTestCase {
         store = DataStore<Person>.getInstance(.Sync)
     }
     
-    func testCustomFilePath() {
+    func testCustomIdentifier() {
         let fileManager = NSFileManager.defaultManager()
         
         let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
         XCTAssertEqual(paths.count, 1)
         if let path = paths.first {
-            let customPath = "\(path)/\(client.appKey!)/custom_path.realm"
-            XCTAssertFalse(fileManager.fileExistsAtPath(customPath))
+            let customPath = "\(path)/\(client.appKey!)/Custom Identifier.realm"
             
-            store = DataStore<Person>.getInstance(.Sync, alias: "custom_path")
-            defer {
+            let removeFiles: () -> Void = {
                 if fileManager.fileExistsAtPath(customPath) {
                     try! fileManager.removeItemAtPath(customPath)
                 }
+                
+                let lockPath = (customPath as NSString).stringByAppendingPathExtension("lock")!
+                if fileManager.fileExistsAtPath(lockPath) {
+                    try! fileManager.removeItemAtPath(lockPath)
+                }
+                
+                let logPath = (customPath as NSString).stringByAppendingPathExtension("log")!
+                if fileManager.fileExistsAtPath(logPath) {
+                    try! fileManager.removeItemAtPath(logPath)
+                }
+                
+                let logAPath = (customPath as NSString).stringByAppendingPathExtension("log_a")!
+                if fileManager.fileExistsAtPath(logAPath) {
+                    try! fileManager.removeItemAtPath(logAPath)
+                }
+                
+                let logBPath = (customPath as NSString).stringByAppendingPathExtension("log_b")!
+                if fileManager.fileExistsAtPath(logBPath) {
+                    try! fileManager.removeItemAtPath(logBPath)
+                }
+            }
+            
+            removeFiles()
+            XCTAssertFalse(fileManager.fileExistsAtPath(customPath))
+            
+            store = DataStore<Person>.getInstance(.Sync, identifier: "Custom Identifier")
+            defer {
+                removeFiles()
+                XCTAssertFalse(fileManager.fileExistsAtPath(customPath))
             }
             XCTAssertTrue(fileManager.fileExistsAtPath(customPath))
         }

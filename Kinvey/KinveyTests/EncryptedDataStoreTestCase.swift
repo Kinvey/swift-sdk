@@ -21,7 +21,7 @@ class EncryptedDataStoreTestCase: StoreTestCase {
     override func setUp() {
         encrypted = true
         
-        deleteRealmDatabase(filePath)
+        deleteAllDocumentFiles()
         
         super.setUp()
     }
@@ -29,7 +29,7 @@ class EncryptedDataStoreTestCase: StoreTestCase {
     func testEncryptedDataStore() {
         signUp()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.getInstance(.Network, client: client)
         
         save(newPerson)
     }
@@ -37,33 +37,22 @@ class EncryptedDataStoreTestCase: StoreTestCase {
     override func tearDown() {
         super.tearDown()
         
-        deleteRealmDatabase(filePath)
+        store = nil
+        
+        deleteAllDocumentFiles()
     }
     
-    private func deleteRealmDatabase(path: NSString) {
+    private func deleteAllDocumentFiles() {
         let fileManager = NSFileManager.defaultManager()
-        if fileManager.fileExistsAtPath(path as String) {
-            try! fileManager.removeItemAtPath(path as String)
-        }
         
-        let lockPath = path.stringByAppendingPathExtension("lock")!
-        if fileManager.fileExistsAtPath(lockPath) {
-            try! fileManager.removeItemAtPath(lockPath)
-        }
-        
-        let logPath = path.stringByAppendingPathExtension("log")!
-        if fileManager.fileExistsAtPath(logPath) {
-            try! fileManager.removeItemAtPath(logPath)
-        }
-        
-        let logAPath = path.stringByAppendingPathExtension("log_a")!
-        if fileManager.fileExistsAtPath(logAPath) {
-            try! fileManager.removeItemAtPath(logAPath)
-        }
-        
-        let logBPath = path.stringByAppendingPathExtension("log_b")!
-        if fileManager.fileExistsAtPath(logBPath) {
-            try! fileManager.removeItemAtPath(logBPath)
+        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+        if let path = paths.first {
+            let url = NSURL(fileURLWithPath: path)
+            for url in try! fileManager.contentsOfDirectoryAtURL(url, includingPropertiesForKeys: [], options: [.SkipsSubdirectoryDescendants, .SkipsHiddenFiles]) {
+                if fileManager.fileExistsAtPath(url.path!) {
+                    try! fileManager.removeItemAtURL(url)
+                }
+            }
         }
     }
     

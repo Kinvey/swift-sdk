@@ -11,19 +11,19 @@ import Foundation
 class DataStoreTypeAlias: Hashable {
     
     let persistableType: Persistable.Type
-    let alias: String
+    let identifier: String
     let type: DataStoreType
     
-    init(persistableType: Persistable.Type, alias: String, type: DataStoreType) {
+    init(persistableType: Persistable.Type, identifier: String, type: DataStoreType) {
         self.persistableType = persistableType
-        self.alias = alias
+        self.identifier = identifier
         self.type = type
     }
     
     var hashValue: Int {
         var hash = NSDecimalNumber(integer: 5)
         hash = 23 * hash + NSDecimalNumber(integer: NSStringFromClass(persistableType).hashValue)
-        hash = 23 * hash + NSDecimalNumber(integer: alias.hashValue)
+        hash = 23 * hash + NSDecimalNumber(integer: identifier.hashValue)
         hash = 23 * hash + NSDecimalNumber(integer: type.hashValue)
         return hash.hashValue
     }
@@ -40,13 +40,11 @@ func *(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
 
 func ==(lhs: DataStoreTypeAlias, rhs: DataStoreTypeAlias) -> Bool {
     return lhs.persistableType == rhs.persistableType &&
-        lhs.alias == rhs.alias &&
+        lhs.identifier == rhs.identifier &&
         lhs.type == rhs.type
 }
 
-var dataStoreInstances = [DataStoreTypeAlias : AnyObject]()
-
-let defaultAlias = "default"
+let defaultIdentifier = "default"
 
 /// Class to interact with a specific collection in the backend.
 public class DataStore<T: Persistable where T: NSObject> {
@@ -87,9 +85,9 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
 
     /// Factory method that returns a `DataStore`.
-    public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient, alias: String = defaultAlias) -> DataStore {
-        let key = DataStoreTypeAlias(persistableType: T.self, alias: alias, type: type)
-        var dataStore = dataStoreInstances[key] as? DataStore
+    public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient, identifier: String = defaultIdentifier) -> DataStore {
+        let key = DataStoreTypeAlias(persistableType: T.self, identifier: identifier, type: type)
+        var dataStore = client.dataStoreInstances[key] as? DataStore
         if dataStore == nil {
             let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
             let path = paths.first! as NSString
@@ -103,9 +101,9 @@ public class DataStore<T: Persistable where T: NSObject> {
                 }
             }
             
-            filePath = filePath.stringByAppendingPathComponent("\(alias).realm")
-            dataStore = DataStore<T>(type: type, client: client, filePath: filePath as String)
-            dataStoreInstances[key] = dataStore
+            filePath = filePath.stringByAppendingPathComponent("\(identifier).realm")
+            dataStore = DataStore<T>(type: type, client: client, filePath: filePath as String, encryptionKey: client.encryptionKey)
+            client.dataStoreInstances[key] = dataStore
         }
         return dataStore!
     }

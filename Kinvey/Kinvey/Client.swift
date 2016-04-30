@@ -50,7 +50,10 @@ public class Client: NSObject, Credential {
                     activeUser?.userId,
                     appKey: appKey
                 )
-                CacheManager(persistenceId: appKey, encryptionKey: encryptionKey).cache().removeAllEntities()
+                
+                CacheManager(persistenceId: appKey, encryptionKey: encryptionKey).clearAllCaches()
+                Keychain(appKey: appKey).removeAll()
+                dataStoreInstances.removeAll()
             }
         }
         didSet {
@@ -118,7 +121,9 @@ public class Client: NSObject, Credential {
     public var userType = User.self
     
     ///Default Value for DataStore alias
-    public static let defaultAlias = Kinvey.defaultAlias
+    public static let defaultAlias = Kinvey.defaultIdentifier
+    
+    var dataStoreInstances = [DataStoreTypeAlias : AnyObject]()
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public override init() {
