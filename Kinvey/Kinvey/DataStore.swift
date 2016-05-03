@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import IKEventSource
 
 /// Class to interact with a specific collection in the backend.
 public class DataStore<T: Persistable where T: NSObject> {
@@ -246,4 +247,8 @@ public class DataStore<T: Persistable where T: NSObject> {
         return nil
     }
 
+    public func subscribe() -> EventSource?
+    {
+        return nil
+    }
 }

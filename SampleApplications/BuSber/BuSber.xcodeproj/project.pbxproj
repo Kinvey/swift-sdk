@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A9A1B24A2999EF4AA36BD99 /* Pods_BuSberTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F08145F6674AB5BF6CD17DD6 /* Pods_BuSberTests.framework */; };
+		1BB81450854C3925BE3A0ABD /* Pods_BuSber.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD576588126583387A5004DE /* Pods_BuSber.framework */; };
 		57F0BC581CD8EB0300A53118 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F0BC571CD8EB0300A53118 /* AppDelegate.swift */; };
 		57F0BC5A1CD8EB0300A53118 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F0BC591CD8EB0300A53118 /* ViewController.swift */; };
 		57F0BC5D1CD8EB0300A53118 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 57F0BC5B1CD8EB0300A53118 /* Main.storyboard */; };
@@ -14,11 +16,12 @@
 		57F0BC621CD8EB0300A53118 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 57F0BC601CD8EB0300A53118 /* LaunchScreen.storyboard */; };
 		57F0BC6D1CD8EB0300A53118 /* BuSberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F0BC6C1CD8EB0300A53118 /* BuSberTests.swift */; };
 		57F0BC781CD8EB0300A53118 /* BuSberUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F0BC771CD8EB0300A53118 /* BuSberUITests.swift */; };
-		57F0BC861CD8EB5D00A53118 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC851CD8EB5D00A53118 /* Kinvey.framework */; };
-		57F0BC891CD8EBA500A53118 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57F0BC851CD8EB5D00A53118 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57F0BC8F1CD8F2A200A53118 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC8E1CD8F2A200A53118 /* Realm.framework */; };
 		57F0BC911CD8F2DC00A53118 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC901CD8F2DC00A53118 /* PromiseKit.framework */; };
 		57F0BC931CD8F32800A53118 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC921CD8F32800A53118 /* KeychainAccess.framework */; };
+		A1DAD7541CD8F962009C3090 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1DAD7531CD8F962009C3090 /* Kinvey.framework */; };
+		A1DAD7551CD8F966009C3090 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A1DAD7531CD8F962009C3090 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E1849FD2A12CE27475EE5733 /* Pods_BuSberUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFD80F9AD53BEFF5B98B3EAE /* Pods_BuSberUITests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,13 +48,17 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				57F0BC891CD8EBA500A53118 /* Kinvey.framework in CopyFiles */,
+				A1DAD7551CD8F966009C3090 /* Kinvey.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		011A06588812CCE06D64A22B /* Pods-BuSber.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSber.release.xcconfig"; path = "Pods/Target Support Files/Pods-BuSber/Pods-BuSber.release.xcconfig"; sourceTree = "<group>"; };
+		2116F5024AAB269B809AE436 /* Pods-BuSberUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSberUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BuSberUITests/Pods-BuSberUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		2584F7DBCB5465A9E4EDDD4F /* Pods-BuSber.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSber.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BuSber/Pods-BuSber.debug.xcconfig"; sourceTree = "<group>"; };
+		3474E13489503F5BEA20571E /* Pods-BuSberTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSberTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BuSberTests/Pods-BuSberTests.debug.xcconfig"; sourceTree = "<group>"; };
 		57F0BC541CD8EB0300A53118 /* BuSber.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuSber.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		57F0BC571CD8EB0300A53118 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		57F0BC591CD8EB0300A53118 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -65,10 +72,15 @@
 		57F0BC731CD8EB0300A53118 /* BuSberUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BuSberUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		57F0BC771CD8EB0300A53118 /* BuSberUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuSberUITests.swift; sourceTree = "<group>"; };
 		57F0BC791CD8EB0300A53118 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		57F0BC851CD8EB5D00A53118 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-exffrtwipaykqoebrnepayenmrat/Build/Products/Debug-iphonesimulator/Kinvey.framework"; sourceTree = "<group>"; };
 		57F0BC8E1CD8F2A200A53118 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../../Kinvey/Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
 		57F0BC901CD8F2DC00A53118 /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = ../../Kinvey/Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
 		57F0BC921CD8F32800A53118 /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = ../../Kinvey/Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
+		72A97A9587DE74193053169D /* Pods-BuSberTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSberTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BuSberTests/Pods-BuSberTests.release.xcconfig"; sourceTree = "<group>"; };
+		A1DAD7531CD8F962009C3090 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-atvmihnjsmmncudtpzcmjthuboxg/Build/Products/Debug-iphonesimulator/Kinvey.framework"; sourceTree = "<group>"; };
+		BD576588126583387A5004DE /* Pods_BuSber.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BuSber.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CFD80F9AD53BEFF5B98B3EAE /* Pods_BuSberUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BuSberUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F08145F6674AB5BF6CD17DD6 /* Pods_BuSberTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BuSberTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4856C28853282EF080A2C43 /* Pods-BuSberUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSberUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BuSberUITests/Pods-BuSberUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,10 +88,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1DAD7541CD8F962009C3090 /* Kinvey.framework in Frameworks */,
 				57F0BC911CD8F2DC00A53118 /* PromiseKit.framework in Frameworks */,
 				57F0BC8F1CD8F2A200A53118 /* Realm.framework in Frameworks */,
 				57F0BC931CD8F32800A53118 /* KeychainAccess.framework in Frameworks */,
-				57F0BC861CD8EB5D00A53118 /* Kinvey.framework in Frameworks */,
+				1BB81450854C3925BE3A0ABD /* Pods_BuSber.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A9A1B24A2999EF4AA36BD99 /* Pods_BuSberTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +108,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E1849FD2A12CE27475EE5733 /* Pods_BuSberUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +123,7 @@
 				57F0BC761CD8EB0300A53118 /* BuSberUITests */,
 				57F0BC551CD8EB0300A53118 /* Products */,
 				57F0BC881CD8EB8200A53118 /* Frameworks */,
+				DEEC47A379BAB70FEFEE121D /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -155,12 +171,28 @@
 		57F0BC881CD8EB8200A53118 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A1DAD7531CD8F962009C3090 /* Kinvey.framework */,
 				57F0BC921CD8F32800A53118 /* KeychainAccess.framework */,
 				57F0BC901CD8F2DC00A53118 /* PromiseKit.framework */,
 				57F0BC8E1CD8F2A200A53118 /* Realm.framework */,
-				57F0BC851CD8EB5D00A53118 /* Kinvey.framework */,
+				BD576588126583387A5004DE /* Pods_BuSber.framework */,
+				F08145F6674AB5BF6CD17DD6 /* Pods_BuSberTests.framework */,
+				CFD80F9AD53BEFF5B98B3EAE /* Pods_BuSberUITests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DEEC47A379BAB70FEFEE121D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2584F7DBCB5465A9E4EDDD4F /* Pods-BuSber.debug.xcconfig */,
+				011A06588812CCE06D64A22B /* Pods-BuSber.release.xcconfig */,
+				3474E13489503F5BEA20571E /* Pods-BuSberTests.debug.xcconfig */,
+				72A97A9587DE74193053169D /* Pods-BuSberTests.release.xcconfig */,
+				2116F5024AAB269B809AE436 /* Pods-BuSberUITests.debug.xcconfig */,
+				F4856C28853282EF080A2C43 /* Pods-BuSberUITests.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -170,10 +202,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57F0BC7C1CD8EB0300A53118 /* Build configuration list for PBXNativeTarget "BuSber" */;
 			buildPhases = (
+				F43256BDD0F25B6A27DA9ACD /* 📦 Check Pods Manifest.lock */,
 				57F0BC501CD8EB0300A53118 /* Sources */,
 				57F0BC511CD8EB0300A53118 /* Frameworks */,
 				57F0BC521CD8EB0300A53118 /* Resources */,
 				57F0BC871CD8EB6500A53118 /* CopyFiles */,
+				E685DFC7B185FE2F6CC8165B /* 📦 Embed Pods Frameworks */,
+				D5121C39F16DC9F15336CC87 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -188,9 +223,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57F0BC7F1CD8EB0300A53118 /* Build configuration list for PBXNativeTarget "BuSberTests" */;
 			buildPhases = (
+				06E43F11BB870987FEEF7303 /* 📦 Check Pods Manifest.lock */,
 				57F0BC641CD8EB0300A53118 /* Sources */,
 				57F0BC651CD8EB0300A53118 /* Frameworks */,
 				57F0BC661CD8EB0300A53118 /* Resources */,
+				6FA5771AF1E6B626DD967D54 /* 📦 Embed Pods Frameworks */,
+				F449FE4CD75EF2992D63A50F /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -206,9 +244,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57F0BC821CD8EB0300A53118 /* Build configuration list for PBXNativeTarget "BuSberUITests" */;
 			buildPhases = (
+				3C22AA377D6D39756A1DD1A9 /* 📦 Check Pods Manifest.lock */,
 				57F0BC6F1CD8EB0300A53118 /* Sources */,
 				57F0BC701CD8EB0300A53118 /* Frameworks */,
 				57F0BC711CD8EB0300A53118 /* Resources */,
+				055DDCC17B7945E9C6395806 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -289,6 +329,129 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		055DDCC17B7945E9C6395806 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BuSberUITests/Pods-BuSberUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		06E43F11BB870987FEEF7303 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		3C22AA377D6D39756A1DD1A9 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		6FA5771AF1E6B626DD967D54 /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BuSberTests/Pods-BuSberTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D5121C39F16DC9F15336CC87 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BuSber/Pods-BuSber-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E685DFC7B185FE2F6CC8165B /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BuSber/Pods-BuSber-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F43256BDD0F25B6A27DA9ACD /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		F449FE4CD75EF2992D63A50F /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BuSberTests/Pods-BuSberTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		57F0BC501CD8EB0300A53118 /* Sources */ = {
@@ -438,6 +601,7 @@
 		};
 		57F0BC7D1CD8EB0300A53118 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2584F7DBCB5465A9E4EDDD4F /* Pods-BuSber.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BuSber/Info.plist;
@@ -449,6 +613,7 @@
 		};
 		57F0BC7E1CD8EB0300A53118 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 011A06588812CCE06D64A22B /* Pods-BuSber.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BuSber/Info.plist;
@@ -460,6 +625,7 @@
 		};
 		57F0BC801CD8EB0300A53118 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3474E13489503F5BEA20571E /* Pods-BuSberTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = BuSberTests/Info.plist;
@@ -472,6 +638,7 @@
 		};
 		57F0BC811CD8EB0300A53118 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 72A97A9587DE74193053169D /* Pods-BuSberTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = BuSberTests/Info.plist;
@@ -484,6 +651,7 @@
 		};
 		57F0BC831CD8EB0300A53118 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2116F5024AAB269B809AE436 /* Pods-BuSberUITests.debug.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = BuSberUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -495,6 +663,7 @@
 		};
 		57F0BC841CD8EB0300A53118 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4856C28853282EF080A2C43 /* Pods-BuSberUITests.release.xcconfig */;
 			buildSettings = {
 				INFOPLIST_FILE = BuSberUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
