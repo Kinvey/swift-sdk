@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		41230687791400096E430167 /* Pods_Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3827BC0A8D7CED7FA89C8987 /* Pods_Kinvey.framework */; };
 		5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */; };
 		5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */; };
 		57162EEF1CB83A2400A3C408 /* KCSClient2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DFC1C7F9414006403CC /* KCSClient2+KCSInternal.m */; };
@@ -319,6 +318,7 @@
 		5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */; };
 		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
 		578F5C931C99EED100B20F17 /* KIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C921C99EED100B20F17 /* KIF.swift */; };
+		579201561CD964270049DB23 /* EventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579201551CD964270049DB23 /* EventSource.swift */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -858,6 +858,7 @@
 		5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
 		578F5C921C99EED100B20F17 /* KIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KIF.swift; sourceTree = "<group>"; };
+		579201551CD964270049DB23 /* EventSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventSource.swift; sourceTree = "<group>"; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
 		57A27C861C178F17000DF951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1258,7 +1259,6 @@
 				5737721B1CB58AA100EDE2BB /* Realm.framework in Frameworks */,
 				574B0F751C6E7E0E00CDC48F /* PromiseKit.framework in Frameworks */,
 				574B0F791C6E7FAA00CDC48F /* KeychainAccess.framework in Frameworks */,
-				41230687791400096E430167 /* Pods_Kinvey.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1413,6 +1413,15 @@
 			path = KinveyApp;
 			sourceTree = "<group>";
 		};
+		579201541CD964030049DB23 /* IKEventSource */ = {
+			isa = PBXGroup;
+			children = (
+				579201551CD964270049DB23 /* EventSource.swift */,
+			);
+			name = IKEventSource;
+			path = ../Carthage/Checkouts/EventSource/EventSource;
+			sourceTree = "<group>";
+		};
 		57A27C771C178F17000DF951 = {
 			isa = PBXGroup;
 			children = (
@@ -1446,6 +1455,7 @@
 		57A27C831C178F17000DF951 /* Kinvey */ = {
 			isa = PBXGroup;
 			children = (
+				579201541CD964030049DB23 /* IKEventSource */,
 				57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */,
 				57B23E801C7F9414006403CC /* KinveyKit */,
 				5747102C1C7B8ECE0096B15F /* ObjC */,
@@ -2499,12 +2509,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57A27C951C178F18000DF951 /* Build configuration list for PBXNativeTarget "Kinvey" */;
 			buildPhases = (
-				4ED90E40B41D3E98A74E2FF8 /* 📦 Check Pods Manifest.lock */,
 				57A27C7C1C178F17000DF951 /* Sources */,
 				57A27C7D1C178F17000DF951 /* Frameworks */,
 				57A27C7E1C178F17000DF951 /* Headers */,
 				57A27C7F1C178F17000DF951 /* Resources */,
-				A42C15165B7F857730F01E6B /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2719,21 +2727,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4ED90E40B41D3E98A74E2FF8 /* 📦 Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "📦 Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
 		8FDB3102F3419D8EDA11707A /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2762,21 +2755,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-KinveyTests/Pods-KinveyTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A42C15165B7F857730F01E6B /* 📦 Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "📦 Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Kinvey/Pods-Kinvey-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F648C920640C115AEF16A661 /* 📦 Check Pods Manifest.lock */ = {
@@ -3061,6 +3039,7 @@
 				57B23F621C7FB1C6006403CC /* KCS_FMDatabaseAdditions.m in Sources */,
 				57B23EDB1C7FA8A9006403CC /* KCSObjcRuntime.m in Sources */,
 				57B23EAD1C7FA55D006403CC /* KCSBase64.m in Sources */,
+				579201561CD964270049DB23 /* EventSource.swift in Sources */,
 				57B23F311C7FB046006403CC /* KCSClient2.m in Sources */,
 				57A27C9C1C178FAC000DF951 /* Kinvey.swift in Sources */,
 				57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */,

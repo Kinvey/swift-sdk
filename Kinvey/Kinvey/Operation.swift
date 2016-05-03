@@ -56,6 +56,10 @@ internal class Operation: NSObject {
     }
     
     func fromJson(json: [String : AnyObject]) -> Persistable {
+        return self.dynamicType.fromJson(persistableType, json: json)
+    }
+    
+    class func fromJson(persistableType: Persistable.Type, json: [String : AnyObject]) -> Persistable {
         let objType = persistableType as! NSObject.Type
         let obj = objType.init() as! Persistable
         for key in persistableType.kinveyPropertyMapping().keys {

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import IKEventSource
 
 /// Class to interact with a specific collection in the backend.
 public class DataStore<T: Persistable where T: NSObject> {
@@ -247,7 +246,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return nil
     }
     
-    var eventSourceLock = NSRecursiveLock()
+    var eventSourceLock = NSLock()
     
     var eventSource: EventSource? {
         willSet {
@@ -263,21 +262,53 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
     }
 
-    public func subscribe(eventHandler: ((NSError?) -> Void)? = nil)
+    public func subscribe(eventHandler: ((T?, NSError?) -> Void)? = nil)
     {
         eventSourceLock.lock()
-        eventSource = EventSource(url: "https://e5555ab0.ngrok.io/appdata/\(client.appKey!)/\(T.kinveyCollectionName())", headers: [:])
-        eventSource!.onMessage { (id, event, data) in
-            print("\(id ?? "")")
-            print("\(event ?? "")")
-            print("\(data ?? "")")
-            eventHandler?(nil)
+        eventSource = EventSource(url: "https://91d0823e.ngrok.io/appdata/\(client.appKey!)/\(T.kinveyCollectionName())", headers: [:])
+        eventSource!.onMessage { [weak self] (id, event, data) in
+            if let selfWeak = self,
+                let jsonStr = data as NSString?,
+                let data = jsonStr.dataUsingEncoding(NSUTF8StringEncoding),
+                let msg = try! NSJSONSerialization.JSONObjectWithData(data, options: []) as? JsonDictionary,
+                let op = msg["op"] as? String
+            {
+                switch op {
+                case "create":
+                    fallthrough
+                case "update":
+                    if let json = msg["data"] as? JsonDictionary,
+                        let obj = T.fromJson(json) as? T
+                    {
+                        selfWeak.cache.saveEntity(T.toJson(persistable: obj))
+                        eventHandler?(obj, nil)
+                    }
+                    break
+                case "delete":
+                    if let id = msg["id"] as? String,
+                        let json = selfWeak.cache.findEntity(id),
+                        let obj = Operation.fromJson(T.self, json: json) as? T
+                    {
+                        eventHandler?(obj, nil)
+                        selfWeak.cache.removeEntity(json)
+                    }
+                    break
+                default:
+                    break
+                }
+            }
         }
         eventSource!.onError { [weak self] (error) in
             self?.eventSource = nil
-            eventHandler?(error)
+            eventHandler?(nil, error)
         }
         eventSourceLock.unlock()
+    }
+    
+    deinit {
+        if isSubscribed {
+            unsubscribe()
+        }
     }
     
     public func unsubscribe() {

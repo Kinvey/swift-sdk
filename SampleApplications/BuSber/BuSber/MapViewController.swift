@@ -15,13 +15,19 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     var locationManager: CLLocationManager!
     var dataStore: DataStore<Bus>!
     let initialLocation = CLLocation(latitude: 42.60027777777778, longitude: -71.10805555555555)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.showsUserLocation = true
         let bus = Bus()
         bus.location = [-71.10805555555555, 42.60027777777778]
         mapView.addAnnotation(bus)
-        let dataStore = DataStore<Bus>.getInstance()
+        dataStore = DataStore<Bus>.getInstance()
+        dataStore.subscribe { (bus, error) in
+            if let bus = bus {
+                print("\(bus)")
+            }
+        }
         
         locationManager = CLLocationManager()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
