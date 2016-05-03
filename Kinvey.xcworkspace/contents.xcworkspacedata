@@ -13,7 +13,4 @@
    <FileRef
       location = "group:SampleApplications/TestDrive/TestDrive.xcodeproj">
    </FileRef>
-   <FileRef
-      location = "group:SampleApplications/BuSber/BuSber.xcodeproj">
-   </FileRef>
 </Workspace>
