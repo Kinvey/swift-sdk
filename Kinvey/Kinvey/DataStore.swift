@@ -246,9 +246,44 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
         return nil
     }
-
-    public func subscribe() -> EventSource?
-    {
-        return nil
+    
+    var eventSourceLock = NSRecursiveLock()
+    
+    var eventSource: EventSource? {
+        willSet {
+            if let eventSource = eventSource {
+                eventSource.close()
+            }
+        }
     }
+    
+    var isSubscribed: Bool {
+        get {
+            return eventSource != nil //&& eventSource!.readyState != .Closed
+        }
+    }
+
+    public func subscribe(eventHandler: (() -> Void)? = nil, errorHandler: (() -> Void)? = nil)
+    {
+        eventSourceLock.lock()
+        eventSource = EventSource(url: "https://a.com/appdata/\(client.appKey!)/\(T.kinveyCollectionName())", headers: [:])
+        eventSource!.onMessage { (id, event, data) in
+            print("\(id ?? "")")
+            print("\(event ?? "")")
+            print("\(data ?? "")")
+            eventHandler?()
+        }
+        eventSource!.onError { [weak self] (error) in
+            self?.eventSource = nil
+            errorHandler?()
+        }
+        eventSourceLock.unlock()
+    }
+    
+    public func unsubscribe() {
+        eventSourceLock.lock()
+        eventSource = nil
+        eventSourceLock.unlock()
+    }
+    
 }
