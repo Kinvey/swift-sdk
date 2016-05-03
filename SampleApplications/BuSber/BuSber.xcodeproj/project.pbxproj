@@ -14,6 +14,11 @@
 		57F0BC621CD8EB0300A53118 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 57F0BC601CD8EB0300A53118 /* LaunchScreen.storyboard */; };
 		57F0BC6D1CD8EB0300A53118 /* BuSberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F0BC6C1CD8EB0300A53118 /* BuSberTests.swift */; };
 		57F0BC781CD8EB0300A53118 /* BuSberUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F0BC771CD8EB0300A53118 /* BuSberUITests.swift */; };
+		57F0BC861CD8EB5D00A53118 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC851CD8EB5D00A53118 /* Kinvey.framework */; };
+		57F0BC891CD8EBA500A53118 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57F0BC851CD8EB5D00A53118 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57F0BC8F1CD8F2A200A53118 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC8E1CD8F2A200A53118 /* Realm.framework */; };
+		57F0BC911CD8F2DC00A53118 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC901CD8F2DC00A53118 /* PromiseKit.framework */; };
+		57F0BC931CD8F32800A53118 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC921CD8F32800A53118 /* KeychainAccess.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +38,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		57F0BC871CD8EB6500A53118 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				57F0BC891CD8EBA500A53118 /* Kinvey.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		57F0BC541CD8EB0300A53118 /* BuSber.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuSber.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		57F0BC571CD8EB0300A53118 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -47,6 +65,10 @@
 		57F0BC731CD8EB0300A53118 /* BuSberUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BuSberUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		57F0BC771CD8EB0300A53118 /* BuSberUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuSberUITests.swift; sourceTree = "<group>"; };
 		57F0BC791CD8EB0300A53118 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		57F0BC851CD8EB5D00A53118 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-exffrtwipaykqoebrnepayenmrat/Build/Products/Debug-iphonesimulator/Kinvey.framework"; sourceTree = "<group>"; };
+		57F0BC8E1CD8F2A200A53118 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../../Kinvey/Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
+		57F0BC901CD8F2DC00A53118 /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = ../../Kinvey/Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
+		57F0BC921CD8F32800A53118 /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = ../../Kinvey/Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +76,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57F0BC911CD8F2DC00A53118 /* PromiseKit.framework in Frameworks */,
+				57F0BC8F1CD8F2A200A53118 /* Realm.framework in Frameworks */,
+				57F0BC931CD8F32800A53118 /* KeychainAccess.framework in Frameworks */,
+				57F0BC861CD8EB5D00A53118 /* Kinvey.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +107,7 @@
 				57F0BC6B1CD8EB0300A53118 /* BuSberTests */,
 				57F0BC761CD8EB0300A53118 /* BuSberUITests */,
 				57F0BC551CD8EB0300A53118 /* Products */,
+				57F0BC881CD8EB8200A53118 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -125,6 +152,17 @@
 			path = BuSberUITests;
 			sourceTree = "<group>";
 		};
+		57F0BC881CD8EB8200A53118 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				57F0BC921CD8F32800A53118 /* KeychainAccess.framework */,
+				57F0BC901CD8F2DC00A53118 /* PromiseKit.framework */,
+				57F0BC8E1CD8F2A200A53118 /* Realm.framework */,
+				57F0BC851CD8EB5D00A53118 /* Kinvey.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -135,6 +173,7 @@
 				57F0BC501CD8EB0300A53118 /* Sources */,
 				57F0BC511CD8EB0300A53118 /* Frameworks */,
 				57F0BC521CD8EB0300A53118 /* Resources */,
+				57F0BC871CD8EB6500A53118 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -484,6 +523,7 @@
 				57F0BC7E1CD8EB0300A53118 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		57F0BC7F1CD8EB0300A53118 /* Build configuration list for PBXNativeTarget "BuSberTests" */ = {
 			isa = XCConfigurationList;
@@ -492,6 +532,7 @@
 				57F0BC811CD8EB0300A53118 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		57F0BC821CD8EB0300A53118 /* Build configuration list for PBXNativeTarget "BuSberUITests" */ = {
 			isa = XCConfigurationList;
@@ -500,6 +541,7 @@
 				57F0BC841CD8EB0300A53118 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

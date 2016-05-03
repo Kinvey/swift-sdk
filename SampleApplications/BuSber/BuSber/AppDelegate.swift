@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kinvey
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        Kinvey.sharedClient.initialize(appKey: "kid_-Ji4W9nWMW", appSecret: "2884f21123f1462e99cfd22afbbb46a4")
+        
         return true
     }
 

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kinvey
 
 class ViewController: UIViewController {
 
@@ -18,6 +19,20 @@ class ViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        switch identifier {
+        case "login":
+            User.login(username: "user", password: "user") { user, error in
+                if let _ = user {
+                    self.performSegueWithIdentifier(identifier, sender: sender)
+                }
+            }
+            return false
+        default:
+            return true
+        }
     }
 
 
