@@ -17,9 +17,9 @@
 		57F0BC8F1CD8F2A200A53118 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC8E1CD8F2A200A53118 /* Realm.framework */; };
 		57F0BC911CD8F2DC00A53118 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC901CD8F2DC00A53118 /* PromiseKit.framework */; };
 		57F0BC931CD8F32800A53118 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC921CD8F32800A53118 /* KeychainAccess.framework */; };
-		A1DAD7631CD90E3D009C3090 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1DAD7621CD90E3D009C3090 /* Kinvey.framework */; };
-		A1DAD7641CD90E3F009C3090 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A1DAD7621CD90E3D009C3090 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		A1DAD7671CD90EB5009C3090 /* IKEventSource.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A1DAD7651CD90EB2009C3090 /* IKEventSource.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57F0BC961CD9294E00A53118 /* IKEventSource.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57F0BC941CD9294800A53118 /* IKEventSource.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57F0BC981CD9296800A53118 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F0BC971CD9296800A53118 /* Kinvey.framework */; };
+		57F0BC991CD9296A00A53118 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57F0BC971CD9296800A53118 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A1DAD7691CD90F2F009C3090 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DAD7681CD90F2F009C3090 /* Bus.swift */; };
 		A1DAD76B1CD91139009C3090 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DAD76A1CD91139009C3090 /* MapViewController.swift */; };
 /* End PBXBuildFile section */
@@ -48,8 +48,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				A1DAD7641CD90E3F009C3090 /* Kinvey.framework in CopyFiles */,
-				A1DAD7671CD90EB5009C3090 /* IKEventSource.framework in CopyFiles */,
+				57F0BC961CD9294E00A53118 /* IKEventSource.framework in CopyFiles */,
+				57F0BC991CD9296A00A53118 /* Kinvey.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,9 +76,9 @@
 		57F0BC8E1CD8F2A200A53118 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../../Kinvey/Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
 		57F0BC901CD8F2DC00A53118 /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = ../../Kinvey/Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
 		57F0BC921CD8F32800A53118 /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = ../../Kinvey/Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
+		57F0BC941CD9294800A53118 /* IKEventSource.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IKEventSource.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-haaetglxbrfzpkcrifrxmhviujyd/Build/Products/Debug-iphonesimulator/IKEventSource/IKEventSource.framework"; sourceTree = "<group>"; };
+		57F0BC971CD9296800A53118 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-haaetglxbrfzpkcrifrxmhviujyd/Build/Products/Debug-iphonesimulator/Kinvey.framework"; sourceTree = "<group>"; };
 		72A97A9587DE74193053169D /* Pods-BuSberTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSberTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BuSberTests/Pods-BuSberTests.release.xcconfig"; sourceTree = "<group>"; };
-		A1DAD7621CD90E3D009C3090 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-cgpwbdqvmdbvfifgkhdeyzkmdxtf/Build/Products/Debug-iphonesimulator/Kinvey.framework"; sourceTree = "<group>"; };
-		A1DAD7651CD90EB2009C3090 /* IKEventSource.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IKEventSource.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-cgpwbdqvmdbvfifgkhdeyzkmdxtf/Build/Products/Debug-iphonesimulator/IKEventSource/IKEventSource.framework"; sourceTree = "<group>"; };
 		A1DAD7681CD90F2F009C3090 /* Bus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
 		A1DAD76A1CD91139009C3090 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		F4856C28853282EF080A2C43 /* Pods-BuSberUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSberUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BuSberUITests/Pods-BuSberUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -89,7 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1DAD7631CD90E3D009C3090 /* Kinvey.framework in Frameworks */,
+				57F0BC981CD9296800A53118 /* Kinvey.framework in Frameworks */,
 				57F0BC911CD8F2DC00A53118 /* PromiseKit.framework in Frameworks */,
 				57F0BC8F1CD8F2A200A53118 /* Realm.framework in Frameworks */,
 				57F0BC931CD8F32800A53118 /* KeychainAccess.framework in Frameworks */,
@@ -171,8 +171,8 @@
 		57F0BC881CD8EB8200A53118 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A1DAD7651CD90EB2009C3090 /* IKEventSource.framework */,
-				A1DAD7621CD90E3D009C3090 /* Kinvey.framework */,
+				57F0BC971CD9296800A53118 /* Kinvey.framework */,
+				57F0BC941CD9294800A53118 /* IKEventSource.framework */,
 				57F0BC921CD8F32800A53118 /* KeychainAccess.framework */,
 				57F0BC901CD8F2DC00A53118 /* PromiseKit.framework */,
 				57F0BC8E1CD8F2A200A53118 /* Realm.framework */,

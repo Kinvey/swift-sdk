@@ -263,19 +263,19 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
     }
 
-    public func subscribe(eventHandler: (() -> Void)? = nil, errorHandler: (() -> Void)? = nil)
+    public func subscribe(eventHandler: ((NSError?) -> Void)? = nil)
     {
         eventSourceLock.lock()
-        eventSource = EventSource(url: "https://a.com/appdata/\(client.appKey!)/\(T.kinveyCollectionName())", headers: [:])
+        eventSource = EventSource(url: "https://e5555ab0.ngrok.io/appdata/\(client.appKey!)/\(T.kinveyCollectionName())", headers: [:])
         eventSource!.onMessage { (id, event, data) in
             print("\(id ?? "")")
             print("\(event ?? "")")
             print("\(data ?? "")")
-            eventHandler?()
+            eventHandler?(nil)
         }
         eventSource!.onError { [weak self] (error) in
             self?.eventSource = nil
-            errorHandler?()
+            eventHandler?(error)
         }
         eventSourceLock.unlock()
     }
