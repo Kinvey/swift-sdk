@@ -51,12 +51,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Nz-QB-CfF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="893" y="459"/>
+            <point key="canvasLocation" x="849" y="459"/>
         </scene>
-        <!--View Controller-->
+        <!--Map View Controller-->
         <scene sceneID="B0N-wN-m0K">
             <objects>
-                <viewController id="e2a-rL-Nqu" sceneMemberID="viewController">
+                <viewController id="e2a-rL-Nqu" customClass="MapViewController" customModule="BuSber" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="soM-Sr-aVm"/>
                         <viewControllerLayoutGuide type="bottom" id="de5-wI-68i"/>
@@ -77,6 +77,9 @@
                             <constraint firstAttribute="trailing" secondItem="ycX-MH-zm4" secondAttribute="trailing" id="Z0L-Il-m5W"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="mapView" destination="ycX-MH-zm4" id="ebO-vd-WTp"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ufh-5n-A6P" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

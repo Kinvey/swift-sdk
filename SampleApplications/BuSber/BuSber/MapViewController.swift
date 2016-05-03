@@ -6,4 +6,15 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-import Foundation
+import Kinvey
+import MapKit
+import UIKit
+
+class MapViewController: UIViewController {
+    @IBOutlet weak var mapView: MKMapView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+
+}

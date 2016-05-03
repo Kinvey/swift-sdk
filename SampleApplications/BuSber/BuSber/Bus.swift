@@ -6,4 +6,18 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-import Foundation
+import Kinvey
+
+class Bus : NSObject, Persistable
+{
+    dynamic var name: String?
+    dynamic var location: Array<Double>?
+    
+    static func kinveyCollectionName() -> String {
+        return "Bus"
+    }
+    
+    static func kinveyPropertyMapping() -> [String : String] {
+        return ["_id": PersistableIdKey, "name": "name", "location": "location"]
+    }
+}

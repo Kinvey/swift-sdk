@@ -26,6 +26,7 @@ class ViewController: UIViewController {
         case "login":
             User.login(username: "user", password: "user") { user, error in
                 if let _ = user {
+                    
                     self.performSegueWithIdentifier(identifier, sender: sender)
                 }
             }
