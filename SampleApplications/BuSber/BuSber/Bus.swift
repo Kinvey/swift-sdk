@@ -7,9 +7,11 @@
 //
 
 import Kinvey
+import MapKit
 
-class Bus : NSObject, Persistable
+class Bus : NSObject, Persistable, MKAnnotation
 {
+    dynamic var _id: String?
     dynamic var name: String?
     dynamic var location: Array<Double>?
     
@@ -19,5 +21,17 @@ class Bus : NSObject, Persistable
     
     static func kinveyPropertyMapping() -> [String : String] {
         return ["_id": PersistableIdKey, "name": "name", "location": "location"]
+    }
+    
+    var coordinate: CLLocationCoordinate2D {
+        get {
+            return CLLocationCoordinate2D(latitude: CLLocationDegrees(location![1]), longitude: CLLocationDegrees(location![0]))
+        }
+    }
+    
+    var title: String? {
+        get {
+            return name
+        }
     }
 }
