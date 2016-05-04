@@ -13,7 +13,14 @@ class Bus : NSObject, Persistable, MKAnnotation
 {
     dynamic var _id: String?
     dynamic var name: String?
-    dynamic var location: Array<Double>?
+    dynamic var location: Array<Double>? {
+        willSet {
+            willChangeValueForKey("coordinate")
+        }
+        didSet {
+            didChangeValueForKey("coordinate")
+        }
+    }
     
     static func kinveyCollectionName() -> String {
         return "Bus"
@@ -23,7 +30,7 @@ class Bus : NSObject, Persistable, MKAnnotation
         return ["_id": PersistableIdKey, "name": "name", "location": "location"]
     }
     
-    var coordinate: CLLocationCoordinate2D {
+    dynamic var coordinate: CLLocationCoordinate2D {
         get {
             return CLLocationCoordinate2D(latitude: CLLocationDegrees(location![1]), longitude: CLLocationDegrees(location![0]))
         }

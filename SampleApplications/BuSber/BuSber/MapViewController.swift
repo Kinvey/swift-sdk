@@ -15,27 +15,35 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     @IBOutlet weak var mapView: MKMapView!
     var locationManager: CLLocationManager!
     var dataStore: DataStore<Bus>!
-    let initialLocation = CLLocation(latitude: 42.35378694, longitude: -71.05854303)
+    var buses = Array<Bus>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.showsUserLocation = true
 
-        let bus = Bus()
-        bus.location = [-71.10805555555555, 42.60027777777778]
+        dataStore = DataStore<Bus>.getInstance(.Network)
+        
+        dataStore.find() { oldbuses, error in
+            if let buses = oldbuses {
+                self.buses = buses
+                self.mapView.addAnnotations(self.buses)
+            }
+        }
 
-        var busLocation = CLLocationCoordinate2DMake(42.35378694, -71.05854303)
-        var busAnnotation = MKPointAnnotation()
-        busAnnotation.coordinate = busLocation
-        busAnnotation.title = "Bus Test1"
-        busAnnotation.subtitle = "Test bus #1"
-        mapView.addAnnotation(busAnnotation)
-
-        mapView.addAnnotation(bus)
-        dataStore = DataStore<Bus>.getInstance()
-        dataStore.subscribe { (bus, error) in
+        dataStore.subscribe { (type, bus, error) in
             if let bus = bus {
-                print("\(bus)")
+                //print("\(bus)")
+                if type == LiveEventType.Create {
+                    self.buses.append(bus)
+                    self.mapView.addAnnotation(bus)
+                }
+                else if type == LiveEventType.Update {
+                    for b in self.buses {
+                        if b._id == bus._id {
+                            b.location = bus.location
+                        }
+                    }
+                }
             }
         }
         
@@ -44,29 +52,62 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         locationManager.delegate = self
 
         var status = CLLocationManager.authorizationStatus()
-        if status == .NotDetermined || status == .Denied || status == .AuthorizedWhenInUse {
             locationManager.requestAlwaysAuthorization()
-            locationManager.requestWhenInUseAuthorization()
             locationManager.startUpdatingLocation()
-        }
         
-        centerMapOnLocation(initialLocation)
     }
 
     let regionRadius: CLLocationDistance = 1000
 
-    func centerMapOnLocation(location: CLLocation) {
-        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate, regionRadius * 2.0, regionRadius * 2.0)
-        mapView.setRegion(coordinateRegion, animated: true)
+//    func centerMapOnLocation(location: CLLocation) {
+//        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate, regionRadius * 4.0, regionRadius * 4.0)
+//        mapView.setRegion(coordinateRegion, animated: true)
+//    }
+
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.last
+        let center = CLLocationCoordinate2D(latitude: location!.coordinate.latitude, longitude: location!.coordinate.longitude)
+        let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02))
+        
+        mapView.setRegion(region, animated: false)
     }
 
-//    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        let location = locations.last
-//        print("present location : \(newLocation.coordinate.latitude), \(newLocation.coordinate.longitude)")
-//        let center = CLLocationCoordinate2D(latitude: location!.coordinate.latitude, longitude: location!.coordinate.longitude)
-//        let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+//    func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+////        // 1
+//        let identifier = "Bus"
+//
+//        // 2
+//        if annotation is Bus {
+//            // 3
+//            var annotationView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
+//            
+//            if annotationView == nil {
+//                //4
+//                annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+//                annotationView!.canShowCallout = true
+//                
+//                // 5
+//                let btn = UIButton(type: .DetailDisclosure)
+//                btn.addTarget(self, action: #selector(pressed(_:)), forControlEvents: .TouchUpInside)
+//                annotationView!.rightCalloutAccessoryView = btn
+//            } else {
+//                // 6
+//                annotationView!.annotation = annotation
+//            }
+//            
+//            return annotationView
+//        }
 //        
-//        mapView.setRegion(region, animated: true)
+//        // 7
+//        return nil
+//    }
+
+//    func pressed(sender: UIButton!) {
+//        var alertView = UIAlertView();
+//        alertView.addButtonWithTitle("Ok");
+//        alertView.title = "title";
+//        alertView.message = "message";
+//        alertView.show();
 //    }
 
 }

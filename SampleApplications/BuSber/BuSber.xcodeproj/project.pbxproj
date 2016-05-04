@@ -76,6 +76,7 @@
 		57F0BC921CD8F32800A53118 /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = ../../Kinvey/Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
 		72A97A9587DE74193053169D /* Pods-BuSberTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSberTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BuSberTests/Pods-BuSberTests.release.xcconfig"; sourceTree = "<group>"; };
 		A142D3251CD966AD00A74C21 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-atvmihnjsmmncudtpzcmjthuboxg/Build/Products/Debug-iphonesimulator/Kinvey.framework"; sourceTree = "<group>"; };
+		A142D3281CDA4E8800A74C21 /* BostonCommon.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BostonCommon.gpx; sourceTree = "<group>"; };
 		A1DAD7681CD90F2F009C3090 /* Bus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
 		A1DAD76A1CD91139009C3090 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		F4856C28853282EF080A2C43 /* Pods-BuSberUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BuSberUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BuSberUITests/Pods-BuSberUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -143,6 +144,7 @@
 				57F0BC631CD8EB0300A53118 /* Info.plist */,
 				A1DAD7681CD90F2F009C3090 /* Bus.swift */,
 				A1DAD76A1CD91139009C3090 /* MapViewController.swift */,
+				A142D3281CDA4E8800A74C21 /* BostonCommon.gpx */,
 			);
 			path = BuSber;
 			sourceTree = "<group>";
