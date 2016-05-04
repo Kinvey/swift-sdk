@@ -3458,7 +3458,6 @@
 		};
 		57A27C961C178F18000DF951 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D22920114B3458C31D8F1E44 /* Pods-Kinvey.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
@@ -3487,7 +3486,6 @@
 		};
 		57A27C971C178F18000DF951 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 983B7ABCC963F6FCF509DCA1 /* Pods-Kinvey.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
@@ -3515,7 +3513,6 @@
 		};
 		57A27C991C178F18000DF951 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CEC03840365C4D6B4DD553C4 /* Pods-KinveyTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp";
 				CLANG_ENABLE_MODULES = YES;
@@ -3539,7 +3536,6 @@
 		};
 		57A27C9A1C178F18000DF951 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E54C2170DF70F33369F8A11E /* Pods-KinveyTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp";
 				CLANG_ENABLE_MODULES = YES;

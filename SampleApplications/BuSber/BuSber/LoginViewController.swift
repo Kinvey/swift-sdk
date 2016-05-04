@@ -9,8 +9,10 @@
 import UIKit
 import Kinvey
 
-class ViewController: UIViewController {
+class LoginViewController: UIViewController {
 
+    @IBOutlet weak var userTextField: UITextField!
+    @IBOutlet weak var passTextField: UITextField!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -24,7 +26,7 @@ class ViewController: UIViewController {
     override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
         switch identifier {
         case "login":
-            User.login(username: "user", password: "user") { user, error in
+            User.login(username: userTextField.text!, password: passTextField.text!) { user, error in
                 if let _ = user {
                     
                     self.performSegueWithIdentifier(identifier, sender: sender)

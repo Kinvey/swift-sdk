@@ -11,16 +11,26 @@ import MapKit
 import UIKit
 
 class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
+
     @IBOutlet weak var mapView: MKMapView!
     var locationManager: CLLocationManager!
     var dataStore: DataStore<Bus>!
-    let initialLocation = CLLocation(latitude: 42.60027777777778, longitude: -71.10805555555555)
+    let initialLocation = CLLocation(latitude: 42.35378694, longitude: -71.05854303)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.showsUserLocation = true
+
         let bus = Bus()
         bus.location = [-71.10805555555555, 42.60027777777778]
+
+        var busLocation = CLLocationCoordinate2DMake(42.35378694, -71.05854303)
+        var busAnnotation = MKPointAnnotation()
+        busAnnotation.coordinate = busLocation
+        busAnnotation.title = "Bus Test1"
+        busAnnotation.subtitle = "Test bus #1"
+        mapView.addAnnotation(busAnnotation)
+
         mapView.addAnnotation(bus)
         dataStore = DataStore<Bus>.getInstance()
         dataStore.subscribe { (bus, error) in
@@ -41,7 +51,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         }
         
         centerMapOnLocation(initialLocation)
-        mapView.showsUserLocation = true
     }
 
     let regionRadius: CLLocationDistance = 1000
@@ -59,4 +68,5 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
 //        
 //        mapView.setRegion(region, animated: true)
 //    }
+
 }

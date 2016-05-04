@@ -21,10 +21,10 @@
             </objects>
             <point key="canvasLocation" x="81" y="459"/>
         </scene>
-        <!--View Controller-->
+        <!--Login View Controller-->
         <scene sceneID="whu-Wz-NmI">
             <objects>
-                <viewController id="R8F-TW-mR9" customClass="ViewController" customModule="BuSber" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="R8F-TW-mR9" customClass="LoginViewController" customModule="BuSber" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jZN-wN-GBa"/>
                         <viewControllerLayoutGuide type="bottom" id="A3t-co-Lt0"/>
@@ -33,13 +33,36 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tMF-NJ-7LT">
-                                <rect key="frame" x="281" y="285" width="38" height="30"/>
-                                <state key="normal" title="Login"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="EIF-DS-uRL" userLabel="textPassword">
+                                <rect key="frame" x="0.0" y="247" width="600" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                <variation key="heightClass=compact-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="0.0" y="199" width="400" height="30"/>
+                                </variation>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tMF-NJ-7LT">
+                                <rect key="frame" x="0.0" y="285" width="600" height="30"/>
+                                <color key="backgroundColor" red="1" green="0.56027005200892632" blue="0.327293411866588" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                <state key="normal" title="Login">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="181" y="242" width="38" height="30"/>
+                                </variation>
                                 <connections>
                                     <segue destination="e2a-rL-Nqu" kind="show" identifier="login" id="dac-FH-dpV"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="8Ts-jW-une" userLabel="textUsername">
+                                <rect key="frame" x="0.0" y="209" width="600" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <variation key="heightClass=compact-widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="0.0" y="161" width="400" height="30"/>
+                                </variation>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -48,6 +71,10 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="klt-Vh-Hau"/>
+                    <connections>
+                        <outlet property="passTextField" destination="EIF-DS-uRL" id="Hwi-7j-ZHu"/>
+                        <outlet property="userTextField" destination="8Ts-jW-une" id="Pzx-PV-ht7"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Nz-QB-CfF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
