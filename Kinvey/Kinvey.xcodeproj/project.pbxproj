@@ -653,7 +653,6 @@
 		57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
 		57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */; };
 		57FF4F6F1CD02FF7002947FF /* OperationQueueRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6E1CD02FF7002947FF /* OperationQueueRequest.swift */; };
-		5DFED2FAC8C9E4FE240193A0 /* Pods_KinveyTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE20F12EB9612E282F8D6F66 /* Pods_KinveyTests.framework */; };
 		E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9073D001C986D9600475E16 /* CustomEndpoint.swift */; };
 /* End PBXBuildFile section */
 
@@ -787,7 +786,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3827BC0A8D7CED7FA89C8987 /* Pods_Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
 		5711C46C1C74F52F00073806 /* SaveOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperationTest.swift; sourceTree = "<group>"; };
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
@@ -1219,7 +1217,6 @@
 		983B7ABCC963F6FCF509DCA1 /* Pods-Kinvey.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kinvey.release.xcconfig"; path = "Pods/Target Support Files/Pods-Kinvey/Pods-Kinvey.release.xcconfig"; sourceTree = "<group>"; };
 		CEC03840365C4D6B4DD553C4 /* Pods-KinveyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KinveyTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KinveyTests/Pods-KinveyTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D22920114B3458C31D8F1E44 /* Pods-Kinvey.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kinvey.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Kinvey/Pods-Kinvey.debug.xcconfig"; sourceTree = "<group>"; };
-		DE20F12EB9612E282F8D6F66 /* Pods_KinveyTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KinveyTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E54C2170DF70F33369F8A11E /* Pods-KinveyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KinveyTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-KinveyTests/Pods-KinveyTests.release.xcconfig"; sourceTree = "<group>"; };
 		E9073D001C986D9600475E16 /* CustomEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomEndpoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1272,7 +1269,6 @@
 				57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */,
 				5747103A1C7BA29D0096B15F /* PromiseKit.framework in Frameworks */,
 				57BEAE241C987DC400479206 /* KIF.framework in Frameworks */,
-				5DFED2FAC8C9E4FE240193A0 /* Pods_KinveyTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2200,8 +2196,6 @@
 				57BEAE231C987DC400479206 /* KIF.framework */,
 				574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */,
 				574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */,
-				3827BC0A8D7CED7FA89C8987 /* Pods_Kinvey.framework */,
-				DE20F12EB9612E282F8D6F66 /* Pods_KinveyTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
