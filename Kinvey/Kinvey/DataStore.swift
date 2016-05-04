@@ -8,6 +8,10 @@
 
 import Foundation
 
+public enum LiveEventType {
+    case Create, Update, Delete
+}
+
 /// Class to interact with a specific collection in the backend.
 public class DataStore<T: Persistable where T: NSObject> {
     
@@ -262,7 +266,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
     }
 
-    public func subscribe(eventHandler: ((T?, NSError?) -> Void)? = nil)
+    public func subscribe(eventHandler: ((LiveEventType?, T?, NSError?) -> Void)? = nil)
     {
         eventSourceLock.lock()
         eventSource = EventSource(url: "https://91d0823e.ngrok.io/appdata/\(client.appKey!)/\(T.kinveyCollectionName())", headers: [:])
@@ -281,7 +285,8 @@ public class DataStore<T: Persistable where T: NSObject> {
                         let obj = T.fromJson(json) as? T
                     {
                         selfWeak.cache.saveEntity(T.toJson(persistable: obj))
-                        eventHandler?(obj, nil)
+                        let eventType: LiveEventType = op == "create" ? .Create : .Update
+                        eventHandler?(eventType, obj, nil)
                     }
                     break
                 case "delete":
@@ -289,7 +294,7 @@ public class DataStore<T: Persistable where T: NSObject> {
                         let json = selfWeak.cache.findEntity(id),
                         let obj = Operation.fromJson(T.self, json: json) as? T
                     {
-                        eventHandler?(obj, nil)
+                        eventHandler?(.Delete, obj, nil)
                         selfWeak.cache.removeEntity(json)
                     }
                     break
@@ -300,7 +305,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
         eventSource!.onError { [weak self] (error) in
             self?.eventSource = nil
-            eventHandler?(nil, error)
+            eventHandler?(nil, nil, error)
         }
         eventSourceLock.unlock()
     }
