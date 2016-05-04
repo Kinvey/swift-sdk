@@ -16,4 +16,7 @@
    <FileRef
       location = "group:SampleApplications/BuSber/BuSber.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:SampleApplications/BuSber Driver/BuSber Driver.xcodeproj">
+   </FileRef>
 </Workspace>

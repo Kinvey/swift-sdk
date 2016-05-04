@@ -1,0 +1,547 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		579201641CDA41020049DB23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579201631CDA41020049DB23 /* AppDelegate.swift */; };
+		579201661CDA41020049DB23 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579201651CDA41020049DB23 /* ViewController.swift */; };
+		579201691CDA41020049DB23 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 579201671CDA41020049DB23 /* Main.storyboard */; };
+		5792016B1CDA41020049DB23 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5792016A1CDA41020049DB23 /* Assets.xcassets */; };
+		5792016E1CDA41020049DB23 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5792016C1CDA41020049DB23 /* LaunchScreen.storyboard */; };
+		579201791CDA41030049DB23 /* BuSber_DriverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579201781CDA41030049DB23 /* BuSber_DriverTests.swift */; };
+		579201841CDA41030049DB23 /* BuSber_DriverUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579201831CDA41030049DB23 /* BuSber_DriverUITests.swift */; };
+		579201921CDA41270049DB23 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 579201911CDA41270049DB23 /* Kinvey.framework */; };
+		579201951CDA41410049DB23 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 579201911CDA41270049DB23 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		579201971CDA41A80049DB23 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579201961CDA41A80049DB23 /* Bus.swift */; };
+		5792019A1CDA42BA0049DB23 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579201991CDA42BA0049DB23 /* MapViewController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		579201751CDA41020049DB23 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 579201581CDA41020049DB23 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5792015F1CDA41020049DB23;
+			remoteInfo = "BuSber Driver";
+		};
+		579201801CDA41030049DB23 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 579201581CDA41020049DB23 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5792015F1CDA41020049DB23;
+			remoteInfo = "BuSber Driver";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		579201941CDA413E0049DB23 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				579201951CDA41410049DB23 /* Kinvey.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		579201601CDA41020049DB23 /* BuSber Driver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BuSber Driver.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		579201631CDA41020049DB23 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		579201651CDA41020049DB23 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		579201681CDA41020049DB23 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5792016A1CDA41020049DB23 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5792016D1CDA41020049DB23 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		5792016F1CDA41020049DB23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		579201741CDA41020049DB23 /* BuSber DriverTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "BuSber DriverTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		579201781CDA41030049DB23 /* BuSber_DriverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuSber_DriverTests.swift; sourceTree = "<group>"; };
+		5792017A1CDA41030049DB23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5792017F1CDA41030049DB23 /* BuSber DriverUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "BuSber DriverUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		579201831CDA41030049DB23 /* BuSber_DriverUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuSber_DriverUITests.swift; sourceTree = "<group>"; };
+		579201851CDA41030049DB23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		579201911CDA41270049DB23 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-exffrtwipaykqoebrnepayenmrat/Build/Products/Debug-iphonesimulator/Kinvey.framework"; sourceTree = "<group>"; };
+		579201961CDA41A80049DB23 /* Bus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Bus.swift; path = ../../BuSber/BuSber/Bus.swift; sourceTree = "<group>"; };
+		579201981CDA41D80049DB23 /* Around Boston Common.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Around Boston Common.gpx"; sourceTree = "<group>"; };
+		579201991CDA42BA0049DB23 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5792015D1CDA41020049DB23 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				579201921CDA41270049DB23 /* Kinvey.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		579201711CDA41020049DB23 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5792017C1CDA41030049DB23 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		579201571CDA41020049DB23 = {
+			isa = PBXGroup;
+			children = (
+				579201981CDA41D80049DB23 /* Around Boston Common.gpx */,
+				579201621CDA41020049DB23 /* BuSber Driver */,
+				579201771CDA41030049DB23 /* BuSber DriverTests */,
+				579201821CDA41030049DB23 /* BuSber DriverUITests */,
+				579201611CDA41020049DB23 /* Products */,
+				579201931CDA412D0049DB23 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		579201611CDA41020049DB23 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				579201601CDA41020049DB23 /* BuSber Driver.app */,
+				579201741CDA41020049DB23 /* BuSber DriverTests.xctest */,
+				5792017F1CDA41030049DB23 /* BuSber DriverUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		579201621CDA41020049DB23 /* BuSber Driver */ = {
+			isa = PBXGroup;
+			children = (
+				579201631CDA41020049DB23 /* AppDelegate.swift */,
+				579201651CDA41020049DB23 /* ViewController.swift */,
+				579201671CDA41020049DB23 /* Main.storyboard */,
+				5792016A1CDA41020049DB23 /* Assets.xcassets */,
+				5792016C1CDA41020049DB23 /* LaunchScreen.storyboard */,
+				5792016F1CDA41020049DB23 /* Info.plist */,
+				579201961CDA41A80049DB23 /* Bus.swift */,
+				579201991CDA42BA0049DB23 /* MapViewController.swift */,
+			);
+			path = "BuSber Driver";
+			sourceTree = "<group>";
+		};
+		579201771CDA41030049DB23 /* BuSber DriverTests */ = {
+			isa = PBXGroup;
+			children = (
+				579201781CDA41030049DB23 /* BuSber_DriverTests.swift */,
+				5792017A1CDA41030049DB23 /* Info.plist */,
+			);
+			path = "BuSber DriverTests";
+			sourceTree = "<group>";
+		};
+		579201821CDA41030049DB23 /* BuSber DriverUITests */ = {
+			isa = PBXGroup;
+			children = (
+				579201831CDA41030049DB23 /* BuSber_DriverUITests.swift */,
+				579201851CDA41030049DB23 /* Info.plist */,
+			);
+			path = "BuSber DriverUITests";
+			sourceTree = "<group>";
+		};
+		579201931CDA412D0049DB23 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				579201911CDA41270049DB23 /* Kinvey.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5792015F1CDA41020049DB23 /* BuSber Driver */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 579201881CDA41030049DB23 /* Build configuration list for PBXNativeTarget "BuSber Driver" */;
+			buildPhases = (
+				5792015C1CDA41020049DB23 /* Sources */,
+				5792015D1CDA41020049DB23 /* Frameworks */,
+				5792015E1CDA41020049DB23 /* Resources */,
+				579201941CDA413E0049DB23 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "BuSber Driver";
+			productName = "BuSber Driver";
+			productReference = 579201601CDA41020049DB23 /* BuSber Driver.app */;
+			productType = "com.apple.product-type.application";
+		};
+		579201731CDA41020049DB23 /* BuSber DriverTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5792018B1CDA41030049DB23 /* Build configuration list for PBXNativeTarget "BuSber DriverTests" */;
+			buildPhases = (
+				579201701CDA41020049DB23 /* Sources */,
+				579201711CDA41020049DB23 /* Frameworks */,
+				579201721CDA41020049DB23 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				579201761CDA41020049DB23 /* PBXTargetDependency */,
+			);
+			name = "BuSber DriverTests";
+			productName = "BuSber DriverTests";
+			productReference = 579201741CDA41020049DB23 /* BuSber DriverTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		5792017E1CDA41030049DB23 /* BuSber DriverUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5792018E1CDA41030049DB23 /* Build configuration list for PBXNativeTarget "BuSber DriverUITests" */;
+			buildPhases = (
+				5792017B1CDA41030049DB23 /* Sources */,
+				5792017C1CDA41030049DB23 /* Frameworks */,
+				5792017D1CDA41030049DB23 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				579201811CDA41030049DB23 /* PBXTargetDependency */,
+			);
+			name = "BuSber DriverUITests";
+			productName = "BuSber DriverUITests";
+			productReference = 5792017F1CDA41030049DB23 /* BuSber DriverUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		579201581CDA41020049DB23 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = Kinvey;
+				TargetAttributes = {
+					5792015F1CDA41020049DB23 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+					579201731CDA41020049DB23 = {
+						CreatedOnToolsVersion = 7.3;
+						TestTargetID = 5792015F1CDA41020049DB23;
+					};
+					5792017E1CDA41030049DB23 = {
+						CreatedOnToolsVersion = 7.3;
+						TestTargetID = 5792015F1CDA41020049DB23;
+					};
+				};
+			};
+			buildConfigurationList = 5792015B1CDA41020049DB23 /* Build configuration list for PBXProject "BuSber Driver" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 579201571CDA41020049DB23;
+			productRefGroup = 579201611CDA41020049DB23 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5792015F1CDA41020049DB23 /* BuSber Driver */,
+				579201731CDA41020049DB23 /* BuSber DriverTests */,
+				5792017E1CDA41030049DB23 /* BuSber DriverUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5792015E1CDA41020049DB23 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5792016E1CDA41020049DB23 /* LaunchScreen.storyboard in Resources */,
+				5792016B1CDA41020049DB23 /* Assets.xcassets in Resources */,
+				579201691CDA41020049DB23 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		579201721CDA41020049DB23 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5792017D1CDA41030049DB23 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5792015C1CDA41020049DB23 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				579201971CDA41A80049DB23 /* Bus.swift in Sources */,
+				579201661CDA41020049DB23 /* ViewController.swift in Sources */,
+				579201641CDA41020049DB23 /* AppDelegate.swift in Sources */,
+				5792019A1CDA42BA0049DB23 /* MapViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		579201701CDA41020049DB23 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				579201791CDA41030049DB23 /* BuSber_DriverTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5792017B1CDA41030049DB23 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				579201841CDA41030049DB23 /* BuSber_DriverUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		579201761CDA41020049DB23 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5792015F1CDA41020049DB23 /* BuSber Driver */;
+			targetProxy = 579201751CDA41020049DB23 /* PBXContainerItemProxy */;
+		};
+		579201811CDA41030049DB23 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5792015F1CDA41020049DB23 /* BuSber Driver */;
+			targetProxy = 579201801CDA41030049DB23 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		579201671CDA41020049DB23 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				579201681CDA41020049DB23 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		5792016C1CDA41020049DB23 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5792016D1CDA41020049DB23 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		579201861CDA41030049DB23 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		579201871CDA41030049DB23 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		579201891CDA41030049DB23 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "BuSber Driver/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.BuSber-Driver";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		5792018A1CDA41030049DB23 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "BuSber Driver/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.BuSber-Driver";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		5792018C1CDA41030049DB23 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = "BuSber DriverTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.BuSber-DriverTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BuSber Driver.app/BuSber Driver";
+			};
+			name = Debug;
+		};
+		5792018D1CDA41030049DB23 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = "BuSber DriverTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.BuSber-DriverTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BuSber Driver.app/BuSber Driver";
+			};
+			name = Release;
+		};
+		5792018F1CDA41030049DB23 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "BuSber DriverUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.BuSber-DriverUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = "BuSber Driver";
+			};
+			name = Debug;
+		};
+		579201901CDA41030049DB23 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "BuSber DriverUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.BuSber-DriverUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = "BuSber Driver";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5792015B1CDA41020049DB23 /* Build configuration list for PBXProject "BuSber Driver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				579201861CDA41030049DB23 /* Debug */,
+				579201871CDA41030049DB23 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		579201881CDA41030049DB23 /* Build configuration list for PBXNativeTarget "BuSber Driver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				579201891CDA41030049DB23 /* Debug */,
+				5792018A1CDA41030049DB23 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5792018B1CDA41030049DB23 /* Build configuration list for PBXNativeTarget "BuSber DriverTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5792018C1CDA41030049DB23 /* Debug */,
+				5792018D1CDA41030049DB23 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5792018E1CDA41030049DB23 /* Build configuration list for PBXNativeTarget "BuSber DriverUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5792018F1CDA41030049DB23 /* Debug */,
+				579201901CDA41030049DB23 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 579201581CDA41020049DB23 /* Project object */;
+}
