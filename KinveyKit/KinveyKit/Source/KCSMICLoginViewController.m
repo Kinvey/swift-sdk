@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
+#if TARGET_OS_IOS
+
 #import "KCSMICLoginViewController.h"
 @import WebKit;
 #import "KinveyUser+Private.h"
@@ -309,3 +311,5 @@
 }
 
 @end
+
+#endif

@@ -6,6 +6,8 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
+#if !os(watchOS)
+
 import Foundation
 
 /// Reachability helper object. Use to test for existence of connection or changes in connectivity. Note that a `true` isReachable doesn't necessarily mean that the conncetion will succeed, just that it is possible.
@@ -53,3 +55,5 @@ public class Reachability {
     }
     
 }
+
+#endif

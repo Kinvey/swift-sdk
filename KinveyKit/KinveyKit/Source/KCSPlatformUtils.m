@@ -48,7 +48,7 @@
 
 + (BOOL) supportsVendorID
 {
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
     return [[UIDevice currentDevice] respondsToSelector:@selector(identifierForVendor)];
 #else
     return NO;
@@ -73,7 +73,7 @@
 
 + (NSString*) platformString
 {
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
     UIDevice* device = [UIDevice currentDevice];
     return [NSString stringWithFormat:@"%@/%@ %@ %@", device.model, [self platform], device.systemName, device.systemVersion];
 #else

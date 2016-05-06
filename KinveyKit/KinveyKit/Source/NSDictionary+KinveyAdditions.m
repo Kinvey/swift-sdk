@@ -23,7 +23,10 @@
 #import "KCSMutableOrderedDictionary.h"
 #import "KCSObjectMapper.h"
 #import "KCSFile.h"
+
+#if TARGET_OS_IOS
 #import <UIKit/UIKit.h>
+#endif
 
 @interface KCSKinveyRef ()
 
@@ -113,8 +116,10 @@
         return [((KCSKinveyRef*) value) proxyForJson];
     } else if ([value isKindOfClass:[KCSFile class]]) {
         return [((KCSFile*) value) proxyForJson];
+#if TARGET_OS_IOS
     } else if ([value isKindOfClass:[UIImage class]]) {
         return [NSNull null];
+#endif
     } else if ([value isKindOfClass:[NSSet class]]) {
         return [self transformValue:((NSSet*) value).allObjects];
     } else if ([value isKindOfClass:[NSDictionary class]]) {

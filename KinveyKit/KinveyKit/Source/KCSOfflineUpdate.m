@@ -58,9 +58,11 @@
 
 - (void) start
 {
+#if !TARGET_OS_WATCH
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reach:) name:KCSReachabilityChangedNotification object:nil];
+#endif
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userUpdated:) name:KCSActiveUserChangedNotification object:nil];
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE && !TARGET_OS_WATCH
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(foreground:) name:UIApplicationDidBecomeActiveNotification object:nil];
 #endif
     [self drainQueue];
@@ -71,6 +73,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#if !TARGET_OS_WATCH
 - (void)reach:(NSNotification*)note
 {
     KCSReachability* reachability = note.object;
@@ -86,6 +89,7 @@
         [self drainQueue];
     }
 }
+#endif
 
 - (void) userUpdated:(NSNotification*)note
 {
