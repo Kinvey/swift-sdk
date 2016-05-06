@@ -1106,6 +1106,7 @@ NSError* createCacheError(NSString* message)
         }
     } else if ([[error domain] isEqualToString:NSURLErrorDomain]) {
         switch (error.code) {
+#if !TARGET_OS_WATCH
             case kCFURLErrorUnknown:
             case kCFURLErrorTimedOut:
             case kCFURLErrorNotConnectedToInternet:
@@ -1113,6 +1114,7 @@ NSError* createCacheError(NSString* message)
                 KCSLogNetwork(@"Got a network error (%d) on save, adding to queue.");
                 isNetworkError = YES;
                 break;
+#endif
             default:
                 KCSLogNetwork(@"Got a network error (%d) on save, but NOT queueing.", error.code);
         }

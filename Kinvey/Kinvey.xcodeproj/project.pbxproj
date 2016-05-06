@@ -11,253 +11,6 @@
 		5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */; };
 		57162EEF1CB83A2400A3C408 /* KCSClient2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DFC1C7F9414006403CC /* KCSClient2+KCSInternal.m */; };
 		57198FEC1CAF33C700070CDA /* KCSQueryProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		57198FF61CB2D42C00070CDA /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57198FF51CB2D42C00070CDA /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		57198FFD1CB2D42C00070CDA /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57198FF31CB2D42C00070CDA /* Kinvey.framework */; };
-		571990021CB2D42C00070CDA /* Kinvey_OSXTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571990011CB2D42C00070CDA /* Kinvey_OSXTests.swift */; };
-		5719900A1CB2D45000070CDA /* Kinvey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C9B1C178FAC000DF951 /* Kinvey.swift */; };
-		5719900B1CB2D45000070CDA /* EntitySchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C45911C86C13800A41935 /* EntitySchema.swift */; };
-		5719900C1CB2D45000070CDA /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
-		5719900D1CB2D45000070CDA /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */; };
-		5719900E1CB2D45000070CDA /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */; };
-		5719900F1CB2D45000070CDA /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E4DB141C8A26880017B406 /* UserDefaults.swift */; };
-		571990101CB2D45000070CDA /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E4DB181C8A26CA0017B406 /* Keychain.swift */; };
-		571990111CB2D45000070CDA /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C9D1C178FB5000DF951 /* Client.swift */; };
-		571990121CB2D45000070CDA /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C9F1C178FC0000DF951 /* User.swift */; };
-		571990131CB2D45000070CDA /* Acl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27CA11C17910E000DF951 /* Acl.swift */; };
-		571990141CB2D45000070CDA /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27CA31C179118000DF951 /* Metadata.swift */; };
-		571990151CB2D45000070CDA /* DataStoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* DataStoreType.swift */; };
-		571990161CB2D45000070CDA /* ReadPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B21C51545900848748 /* ReadPolicy.swift */; };
-		571990171CB2D45000070CDA /* WritePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912721C5932A700EA4F26 /* WritePolicy.swift */; };
-		571990181CB2D45000070CDA /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* DataStore.swift */; };
-		571990191CB2D45000070CDA /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
-		5719901A1CB2D45000070CDA /* Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A21C17B3FF00578974 /* Query.swift */; };
-		5719901B1CB2D45000070CDA /* Persistable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3A61C17B4F300578974 /* Persistable.swift */; };
-		5719901C1CB2D45000070CDA /* RequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3AE1C18153900578974 /* RequestFactory.swift */; };
-		5719901D1CB2D45000070CDA /* HttpRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B01C18156700578974 /* HttpRequestFactory.swift */; };
-		5719901E1CB2D45000070CDA /* ResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B21C1822B100578974 /* ResponseParser.swift */; };
-		5719901F1CB2D45000070CDA /* JsonResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1C3B41C18253B00578974 /* JsonResponseParser.swift */; };
-		571990201CB2D45000070CDA /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
-		571990211CB2D45000070CDA /* RequestType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B41C51981400848748 /* RequestType.swift */; };
-		571990221CB2D45000070CDA /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C71DC71C3EFBF900B1BEF2 /* Request.swift */; };
-		571990231CB2D45000070CDA /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */; };
-		571990241CB2D45000070CDA /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
-		571990251CB2D45000070CDA /* MultiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA61C7698B30096B15F /* MultiRequest.swift */; };
-		571990261CB2D45000070CDA /* NSURLSessionDownloadTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionDownloadTaskRequest.swift */; };
-		571990271CB2D45000070CDA /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED851C49B9D5006D26A9 /* Response.swift */; };
-		571990281CB2D45000070CDA /* HttpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2ED871C49BADD006D26A9 /* HttpResponse.swift */; };
-		571990291CB2D45000070CDA /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
-		5719902A1CB2D45000070CDA /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
-		5719902B1CB2D45000070CDA /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A41C504AC500848748 /* Cache.swift */; };
-		5719902C1CB2D45000070CDA /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A61C504B0900848748 /* CacheManager.swift */; };
-		5719902D1CB2D45000070CDA /* PendingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7A81C504E7B00848748 /* PendingOperation.swift */; };
-		5719902E1CB2D45000070CDA /* Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7AE1C50539200848748 /* Sync.swift */; };
-		5719902F1CB2D45000070CDA /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B01C50539C00848748 /* SyncManager.swift */; };
-		571990301CB2D45000070CDA /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
-		571990311CB2D45000070CDA /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
-		571990321CB2D45000070CDA /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
-		571990331CB2D45000070CDA /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57757F3D1C652A5600C810E9 /* Reachability.swift */; };
-		571990341CB2D45000070CDA /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155BA1CA21CC200C91B4B /* Migration.swift */; };
-		571990351CB2D45000070CDA /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D643471CAB3C8A00F6D16E /* MemoryCache.swift */; };
-		571990361CB2D45000070CDA /* CustomEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9073D001C986D9600475E16 /* CustomEndpoint.swift */; };
-		571990371CB2D66800070CDA /* ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E4DB101C8A19250017B406 /* ObjC.swift */; };
-		5719903C1CB2D85000070CDA /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
-		5719903D1CB2D85000070CDA /* ReadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA01C76834B0096B15F /* ReadOperation.swift */; };
-		5719903E1CB2D85000070CDA /* WriteOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA21C76847F0096B15F /* WriteOperation.swift */; };
-		5719903F1CB2D85000070CDA /* GetOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA61C729EAF00CDC48F /* GetOperation.swift */; };
-		571990401CB2D85000070CDA /* FindOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA81C729EB900CDC48F /* FindOperation.swift */; };
-		571990411CB2D85000070CDA /* SaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAA1C729EC900CDC48F /* SaveOperation.swift */; };
-		571990421CB2D85000070CDA /* RemoveByQueryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */; };
-		571990431CB2D85000070CDA /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
-		571990441CB2D85000070CDA /* PushOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA41C76926B0096B15F /* PushOperation.swift */; };
-		571990451CB2D85000070CDA /* PurgeOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FAA1C769EF00096B15F /* PurgeOperation.swift */; };
-		571990461CB2D98300070CDA /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
-		571990471CB2D98300070CDA /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
-		571990481CB2D99C00070CDA /* NSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB87E71C62B0F6002BA684 /* NSData.swift */; };
-		571990491CB2D99C00070CDA /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
-		5719904A1CB2D99C00070CDA /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
-		5719904B1CB2DCCA00070CDA /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */; };
-		5719904C1CB2DCCE00070CDA /* MongoDBPredicateAdaptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5719904D1CB2DCE800070CDA /* KCSRealmEntityPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D6A1C7F9414006403CC /* KCSRealmEntityPersistence.m */; };
-		5719904E1CB2DCED00070CDA /* KCSRealmEntityPersistence.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D691C7F9414006403CC /* KCSRealmEntityPersistence.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5719904F1CB2DD5D00070CDA /* KCSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DD51C7F9414006403CC /* KCSReachability.m */; };
-		571990501CB2DD6600070CDA /* KCSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DD41C7F9414006403CC /* KCSReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990511CB2FFF300070CDA /* KCSCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D871C7F9414006403CC /* KCSCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990521CB2FFF900070CDA /* KCSQueryProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990531CB3000000070CDA /* KCSSync.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D881C7F9414006403CC /* KCSSync.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990541CB3000A00070CDA /* KinveyHeaderInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DF21C7F9414006403CC /* KinveyHeaderInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990551CB3003A00070CDA /* KCSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E0D1C7F9414006403CC /* KCSKeychain.m */; };
-		571990561CB3003F00070CDA /* KCSKeychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E0C1C7F9414006403CC /* KCSKeychain.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990571CB3005500070CDA /* KCSClientConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DF71C7F9414006403CC /* KCSClientConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990581CB3005D00070CDA /* KCSRequestConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E1B1C7F9414006403CC /* KCSRequestConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990591CB300FF00070CDA /* KCSClientConfiguration+KCSInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DFD1C7F9414006403CC /* KCSClientConfiguration+KCSInternal.h */; };
-		5719905C1CB3031600070CDA /* KCSClientConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DF81C7F9414006403CC /* KCSClientConfiguration.m */; };
-		5719905D1CB3032500070CDA /* KNVKinvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E4DB221C8A49130017B406 /* KNVKinvey.m */; };
-		5719905E1CB3032B00070CDA /* KNVKinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E4DB211C8A49130017B406 /* KNVKinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5719905F1CB3034900070CDA /* KNVClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A3BF951C8912A900DCD439 /* KNVClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990601CB3034900070CDA /* KNVUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E4DB021C89FE170017B406 /* KNVUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990611CB3034900070CDA /* KNVDataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E4DB251C8A4B6D0017B406 /* KNVDataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990621CB3034900070CDA /* KNVReadPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D1E75D1C7D21720009834A /* KNVReadPolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990631CB3034900070CDA /* KNVError.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D643431CAAFA7C00F6D16E /* KNVError.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990641CB3035500070CDA /* KNVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 57A3BF961C8912A900DCD439 /* KNVClient.m */; };
-		571990651CB3035500070CDA /* KNVUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E4DB031C89FE170017B406 /* KNVUser.m */; };
-		571990661CB3035500070CDA /* KNVDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E4DB261C8A4B6D0017B406 /* KNVDataStore.m */; };
-		571990671CB3035500070CDA /* KNVError.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D643441CAAFA7C00F6D16E /* KNVError.m */; };
-		571990681CB3035A00070CDA /* KNVWritePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57E4DB291C8A5B620017B406 /* KNVWritePolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990691CB3035F00070CDA /* KinveyInternal-Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 572C45931C86C29300A41935 /* KinveyInternal-Swift.h */; };
-		5719906A1CB3037000070CDA /* KCSAclRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D6C1C7F9414006403CC /* KCSAclRealm.m */; };
-		5719906B1CB3037300070CDA /* KCSAclRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D6B1C7F9414006403CC /* KCSAclRealm.h */; };
-		5719906C1CB3037700070CDA /* KCSFileRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D6D1C7F9414006403CC /* KCSFileRealm.h */; };
-		5719906D1CB3037A00070CDA /* KCSFileRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D6E1C7F9414006403CC /* KCSFileRealm.m */; };
-		5719906E1CB3038E00070CDA /* KCSClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DD31C7F9414006403CC /* KCSClient.m */; };
-		5719906F1CB3039200070CDA /* KCSClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DD21C7F9414006403CC /* KCSClient.h */; };
-		571990701CB3039D00070CDA /* KinveyUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DC71C7F9414006403CC /* KinveyUser.m */; };
-		571990711CB303AA00070CDA /* KinveyUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DC51C7F9414006403CC /* KinveyUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990721CB303AF00070CDA /* KinveyUser+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DC61C7F9414006403CC /* KinveyUser+Private.h */; };
-		571990731CB303B700070CDA /* KCSUserActionResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DC41C7F9414006403CC /* KCSUserActionResult.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990741CB3051300070CDA /* KCSAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D961C7F9414006403CC /* KCSAppdataStore.m */; };
-		571990751CB3051900070CDA /* KCSAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D951C7F9414006403CC /* KCSAppdataStore.h */; };
-		571990761CB3052800070CDA /* KCSBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E091C7F9414006403CC /* KCSBase64.m */; };
-		571990771CB3052C00070CDA /* KCSBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E081C7F9414006403CC /* KCSBase64.h */; };
-		571990781CB3053700070CDA /* DataStoreOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D981C7F9414006403CC /* DataStoreOperation.m */; };
-		571990791CB3053A00070CDA /* DataStoreOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D971C7F9414006403CC /* DataStoreOperation.h */; };
-		5719907A1CB3054600070CDA /* KCSBackgroundAppdataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D9A1C7F9414006403CC /* KCSBackgroundAppdataStore.m */; };
-		5719907B1CB3054900070CDA /* KCSBackgroundAppdataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D991C7F9414006403CC /* KCSBackgroundAppdataStore.h */; };
-		5719907C1CB3055400070CDA /* KCSHttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E211C7F9414006403CC /* KCSHttpRequest.m */; };
-		5719907D1CB3055700070CDA /* KCSHttpRequest+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E201C7F9414006403CC /* KCSHttpRequest+Private.h */; };
-		5719907E1CB3055A00070CDA /* KCSHttpRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E1F1C7F9414006403CC /* KCSHttpRequest.h */; };
-		5719907F1CB3056700070CDA /* KCSCachedStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D9C1C7F9414006403CC /* KCSCachedStore.m */; };
-		571990801CB3056A00070CDA /* KCSCachedStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D9B1C7F9414006403CC /* KCSCachedStore.h */; };
-		571990811CB3057700070CDA /* KCSClient+KinveyDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E491C7F9414006403CC /* KCSClient+KinveyDataStore.m */; };
-		571990821CB3057A00070CDA /* KCSClient+KinveyDataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E481C7F9414006403CC /* KCSClient+KinveyDataStore.h */; };
-		571990831CB3058A00070CDA /* KCSClient2.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DF61C7F9414006403CC /* KCSClient2.m */; };
-		571990841CB3058D00070CDA /* KCSClient2.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DF51C7F9414006403CC /* KCSClient2.h */; };
-		571990851CB305B000070CDA /* KinveyCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DB01C7F9414006403CC /* KinveyCollection.m */; };
-		571990861CB305B600070CDA /* KinveyCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAF1C7F9414006403CC /* KinveyCollection.h */; };
-		571990871CB305C400070CDA /* KCSDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E441C7F9414006403CC /* KCSDataStore.m */; };
-		571990881CB305C800070CDA /* KCSDataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E431C7F9414006403CC /* KCSDataStore.h */; };
-		571990891CB305D400070CDA /* KCSFileStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DC21C7F9414006403CC /* KCSFileStore.m */; };
-		5719908A1CB305D800070CDA /* KCSFileStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DC11C7F9414006403CC /* KCSFileStore.h */; };
-		5719908B1CB305E300070CDA /* KCSDataStoreOperationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DDE1C7F9414006403CC /* KCSDataStoreOperationRequest.m */; };
-		5719908C1CB305E600070CDA /* KCSDataStoreOperationRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DDD1C7F9414006403CC /* KCSDataStoreOperationRequest.h */; };
-		5719908D1CB305F200070CDA /* KCSErrorUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DE91C7F9414006403CC /* KCSErrorUtilities.m */; };
-		5719908E1CB305F500070CDA /* KCSErrorUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DE81C7F9414006403CC /* KCSErrorUtilities.h */; };
-		5719908F1CB305FE00070CDA /* KCSFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DBE1C7F9414006403CC /* KCSFile.m */; };
-		571990901CB3060100070CDA /* KCSFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DBD1C7F9414006403CC /* KCSFile.h */; };
-		571990911CB3061300070CDA /* KCSImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DBF1C7F9414006403CC /* KCSImageUtils.h */; };
-		571990921CB3063C00070CDA /* KCSImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DC01C7F9414006403CC /* KCSImageUtils.m */; };
-		571990931CB314B000070CDA /* KCSFileRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DE01C7F9414006403CC /* KCSFileRequest.m */; };
-		571990941CB314B400070CDA /* KCSFileRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DDF1C7F9414006403CC /* KCSFileRequest.h */; };
-		571990951CB314BE00070CDA /* KCSFileRequestManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E601C7F9414006403CC /* KCSFileRequestManager.m */; };
-		571990961CB314C300070CDA /* KCSFileRequestManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E5F1C7F9414006403CC /* KCSFileRequestManager.h */; };
-		571990971CB314CF00070CDA /* KCSFileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E071C7F9414006403CC /* KCSFileUtils.m */; };
-		571990981CB314D300070CDA /* KCSFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E061C7F9414006403CC /* KCSFileUtils.h */; };
-		571990991CB314DF00070CDA /* KCSGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DA81C7F9414006403CC /* KCSGroup.m */; };
-		5719909A1CB314E300070CDA /* KCSGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DA71C7F9414006403CC /* KCSGroup.h */; };
-		5719909B1CB314EE00070CDA /* KCSLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E031C7F9414006403CC /* KCSLogFormatter.m */; };
-		5719909C1CB314F100070CDA /* KCSLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E021C7F9414006403CC /* KCSLogFormatter.h */; };
-		5719909D1CB314FC00070CDA /* KCSLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DEC1C7F9414006403CC /* KCSLogManager.m */; };
-		5719909E1CB314FF00070CDA /* KCSLogManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DEB1C7F9414006403CC /* KCSLogManager.h */; };
-		5719909F1CB3150F00070CDA /* KCSMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DBB1C7F9414006403CC /* KCSMetadata.m */; };
-		571990A01CB3151200070CDA /* KCSMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DBA1C7F9414006403CC /* KCSMetadata.h */; };
-		571990A11CB3151D00070CDA /* KCSMetadataRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D701C7F9414006403CC /* KCSMetadataRealm.m */; };
-		571990A21CB3152100070CDA /* KCSMetadataRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D6F1C7F9414006403CC /* KCSMetadataRealm.h */; };
-		571990A31CB3152D00070CDA /* KCSMockRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E2B1C7F9414006403CC /* KCSMockRequestOperation.m */; };
-		571990A41CB3153000070CDA /* KCSMockRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E2A1C7F9414006403CC /* KCSMockRequestOperation.h */; };
-		571990A51CB3154100070CDA /* KCSMockServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E2D1C7F9414006403CC /* KCSMockServer.m */; };
-		571990A61CB3154400070CDA /* KCSMockServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E2C1C7F9414006403CC /* KCSMockServer.h */; };
-		571990A71CB3156600070CDA /* KCSMutipleRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DDC1C7F9414006403CC /* KCSMutipleRequest.m */; };
-		571990A81CB3156800070CDA /* KCSMultipleRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DDB1C7F9414006403CC /* KCSMultipleRequest.h */; };
-		571990A91CB3157A00070CDA /* KCSNSURLCxnFileOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E631C7F9414006403CC /* KCSNSURLCxnFileOperation.m */; };
-		571990AA1CB3157C00070CDA /* KCSNSURLCxnFileOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E621C7F9414006403CC /* KCSNSURLCxnFileOperation.h */; };
-		571990AB1CB3158800070CDA /* KCSNSURLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E271C7F9414006403CC /* KCSNSURLRequestOperation.m */; };
-		571990AC1CB3158D00070CDA /* KCSNSURLRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E261C7F9414006403CC /* KCSNSURLRequestOperation.h */; };
-		571990AD1CB3159A00070CDA /* KCSNSURLSessionFileOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E651C7F9414006403CC /* KCSNSURLSessionFileOperation.m */; };
-		571990AE1CB3159D00070CDA /* KCSNSURLSessionFileOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E641C7F9414006403CC /* KCSNSURLSessionFileOperation.h */; };
-		571990AF1CB315AD00070CDA /* KCSNSURLSessionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E291C7F9414006403CC /* KCSNSURLSessionOperation.m */; };
-		571990B01CB315B100070CDA /* KCSNSURLSessionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E281C7F9414006403CC /* KCSNSURLSessionOperation.h */; };
-		571990B11CB315BD00070CDA /* KCSNetworkObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E2F1C7F9414006403CC /* KCSNetworkObserver.m */; };
-		571990B21CB315C000070CDA /* KCSNetworkObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E2E1C7F9414006403CC /* KCSNetworkObserver.h */; };
-		571990B31CB315CB00070CDA /* KCSNetworkResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E251C7F9414006403CC /* KCSNetworkResponse.m */; };
-		571990B41CB315CE00070CDA /* KCSNetworkResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E241C7F9414006403CC /* KCSNetworkResponse.h */; };
-		571990B51CB315DA00070CDA /* KCSObjcRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D721C7F9414006403CC /* KCSObjcRuntime.m */; };
-		571990B61CB315DD00070CDA /* KCSObjcRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D711C7F9414006403CC /* KCSObjcRuntime.h */; };
-		571990B71CB315FC00070CDA /* KCSObjectCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E511C7F9414006403CC /* KCSObjectCache.m */; };
-		571990B81CB315FF00070CDA /* KCSObjectCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E501C7F9414006403CC /* KCSObjectCache.h */; };
-		571990B91CB3160B00070CDA /* KCSDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E571C7F9414006403CC /* KCSDataModel.m */; };
-		571990BA1CB3160E00070CDA /* KCSDataModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E561C7F9414006403CC /* KCSDataModel.h */; };
-		571990BB1CB3161900070CDA /* KCSEntityPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E4F1C7F9414006403CC /* KCSEntityPersistence.m */; };
-		571990BC1CB3161C00070CDA /* KCSEntityPersistence.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E4E1C7F9414006403CC /* KCSEntityPersistence.h */; };
-		571990BD1CB3162E00070CDA /* KCSDBTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E0B1C7F9414006403CC /* KCSDBTools.m */; };
-		571990BE1CB3163000070CDA /* KCSDBTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E0A1C7F9414006403CC /* KCSDBTools.h */; };
-		571990BF1CB3163C00070CDA /* KCSMutableOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E331C7F9414006403CC /* KCSMutableOrderedDictionary.m */; };
-		571990C01CB3163E00070CDA /* KCSMutableOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E321C7F9414006403CC /* KCSMutableOrderedDictionary.h */; };
-		571990C11CB3164900070CDA /* KCSObjectMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DB71C7F9414006403CC /* KCSObjectMapper.m */; };
-		571990C21CB3164C00070CDA /* KCSObjectMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DB61C7F9414006403CC /* KCSObjectMapper.h */; };
-		571990C31CB3168500070CDA /* KCSBuilders.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DB91C7F9414006403CC /* KCSBuilders.m */; };
-		571990C41CB3168800070CDA /* KCSBuilders.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DB81C7F9414006403CC /* KCSBuilders.h */; };
-		571990C51CB3169D00070CDA /* KCSOfflineUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E531C7F9414006403CC /* KCSOfflineUpdate.m */; };
-		571990C61CB316A100070CDA /* KCSOfflineUpdate.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E521C7F9414006403CC /* KCSOfflineUpdate.h */; };
-		571990C71CB316E100070CDA /* KCSPendingOperationRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D741C7F9414006403CC /* KCSPendingOperationRealm.m */; };
-		571990C81CB316E800070CDA /* KCSPendingOperationRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D731C7F9414006403CC /* KCSPendingOperationRealm.h */; };
-		571990C91CB316FC00070CDA /* KCSPersistableDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E551C7F9414006403CC /* KCSPersistableDescription.m */; };
-		571990CA1CB316FF00070CDA /* KCSPersistableDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E541C7F9414006403CC /* KCSPersistableDescription.h */; };
-		571990CB1CB3170900070CDA /* KCSPlatformUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E051C7F9414006403CC /* KCSPlatformUtils.m */; };
-		571990CC1CB3170B00070CDA /* KCSPlatformUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E041C7F9414006403CC /* KCSPlatformUtils.h */; };
-		571990CD1CB3171700070CDA /* KCSPropertyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E591C7F9414006403CC /* KCSPropertyUtil.m */; };
-		571990CE1CB3171B00070CDA /* KCSPropertyUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E581C7F9414006403CC /* KCSPropertyUtil.h */; };
-		571990CF1CB3172800070CDA /* KCSQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DA41C7F9414006403CC /* KCSQuery.m */; };
-		571990D01CB3172B00070CDA /* KCSQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DA31C7F9414006403CC /* KCSQuery.h */; };
-		571990D11CB3173400070CDA /* KCSQuery2.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E461C7F9414006403CC /* KCSQuery2.m */; };
-		571990D21CB3173700070CDA /* KCSQuery2.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E451C7F9414006403CC /* KCSQuery2.h */; };
-		571990D31CB3174100070CDA /* KCSQueryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D761C7F9414006403CC /* KCSQueryAdapter.m */; };
-		571990D41CB3174400070CDA /* KCSQueryAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D751C7F9414006403CC /* KCSQueryAdapter.h */; };
-		571990D51CB3174E00070CDA /* KCSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DDA1C7F9414006403CC /* KCSRequest.m */; };
-		571990D61CB3175100070CDA /* KCSRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DD81C7F9414006403CC /* KCSRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		571990D71CB3175400070CDA /* KCSRequest+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DD91C7F9414006403CC /* KCSRequest+Private.h */; };
-		571990D81CB3176200070CDA /* KCSSaveGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DA01C7F9414006403CC /* KCSSaveGraph.m */; };
-		571990D91CB3176500070CDA /* KCSSaveGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D9F1C7F9414006403CC /* KCSSaveGraph.h */; };
-		571990DA1CB3176E00070CDA /* KCSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E1E1C7F9414006403CC /* KCSURLProtocol.m */; };
-		571990DB1CB3177100070CDA /* KCSURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E1D1C7F9414006403CC /* KCSURLProtocol.h */; };
-		571990DC1CB3177B00070CDA /* KCSUser2.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E3D1C7F9414006403CC /* KCSUser2.m */; };
-		571990DD1CB3177E00070CDA /* KCSUser2.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E3C1C7F9414006403CC /* KCSUser2.h */; };
-		571990DE1CB3178800070CDA /* KCSUserRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D781C7F9414006403CC /* KCSUserRealm.m */; };
-		571990DF1CB3178B00070CDA /* KCSUserRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D771C7F9414006403CC /* KCSUserRealm.h */; };
-		571990E01CB3179500070CDA /* KCS_CLLocation_Realm.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D7A1C7F9414006403CC /* KCS_CLLocation_Realm.m */; };
-		571990E11CB3179700070CDA /* KCS_CLLocation_Realm.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D791C7F9414006403CC /* KCS_CLLocation_Realm.h */; };
-		571990E21CB317A400070CDA /* KCS_CLLocation_Realm_ValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D7C1C7F9414006403CC /* KCS_CLLocation_Realm_ValueTransformer.m */; };
-		571990E31CB317A700070CDA /* KCS_CLLocation_Realm_ValueTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D7B1C7F9414006403CC /* KCS_CLLocation_Realm_ValueTransformer.h */; };
-		571990E41CB317B900070CDA /* KCS_DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D411C7F9414006403CC /* KCS_DDASLLogger.m */; };
-		571990E51CB317BC00070CDA /* KCS_DDASLLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D401C7F9414006403CC /* KCS_DDASLLogger.h */; };
-		571990E61CB317C900070CDA /* KCS_DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D3F1C7F9414006403CC /* KCS_DDAbstractDatabaseLogger.m */; };
-		571990E71CB317CC00070CDA /* KCS_DDAbstractDatabaseLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D3E1C7F9414006403CC /* KCS_DDAbstractDatabaseLogger.h */; };
-		571990E81CB317E000070CDA /* KCS_DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D451C7F9414006403CC /* KCS_DDLog.m */; };
-		571990E91CB317E300070CDA /* KCS_DDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D441C7F9414006403CC /* KCS_DDLog.h */; };
-		571990EA1CB317EE00070CDA /* KCS_DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D471C7F9414006403CC /* KCS_DDTTYLogger.m */; };
-		571990EB1CB317F000070CDA /* KCS_DDTTYLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D461C7F9414006403CC /* KCS_DDTTYLogger.h */; };
-		571990EC1CB317FC00070CDA /* KCS_FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D581C7F9414006403CC /* KCS_FMDatabaseQueue.m */; };
-		571990ED1CB317FF00070CDA /* KCS_FMDatabaseQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D571C7F9414006403CC /* KCS_FMDatabaseQueue.h */; };
-		571990EE1CB3180900070CDA /* KCS_FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D501C7F9414006403CC /* KCS_FMDatabase.m */; };
-		571990EF1CB3180B00070CDA /* KCS_FMDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D4F1C7F9414006403CC /* KCS_FMDatabase.h */; };
-		571990F01CB3181500070CDA /* KCS_FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D541C7F9414006403CC /* KCS_FMResultSet.m */; };
-		571990F11CB3181900070CDA /* KCS_FMResultSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D531C7F9414006403CC /* KCS_FMResultSet.h */; };
-		571990F21CB3182300070CDA /* KCS_KSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D5B1C7F9414006403CC /* KCS_KSReachability.m */; };
-		571990F31CB3182600070CDA /* KCS_KSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D5A1C7F9414006403CC /* KCS_KSReachability.h */; };
-		571990F41CB3183500070CDA /* KCS_NSArray_CLLocation_NSValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D7E1C7F9414006403CC /* KCS_NSArray_CLLocation_NSValueTransformer.m */; };
-		571990F51CB3183800070CDA /* KCS_NSArray_CLLocation_NSValueTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D7D1C7F9414006403CC /* KCS_NSArray_CLLocation_NSValueTransformer.h */; };
-		571990F61CB3184300070CDA /* CLLocation+Kinvey.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E711C7F9414006403CC /* CLLocation+Kinvey.m */; };
-		571990F71CB3184600070CDA /* CLLocation+Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E701C7F9414006403CC /* CLLocation+Kinvey.h */; };
-		571990F81CB3185200070CDA /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D801C7F9414006403CC /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m */; };
-		571990F91CB3185600070CDA /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D7F1C7F9414006403CC /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.h */; };
-		571990FA1CB3186000070CDA /* KCS_NSString_NSDate_NSValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D821C7F9414006403CC /* KCS_NSString_NSDate_NSValueTransformer.m */; };
-		571990FB1CB3186300070CDA /* KCS_NSString_NSDate_NSValueTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D811C7F9414006403CC /* KCS_NSString_NSDate_NSValueTransformer.h */; };
-		571990FC1CB3186F00070CDA /* KCS_NSURL_NSString_NSValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D841C7F9414006403CC /* KCS_NSURL_NSString_NSValueTransformer.m */; };
-		571990FD1CB3187100070CDA /* KCS_NSURL_NSString_NSValueTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D831C7F9414006403CC /* KCS_NSURL_NSString_NSValueTransformer.h */; };
-		571990FE1CB3187C00070CDA /* KCSUser2+KinveyUserService.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E401C7F9414006403CC /* KCSUser2+KinveyUserService.m */; };
-		571990FF1CB3187F00070CDA /* KCSUser2+KinveyUserService+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E3F1C7F9414006403CC /* KCSUser2+KinveyUserService+Private.h */; };
-		571991001CB3188300070CDA /* KCSUser2+KinveyUserService.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E3E1C7F9414006403CC /* KCSUser2+KinveyUserService.h */; };
-		571991011CB3195D00070CDA /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DAB1C7F9414006403CC /* KCSPush.m */; };
-		571991021CB3196000070CDA /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAA1C7F9414006403CC /* KCSPush.h */; };
-		571991041CB31DE700070CDA /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 571991031CB31DE700070CDA /* libsqlite3.tbd */; };
 		571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */; };
 		571991091CB45EEE00070CDA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
@@ -269,7 +22,6 @@
 		572C45921C86C13800A41935 /* EntitySchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C45911C86C13800A41935 /* EntitySchema.swift */; };
 		572C45951C86C29300A41935 /* KinveyInternal-Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 572C45931C86C29300A41935 /* KinveyInternal-Swift.h */; };
 		573150981CBD8D910022A05C /* QueryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573150971CBD8D910022A05C /* QueryTest.swift */; };
-		5737721B1CB58AA100EDE2BB /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; };
 		57379DA51C72AAA900E240E9 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
 		573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
@@ -279,20 +31,16 @@
 		57470FA51C76926B0096B15F /* PushOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA41C76926B0096B15F /* PushOperation.swift */; };
 		57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA61C7698B30096B15F /* MultiRequest.swift */; };
 		57470FAB1C769EF00096B15F /* PurgeOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FAA1C769EF00096B15F /* PurgeOperation.swift */; };
-		574710381C7BA29C0096B15F /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; };
 		5747103A1C7BA29D0096B15F /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
-		5747103C1C7BA2CB0096B15F /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5747103E1C7BA2CC0096B15F /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57471A301CCAED1600628933 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
 		574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* DataStoreType.swift */; };
 		574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912721C5932A700EA4F26 /* WritePolicy.swift */; };
 		574B0F751C6E7E0E00CDC48F /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
-		574B0F791C6E7FAA00CDC48F /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; };
 		574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA61C729EAF00CDC48F /* GetOperation.swift */; };
 		574B0FA91C729EB900CDC48F /* FindOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA81C729EB900CDC48F /* FindOperation.swift */; };
 		574B0FAB1C729EC900CDC48F /* SaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAA1C729EC900CDC48F /* SaveOperation.swift */; };
 		574B0FAD1C729F3300CDC48F /* RemoveByQueryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */; };
-		574EB8BA1C91FCE900238D2D /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		575772861C4728E5001D56F5 /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
 		5759854E1CC833930054DF08 /* LongData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5759854D1CC833930054DF08 /* LongData.swift */; };
 		575985501CC834FE0054DF08 /* MedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5759854F1CC834FE0054DF08 /* MedData.swift */; };
@@ -304,9 +52,7 @@
 		5765B8511C9771BC00080FFA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5765B84F1C9771BC00080FFA /* LaunchScreen.storyboard */; };
 		5765B8641C97751000080FFA /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		576A1D361CCA92CA006B261E /* DataTypeTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576A1D351CCA92CA006B261E /* DataTypeTestCase.swift */; };
-		576E2D551CC15A2E00F3E30F /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		576E2D561CC15A2E00F3E30F /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		576E2D571CC15A2E00F3E30F /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		576E2D581CC15A2E00F3E30F /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* DataStore.swift */; };
 		577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
@@ -339,7 +85,6 @@
 		57A4658D1CC02AE3009E7384 /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
 		57A4658E1CC02AE6009E7384 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		57A4658F1CC02AEF009E7384 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
-		57A465911CC02E53009E7384 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; };
 		57A465921CC030AF009E7384 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9609C1CC6D675005E52A8 /* DirectoryEntry.swift */; };
 		57A9609F1CC6D6A9005E52A8 /* RefProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9609E1CC6D6A9005E52A8 /* RefProject.swift */; };
@@ -558,8 +303,6 @@
 		57B23FF71C800F40006403CC /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D931C7F9414006403CC /* KCSStore.h */; };
 		57B23FF81C800F43006403CC /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D941C7F9414006403CC /* KCSStore.m */; };
 		57B23FF91C80C4D9006403CC /* KCSCacheUpdatePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DA11C7F9414006403CC /* KCSCacheUpdatePolicy.h */; };
-		57B7391F1C9776B7000FEA7C /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57B739201C9776B8000FEA7C /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57B739211C9776BA000FEA7C /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
@@ -583,30 +326,24 @@
 		57D643021CA3268000F6D16E /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		57D643041CA3268000F6D16E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57D643051CA3268000F6D16E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
-		57D643061CA3268000F6D16E /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; };
 		57D643071CA3268000F6D16E /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57D643081CA3268000F6D16E /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
 		57D643091CA3268000F6D16E /* KIF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; };
 		57D6430B1CA3268000F6D16E /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
 		57D6430D1CA3268000F6D16E /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57D6430E1CA3268000F6D16E /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D6430F1CA3268000F6D16E /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57D643101CA3268000F6D16E /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D6431D1CA3268600F6D16E /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
 		57D643201CA3268600F6D16E /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57D643261CA3268600F6D16E /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
 		57D643291CA3268600F6D16E /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		57D6432B1CA3268600F6D16E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
-		57D6432D1CA3268600F6D16E /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; };
 		57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57D6432F1CA3268600F6D16E /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
 		57D643301CA3268600F6D16E /* KIF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; };
 		57D643321CA3268600F6D16E /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
 		57D643341CA3268600F6D16E /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57D643351CA3268600F6D16E /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D643361CA3268600F6D16E /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57D643371CA3268600F6D16E /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574EB8B91C91FCE400238D2D /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D6433E1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */; };
 		57D6433F1CA328F800F6D16E /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		57D643401CA328F800F6D16E /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -646,8 +383,6 @@
 		57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */; };
 		57F717BD1CAF165500DD7750 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DAB1C7F9414006403CC /* KCSPush.m */; };
 		57F717BE1CAF165800DD7750 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAA1C7F9414006403CC /* KCSPush.h */; };
-		57FAC66D1CB820990042FDB3 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5719903A1CB2D82A00070CDA /* PromiseKit.framework */; };
-		57FAC66E1CB820A30042FDB3 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 571990381CB2D69500070CDA /* Realm.framework */; };
 		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
 		57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */; };
@@ -656,13 +391,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		57198FFE1CB2D42C00070CDA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 57198FF21CB2D42C00070CDA;
-			remoteInfo = "Kinvey-OSX";
-		};
 		57A27C8D1C178F18000DF951 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
@@ -723,9 +451,7 @@
 			files = (
 				57D386A31CC19D7C0014050D /* Kinvey.framework in CopyFiles */,
 				57BEAE251C987DCA00479206 /* KIF.framework in CopyFiles */,
-				5747103C1C7BA2CB0096B15F /* KeychainAccess.framework in CopyFiles */,
 				5747103E1C7BA2CC0096B15F /* PromiseKit.framework in CopyFiles */,
-				574EB8BA1C91FCE900238D2D /* Realm.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -736,9 +462,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				57D386A21CC19D0C0014050D /* Kinvey.framework in CopyFiles */,
-				576E2D551CC15A2E00F3E30F /* Realm.framework in CopyFiles */,
 				576E2D561CC15A2E00F3E30F /* KIF.framework in CopyFiles */,
-				576E2D571CC15A2E00F3E30F /* KeychainAccess.framework in CopyFiles */,
 				576E2D581CC15A2E00F3E30F /* PromiseKit.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -750,8 +474,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5745DC821C97904400E7E764 /* Kinvey.framework in CopyFiles */,
-				57B7391F1C9776B7000FEA7C /* Realm.framework in CopyFiles */,
-				57B739201C9776B8000FEA7C /* KeychainAccess.framework in CopyFiles */,
 				57B739211C9776BA000FEA7C /* PromiseKit.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -763,9 +485,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				57D6430D1CA3268000F6D16E /* KIF.framework in CopyFiles */,
-				57D6430E1CA3268000F6D16E /* KeychainAccess.framework in CopyFiles */,
 				57D6430F1CA3268000F6D16E /* PromiseKit.framework in CopyFiles */,
-				57D643101CA3268000F6D16E /* Realm.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -776,9 +496,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				57D643341CA3268600F6D16E /* KIF.framework in CopyFiles */,
-				57D643351CA3268600F6D16E /* KeychainAccess.framework in CopyFiles */,
 				57D643361CA3268600F6D16E /* PromiseKit.framework in CopyFiles */,
-				57D643371CA3268600F6D16E /* Realm.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -790,13 +508,6 @@
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
 		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
 		57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryProtocol.h; sourceTree = "<group>"; };
-		57198FF31CB2D42C00070CDA /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		57198FF51CB2D42C00070CDA /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
-		57198FF71CB2D42C00070CDA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		57198FFC1CB2D42C00070CDA /* Kinvey-OSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Kinvey-OSXTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		571990011CB2D42C00070CDA /* Kinvey_OSXTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kinvey_OSXTests.swift; sourceTree = "<group>"; };
-		571990031CB2D42C00070CDA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		571990381CB2D69500070CDA /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/Mac/Realm.framework; sourceTree = "<group>"; };
 		5719903A1CB2D82A00070CDA /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/Mac/PromiseKit.framework; sourceTree = "<group>"; };
 		5719905A1CB301D500070CDA /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		571991031CB31DE700070CDA /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
@@ -823,12 +534,10 @@
 		574912701C59323B00EA4F26 /* DataStoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreType.swift; sourceTree = "<group>"; };
 		574912721C5932A700EA4F26 /* WritePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WritePolicy.swift; sourceTree = "<group>"; };
 		574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
-		574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
 		574B0FA61C729EAF00CDC48F /* GetOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperation.swift; sourceTree = "<group>"; };
 		574B0FA81C729EB900CDC48F /* FindOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperation.swift; sourceTree = "<group>"; };
 		574B0FAA1C729EC900CDC48F /* SaveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperation.swift; sourceTree = "<group>"; };
 		574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByQueryOperation.swift; sourceTree = "<group>"; };
-		574EB8B91C91FCE400238D2D /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncStoreTests.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
 		5759854D1CC833930054DF08 /* LongData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LongData.swift; sourceTree = "<group>"; };
@@ -884,6 +593,7 @@
 		57A960A31CC8278E005E52A8 /* PerformanceTestLongData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestLongData.swift; sourceTree = "<group>"; };
 		57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestMedData.swift; sourceTree = "<group>"; };
 		57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestData.swift; sourceTree = "<group>"; };
+		57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Kinvey.xcconfig; sourceTree = "<group>"; };
 		57B0E94F1C5FF52200BA984F /* Push.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Push.swift; sourceTree = "<group>"; };
 		57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongoDBPredicateAdaptor.h; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"; sourceTree = SOURCE_ROOT; };
 		57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MongoDBPredicateAdaptor.m; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.m"; sourceTree = SOURCE_ROOT; };
@@ -1216,24 +926,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		57198FEF1CB2D42C00070CDA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				571991041CB31DE700070CDA /* libsqlite3.tbd in Frameworks */,
-				57FAC66E1CB820A30042FDB3 /* Realm.framework in Frameworks */,
-				57FAC66D1CB820990042FDB3 /* PromiseKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		57198FF91CB2D42C00070CDA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				57198FFD1CB2D42C00070CDA /* Kinvey.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		5765B8411C9771BC00080FFA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1247,9 +939,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */,
-				5737721B1CB58AA100EDE2BB /* Realm.framework in Frameworks */,
 				574B0F751C6E7E0E00CDC48F /* PromiseKit.framework in Frameworks */,
-				574B0F791C6E7FAA00CDC48F /* KeychainAccess.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1259,7 +949,6 @@
 			files = (
 				57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */,
 				57BEAE2D1C98805600479206 /* CoreGraphics.framework in Frameworks */,
-				574710381C7BA29C0096B15F /* KeychainAccess.framework in Frameworks */,
 				57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */,
 				5747103A1C7BA29D0096B15F /* PromiseKit.framework in Frameworks */,
 				57BEAE241C987DC400479206 /* KIF.framework in Frameworks */,
@@ -1271,7 +960,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				57A465921CC030AF009E7384 /* Kinvey.framework in Frameworks */,
-				57A465911CC02E53009E7384 /* Realm.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1281,7 +969,6 @@
 			files = (
 				57D643041CA3268000F6D16E /* QuartzCore.framework in Frameworks */,
 				57D643051CA3268000F6D16E /* CoreGraphics.framework in Frameworks */,
-				57D643061CA3268000F6D16E /* KeychainAccess.framework in Frameworks */,
 				57D643071CA3268000F6D16E /* Kinvey.framework in Frameworks */,
 				57D643081CA3268000F6D16E /* PromiseKit.framework in Frameworks */,
 				57D643091CA3268000F6D16E /* KIF.framework in Frameworks */,
@@ -1294,7 +981,6 @@
 			files = (
 				57D6432B1CA3268600F6D16E /* QuartzCore.framework in Frameworks */,
 				57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */,
-				57D6432D1CA3268600F6D16E /* KeychainAccess.framework in Frameworks */,
 				57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */,
 				57D6432F1CA3268600F6D16E /* PromiseKit.framework in Frameworks */,
 				57D643301CA3268600F6D16E /* KIF.framework in Frameworks */,
@@ -1304,24 +990,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		57198FF41CB2D42C00070CDA /* Kinvey-OSX */ = {
-			isa = PBXGroup;
-			children = (
-				57198FF51CB2D42C00070CDA /* Kinvey.h */,
-				57198FF71CB2D42C00070CDA /* Info.plist */,
-			);
-			path = "Kinvey-OSX";
-			sourceTree = "<group>";
-		};
-		571990001CB2D42C00070CDA /* Kinvey-OSXTests */ = {
-			isa = PBXGroup;
-			children = (
-				571990011CB2D42C00070CDA /* Kinvey_OSXTests.swift */,
-				571990031CB2D42C00070CDA /* Info.plist */,
-			);
-			path = "Kinvey-OSXTests";
-			sourceTree = "<group>";
-		};
 		572C458C1C86A6C800A41935 /* Value Transformers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1399,8 +1067,6 @@
 				57A27C8F1C178F18000DF951 /* KinveyTests */,
 				5765B8451C9771BC00080FFA /* KinveyApp */,
 				57A465831CC02A59009E7384 /* KinveyAppTests */,
-				57198FF41CB2D42C00070CDA /* Kinvey-OSX */,
-				571990001CB2D42C00070CDA /* Kinvey-OSXTests */,
 				57A27C821C178F17000DF951 /* Products */,
 				DBD4AA6B25714F7AAA213880 /* Frameworks */,
 			);
@@ -1414,8 +1080,6 @@
 				5765B8441C9771BC00080FFA /* KinveyApp.app */,
 				57D643141CA3268000F6D16E /* KinveyTests Migration Database Step 1.xctest */,
 				57D6433B1CA3268600F6D16E /* KinveyTests Migration Database Step 2.xctest */,
-				57198FF31CB2D42C00070CDA /* Kinvey.framework */,
-				57198FFC1CB2D42C00070CDA /* Kinvey-OSXTests.xctest */,
 				57A465821CC02A59009E7384 /* KinveyAppTests.xctest */,
 			);
 			name = Products;
@@ -1424,6 +1088,7 @@
 		57A27C831C178F17000DF951 /* Kinvey */ = {
 			isa = PBXGroup;
 			children = (
+				57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */,
 				57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */,
 				57B23E801C7F9414006403CC /* KinveyKit */,
 				5747102C1C7B8ECE0096B15F /* ObjC */,
@@ -2160,13 +1825,10 @@
 				571991031CB31DE700070CDA /* libsqlite3.tbd */,
 				5719905A1CB301D500070CDA /* Security.framework */,
 				5719903A1CB2D82A00070CDA /* PromiseKit.framework */,
-				571990381CB2D69500070CDA /* Realm.framework */,
 				57BEAE2E1C98805E00479206 /* QuartzCore.framework */,
 				57BEAE2C1C98805600479206 /* CoreGraphics.framework */,
 				5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */,
-				574EB8B91C91FCE400238D2D /* Realm.framework */,
 				57BEAE231C987DC400479206 /* KIF.framework */,
-				574B0F781C6E7FAA00CDC48F /* KeychainAccess.framework */,
 				574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */,
 			);
 			name = Frameworks;
@@ -2175,112 +1837,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		57198FF01CB2D42C00070CDA /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				5719908E1CB305F500070CDA /* KCSErrorUtilities.h in Headers */,
-				571990B61CB315DD00070CDA /* KCSObjcRuntime.h in Headers */,
-				571990EB1CB317F000070CDA /* KCS_DDTTYLogger.h in Headers */,
-				571990DD1CB3177E00070CDA /* KCSUser2.h in Headers */,
-				571990621CB3034900070CDA /* KNVReadPolicy.h in Headers */,
-				571990C41CB3168800070CDA /* KCSBuilders.h in Headers */,
-				571990F91CB3185600070CDA /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.h in Headers */,
-				571990901CB3060100070CDA /* KCSFile.h in Headers */,
-				571990BA1CB3160E00070CDA /* KCSDataModel.h in Headers */,
-				571990ED1CB317FF00070CDA /* KCS_FMDatabaseQueue.h in Headers */,
-				571990DB1CB3177100070CDA /* KCSURLProtocol.h in Headers */,
-				571990571CB3005500070CDA /* KCSClientConfiguration.h in Headers */,
-				571990C81CB316E800070CDA /* KCSPendingOperationRealm.h in Headers */,
-				57198FF61CB2D42C00070CDA /* Kinvey.h in Headers */,
-				571990941CB314B400070CDA /* KCSFileRequest.h in Headers */,
-				571990AE1CB3159D00070CDA /* KCSNSURLSessionFileOperation.h in Headers */,
-				571990B21CB315C000070CDA /* KCSNetworkObserver.h in Headers */,
-				571990501CB2DD6600070CDA /* KCSReachability.h in Headers */,
-				5719906B1CB3037300070CDA /* KCSAclRealm.h in Headers */,
-				571990591CB300FF00070CDA /* KCSClientConfiguration+KCSInternal.h in Headers */,
-				571990A41CB3153000070CDA /* KCSMockRequestOperation.h in Headers */,
-				571990691CB3035F00070CDA /* KinveyInternal-Swift.h in Headers */,
-				571990981CB314D300070CDA /* KCSFileUtils.h in Headers */,
-				5719909C1CB314F100070CDA /* KCSLogFormatter.h in Headers */,
-				571990711CB303AA00070CDA /* KinveyUser.h in Headers */,
-				571990DF1CB3178B00070CDA /* KCSUserRealm.h in Headers */,
-				571990E51CB317BC00070CDA /* KCS_DDASLLogger.h in Headers */,
-				571990E31CB317A700070CDA /* KCS_CLLocation_Realm_ValueTransformer.h in Headers */,
-				571990B01CB315B100070CDA /* KCSNSURLSessionOperation.h in Headers */,
-				571990581CB3005D00070CDA /* KCSRequestConfiguration.h in Headers */,
-				571990511CB2FFF300070CDA /* KCSCache.h in Headers */,
-				571990751CB3051900070CDA /* KCSAppdataStore.h in Headers */,
-				571990AC1CB3158D00070CDA /* KCSNSURLRequestOperation.h in Headers */,
-				571990AA1CB3157C00070CDA /* KCSNSURLCxnFileOperation.h in Headers */,
-				571990601CB3034900070CDA /* KNVUser.h in Headers */,
-				571990911CB3061300070CDA /* KCSImageUtils.h in Headers */,
-				571991021CB3196000070CDA /* KCSPush.h in Headers */,
-				571990E91CB317E300070CDA /* KCS_DDLog.h in Headers */,
-				571990D91CB3176500070CDA /* KCSSaveGraph.h in Headers */,
-				571990BE1CB3163000070CDA /* KCSDBTools.h in Headers */,
-				571990C01CB3163E00070CDA /* KCSMutableOrderedDictionary.h in Headers */,
-				571990D01CB3172B00070CDA /* KCSQuery.h in Headers */,
-				571990801CB3056A00070CDA /* KCSCachedStore.h in Headers */,
-				571990F11CB3181900070CDA /* KCS_FMResultSet.h in Headers */,
-				5719909E1CB314FF00070CDA /* KCSLogManager.h in Headers */,
-				571990791CB3053A00070CDA /* DataStoreOperation.h in Headers */,
-				5719906C1CB3037700070CDA /* KCSFileRealm.h in Headers */,
-				571990821CB3057A00070CDA /* KCSClient+KinveyDataStore.h in Headers */,
-				571990EF1CB3180B00070CDA /* KCS_FMDatabase.h in Headers */,
-				571990D61CB3175100070CDA /* KCSRequest.h in Headers */,
-				571990541CB3000A00070CDA /* KinveyHeaderInfo.h in Headers */,
-				571990E11CB3179700070CDA /* KCS_CLLocation_Realm.h in Headers */,
-				571990681CB3035A00070CDA /* KNVWritePolicy.h in Headers */,
-				5719907E1CB3055A00070CDA /* KCSHttpRequest.h in Headers */,
-				571990E71CB317CC00070CDA /* KCS_DDAbstractDatabaseLogger.h in Headers */,
-				571990C21CB3164C00070CDA /* KCSObjectMapper.h in Headers */,
-				5719907B1CB3054900070CDA /* KCSBackgroundAppdataStore.h in Headers */,
-				571990FD1CB3187100070CDA /* KCS_NSURL_NSString_NSValueTransformer.h in Headers */,
-				571990731CB303B700070CDA /* KCSUserActionResult.h in Headers */,
-				571990561CB3003F00070CDA /* KCSKeychain.h in Headers */,
-				5719906F1CB3039200070CDA /* KCSClient.h in Headers */,
-				5719904C1CB2DCCE00070CDA /* MongoDBPredicateAdaptor.h in Headers */,
-				571990C61CB316A100070CDA /* KCSOfflineUpdate.h in Headers */,
-				571990D21CB3173700070CDA /* KCSQuery2.h in Headers */,
-				571990CC1CB3170B00070CDA /* KCSPlatformUtils.h in Headers */,
-				571990611CB3034900070CDA /* KNVDataStore.h in Headers */,
-				5719909A1CB314E300070CDA /* KCSGroup.h in Headers */,
-				571990F51CB3183800070CDA /* KCS_NSArray_CLLocation_NSValueTransformer.h in Headers */,
-				571990F71CB3184600070CDA /* CLLocation+Kinvey.h in Headers */,
-				5719904E1CB2DCED00070CDA /* KCSRealmEntityPersistence.h in Headers */,
-				571990D41CB3174400070CDA /* KCSQueryAdapter.h in Headers */,
-				571990A61CB3154400070CDA /* KCSMockServer.h in Headers */,
-				571990FB1CB3186300070CDA /* KCS_NSString_NSDate_NSValueTransformer.h in Headers */,
-				5719908A1CB305D800070CDA /* KCSFileStore.h in Headers */,
-				571991001CB3188300070CDA /* KCSUser2+KinveyUserService.h in Headers */,
-				571990841CB3058D00070CDA /* KCSClient2.h in Headers */,
-				571990B41CB315CE00070CDA /* KCSNetworkResponse.h in Headers */,
-				5719908C1CB305E600070CDA /* KCSDataStoreOperationRequest.h in Headers */,
-				571990BC1CB3161C00070CDA /* KCSEntityPersistence.h in Headers */,
-				571990531CB3000000070CDA /* KCSSync.h in Headers */,
-				571990B81CB315FF00070CDA /* KCSObjectCache.h in Headers */,
-				5719905F1CB3034900070CDA /* KNVClient.h in Headers */,
-				571990D71CB3175400070CDA /* KCSRequest+Private.h in Headers */,
-				571990A81CB3156800070CDA /* KCSMultipleRequest.h in Headers */,
-				571990CE1CB3171B00070CDA /* KCSPropertyUtil.h in Headers */,
-				571990721CB303AF00070CDA /* KinveyUser+Private.h in Headers */,
-				571990631CB3034900070CDA /* KNVError.h in Headers */,
-				571990521CB2FFF900070CDA /* KCSQueryProtocol.h in Headers */,
-				571990961CB314C300070CDA /* KCSFileRequestManager.h in Headers */,
-				571990FF1CB3187F00070CDA /* KCSUser2+KinveyUserService+Private.h in Headers */,
-				5719905E1CB3032B00070CDA /* KNVKinvey.h in Headers */,
-				5719907D1CB3055700070CDA /* KCSHttpRequest+Private.h in Headers */,
-				571990861CB305B600070CDA /* KinveyCollection.h in Headers */,
-				571990F31CB3182600070CDA /* KCS_KSReachability.h in Headers */,
-				571990A01CB3151200070CDA /* KCSMetadata.h in Headers */,
-				571990881CB305C800070CDA /* KCSDataStore.h in Headers */,
-				571990771CB3052C00070CDA /* KCSBase64.h in Headers */,
-				571990CA1CB316FF00070CDA /* KCSPersistableDescription.h in Headers */,
-				571990A21CB3152100070CDA /* KCSMetadataRealm.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		57A27C7E1C178F17000DF951 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2417,42 +1973,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		57198FF21CB2D42C00070CDA /* Kinvey-OSX */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 571990041CB2D42C00070CDA /* Build configuration list for PBXNativeTarget "Kinvey-OSX" */;
-			buildPhases = (
-				57198FEE1CB2D42C00070CDA /* Sources */,
-				57198FEF1CB2D42C00070CDA /* Frameworks */,
-				57198FF01CB2D42C00070CDA /* Headers */,
-				57198FF11CB2D42C00070CDA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "Kinvey-OSX";
-			productName = "Kinvey-OSX";
-			productReference = 57198FF31CB2D42C00070CDA /* Kinvey.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		57198FFB1CB2D42C00070CDA /* Kinvey-OSXTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 571990071CB2D42C00070CDA /* Build configuration list for PBXNativeTarget "Kinvey-OSXTests" */;
-			buildPhases = (
-				57198FF81CB2D42C00070CDA /* Sources */,
-				57198FF91CB2D42C00070CDA /* Frameworks */,
-				57198FFA1CB2D42C00070CDA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				57198FFF1CB2D42C00070CDA /* PBXTargetDependency */,
-			);
-			name = "Kinvey-OSXTests";
-			productName = "Kinvey-OSXTests";
-			productReference = 57198FFC1CB2D42C00070CDA /* Kinvey-OSXTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		5765B8431C9771BC00080FFA /* KinveyApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5765B8621C9771BD00080FFA /* Build configuration list for PBXNativeTarget "KinveyApp" */;
@@ -2578,12 +2098,6 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = Kinvey;
 				TargetAttributes = {
-					57198FF21CB2D42C00070CDA = {
-						CreatedOnToolsVersion = 7.3;
-					};
-					57198FFB1CB2D42C00070CDA = {
-						CreatedOnToolsVersion = 7.3;
-					};
 					5765B8431C9771BC00080FFA = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
@@ -2618,27 +2132,11 @@
 				57D643161CA3268600F6D16E /* KinveyTests Migration Database Step 2 */,
 				5765B8431C9771BC00080FFA /* KinveyApp */,
 				57A465811CC02A59009E7384 /* KinveyAppTests */,
-				57198FF21CB2D42C00070CDA /* Kinvey-OSX */,
-				57198FFB1CB2D42C00070CDA /* Kinvey-OSXTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		57198FF11CB2D42C00070CDA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		57198FFA1CB2D42C00070CDA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		5765B8421C9771BC00080FFA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2690,166 +2188,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		57198FEE1CB2D42C00070CDA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				571990641CB3035500070CDA /* KNVClient.m in Sources */,
-				571990401CB2D85000070CDA /* FindOperation.swift in Sources */,
-				571990241CB2D45000070CDA /* LocalRequest.swift in Sources */,
-				571990CF1CB3172800070CDA /* KCSQuery.m in Sources */,
-				571990E41CB317B900070CDA /* KCS_DDASLLogger.m in Sources */,
-				5719901B1CB2D45000070CDA /* Persistable.swift in Sources */,
-				571990451CB2D85000070CDA /* PurgeOperation.swift in Sources */,
-				5719907C1CB3055400070CDA /* KCSHttpRequest.m in Sources */,
-				571990AB1CB3158800070CDA /* KCSNSURLRequestOperation.m in Sources */,
-				571990EA1CB317EE00070CDA /* KCS_DDTTYLogger.m in Sources */,
-				571990481CB2D99C00070CDA /* NSData.swift in Sources */,
-				571990CD1CB3171700070CDA /* KCSPropertyUtil.m in Sources */,
-				5719901C1CB2D45000070CDA /* RequestFactory.swift in Sources */,
-				5719900A1CB2D45000070CDA /* Kinvey.swift in Sources */,
-				571990FC1CB3186F00070CDA /* KCS_NSURL_NSString_NSValueTransformer.m in Sources */,
-				571990CB1CB3170900070CDA /* KCSPlatformUtils.m in Sources */,
-				5719902B1CB2D45000070CDA /* Cache.swift in Sources */,
-				571990311CB2D45000070CDA /* File.swift in Sources */,
-				571990271CB2D45000070CDA /* Response.swift in Sources */,
-				5719902C1CB2D45000070CDA /* CacheManager.swift in Sources */,
-				571990B51CB315DA00070CDA /* KCSObjcRuntime.m in Sources */,
-				571990BB1CB3161900070CDA /* KCSEntityPersistence.m in Sources */,
-				571990171CB2D45000070CDA /* WritePolicy.swift in Sources */,
-				571991011CB3195D00070CDA /* KCSPush.m in Sources */,
-				571990811CB3057700070CDA /* KCSClient+KinveyDataStore.m in Sources */,
-				5719904B1CB2DCCA00070CDA /* MongoDBPredicateAdaptor.m in Sources */,
-				571990F81CB3185200070CDA /* KCS_NSArray_KCS_CLLocation_Realm_NSValueTransformer.m in Sources */,
-				571990BF1CB3163C00070CDA /* KCSMutableOrderedDictionary.m in Sources */,
-				5719901D1CB2D45000070CDA /* HttpRequestFactory.swift in Sources */,
-				571990891CB305D400070CDA /* KCSFileStore.m in Sources */,
-				571990231CB2D45000070CDA /* HttpRequest.swift in Sources */,
-				571990DE1CB3178800070CDA /* KCSUserRealm.m in Sources */,
-				571990671CB3035500070CDA /* KNVError.m in Sources */,
-				571990A51CB3154100070CDA /* KCSMockServer.m in Sources */,
-				571990431CB2D85000070CDA /* SyncOperation.swift in Sources */,
-				571990291CB2D45000070CDA /* LocalResponse.swift in Sources */,
-				5719903E1CB2D85000070CDA /* WriteOperation.swift in Sources */,
-				571990921CB3063C00070CDA /* KCSImageUtils.m in Sources */,
-				571990361CB2D45000070CDA /* CustomEndpoint.swift in Sources */,
-				5719903F1CB2D85000070CDA /* GetOperation.swift in Sources */,
-				5719900D1CB2D45000070CDA /* HttpHeaderCredential.swift in Sources */,
-				571990F41CB3183500070CDA /* KCS_NSArray_CLLocation_NSValueTransformer.m in Sources */,
-				5719904A1CB2D99C00070CDA /* NSDate.swift in Sources */,
-				571990461CB2D98300070CDA /* ValueTransformer.swift in Sources */,
-				571990201CB2D45000070CDA /* JsonObject.swift in Sources */,
-				571990331CB2D45000070CDA /* Reachability.swift in Sources */,
-				571990951CB314BE00070CDA /* KCSFileRequestManager.m in Sources */,
-				571990871CB305C400070CDA /* KCSDataStore.m in Sources */,
-				5719905C1CB3031600070CDA /* KCSClientConfiguration.m in Sources */,
-				5719900F1CB2D45000070CDA /* UserDefaults.swift in Sources */,
-				5719900C1CB2D45000070CDA /* Credential.swift in Sources */,
-				5719907F1CB3056700070CDA /* KCSCachedStore.m in Sources */,
-				571990321CB2D45000070CDA /* FileStore.swift in Sources */,
-				5719902D1CB2D45000070CDA /* PendingOperation.swift in Sources */,
-				571990851CB305B000070CDA /* KinveyCollection.m in Sources */,
-				571990FA1CB3186000070CDA /* KCS_NSString_NSDate_NSValueTransformer.m in Sources */,
-				571990D31CB3174100070CDA /* KCSQueryAdapter.m in Sources */,
-				5719909D1CB314FC00070CDA /* KCSLogManager.m in Sources */,
-				5719900B1CB2D45000070CDA /* EntitySchema.swift in Sources */,
-				5719904F1CB2DD5D00070CDA /* KCSReachability.m in Sources */,
-				571990551CB3003A00070CDA /* KCSKeychain.m in Sources */,
-				571990781CB3053700070CDA /* DataStoreOperation.m in Sources */,
-				571990121CB2D45000070CDA /* User.swift in Sources */,
-				571990C11CB3164900070CDA /* KCSObjectMapper.m in Sources */,
-				571990DC1CB3177B00070CDA /* KCSUser2.m in Sources */,
-				571990661CB3035500070CDA /* KNVDataStore.m in Sources */,
-				571990421CB2D85000070CDA /* RemoveByQueryOperation.swift in Sources */,
-				571990A11CB3151D00070CDA /* KCSMetadataRealm.m in Sources */,
-				571990AD1CB3159A00070CDA /* KCSNSURLSessionFileOperation.m in Sources */,
-				5719906D1CB3037A00070CDA /* KCSFileRealm.m in Sources */,
-				571990651CB3035500070CDA /* KNVUser.m in Sources */,
-				5719902F1CB2D45000070CDA /* SyncManager.swift in Sources */,
-				571990371CB2D66800070CDA /* ObjC.swift in Sources */,
-				5719902E1CB2D45000070CDA /* Sync.swift in Sources */,
-				5719900E1CB2D45000070CDA /* Endpoint.swift in Sources */,
-				571990221CB2D45000070CDA /* Request.swift in Sources */,
-				571990741CB3051300070CDA /* KCSAppdataStore.m in Sources */,
-				5719903D1CB2D85000070CDA /* ReadOperation.swift in Sources */,
-				571990191CB2D45000070CDA /* TTL.swift in Sources */,
-				571990B11CB315BD00070CDA /* KCSNetworkObserver.m in Sources */,
-				571990151CB2D45000070CDA /* DataStoreType.swift in Sources */,
-				5719906E1CB3038E00070CDA /* KCSClient.m in Sources */,
-				571990DA1CB3176E00070CDA /* KCSURLProtocol.m in Sources */,
-				571990971CB314CF00070CDA /* KCSFileUtils.m in Sources */,
-				571990E21CB317A400070CDA /* KCS_CLLocation_Realm_ValueTransformer.m in Sources */,
-				571990C31CB3168500070CDA /* KCSBuilders.m in Sources */,
-				571990281CB2D45000070CDA /* HttpResponse.swift in Sources */,
-				571990251CB2D45000070CDA /* MultiRequest.swift in Sources */,
-				571990141CB2D45000070CDA /* Metadata.swift in Sources */,
-				571990111CB2D45000070CDA /* Client.swift in Sources */,
-				571990931CB314B000070CDA /* KCSFileRequest.m in Sources */,
-				571990F61CB3184300070CDA /* CLLocation+Kinvey.m in Sources */,
-				571990E01CB3179500070CDA /* KCS_CLLocation_Realm.m in Sources */,
-				5719909F1CB3150F00070CDA /* KCSMetadata.m in Sources */,
-				571990991CB314DF00070CDA /* KCSGroup.m in Sources */,
-				5719908D1CB305F200070CDA /* KCSErrorUtilities.m in Sources */,
-				571990491CB2D99C00070CDA /* String.swift in Sources */,
-				571990161CB2D45000070CDA /* ReadPolicy.swift in Sources */,
-				571990131CB2D45000070CDA /* Acl.swift in Sources */,
-				571990341CB2D45000070CDA /* Migration.swift in Sources */,
-				571990C71CB316E100070CDA /* KCSPendingOperationRealm.m in Sources */,
-				5719902A1CB2D45000070CDA /* Error.swift in Sources */,
-				571990181CB2D45000070CDA /* DataStore.swift in Sources */,
-				571990441CB2D85000070CDA /* PushOperation.swift in Sources */,
-				5719908B1CB305E300070CDA /* KCSDataStoreOperationRequest.m in Sources */,
-				5719906A1CB3037000070CDA /* KCSAclRealm.m in Sources */,
-				5719901A1CB2D45000070CDA /* Query.swift in Sources */,
-				571990471CB2D98300070CDA /* NSDate2StringValueTransformer.swift in Sources */,
-				571990351CB2D45000070CDA /* MemoryCache.swift in Sources */,
-				571990D11CB3173400070CDA /* KCSQuery2.m in Sources */,
-				571990AF1CB315AD00070CDA /* KCSNSURLSessionOperation.m in Sources */,
-				571990C91CB316FC00070CDA /* KCSPersistableDescription.m in Sources */,
-				571990261CB2D45000070CDA /* NSURLSessionDownloadTaskRequest.swift in Sources */,
-				5719903C1CB2D85000070CDA /* Operation.swift in Sources */,
-				571990831CB3058A00070CDA /* KCSClient2.m in Sources */,
-				5719904D1CB2DCE800070CDA /* KCSRealmEntityPersistence.m in Sources */,
-				571990411CB2D85000070CDA /* SaveOperation.swift in Sources */,
-				571990A31CB3152D00070CDA /* KCSMockRequestOperation.m in Sources */,
-				571990D51CB3174E00070CDA /* KCSRequest.m in Sources */,
-				571990BD1CB3162E00070CDA /* KCSDBTools.m in Sources */,
-				5719909B1CB314EE00070CDA /* KCSLogFormatter.m in Sources */,
-				571990A71CB3156600070CDA /* KCSMutipleRequest.m in Sources */,
-				571990B31CB315CB00070CDA /* KCSNetworkResponse.m in Sources */,
-				571990FE1CB3187C00070CDA /* KCSUser2+KinveyUserService.m in Sources */,
-				5719908F1CB305FE00070CDA /* KCSFile.m in Sources */,
-				571990701CB3039D00070CDA /* KinveyUser.m in Sources */,
-				571990E81CB317E000070CDA /* KCS_DDLog.m in Sources */,
-				571990B91CB3160B00070CDA /* KCSDataModel.m in Sources */,
-				571990301CB2D45000070CDA /* Push.swift in Sources */,
-				571990101CB2D45000070CDA /* Keychain.swift in Sources */,
-				571990EE1CB3180900070CDA /* KCS_FMDatabase.m in Sources */,
-				5719901E1CB2D45000070CDA /* ResponseParser.swift in Sources */,
-				571990E61CB317C900070CDA /* KCS_DDAbstractDatabaseLogger.m in Sources */,
-				571990A91CB3157A00070CDA /* KCSNSURLCxnFileOperation.m in Sources */,
-				5719907A1CB3054600070CDA /* KCSBackgroundAppdataStore.m in Sources */,
-				571990761CB3052800070CDA /* KCSBase64.m in Sources */,
-				5719901F1CB2D45000070CDA /* JsonResponseParser.swift in Sources */,
-				571990C51CB3169D00070CDA /* KCSOfflineUpdate.m in Sources */,
-				571990B71CB315FC00070CDA /* KCSObjectCache.m in Sources */,
-				571990211CB2D45000070CDA /* RequestType.swift in Sources */,
-				571990EC1CB317FC00070CDA /* KCS_FMDatabaseQueue.m in Sources */,
-				5719905D1CB3032500070CDA /* KNVKinvey.m in Sources */,
-				571990D81CB3176200070CDA /* KCSSaveGraph.m in Sources */,
-				571990F21CB3182300070CDA /* KCS_KSReachability.m in Sources */,
-				571990F01CB3181500070CDA /* KCS_FMResultSet.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		57198FF81CB2D42C00070CDA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				571990021CB2D42C00070CDA /* Kinvey_OSXTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		5765B8401C9771BC00080FFA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3113,11 +2451,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		57198FFF1CB2D42C00070CDA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 57198FF21CB2D42C00070CDA /* Kinvey-OSX */;
-			targetProxy = 57198FFE1CB2D42C00070CDA /* PBXContainerItemProxy */;
-		};
 		57A27C8E1C178F18000DF951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 57A27C801C178F17000DF951 /* Kinvey */;
@@ -3175,90 +2508,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		571990051CB2D42C00070CDA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
-				FRAMEWORK_VERSION = A;
-				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
-				INFOPLIST_FILE = "Kinvey-OSX/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
-				PRODUCT_NAME = Kinvey;
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		571990061CB2D42C00070CDA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
-				FRAMEWORK_VERSION = A;
-				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
-				INFOPLIST_FILE = "Kinvey-OSX/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
-				PRODUCT_NAME = Kinvey;
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-			};
-			name = Release;
-		};
-		571990081CB2D42C00070CDA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = "Kinvey-OSXTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.Kinvey-OSXTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		571990091CB2D42C00070CDA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = "Kinvey-OSXTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.kinvey.Kinvey-OSXTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-			};
-			name = Release;
-		};
 		5765B85E1C9771BD00080FFA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3372,50 +2621,46 @@
 		};
 		57A27C961C178F18000DF951 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Debug;
 		};
 		57A27C971C178F18000DF951 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				GCC_PREFIX_HEADER = "../KinveyKit/KinveyKit/KinveyKit-Prefix.pch";
 				INFOPLIST_FILE = Kinvey/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.Kinvey;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Release;
 		};
@@ -3593,24 +2838,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		571990041CB2D42C00070CDA /* Build configuration list for PBXNativeTarget "Kinvey-OSX" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				571990051CB2D42C00070CDA /* Debug */,
-				571990061CB2D42C00070CDA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		571990071CB2D42C00070CDA /* Build configuration list for PBXNativeTarget "Kinvey-OSXTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				571990081CB2D42C00070CDA /* Debug */,
-				571990091CB2D42C00070CDA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		5765B8621C9771BD00080FFA /* Build configuration list for PBXNativeTarget "KinveyApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

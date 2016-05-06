@@ -117,13 +117,16 @@
         [[KCSUser activeUser] logout];
     }
 
+#if !TARGET_OS_WATCH
     _networkReachability = [KCSReachability reachabilityForInternetConnection];
+
     // This next initializer is Async.  It needs to DNS lookup the hostname (in this case the hard coded _serviceHostname)
     // We start this in init in the hopes that it will be (mostly) complete by the time we need to use it.
     // TODO: Investigate being notified of changes in KCS Client
 
     // We do this here because there is latency on DNS resolution of the hostname.  We need to do this ASAP when the hostname changes
     self.kinveyReachability = [KCSReachability reachabilityWithHostName:[NSString stringWithFormat:@"%@.%@", self.configuration.serviceHostname, self.configuration.hostDomain]];
+#endif
 
     [self updateURLs];
     // Check to make sure appdata URL is good

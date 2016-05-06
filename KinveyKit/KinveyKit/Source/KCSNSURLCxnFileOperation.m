@@ -105,10 +105,11 @@
         } else {
             _isUpload = YES;
         }
-
+#if !TARGET_OS_WATCH
         _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
         [_connection setDelegateQueue:[NSOperationQueue mainQueue]];
         [_connection start];
+#endif
     }
 }
 

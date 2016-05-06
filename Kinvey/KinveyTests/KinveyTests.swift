@@ -1,15 +1,15 @@
 //
-//  Kinvey_OSXTests.swift
-//  Kinvey-OSXTests
+//  KinveyTests.swift
+//  KinveyTests
 //
-//  Created by Victor Barros on 2016-04-04.
+//  Created by Victor Barros on 2016-05-05.
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
 import XCTest
-@testable import Kinvey_OSX
+@testable import Kinvey
 
-class Kinvey_OSXTests: XCTestCase {
+class KinveyTests: XCTestCase {
     
     override func setUp() {
         super.setUp()

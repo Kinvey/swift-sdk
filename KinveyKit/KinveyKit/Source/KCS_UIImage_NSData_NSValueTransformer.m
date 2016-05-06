@@ -6,6 +6,8 @@
 //  Copyright © 2015 Kinvey. All rights reserved.
 //
 
+#if TARGET_OS_IOS
+
 #import "KCS_UIImage_NSData_NSValueTransformer.h"
 @import UIKit;
 
@@ -43,3 +45,5 @@
 }
 
 @end
+
+#endif

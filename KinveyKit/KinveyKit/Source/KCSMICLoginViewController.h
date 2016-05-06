@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Kinvey. All rights reserved.
 //
 
+#if TARGET_OS_IOS
+
 @import UIKit;
 #import "KinveyUser.h"
 
@@ -21,3 +23,5 @@
                withCompletionBlock:(KCSUserCompletionBlock)completionBlock;
 
 @end
+
+#endif

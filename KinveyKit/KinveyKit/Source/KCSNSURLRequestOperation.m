@@ -54,11 +54,12 @@
         
         self.downloadedData = [NSMutableData data];
         self.response = [[KCSNetworkResponse alloc] init];
-        
+#if !TARGET_OS_WATCH
         _connection = [[NSURLConnection alloc] initWithRequest:_request delegate:self startImmediately:NO];
         // [connection setDelegateQueue:[NSOperationQueue currentQueue]];
         [_connection scheduleInRunLoop:runLoop forMode:NSRunLoopCommonModes];
         [_connection start];
+#endif
         [runLoop run];
     }
 }

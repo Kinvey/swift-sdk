@@ -422,6 +422,7 @@ BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op)
     if (op.error) {
         if ([[op.error domain] isEqualToString:NSURLErrorDomain]) {
             switch (op.error.code) {
+#if !TARGET_OS_WATCH
                 case kCFURLErrorUnknown:
                 case kCFURLErrorTimedOut:
                 case kCFURLErrorCannotFindHost:
@@ -432,6 +433,7 @@ BOOL opIsRetryableNetworkError(NSOperation<KCSNetworkOperation>* op)
                 case kCFURLErrorRequestBodyStreamExhausted:
                     isError = YES;
                     break;
+#endif
             }
         }
     }

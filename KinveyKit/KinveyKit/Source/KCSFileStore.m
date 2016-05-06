@@ -95,8 +95,10 @@ NSString* kcsMimeType(id filenameOrURL)
     
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
     [request setHTTPMethod:@"GET"];
+#if !TARGET_OS_WATCH
     NSURLConnection* connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     [connection start];
+#endif
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
