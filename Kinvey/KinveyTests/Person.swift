@@ -13,6 +13,7 @@ class Person: NSObject, Persistable {
     dynamic var personId: String?
     dynamic var name: String?
     dynamic var age: Int = 0
+    dynamic var acl: Acl? = nil
     
     override init() {
     }
@@ -29,6 +30,7 @@ class Person: NSObject, Persistable {
     static func kinveyPropertyMapping() -> [String : String] {
         return [
             "personId" : Kinvey.PersistableIdKey,
+            "acl" : Kinvey.PersistableAclKey,
             "name" : "name",
             "age" : "age"
         ]

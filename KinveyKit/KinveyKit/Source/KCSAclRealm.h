@@ -7,9 +7,14 @@
 //
 
 @import Realm;
+#import "KCSStringRealm.h"
 
 @interface KCSAclRealm : RLMObject
 
 @property NSString* creator;
+@property NSNumber<RLMBool>* gr;
+@property NSNumber<RLMBool>* gw;
+@property RLMArray<KCSStringRealm*><KCSStringRealm>* r;
+@property RLMArray<KCSStringRealm*><KCSStringRealm>* w;
 
 @end
