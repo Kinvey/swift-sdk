@@ -113,4 +113,162 @@ class AclTestCase: StoreTestCase {
         }
     }
     
+    func testGlobalRead() {
+        signUp()
+        
+        store = DataStore<Person>.getInstance(.Network)
+        
+        let newPerson = self.newPerson
+        newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, globalRead: true)
+        let person = save(newPerson)
+        
+        XCTAssertNotNil(person.personId)
+        if let personId = person.personId {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            store.find(personId) { person, error in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    XCTAssertNotNil(person.acl)
+                    if let acl = person.acl {
+                        XCTAssertNotNil(acl.globalRead)
+                        if let globalRead = acl.globalRead {
+                            XCTAssertTrue(globalRead)
+                        }
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+                expectationFind = nil
+            }
+        }
+    }
+    
+    func testGlobalWrite() {
+        signUp()
+        
+        store = DataStore<Person>.getInstance(.Network)
+        
+        let newPerson = self.newPerson
+        newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, globalWrite: true)
+        let person = save(newPerson)
+        
+        XCTAssertNotNil(person.personId)
+        if let personId = person.personId {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            store.find(personId) { person, error in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    XCTAssertNotNil(person.acl)
+                    if let acl = person.acl {
+                        XCTAssertNotNil(acl.globalWrite)
+                        if let globalWrite = acl.globalWrite {
+                            XCTAssertTrue(globalWrite)
+                        }
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+                expectationFind = nil
+            }
+        }
+    }
+    
+    func testReaders() {
+        signUp()
+        
+        XCTAssertNotNil(sharedClient.activeUser)
+        guard let user = sharedClient.activeUser else {
+            return
+        }
+        
+        signUp()
+        
+        store = DataStore<Person>.getInstance(.Network)
+        
+        let newPerson = self.newPerson
+        newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, readers: [user.userId])
+        let person = save(newPerson)
+        
+        XCTAssertNotNil(person.personId)
+        if let personId = person.personId {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            store.find(personId) { person, error in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    XCTAssertNotNil(person.acl)
+                    if let acl = person.acl {
+                        XCTAssertNotNil(acl.readers)
+                        if let readers = acl.readers {
+                            XCTAssertEqual(readers.count, 1)
+                        }
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+                expectationFind = nil
+            }
+        }
+    }
+    
+    func testWriters() {
+        signUp()
+        
+        XCTAssertNotNil(sharedClient.activeUser)
+        guard let user = sharedClient.activeUser else {
+            return
+        }
+        
+        signUp()
+        
+        store = DataStore<Person>.getInstance(.Network)
+        
+        let newPerson = self.newPerson
+        newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, writers: [user.userId])
+        let person = save(newPerson)
+        
+        XCTAssertNotNil(person.personId)
+        if let personId = person.personId {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            store.find(personId) { person, error in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    XCTAssertNotNil(person.acl)
+                    if let acl = person.acl {
+                        XCTAssertNotNil(acl.writers)
+                        if let writers = acl.writers {
+                            XCTAssertEqual(writers.count, 1)
+                        }
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+                expectationFind = nil
+            }
+        }
+    }
+    
 }

@@ -51,6 +51,8 @@ extension RequestFactory {
                     } else {
                         jsonObject[keyPair.0] = persistable._toJson()
                     }
+                } else if let acl = keyPair.1 as? Acl {
+                    jsonObject[keyPair.0] = acl.toJson()
                 }
             }
         }

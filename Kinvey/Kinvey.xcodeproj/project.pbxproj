@@ -31,12 +31,9 @@
 		57470FA51C76926B0096B15F /* PushOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA41C76926B0096B15F /* PushOperation.swift */; };
 		57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA61C7698B30096B15F /* MultiRequest.swift */; };
 		57470FAB1C769EF00096B15F /* PurgeOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FAA1C769EF00096B15F /* PurgeOperation.swift */; };
-		5747103A1C7BA29D0096B15F /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
-		5747103E1C7BA2CC0096B15F /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57471A301CCAED1600628933 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
 		574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* DataStoreType.swift */; };
 		574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912721C5932A700EA4F26 /* WritePolicy.swift */; };
-		574B0F751C6E7E0E00CDC48F /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
 		574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA61C729EAF00CDC48F /* GetOperation.swift */; };
 		574B0FA91C729EB900CDC48F /* FindOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA81C729EB900CDC48F /* FindOperation.swift */; };
 		574B0FAB1C729EC900CDC48F /* SaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAA1C729EC900CDC48F /* SaveOperation.swift */; };
@@ -52,14 +49,14 @@
 		5765B8511C9771BC00080FFA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5765B84F1C9771BC00080FFA /* LaunchScreen.storyboard */; };
 		5765B8641C97751000080FFA /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		576A1D361CCA92CA006B261E /* DataTypeTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576A1D351CCA92CA006B261E /* DataTypeTestCase.swift */; };
-		576E2D561CC15A2E00F3E30F /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		576E2D581CC15A2E00F3E30F /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		576E95A41C1FB10700258CC3 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95A31C1FB10700258CC3 /* DataStore.swift */; };
 		577155511CA0F1D200C91B4B /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
 		577155521CA0F1D400C91B4B /* FindOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B8351C92365700080FFA /* FindOperationTest.swift */; };
 		577155BB1CA21CC200C91B4B /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155BA1CA21CC200C91B4B /* Migration.swift */; };
 		57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57757F3D1C652A5600C810E9 /* Reachability.swift */; };
 		577C9E781C1F89C700BF49EE /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
+		5781D0B41CE13A2E00369F40 /* KCSStringRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 5781D0B21CE13A2E00369F40 /* KCSStringRealm.h */; };
+		5781D0B51CE13A2E00369F40 /* KCSStringRealm.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781D0B31CE13A2E00369F40 /* KCSStringRealm.m */; };
 		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
 		5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */; };
 		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
@@ -92,6 +89,10 @@
 		57A960A41CC8278E005E52A8 /* PerformanceTestLongData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A31CC8278E005E52A8 /* PerformanceTestLongData.swift */; };
 		57A960A61CC827A3005E52A8 /* PerformanceTestMedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */; };
 		57ADC0C41CC95CF4002B517A /* PerformanceTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */; };
+		57B0C2131CDCE8E200492D6C /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1DA1CDCE88900492D6C /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57B0C2141CDCE8FC00492D6C /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57B0C2151CDCE90D00492D6C /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D81CDCE88900492D6C /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		57B0C2161CDCF25900492D6C /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57B0E9501C5FF52200BA984F /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
 		57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23CF61C7F8C12006403CC /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */; };
@@ -303,11 +304,8 @@
 		57B23FF71C800F40006403CC /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D931C7F9414006403CC /* KCSStore.h */; };
 		57B23FF81C800F43006403CC /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D941C7F9414006403CC /* KCSStore.m */; };
 		57B23FF91C80C4D9006403CC /* KCSCacheUpdatePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DA11C7F9414006403CC /* KCSCacheUpdatePolicy.h */; };
-		57B739211C9776BA000FEA7C /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
-		57BEAE241C987DC400479206 /* KIF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; };
-		57BEAE251C987DCA00479206 /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57BEAE2D1C98805600479206 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BEAE341C98AB3900479206 /* MainViewController.swift */; };
@@ -327,11 +325,7 @@
 		57D643041CA3268000F6D16E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57D643051CA3268000F6D16E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57D643071CA3268000F6D16E /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
-		57D643081CA3268000F6D16E /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
-		57D643091CA3268000F6D16E /* KIF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; };
 		57D6430B1CA3268000F6D16E /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
-		57D6430D1CA3268000F6D16E /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57D6430F1CA3268000F6D16E /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D6431D1CA3268600F6D16E /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
 		57D643201CA3268600F6D16E /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57D643261CA3268600F6D16E /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
@@ -339,11 +333,7 @@
 		57D6432B1CA3268600F6D16E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
-		57D6432F1CA3268600F6D16E /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; };
-		57D643301CA3268600F6D16E /* KIF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; };
 		57D643321CA3268600F6D16E /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
-		57D643341CA3268600F6D16E /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57BEAE231C987DC400479206 /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		57D643361CA3268600F6D16E /* PromiseKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57D6433E1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D6433D1CA326DE00F6D16E /* CacheMigrationTestCaseStep2.swift */; };
 		57D6433F1CA328F800F6D16E /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
 		57D643401CA328F800F6D16E /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -450,8 +440,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				57D386A31CC19D7C0014050D /* Kinvey.framework in CopyFiles */,
-				57BEAE251C987DCA00479206 /* KIF.framework in CopyFiles */,
-				5747103E1C7BA2CC0096B15F /* PromiseKit.framework in CopyFiles */,
+				57B0C2161CDCF25900492D6C /* KIF.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -462,8 +451,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				57D386A21CC19D0C0014050D /* Kinvey.framework in CopyFiles */,
-				576E2D561CC15A2E00F3E30F /* KIF.framework in CopyFiles */,
-				576E2D581CC15A2E00F3E30F /* PromiseKit.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,7 +461,9 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5745DC821C97904400E7E764 /* Kinvey.framework in CopyFiles */,
-				57B739211C9776BA000FEA7C /* PromiseKit.framework in CopyFiles */,
+				57B0C2131CDCE8E200492D6C /* Realm.framework in CopyFiles */,
+				57B0C2151CDCE90D00492D6C /* PromiseKit.framework in CopyFiles */,
+				57B0C2141CDCE8FC00492D6C /* KeychainAccess.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,8 +473,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				57D6430D1CA3268000F6D16E /* KIF.framework in CopyFiles */,
-				57D6430F1CA3268000F6D16E /* PromiseKit.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -495,8 +482,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				57D643341CA3268600F6D16E /* KIF.framework in CopyFiles */,
-				57D643361CA3268600F6D16E /* PromiseKit.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -508,9 +493,7 @@
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
 		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
 		57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryProtocol.h; sourceTree = "<group>"; };
-		5719903A1CB2D82A00070CDA /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/Mac/PromiseKit.framework; sourceTree = "<group>"; };
 		5719905A1CB301D500070CDA /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
-		571991031CB31DE700070CDA /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		571991081CB45EEE00070CDA /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
@@ -533,7 +516,6 @@
 		57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncryptedDataStoreTestCase.swift; sourceTree = "<group>"; };
 		574912701C59323B00EA4F26 /* DataStoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreType.swift; sourceTree = "<group>"; };
 		574912721C5932A700EA4F26 /* WritePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WritePolicy.swift; sourceTree = "<group>"; };
-		574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
 		574B0FA61C729EAF00CDC48F /* GetOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperation.swift; sourceTree = "<group>"; };
 		574B0FA81C729EB900CDC48F /* FindOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperation.swift; sourceTree = "<group>"; };
 		574B0FAA1C729EC900CDC48F /* SaveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperation.swift; sourceTree = "<group>"; };
@@ -560,6 +542,8 @@
 		577155BA1CA21CC200C91B4B /* Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Migration.swift; sourceTree = "<group>"; };
 		57757F3D1C652A5600C810E9 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		577C9E771C1F89C700BF49EE /* Credential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credential.swift; sourceTree = "<group>"; };
+		5781D0B21CE13A2E00369F40 /* KCSStringRealm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSStringRealm.h; sourceTree = "<group>"; };
+		5781D0B31CE13A2E00369F40 /* KCSStringRealm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSStringRealm.m; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
 		5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
@@ -594,6 +578,28 @@
 		57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestMedData.swift; sourceTree = "<group>"; };
 		57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestData.swift; sourceTree = "<group>"; };
 		57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Kinvey.xcconfig; sourceTree = "<group>"; };
+		57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = KinveyTests.xcconfig; sourceTree = "<group>"; };
+		57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KeychainAccess.framework; sourceTree = "<group>"; };
+		57B0C1D21CDCE88900492D6C /* KIF.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KIF.framework; sourceTree = "<group>"; };
+		57B0C1D61CDCE88900492D6C /* OMGHTTPURLRQ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OMGHTTPURLRQ.framework; sourceTree = "<group>"; };
+		57B0C1D81CDCE88900492D6C /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = "<group>"; };
+		57B0C1DA1CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
+		57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
+		57B0C1DF1CDCE88900492D6C /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KeychainAccess.framework; sourceTree = "<group>"; };
+		57B0C1E31CDCE88900492D6C /* OMGHTTPURLRQ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OMGHTTPURLRQ.framework; sourceTree = "<group>"; };
+		57B0C1E51CDCE88900492D6C /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = "<group>"; };
+		57B0C1E71CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
+		57B0C1E91CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
+		57B0C1F31CDCE88900492D6C /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KeychainAccess.framework; sourceTree = "<group>"; };
+		57B0C1F71CDCE88900492D6C /* OMGHTTPURLRQ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OMGHTTPURLRQ.framework; sourceTree = "<group>"; };
+		57B0C1F91CDCE88900492D6C /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = "<group>"; };
+		57B0C1FB1CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
+		57B0C1FD1CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
+		57B0C2061CDCE88900492D6C /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KeychainAccess.framework; sourceTree = "<group>"; };
+		57B0C20A1CDCE88900492D6C /* OMGHTTPURLRQ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OMGHTTPURLRQ.framework; sourceTree = "<group>"; };
+		57B0C20C1CDCE88900492D6C /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PromiseKit.framework; sourceTree = "<group>"; };
+		57B0C20E1CDCE88900492D6C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
+		57B0C2101CDCE88900492D6C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		57B0E94F1C5FF52200BA984F /* Push.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Push.swift; sourceTree = "<group>"; };
 		57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongoDBPredicateAdaptor.h; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.h"; sourceTree = SOURCE_ROOT; };
 		57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MongoDBPredicateAdaptor.m; path = "Carthage/Checkouts/NSPredicate-MongoDB-Adaptor/MongoDBPredicateAdaptor.m"; sourceTree = SOURCE_ROOT; };
@@ -878,7 +884,6 @@
 		57B23E9B1C7FA0BA006403CC /* KinveyKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyKit-Prefix.pch"; sourceTree = "<group>"; };
 		57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalRequest.swift; sourceTree = "<group>"; };
 		57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalResponse.swift; sourceTree = "<group>"; };
-		57BEAE231C987DC400479206 /* KIF.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KIF.framework; path = Carthage/Build/iOS/KIF.framework; sourceTree = "<group>"; };
 		57BEAE2C1C98805600479206 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		57BEAE2E1C98805E00479206 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		57BEAE341C98AB3900479206 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -939,7 +944,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */,
-				574B0F751C6E7E0E00CDC48F /* PromiseKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -950,8 +954,6 @@
 				57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */,
 				57BEAE2D1C98805600479206 /* CoreGraphics.framework in Frameworks */,
 				57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */,
-				5747103A1C7BA29D0096B15F /* PromiseKit.framework in Frameworks */,
-				57BEAE241C987DC400479206 /* KIF.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -970,8 +972,6 @@
 				57D643041CA3268000F6D16E /* QuartzCore.framework in Frameworks */,
 				57D643051CA3268000F6D16E /* CoreGraphics.framework in Frameworks */,
 				57D643071CA3268000F6D16E /* Kinvey.framework in Frameworks */,
-				57D643081CA3268000F6D16E /* PromiseKit.framework in Frameworks */,
-				57D643091CA3268000F6D16E /* KIF.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -982,8 +982,6 @@
 				57D6432B1CA3268600F6D16E /* QuartzCore.framework in Frameworks */,
 				57D6432C1CA3268600F6D16E /* CoreGraphics.framework in Frameworks */,
 				57D6432E1CA3268600F6D16E /* Kinvey.framework in Frameworks */,
-				57D6432F1CA3268600F6D16E /* PromiseKit.framework in Frameworks */,
-				57D643301CA3268600F6D16E /* KIF.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1089,6 +1087,7 @@
 			isa = PBXGroup;
 			children = (
 				57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */,
+				57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */,
 				57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */,
 				57B23E801C7F9414006403CC /* KinveyKit */,
 				5747102C1C7B8ECE0096B15F /* ObjC */,
@@ -1197,6 +1196,59 @@
 				57A9609E1CC6D6A9005E52A8 /* RefProject.swift */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		57B0C1C11CDCE88900492D6C /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */,
+				57B0C1D21CDCE88900492D6C /* KIF.framework */,
+				57B0C1D61CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
+				57B0C1D81CDCE88900492D6C /* PromiseKit.framework */,
+				57B0C1DA1CDCE88900492D6C /* Realm.framework */,
+				57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */,
+			);
+			name = iOS;
+			path = Carthage/Build/iOS;
+			sourceTree = "<group>";
+		};
+		57B0C1DE1CDCE88900492D6C /* Mac */ = {
+			isa = PBXGroup;
+			children = (
+				57B0C1DF1CDCE88900492D6C /* KeychainAccess.framework */,
+				57B0C1E31CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
+				57B0C1E51CDCE88900492D6C /* PromiseKit.framework */,
+				57B0C1E71CDCE88900492D6C /* Realm.framework */,
+				57B0C1E91CDCE88900492D6C /* RealmSwift.framework */,
+			);
+			name = Mac;
+			path = Carthage/Build/Mac;
+			sourceTree = "<group>";
+		};
+		57B0C1EB1CDCE88900492D6C /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				57B0C1F31CDCE88900492D6C /* KeychainAccess.framework */,
+				57B0C1F71CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
+				57B0C1F91CDCE88900492D6C /* PromiseKit.framework */,
+				57B0C1FB1CDCE88900492D6C /* Realm.framework */,
+				57B0C1FD1CDCE88900492D6C /* RealmSwift.framework */,
+			);
+			name = tvOS;
+			path = Carthage/Build/tvOS;
+			sourceTree = "<group>";
+		};
+		57B0C1FF1CDCE88900492D6C /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				57B0C2061CDCE88900492D6C /* KeychainAccess.framework */,
+				57B0C20A1CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
+				57B0C20C1CDCE88900492D6C /* PromiseKit.framework */,
+				57B0C20E1CDCE88900492D6C /* Realm.framework */,
+				57B0C2101CDCE88900492D6C /* RealmSwift.framework */,
+			);
+			name = watchOS;
+			path = Carthage/Build/watchOS;
 			sourceTree = "<group>";
 		};
 		57B23CF21C7F8C02006403CC /* NSPredicate-MongoDB-Adaptor */ = {
@@ -1332,6 +1384,8 @@
 				57B23D881C7F9414006403CC /* KCSSync.h */,
 				57B23D8A1C7F9414006403CC /* NSValueTransformer+Kinvey.h */,
 				57B23D8B1C7F9414006403CC /* NSValueTransformer+Kinvey.m */,
+				5781D0B21CE13A2E00369F40 /* KCSStringRealm.h */,
+				5781D0B31CE13A2E00369F40 /* KCSStringRealm.m */,
 			);
 			name = KinveySwift;
 			sourceTree = "<group>";
@@ -1822,14 +1876,14 @@
 		DBD4AA6B25714F7AAA213880 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				571991031CB31DE700070CDA /* libsqlite3.tbd */,
 				5719905A1CB301D500070CDA /* Security.framework */,
-				5719903A1CB2D82A00070CDA /* PromiseKit.framework */,
 				57BEAE2E1C98805E00479206 /* QuartzCore.framework */,
 				57BEAE2C1C98805600479206 /* CoreGraphics.framework */,
 				5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */,
-				57BEAE231C987DC400479206 /* KIF.framework */,
-				574B0F741C6E7E0E00CDC48F /* PromiseKit.framework */,
+				57B0C1C11CDCE88900492D6C /* iOS */,
+				57B0C1DE1CDCE88900492D6C /* Mac */,
+				57B0C1EB1CDCE88900492D6C /* tvOS */,
+				57B0C1FF1CDCE88900492D6C /* watchOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1959,6 +2013,7 @@
 				57B23EC81C7FA782006403CC /* KCSFileRealm.h in Headers */,
 				57B23EEE1C7FAA04006403CC /* KCSNSURLSessionFileOperation.h in Headers */,
 				57B23EF11C7FAA1E006403CC /* KCSMockFileOperation.h in Headers */,
+				5781D0B41CE13A2E00369F40 /* KCSStringRealm.h in Headers */,
 				57B23EE21C7FA934006403CC /* KCSNSURLSessionOperation.h in Headers */,
 				57B23F211C7FB000006403CC /* KCSEntityDict.h in Headers */,
 				57F717BE1CAF165800DD7750 /* KCSPush.h in Headers */,
@@ -2095,7 +2150,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = Kinvey;
 				TargetAttributes = {
 					5765B8431C9771BC00080FFA = {
@@ -2265,6 +2320,7 @@
 				574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
 				E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */,
+				5781D0B51CE13A2E00369F40 /* KCSStringRealm.m in Sources */,
 				57B23EA61C7FA465006403CC /* KCSAclRealm.m in Sources */,
 				57B23EF01C7FAA18006403CC /* KCSMockFileOperation.m in Sources */,
 				57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */,
@@ -2666,8 +2722,8 @@
 		};
 		57A27C991C178F18000DF951 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2683,14 +2739,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				TEST_HOST = "$(BUNDLE_LOADER)";
 			};
 			name = Debug;
 		};
 		57A27C9A1C178F18000DF951 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/KinveyApp.app/KinveyApp";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2705,7 +2760,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
 			};
 			name = Release;
 		};

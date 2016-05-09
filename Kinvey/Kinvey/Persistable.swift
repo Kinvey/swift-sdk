@@ -116,14 +116,20 @@ extension Persistable {
                 {
                     if let destinationType = destinationTypeDefinition.classType,
                         let valueNonNull = value where !valueNonNull.isKindOfClass(destinationType.1.0),
-                        let valueTransformer = ValueTransformer.valueTransformer(fromClass: valueNonNull.dynamicType, toClass: destinationType.1.0)
+                        let classType = destinationTypeDefinition.classType
                     {
-                        if let destinationType = destinationType.1.0 as? NSDate.Type,
-                            let transformedValue = valueTransformer.transformValue(value, destinationType: destinationType)
+                        if let valueTransformer = ValueTransformer.valueTransformer(fromClass: valueNonNull.dynamicType, toClass: destinationType.1.0) {
+                            if let destinationType = destinationType.1.0 as? NSDate.Type,
+                                let transformedValue = valueTransformer.transformValue(value, destinationType: destinationType)
+                            {
+                                value = transformedValue
+                            } else {
+                                value = nil
+                            }
+                        } else if let _ = classType.type.main as? Acl.Type,
+                            let json = value as? JsonDictionary
                         {
-                            value = transformedValue
-                        } else {
-                            value = nil
+                            value = Acl(json: json)
                         }
                     } else if value == nil {
                         continue
@@ -202,7 +208,11 @@ extension Persistable {
     /// Serialize the persistable object to a JSON object.
     func _toJson() -> JsonDictionary {
         let keys = self.dynamicType.kinveyPropertyMapping().map({ keyValuePair in keyValuePair.0 })
-        return dictionaryWithValuesForKeys(keys)
+        var json = dictionaryWithValuesForKeys(keys)
+        if let aclKey = self.dynamicType.aclKey, let acl = json[aclKey] as? Acl {
+            json[aclKey] = acl.toJson()
+        }
+        return json
     }
     
     /// Deserialize a JSON object into the persistable object.
