@@ -137,21 +137,23 @@ internal class Operation: NSObject {
                 persistableJson[PersistableMetadataKey] = kmd
             }
         }
-        if let aclKey = persistableType.aclKey {
-            persistableJson[aclKey] = json[PersistableAclKey]
-            if var acl = persistableJson[aclKey] as? JsonDictionary {
-                if let readers = acl[Acl.ReadersKey] as? [String] {
-                    acl[Acl.ReadersKey] = readers.map { ["stringValue" : $0] }
-                }
-                
-                if let writers = acl[Acl.WritersKey] as? [String] {
-                    acl[Acl.WritersKey] = writers.map { ["stringValue" : $0] }
-                }
-                
+        if let acl = json[PersistableAclKey] where acl.count > 0 {
+            if let aclKey = persistableType.aclKey {
                 persistableJson[aclKey] = acl
+                if var acl = persistableJson[aclKey] as? JsonDictionary where acl.count > 0 {
+                    if let readers = acl[Acl.ReadersKey] as? [String] {
+                        acl[Acl.ReadersKey] = readers.map { ["stringValue" : $0] }
+                    }
+                    
+                    if let writers = acl[Acl.WritersKey] as? [String] {
+                        acl[Acl.WritersKey] = writers.map { ["stringValue" : $0] }
+                    }
+                    
+                    persistableJson[aclKey] = acl
+                }
+            } else {
+                persistableJson[PersistableAclKey] = acl
             }
-        } else if let acl = json[PersistableAclKey] where acl.count > 0 {
-            persistableJson[PersistableAclKey] = acl
         }
         return persistableJson
     }

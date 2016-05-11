@@ -52,7 +52,7 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationPurge = expectationWithDescription("Purge")
         
-        let query = Query(format: "_acl.creatorId == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclKey ?? Kinvey.PersistableAclKey).creatorId == %@", client.activeUser!.userId)
         store.purge(query) { (count, error) -> Void in
             XCTAssertNotNil(count)
             XCTAssertNil(error)
@@ -72,7 +72,7 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationPurge = expectationWithDescription("Purge")
         
-        let query = Query(format: "_acl.creatorId == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclKey ?? Kinvey.PersistableAclKey).creatorId == %@", client.activeUser!.userId)
         store.purge(query) { (count, error) -> Void in
             self.assertThread()
             XCTAssertNil(count)
@@ -102,7 +102,7 @@ class SyncStoreTests: StoreTestCase {
         
         weak var expectationPurge = expectationWithDescription("Purge")
         
-        let query = Query(format: "_acl.creatorId == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclKey ?? Kinvey.PersistableAclKey).creatorId == %@", client.activeUser!.userId)
         store.purge(query) { (count, error) -> Void in
             XCTAssertNil(count)
             XCTAssertNotNil(error)

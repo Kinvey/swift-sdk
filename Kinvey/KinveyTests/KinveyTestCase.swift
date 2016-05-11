@@ -41,17 +41,37 @@ class KinveyTestCase: XCTestCase {
         KinveyTestCase.defaultTimeout
     }()
     
-    static let developmentAppId = "kid_Wy35WH6X9e"
+    typealias AppInitialize = (appKey: String, appSecret: String)
+    static let appInitializeDevelopment = AppInitialize(appKey: "kid_Wy35WH6X9e", appSecret: "d85f81cad5a649baaa6fdcd99a108ab1")
+    static let appInitializeProduction = AppInitialize(appKey: "kid_WyWKm0pPM-", appSecret: "081bc930604446de9153292f05c1b8e9")
+    static let appInitialize = appInitializeProduction
+    
+    func initializeDevelopment() {
+        client = Kinvey.sharedClient.initialize(
+            appKey: KinveyTestCase.appInitializeDevelopment.appKey,
+            appSecret: KinveyTestCase.appInitializeDevelopment.appSecret,
+            apiHostName: NSURL(string: "https://v3yk1n-kcs.kinvey.com")!,
+            encrypted: encrypted
+        )
+    }
+    
+    func initializeProduction() {
+        client = Kinvey.sharedClient.initialize(
+            appKey: KinveyTestCase.appInitializeProduction.appKey,
+            appSecret: KinveyTestCase.appInitializeProduction.appSecret,
+            encrypted: encrypted
+        )
+    }
     
     override func setUp() {
         super.setUp()
         
-        client = Kinvey.sharedClient.initialize(
-            appKey: KinveyTestCase.developmentAppId,
-            appSecret: "d85f81cad5a649baaa6fdcd99a108ab1",
-            apiHostName: NSURL(string: "https://v3yk1n-kcs.kinvey.com")!,
-            encrypted: encrypted
-        )
+        if KinveyTestCase.appInitialize == KinveyTestCase.appInitializeDevelopment {
+            initializeDevelopment()
+        } else {
+            initializeProduction()
+        }
+        
         if let activeUser = client.activeUser {
             activeUser.logout()
         }

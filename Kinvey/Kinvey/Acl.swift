@@ -47,9 +47,13 @@ public class Acl: NSObject {
     }
     
     /// Constructor used to build a new `Acl` instance from a JSON object.
-    public convenience init(json: JsonDictionary) {
+    public convenience init?(json: JsonDictionary) {
+        guard let creator = json[Acl.CreatorKey] as? String else {
+            return nil
+        }
+        
         self.init(
-            creator: json[Acl.CreatorKey] as! String,
+            creator: creator,
             globalRead: json[Acl.GlobalReadKey] as? Bool,
             globalWrite: json[Acl.GlobalWriteKey] as? Bool,
             readers: json[Acl.ReadersKey] as? [String],
