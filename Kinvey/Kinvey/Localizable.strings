@@ -1,0 +1,19 @@
+/* 
+  Localizable.strings
+  Kinvey
+
+  Created by Victor Barros on 2016-05-11.
+  Copyright © 2016 Kinvey. All rights reserved.
+*/
+
+"Error.ObjectIdMissing" = "Object ID is required and is missing";
+
+"Error.InvalidResponse" = "Invalid response from the server";
+
+"Error.NoActiveUser" = "An active user is required and none was found";
+
+"Error.RequestCanceled" = "Request was canceled";
+
+"Error.InvalidDataStoreType" = "DataStore type does not support this operation";
+
+"Error.UserWithoutEmailOrUsername" = "User has no email or username";

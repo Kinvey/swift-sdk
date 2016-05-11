@@ -44,6 +44,18 @@ public enum Error: ErrorType {
         }
     }
     
+    var description: String {
+        get {
+            let bundle = NSBundle(forClass: Client.self)
+            switch self {
+            case .Unauthorized(_, let description):
+                return description
+            default:
+                return NSLocalizedString("Error.\(self)", bundle: bundle, comment: "")
+            }
+        }
+    }
+    
     static func buildUnauthorized(json: [String : String]) -> Error {
         return Unauthorized(error: json["error"]!, description: json["description"]!)
     }

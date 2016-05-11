@@ -62,6 +62,8 @@
 		5781D1291CE2AFEC00369F40 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5781D12A1CE2AFF600369F40 /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5781D12B1CE2AFF900369F40 /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5781D1311CE3ADBC00369F40 /* ErrorTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */; };
+		5781D1341CE3B0FB00369F40 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5781D12E1CE3ACA000369F40 /* Localizable.strings */; };
 		5783B5071C1910B00077F8A6 /* JsonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5783B5061C1910B00077F8A6 /* JsonObject.swift */; };
 		5783B6671C1A13CB0077F8A6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */; };
 		578F5C911C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */; };
@@ -554,6 +556,8 @@
 		5781D0B21CE13A2E00369F40 /* KCSStringRealm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSStringRealm.h; sourceTree = "<group>"; };
 		5781D0B31CE13A2E00369F40 /* KCSStringRealm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSStringRealm.m; sourceTree = "<group>"; };
 		5781D1261CE29AA600369F40 /* ObjCRuntime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCRuntime.swift; sourceTree = "<group>"; };
+		5781D12E1CE3ACA000369F40 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
+		5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorTestCase.swift; sourceTree = "<group>"; };
 		5783B5061C1910B00077F8A6 /* JsonObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonObject.swift; sourceTree = "<group>"; };
 		5783B6661C1A13CB0077F8A6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		578F5C901C99EE5C00B20F17 /* DeltaSetCacheTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeltaSetCacheTestCase.swift; sourceTree = "<group>"; };
@@ -1106,6 +1110,7 @@
 				574B0FA51C729E9E00CDC48F /* Operations */,
 				57A27C841C178F17000DF951 /* Kinvey.h */,
 				57A27C861C178F17000DF951 /* Info.plist */,
+				5781D12E1CE3ACA000369F40 /* Localizable.strings */,
 				57A27C9B1C178FAC000DF951 /* Kinvey.swift */,
 				572C45911C86C13800A41935 /* EntitySchema.swift */,
 				577C9E771C1F89C700BF49EE /* Credential.swift */,
@@ -1187,6 +1192,7 @@
 				57A2ED951C4D5F74006D26A9 /* Media.xcassets */,
 				57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */,
 				5711C46C1C74F52F00073806 /* SaveOperationTest.swift */,
+				5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */,
 			);
 			path = KinveyTests;
 			sourceTree = "<group>";
@@ -2217,6 +2223,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5781D1341CE3B0FB00369F40 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2463,6 +2470,7 @@
 				57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */,
 				57471A301CCAED1600628933 /* EncryptedDataStoreTestCase.swift in Sources */,
 				571991091CB45EEE00070CDA /* Person.swift in Sources */,
+				5781D1311CE3ADBC00369F40 /* ErrorTestCase.swift in Sources */,
 				5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */,
 				57C563061C9CC7410011FB36 /* String.swift in Sources */,
 				5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */,

@@ -10,12 +10,12 @@ import Foundation
 import ObjectiveC
 
 @objc(__KNVObjCRuntime)
-public class ObjCRuntime: NSObject {
+internal class ObjCRuntime: NSObject {
     
     private override init() {
     }
     
-    public class func propertyNamesForTypeInClass(cls: AnyClass, type: AnyClass) -> [String]? {
+    internal class func propertyNamesForTypeInClass(cls: AnyClass, type: AnyClass) -> [String]? {
         var propertyNames = [String]()
         let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
         var propertyCount = UInt32(0)
@@ -45,7 +45,7 @@ public class ObjCRuntime: NSObject {
         return propertyNames.isEmpty ? nil : propertyNames
     }
     
-    public class func typeForPropertyName(cls: AnyClass, propertyName: String) -> AnyClass? {
+    internal class func typeForPropertyName(cls: AnyClass, propertyName: String) -> AnyClass? {
         let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
         var propertyCount = UInt32(0)
         let properties = class_copyPropertyList(cls, &propertyCount)
