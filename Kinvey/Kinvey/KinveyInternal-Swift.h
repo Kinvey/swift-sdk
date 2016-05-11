@@ -225,3 +225,10 @@
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 
 @end
+
+@interface __KNVObjCRuntime : NSObject
+
++ (NSArray<NSString *> * _Nullable)propertyNamesForTypeInClass:(Class _Nonnull)cls type:(Class _Nonnull)type;
++ (Class _Nullable)typeForPropertyName:(Class _Nonnull)cls propertyName:(NSString * _Nonnull)propertyName;
+
+@end
