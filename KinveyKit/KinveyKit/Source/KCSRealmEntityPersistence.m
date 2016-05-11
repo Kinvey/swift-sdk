@@ -285,7 +285,11 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     [self copyPropertiesFromClass:clazz
                           toClass:realmClass];
     
-    [self createAclToClass:realmClass];
+    NSArray<NSString*>* aclKeys = [__KNVObjCRuntime propertyNamesForTypeInClass:clazz
+                                                                           type:[KNVAcl class]];
+    if (!aclKeys || aclKeys.count == 0) {
+        [self createAclToClass:realmClass];
+    }
     [self createKmdToClass:realmClass];
     
     objc_registerClassPair(realmClass);
@@ -541,14 +545,15 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     RLMRealmConfiguration* realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
     
     if (filePath) {
-        realmConfiguration.path = filePath;
+        realmConfiguration.fileURL = [NSURL fileURLWithPath:filePath];
     } else {
-        NSMutableArray<NSString*>* pathComponents = [realmConfiguration.path pathComponents].mutableCopy;
+        NSMutableArray<NSString*>* pathComponents = [realmConfiguration.fileURL.path pathComponents].mutableCopy;
         pathComponents[pathComponents.count - 1] = [NSString stringWithFormat:@"com.kinvey.%@_cache.realm", persistenceId];
-        realmConfiguration.path = [NSString pathWithComponents:pathComponents];
+        NSString* path = [NSString pathWithComponents:pathComponents];
+        realmConfiguration.fileURL = [NSURL fileURLWithPath:path];
     }
     
-    NSLog(@"Database Path: %@", realmConfiguration.path);
+    NSLog(@"Database Path: %@", realmConfiguration.fileURL.path);
     
     if (encryptionKey) {
         realmConfiguration.encryptionKey = encryptionKey;

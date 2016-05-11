@@ -42,7 +42,7 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush = nil
             }
             
-            let query = Query(format: "_acl.creator ==  %@", user.userId)
+            let query = Query(format: "\(Person.aclKey ?? Kinvey.PersistableAclKey).creator ==  %@", user.userId)
             
             self.measureBlock {
                 weak var expectationFind = self.expectationWithDescription("Find")
@@ -96,7 +96,7 @@ class PerformanceTestCase: StoreTestCase {
                 expectationPush = nil
             }
             
-            let query = Query(format: "_acl.creator ==  %@", user.userId)
+            let query = Query(format: "\(Person.aclKey ?? Kinvey.PersistableAclKey).creator ==  %@", user.userId)
             
             self.measureBlock {
                 weak var expectationFind = self.expectationWithDescription("Find")
