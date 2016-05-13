@@ -27,8 +27,8 @@ class ErrorTestCase: XCTestCase {
         XCTAssertEqual(Error.NoActiveUser.description, "An active user is required and none was found")
     }
     
-    func testRequestCanceled() {
-        XCTAssertEqual(Error.RequestCanceled.description, "Request was canceled")
+    func testRequestCancelled() {
+        XCTAssertEqual(Error.RequestCancelled.description, "Request was cancelled")
     }
     
     func testInvalidDataStoreType() {

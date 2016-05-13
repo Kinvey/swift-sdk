@@ -25,9 +25,9 @@
     return [__KNVError NoActiveUser];
 }
 
-+ (NSError * _Nonnull)RequestCanceled
++ (NSError * _Nonnull)RequestCancelled
 {
-    return [__KNVError RequestCanceled];
+    return [__KNVError RequestCancelled];
 }
 
 + (NSError * _Nonnull)InvalidStoreType

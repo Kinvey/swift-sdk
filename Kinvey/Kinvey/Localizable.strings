@@ -12,7 +12,7 @@
 
 "Error.NoActiveUser" = "An active user is required and none was found";
 
-"Error.RequestCanceled" = "Request was canceled";
+"Error.RequestCancelled" = "Request was cancelled";
 
 "Error.InvalidDataStoreType" = "DataStore type does not support this operation";
 

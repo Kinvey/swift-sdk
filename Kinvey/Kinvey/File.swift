@@ -45,6 +45,8 @@ public class File: NSObject {
     /// Headers needed to submit the request to the `uploadURL`.
     var uploadHeaders: [String : String]?
     
+    var resumeDownloadData: NSData?
+    
     /// Constructor of a file instance.
     public init(fileId: String? = nil, fileName: String? = nil, size: UInt64? = nil, mimeType: String? = nil, publicAccessible: Bool = false) {
         self.fileId = fileId
