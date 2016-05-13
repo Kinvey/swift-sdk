@@ -105,19 +105,56 @@ public class FileStore {
     
     /// Uploads a file using a `NSData`.
     public func upload(file: File, data: NSData, completionHandler: FileCompletionHandler? = nil) -> Request {
-        let request = client.networkRequestFactory.buildBlobUploadFile(file)
-        Promise<File> { fulfill, reject in //creating bucket
-            request.execute({ (data, response, error) -> Void in
-                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
-                    self.fillFile(file, json: json)
-                    fulfill(file)
-                } else if let error = error {
-                    reject(error)
-                } else {
-                    reject(Error.InvalidResponse)
+        let requests = MultiRequest()
+        Promise<(file: File, skip: Int?)> { fulfill, reject in //creating bucket
+            if let _ = file.fileId {
+                let request = NSMutableURLRequest(URL: file.uploadURL!)
+                request.HTTPMethod = "PUT"
+                if let uploadHeaders = file.uploadHeaders {
+                    for header in uploadHeaders {
+                        request.setValue(header.1, forHTTPHeaderField: header.0)
+                    }
                 }
-            })
-        }.then { file in //uploading data
+                request.setValue("0", forHTTPHeaderField: "Content-Length")
+                request.setValue("bytes */\(data.length)", forHTTPHeaderField: "Content-Range")
+                let dataTask = self.client.urlSession.dataTaskWithRequest(request) { (_, response, error) in
+                    let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)", options: [])
+                    if let response = response as? NSHTTPURLResponse
+                        where response.statusCode == 308,
+                        let rangeString = response.allHeaderFields["Range"] as? String,
+                        let textCheckingResult = regexRange.matchesInString(rangeString, options: [], range: NSMakeRange(0, rangeString.characters.count)).first
+                        where textCheckingResult.numberOfRanges == 3
+                    {
+                        let rangeNSString = rangeString as NSString
+                        let endRangeString = rangeNSString.substringWithRange(textCheckingResult.rangeAtIndex(2))
+                        if let endRange = Int(endRangeString) {
+                            fulfill((file: file, skip: endRange))
+                        } else {
+                            reject(Error.InvalidResponse)
+                        }
+                    } else if let error = error {
+                        reject(error)
+                    } else {
+                        reject(Error.InvalidResponse)
+                    }
+                }
+                requests += NSURLSessionTaskRequest(client: client, task: dataTask)
+                dataTask.resume()
+            } else {
+                let request = client.networkRequestFactory.buildBlobUploadFile(file)
+                requests += request
+                request.execute({ (data, response, error) -> Void in
+                    if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
+                        self.fillFile(file, json: json)
+                        fulfill((file: file, skip: nil))
+                    } else if let error = error {
+                        reject(error)
+                    } else {
+                        reject(Error.InvalidResponse)
+                    }
+                })
+            }
+        }.then { file, skip in //uploading data
             return Promise<File> { fulfill, reject in
                 let request = NSMutableURLRequest(URL: file.uploadURL!)
                 request.HTTPMethod = "PUT"
@@ -126,7 +163,15 @@ public class FileStore {
                         request.setValue(header.1, forHTTPHeaderField: header.0)
                     }
                 }
-                let uploadTask = self.client.urlSession.uploadTaskWithRequest(request, fromData: data) { (data, response, error) -> Void in
+                let uploadData: NSData
+                if let skip = skip {
+                    let startIndex = skip + 1
+                    uploadData = data.subdataWithRange(NSMakeRange(startIndex, data.length - startIndex))
+                    request.setValue("bytes \(startIndex)-\(data.length - 1)/\(data.length)", forHTTPHeaderField: "Content-Range")
+                } else {
+                    uploadData = data
+                }
+                let uploadTask = self.client.urlSession.uploadTaskWithRequest(request, fromData: uploadData) { (data, response, error) -> Void in
                     if let response = response as? NSHTTPURLResponse where 200 <= response.statusCode && response.statusCode < 300 {
                         fulfill(file)
                     } else if let error = error {
@@ -135,6 +180,7 @@ public class FileStore {
                         reject(Error.InvalidResponse)
                     }
                 }
+                requests += NSURLSessionTaskRequest(client: self.client, task: uploadTask)
                 uploadTask.resume()
             }
         }.then { file in //fetching download url
@@ -144,7 +190,7 @@ public class FileStore {
         }.error { error in
             completionHandler?(file, error)
         }
-        return request
+        return requests
     }
     
     /// Refresh a `File` instance.
@@ -159,10 +205,10 @@ public class FileStore {
         return request
     }
     
-    private func downloadFile(file: File, downloadURL: NSURL, completionHandler: FileDataCompletionHandler? = nil) -> NSURLSessionDownloadTaskRequest {
-        let downloadTaskRequest = NSURLSessionDownloadTaskRequest(client: client, url: downloadURL)
+    private func downloadFile(file: File, downloadURL: NSURL, completionHandler: FileDataCompletionHandler? = nil) -> NSURLSessionTaskRequest {
+        let downloadTaskRequest = NSURLSessionTaskRequest(client: client, url: downloadURL)
         Promise<NSData> { fulfill, reject in
-            downloadTaskRequest.execute({ (data, response, error) -> Void in
+            downloadTaskRequest.downloadTaskWithURL(file) { (data, response, error) -> Void in
                 if let response = response where response.isResponseOK, let data = data {
                     fulfill(data)
                 } else if let error = error {
@@ -170,7 +216,7 @@ public class FileStore {
                 } else {
                     reject(Error.InvalidResponse)
                 }
-            })
+            }
         }.then { data in
             completionHandler?(file, data, nil)
         }.error { error in

@@ -23,10 +23,10 @@ class RequestTestCase: KinveyTestCase {
         if let activeUser = client.activeUser {
             let request = HttpRequest(endpoint: Endpoint.UserById(client: client, userId: activeUser.userId))
             request.execute()
-            XCTAssertFalse(request.canceled)
+            XCTAssertFalse(request.cancelled)
             request.cancel()
             NSThread.sleepForTimeInterval(3)
-            XCTAssertTrue(request.canceled)
+            XCTAssertTrue(request.cancelled)
         }
     }
     

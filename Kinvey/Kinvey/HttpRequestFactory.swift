@@ -210,6 +210,7 @@ class HttpRequestFactory: RequestFactory {
         }
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.request.setValue(file.mimeType ?? "application/octet-stream", forHTTPHeaderField: "X-Kinvey-Content-Type")
         request.request.HTTPBody = toJson(bodyObject)
         return request
     }

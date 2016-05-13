@@ -20,5 +20,5 @@ public protocol Request {
     
     /// Cancels a request in progress.
     func cancel()
-
+    
 }

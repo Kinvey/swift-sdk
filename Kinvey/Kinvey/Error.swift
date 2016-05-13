@@ -30,7 +30,7 @@ public enum Error: ErrorType {
     case NoActiveUser
     
     /// Error when a request was cancelled.
-    case RequestCanceled
+    case RequestCancelled
     
     /// Error when calls a method not available for a specific data store type.
     case InvalidDataStoreType

@@ -14,7 +14,7 @@ internal class MultiRequest: NSObject, Request {
     private var requests = [Request]()
     
     internal func addRequest(request: Request) {
-        if _canceled {
+        if _cancelled {
             request.cancel()
         }
         requests.append(request)
@@ -31,7 +31,7 @@ internal class MultiRequest: NSObject, Request {
         }
     }
     
-    var _canceled = false
+    var _cancelled = false
     internal var cancelled: Bool {
         get {
             for request in requests {
@@ -39,15 +39,19 @@ internal class MultiRequest: NSObject, Request {
                     return true
                 }
             }
-            return _canceled
+            return _cancelled
         }
     }
     
     internal func cancel() {
-        _canceled = true
+        _cancelled = true
         for request in requests {
             request.cancel()
         }
     }
     
+}
+
+func +=(lhs: MultiRequest, rhs: Request) {
+    lhs.addRequest(rhs)
 }

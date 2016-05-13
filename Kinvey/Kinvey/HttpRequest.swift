@@ -113,13 +113,15 @@ extension RequestType {
 
 internal typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
 
+public let restApiVersion = 4
+
 @objc(__KNVHttpRequest)
 internal class HttpRequest: NSObject, Request {
     
     let httpMethod: HttpMethod
     let endpoint: Endpoint
     let defaultHeaders = [
-        HttpHeader.APIVersion(version: 3)
+        HttpHeader.APIVersion(version: restApiVersion)
     ]
     
     var headers: [HttpHeader] = []
@@ -187,7 +189,7 @@ internal class HttpRequest: NSObject, Request {
     
     func execute(completionHandler: DataResponseCompletionHandler? = nil) {
         guard !cancelled else {
-            completionHandler?(nil, nil, Error.RequestCanceled)
+            completionHandler?(nil, nil, Error.RequestCancelled)
             return
         }
         

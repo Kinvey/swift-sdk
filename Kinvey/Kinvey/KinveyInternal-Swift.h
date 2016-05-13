@@ -201,7 +201,7 @@
 + (NSError * _Nonnull)ObjectIdMissing;
 + (NSError * _Nonnull)InvalidResponse;
 + (NSError * _Nonnull)NoActiveUser;
-+ (NSError * _Nonnull)RequestCanceled;
++ (NSError * _Nonnull)RequestCancelled;
 + (NSError * _Nonnull)InvalidStoreType;
 
 @end
@@ -209,7 +209,7 @@
 @interface __KNVLocalRequest : NSObject <KNVRequest>
 
 @property (nonatomic, readonly) BOOL executing;
-@property (nonatomic, readonly) BOOL canceled;
+@property (nonatomic, readonly) BOOL cancelled;
 
 - (void)cancel;
 
@@ -218,7 +218,7 @@
 @interface __KNVMultiRequest : NSObject <KNVRequest>
 
 @property (nonatomic, readonly) BOOL executing;
-@property (nonatomic, readonly) BOOL canceled;
+@property (nonatomic, readonly) BOOL cancelled;
 
 - (void)addRequest:(id <KNVRequest> _Nonnull)request;
 - (void)cancel;
