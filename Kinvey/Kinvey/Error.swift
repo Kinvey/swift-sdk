@@ -44,7 +44,8 @@ public enum Error: ErrorType {
         }
     }
     
-    var description: String {
+    //Error localized description.
+    public var localizedDescription: String {
         get {
             let bundle = NSBundle(forClass: Client.self)
             switch self {
