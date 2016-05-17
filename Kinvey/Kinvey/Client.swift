@@ -51,7 +51,7 @@ public class Client: NSObject, Credential {
                     appKey: appKey
                 )
                 
-                CacheManager(persistenceId: appKey, encryptionKey: encryptionKey).clearAllCaches()
+                CacheManager(persistenceId: appKey, encryptionKey: encryptionKey).clearAll()
                 Keychain(appKey: appKey).removeAll()
                 dataStoreInstances.removeAll()
             }
