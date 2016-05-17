@@ -31,7 +31,7 @@ internal class CacheManager: NSObject {
         return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName, filePath: filePath, encryptionKey: encryptionKey) as! Cache
     }
     
-    func clearAllCaches() {
+    func clearAll(tag: String? = nil) {
         let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
         if let path = paths.first as NSString? {
             let basePath = path.stringByAppendingPathComponent(persistenceId)
@@ -43,7 +43,7 @@ internal class CacheManager: NSObject {
             if exists && isDirectory {
                 var array = try! fileManager.subpathsOfDirectoryAtPath(basePath)
                 array = array.filter({ (path) -> Bool in
-                    return path.hasSuffix(".realm")
+                    return path.hasSuffix(".realm") && (tag == nil || path.caseInsensitiveCompare(tag! + ".realm") == .OrderedSame)
                 })
                 for realmFile in array {
                     let realmConfiguration = RLMRealmConfiguration.defaultConfiguration()

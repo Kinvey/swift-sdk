@@ -245,7 +245,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return requests
     }
     
-    /// Deletes all the pending chances in the local cache.
+    /// Deletes all the pending changes in the local cache.
     public func purge(query: Query = Query(), completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
@@ -310,6 +310,15 @@ public class DataStore<T: Persistable where T: NSObject> {
             }
         }
         return nil
+    }
+    
+    public class func clearCache(tag: String? = nil, client: Client = sharedClient) {
+        client.cacheManager.clearAll(tag)
+    }
+    
+    public func clearCache() {
+        cache.removeAllEntities()
+        sync.removeAllPendingOperations()
     }
 
 }
