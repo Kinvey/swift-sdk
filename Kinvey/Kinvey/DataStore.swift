@@ -32,6 +32,8 @@ public class DataStore<T: Persistable where T: NSObject> {
     private let cache: Cache
     private let sync: Sync
     
+    private var deltaSet: Bool
+    
     /// TTL (Time to Live) defines a filter of how old the data returned from the DataStore can be.
     public var ttl: TTL? {
         didSet {
@@ -40,12 +42,13 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Factory method that returns a `DataStore`.
-    public class func getInstance(type: DataStoreType = .Cache, client: Client = sharedClient) -> DataStore {
-        return DataStore<T>(type: type, client: client, filePath: nil, encryptionKey: client.encryptionKey)
+    public class func getInstance(type: DataStoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient) -> DataStore {
+        return DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: nil, encryptionKey: client.encryptionKey)
     }
     
-    private init(type: DataStoreType, client: Client, filePath: String?, encryptionKey: NSData?) {
+    private init(type: DataStoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: NSData?) {
         self.type = type
+        self.deltaSet = deltaSet
         self.client = client
         collectionName = T.kinveyCollectionName()
         cache = client.cacheManager.cache(collectionName, filePath: filePath)
@@ -69,8 +72,9 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Gets a list of records that matches with the query passed by parameter.
-    public func find(query: Query = Query(), deltaSet: Bool = true, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
+    public func find(query: Query = Query(), deltaSet: Bool? = nil, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
+        let deltaSet = deltaSet ?? self.deltaSet
         let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
@@ -144,14 +148,14 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
-    public func pull(query: Query = Query(), completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
+    public func pull(query: Query = Query(), deltaSet: Bool? = nil, completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
             completionHandler?(nil, KinveyError.InvalidDataStoreType)
             return LocalRequest()
         }
-        
-        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: true, readPolicy: .ForceNetwork, persistableType: T.self, cache: cache, client: client)
+        let deltaSet = deltaSet ?? self.deltaSet
+        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
