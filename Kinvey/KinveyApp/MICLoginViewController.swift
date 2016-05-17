@@ -22,8 +22,8 @@ public class MICLoginViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         Kinvey.sharedClient.initialize(
-            appKey: "kid_W1rPs9qy0",
-            appSecret: "75f94ea7477c4bb7bd28c93b703bd10b"
+            appKey: "kid_WyWKm0pPM-",
+            appSecret: "081bc930604446de9153292f05c1b8e9"
         )
     }
 

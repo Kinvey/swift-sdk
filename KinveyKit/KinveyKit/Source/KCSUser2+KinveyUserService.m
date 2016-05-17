@@ -132,7 +132,10 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
     return [KCSRequest requestWithNetworkOperation:[request start]];
 }
 
-+ (void) createWithAuthProvider:(KCSUserSocialIdentifyProvider)provider loginBody:(NSDictionary*)body completion:(KCSUser2CompletionBlock)completionBlock;
++ (void)createWithAuthProvider:(KCSUserSocialIdentifyProvider)provider
+                     loginBody:(NSDictionary*)body
+                        client:(KNVClient*)client
+                    completion:(KCSUser2CompletionBlock)completionBlock;
 {
     KCSHttpRequest* request = [KCSHttpRequest requestWithCompletion:^(KCSNetworkResponse *response, NSError *error) {
         if (error) {
@@ -149,9 +152,10 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             }
         }
     }
-                                                        route:KCSRESTRouteUser
-                                                      options:@{KCSRequestLogMethod}
-                                                  credentials:[KCSClient2 sharedClient]];
+                                                              route:KCSRESTRouteUser
+                                                            options:@{KCSRequestLogMethod}
+                                                        credentials:[KCSClient2 sharedClient]
+                                                             client:client];
     request.method = KCSRESTMethodPOST;
     request.body = body;
     [request start];
@@ -213,7 +217,10 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         if (error) {
             if (response.isKCSError == YES && response.code == KCSNotFoundError) {
                 //This is new user, create
-                [self createWithAuthProvider:provider loginBody:loginDict completion:completionBlock];
+                [self createWithAuthProvider:provider
+                                   loginBody:loginDict
+                                      client:client
+                                  completion:completionBlock];
             } else {
                 KCSLogNSError(KCS_LOG_CONTEXT_USER, error);
                 [self setActive:nil];
@@ -236,9 +243,10 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
             }
         }
     }
-                                                        route:KCSRESTRouteUser
-                                                      options:@{KCSRequestLogMethod}
-                                                  credentials:[KCSClient2 sharedClient]];
+                                                              route:KCSRESTRouteUser
+                                                            options:@{KCSRequestLogMethod}
+                                                        credentials:[KCSClient2 sharedClient]
+                                                             client:client];
     request.path = @[@"login"];
     request.method = KCSRESTMethodPOST;
     request.body = loginDict;

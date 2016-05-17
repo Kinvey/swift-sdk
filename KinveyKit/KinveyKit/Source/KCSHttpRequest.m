@@ -110,7 +110,21 @@ static NSOperationQueue* kcsRequestQueue;
                                  route:route
                                options:options
                            credentials:credentials
-                  requestConfiguration:nil];
+                                client:[KCSClient sharedClient]];
+}
+
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
+                                 route:(NSString*)route
+                               options:(NSDictionary*)options
+                           credentials:(id)credentials
+                                client:(KNVClient*)client
+{
+    return [self requestWithCompletion:completion
+                                 route:route
+                               options:options
+                           credentials:credentials
+                  requestConfiguration:nil
+                                client:client];
 }
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
@@ -119,7 +133,22 @@ static NSOperationQueue* kcsRequestQueue;
                            credentials:(id)credentials
                   requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
 {
-    KCSHttpRequest* request = [[KCSHttpRequest alloc] init];
+    return [self requestWithCompletion:completion
+                                 route:route
+                               options:options
+                           credentials:credentials
+                  requestConfiguration:requestConfiguration
+                                client:[KCSClient sharedClient]];
+}
+
++ (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
+                                 route:(NSString*)route
+                               options:(NSDictionary*)options
+                           credentials:(id)credentials
+                  requestConfiguration:(KCSRequestConfiguration*)requestConfiguration
+                                client:(KNVClient*)client
+{
+    KCSHttpRequest* request = [[KCSHttpRequest alloc] initWithClient:client];
     request.useMock = [options[KCSRequestOptionUseMock] boolValue];
     request.completionBlock = completion;
     request.credentials = credentials;
@@ -131,11 +160,16 @@ static NSOperationQueue* kcsRequestQueue;
 
 - (instancetype) init
 {
+    return [self initWithClient:[KCSClient sharedClient]];
+}
+
+- (instancetype) initWithClient:(KNVClient*)client
+{
     self = [super init];
     if (self) {
         _contentType = kHeaderValueJson;
         _method = KCSRESTMethodGET;
-        _client = [KCSClient sharedClient].client;
+        _client = client;
     }
     return self;
 }
