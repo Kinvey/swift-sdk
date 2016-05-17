@@ -138,8 +138,8 @@ internal class Operation: NSObject {
             }
         }
         if let acl = json[PersistableAclKey] where acl.count > 0 {
-            if let aclKey = persistableType.aclKey {
-                persistableJson[aclKey] = acl
+            let decorateAcl: (String) -> Void = { aclKey in
+                persistableJson[PersistableAclKey] = acl
                 if var acl = persistableJson[aclKey] as? JsonDictionary where acl.count > 0 {
                     if let readers = acl[Acl.ReadersKey] as? [String] {
                         acl[Acl.ReadersKey] = readers.map { ["stringValue" : $0] }
@@ -151,9 +151,8 @@ internal class Operation: NSObject {
                     
                     persistableJson[aclKey] = acl
                 }
-            } else {
-                persistableJson[PersistableAclKey] = acl
             }
+            decorateAcl(persistableType.aclKey ?? PersistableAclKey)
         }
         return persistableJson
     }

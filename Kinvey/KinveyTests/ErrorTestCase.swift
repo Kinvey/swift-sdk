@@ -12,31 +12,31 @@ import XCTest
 class ErrorTestCase: XCTestCase {
     
     func testObjectIDMissing() {
-        XCTAssertEqual(Error.ObjectIdMissing.description, "Object ID is required and is missing")
+        XCTAssertEqual(Error.ObjectIdMissing.localizedDescription, "Object ID is required and is missing")
     }
     
     func testInvalidResponse() {
-        XCTAssertEqual(Error.InvalidResponse.description, "Invalid response from the server")
+        XCTAssertEqual(Error.InvalidResponse.localizedDescription, "Invalid response from the server")
     }
     
     func testUnauthorized() {
-        XCTAssertEqual(Error.Unauthorized(error: "Error", description: "Description").description, "Description")
+        XCTAssertEqual(Error.Unauthorized(error: "Error", description: "Description").localizedDescription, "Description")
     }
     
     func testNoActiveUser() {
-        XCTAssertEqual(Error.NoActiveUser.description, "An active user is required and none was found")
+        XCTAssertEqual(Error.NoActiveUser.localizedDescription, "An active user is required and none was found")
     }
     
     func testRequestCancelled() {
-        XCTAssertEqual(Error.RequestCancelled.description, "Request was cancelled")
+        XCTAssertEqual(Error.RequestCancelled.localizedDescription, "Request was cancelled")
     }
     
     func testInvalidDataStoreType() {
-        XCTAssertEqual(Error.InvalidDataStoreType.description, "DataStore type does not support this operation")
+        XCTAssertEqual(Error.InvalidDataStoreType.localizedDescription, "DataStore type does not support this operation")
     }
     
     func testUserWithoutEmailOrUsername() {
-        XCTAssertEqual(Error.UserWithoutEmailOrUsername.description, "User has no email or username")
+        XCTAssertEqual(Error.UserWithoutEmailOrUsername.localizedDescription, "User has no email or username")
     }
     
 }
