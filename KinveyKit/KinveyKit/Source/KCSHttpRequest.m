@@ -110,7 +110,7 @@ static NSOperationQueue* kcsRequestQueue;
                                  route:route
                                options:options
                            credentials:credentials
-                                client:[KCSClient sharedClient]];
+                                client:[KCSClient sharedClient].client];
 }
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
@@ -138,7 +138,7 @@ static NSOperationQueue* kcsRequestQueue;
                                options:options
                            credentials:credentials
                   requestConfiguration:requestConfiguration
-                                client:[KCSClient sharedClient]];
+                                client:[KCSClient sharedClient].client];
 }
 
 + (instancetype) requestWithCompletion:(KCSRequestCompletionBlock)completion
@@ -160,7 +160,7 @@ static NSOperationQueue* kcsRequestQueue;
 
 - (instancetype) init
 {
-    return [self initWithClient:[KCSClient sharedClient]];
+    return [self initWithClient:[KCSClient sharedClient].client];
 }
 
 - (instancetype) initWithClient:(KNVClient*)client
