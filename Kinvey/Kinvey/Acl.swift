@@ -27,8 +27,10 @@ public class Acl: NSObject {
     /// The `userId` of the `User` used to create the record.
     public let globalWrite: Bool?
     
+    /// Specifies the list of user _ids that are explicitly allowed to read the entity.
     public let readers: [String]?
     
+    /// Specifies the list of user _ids that are explicitly allowed to modify the entity.
     public let writers: [String]?
     
     /// Constructs an Acl instance with the `userId` of the `User` used to create the record.
