@@ -113,6 +113,7 @@ extension RequestType {
 
 internal typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
 
+/// REST API Version used in the REST calls.
 public let restApiVersion = 4
 
 @objc(__KNVHttpRequest)
