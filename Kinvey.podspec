@@ -90,7 +90,7 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  # s.source_files  = "Kinvey.m", "Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/*"
+  s.source_files  = "Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/*"
   # s.exclude_files = "Classes/Exclude"
 
   s.public_header_files = "Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/*"
@@ -137,8 +137,8 @@ Pod::Spec.new do |s|
 
   s.xcconfig = { "OTHER_LDFLAGS" => "-ObjC" }
 	
-  s.dependency "PromiseKit", "~> 3.0.3"
-	s.dependency "KeychainAccess", "~> 2.3.4"
-	s.dependency "Realm", "~> 0.98.5"
+  s.dependency "PromiseKit", "~> 3.1.1"
+  s.dependency "KeychainAccess", "~> 2.3.5"
+  s.dependency "Realm", "~> 0.103.0"
 
 end
