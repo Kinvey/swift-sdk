@@ -50,7 +50,10 @@ public class Client: NSObject, Credential {
                     activeUser?.userId,
                     appKey: appKey
                 )
-                CacheManager(persistenceId: appKey, encryptionKey: encryptionKey).cache().removeAllEntities()
+                
+                CacheManager(persistenceId: appKey, encryptionKey: encryptionKey).clearAll()
+                Keychain(appKey: appKey).removeAll()
+                dataStoreInstances.removeAll()
             }
         }
         didSet {
@@ -116,6 +119,11 @@ public class Client: NSObject, Credential {
     
     /// Set a different type if you need a custom `User` class. Extends from `User` allows you to have custom properties in your `User` instances.
     public var userType = User.self
+    
+    ///Default Value for DataStore tag
+    public static let defaultTag = Kinvey.defaultTag
+    
+    var dataStoreInstances = [DataStoreTypeTag : AnyObject]()
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public override init() {

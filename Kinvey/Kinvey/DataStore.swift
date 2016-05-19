@@ -8,6 +8,44 @@
 
 import Foundation
 
+class DataStoreTypeTag: Hashable {
+    
+    let persistableType: Persistable.Type
+    let tag: String
+    let type: DataStoreType
+    
+    init(persistableType: Persistable.Type, tag: String, type: DataStoreType) {
+        self.persistableType = persistableType
+        self.tag = tag
+        self.type = type
+    }
+    
+    var hashValue: Int {
+        var hash = NSDecimalNumber(integer: 5)
+        hash = 23 * hash + NSDecimalNumber(integer: NSStringFromClass(persistableType).hashValue)
+        hash = 23 * hash + NSDecimalNumber(integer: tag.hashValue)
+        hash = 23 * hash + NSDecimalNumber(integer: type.hashValue)
+        return hash.hashValue
+    }
+    
+}
+
+func +(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
+    return lhs.decimalNumberByAdding(rhs)
+}
+
+func *(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
+    return lhs.decimalNumberByMultiplyingBy(rhs)
+}
+
+func ==(lhs: DataStoreTypeTag, rhs: DataStoreTypeTag) -> Bool {
+    return lhs.persistableType == rhs.persistableType &&
+        lhs.tag == rhs.tag &&
+        lhs.type == rhs.type
+}
+
+let defaultTag = "kinvey"
+
 /// Class to interact with a specific collection in the backend.
 public class DataStore<T: Persistable where T: NSObject> {
     
@@ -40,10 +78,29 @@ public class DataStore<T: Persistable where T: NSObject> {
             cache.ttl = ttl != nil ? ttl!.1.toTimeInterval(ttl!.0) : 0
         }
     }
-    
+
     /// Factory method that returns a `DataStore`.
-    public class func getInstance(type: DataStoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient) -> DataStore {
-        return DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: nil, encryptionKey: client.encryptionKey)
+    public class func getInstance(type: DataStoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
+        let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
+        var dataStore = client.dataStoreInstances[key] as? DataStore
+        if dataStore == nil {
+            let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+            let path = paths.first! as NSString
+            var filePath = path.stringByAppendingPathComponent(client.appKey!) as NSString
+            
+            let fileManager = NSFileManager.defaultManager()
+            do {
+                let filePath = filePath as String
+                if !fileManager.fileExistsAtPath(filePath) {
+                    try! fileManager.createDirectoryAtPath(filePath, withIntermediateDirectories: true, attributes: nil)
+                }
+            }
+            
+            filePath = filePath.stringByAppendingPathComponent("\(tag).realm")
+            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: filePath as String, encryptionKey: client.encryptionKey)
+            client.dataStoreInstances[key] = dataStore
+        }
+        return dataStore!
     }
     
     private init(type: DataStoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: NSData?) {
@@ -183,7 +240,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         return requests
     }
     
-    /// Deletes all the pending chances in the local cache.
+    /// Deletes all the pending changes in the local cache.
     public func purge(query: Query = Query(), completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         guard type == .Sync else {
@@ -248,6 +305,15 @@ public class DataStore<T: Persistable where T: NSObject> {
             }
         }
         return nil
+    }
+    
+    public class func clearCache(tag: String? = nil, client: Client = sharedClient) {
+        client.cacheManager.clearAll(tag)
+    }
+    
+    public func clearCache() {
+        cache.removeAllEntities()
+        sync.removeAllPendingOperations()
     }
 
 }

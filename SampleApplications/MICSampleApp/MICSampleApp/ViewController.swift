@@ -32,12 +32,12 @@ class ViewController: UIViewController {
         User.presentMICViewController(
             redirectURI: NSURL(string: textFieldRedirectURI.text!)!,
             client: client
-        ) { user, error in
+        ) { (user: User?, error: ErrorType?) in
             let alertVC = UIAlertController()
             if let user = user {
                 alertVC.title = "Success"
                 alertVC.message = user.userId
-            } else if let error = error {
+            } else if let error = error as? NSError {
                 alertVC.title = "Error"
                 alertVC.message = error.localizedDescription
             }
