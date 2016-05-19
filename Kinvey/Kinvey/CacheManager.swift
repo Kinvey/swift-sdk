@@ -47,7 +47,7 @@ internal class CacheManager: NSObject {
                 })
                 for realmFile in array {
                     let realmConfiguration = RLMRealmConfiguration.defaultConfiguration()
-                    realmConfiguration.path = (basePath as NSString).stringByAppendingPathComponent(realmFile)
+                    realmConfiguration.fileURL = NSURL(fileURLWithPath: (basePath as NSString).stringByAppendingPathComponent(realmFile))
                     if let encryptionKey = encryptionKey {
                         realmConfiguration.encryptionKey = encryptionKey
                     }

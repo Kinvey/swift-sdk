@@ -120,10 +120,10 @@ public class Client: NSObject, Credential {
     /// Set a different type if you need a custom `User` class. Extends from `User` allows you to have custom properties in your `User` instances.
     public var userType = User.self
     
-    ///Default Value for DataStore alias
-    public static let defaultAlias = Kinvey.defaultIdentifier
+    ///Default Value for DataStore tag
+    public static let defaultTag = Kinvey.defaultTag
     
-    var dataStoreInstances = [DataStoreTypeAlias : AnyObject]()
+    var dataStoreInstances = [DataStoreTypeTag : AnyObject]()
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public override init() {

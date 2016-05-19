@@ -547,7 +547,7 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
     if (filePath) {
         realmConfiguration.fileURL = [NSURL fileURLWithPath:filePath];
     } else {
-        NSString* path = [realmConfiguration.path.stringByDeletingLastPathComponent stringByAppendingPathComponent:persistenceId];
+        NSString* path = [realmConfiguration.fileURL.path.stringByDeletingLastPathComponent stringByAppendingPathComponent:persistenceId];
         NSFileManager* fileManager = [NSFileManager defaultManager];
         if (![fileManager fileExistsAtPath:path]) {
             NSError *error = nil;
@@ -559,8 +559,8 @@ static inline void saveEntity(NSDictionary<NSString *,id> *entity, RLMRealm* rea
                 NSLog(@"%@", error);
             }
         }
-        path = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.realm", [__KNVClient defaultAlias]]];
-        realmConfiguration.path = path;
+        path = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.realm", [__KNVClient defaultTag]]];
+        realmConfiguration.fileURL = [NSURL fileURLWithPath:path];
     }
     
     NSLog(@"Database Path: %@", realmConfiguration.fileURL.path);
