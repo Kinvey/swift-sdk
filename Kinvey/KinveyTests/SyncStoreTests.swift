@@ -28,13 +28,14 @@ class SyncStoreTests: StoreTestCase {
         store = DataStore<Person>.getInstance(.Sync)
     }
     
-    func testCustomIdentifier() {
+    func testCustomTag() {
         let fileManager = NSFileManager.defaultManager()
         
         let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
         XCTAssertEqual(paths.count, 1)
         if let path = paths.first {
-            let customPath = "\(path)/\(client.appKey!)/Custom Identifier.realm"
+            let tag = "Custom Identifier"
+            let customPath = "\(path)/\(client.appKey!)/\(tag).realm"
             
             let removeFiles: () -> Void = {
                 if fileManager.fileExistsAtPath(customPath) {
@@ -65,7 +66,7 @@ class SyncStoreTests: StoreTestCase {
             removeFiles()
             XCTAssertFalse(fileManager.fileExistsAtPath(customPath))
             
-            store = DataStore<Person>.getInstance(.Sync, identifier: "Custom Identifier")
+            store = DataStore<Person>.getInstance(.Sync, tag: tag)
             defer {
                 removeFiles()
                 XCTAssertFalse(fileManager.fileExistsAtPath(customPath))

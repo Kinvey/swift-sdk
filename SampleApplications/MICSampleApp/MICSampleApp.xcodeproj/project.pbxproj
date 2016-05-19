@@ -14,9 +14,9 @@
 		5709606A1C1B962400D4AFA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 570960681C1B962400D4AFA5 /* LaunchScreen.storyboard */; };
 		570960751C1B962500D4AFA5 /* MICSampleAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570960741C1B962500D4AFA5 /* MICSampleAppTests.swift */; };
 		570960801C1B962500D4AFA5 /* MICSampleAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5709607F1C1B962500D4AFA5 /* MICSampleAppUITests.swift */; };
-		577C9E601C1CF69300BF49EE /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 577C9E5F1C1CF69300BF49EE /* Kinvey.framework */; };
-		577C9E611C1CF6B300BF49EE /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 577C9E5F1C1CF69300BF49EE /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		577C9E691C1E046800BF49EE /* XCUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E681C1E046800BF49EE /* XCUIElement.swift */; };
+		579483021CEE34FE00B0ECF0 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 579482FE1CEE348A00B0ECF0 /* Realm.framework */; };
+		579483041CEE354900B0ECF0 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 579483031CEE354900B0ECF0 /* Kinvey.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,7 +43,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				577C9E611C1CF6B300BF49EE /* Kinvey.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,8 +62,9 @@
 		5709607B1C1B962500D4AFA5 /* MICSampleAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MICSampleAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5709607F1C1B962500D4AFA5 /* MICSampleAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MICSampleAppUITests.swift; sourceTree = "<group>"; };
 		570960811C1B962500D4AFA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		577C9E5F1C1CF69300BF49EE /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../Kinvey/build/Debug-universal/Kinvey.framework"; sourceTree = "<group>"; };
 		577C9E681C1E046800BF49EE /* XCUIElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XCUIElement.swift; sourceTree = "<group>"; };
+		579482FE1CEE348A00B0ECF0 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../../Kinvey/Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
+		579483031CEE354900B0ECF0 /* Kinvey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kinvey.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Kinvey-exffrtwipaykqoebrnepayenmrat/Build/Products/Debug-iphonesimulator/Kinvey.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,7 +72,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				577C9E601C1CF69300BF49EE /* Kinvey.framework in Frameworks */,
+				579483041CEE354900B0ECF0 /* Kinvey.framework in Frameworks */,
+				579483021CEE34FE00B0ECF0 /* Realm.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,11 +97,11 @@
 		570960531C1B962400D4AFA5 = {
 			isa = PBXGroup;
 			children = (
-				577C9E5F1C1CF69300BF49EE /* Kinvey.framework */,
 				5709605E1C1B962400D4AFA5 /* MICSampleApp */,
 				570960731C1B962500D4AFA5 /* MICSampleAppTests */,
 				5709607E1C1B962500D4AFA5 /* MICSampleAppUITests */,
 				5709605D1C1B962400D4AFA5 /* Products */,
+				579483001CEE349200B0ECF0 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -144,6 +145,15 @@
 				570960811C1B962500D4AFA5 /* Info.plist */,
 			);
 			path = MICSampleAppUITests;
+			sourceTree = "<group>";
+		};
+		579483001CEE349200B0ECF0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				579483031CEE354900B0ECF0 /* Kinvey.framework */,
+				579482FE1CEE348A00B0ECF0 /* Realm.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -422,6 +432,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = ../../Kinvey/Carthage/Build/iOS;
 				INFOPLIST_FILE = MICSampleApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.MICSampleApp;
@@ -433,6 +444,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = ../../Kinvey/Carthage/Build/iOS;
 				INFOPLIST_FILE = MICSampleApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.MICSampleApp;
