@@ -307,10 +307,12 @@ public class DataStore<T: Persistable where T: NSObject> {
         return nil
     }
     
+    /// Clear all data for all collections.
     public class func clearCache(tag: String? = nil, client: Client = sharedClient) {
         client.cacheManager.clearAll(tag)
     }
-    
+
+    /// Clear all data for the collection attached to the DataStore.
     public func clearCache() {
         cache.removeAllEntities()
         sync.removeAllPendingOperations()
