@@ -316,6 +316,8 @@ public class User: NSObject, Credential {
         return request
     }
     
+    internal static let authtokenPrefix = "Kinvey "
+    
     /// Autorization header used for calls that requires a logged `User`.
     public var authorizationHeader: String? {
         get {
@@ -333,7 +335,9 @@ public class User: NSObject, Credential {
         let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) -> Void in
             var user: User? = nil
             if let kcsUser = kcsUser {
-                user = User(userId: kcsUser.userId, metadata: Metadata(authtoken: kcsUser.authString), client: client)
+                let authString = kcsUser.authString
+                let authtoken = authString.hasPrefix(authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(authtokenPrefix.characters.count)) : authString
+                user = User(userId: kcsUser.userId, metadata: Metadata(authtoken: authtoken), client: client)
                 user?.username = kcsUser.username
                 user?.email = kcsUser.email
                 client.activeUser = user

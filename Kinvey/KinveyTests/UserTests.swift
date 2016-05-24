@@ -821,6 +821,8 @@ class UserTests: KinveyTestCase {
             waitForExpectationsWithTimeout(defaultTimeout) { error in
                 expectationLogin = nil
             }
+            
+            find()
         } else {
             XCTFail()
         }
@@ -896,6 +898,8 @@ class UserTests: KinveyTestCase {
             waitForExpectationsWithTimeout(defaultTimeout) { error in
                 expectationLogin = nil
             }
+            
+            find()
         } else {
             XCTFail()
         }
@@ -948,8 +952,31 @@ class UserTests: KinveyTestCase {
             waitForExpectationsWithTimeout(defaultTimeout) { error in
                 expectationLogin = nil
             }
+            
+            find()
         } else {
             XCTFail()
+        }
+    }
+    
+    func find() {
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        
+        if Kinvey.sharedClient.activeUser != nil {
+            let store = DataStore<Person>.getInstance()
+            
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            store.find() { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
         }
     }
     
