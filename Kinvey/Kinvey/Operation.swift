@@ -154,6 +154,15 @@ internal class Operation: NSObject {
             }
             decorateAcl(persistableType.aclKey ?? PersistableAclKey)
         }
+        for keyPair in persistableJson {
+            if let obj = keyPair.1 as? NSCoding where !EntitySchema.isTypeSupported(obj) {
+                let data = NSMutableData()
+                let coder = NSKeyedArchiver(forWritingWithMutableData: data)
+                obj.encodeWithCoder(coder)
+                coder.finishEncoding()
+                persistableJson[keyPair.0] = data.base64EncodedStringWithOptions([])
+            }
+        }
         return persistableJson
     }
     

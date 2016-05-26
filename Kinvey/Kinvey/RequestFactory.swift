@@ -53,6 +53,14 @@ extension RequestFactory {
                     }
                 } else if let acl = keyPair.1 as? Acl {
                     jsonObject[keyPair.0] = acl.toJson()
+                } else if let coding = keyPair.1 as? NSCoding where !EntitySchema.isTypeSupported(keyPair.1) {
+                    let data = NSMutableData()
+                    let coder = NSKeyedArchiver(forWritingWithMutableData: data)
+                    coding.encodeWithCoder(coder)
+                    coder.finishEncoding()
+                    jsonObject[keyPair.0] = data.base64EncodedStringWithOptions([])
+                } else if !EntitySchema.isTypeSupported(keyPair.1) {
+                    jsonObject.removeValueForKey(keyPair.0)
                 }
             }
         }

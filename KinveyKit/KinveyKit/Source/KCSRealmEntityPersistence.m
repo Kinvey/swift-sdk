@@ -272,6 +272,9 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
 +(Class)createRealmClass:(Class)clazz
 {
     NSString* className = [NSString stringWithUTF8String:class_getName(clazz)];
+    if (![clazz respondsToSelector:@selector(kinveyCollectionName)]) {
+        return nil;
+    }
     collectionNamesMap[[clazz kinveyCollectionName]] = className;
     
     NSString* realmClassName = [KNVRealmEntitySchema realmClassNameForClass:clazz];
@@ -420,6 +423,9 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
                                                           propertyName:propertyName];
                                     } else if (classMapOriginalRealm[className] == nil) {
                                         realmClassName = NSStringFromClass([self createRealmClass:NSClassFromString(className)]);
+                                        if (!realmClassName && class_conformsToProtocol(NSClassFromString(className), @protocol(NSCoding))) {
+                                            realmClassName = @"NSString"; //NSData as Base64
+                                        }
                                     }
                                     if (realmClassName) {
                                         if (subtypeName) {
@@ -428,6 +434,8 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
                                             attribute.value = [NSString stringWithFormat:@"@\"%@\"", realmClassName].UTF8String;
                                         }
                                         attributes[i] = attribute;
+                                    } else {
+                                        ignoreProperty = YES;
                                     }
                                 }
                             }

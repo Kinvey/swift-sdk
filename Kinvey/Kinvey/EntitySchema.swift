@@ -30,6 +30,14 @@ internal class EntitySchema: NSObject {
         return entitySchemas[NSStringFromClass(type)]
     }
     
+    internal class func isTypeSupported(obj: AnyObject) -> Bool {
+        return obj is NSString ||
+            obj is NSNumber ||
+            obj is NSArray ||
+            obj is NSDictionary ||
+            obj is NSNull
+    }
+    
     class func scanForPersistableEntities() {
         var classCount = UInt32(0)
         let classList = objc_copyClassList(&classCount)

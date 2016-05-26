@@ -11,12 +11,13 @@ import XCTest
 
 class DataTypeTestCase: StoreTestCase {
     
-    func testBoolSave() {
+    func testSave() {
         signUp()
         
         let store = DataStore<DataType>.getInstance(.Network)
         let dataType = DataType()
         dataType.boolValue = true
+        dataType.colorValue = UIColor.orangeColor()
         let tuple = save(dataType, store: store)
         
         XCTAssertNotNil(tuple.savedPersistable)
@@ -37,6 +38,7 @@ class DataTypeTestCase: StoreTestCase {
                 
                 if let dataType = results.first {
                     XCTAssertTrue(dataType.boolValue)
+                    XCTAssertEqual(dataType.colorValue, UIColor.orangeColor())
                 }
             }
             
@@ -54,6 +56,8 @@ class DataType: NSObject, Persistable, BooleanType {
     
     dynamic var objectId: String?
     dynamic var boolValue: Bool = false
+    dynamic var objectValue: NSObject?
+    dynamic var colorValue: UIColor?
     
     static func kinveyCollectionName() -> String {
         return "DataType"
@@ -62,7 +66,9 @@ class DataType: NSObject, Persistable, BooleanType {
     static func kinveyPropertyMapping() -> [String : String] {
         return [
             "objectId" : PersistableIdKey,
-            "boolValue" : "boolValue"
+            "boolValue" : "boolValue",
+            "objectValue" : "objectValue",
+            "colorValue" : "colorValue"
         ]
     }
     
