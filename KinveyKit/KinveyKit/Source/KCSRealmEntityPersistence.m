@@ -423,8 +423,12 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
                                                           propertyName:propertyName];
                                     } else if (classMapOriginalRealm[className] == nil) {
                                         realmClassName = NSStringFromClass([self createRealmClass:NSClassFromString(className)]);
-                                        if (!realmClassName && class_conformsToProtocol(NSClassFromString(className), @protocol(NSCoding))) {
-                                            realmClassName = @"NSString"; //NSData as Base64
+                                        if (!realmClassName) {
+                                            if (class_conformsToProtocol(NSClassFromString(className), @protocol(KNVJsonObject))) {
+                                                realmClassName = @"NSString"; //Json
+                                            } else if (class_conformsToProtocol(NSClassFromString(className), @protocol(NSCoding))) {
+                                                realmClassName = @"NSString"; //NSData as Base64
+                                            }
                                         }
                                     }
                                     if (realmClassName) {

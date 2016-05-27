@@ -75,4 +75,51 @@ internal class ObjCRuntime: NSObject {
         return nil
     }
     
+    internal class func properties(cls: AnyClass) -> [String : AnyClass] {
+        let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
+        var propertyCount = UInt32(0)
+        let properties = class_copyPropertyList(cls, &propertyCount)
+        defer { free(properties) }
+        var results = [String : AnyClass]()
+        for i in UInt32(0) ..< propertyCount {
+            let property = properties[Int(i)]
+            if let propertyName = String.fromCString(property_getName(property))
+            {
+                var attributeCount = UInt32(0)
+                let attributes = property_copyAttributeList(property, &attributeCount)
+                defer { free(attributes) }
+                for x in UInt32(0) ..< attributeCount {
+                    let attribute = attributes[Int(x)]
+                    if let attributeName = String.fromCString(attribute.name) where attributeName == "T",
+                        let attributeValue = String.fromCString(attribute.value),
+                        let textCheckingResult = regexClassName.matchesInString(attributeValue, options: [], range: NSMakeRange(0, attributeValue.characters.count)).first
+                    {
+                        let attributeValueNSString = attributeValue as NSString
+                        let propertyTypeName = attributeValueNSString.substringWithRange(textCheckingResult.rangeAtIndex(1))
+                        if let propertyTypeNameClass = NSClassFromString(propertyTypeName) {
+                            results[propertyName] = propertyTypeNameClass
+                        }
+                    }
+                }
+            }
+        }
+        return results
+    }
+    
+    internal class func propertyNames(cls: AnyClass) -> [String] {
+        let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
+        var propertyCount = UInt32(0)
+        let properties = class_copyPropertyList(cls, &propertyCount)
+        defer { free(properties) }
+        var results = [String]()
+        for i in UInt32(0) ..< propertyCount {
+            let property = properties[Int(i)]
+            if let propertyName = String.fromCString(property_getName(property))
+            {
+                results.append(propertyName)
+            }
+        }
+        return results
+    }
+    
 }
