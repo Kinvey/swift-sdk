@@ -130,6 +130,16 @@ extension Persistable {
                             let json = value as? JsonDictionary
                         {
                             value = Acl(json: json)
+                        } else if let type = classType.type.main as? JsonObject.Type where type is NSObject.Type,
+                            let json = value as? JsonDictionary
+                        {
+                            let obj = (type as! NSObject.Type).init() as! JsonObject
+                            if let fromJson = obj.fromJson {
+                                fromJson(json)
+                            } else {
+                                obj._fromJson(json)
+                            }
+                            value = obj
                         } else if let type = classType.type.main as? NSCoding.Type,
                             let base64Str = value as? String,
                             let data = NSData(base64EncodedString: base64Str, options: [])
@@ -156,21 +166,6 @@ extension Persistable {
             results.append(fromJson(item))
         }
         return results
-    }
-    
-    subscript(key: String) -> AnyObject? {
-        get {
-            guard let this = self as? NSObject else {
-                return nil
-            }
-            return this.valueForKey(key)
-        }
-        set {
-            guard let this = self as? NSObject else {
-                return
-            }
-            this.setValue(newValue, forKey: key)
-        }
     }
     
     /// Converts the object into a `Dictionary<String, AnyObject>`.

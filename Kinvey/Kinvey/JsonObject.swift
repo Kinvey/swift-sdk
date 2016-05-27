@@ -22,6 +22,52 @@ public protocol JsonObject {
 
 }
 
+/// Protocol used to serialize and deserialize JSON objects into objects.
+@objc(KNVObject)
+public protocol Object {
+    
+    /// Deserialize JSON object into object.
+    init?(json: JsonDictionary)
+    
+    /// Serialize object to JSON.
+    func toJson() -> JsonDictionary
+    
+}
+
+extension JsonObject {
+    
+    subscript(key: String) -> AnyObject? {
+        get {
+            guard let this = self as? NSObject else {
+                return nil
+            }
+            return this.valueForKey(key)
+        }
+        set {
+            guard let this = self as? NSObject else {
+                return
+            }
+            this.setValue(newValue, forKey: key)
+        }
+    }
+    
+    internal func _toJson() -> JsonDictionary {
+        var json = JsonDictionary()
+        let properties = ObjCRuntime.propertyNames(self.dynamicType)
+        for property in properties {
+            json[property] = self[property]
+        }
+        return json
+    }
+    
+    internal func _fromJson(json: JsonDictionary) {
+        for keyPair in json {
+            self[keyPair.0] = keyPair.1
+        }
+    }
+    
+}
+
 extension Dictionary where Key: StringLiteralConvertible, Value: AnyObject {
     
     private func translateValue(value: AnyObject) -> AnyObject {
