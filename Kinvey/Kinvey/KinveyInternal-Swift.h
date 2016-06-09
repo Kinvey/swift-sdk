@@ -104,80 +104,6 @@
 
 @end
 
-@interface __KNVSyncOperation : __KNVOperation
-
-- (nonnull instancetype)initWithSync:(id <__KNVSync> _Nonnull)sync
-                     persistableType:(Class <KNVPersistable> _Nonnull)persistableType
-                               cache:(id <__KNVCache> _Nonnull)cache
-                              client:(__KNVClient * _Nonnull)client OBJC_DESIGNATED_INITIALIZER;
-
-- (id <KNVRequest> _Nonnull)execute:(void (^ _Nullable)(id _Nullable, NSError * _Nullable))completionHandler;
-- (id <KNVRequest> _Nonnull)executeUInt:(void (^ _Nullable)(NSUInteger, NSError * _Nullable))completionHandler;
-
-@end
-
-@interface __KNVSaveOperation : __KNVWriteOperation
-
-- (nonnull instancetype)initWithPersistable:(id <KNVPersistable> _Nonnull)persistable
-                                writePolicy:(enum WritePolicy)writePolicy
-                                       sync:(id <__KNVSync> _Nonnull)sync
-                                      cache:(id <__KNVCache> _Nonnull)cache
-                                     client:(__KNVClient * _Nonnull)client OBJC_DESIGNATED_INITIALIZER;
-
-@end
-
-@interface __KNVGetOperation : __KNVReadOperation
-
-- (nonnull instancetype)initWithId:(NSString * _Nonnull)objectId
-                        readPolicy:(enum ReadPolicy)readPolicy
-                   persistableType:(Class <KNVPersistable> _Nonnull)persistableClass
-                             cache:(id <__KNVCache> _Nonnull)cache
-                            client:(__KNVClient * _Nonnull)client;
-
-@end
-
-@interface __KNVFindOperation : __KNVReadOperation
-
-- (nonnull instancetype)initWithQuery:(KNVQuery * _Nonnull)query
-                             deltaSet:(BOOL)deltaSet
-                           readPolicy:(enum ReadPolicy)readPolicy
-                      persistableType:(Class <KNVPersistable> _Nonnull)persistableClass
-                                cache:(id <__KNVCache> _Nonnull)cache
-                               client:(__KNVClient * _Nonnull)client;
-
-@end
-
-@interface __KNVRemoveOperation : __KNVWriteOperation
-
-- (nonnull instancetype)initWithQuery:(KNVQuery * _Nonnull)query
-                          writePolicy:(enum WritePolicy)writePolicy
-                                 sync:(id <__KNVSync> _Nonnull)sync
-                      persistableType:(Class <KNVPersistable> _Nonnull)persistableType
-                                cache:(id <__KNVCache> _Nonnull)cache
-                               client:(__KNVClient * _Nonnull)client OBJC_DESIGNATED_INITIALIZER;
-
-- (id <KNVRequest> _Nonnull)executeUInt:(void (^ _Nullable)(NSUInteger, NSError * _Nullable))completionHandler;
-
-@end
-
-@interface __KNVPushOperation : __KNVSyncOperation
-
-- (nonnull instancetype)initWithSync:(id <__KNVSync> _Nonnull)sync
-                     persistableType:(Class <KNVPersistable> _Nonnull)persistableType
-                               cache:(id <__KNVCache> _Nonnull)cache
-                              client:(__KNVClient * _Nonnull)client OBJC_DESIGNATED_INITIALIZER;
-
-@end
-
-@interface __KNVPurgeOperation : __KNVSyncOperation
-
-- (nonnull instancetype)initWithSync:(id <__KNVSync> _Nonnull)sync
-                     persistableType:(Class <KNVPersistable> _Nonnull)persistableType
-                               cache:(id <__KNVCache> _Nonnull)cache
-                              client:(__KNVClient * _Nonnull)client OBJC_DESIGNATED_INITIALIZER;
-
-@end
-
 @interface __KNVPersistable : NSObject
 
 + (NSString * _Nonnull)idKey:(Class <KNVPersistable> _Nonnull)type;
@@ -186,16 +112,6 @@
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 
 @end
-
-@interface __KNVQuery : NSObject
-
-+ (KNVQuery * _Nonnull)query:(KNVQuery * _Nonnull)query
-             persistableType:(Class <KNVPersistable> _Nonnull)persistableType;
-
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-
-@end
-
 @interface __KNVError : NSObject
 
 + (NSError * _Nonnull)ObjectIdMissing;

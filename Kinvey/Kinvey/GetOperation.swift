@@ -8,14 +8,13 @@
 
 import Foundation
 
-@objc(__KNVGetOperation)
-internal class GetOperation: ReadOperation {
+internal class GetOperation<T: Persistable>: ReadOperation<T, T?> {
     
     let id: String
     
-    init(id: String, readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    init(id: String, readPolicy: ReadPolicy, cache: Cache, client: Client) {
         self.id = id
-        super.init(readPolicy: readPolicy, persistableType: persistableType, cache: cache, client: client)
+        super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
     
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
@@ -33,10 +32,10 @@ internal class GetOperation: ReadOperation {
     }
     
     override func executeNetwork(completionHandler: CompletionHandler?) -> Request {
-        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: self.persistableType.kinveyCollectionName(), id: id)
+        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName(), id: id)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
-                let obj = self.persistableType.fromJson(json)
+                let obj: T = T.fromJson(json)
                 if let cache = self.cache {
                     let persistableJson = self.merge(obj, json: json)
                     cache.saveEntity(persistableJson)

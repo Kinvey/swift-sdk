@@ -7,6 +7,7 @@
 //
 
 @testable import Kinvey
+import ObjectMapper
 
 class Person: NSObject, Persistable {
     
@@ -18,6 +19,9 @@ class Person: NSObject, Persistable {
     override init() {
     }
     
+    required init?(_ map: Map) {
+    }
+    
     init(personId: String? = nil, name: String) {
         self.personId = personId
         self.name = name
@@ -27,13 +31,11 @@ class Person: NSObject, Persistable {
         return "Person"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "personId" : Kinvey.PersistableIdKey,
-            "acl" : Kinvey.PersistableAclKey,
-            "name" : "name",
-            "age" : "age"
-        ]
+    func mapping(map: Map) {
+        personId <- map[Kinvey.PersistableIdKey]
+        acl <- map[Kinvey.PersistableAclKey]
+        name <- map["name"]
+        age <- map["age"]
     }
     
 }

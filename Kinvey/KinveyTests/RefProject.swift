@@ -8,6 +8,7 @@
 
 import Foundation
 @testable import Kinvey
+import ObjectMapper
 
 class RefProject: NSObject, Persistable {
     
@@ -18,31 +19,15 @@ class RefProject: NSObject, Persistable {
         return "HelixProjectProjects"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "uniqueId" : Kinvey.PersistableIdKey,
-            "name" : "name"
-        ]
+    required init?(_ map: Map) {
     }
     
-    func toJson() -> JsonDictionary {
-        var json = JsonDictionary()
-        if let uniqueId = uniqueId {
-            json[Kinvey.PersistableIdKey] = uniqueId
-        }
-        if let name = name {
-            json["name"] = name
-        }
-        return json
+    override init() {
     }
     
-    func fromJson(json: JsonDictionary) {
-        if let uniqueId = json[Kinvey.PersistableIdKey] as? String {
-            self.uniqueId = uniqueId
-        }
-        if let name = json["name"] as? String {
-            self.name = name
-        }
+    func mapping(map: Map) {
+        uniqueId <- map[Kinvey.PersistableIdKey]
+        name <- map["name"]
     }
     
 }

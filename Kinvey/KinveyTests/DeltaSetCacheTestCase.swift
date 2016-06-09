@@ -54,7 +54,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 Metadata.LmtKey : date
             ]
         ])
-        let operation = Operation(persistableType: Person.self, cache: cache, client: client)
+        let operation = Operation<Person>(cache: cache, client: client)
         let query = Query()
         let refObjs: [JsonDictionary] = [
             [
@@ -323,12 +323,12 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             
             let query = Query(format: "personId == %@", personId)
             query.persistableType = Person.self
-            let createRemove = RemoveByQueryOperation(query: query, writePolicy: .ForceNetwork, persistableType: Person.self, client: client)
+            let createRemove = RemoveByQueryOperation<Person>(query: query, writePolicy: .ForceNetwork, client: client)
             createRemove.execute { (count, error) -> Void in
                 XCTAssertNotNil(count)
                 XCTAssertNil(error)
                 
-                if let count = count as? UInt {
+                if let count = count {
                     XCTAssertEqual(count, 1)
                 }
                 

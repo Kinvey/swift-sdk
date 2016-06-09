@@ -8,19 +8,18 @@
 
 import Foundation
 
-@objc(__KNVRemoveByIdOperation)
-internal class RemoveByIdOperation: RemoveOperation {
+internal class RemoveByIdOperation<T: Persistable>: RemoveOperation<T> {
     
     let objectId: String
     
     override func buildRequest() -> HttpRequest {
-        return client.networkRequestFactory.buildAppDataRemoveById(collectionName: persistableType.kinveyCollectionName(), objectId: objectId)
+        return client.networkRequestFactory.buildAppDataRemoveById(collectionName: T.kinveyCollectionName(), objectId: objectId)
     }
     
-    internal init(objectId: String, writePolicy: WritePolicy, sync: Sync? = nil, persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
+    internal init(objectId: String, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache? = nil, client: Client) {
         self.objectId = objectId
-        let query = Query(format: "\(persistableType.idKey) == %@", objectId)
-        super.init(query: query, writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
+        let query = Query(format: "\(T.idKey) == %@", objectId)
+        super.init(query: query, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
 }

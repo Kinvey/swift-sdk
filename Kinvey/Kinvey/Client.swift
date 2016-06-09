@@ -140,7 +140,6 @@ public class Client: NSObject, Credential {
     /// This method is called automatically before use any usage of the `Client` class.
     public override class func initialize () {
         ValueTransformer.setValueTransformer(NSDate2StringValueTransformer())
-        EntitySchema.scanForPersistableEntities()
         KCSRealmEntityPersistence.initialize()
     }
     

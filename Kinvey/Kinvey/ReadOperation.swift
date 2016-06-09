@@ -8,16 +8,15 @@
 
 import Foundation
 
-@objc(__KNVReadOperation)
-internal class ReadOperation: Operation {
+internal class ReadOperation<T: Persistable, R>: Operation<T> {
     
-    typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
+    typealias CompletionHandler = (R, ErrorType?) -> Void
     
     let readPolicy: ReadPolicy
     
-    init(readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    init(readPolicy: ReadPolicy, cache: Cache, client: Client) {
         self.readPolicy = readPolicy
-        super.init(persistableType: persistableType, cache: cache, client: client)
+        super.init(cache: cache, client: client)
     }
     
     func execute(completionHandler: CompletionHandler? = nil) -> Request {

@@ -245,12 +245,6 @@ public class User: NSObject, Credential {
             self.email = email
         }
         
-        if let acl = json[PersistableAclKey] as? [String : String] {
-            self.acl = Acl(json: acl)
-        } else {
-            self.acl = nil
-        }
-        
         if let kmd = json[PersistableMetadataKey] as? [String : AnyObject] {
             metadata = Metadata(json: kmd)
         } else {
@@ -267,10 +261,6 @@ public class User: NSObject, Credential {
         var json: [String : AnyObject] = [:]
         
         json[Kinvey.PersistableIdKey] = userId
-        
-        if let acl = acl {
-            json[Kinvey.PersistableAclKey] = acl.toJson()
-        }
         
         if let metadata = metadata {
             json[Kinvey.PersistableMetadataKey] = metadata.toJson()

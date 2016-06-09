@@ -162,9 +162,6 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
         [self registerOriginalClass:[KNVMetadata class]
                          realmClass:[KCSMetadataRealm class]];
         
-        [self registerOriginalClass:[KNVAcl class]
-                         realmClass:[KCSAclRealm class]];
-        
         realmClassProperties = [NSMutableDictionary dictionary];
         
         [self registerRealmClassProperties:[KCSUserRealm class]];
@@ -288,11 +285,6 @@ static NSMutableDictionary<NSString*, NSMutableDictionary<NSString*, NSValueTran
     [self copyPropertiesFromClass:clazz
                           toClass:realmClass];
     
-    NSArray<NSString*>* aclKeys = [__KNVObjCRuntime propertyNamesForTypeInClass:clazz
-                                                                           type:[KNVAcl class]];
-    if (!aclKeys || aclKeys.count == 0) {
-        [self createAclToClass:realmClass];
-    }
     [self createKmdToClass:realmClass];
     
     objc_registerClassPair(realmClass);

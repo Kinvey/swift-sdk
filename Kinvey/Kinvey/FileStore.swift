@@ -65,9 +65,6 @@ public class FileStore {
         if let publicAccessible = json["_public"] as? Bool {
             file.publicAccessible = publicAccessible
         }
-        if let acl = json["_acl"] as? [String : AnyObject] {
-            file.acl = Acl(json: acl)
-        }
         if let kmd = json["_kmd"] as? [String : AnyObject] {
             file.metadata = Metadata(json: kmd)
         }

@@ -38,18 +38,6 @@ internal class EntitySchema: NSObject {
             obj is NSNull
     }
     
-    class func scanForPersistableEntities() {
-        var classCount = UInt32(0)
-        let classList = objc_copyClassList(&classCount)
-        for i in UInt32(0) ..< classCount {
-            if let aClass = classList[Int(i)] as AnyClass? where class_conformsToProtocol(aClass, Persistable.self),
-                let cls = aClass as? Persistable.Type
-            {
-                entitySchemas[NSStringFromClass(aClass)] = EntitySchema(persistableType: cls, persistableClass: aClass, collectionName: cls.kinveyCollectionName(), properties: getProperties(aClass))
-            }
-        }
-    }
-    
     private class func getProperties(cls: AnyClass) -> [String : Type] {
         let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
         var propertyCount = UInt32(0)

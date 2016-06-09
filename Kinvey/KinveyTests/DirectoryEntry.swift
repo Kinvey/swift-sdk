@@ -8,6 +8,7 @@
 
 import Foundation
 @testable import Kinvey
+import ObjectMapper
 
 class DirectoryEntry: NSObject, Persistable {
     
@@ -22,53 +23,17 @@ class DirectoryEntry: NSObject, Persistable {
         return "HelixProjectDirectory"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "uniqueId" : Kinvey.PersistableIdKey,
-            "nameFirst" : "nameFirst",
-            "nameLast" : "nameLast",
-            "email" : "email"
-        ]
+    required init?(_ map: Map) {
     }
     
-    func toJson() -> JsonDictionary {
-        var json = JsonDictionary()
-        if let uniqueId = uniqueId {
-            json[Kinvey.PersistableIdKey] = uniqueId
-        }
-        if let nameFirst = nameFirst {
-            json["nameFirst"] = nameFirst
-        }
-        if let nameLast = nameLast {
-            json["nameLast"] = nameLast
-        }
-        if let email = email {
-            json["email"] = email
-        }
-        if let refProject = refProject {
-            json["refProject"] = refProject
-        }
-        return json
+    override init() {
     }
     
-    func fromJson(json: JsonDictionary) {
-        if let uniqueId = json[Kinvey.PersistableIdKey] as? String {
-            self.uniqueId = uniqueId
-        }
-        if let nameFirst = json["nameFirst"] as? String {
-            self.nameFirst = nameFirst
-        }
-        if let nameLast = json["nameLast"] as? String {
-            self.nameLast = nameLast
-        }
-        if let email = json["email"] as? String {
-            self.email = email
-        }
-        if let refProject = json["refProject"] as? JsonDictionary {
-            let project = RefProject()
-            project.fromJson(refProject)
-            self.refProject = project
-        }
+    func mapping(map: Map) {
+        uniqueId <- map[Kinvey.PersistableIdKey]
+        nameFirst <- map["nameFirst"]
+        nameLast <- map["nameLast"]
+        email <- map["email"]
     }
     
 }

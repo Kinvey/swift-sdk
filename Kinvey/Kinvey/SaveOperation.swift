@@ -8,14 +8,13 @@
 
 import Foundation
 
-@objc(__KNVSaveOperation)
-internal class SaveOperation: WriteOperation {
+internal class SaveOperation<T: Persistable>: WriteOperation<T, T?> {
     
-    let persistable: Persistable
+    let persistable: T
     
-    init(persistable: Persistable, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache? = nil, client: Client) {
+    init(persistable: T, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache? = nil, client: Client) {
         self.persistable = persistable
-        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistable.dynamicType, cache: cache, client: client)
+        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
@@ -45,7 +44,7 @@ internal class SaveOperation: WriteOperation {
                 if let response = response where response.isResponseOK {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
-                        let persistable = self.persistableType.fromJson(json)
+                        let persistable: T = T.fromJson(json)
                         if let cache = self.cache {
                             var persistableJson = self.merge(persistable, json: json)
                             if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] where kmd[PersistableMetadataLastRetrievedTimeKey] == nil {

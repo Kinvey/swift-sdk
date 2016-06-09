@@ -9,6 +9,7 @@
 import XCTest
 import ObjectiveC
 @testable import Kinvey
+import ObjectMapper
 
 class CacheMigrationTestCaseStep2: XCTestCase {
     
@@ -43,11 +44,12 @@ class CacheMigrationTestCaseStep2: XCTestCase {
                 return "CacheMigrationTestCase_Person"
             }
             
-            @objc static func kinveyPropertyMapping() -> [String : String] {
-                return [
-                    "personId" : PersistableIdKey,
-                    "fullName" : "fullName"
-                ]
+            required init?(_ map: Map) {
+            }
+            
+            private func mapping(map: Map) {
+                personId <- map[PersistableIdKey]
+                fullName <- map["fullName"]
             }
             
         }

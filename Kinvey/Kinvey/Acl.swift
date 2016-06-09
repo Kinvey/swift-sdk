@@ -7,10 +7,10 @@
 //
 
 import Foundation
+import ObjectMapper
 
 /// This class represents the ACL (Access Control List) for a record.
-@objc(KNVAcl)
-public class Acl: NSObject {
+public class Acl: NSObject, Mappable {
     
     static let CreatorKey = "creator"
     static let GlobalReadKey = "gr"
@@ -18,20 +18,35 @@ public class Acl: NSObject {
     static let ReadersKey = "r"
     static let WritersKey = "w"
     
-    /// The `userId` of the `User` used to create the record.
-    public let creator: String
+    private var _creator: String!
     
     /// The `userId` of the `User` used to create the record.
-    public let globalRead: Bool?
+    public var creator: String {
+        get { return _creator }
+    }
+    
+    private var _globalRead: Bool?
     
     /// The `userId` of the `User` used to create the record.
-    public let globalWrite: Bool?
+    public var globalRead: Bool? {
+        get { return _globalRead }
+    }
+    
+    private var _globalWrite: Bool?
+    
+    /// The `userId` of the `User` used to create the record.
+    public var globalWrite: Bool? {
+        get { return _globalWrite }
+    }
+    
+    private var _readers: [String]?
     
     /// Specifies the list of user _ids that are explicitly allowed to read the entity.
-    public let readers: [String]?
+    public var readers: [String]? {
+        get { return _readers }
+    }
     
-    /// Specifies the list of user _ids that are explicitly allowed to modify the entity.
-    public let writers: [String]?
+    private var _writers: [String]?
     
     /// Constructs an Acl instance with the `userId` of the `User` used to create the record.
     public init(
@@ -41,46 +56,30 @@ public class Acl: NSObject {
         readers: [String]? = nil,
         writers: [String]? = nil
     ) {
-        self.creator = creator
-        self.globalRead = globalRead
-        self.globalWrite = globalWrite
-        self.readers = readers
-        self.writers = writers
+        _creator = creator
+        _globalRead = globalRead
+        _globalWrite = globalWrite
+        _readers = readers
+        _writers = writers
     }
     
-    /// Constructor used to build a new `Acl` instance from a JSON object.
-    public convenience init?(json: JsonDictionary) {
-        guard let creator = json[Acl.CreatorKey] as? String else {
+    /// Specifies the list of user _ids that are explicitly allowed to modify the entity.
+    public var writers: [String]? {
+        get { return _writers }
+    }
+    
+    public required init?(_ map: Map) {
+        guard map[Acl.CreatorKey].value() != nil else {
             return nil
         }
-        
-        self.init(
-            creator: creator,
-            globalRead: json[Acl.GlobalReadKey] as? Bool,
-            globalWrite: json[Acl.GlobalWriteKey] as? Bool,
-            readers: json[Acl.ReadersKey] as? [String],
-            writers: json[Acl.WritersKey] as? [String]
-        )
     }
     
-    /// The JSON representation for the `Acl` instance.
-    public func toJson() -> JsonDictionary {
-        var json: JsonDictionary = [
-            Acl.CreatorKey : creator,
-        ]
-        if let globalRead = globalRead {
-            json[Acl.GlobalReadKey] = globalRead
-        }
-        if let globalWrite = globalWrite {
-            json[Acl.GlobalWriteKey] = globalWrite
-        }
-        if let readers = readers {
-            json[Acl.ReadersKey] = readers
-        }
-        if let writers = writers {
-            json[Acl.WritersKey] = writers
-        }
-        return json
+    public func mapping(map: Map) {
+        _creator <- map[Acl.CreatorKey]
+        _globalRead <- map[Acl.GlobalReadKey]
+        _globalWrite <- map[Acl.GlobalWriteKey]
+        _readers <- map[Acl.ReadersKey]
+        _writers <- map[Acl.WritersKey]
     }
 
 }

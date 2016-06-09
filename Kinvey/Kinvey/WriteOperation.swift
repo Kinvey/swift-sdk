@@ -8,18 +8,17 @@
 
 import Foundation
 
-@objc(__KNVWriteOperation)
-internal class WriteOperation: Operation {
+internal class WriteOperation<T: Persistable, R>: Operation<T> {
     
-    typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
+    typealias CompletionHandler = (R, ErrorType?) -> Void
     
     let writePolicy: WritePolicy
     let sync: Sync?
     
-    init(writePolicy: WritePolicy, sync: Sync? = nil, persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
+    init(writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache? = nil, client: Client) {
         self.writePolicy = writePolicy
         self.sync = sync
-        super.init(persistableType: persistableType, cache: cache, client: client)
+        super.init(cache: cache, client: client)
     }
     
     func execute(completionHandler: CompletionHandler?) -> Request {

@@ -9,8 +9,11 @@
 import Foundation
 import PromiseKit
 
-@objc(__KNVPushOperation)
-internal class PushOperation: SyncOperation {
+internal class PushOperation<T: Persistable>: SyncOperation<T, UInt> {
+    
+    internal override init(sync: Sync, cache: Cache, client: Client) {
+        super.init(sync: sync, cache: cache, client: client)
+    }
     
     func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: ((UInt, [ErrorType]?) -> Void)?) -> Request {
         let requests = OperationQueueRequest()
@@ -33,7 +36,7 @@ internal class PushOperation: SyncOperation {
                                 cache.removeEntity(entity)
                             }
                             
-                            let persistable = self.persistableType.fromJson(json)
+                            let persistable: T = T.fromJson(json)
                             let persistableJson = self.merge(persistable, json: json)
                             cache.saveEntity(persistableJson)
                         }

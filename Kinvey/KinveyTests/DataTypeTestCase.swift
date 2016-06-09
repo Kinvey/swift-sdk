@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import Kinvey
+import ObjectMapper
 
 class DataTypeTestCase: StoreTestCase {
     
@@ -89,15 +90,19 @@ class DataType: NSObject, Persistable, BooleanType {
         return "DataType"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "objectId" : PersistableIdKey,
-            "boolValue" : "boolValue",
-            "objectValue" : "objectValue",
-            "colorValue" : "colorValue",
-            "fullName" : "fullName",
-            "fullName2" : "fullName2"
-        ]
+    required init?(_ map: Map) {
+    }
+    
+    override init() {
+    }
+    
+    func mapping(map: Map) {
+        objectId <- map[PersistableIdKey]
+        boolValue <- map["boolValue"]
+        objectValue <- map["objectValue"]
+        colorValue <- map["colorValue"]
+        fullName <- map["fullName"]
+        fullName2 <- map["fullName2"]
     }
     
 }

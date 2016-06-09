@@ -9,8 +9,11 @@
 import Foundation
 import PromiseKit
 
-@objc(__KNVPurgeOperation)
-internal class PurgeOperation: SyncOperation {
+internal class PurgeOperation<T: Persistable>: SyncOperation<T, UInt?> {
+    
+    internal override init(sync: Sync, cache: Cache, client: Client) {
+        super.init(sync: sync, cache: cache, client: client)
+    }
     
     override func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         let requests = MultiRequest()
@@ -24,12 +27,12 @@ internal class PurgeOperation: SyncOperation {
             case .Update:
                 if let objectId = pendingOperation.objectId {
                     promises.append(Promise<Void> { fulfill, reject in
-                        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: self.persistableType.kinveyCollectionName(), id: objectId)
+                        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName(), id: objectId)
                         requests.addRequest(request)
                         request.execute() { data, response, error in
                             if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
                                 if let cache = self.cache {
-                                    let persistable = self.persistableType.fromJson(json)
+                                    let persistable: T = T.fromJson(json)
                                     let persistableJson = self.merge(persistable, json: json)
                                     cache.saveEntity(persistableJson)
                                 }
@@ -53,7 +56,7 @@ internal class PurgeOperation: SyncOperation {
             case .Create:
                 promises.append(Promise<Void> { fulfill, reject in
                     if let objectId = pendingOperation.objectId {
-                        let query = Query(format: "\(self.persistableType.idKey) == %@", objectId)
+                        let query = Query(format: "\(T.idKey) == %@", objectId)
                         cache?.removeEntitiesByQuery(query)
                     }
                     sync.removePendingOperation(pendingOperation)

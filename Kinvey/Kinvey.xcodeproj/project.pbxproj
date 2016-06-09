@@ -16,6 +16,7 @@
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* NSURLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */; };
+		572ABA121D08F147000EDC1C /* ObjectMapper.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 572ABA0C1D077D18000EDC1C /* ObjectMapper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		572C457B1C86690700A41935 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
 		572C458E1C86A70000A41935 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
@@ -473,6 +474,7 @@
 				57B0C2131CDCE8E200492D6C /* Realm.framework in CopyFiles */,
 				57B0C2151CDCE90D00492D6C /* PromiseKit.framework in CopyFiles */,
 				57B0C2141CDCE8FC00492D6C /* KeychainAccess.framework in CopyFiles */,
+				572ABA121D08F147000EDC1C /* ObjectMapper.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -511,6 +513,10 @@
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionTaskRequest.swift; sourceTree = "<group>"; };
+		572ABA0C1D077D18000EDC1C /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
+		572ABA0D1D077D32000EDC1C /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
+		572ABA0E1D077D6B000EDC1C /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
+		572ABA0F1D077D83000EDC1C /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
 		572C457A1C86690700A41935 /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
 		572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate2StringValueTransformer.swift; sourceTree = "<group>"; };
 		572C458F1C86AC7C00A41935 /* ValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTransformer.swift; sourceTree = "<group>"; };
@@ -1224,6 +1230,7 @@
 		57B0C1C11CDCE88900492D6C /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				572ABA0C1D077D18000EDC1C /* ObjectMapper.framework */,
 				57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1D21CDCE88900492D6C /* KIF.framework */,
 				57B0C1D61CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
@@ -1238,6 +1245,7 @@
 		57B0C1DE1CDCE88900492D6C /* Mac */ = {
 			isa = PBXGroup;
 			children = (
+				572ABA0D1D077D32000EDC1C /* ObjectMapper.framework */,
 				57B0C1DF1CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1E31CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C1E51CDCE88900492D6C /* PromiseKit.framework */,
@@ -1251,6 +1259,7 @@
 		57B0C1EB1CDCE88900492D6C /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
+				572ABA0E1D077D6B000EDC1C /* ObjectMapper.framework */,
 				57B0C1F31CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1F71CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C1F91CDCE88900492D6C /* PromiseKit.framework */,
@@ -1264,6 +1273,7 @@
 		57B0C1FF1CDCE88900492D6C /* watchOS */ = {
 			isa = PBXGroup;
 			children = (
+				572ABA0F1D077D83000EDC1C /* ObjectMapper.framework */,
 				57B0C2061CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C20A1CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C20C1CDCE88900492D6C /* PromiseKit.framework */,
