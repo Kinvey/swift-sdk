@@ -78,6 +78,8 @@ class SyncStoreTests: StoreTestCase {
     func testPurge() {
         save()
         
+        XCTAssertEqual(store.syncCount(), 1)
+        
         weak var expectationPurge = expectationWithDescription("Purge")
         
         let query = Query(format: "\(Person.aclKey ?? Kinvey.PersistableAclKey).creatorId == %@", client.activeUser!.userId)
@@ -85,12 +87,18 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             
+            if let count = count {
+                XCTAssertEqual(count, 1)
+            }
+            
             expectationPurge?.fulfill()
         }
         
         waitForExpectationsWithTimeout(defaultTimeout) { error in
             expectationPurge = nil
         }
+        
+        XCTAssertEqual(store.syncCount(), 0)
     }
     
     func testPurgeInvalidDataStoreType() {
@@ -145,6 +153,8 @@ class SyncStoreTests: StoreTestCase {
     
     func testSync() {
         save()
+        
+        XCTAssertEqual(store.syncCount(), 1)
         
         weak var expectationSync = expectationWithDescription("Sync")
         
@@ -235,6 +245,8 @@ class SyncStoreTests: StoreTestCase {
     func testPush() {
         save()
         
+        XCTAssertEqual(store.syncCount(), 1)
+        
         weak var expectationPush = expectationWithDescription("Push")
         
         store.push() { count, error in
@@ -252,6 +264,8 @@ class SyncStoreTests: StoreTestCase {
         waitForExpectationsWithTimeout(defaultTimeout) { error in
             expectationPush = nil
         }
+        
+        XCTAssertEqual(store.syncCount(), 0)
     }
     
     func testPushInvalidDataStoreType() {
