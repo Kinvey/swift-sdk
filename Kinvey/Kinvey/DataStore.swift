@@ -217,6 +217,11 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    /// Returns the number of changes not synced yet.
+    public func syncCount() -> UInt {
+        return UInt(sync.pendingOperations().count)
+    }
+    
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
     public func sync(query: Query = Query(), completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
