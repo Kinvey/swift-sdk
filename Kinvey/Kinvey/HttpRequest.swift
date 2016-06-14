@@ -234,12 +234,16 @@ internal class HttpRequest: NSObject, Request {
         prepareRequest()
         
         if client.logNetworkEnabled {
-            print("\(request)")
+            do {
+                print("\(request)")
+            }
         }
         
         task = client.urlSession.dataTaskWithRequest(request) { (data, response, error) -> Void in
             if self.client.logNetworkEnabled, let response = response as? NSHTTPURLResponse {
-                print("\(response.description(data))")
+                do {
+                    print("\(response.description(data))")
+                }
             }
             
             completionHandler?(data, HttpResponse(response: response as? NSHTTPURLResponse), error)

@@ -119,12 +119,16 @@ public class FileStore {
                 request.setValue("bytes */\(data.length)", forHTTPHeaderField: "Content-Range")
                 
                 if self.client.logNetworkEnabled {
-                    print("\(request)")
+                    do {
+                        print("\(request)")
+                    }
                 }
                 
                 let dataTask = self.client.urlSession.dataTaskWithRequest(request) { (data, response, error) in
                     if self.client.logNetworkEnabled, let response = response as? NSHTTPURLResponse {
-                        print("\(response.description(data))")
+                        do {
+                            print("\(response.description(data))")
+                        }
                     }
                     
                     let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)", options: [])
