@@ -113,6 +113,43 @@ extension RequestType {
 
 internal typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
 
+extension NSURLRequest {
+    
+    public override var description: String {
+        var description = "\(HTTPMethod ?? "GET") \(URL?.absoluteString ?? "")"
+        if let headers = allHTTPHeaderFields {
+            for keyPair in headers {
+                description += "\n\(keyPair.0): \(keyPair.1)"
+            }
+        }
+        if let body = HTTPBody, let bodyString = String(data: body, encoding: NSUTF8StringEncoding) {
+            description += "\n\n\(bodyString)"
+        }
+        return description
+    }
+    
+}
+
+extension NSHTTPURLResponse {
+    
+    public override var description: String {
+        var description = "\(statusCode) \(NSHTTPURLResponse.localizedStringForStatusCode(statusCode))"
+        for keyPair in allHeaderFields {
+            description += "\n\(keyPair.0): \(keyPair.1)"
+        }
+        return description
+    }
+    
+    public func description(body: NSData?) -> String {
+        var description = self.description
+        if let body = body, let bodyString = String(data: body, encoding: NSUTF8StringEncoding) {
+            description += "\n\n\(bodyString)"
+        }
+        return description
+    }
+    
+}
+
 /// REST API Version used in the REST calls.
 public let restApiVersion = 4
 
@@ -196,9 +233,15 @@ internal class HttpRequest: NSObject, Request {
         
         prepareRequest()
         
-//        print("\(curlCommand)")
+        if client.logNetworkEnabled {
+            print("\(request)")
+        }
         
         task = client.urlSession.dataTaskWithRequest(request) { (data, response, error) -> Void in
+            if self.client.logNetworkEnabled, let response = response as? NSHTTPURLResponse {
+                print("\(response.description(data))")
+            }
+            
             completionHandler?(data, HttpResponse(response: response as? NSHTTPURLResponse), error)
         }
         task!.resume()
