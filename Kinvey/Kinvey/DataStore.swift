@@ -194,7 +194,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// Sends to the backend all the pending records in the local cache.
     public func push(timeout timeout: NSTimeInterval? = nil, completionHandler: UIntErrorTypeArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
-        guard type == .Sync else {
+        if type == .Network {
             completionHandler?(nil, [KinveyError.InvalidDataStoreType])
             return LocalRequest()
         }
@@ -207,7 +207,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// Gets the records from the backend that matches with the query passed by parameter and saves locally in the local cache.
     public func pull(query: Query = Query(), deltaSet: Bool? = nil, completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
-        guard type == .Sync else {
+        if type == .Network {
             completionHandler?(nil, KinveyError.InvalidDataStoreType)
             return LocalRequest()
         }
@@ -220,7 +220,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
     public func sync(query: Query = Query(), completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
-        guard type == .Sync else {
+        if type == .Network {
             completionHandler?(nil, nil, [KinveyError.InvalidDataStoreType])
             return LocalRequest()
         }
@@ -243,7 +243,8 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// Deletes all the pending changes in the local cache.
     public func purge(query: Query = Query(), completionHandler: DataStore<T>.UIntCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
-        guard type == .Sync else {
+        
+        if type == .Network {
             completionHandler?(nil, Error.InvalidDataStoreType)
             return LocalRequest()
         }
