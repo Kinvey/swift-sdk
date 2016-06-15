@@ -9,8 +9,7 @@
 import Foundation
 import PromiseKit
 
-@objc(__KNVPushOperation)
-internal class PushOperation: SyncOperation {
+internal class PushOperation<T: Persistable>: SyncOperation<T> {
     
     func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: ((UInt, [ErrorType]?) -> Void)?) -> Request {
         let requests = OperationQueueRequest()

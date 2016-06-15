@@ -8,14 +8,14 @@
 
 import Foundation
 
-class RemoveOperation: WriteOperation {
+class RemoveOperation<T: Persistable>: WriteOperation<T> {
     
     let query: Query
     lazy var request: HttpRequest = self.buildRequest()
     
-    init(query: Query, writePolicy: WritePolicy, sync: Sync? = nil, persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
+    init(query: Query, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache<T>? = nil, client: Client) {
         self.query = query
-        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
+        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
     func buildRequest() -> HttpRequest {

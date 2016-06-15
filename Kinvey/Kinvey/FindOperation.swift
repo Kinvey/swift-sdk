@@ -9,8 +9,7 @@
 import Foundation
 import PromiseKit
 
-@objc(__KNVFindOperation)
-internal class FindOperation: ReadOperation {
+internal class FindOperation<T: Persistable>: ReadOperation<T> {
     
     private static let MaxIdsPerQuery = 200
     
@@ -20,11 +19,11 @@ internal class FindOperation: ReadOperation {
     typealias ResultsHandler = ([JsonDictionary]) -> Void
     let resultsHandler: ResultsHandler?
     
-    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client, resultsHandler: ResultsHandler? = nil) {
+    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, cache: Cache<T>, client: Client, resultsHandler: ResultsHandler? = nil) {
         self.query = query
         self.deltaSet = deltaSet
         self.resultsHandler = resultsHandler
-        super.init(readPolicy: readPolicy, persistableType: persistableType, cache: cache, client: client)
+        super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
     
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
@@ -46,7 +45,7 @@ internal class FindOperation: ReadOperation {
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
         let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
-        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: persistableType.kinveyCollectionName(), query: query, fields: fields)
+        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.kinveyCollectionName, query: query, fields: fields)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK,
                 let jsonArray = self.client.responseParser.parseArray(data)

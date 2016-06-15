@@ -140,13 +140,6 @@ public class Client: NSObject, Credential {
         responseParser = JsonResponseParser(client: self)
     }
     
-    /// This method is called automatically before use any usage of the `Client` class.
-    public override class func initialize () {
-        ValueTransformer.setValueTransformer(NSDate2StringValueTransformer())
-        EntitySchema.scanForPersistableEntities()
-        KCSRealmEntityPersistence.initialize()
-    }
-    
     /// Constructor that already initialize the client. The `initialize` method is called automatically.
     public convenience init(appKey: String, appSecret: String, apiHostName: NSURL = Client.defaultApiHostName, authHostName: NSURL = Client.defaultAuthHostName) {
         self.init()

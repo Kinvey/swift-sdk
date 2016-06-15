@@ -9,8 +9,7 @@
 import Foundation
 import PromiseKit
 
-@objc(__KNVPurgeOperation)
-internal class PurgeOperation: SyncOperation {
+internal class PurgeOperation<T: Persistable>: SyncOperation<T> {
     
     override func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         let requests = MultiRequest()
@@ -24,7 +23,7 @@ internal class PurgeOperation: SyncOperation {
             case .Update:
                 if let objectId = pendingOperation.objectId {
                     promises.append(Promise<Void> { fulfill, reject in
-                        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: self.persistableType.kinveyCollectionName(), id: objectId)
+                        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName, id: objectId)
                         requests.addRequest(request)
                         request.execute() { data, response, error in
                             if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
@@ -53,7 +52,7 @@ internal class PurgeOperation: SyncOperation {
             case .Create:
                 promises.append(Promise<Void> { fulfill, reject in
                     if let objectId = pendingOperation.objectId {
-                        let query = Query(format: "\(self.persistableType.idKey) == %@", objectId)
+                        let query = Query(format: "\(T.kinveyObjectIdPropertyName) == %@", objectId)
                         cache?.removeEntitiesByQuery(query)
                     }
                     sync.removePendingOperation(pendingOperation)
