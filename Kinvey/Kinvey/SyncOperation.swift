@@ -8,16 +8,15 @@
 
 import Foundation
 
-@objc(__KNVSyncOperation)
-internal class SyncOperation: Operation {
+internal class SyncOperation<T: Persistable>: Operation<T> {
     
     typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
     
     let sync: Sync
     
-    internal init(sync: Sync, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    internal init(sync: Sync, cache: Cache<T>, client: Client) {
         self.sync = sync
-        super.init(persistableType: persistableType, cache: cache, client: client)
+        super.init(cache: cache, client: client)
     }
     
     func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {

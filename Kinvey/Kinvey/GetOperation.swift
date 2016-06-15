@@ -8,14 +8,13 @@
 
 import Foundation
 
-@objc(__KNVGetOperation)
-internal class GetOperation: ReadOperation {
+internal class GetOperation<T: Persistable>: ReadOperation<T> {
     
     let id: String
     
-    init(id: String, readPolicy: ReadPolicy, persistableType: Persistable.Type, cache: Cache, client: Client) {
+    init(id: String, readPolicy: ReadPolicy, cache: Cache<T>, client: Client) {
         self.id = id
-        super.init(readPolicy: readPolicy, persistableType: persistableType, cache: cache, client: client)
+        super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
     
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {

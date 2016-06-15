@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectMapper
 
 class HttpRequestFactory: RequestFactory {
     
@@ -30,7 +31,7 @@ class HttpRequestFactory: RequestFactory {
         if let password = password {
             bodyObject["password"] = password
         }
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     
@@ -44,7 +45,7 @@ class HttpRequestFactory: RequestFactory {
         if hard {
             bodyObject["hard"] = true
         }
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     
@@ -56,7 +57,7 @@ class HttpRequestFactory: RequestFactory {
             "username" : username,
             "password" : password
         ]
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     
@@ -67,7 +68,7 @@ class HttpRequestFactory: RequestFactory {
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = ["username" : username]
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     
@@ -81,7 +82,7 @@ class HttpRequestFactory: RequestFactory {
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = user.toJson()
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     
@@ -95,7 +96,7 @@ class HttpRequestFactory: RequestFactory {
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyObject = ["email" : email]
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     
@@ -109,10 +110,10 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
-    func buildAppDataSave(persistable: Persistable) -> HttpRequest {
-        let collectionName = persistable.dynamicType.kinveyCollectionName()
-        let bodyObject = persistable.dynamicType.toJson(persistable: persistable)
-        let objId = bodyObject[Kinvey.PersistableIdKey] as? String
+    func buildAppDataSave<T: Persistable>(persistable: T) -> HttpRequest {
+        let collectionName = T.kinveyCollectionName
+        let bodyObject = Mapper<T>().toJSON(persistable)
+        let objId = bodyObject[PersistableIdKey] as? String
         let isNewObj = objId == nil
         let request = HttpRequest(
             httpMethod: isNewObj ? .Post : .Put,
@@ -123,7 +124,7 @@ class HttpRequestFactory: RequestFactory {
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     

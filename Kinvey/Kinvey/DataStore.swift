@@ -67,7 +67,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// DataStoreType defines how the DataStore will behave.
     public let type: DataStoreType
     
-    private let cache: Cache
+    private let cache: Cache<T>
     private let sync: Sync
     
     private var deltaSet: Bool
@@ -108,7 +108,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         self.type = type
         self.deltaSet = deltaSet
         self.client = client
-        collectionName = T.kinveyCollectionName()
+        collectionName = T.kinveyCollectionName
         cache = client.cacheManager.cache(collectionName, filePath: filePath)
         sync = client.syncManager.sync(collectionName, filePath: filePath)
         readPolicy = type.readPolicy
@@ -119,7 +119,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func findById(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         precondition(!id.isEmpty)
         let readPolicy = readPolicy ?? self.readPolicy
-        let operation = GetOperation(id: id, readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
+        let operation = GetOperation(id: id, readPolicy: readPolicy, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -133,7 +133,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func find(query: Query = Query(), deltaSet: Bool? = nil, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let deltaSet = deltaSet ?? self.deltaSet
-        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
+        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: readPolicy, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -170,7 +170,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         precondition(!id.isEmpty)
 
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = RemoveByIdOperation(objectId: id, writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = RemoveByIdOperation(objectId: id, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -178,14 +178,14 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// Deletes a list of records using the `_id` of the records.
     public func removeById(ids: [String], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         precondition(ids.count > 0)
-        let query = Query(format: "\(T.idKey) IN %@", ids)
+        let query = Query(format: "\(T.kinveyObjectIdPropertyName) IN %@", ids)
         return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
     /// Deletes a list of records that matches with the query passed by parameter.
     public func remove(query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = RemoveByQueryOperation(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = RemoveByQueryOperation<T>(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }

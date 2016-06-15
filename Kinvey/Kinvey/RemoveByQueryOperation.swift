@@ -8,11 +8,10 @@
 
 import Foundation
 
-@objc(__KNVRemoveOperation)
-internal class RemoveByQueryOperation: RemoveOperation {
+internal class RemoveByQueryOperation<T: Persistable>: RemoveOperation<T> {
     
     override func buildRequest() -> HttpRequest {
-        return client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: persistableType.kinveyCollectionName(), query: query)
+        return client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: T.kinveyCollectionName, query: query)
     }
     
 }

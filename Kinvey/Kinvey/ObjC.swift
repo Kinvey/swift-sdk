@@ -83,7 +83,6 @@ extension ReadOperation {
     
     internal typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
     
-    @objc
     internal func execute(completionHandler: CompletionHandlerObjC? = nil) -> Request {
         switch readPolicy {
         case .ForceLocal:
@@ -112,7 +111,6 @@ extension WriteOperation {
     
     internal typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
     
-    @objc
     internal func execute(completionHandler: CompletionHandlerObjC?) -> Request {
         switch writePolicy {
         case .ForceLocal:
@@ -138,21 +136,18 @@ extension SyncOperation {
     internal typealias CompletionHandlerObjC = (AnyObject?, NSError?) -> Void
     internal typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
     
-    @objc
     internal func execute(completionHandler: CompletionHandlerObjC?) -> Request {
         return execute(timeout: nil) { (objs, error) -> Void in
             completionHandler?(objs, error as? NSError)
         }
     }
     
-    @objc
     internal func executeWithTimeout(timeout: NSTimeInterval, completionHandler: CompletionHandlerObjC?) -> Request {
         return execute(timeout: timeout) { (objs, error) -> Void in
             completionHandler?(objs, error as? NSError)
         }
     }
     
-    @objc
     internal func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
         return execute { (obj, error) -> Void in
             completionHandler?(obj as? UInt ?? 0, error)
@@ -165,7 +160,6 @@ extension RemoveOperation {
     
     internal typealias UIntCompletionHandlerObjC = (UInt, NSError?) -> Void
     
-    @objc
     internal func executeUInt(completionHandler: UIntCompletionHandlerObjC?) -> Request {
         switch writePolicy {
         case .ForceLocal:
@@ -182,14 +176,6 @@ extension RemoveOperation {
                 completionHandler?(obj as! UInt, error as? NSError)
             })
         }
-    }
-    
-}
-
-extension FindOperation {
-    
-    internal convenience init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, persistableClass: AnyClass, cache: Cache, client: Client) {
-        self.init(query: query, deltaSet: deltaSet, readPolicy: readPolicy, persistableType: persistableClass as! Persistable.Type, cache: cache, client: client)
     }
     
 }

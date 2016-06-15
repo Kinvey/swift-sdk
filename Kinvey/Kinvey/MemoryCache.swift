@@ -8,36 +8,37 @@
 
 import Foundation
 
-@objc
-class MemoryCache: NSObject, Cache {
+class MemoryCache<T: Persistable>: CacheProtocol {
+    
+    internal typealias Type = T
     
     var persistenceId: String = ""
     var collectionName: String = ""
     var ttl: NSTimeInterval = 0
     let type: Persistable.Type
     
-    var memory = [String : JsonDictionary]()
+    var memory = [String : Type]()
     
     init(type: Persistable.Type) {
         self.type = type
     }
     
-    func saveEntity(entity: JsonDictionary) {
+    func saveEntity(entity: Type) {
         let objId = entity[type.idKey] as! String
         memory[objId] = entity
     }
     
-    func saveEntities(entities: [JsonDictionary]) {
+    func saveEntities(entities: [Type]) {
         for entity in entities {
             saveEntity(entity)
         }
     }
     
-    func findEntity(objectId: String) -> JsonDictionary? {
+    func findEntity(objectId: String) -> Type? {
         return memory[objectId]
     }
     
-    func findEntityByQuery(query: Query) -> [JsonDictionary] {
+    func findEntityByQuery(query: Query) -> [Type] {
         guard let predicate = query.predicate else {
             return memory.values.map({ (json) -> JsonDictionary in
                 return json
@@ -61,7 +62,7 @@ class MemoryCache: NSObject, Cache {
             })
     }
     
-    func findAll() -> [JsonDictionary] {
+    func findAll() -> [Type] {
         return findEntityByQuery(Query())
     }
     
@@ -69,7 +70,7 @@ class MemoryCache: NSObject, Cache {
         return UInt(memory.count)
     }
     
-    func removeEntity(entity: JsonDictionary) -> Bool {
+    func removeEntity(entity: Type) -> Bool {
         let objId = entity[type.idKey] as! String
         return memory.removeValueForKey(objId) != nil
     }

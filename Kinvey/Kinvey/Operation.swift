@@ -8,20 +8,17 @@
 
 import Foundation
 
-@objc(__KNVOperation)
-internal class Operation: NSObject {
+internal class Operation<T: Persistable>: NSObject {
     
     typealias ArrayCompletionHandler = ([Persistable]?, ErrorType?) -> Void
     typealias ObjectCompletionHandler = (Persistable?, ErrorType?) -> Void
     typealias UIntCompletionHandler = (UInt?, ErrorType?) -> Void
     typealias UIntArrayCompletionHandler = (UInt?, [Persistable]?, ErrorType?) -> Void
     
-    let persistableType: Persistable.Type
-    let cache: Cache?
+    let cache: Cache<T>?
     let client: Client
     
-    init(persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
-        self.persistableType = persistableType
+    init(cache: Cache<T>? = nil, client: Client) {
         self.cache = cache
         self.client = client
     }

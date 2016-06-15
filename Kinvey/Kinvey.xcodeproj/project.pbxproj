@@ -19,7 +19,6 @@
 		572C457B1C86690700A41935 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
 		572C458E1C86A70000A41935 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		572C45901C86AC7C00A41935 /* ValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458F1C86AC7C00A41935 /* ValueTransformer.swift */; };
-		572C45921C86C13800A41935 /* EntitySchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C45911C86C13800A41935 /* EntitySchema.swift */; };
 		572C45951C86C29300A41935 /* KinveyInternal-Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 572C45931C86C29300A41935 /* KinveyInternal-Swift.h */; };
 		573150981CBD8D910022A05C /* QueryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573150971CBD8D910022A05C /* QueryTest.swift */; };
 		57379DA51C72AAA900E240E9 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
@@ -105,13 +104,11 @@
 		57B0E9501C5FF52200BA984F /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0E94F1C5FF52200BA984F /* Push.swift */; };
 		57B23CF51C7F8C12006403CC /* MongoDBPredicateAdaptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23CF31C7F8C12006403CC /* MongoDBPredicateAdaptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23CF61C7F8C12006403CC /* MongoDBPredicateAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23CF41C7F8C12006403CC /* MongoDBPredicateAdaptor.m */; };
-		57B23E821C7F94B2006403CC /* KCSRealmEntityPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D6A1C7F9414006403CC /* KCSRealmEntityPersistence.m */; };
 		57B23E831C7F9510006403CC /* KCSCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D871C7F9414006403CC /* KCSCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23E841C7F9510006403CC /* KCSSync.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D881C7F9414006403CC /* KCSSync.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23E851C7F9562006403CC /* KCSQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DA31C7F9414006403CC /* KCSQuery.h */; };
 		57B23E861C7F9566006403CC /* KCSQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DA41C7F9414006403CC /* KCSQuery.m */; };
 		57B23E871C7F9594006403CC /* KinveyHeaderInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DF21C7F9414006403CC /* KinveyHeaderInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		57B23E891C7F9734006403CC /* KCSRealmEntityPersistence.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D691C7F9414006403CC /* KCSRealmEntityPersistence.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23E8A1C7F97ED006403CC /* KCSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DD51C7F9414006403CC /* KCSReachability.m */; };
 		57B23E8B1C7F97F1006403CC /* KCSReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DD41C7F9414006403CC /* KCSReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23E8E1C7F9853006403CC /* KCSBlockDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DD11C7F9414006403CC /* KCSBlockDefs.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -313,6 +310,7 @@
 		57B23FF71C800F40006403CC /* KCSStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23D931C7F9414006403CC /* KCSStore.h */; };
 		57B23FF81C800F43006403CC /* KCSStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23D941C7F9414006403CC /* KCSStore.m */; };
 		57B23FF91C80C4D9006403CC /* KCSCacheUpdatePolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DA11C7F9414006403CC /* KCSCacheUpdatePolicy.h */; };
+		57B768811D10C0C70086AA38 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B768801D10C0C70086AA38 /* Entity.swift */; };
 		57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */; };
 		57BB56B61C4D8E8400F6B548 /* LocalResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */; };
 		57BEAE2D1C98805600479206 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
@@ -514,7 +512,6 @@
 		572C457A1C86690700A41935 /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
 		572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate2StringValueTransformer.swift; sourceTree = "<group>"; };
 		572C458F1C86AC7C00A41935 /* ValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTransformer.swift; sourceTree = "<group>"; };
-		572C45911C86C13800A41935 /* EntitySchema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitySchema.swift; sourceTree = "<group>"; };
 		572C45931C86C29300A41935 /* KinveyInternal-Swift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KinveyInternal-Swift.h"; sourceTree = "<group>"; };
 		573150971CBD8D910022A05C /* QueryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTest.swift; sourceTree = "<group>"; };
 		57379DA41C72AAA900E240E9 /* Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
@@ -900,6 +897,11 @@
 		57B23E7B1C7F9414006403CC /* KCSSocialRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSSocialRequest.h; sourceTree = "<group>"; };
 		57B23E7C1C7F9414006403CC /* KCSSocialRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KCSSocialRequest.m; sourceTree = "<group>"; };
 		57B23E9B1C7FA0BA006403CC /* KinveyKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KinveyKit-Prefix.pch"; sourceTree = "<group>"; };
+		57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
+		57B7687D1D10C02C0086AA38 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
+		57B7687E1D10C0380086AA38 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
+		57B7687F1D10C0490086AA38 /* ObjectMapper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectMapper.framework; sourceTree = "<group>"; };
+		57B768801D10C0C70086AA38 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
 		57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalRequest.swift; sourceTree = "<group>"; };
 		57BB56B51C4D8E8400F6B548 /* LocalResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalResponse.swift; sourceTree = "<group>"; };
 		57BEAE2C1C98805600479206 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1116,7 +1118,6 @@
 				57A27C861C178F17000DF951 /* Info.plist */,
 				5781D12E1CE3ACA000369F40 /* Localizable.strings */,
 				57A27C9B1C178FAC000DF951 /* Kinvey.swift */,
-				572C45911C86C13800A41935 /* EntitySchema.swift */,
 				577C9E771C1F89C700BF49EE /* Credential.swift */,
 				57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */,
 				57A2ED8F1C49D30B006D26A9 /* Endpoint.swift */,
@@ -1133,6 +1134,7 @@
 				575772851C4728E5001D56F5 /* TTL.swift */,
 				57E1C3A21C17B3FF00578974 /* Query.swift */,
 				57E1C3A61C17B4F300578974 /* Persistable.swift */,
+				57B768801D10C0C70086AA38 /* Entity.swift */,
 				57E1C3AE1C18153900578974 /* RequestFactory.swift */,
 				57E1C3B01C18156700578974 /* HttpRequestFactory.swift */,
 				57E1C3B21C1822B100578974 /* ResponseParser.swift */,
@@ -1224,6 +1226,7 @@
 		57B0C1C11CDCE88900492D6C /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				57B7687C1D10C01F0086AA38 /* ObjectMapper.framework */,
 				57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1D21CDCE88900492D6C /* KIF.framework */,
 				57B0C1D61CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
@@ -1238,6 +1241,7 @@
 		57B0C1DE1CDCE88900492D6C /* Mac */ = {
 			isa = PBXGroup;
 			children = (
+				57B7687D1D10C02C0086AA38 /* ObjectMapper.framework */,
 				57B0C1DF1CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1E31CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C1E51CDCE88900492D6C /* PromiseKit.framework */,
@@ -1251,6 +1255,7 @@
 		57B0C1EB1CDCE88900492D6C /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
+				57B7687E1D10C0380086AA38 /* ObjectMapper.framework */,
 				57B0C1F31CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C1F71CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C1F91CDCE88900492D6C /* PromiseKit.framework */,
@@ -1264,6 +1269,7 @@
 		57B0C1FF1CDCE88900492D6C /* watchOS */ = {
 			isa = PBXGroup;
 			children = (
+				57B7687F1D10C0490086AA38 /* ObjectMapper.framework */,
 				57B0C2061CDCE88900492D6C /* KeychainAccess.framework */,
 				57B0C20A1CDCE88900492D6C /* OMGHTTPURLRQ.framework */,
 				57B0C20C1CDCE88900492D6C /* PromiseKit.framework */,
@@ -1944,7 +1950,6 @@
 				57B23EF31C7FAA29006403CC /* KCSFile+KCSInternal.h in Headers */,
 				57B23FF71C800F40006403CC /* KCSStore.h in Headers */,
 				57B23F231C7FB000006403CC /* KinveyEntity.h in Headers */,
-				57B23E891C7F9734006403CC /* KCSRealmEntityPersistence.h in Headers */,
 				57B23E851C7F9562006403CC /* KCSQuery.h in Headers */,
 				57B23EA01C7FA2BF006403CC /* KCSHttpRequest+Private.h in Headers */,
 				57B23F241C7FB000006403CC /* KinveyPersistable.h in Headers */,
@@ -2309,7 +2314,6 @@
 				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
 				574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
-				572C45921C86C13800A41935 /* EntitySchema.swift in Sources */,
 				57B23F371C7FB082006403CC /* KCSQuery2.m in Sources */,
 				57FF4F6F1CD02FF7002947FF /* OperationQueueRequest.swift in Sources */,
 				57E1C3A71C17B4F300578974 /* Persistable.swift in Sources */,
@@ -2350,7 +2354,6 @@
 				57B23EF01C7FAA18006403CC /* KCSMockFileOperation.m in Sources */,
 				57A2ED901C49D30B006D26A9 /* Endpoint.swift in Sources */,
 				57B23F3F1C7FB15C006403CC /* KCSURLProtocol.m in Sources */,
-				57B23E821C7F94B2006403CC /* KCSRealmEntityPersistence.m in Sources */,
 				5781D1271CE29AA700369F40 /* ObjCRuntime.swift in Sources */,
 				57B23F691C7FB1D1006403CC /* KCS_KSReachability.m in Sources */,
 				57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */,
@@ -2375,6 +2378,7 @@
 				57B23EDB1C7FA8A9006403CC /* KCSObjcRuntime.m in Sources */,
 				57B23EAD1C7FA55D006403CC /* KCSBase64.m in Sources */,
 				57B23F311C7FB046006403CC /* KCSClient2.m in Sources */,
+				57B768811D10C0C70086AA38 /* Entity.swift in Sources */,
 				57A27C9C1C178FAC000DF951 /* Kinvey.swift in Sources */,
 				57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */,
 				57B23ED71C7FA877006403CC /* KCSLogManager.m in Sources */,
