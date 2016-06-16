@@ -117,7 +117,20 @@ public class FileStore {
                 }
                 request.setValue("0", forHTTPHeaderField: "Content-Length")
                 request.setValue("bytes */\(data.length)", forHTTPHeaderField: "Content-Range")
-                let dataTask = self.client.urlSession.dataTaskWithRequest(request) { (_, response, error) in
+                
+                if self.client.logNetworkEnabled {
+                    do {
+                        print("\(request)")
+                    }
+                }
+                
+                let dataTask = self.client.urlSession.dataTaskWithRequest(request) { (data, response, error) in
+                    if self.client.logNetworkEnabled, let response = response as? NSHTTPURLResponse {
+                        do {
+                            print("\(response.description(data))")
+                        }
+                    }
+                    
                     let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)", options: [])
                     if let response = response as? NSHTTPURLResponse
                         where response.statusCode == 308,
