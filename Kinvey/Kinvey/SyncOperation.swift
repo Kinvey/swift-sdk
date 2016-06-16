@@ -8,9 +8,9 @@
 
 import Foundation
 
-internal class SyncOperation<T: Persistable>: Operation<T> {
+internal class SyncOperation<T: Persistable, R, E where T: NSObject>: Operation<T> {
     
-    typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
+    internal typealias CompletionHandler = (R, E) -> Void
     
     let sync: Sync
     

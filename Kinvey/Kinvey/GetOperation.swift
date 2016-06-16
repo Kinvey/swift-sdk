@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class GetOperation<T: Persistable>: ReadOperation<T> {
+internal class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T> {
     
     let id: String
     
@@ -20,25 +20,20 @@ internal class GetOperation<T: Persistable>: ReadOperation<T> {
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            let json = self.cache?.findEntity(self.id)
-            if let json = json {
-                let persistable = self.fromJson(json)
-                completionHandler?(persistable, nil)
-            } else {
-                completionHandler?(nil, nil)
-            }
+            let persistable = self.cache?.findEntity(self.id)
+            completionHandler?(persistable, nil)
         }
         return request
     }
     
     override func executeNetwork(completionHandler: CompletionHandler?) -> Request {
-        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: self.persistableType.kinveyCollectionName(), id: id)
+        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName(), id: id)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
-                let obj = self.persistableType.fromJson(json)
-                if let cache = self.cache {
-                    let persistableJson = self.merge(obj, json: json)
-                    cache.saveEntity(persistableJson)
+                let obj = T.fromJson(json)
+                if let obj = obj, let cache = self.cache {
+//                    self.merge(obj, json: json)
+//                    cache.saveEntity(obj)
                 }
                 completionHandler?(obj, nil)
             } else if let error = error {

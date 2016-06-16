@@ -8,7 +8,6 @@
 
 import Foundation
 
-@objc(KNVPendingOperation)
 internal protocol PendingOperation {
     
     var objectId: String? { get }

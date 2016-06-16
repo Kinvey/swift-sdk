@@ -9,9 +9,9 @@
 import Foundation
 import PromiseKit
 
-internal class FindOperation<T: Persistable>: ReadOperation<T> {
-    
-    private static let MaxIdsPerQuery = 200
+private let MaxIdsPerQuery = 200
+
+internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T> {
     
     let query: Query
     let deltaSet: Bool
@@ -31,8 +31,8 @@ internal class FindOperation<T: Persistable>: ReadOperation<T> {
         request.execute { () -> Void in
             if let cache = self.cache {
                 let json = cache.findEntityByQuery(self.query)
-                let array = self.fromJson(jsonArray: json)
-                completionHandler?(array, nil)
+//                let array = self.fromJson(jsonArray: json)
+//                completionHandler?(array, nil)
             } else {
                 completionHandler?([], nil)
             }
@@ -45,7 +45,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T> {
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
         let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
-        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.kinveyCollectionName, query: query, fields: fields)
+        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.kinveyCollectionName(), query: query, fields: fields)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK,
                 let jsonArray = self.client.responseParser.parseArray(data)
@@ -58,16 +58,16 @@ internal class FindOperation<T: Persistable>: ReadOperation<T> {
                     allIds.unionInPlace(deltaSet.created)
                     allIds.unionInPlace(deltaSet.updated)
                     allIds.unionInPlace(deltaSet.deleted)
-                    if allIds.count > self.dynamicType.MaxIdsPerQuery {
+                    if allIds.count > MaxIdsPerQuery {
                         let allIds = Array<String>(allIds)
                         var promises = [Promise<[AnyObject]>]()
                         var newRefObjs = [String : String]()
-                        for offset in 0.stride(to: allIds.count, by: self.dynamicType.MaxIdsPerQuery) {
-                            let limit = min(offset + self.dynamicType.MaxIdsPerQuery, allIds.count - 1)
+                        for offset in 0.stride(to: allIds.count, by: MaxIdsPerQuery) {
+                            let limit = min(offset + MaxIdsPerQuery, allIds.count - 1)
                             let allIds = Set<String>(allIds[offset...limit])
                             let promise = Promise<[AnyObject]> { fulfill, reject in
                                 let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
-                                let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: cache, client: self.client) { jsonArray in
+                                let operation = FindOperation<T>(query: query, deltaSet: false, readPolicy: .ForceNetwork, cache: cache, client: self.client) { jsonArray in
                                     for (key, value) in self.reduceToIdsLmts(jsonArray) {
                                         newRefObjs[key] = value
                                     }
@@ -88,7 +88,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T> {
                             let refKeys = Set<String>(refObjs.keys)
                             let deleted = deltaSet.deleted.subtract(refKeys)
                             if deleted.count > 0 {
-                                let query = Query(format: "\(self.persistableType.idKey) IN %@", deleted)
+                                let query = Query(format: "\(T.kinveyObjectIdPropertyName()) IN %@", deleted)
                                 cache.removeEntitiesByQuery(query)
                             }
                             self.executeLocal(completionHandler)
@@ -98,7 +98,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T> {
                     } else if allIds.count > 0 {
                         let query = Query(format: "\(PersistableIdKey) IN %@", allIds)
                         var newRefObjs: [String : String]? = nil
-                        let operation = FindOperation(query: query, deltaSet: false, readPolicy: .ForceNetwork, persistableType: self.persistableType, cache: cache, client: self.client) { jsonArray in
+                        let operation = FindOperation<T>(query: query, deltaSet: false, readPolicy: .ForceNetwork, cache: cache, client: self.client) { jsonArray in
                             newRefObjs = self.reduceToIdsLmts(jsonArray)
                         }
                         operation.execute { (results, error) -> Void in
@@ -107,7 +107,7 @@ internal class FindOperation<T: Persistable>: ReadOperation<T> {
                                     let refKeys = Set<String>(refObjs.keys)
                                     let deleted = deltaSet.deleted.subtract(refKeys)
                                     if deleted.count > 0 {
-                                        let query = Query(format: "\(self.persistableType.idKey) IN %@", deleted)
+                                        let query = Query(format: "\(T.kinveyObjectIdPropertyName()) IN %@", deleted)
                                         cache.removeEntitiesByQuery(query)
                                     }
                                 }
@@ -122,10 +122,10 @@ internal class FindOperation<T: Persistable>: ReadOperation<T> {
                         self.executeLocal(completionHandler)
                     }
                 } else {
-                    let persistableArray = self.persistableType.fromJson(jsonArray)
-                    let persistableJson = self.merge(persistableArray, jsonArray: jsonArray)
-                    self.cache?.saveEntities(persistableJson)
-                    completionHandler?(persistableArray, nil)
+//                    let persistableArray = T.fromJson(jsonArray)
+//                    let persistableJson = self.merge(persistableArray, jsonArray: jsonArray)
+//                    self.cache?.saveEntities(persistableJson)
+//                    completionHandler?(persistableArray, nil)
                 }
             } else if let error = error {
                 completionHandler?(nil, error)

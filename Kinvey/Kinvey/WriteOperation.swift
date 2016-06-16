@@ -8,9 +8,9 @@
 
 import Foundation
 
-internal class WriteOperation<T: Persistable>: Operation<T> {
+internal class WriteOperation<T: Persistable, R where T: NSObject>: Operation<T> {
     
-    typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
+    typealias CompletionHandler = (R, ErrorType?) -> Void
     
     let writePolicy: WritePolicy
     let sync: Sync?

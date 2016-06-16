@@ -8,53 +8,46 @@
 
 import Foundation
 
-class MemoryCache<T: Persistable>: CacheProtocol {
-    
-    internal typealias Type = T
-    
-    var persistenceId: String = ""
-    var collectionName: String = ""
-    var ttl: NSTimeInterval = 0
-    let type: Persistable.Type
+class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
     
     var memory = [String : Type]()
     
-    init(type: Persistable.Type) {
-        self.type = type
+    init() {
+        super.init(persistenceId: "")
     }
     
-    func saveEntity(entity: Type) {
-        let objId = entity[type.idKey] as! String
+    override func saveEntity(entity: Type) {
+        let objId = entity[T.kinveyObjectIdPropertyName()] as! String
         memory[objId] = entity
     }
     
-    func saveEntities(entities: [Type]) {
+    override func saveEntities(entities: [Type]) {
         for entity in entities {
             saveEntity(entity)
         }
     }
     
-    func findEntity(objectId: String) -> Type? {
+    override func findEntity(objectId: String) -> Type? {
         return memory[objectId]
     }
     
-    func findEntityByQuery(query: Query) -> [Type] {
+    override func findEntityByQuery(query: Query) -> [Type] {
         guard let predicate = query.predicate else {
-            return memory.values.map({ (json) -> JsonDictionary in
+            return memory.values.map({ (json) -> Type in
                 return json
             })
         }
         return memory.filter({ (key, obj) -> Bool in
             return predicate.evaluateWithObject(obj)
-        }).map({ (key, obj) -> JsonDictionary in
+        }).map({ (key, obj) -> Type in
             return obj
         })
     }
     
-    func findIdsLmtsByQuery(query: Query) -> [String : String] {
+    override func findIdsLmtsByQuery(query: Query) -> [String : String] {
         return findEntityByQuery(query).map { (entity) -> (String, NSDate) in
-            let kmd = entity[type.kmdKey ?? PersistableMetadataKey] as! JsonDictionary
-            return (entity[type.idKey] as! String, kmd[Metadata.LmtKey] as! NSDate)
+            let kmd = entity[T.kinveyMetadataPropertyName() ?? PersistableMetadataKey] as! JsonDictionary
+            return (entity[T.kinveyObjectIdPropertyName()] as! String, kmd[Metadata.LmtKey] as! NSDate)
             }.reduce([String : String](), combine: { (items, pair) in
                 var items = items
                 items[pair.0] = pair.1.toString()
@@ -62,20 +55,20 @@ class MemoryCache<T: Persistable>: CacheProtocol {
             })
     }
     
-    func findAll() -> [Type] {
+    override func findAll() -> [Type] {
         return findEntityByQuery(Query())
     }
     
-    func count() -> UInt {
+    override func count() -> UInt {
         return UInt(memory.count)
     }
     
-    func removeEntity(entity: Type) -> Bool {
-        let objId = entity[type.idKey] as! String
+    override func removeEntity(entity: Type) -> Bool {
+        let objId = entity[Type.kinveyObjectIdPropertyName()] as! String
         return memory.removeValueForKey(objId) != nil
     }
     
-    func removeEntitiesByQuery(query: Query) -> UInt {
+    override func removeEntitiesByQuery(query: Query) -> UInt {
         let objs = findEntityByQuery(query)
         for obj in objs {
             removeEntity(obj)
@@ -83,7 +76,7 @@ class MemoryCache<T: Persistable>: CacheProtocol {
         return UInt(objs.count)
     }
     
-    func removeAllEntities() {
+    override func removeAllEntities() {
         memory.removeAll()
     }
     

@@ -81,7 +81,7 @@ class HttpRequestFactory: RequestFactory {
         let request = HttpRequest(httpMethod: .Put, endpoint: Endpoint.UserById(client: client, userId: user.userId), credential: client.activeUser, client: client)
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let bodyObject = user.toJson()
+        let bodyObject = user.toJSON()
         request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
@@ -111,7 +111,7 @@ class HttpRequestFactory: RequestFactory {
     }
     
     func buildAppDataSave<T: Persistable>(persistable: T) -> HttpRequest {
-        let collectionName = T.kinveyCollectionName
+        let collectionName = T.kinveyCollectionName()
         let bodyObject = Mapper<T>().toJSON(persistable)
         let objId = bodyObject[PersistableIdKey] as? String
         let isNewObj = objId == nil
@@ -161,7 +161,7 @@ class HttpRequestFactory: RequestFactory {
             "deviceId" : deviceToken.hexString()
         ]
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     
@@ -178,7 +178,7 @@ class HttpRequestFactory: RequestFactory {
             "deviceId" : deviceToken.hexString()
         ]
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     
@@ -212,7 +212,7 @@ class HttpRequestFactory: RequestFactory {
         
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.request.setValue(file.mimeType ?? "application/octet-stream", forHTTPHeaderField: "X-Kinvey-Content-Type")
-        request.request.HTTPBody = toJson(bodyObject)
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     

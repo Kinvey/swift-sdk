@@ -8,12 +8,12 @@
 
 import Foundation
 
-internal class RemoveByIdOperation<T: Persistable>: RemoveOperation<T> {
+internal class RemoveByIdOperation<T: Persistable where T: NSObject>: RemoveOperation<T> {
     
     let objectId: String
     
     override func buildRequest() -> HttpRequest {
-        return client.networkRequestFactory.buildAppDataRemoveById(collectionName: T.kinveyCollectionName, objectId: objectId)
+        return client.networkRequestFactory.buildAppDataRemoveById(collectionName: T.kinveyCollectionName(), objectId: objectId)
     }
     
     internal init(objectId: String, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache<T>? = nil, client: Client) {

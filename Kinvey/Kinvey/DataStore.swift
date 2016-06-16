@@ -22,7 +22,7 @@ class DataStoreTypeTag: Hashable {
     
     var hashValue: Int {
         var hash = NSDecimalNumber(integer: 5)
-        hash = 23 * hash + NSDecimalNumber(integer: NSStringFromClass(persistableType).hashValue)
+        hash = 23 * hash + NSDecimalNumber(integer: NSStringFromClass(persistableType as! AnyClass).hashValue)
         hash = 23 * hash + NSDecimalNumber(integer: tag.hashValue)
         hash = 23 * hash + NSDecimalNumber(integer: type.hashValue)
         return hash.hashValue
@@ -108,9 +108,9 @@ public class DataStore<T: Persistable where T: NSObject> {
         self.type = type
         self.deltaSet = deltaSet
         self.client = client
-        collectionName = T.kinveyCollectionName
+        collectionName = T.kinveyCollectionName()
         cache = client.cacheManager.cache(collectionName, filePath: filePath)
-        sync = client.syncManager.sync(collectionName, filePath: filePath)
+        sync = client.syncManager.sync(filePath: filePath, type: T.self)
         readPolicy = type.readPolicy
         writePolicy = type.writePolicy
     }
@@ -203,7 +203,7 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PushOperation(sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = PushOperation<T>(sync: sync, cache: cache, client: client)
         let request = operation.execute(timeout: timeout, completionHandler: completionHandler)
         return request
     }
@@ -222,7 +222,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
         
         let deltaSet = deltaSet ?? self.deltaSet
-        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, persistableType: T.self, cache: cache, client: client)
+        let operation = FindOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
@@ -264,7 +264,7 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PurgeOperation(sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = PurgeOperation<T>(sync: sync, cache: cache, client: client)
         let request = operation.execute { (count, error: ErrorType?) -> Void in
             if let count = count {
                 self.pull(query) { (results, error) -> Void in

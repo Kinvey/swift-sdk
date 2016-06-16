@@ -7,10 +7,10 @@
 //
 
 import Foundation
+import ObjectMapper
 
 /// This class represents the metadata information for a record
-@objc(KNVMetadata)
-public class Metadata: NSObject {
+public class Metadata: NSObject, Mappable {
     
     /// Last Modification Time Key.
     public static let LmtKey = "lmt"
@@ -40,28 +40,24 @@ public class Metadata: NSObject {
         self.authtoken = authtoken
     }
     
-    /// Constructor used to build a new `Metadata` instance from a JSON object.
-    public convenience init(json: JsonDictionary) {
+    public required convenience init?(_ map: Map) {
+        var lmt: String?
+        var ect: String?
+        var authtoken: String?
+        lmt <- map[Metadata.LmtKey]
+        ect <- map[Metadata.EctKey]
+        authtoken <- map[Metadata.AuthTokenKey]
         self.init(
-            lmt: json[Metadata.LmtKey] as? String,
-            ect: json[Metadata.EctKey] as? String,
-            authtoken: json[Metadata.AuthTokenKey] as? String
+            lmt: lmt,
+            ect: ect,
+            authtoken: authtoken
         )
     }
     
-    /// The JSON representation for the `Metadata` instance.
-    public func toJson() -> [String : AnyObject] {
-        var json: [String : AnyObject] = [:]
-        if let lmtString = lmtString {
-            json[Metadata.LmtKey] = lmtString
-        }
-        if let ectString = ectString {
-            json[Metadata.EctKey] = ectString
-        }
-        if let authtoken = authtoken {
-            json[Metadata.AuthTokenKey] = authtoken
-        }
-        return json
+    public func mapping(map: Map) {
+        lmt <- map[Metadata.LmtKey]
+        ect <- map[Metadata.EctKey]
+        authtoken <- map[Metadata.AuthTokenKey]
     }
 
 }
