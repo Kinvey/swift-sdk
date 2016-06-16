@@ -217,4 +217,7 @@ public class Client: NSObject, Credential {
         }
     }
 
+    internal func isInitialized () -> Bool {
+        return self.appKey != nil && self.appSecret != nil
+    }
 }
