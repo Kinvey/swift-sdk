@@ -14,15 +14,55 @@ import ObjectMapper
 public protocol Persistable: Mappable {
     
     /// Provides the collection name to be matched with the backend.
-    static var kinveyCollectionName: String { get }
+    static func kinveyCollectionName() -> String
     
     /// Provides the object id property name.
-    static var kinveyObjectIdPropertyName: String { get }
+    static func kinveyObjectIdPropertyName() -> String
     
     /// Provides the metadata property name.
-    static var kinveyMetadataPropertyName: String { get }
+    static func kinveyMetadataPropertyName() -> String?
     
     /// Provides the ACL property name.
-    static var kinveyAclPropertyName: String { get }
+    static func kinveyAclPropertyName() -> String?
+    
+}
+
+extension Persistable where Self: NSObject {
+    
+    public subscript(key: String) -> AnyObject? {
+        get {
+            return self.valueForKey(key)
+        }
+        set {
+            self.setValue(newValue, forKey: key)
+        }
+    }
+    
+    internal var kinveyObjectId: String? {
+        get {
+            return self[Self.kinveyObjectIdPropertyName()] as? String
+        }
+        set {
+            self[Self.kinveyObjectIdPropertyName()] = newValue
+        }
+    }
+    
+    internal var kinveyAcl: Acl? {
+        get {
+            if let aclKey = Self.kinveyAclPropertyName() {
+                return self[aclKey] as? Acl
+            }
+            return nil
+        }
+        set {
+            if let aclKey = Self.kinveyAclPropertyName() {
+                self[aclKey] = newValue
+            }
+        }
+    }
+    
+    internal static func fromJson(json: JsonDictionary) -> Self? {
+        return Mapper().map(json)
+    }
     
 }

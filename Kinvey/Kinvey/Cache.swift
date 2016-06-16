@@ -46,7 +46,7 @@ extension CacheProtocol {
     
 }
 
-internal class Cache<T: Persistable>: CacheProtocol {
+internal class Cache<T: Persistable where T: NSObject>: CacheProtocol {
     
     internal typealias Type = T
     
@@ -56,45 +56,48 @@ internal class Cache<T: Persistable>: CacheProtocol {
     
     init(persistenceId: String, ttl: NSTimeInterval = DBL_MAX) {
         self.persistenceId = persistenceId
-        self.collectionName = T.kinveyCollectionName
+        self.collectionName = T.kinveyCollectionName()
         self.ttl = ttl
     }
     
-    func saveEntity(entity: Type) {
+    func saveEntity(entity: T) {
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func saveEntities(entities: [Type]) {
+    func saveEntities(entities: [T]) {
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func findEntity(objectId: String) -> Type? {
-        return nil
+    func findEntity(objectId: String) -> T? {
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func findEntityByQuery(query: Query) -> [Type] {
-        return []
+    func findEntityByQuery(query: Query) -> [T] {
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
     func findIdsLmtsByQuery(query: Query) -> [String : String] {
-        return [:]
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func findAll() -> [Type] {
-        return []
+    func findAll() -> [T] {
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
     func count() -> UInt {
-        return 0
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func removeEntity(entity: Type) -> Bool {
-        return false
+    func removeEntity(entity: T) -> Bool {
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
     func removeEntitiesByQuery(query: Query) -> UInt {
-        return 0
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
     func removeAllEntities() {
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
 }

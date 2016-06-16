@@ -8,6 +8,8 @@
 
 import XCTest
 import ObjectiveC
+import Realm
+import ObjectMapper
 @testable import Kinvey
 
 class CacheMigrationTestCaseStep2: XCTestCase {
@@ -33,21 +35,20 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     }
     
     func testMigration() {
-        @objc(CacheMigrationTestCase_Person)
-        class Person: NSObject, Persistable {
+        class Person: Entity {
             
             dynamic var personId: String?
             dynamic var fullName: String?
             
-            @objc static func kinveyCollectionName() -> String {
+            override class func kinveyCollectionName() -> String {
                 return "CacheMigrationTestCase_Person"
             }
             
-            @objc static func kinveyPropertyMapping() -> [String : String] {
-                return [
-                    "personId" : PersistableIdKey,
-                    "fullName" : "fullName"
-                ]
+            override func mapping(map: Map) {
+                super.mapping(map)
+                
+                personId <- map[PersistableIdKey]
+                fullName <- map["fullName"]
             }
             
         }

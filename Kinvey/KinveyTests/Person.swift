@@ -6,34 +6,49 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
+import ObjectMapper
+import Realm
 @testable import Kinvey
 
-class Person: NSObject, Persistable {
+class Person: Entity {
     
     dynamic var personId: String?
     dynamic var name: String?
     dynamic var age: Int = 0
-    dynamic var acl: Acl? = nil
     
-    override init() {
+    required override init() {
+        super.init()
     }
     
     init(personId: String? = nil, name: String) {
         self.personId = personId
         self.name = name
+        super.init()
     }
     
-    static func kinveyCollectionName() -> String {
+    required init?(_ map: Map) {
+        super.init()
+    }
+    
+    required init(value: AnyObject, schema: RLMSchema) {
+        fatalError("init(value:schema:) has not been implemented")
+    }
+    
+    required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        fatalError("init(realm:schema:) has not been implemented")
+    }
+    
+    override class func kinveyCollectionName() -> String {
         return "Person"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "personId" : Kinvey.PersistableIdKey,
-            "acl" : Kinvey.PersistableAclKey,
-            "name" : "name",
-            "age" : "age"
-        ]
+    override func mapping(map: Map) {
+        super.mapping(map)
+        
+        personId <- map[PersistableIdKey]
+        name <- map["name"]
+        age <- map["age"]
+        
     }
     
 }

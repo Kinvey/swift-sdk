@@ -8,6 +8,7 @@
 
 import XCTest
 import WebKit
+import ObjectMapper
 import KinveyApp
 @testable import Kinvey
 
@@ -217,17 +218,21 @@ class UserTests: KinveyTestCase {
             
             var foo: String?
             
-            required init?(json: [String : AnyObject], client: Client) {
-                super.init(json: json, client: client)
-                foo = json["foo"] as? String
+            required init?(_ map: Map) {
+                var userId: String?
+                userId <- map[PersistableIdKey]
+                
+                guard let userIdValue = userId else {
+                    return nil
+                }
+                
+                super.init(userId: userIdValue)
             }
             
-            private override func toJson() -> [String : AnyObject] {
-                var json = super.toJson()
-                if let foo = foo {
-                    json["foo"] = foo
-                }
-                return json
+            override func mapping(map: Map) {
+                super.mapping(map)
+                
+                foo <- map["foo"]
             }
             
         }
@@ -267,17 +272,21 @@ class UserTests: KinveyTestCase {
             
             var foo: String?
             
-            required init?(json: [String : AnyObject], client: Client) {
-                super.init(json: json, client: client)
-                foo = json["foo"] as? String
+            required init?(_ map: Map) {
+                var userId: String?
+                userId <- map[PersistableIdKey]
+                
+                guard let userIdValue = userId else {
+                    return nil
+                }
+                
+                super.init(userId: userIdValue)
             }
             
-            private override func toJson() -> [String : AnyObject] {
-                var json = super.toJson()
-                if let foo = foo {
-                    json["foo"] = foo
-                }
-                return json
+            override func mapping(map: Map) {
+                super.mapping(map)
+                
+                foo <- map["foo"]
             }
             
         }

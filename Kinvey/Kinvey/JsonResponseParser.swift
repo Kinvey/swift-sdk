@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectMapper
 
 class JsonResponseParser: ResponseParser {
     
@@ -38,7 +39,7 @@ class JsonResponseParser: ResponseParser {
         if let data = data where data.length > 0,
             let result = try? NSJSONSerialization.JSONObjectWithData(data, options: []) as? JsonDictionary,
             let json = result,
-            let user = client.userType.init(json: json, client: client) as? U
+            let user = Mapper<U>().map(json)
         {
             return user
         }

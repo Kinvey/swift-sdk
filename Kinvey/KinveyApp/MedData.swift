@@ -7,8 +7,11 @@
 //
 
 import Kinvey
+import Realm
+import RealmSwift
+import ObjectMapper
 
-class MedData: NSObject, Persistable {
+class MedData: Entity {
     
     dynamic var id: String?
     dynamic var acl: Acl?
@@ -24,26 +27,34 @@ class MedData: NSObject, Persistable {
     dynamic var dollar: String?
     dynamic var pick: String?
     
-    static func kinveyCollectionName() -> String {
+    override class func kinveyCollectionName() -> String {
         return "meddata"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "id" : Kinvey.PersistableIdKey,
-            "acl" : Kinvey.PersistableAclKey,
-            "kmd" : Kinvey.PersistableMetadataKey,
-            "seq" : "seq",
-            "first" : "first",
-            "last" : "last",
-            "age" : "age",
-            "street" : "street",
-            "city" : "city",
-            "state" : "state",
-            "zip" : "zip",
-            "dollar" : "dollar",
-            "pick" : "pick"
-        ]
+    required init?(_ map: Map) {
+        super.init(map)
+    }
+    
+    required init() {
+        super.init()
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map)
+        
+        id <- map[PersistableIdKey]
+        acl <- map[PersistableAclKey]
+        kmd <- map[PersistableMetadataKey]
+        seq <- map["seq"]
+        first <- map["first"]
+        last <- map["last"]
+        age <- map["age"]
+        street <- map["street"]
+        city <- map["city"]
+        state <- map["state"]
+        zip <- map["zip"]
+        dollar <- map["dollar"]
+        pick <- map["pick"]
     }
     
 }

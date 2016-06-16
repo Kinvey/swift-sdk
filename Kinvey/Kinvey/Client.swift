@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectMapper
 
 private let lockEncryptionKey = NSLock()
 
@@ -25,7 +26,7 @@ public class Client: NSObject, Credential {
         willSet (newActiveUser) {
             let userDefaults = NSUserDefaults.standardUserDefaults()
             if let activeUser = newActiveUser {
-                var json = activeUser.toJson()
+                var json = activeUser.toJSON()
                 if var kmd = json[PersistableMetadataKey] as? [String : AnyObject] {
                     kmd.removeValueForKey(Metadata.AuthTokenKey)
                     json[PersistableMetadataKey] = kmd
@@ -193,8 +194,9 @@ public class Client: NSObject, Credential {
         self.appKey = appKey
         self.appSecret = appSecret
         if let json = NSUserDefaults.standardUserDefaults().objectForKey(appKey) as? [String : AnyObject] {
-            let user = User(json: json, client: self)
+            let user = Mapper<User>().map(json)
             if let user = user, let metadata = user.metadata, let authtoken = keychain.authtoken {
+                user.client = self
                 metadata.authtoken = authtoken
                 activeUser = user
             }

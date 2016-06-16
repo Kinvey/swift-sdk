@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RemoveOperation<T: Persistable>: WriteOperation<T> {
+class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?> {
     
     let query: Query
     lazy var request: HttpRequest = self.buildRequest()
@@ -27,7 +27,7 @@ class RemoveOperation<T: Persistable>: WriteOperation<T> {
         request.execute { () -> Void in
             let objects = self.cache?.findEntityByQuery(self.query)
             let count = self.cache?.removeEntitiesByQuery(self.query)
-            let idKey = self.persistableType.idKey
+            let idKey = T.kinveyObjectIdPropertyName()
             if let objects = objects {
                 for object in objects {
                     if let objectId = object[idKey] as? String, let sync = self.sync {

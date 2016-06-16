@@ -9,7 +9,11 @@
 import Foundation
 import PromiseKit
 
-internal class PurgeOperation<T: Persistable>: SyncOperation<T> {
+internal class PurgeOperation<T: Persistable where T: NSObject>: SyncOperation<T, UInt?, ErrorType?> {
+    
+    internal override init(sync: Sync, cache: Cache<T>, client: Client) {
+        super.init(sync: sync, cache: cache, client: client)
+    }
     
     override func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         let requests = MultiRequest()
@@ -23,14 +27,14 @@ internal class PurgeOperation<T: Persistable>: SyncOperation<T> {
             case .Update:
                 if let objectId = pendingOperation.objectId {
                     promises.append(Promise<Void> { fulfill, reject in
-                        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName, id: objectId)
+                        let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName(), id: objectId)
                         requests.addRequest(request)
                         request.execute() { data, response, error in
                             if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
                                 if let cache = self.cache {
-                                    let persistable = self.persistableType.fromJson(json)
-                                    let persistableJson = self.merge(persistable, json: json)
-                                    cache.saveEntity(persistableJson)
+                                    let persistable = T.fromJson(json)
+//                                    let persistableJson = self.merge(persistable, json: json)
+//                                    cache.saveEntity(persistableJson)
                                 }
                                 self.sync.removePendingOperation(pendingOperation)
                                 fulfill()

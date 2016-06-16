@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import ObjectMapper
 @testable import Kinvey
 
-class DirectoryEntry: NSObject, Persistable {
+class DirectoryEntry: Entity {
     
     dynamic var uniqueId: String?
     dynamic var nameFirst: String?
@@ -18,57 +19,17 @@ class DirectoryEntry: NSObject, Persistable {
     
     dynamic var refProject: RefProject?
     
-    static func kinveyCollectionName() -> String {
+    override class func kinveyCollectionName() -> String {
         return "HelixProjectDirectory"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "uniqueId" : Kinvey.PersistableIdKey,
-            "nameFirst" : "nameFirst",
-            "nameLast" : "nameLast",
-            "email" : "email"
-        ]
-    }
-    
-    func toJson() -> JsonDictionary {
-        var json = JsonDictionary()
-        if let uniqueId = uniqueId {
-            json[Kinvey.PersistableIdKey] = uniqueId
-        }
-        if let nameFirst = nameFirst {
-            json["nameFirst"] = nameFirst
-        }
-        if let nameLast = nameLast {
-            json["nameLast"] = nameLast
-        }
-        if let email = email {
-            json["email"] = email
-        }
-        if let refProject = refProject {
-            json["refProject"] = refProject
-        }
-        return json
-    }
-    
-    func fromJson(json: JsonDictionary) {
-        if let uniqueId = json[Kinvey.PersistableIdKey] as? String {
-            self.uniqueId = uniqueId
-        }
-        if let nameFirst = json["nameFirst"] as? String {
-            self.nameFirst = nameFirst
-        }
-        if let nameLast = json["nameLast"] as? String {
-            self.nameLast = nameLast
-        }
-        if let email = json["email"] as? String {
-            self.email = email
-        }
-        if let refProject = json["refProject"] as? JsonDictionary {
-            let project = RefProject()
-            project.fromJson(refProject)
-            self.refProject = project
-        }
+    override func mapping(map: Map) {
+        super.mapping(map)
+        
+        uniqueId <- map[PersistableIdKey]
+        nameFirst <- map["nameFirst"]
+        nameLast <- map["nameLast"]
+        email <- map["email"]
     }
     
 }

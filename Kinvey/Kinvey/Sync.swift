@@ -8,13 +8,12 @@
 
 import Foundation
 
-@objc(__KNVSync)
 internal protocol Sync {
     
-    var persistenceId: String { get set }
-    var collectionName: String { get set }
+    var persistenceId: String { get }
+    var collectionName: String { get }
     
-    init!(persistenceId: String, collectionName: String)
+    init(persistenceId: String)
     
     func createPendingOperation(request: NSURLRequest!, objectId: String?) -> PendingOperation
     func savePendingOperation(pendingOperation: PendingOperation)

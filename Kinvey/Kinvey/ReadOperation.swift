@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class ReadOperation<T: Persistable>: Operation<T> {
+internal class ReadOperation<T: Persistable where T: NSObject>: Operation<T> {
     
     typealias CompletionHandler = (AnyObject?, ErrorType?) -> Void
     

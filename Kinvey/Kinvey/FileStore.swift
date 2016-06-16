@@ -69,7 +69,7 @@ public class FileStore {
             file.acl = Acl(json: acl)
         }
         if let kmd = json["_kmd"] as? [String : AnyObject] {
-            file.metadata = Metadata(json: kmd)
+            file.metadata = Metadata(JSON: kmd)
         }
         if let uploadURL = json["_uploadURL"] as? String {
             file.uploadURL = NSURL(string: uploadURL)

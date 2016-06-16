@@ -9,9 +9,13 @@
 import Foundation
 import PromiseKit
 
-internal class PushOperation<T: Persistable>: SyncOperation<T> {
+internal class PushOperation<T: Persistable where T: NSObject>: SyncOperation<T, UInt, [ErrorType]?> {
     
-    func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: ((UInt, [ErrorType]?) -> Void)?) -> Request {
+    internal override init(sync: Sync, cache: Cache<T>, client: Client) {
+        super.init(sync: sync, cache: cache, client: client)
+    }
+    
+    override func execute(timeout timeout: NSTimeInterval? = nil, completionHandler: CompletionHandler?) -> Request {
         let requests = OperationQueueRequest()
         requests.operationQueue.maxConcurrentOperationCount = 1
         var count = UInt(0)
@@ -32,9 +36,9 @@ internal class PushOperation<T: Persistable>: SyncOperation<T> {
                                 cache.removeEntity(entity)
                             }
                             
-                            let persistable = self.persistableType.fromJson(json)
-                            let persistableJson = self.merge(persistable, json: json)
-                            cache.saveEntity(persistableJson)
+                            let persistable = T.fromJson(json)
+//                            let persistableJson = self.merge(persistable, json: json)
+//                            cache.saveEntity(persistableJson)
                         }
                         if request.request.HTTPMethod != "DELETE" {
                             self.sync.removePendingOperation(pendingOperation)
