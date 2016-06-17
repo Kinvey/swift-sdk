@@ -39,6 +39,8 @@ public class User: NSObject, Credential {
     
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to sign up.")
+
         let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -90,6 +92,8 @@ public class User: NSObject, Credential {
     
     /// Sign in a user and set as a current active user.
     public class func login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
+
         let request = client.networkRequestFactory.buildUserLogin(username: username, password: password)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
@@ -332,6 +336,8 @@ public class User: NSObject, Credential {
 #if os(iOS)
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
     public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
+        precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
+
         let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) -> Void in
             var user: User? = nil
             if let kcsUser = kcsUser {
