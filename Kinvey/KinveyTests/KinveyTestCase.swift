@@ -72,6 +72,8 @@ class KinveyTestCase: XCTestCase {
             initializeProduction()
         }
         
+        XCTAssertNotNil(client.isInitialized())
+        
         if let activeUser = client.activeUser {
             activeUser.logout()
         }
