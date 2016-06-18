@@ -61,8 +61,4 @@ extension Persistable where Self: NSObject {
         }
     }
     
-    internal static func fromJson(json: JsonDictionary) -> Self? {
-        return Mapper().map(json)
-    }
-    
 }

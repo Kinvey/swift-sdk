@@ -309,7 +309,7 @@ public class User: NSObject, Credential, Mappable {
             if let kcsUser = kcsUser {
                 let authString = kcsUser.authString
                 let authtoken = authString.hasPrefix(authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(authtokenPrefix.characters.count)) : authString
-                user = User(userId: kcsUser.userId, metadata: Metadata(authtoken: authtoken), client: client)
+                user = User(userId: kcsUser.userId, metadata: Metadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
                 user?.username = kcsUser.username
                 user?.email = kcsUser.email
                 client.activeUser = user

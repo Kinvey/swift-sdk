@@ -77,13 +77,75 @@ class DataTypeTestCase: StoreTestCase {
     
 }
 
+class UIColorTransformType : TransformType {
+    
+    typealias Object = UIColor
+    typealias JSON = JsonDictionary
+    
+    func transformFromJSON(value: AnyObject?) -> UIColor? {
+        if let value = value as? JsonDictionary,
+            let red = value["red"] as? CGFloat,
+            let green = value["green"] as? CGFloat,
+            let blue = value["blue"] as? CGFloat,
+            let alpha = value["alpha"] as? CGFloat
+        {
+            return UIColor(red: red, green: green, blue: blue, alpha: alpha)
+        }
+        return nil
+    }
+    
+    func transformToJSON(value: UIColor?) -> JsonDictionary? {
+        if let value = value {
+            var red: CGFloat = 0
+            var green: CGFloat = 0
+            var blue: CGFloat = 0
+            var alpha: CGFloat = 9
+            value.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+            return [
+                "red" : red,
+                "green" : green,
+                "blue" : blue,
+                "alpha" : alpha
+            ]
+        }
+        return nil
+    }
+    
+}
+
 class DataType: Entity, BooleanType {
     
     dynamic var boolValue: Bool = false
-    dynamic var objectValue: NSObject?
-    dynamic var colorValue: UIColor?
     dynamic var fullName: FullName?
+    
+    private dynamic var fullName2Value: String?
     dynamic var fullName2: FullName2?
+    
+    dynamic var objectValue: NSObject?
+    
+    private dynamic var colorValueString: String?
+    dynamic var colorValue: UIColor? {
+        get {
+            if let colorValueString = colorValueString,
+                let data = colorValueString.dataUsingEncoding(NSUTF8StringEncoding),
+                let json = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
+            {
+                return UIColorTransformType().transformFromJSON(json)
+            }
+            return nil
+        }
+        set {
+            if let newValue = newValue,
+                let json = UIColorTransformType().transformToJSON(newValue),
+                let data = try? NSJSONSerialization.dataWithJSONObject(json, options: []),
+                let stringValue = String(data: data, encoding: NSUTF8StringEncoding)
+            {
+                colorValueString = stringValue
+            } else {
+                colorValueString = nil
+            }
+        }
+    }
     
     override class func kinveyCollectionName() -> String {
         return "DataType"
@@ -93,46 +155,64 @@ class DataType: Entity, BooleanType {
         super.mapping(map)
         
         boolValue <- map["boolValue"]
-        objectValue <- map["objectValue"]
-        colorValue <- map["colorValue"]
+        colorValue <- (map["colorValue"], UIColorTransformType())
         fullName <- map["fullName"]
-        fullName2 <- map["fullName2"]
+        fullName2 <- (map["fullName2"], FullName2TransformType())
+    }
+    
+    override class func ignoredProperties() -> [String] {
+        return ["objectValue", "colorValue", "fullName2"]
     }
     
 }
 
-class FullName: NSObject, JsonObject {
+class FullName: Entity {
     
     dynamic var firstName: String?
     dynamic var lastName: String?
     
-    func toJson() -> JsonDictionary {
-        var json = JsonDictionary()
-        if let firstName = firstName {
-            json["firstName"] = firstName
-        }
-        if let lastName = lastName {
-            json["lastName"] = lastName
-        }
-        return json
+    override class func kinveyCollectionName() -> String {
+        return "FullName"
     }
     
-    func fromJson(json: JsonDictionary) {
-        if let firstName = json["firstName"] as? String {
-            self.firstName = firstName
-        }
-        if let lastName = json["lastName"] as? String {
-            self.lastName = lastName
-        }
+    override func mapping(map: Map) {
+        firstName <- map["firstName"]
+        lastName <- map["lastName"]
     }
     
 }
 
-class FullName2: NSObject, JsonObject {
+class FullName2TransformType: TransformType {
+    
+    typealias Object = FullName2
+    typealias JSON = JsonDictionary
+    
+    func transformFromJSON(value: AnyObject?) -> FullName2? {
+        return nil
+    }
+    
+    func transformToJSON(value: FullName2?) -> JsonDictionary? {
+        return nil
+    }
+    
+}
+
+class FullName2: NSObject, Mappable {
     
     dynamic var firstName: String?
     dynamic var lastName: String?
 //    dynamic var fontDescriptor: UIFontDescriptor?
+    
+    override init() {
+    }
+    
+    required init?(_ map: Map) {
+    }
+    
+    func mapping(map: Map) {
+        firstName <- map["firstName"]
+        lastName <- map["lastName"]
+    }
     
 }
 

@@ -12,8 +12,6 @@ import ObjectMapper
 class LongData: Entity {
     
     dynamic var id: String?
-    dynamic var acl: Acl?
-    dynamic var kmd: Metadata?
     dynamic var seq: Int = 0
     dynamic var first: String?
     dynamic var last: String?
@@ -32,8 +30,6 @@ class LongData: Entity {
     
     override func mapping(map: Map) {
         id <- map[PersistableIdKey]
-        acl <- map[PersistableAclKey]
-        kmd <- map[PersistableMetadataKey]
         seq <- map["seq"]
         first <- map["first"]
         last <- map["last"]

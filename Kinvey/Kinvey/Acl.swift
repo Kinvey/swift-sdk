@@ -7,10 +7,36 @@
 //
 
 import Foundation
+import Realm
+import RealmSwift
+import ObjectMapper
+
+class AclTransformType: TransformType {
+    
+    typealias Object = [String]
+    typealias JSON = [String]
+    
+    func transformFromJSON(value: AnyObject?) -> [String]? {
+        if let value = value as? String,
+            let data = value.dataUsingEncoding(NSUTF8StringEncoding),
+            let json = try? NSJSONSerialization.JSONObjectWithData(data, options: []),
+            let array = json as? Object
+        {
+            return array
+        } else if let value = value as? [String] {
+            return value
+        }
+        return nil
+    }
+    
+    func transformToJSON(value: [String]?) -> [String]? {
+        return value
+    }
+
+}
 
 /// This class represents the ACL (Access Control List) for a record.
-@objc(KNVAcl)
-public class Acl: NSObject {
+public class Acl: Object, Mappable {
     
     static let CreatorKey = "creator"
     static let GlobalReadKey = "gr"
@@ -19,19 +45,57 @@ public class Acl: NSObject {
     static let WritersKey = "w"
     
     /// The `userId` of the `User` used to create the record.
-    public let creator: String
+    public dynamic var creator: String?
     
     /// The `userId` of the `User` used to create the record.
-    public let globalRead: Bool?
+    public let globalRead = RealmOptional<Bool>()
     
     /// The `userId` of the `User` used to create the record.
-    public let globalWrite: Bool?
+    public let globalWrite = RealmOptional<Bool>()
+    
+    private dynamic var readersValue: String?
     
     /// Specifies the list of user _ids that are explicitly allowed to read the entity.
-    public let readers: [String]?
+    public var readers: [String]? {
+        get {
+            if let value = readersValue, let array = AclTransformType().transformFromJSON(value) {
+                return array
+            }
+            return nil
+        }
+        set {
+            if let newValue = newValue,
+                let data = try? NSJSONSerialization.dataWithJSONObject(newValue, options: []),
+                let json = String(data: data, encoding: NSUTF8StringEncoding)
+            {
+                readersValue = json
+            } else {
+                readersValue = nil
+            }
+        }
+    }
+    
+    private dynamic var writersValue: String?
     
     /// Specifies the list of user _ids that are explicitly allowed to modify the entity.
-    public let writers: [String]?
+    public var writers: [String]? {
+        get {
+            if let value = writersValue, let array = AclTransformType().transformFromJSON(value) {
+                return array
+            }
+            return nil
+        }
+        set {
+            if let newValue = newValue,
+                let data = try? NSJSONSerialization.dataWithJSONObject(newValue, options: []),
+                let json = String(data: data, encoding: NSUTF8StringEncoding)
+            {
+                writersValue = json
+            } else {
+                writersValue = nil
+            }
+        }
+    }
     
     /// Constructs an Acl instance with the `userId` of the `User` used to create the record.
     public init(
@@ -42,45 +106,47 @@ public class Acl: NSObject {
         writers: [String]? = nil
     ) {
         self.creator = creator
-        self.globalRead = globalRead
-        self.globalWrite = globalWrite
+        self.globalRead.value = globalRead
+        self.globalWrite.value = globalWrite
+        super.init()
         self.readers = readers
         self.writers = writers
     }
     
-    /// Constructor used to build a new `Acl` instance from a JSON object.
-    public convenience init?(json: JsonDictionary) {
-        guard let creator = json[Acl.CreatorKey] as? String else {
+    public required convenience init?(_ map: Map) {
+        var creator: String?
+        
+        creator <- map[Acl.CreatorKey]
+        
+        guard let creatorValue = creator else {
             return nil
         }
         
-        self.init(
-            creator: creator,
-            globalRead: json[Acl.GlobalReadKey] as? Bool,
-            globalWrite: json[Acl.GlobalWriteKey] as? Bool,
-            readers: json[Acl.ReadersKey] as? [String],
-            writers: json[Acl.WritersKey] as? [String]
-        )
+        self.init(creator: creatorValue)
     }
     
-    /// The JSON representation for the `Acl` instance.
-    public func toJson() -> JsonDictionary {
-        var json: JsonDictionary = [
-            Acl.CreatorKey : creator,
-        ]
-        if let globalRead = globalRead {
-            json[Acl.GlobalReadKey] = globalRead
-        }
-        if let globalWrite = globalWrite {
-            json[Acl.GlobalWriteKey] = globalWrite
-        }
-        if let readers = readers {
-            json[Acl.ReadersKey] = readers
-        }
-        if let writers = writers {
-            json[Acl.WritersKey] = writers
-        }
-        return json
+    public required init() {
+        super.init()
+    }
+    
+    public required init(value: AnyObject, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public func mapping(map: Map) {
+        creator <- map[Acl.CreatorKey]
+        globalRead.value <- map[Acl.GlobalReadKey]
+        globalWrite.value <- map[Acl.GlobalWriteKey]
+        readers <- (map[Acl.ReadersKey], AclTransformType())
+        writers <- (map[Acl.WritersKey], AclTransformType())
+    }
+    
+    public override class func ignoredProperties() -> [String] {
+        return ["readers", "writers"]
     }
 
 }

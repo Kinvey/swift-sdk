@@ -8,7 +8,7 @@
 
 import XCTest
 import ObjectiveC
-import Realm
+import RealmSwift
 import ObjectMapper
 @testable import Kinvey
 
@@ -17,7 +17,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     let defaultTimeout = KinveyTestCase.defaultTimeout
     
     override func tearDown() {
-        let realmConfiguration = RLMRealmConfiguration.defaultConfiguration()
+        let realmConfiguration = Realm.Configuration.defaultConfiguration
         if let fileURL = realmConfiguration.fileURL, var path = fileURL.path {
             var pathComponents = (path as NSString).pathComponents
             pathComponents[pathComponents.count - 1] = "com.kinvey.appKey_cache.realm"

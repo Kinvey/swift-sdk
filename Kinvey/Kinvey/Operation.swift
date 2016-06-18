@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectMapper
 
 internal class Operation<T: Persistable where T: NSObject>: NSObject {
     
@@ -89,57 +90,8 @@ internal class Operation<T: Persistable where T: NSObject>: NSObject {
     }
     
     func merge(inout persistable: T, json: JsonDictionary) {
-//        var persistableJson = persistable._toJson()
-//        if persistableType.kmdKey == nil {
-//            persistableJson[PersistableMetadataKey] = json[PersistableMetadataKey]
-//            if var kmd = persistableJson[PersistableMetadataKey] as? JsonDictionary {
-//                if let lmt = kmd[Metadata.LmtKey] as? String {
-//                    kmd[Metadata.LmtKey] = lmt
-//                }
-//                if let ect = kmd[Metadata.EctKey] as? String {
-//                    kmd[Metadata.EctKey] = ect
-//                }
-//                persistableJson[PersistableMetadataKey] = kmd
-//            }
-//        }
-//        if let acl = json[PersistableAclKey] where acl.count > 0 {
-//            let decorateAcl: (String) -> Void = { aclKey in
-//                persistableJson[PersistableAclKey] = acl
-//                if var acl = persistableJson[aclKey] as? JsonDictionary where acl.count > 0 {
-//                    if let readers = acl[Acl.ReadersKey] as? [String] {
-//                        acl[Acl.ReadersKey] = readers.map { ["stringValue" : $0] }
-//                    }
-//                    
-//                    if let writers = acl[Acl.WritersKey] as? [String] {
-//                        acl[Acl.WritersKey] = writers.map { ["stringValue" : $0] }
-//                    }
-//                    
-//                    persistableJson[aclKey] = acl
-//                }
-//            }
-//            decorateAcl(persistableType.aclKey ?? PersistableAclKey)
-//        }
-//        for keyPair in persistableJson {
-//            if !EntitySchema.isTypeSupported(keyPair.1) {
-//                if let obj = keyPair.1 as? JsonObject {
-//                    var json: JsonDictionary? = nil
-//                    if let toJson = obj.toJson {
-//                        json = toJson()
-//                    } else {
-//                        json = obj._toJson()
-//                    }
-//                    let data = try! NSJSONSerialization.dataWithJSONObject(json!, options: [])
-//                    persistableJson[keyPair.0] = NSString(data: data, encoding: NSUTF8StringEncoding)!
-//                } else if let obj = keyPair.1 as? NSCoding {
-//                    let data = NSMutableData()
-//                    let coder = NSKeyedArchiver(forWritingWithMutableData: data)
-//                    obj.encodeWithCoder(coder)
-//                    coder.finishEncoding()
-//                    persistableJson[keyPair.0] = data.base64EncodedStringWithOptions([])
-//                }
-//            }
-//        }
-//        return persistableJson
+        let map = Map(mappingType: .FromJSON, JSONDictionary: json)
+        persistable.mapping(map)
     }
     
 }

@@ -8,7 +8,7 @@
 
 import XCTest
 import ObjectiveC
-import Realm
+import RealmSwift
 import ObjectMapper
 import KIF
 @testable import Kinvey
@@ -18,7 +18,7 @@ class CacheMigrationTestCaseStep1: XCTestCase {
     let defaultTimeout = KinveyTestCase.defaultTimeout
     
     override func setUp() {
-        let realmConfiguration = RLMRealmConfiguration.defaultConfiguration()
+        let realmConfiguration = Realm.Configuration.defaultConfiguration
         if let fileURL = realmConfiguration.fileURL, var path = fileURL.path {
             var pathComponents = (path as NSString).pathComponents
             pathComponents[pathComponents.count - 1] = "com.kinvey.appKey_cache.realm"
@@ -44,20 +44,6 @@ class CacheMigrationTestCaseStep1: XCTestCase {
             dynamic var firstName: String?
             dynamic var lastName: String?
             
-            init(firstName: String? = nil, lastName: String? = nil) {
-                self.firstName = firstName
-                self.lastName = lastName
-                super.init()
-            }
-            
-            required init?(_ map: Map) {
-                super.init()
-            }
-            
-            required init() {
-                super.init()
-            }
-            
             override class func kinveyCollectionName() -> String {
                 return "CacheMigrationTestCase_Person"
             }
@@ -74,11 +60,13 @@ class CacheMigrationTestCaseStep1: XCTestCase {
         
         let store = DataStore<Person>.getInstance(.Sync)
         
-        let person = Person(firstName: "Victor", lastName: "Barros")
+        var person = Person()
+        person.firstName = "Victor"
+        person.lastName = "Barros"
         
         weak var expectationSave = expectationWithDescription("Save")
         
-        store.save(person) { (person, error) in
+        store.save(&person) { (person, error) in
             XCTAssertNotNil(person)
             XCTAssertNil(error)
             
