@@ -19,7 +19,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
     typealias ResultsHandler = ([JsonDictionary]) -> Void
     let resultsHandler: ResultsHandler?
     
-    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, cache: Cache<T>, client: Client, resultsHandler: ResultsHandler? = nil) {
+    init(query: Query, deltaSet: Bool, readPolicy: ReadPolicy, cache: Cache<T>?, client: Client, resultsHandler: ResultsHandler? = nil) {
         self.query = query
         self.deltaSet = deltaSet
         self.resultsHandler = resultsHandler

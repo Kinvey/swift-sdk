@@ -39,13 +39,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         do {
             let person = Person()
             person.personId = "update"
-            person.metadata = Metadata(lmt: date.toString())
+            person.metadata = Metadata(JSON: [Metadata.LmtKey : date.toString()])
             cache.saveEntity(person)
         }
         do {
             let person = Person()
             person.personId = "delete"
-            person.metadata = Metadata(lmt: date.toString())
+            person.metadata = Metadata(JSON: [Metadata.LmtKey : date.toString()])
             cache.saveEntity(person)
         }
         let operation = Operation<Person>(cache: cache, client: client)
@@ -94,7 +94,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let store = DataStore<Person>.getInstance(.Network)
         
-        let person = Person(name: "Victor")
+        let person = Person()
+        person.name = "Victor"
         
         do {
             weak var expectationSave = expectationWithDescription("Save")
@@ -114,7 +115,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         XCTAssertNotNil(person.personId)
         
         do {
-            let person = Person(name: "Victor Barros")
+            let person = Person()
+            person.name = "Victor Barros"
             
             weak var expectationCreate = expectationWithDescription("Create")
             
@@ -192,7 +194,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let store = DataStore<Person>.getInstance(.Network)
         
-        let person = Person(name: "Victor")
+        let person = Person()
+        person.name = "Victor"
         
         do {
             weak var expectationSave = expectationWithDescription("Save")
@@ -215,7 +218,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
-            let person = Person(personId: personId, name: "Victor Barros")
+            let person = Person()
+            person.personId = personId
+            person.name = "Victor Barros"
             
             weak var expectationUpdate = expectationWithDescription("Update")
             
@@ -290,7 +295,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let store = DataStore<Person>.getInstance(.Network)
         
-        let person = Person(name: "Victor")
+        let person = Person()
+        person.name = "Victor"
         
         do {
             weak var expectationSave = expectationWithDescription("Save")
@@ -386,7 +392,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let save: (Int) -> Void = { i in
-            let person = Person(name: String(format: "Person %02d", i))
+            let person = Person()
+            person.name = String(format: "Person %02d", i)
             
             weak var expectationCreate = self.expectationWithDescription("Create")
             
@@ -404,7 +411,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let saveAndCache: (Int) -> Void = { i in
-            let person = Person(name: String(format: "Person Cached %02d", i))
+            let person = Person()
+            person.name = String(format: "Person Cached %02d", i)
             let store = DataStore<Person>.getInstance(.Network)
             
             weak var expectationSave = self.expectationWithDescription("Save")
@@ -495,7 +503,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let save: (Int) -> Void = { n in
             for i in 1...n {
-                let person = Person(name: String(format: "Person %03d", i))
+                let person = Person()
+                person.name = String(format: "Person %03d", i)
                 
                 weak var expectationCreate = self.expectationWithDescription("Create")
                 
@@ -517,7 +526,8 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let store = DataStore<Person>.getInstance(.Network)
             
             for i in 1...n {
-                let person = Person(name: String(format: "Person Cached %03d", i))
+                let person = Person()
+                person.name = String(format: "Person Cached %03d", i)
                 
                 weak var expectationSave = self.expectationWithDescription("Save")
                 

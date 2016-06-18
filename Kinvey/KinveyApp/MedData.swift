@@ -7,15 +7,11 @@
 //
 
 import Kinvey
-import Realm
-import RealmSwift
 import ObjectMapper
 
 class MedData: Entity {
     
-    dynamic var id: String?
-    dynamic var acl: Acl?
-    dynamic var kmd: Metadata?
+    dynamic var entityId: String?
     dynamic var seq: Int = 0
     dynamic var first: String?
     dynamic var last: String?
@@ -31,20 +27,10 @@ class MedData: Entity {
         return "meddata"
     }
     
-    required init?(_ map: Map) {
-        super.init(map)
-    }
-    
-    required init() {
-        super.init()
-    }
-    
     override func mapping(map: Map) {
         super.mapping(map)
         
-        id <- map[PersistableIdKey]
-        acl <- map[PersistableAclKey]
-        kmd <- map[PersistableMetadataKey]
+        entityId <- map[PersistableIdKey]
         seq <- map["seq"]
         first <- map["first"]
         last <- map["last"]

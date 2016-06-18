@@ -11,7 +11,7 @@ import Realm
 import RealmSwift
 import ObjectMapper
 
-public class Entity: RLMObject, Persistable {
+public class Entity: Object, Persistable {
     
     public class func kinveyCollectionName() -> String {
         preconditionFailure("Method \(#function) must be overridden")
@@ -29,26 +29,30 @@ public class Entity: RLMObject, Persistable {
         return "acl"
     }
     
-    dynamic var objectId: String?
-    dynamic var metadata: Metadata?
-    dynamic var acl: Acl?
+    public dynamic var objectId: String?
+    public dynamic var metadata: Metadata?
+    public dynamic var acl: Acl?
     
     public required init?(_ map: Map) {
         super.init()
     }
     
-    public required override init() {
+    public required init() {
         super.init()
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: AnyObject, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
     }
     
     public func mapping(map: Map) {
         objectId <- map[PersistableIdKey]
         metadata <- map[PersistableMetadataKey]
         acl <- map[PersistableAclKey]
-    }
-    
-    public override class func primaryKey() -> String? {
-        return "objectId"
     }
     
 }

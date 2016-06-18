@@ -32,4 +32,8 @@ class DirectoryEntry: Entity {
         email <- map["email"]
     }
     
+    override class func ignoredProperties() -> [String] {
+        return ["refProject"]
+    }
+    
 }

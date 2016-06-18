@@ -7,10 +7,12 @@
 //
 
 import Foundation
+import Realm
+import RealmSwift
 import ObjectMapper
 
 /// This class represents the metadata information for a record
-public class Metadata: NSObject, Mappable {
+public class Metadata: Object, Mappable {
     
     /// Last Modification Time Key.
     public static let LmtKey = "lmt"
@@ -21,43 +23,56 @@ public class Metadata: NSObject, Mappable {
     /// Authentication Token Key.
     public static let AuthTokenKey = "authtoken"
     
-    private let lmtString: String?
-    private let ectString: String?
+    private dynamic var lmt: String?
+    private dynamic var ect: String?
     
     /// Last Modification Time.
-    public lazy var lmt: NSDate? = self.lmtString?.toDate()
+    public var lastModifiedtime: NSDate? {
+        get {
+            return self.lmt?.toDate()
+        }
+        set {
+            lmt = newValue?.toString()
+        }
+    }
     
     /// Entity Creation Time.
-    public lazy var ect: NSDate? = self.ectString?.toDate()
+    public var entityCreationTime: NSDate? {
+        get {
+            return self.ect?.toDate()
+        }
+        set {
+            ect = newValue?.toString()
+        }
+    }
     
     /// Authentication Token.
     public internal(set) var authtoken: String?
     
-    /// Default Constructor
-    public init(lmt: String? = nil, ect: String? = nil, authtoken: String? = nil) {
-        self.lmtString = lmt
-        self.ectString = ect
-        self.authtoken = authtoken
+    public required init?(_ map: Map) {
+        super.init()
     }
     
-    public required convenience init?(_ map: Map) {
-        var lmt: String?
-        var ect: String?
-        var authtoken: String?
-        lmt <- map[Metadata.LmtKey]
-        ect <- map[Metadata.EctKey]
-        authtoken <- map[Metadata.AuthTokenKey]
-        self.init(
-            lmt: lmt,
-            ect: ect,
-            authtoken: authtoken
-        )
+    public required init() {
+        super.init()
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: AnyObject, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
     }
     
     public func mapping(map: Map) {
         lmt <- map[Metadata.LmtKey]
         ect <- map[Metadata.EctKey]
         authtoken <- map[Metadata.AuthTokenKey]
+    }
+    
+    public override class func ignoredProperties() -> [String] {
+        return ["lastModifiedtime", "entityCreationTime"]
     }
 
 }

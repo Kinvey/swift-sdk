@@ -12,7 +12,7 @@ internal class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T> 
     
     let id: String
     
-    init(id: String, readPolicy: ReadPolicy, cache: Cache<T>, client: Client) {
+    init(id: String, readPolicy: ReadPolicy, cache: Cache<T>?, client: Client) {
         self.id = id
         super.init(readPolicy: readPolicy, cache: cache, client: client)
     }
@@ -30,10 +30,9 @@ internal class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T> 
         let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName(), id: id)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
-                let obj = T.fromJson(json)
+                let obj = T(JSON: json)
                 if let obj = obj, let cache = self.cache {
-//                    self.merge(obj, json: json)
-//                    cache.saveEntity(obj)
+                    cache.saveEntity(obj)
                 }
                 completionHandler?(obj, nil)
             } else if let error = error {

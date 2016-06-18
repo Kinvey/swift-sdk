@@ -10,7 +10,12 @@ import Foundation
 
 internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T?> {
     
-    let persistable: T
+    var persistable: T
+    
+    init(inout persistable: T, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache<T>? = nil, client: Client) {
+        self.persistable = persistable
+        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+    }
     
     init(persistable: T, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache<T>? = nil, client: Client) {
         self.persistable = persistable
@@ -42,16 +47,11 @@ internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T
                 if let response = response where response.isResponseOK {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
-                        let persistable = T.fromJson(json)
+                        let persistable = T(JSON: json)
                         if let persistable = persistable, let cache = self.cache {
-//                            var persistableJson = self.merge(persistable, json: json)
-//                            if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] where kmd[PersistableMetadataLastRetrievedTimeKey] == nil {
-//                                kmd[PersistableMetadataLastRetrievedTimeKey] = NSDate().toString()
-//                                persistableJson[PersistableMetadataKey] = kmd
-//                            }
-//                            cache.saveEntity(persistableJson)
+                            cache.saveEntity(persistable)
                         }
-//                        self.persistable.merge(persistable)
+                        self.merge(&self.persistable, json: json)
                     }
                     completionHandler?(self.persistable, nil)
                 } else if let error = error {

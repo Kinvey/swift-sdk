@@ -134,7 +134,7 @@ class AclTestCase: StoreTestCase {
                     XCTAssertNotNil(person.acl)
                     if let acl = person.acl {
                         XCTAssertNotNil(acl.globalRead)
-                        if let globalRead = acl.globalRead {
+                        if let globalRead = acl.globalRead.value {
                             XCTAssertTrue(globalRead)
                         }
                     }
@@ -170,7 +170,7 @@ class AclTestCase: StoreTestCase {
                     XCTAssertNotNil(person.acl)
                     if let acl = person.acl {
                         XCTAssertNotNil(acl.globalWrite)
-                        if let globalWrite = acl.globalWrite {
+                        if let globalWrite = acl.globalWrite.value {
                             XCTAssertTrue(globalWrite)
                         }
                     }

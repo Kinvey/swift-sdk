@@ -10,8 +10,8 @@ import Foundation
 
 internal protocol CacheProtocol {
     
-    var persistenceId: String { get set }
-    var collectionName: String { get set }
+    var persistenceId: String { get }
+    var collectionName: String { get }
     var ttl: NSTimeInterval { get set }
     
     associatedtype Type
@@ -50,8 +50,8 @@ internal class Cache<T: Persistable where T: NSObject>: CacheProtocol {
     
     internal typealias Type = T
     
-    var persistenceId: String
-    var collectionName: String
+    let persistenceId: String
+    let collectionName: String
     var ttl: NSTimeInterval
     
     init(persistenceId: String, ttl: NSTimeInterval = DBL_MAX) {

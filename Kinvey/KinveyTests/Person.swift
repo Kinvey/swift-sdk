@@ -7,7 +7,6 @@
 //
 
 import ObjectMapper
-import Realm
 @testable import Kinvey
 
 class Person: Entity {
@@ -15,28 +14,6 @@ class Person: Entity {
     dynamic var personId: String?
     dynamic var name: String?
     dynamic var age: Int = 0
-    
-    required override init() {
-        super.init()
-    }
-    
-    init(personId: String? = nil, name: String) {
-        self.personId = personId
-        self.name = name
-        super.init()
-    }
-    
-    required init?(_ map: Map) {
-        super.init()
-    }
-    
-    required init(value: AnyObject, schema: RLMSchema) {
-        fatalError("init(value:schema:) has not been implemented")
-    }
-    
-    required init(realm: RLMRealm, schema: RLMObjectSchema) {
-        fatalError("init(realm:schema:) has not been implemented")
-    }
     
     override class func kinveyCollectionName() -> String {
         return "Person"
@@ -48,7 +25,6 @@ class Person: Entity {
         personId <- map[PersistableIdKey]
         name <- map["name"]
         age <- map["age"]
-        
     }
     
 }

@@ -7,11 +7,30 @@
 //
 
 import Foundation
+import RealmSwift
 
 internal class RealmCache<T: Persistable where T: NSObject>: Cache<T>, Sync {
     
+    let realm: Realm
+    let operationQueue: NSOperationQueue
+    
     required init(persistenceId: String) {
+        if !(T.self is Entity.Type) {
+            preconditionFailure("\(T.self) needs to be a Entity")
+        }
+        realm = try! Realm()
+        operationQueue = NSOperationQueue.currentQueue()!
+        print("\(realm.configuration.fileURL!.path!)")
         super.init(persistenceId: persistenceId)
+    }
+    
+    override func saveEntity(entity: T) {
+        operationQueue.addOperationWithBlock {
+            try! self.realm.write {
+                self.realm.add(entity as! Entity)
+            }
+        }
+        operationQueue.waitUntilAllOperationsAreFinished()
     }
     
     func createPendingOperation(request: NSURLRequest!, objectId: String?) -> PendingOperation {

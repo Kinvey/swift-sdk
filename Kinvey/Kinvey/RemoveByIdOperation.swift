@@ -18,7 +18,7 @@ internal class RemoveByIdOperation<T: Persistable where T: NSObject>: RemoveOper
     
     internal init(objectId: String, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache<T>? = nil, client: Client) {
         self.objectId = objectId
-        let query = Query(format: "\(T.kinveyObjectIdPropertyName) == %@", objectId)
+        let query = Query(format: "\(T.kinveyObjectIdPropertyName()) == %@", objectId)
         super.init(query: query, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     

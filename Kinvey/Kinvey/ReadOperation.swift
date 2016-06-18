@@ -14,7 +14,7 @@ internal class ReadOperation<T: Persistable where T: NSObject>: Operation<T> {
     
     let readPolicy: ReadPolicy
     
-    init(readPolicy: ReadPolicy, cache: Cache<T>, client: Client) {
+    init(readPolicy: ReadPolicy, cache: Cache<T>?, client: Client) {
         self.readPolicy = readPolicy
         super.init(cache: cache, client: client)
     }

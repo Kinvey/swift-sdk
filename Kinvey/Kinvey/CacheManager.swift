@@ -9,7 +9,6 @@
 import Foundation
 import RealmSwift
 
-@objc(__KNVCacheManager)
 internal class CacheManager: NSObject {
     
     private let persistenceId: String
@@ -28,8 +27,8 @@ internal class CacheManager: NSObject {
         let _ = try! Realm(configuration: realmConfiguration)
     }
     
-    func cache<T: Persistable>(collectionName: String? = nil, filePath: String? = nil) -> Cache<T> {
-        return Cache<T>(persistenceId: persistenceId)
+    func cache<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Cache<T>? {
+        return RealmCache<T>(persistenceId: persistenceId)
     }
     
     func clearAll(tag: String? = nil) {
