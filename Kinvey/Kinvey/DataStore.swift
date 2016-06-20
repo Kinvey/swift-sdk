@@ -117,7 +117,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     /// Gets a single record using the `_id` of the record.
     public func findById(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
-        assert(id != "")
+        precondition(!id.isEmpty)
         let readPolicy = readPolicy ?? self.readPolicy
         let operation = GetOperation(id: id, readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
@@ -167,6 +167,8 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     /// Deletes a record using the `_id` of the record.
     public func removeById(id: String, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+        precondition(!id.isEmpty)
+
         let writePolicy = writePolicy ?? self.writePolicy
         let operation = RemoveByIdOperation(objectId: id, writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
@@ -175,6 +177,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     /// Deletes a list of records using the `_id` of the records.
     public func removeById(ids: [String], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+        precondition(ids.count > 0)
         let query = Query(format: "\(T.idKey) IN %@", ids)
         return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }
@@ -196,7 +199,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func push(timeout timeout: NSTimeInterval? = nil, completionHandler: UIntErrorTypeArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         if type == .Network {
-            completionHandler?(nil, [KinveyError.InvalidDataStoreType])
+            completionHandler?(nil, [Error.InvalidDataStoreType])
             return LocalRequest()
         }
         
@@ -209,9 +212,15 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func pull(query: Query = Query(), deltaSet: Bool? = nil, completionHandler: DataStore<T>.ArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         if type == .Network {
-            completionHandler?(nil, KinveyError.InvalidDataStoreType)
+            completionHandler?(nil, Error.InvalidDataStoreType)
             return LocalRequest()
         }
+        
+        if self.syncCount() > 0 {
+            completionHandler?(nil, Error.InvalidOperation(description: "You must push all pending sync items before new data is pulled. Call push() on the data store instance to push pending items, or purge() to remove them."))
+            return LocalRequest()
+        }
+        
         let deltaSet = deltaSet ?? self.deltaSet
         let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, persistableType: T.self, cache: cache, client: client)
         let request = operation.execute(completionHandler)
@@ -227,7 +236,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func sync(query: Query = Query(), completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         if type == .Network {
-            completionHandler?(nil, nil, [KinveyError.InvalidDataStoreType])
+            completionHandler?(nil, nil, [Error.InvalidDataStoreType])
             return LocalRequest()
         }
         
