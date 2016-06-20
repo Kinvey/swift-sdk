@@ -32,6 +32,8 @@ internal protocol CacheProtocol {
     
     func removeEntity(entity: Type) -> Bool
     
+    func removeEntities(entity: [Type]) -> Bool
+    
     func removeEntitiesByQuery(query: Query) -> UInt
     
     func removeAllEntities()
@@ -58,6 +60,14 @@ internal class Cache<T: Persistable where T: NSObject>: CacheProtocol {
         self.persistenceId = persistenceId
         self.collectionName = T.kinveyCollectionName()
         self.ttl = ttl
+    }
+    
+    func detach(entity: T) -> T {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func detach(entity: [T]) -> [T] {
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
     func saveEntity(entity: T) {
@@ -89,6 +99,10 @@ internal class Cache<T: Persistable where T: NSObject>: CacheProtocol {
     }
     
     func removeEntity(entity: T) -> Bool {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func removeEntities(entity: [T]) -> Bool {
         preconditionFailure("Method \(#function) must be overridden")
     }
     

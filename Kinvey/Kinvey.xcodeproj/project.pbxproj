@@ -13,7 +13,6 @@
 		57198FEC1CAF33C700070CDA /* KCSQueryProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */; };
 		571991091CB45EEE00070CDA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
-		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* NSURLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */; };
 		572C457B1C86690700A41935 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
@@ -313,6 +312,8 @@
 		57BEAE2D1C98805600479206 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BEAE341C98AB3900479206 /* MainViewController.swift */; };
+		57C382A11D15F0AD006C06E0 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C382A01D15F0AD006C06E0 /* File.swift */; };
+		57C382A31D160E20006C06E0 /* RealmResultsArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C382A21D160E20006C06E0 /* RealmResultsArray.swift */; };
 		57C563041C9CC7270011FB36 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
 		57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		57C563061C9CC7410011FB36 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
@@ -505,7 +506,6 @@
 		57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryProtocol.h; sourceTree = "<group>"; };
 		5719905A1CB301D500070CDA /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		571991081CB45EEE00070CDA /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
-		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionTaskRequest.swift; sourceTree = "<group>"; };
 		572C457A1C86690700A41935 /* NSDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDate.swift; sourceTree = "<group>"; };
@@ -897,6 +897,8 @@
 		57BEAE2C1C98805600479206 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		57BEAE2E1C98805E00479206 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		57BEAE341C98AB3900479206 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		57C382A01D15F0AD006C06E0 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		57C382A21D160E20006C06E0 /* RealmResultsArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmResultsArray.swift; sourceTree = "<group>"; };
 		57C71DC71C3EFBF900B1BEF2 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		57D1E75D1C7D21720009834A /* KNVReadPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVReadPolicy.h; sourceTree = "<group>"; };
 		57D643141CA3268000F6D16E /* KinveyTests Migration Database Step 1.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Migration Database Step 1.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1152,13 +1154,14 @@
 				57E7C7AE1C50539200848748 /* Sync.swift */,
 				57E7C7B01C50539C00848748 /* SyncManager.swift */,
 				57B0E94F1C5FF52200BA984F /* Push.swift */,
-				5728212C1C63E0F500373EC8 /* File.swift */,
 				5728212E1C63E10700373EC8 /* FileStore.swift */,
 				57757F3D1C652A5600C810E9 /* Reachability.swift */,
 				577155BA1CA21CC200C91B4B /* Migration.swift */,
 				57D643471CAB3C8A00F6D16E /* MemoryCache.swift */,
 				E9073D001C986D9600475E16 /* CustomEndpoint.swift */,
 				5781D1261CE29AA600369F40 /* ObjCRuntime.swift */,
+				57C382A01D15F0AD006C06E0 /* File.swift */,
+				57C382A21D160E20006C06E0 /* RealmResultsArray.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -2292,6 +2295,7 @@
 				57B23F641C7FB1C6006403CC /* KCS_FMResultSet.m in Sources */,
 				57E4DB051C89FE170017B406 /* KNVUser.m in Sources */,
 				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
+				57C382A31D160E20006C06E0 /* RealmResultsArray.swift in Sources */,
 				574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
 				57B23F371C7FB082006403CC /* KCSQuery2.m in Sources */,
@@ -2325,6 +2329,7 @@
 				57B23EF21C7FAA23006403CC /* KCSFile+KCSInternal.m in Sources */,
 				57B0E9501C5FF52200BA984F /* Push.swift in Sources */,
 				57D643461CAAFA7C00F6D16E /* KNVError.m in Sources */,
+				57C382A11D15F0AD006C06E0 /* File.swift in Sources */,
 				574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
 				E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */,
@@ -2335,7 +2340,6 @@
 				57B23F691C7FB1D1006403CC /* KCS_KSReachability.m in Sources */,
 				57E1C3B51C18253B00578974 /* JsonResponseParser.swift in Sources */,
 				57B23F4A1C7FB187006403CC /* KCS_NSArray_CLLocation_NSValueTransformer.m in Sources */,
-				5728212D1C63E0F500373EC8 /* File.swift in Sources */,
 				57B23F661C7FB1C6006403CC /* KCS_FMDatabasePool.m in Sources */,
 				57B23ECF1C7FA7F8006403CC /* KCSGroup.m in Sources */,
 				57B23EE11C7FA930006403CC /* KCSNSURLSessionOperation.m in Sources */,

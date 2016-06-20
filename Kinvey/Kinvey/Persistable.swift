@@ -61,4 +61,18 @@ extension Persistable where Self: NSObject {
         }
     }
     
+    internal var kinveyMetadata: Metadata? {
+        get {
+            if let kmdKey = Self.kinveyMetadataPropertyName() {
+                return self[kmdKey] as? Metadata
+            }
+            return nil
+        }
+        set {
+            if let kmdKey = Self.kinveyMetadataPropertyName() {
+                self[kmdKey] = newValue
+            }
+        }
+    }
+    
 }

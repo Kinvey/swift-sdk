@@ -25,18 +25,24 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            let objects = self.cache?.findEntityByQuery(self.query)
-            let count = self.cache?.removeEntitiesByQuery(self.query)
-            let idKey = T.kinveyObjectIdPropertyName()
-            if let objects = objects {
-                for object in objects {
-                    if let objectId = object[idKey] as? String, let sync = self.sync {
-                        if objectId.hasPrefix(ObjectIdTmpPrefix) {
-                            sync.removeAllPendingOperations(objectId)
-                        } else {
-                            sync.savePendingOperation(sync.createPendingOperation(self.request.request, objectId: objectId))
+            var count: UInt?
+            if let cache = self.cache {
+                let realmObjects = cache.findEntityByQuery(self.query)
+                count = UInt(realmObjects.count)
+                let detachedObjects = cache.detach(realmObjects)
+                if cache.removeEntities(realmObjects) {
+                    let idKey = T.kinveyObjectIdPropertyName()
+                    for object in detachedObjects {
+                        if let objectId = object[idKey] as? String, let sync = self.sync {
+                            if objectId.hasPrefix(ObjectIdTmpPrefix) {
+                                sync.removeAllPendingOperations(objectId)
+                            } else {
+                                sync.savePendingOperation(sync.createPendingOperation(self.request.request, objectId: objectId))
+                            }
                         }
                     }
+                } else {
+                    count = 0
                 }
             }
             completionHandler?(count, nil)
