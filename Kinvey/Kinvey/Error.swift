@@ -24,7 +24,7 @@ public enum Error: ErrorType {
     case InvalidResponse
     
     /// Error when a Unauthorized Response coming from the backend.
-    case Unauthorized(error: String, description: String)
+    case Unauthorized (error: String, description: String)
     
     /// Error when calls a method that requires an active user.
     case NoActiveUser
@@ -34,6 +34,9 @@ public enum Error: ErrorType {
     
     /// Error when calls a method not available for a specific data store type.
     case InvalidDataStoreType
+    
+    /// Invalid operation
+    case InvalidOperation (description: String)
     
     /// Error when a `User` doen't have an email or username.
     case UserWithoutEmailOrUsername
@@ -50,6 +53,8 @@ public enum Error: ErrorType {
             let bundle = NSBundle(forClass: Client.self)
             switch self {
             case .Unauthorized(_, let description):
+                return description
+            case .InvalidOperation(let description):
                 return description
             default:
                 return NSLocalizedString("Error.\(self)", bundle: bundle, comment: "")
