@@ -60,6 +60,9 @@
 		577155BB1CA21CC200C91B4B /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577155BA1CA21CC200C91B4B /* Migration.swift */; };
 		57757F3E1C652A5600C810E9 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57757F3D1C652A5600C810E9 /* Reachability.swift */; };
 		577C9E781C1F89C700BF49EE /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577C9E771C1F89C700BF49EE /* Credential.swift */; };
+		577E6FA41D18B33900B5DA36 /* Results.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577E6FA31D18B33900B5DA36 /* Results.swift */; };
+		577E6FA61D18E1F900B5DA36 /* RealmSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577E6FA51D18E1F900B5DA36 /* RealmSync.swift */; };
+		577E6FA81D18E45F00B5DA36 /* Executor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577E6FA71D18E45F00B5DA36 /* Executor.swift */; };
 		5781D1271CE29AA700369F40 /* ObjCRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5781D1261CE29AA600369F40 /* ObjCRuntime.swift */; };
 		5781D1281CE2AFE800369F40 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5781D1291CE2AFEC00369F40 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -554,6 +557,9 @@
 		577155BA1CA21CC200C91B4B /* Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Migration.swift; sourceTree = "<group>"; };
 		57757F3D1C652A5600C810E9 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		577C9E771C1F89C700BF49EE /* Credential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credential.swift; sourceTree = "<group>"; };
+		577E6FA31D18B33900B5DA36 /* Results.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Results.swift; sourceTree = "<group>"; };
+		577E6FA51D18E1F900B5DA36 /* RealmSync.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmSync.swift; sourceTree = "<group>"; };
+		577E6FA71D18E45F00B5DA36 /* Executor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Executor.swift; sourceTree = "<group>"; };
 		5781D1261CE29AA600369F40 /* ObjCRuntime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCRuntime.swift; sourceTree = "<group>"; };
 		5781D12E1CE3ACA000369F40 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		5781D1301CE3ADBC00369F40 /* ErrorTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorTestCase.swift; sourceTree = "<group>"; };
@@ -1153,6 +1159,7 @@
 				57E7C7A81C504E7B00848748 /* PendingOperation.swift */,
 				57E7C7AE1C50539200848748 /* Sync.swift */,
 				57E7C7B01C50539C00848748 /* SyncManager.swift */,
+				577E6FA51D18E1F900B5DA36 /* RealmSync.swift */,
 				57B0E94F1C5FF52200BA984F /* Push.swift */,
 				5728212C1C63E0F500373EC8 /* File.swift */,
 				5728212E1C63E10700373EC8 /* FileStore.swift */,
@@ -1162,6 +1169,8 @@
 				E9073D001C986D9600475E16 /* CustomEndpoint.swift */,
 				5781D1261CE29AA600369F40 /* ObjCRuntime.swift */,
 				57557FE51D185BC3001D991C /* RealmResultsArray.swift */,
+				577E6FA31D18B33900B5DA36 /* Results.swift */,
+				577E6FA71D18E45F00B5DA36 /* Executor.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -2356,6 +2365,7 @@
 				57B23EEF1C7FAA0C006403CC /* KCSNSURLSessionFileOperation.m in Sources */,
 				57B23F5C1C7FB1B6006403CC /* KCS_DDLog.m in Sources */,
 				57B23F621C7FB1C6006403CC /* KCS_FMDatabaseAdditions.m in Sources */,
+				577E6FA81D18E45F00B5DA36 /* Executor.swift in Sources */,
 				57B23EDB1C7FA8A9006403CC /* KCSObjcRuntime.m in Sources */,
 				57B23EAD1C7FA55D006403CC /* KCSBase64.m in Sources */,
 				57B23F311C7FB046006403CC /* KCSClient2.m in Sources */,
@@ -2364,6 +2374,7 @@
 				57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */,
 				57B23ED71C7FA877006403CC /* KCSLogManager.m in Sources */,
 				57E1C3B11C18156700578974 /* HttpRequestFactory.swift in Sources */,
+				577E6FA61D18E1F900B5DA36 /* RealmSync.swift in Sources */,
 				57B23EF41C7FAA3E006403CC /* KCSNetworkObserver.m in Sources */,
 				57B23ECB1C7FA7B8006403CC /* KCSFileRequestManager.m in Sources */,
 				57B23F2D1C7FB021006403CC /* KCSObjectMapper.m in Sources */,
@@ -2423,6 +2434,7 @@
 				57B23F041C7FAF39006403CC /* NSError+KinveyKit.m in Sources */,
 				57B23EE51C7FA947006403CC /* KCSNetworkResponse.m in Sources */,
 				57B23EC91C7FA79E006403CC /* KCSFileRequest.m in Sources */,
+				577E6FA41D18B33900B5DA36 /* Results.swift in Sources */,
 				57470FA31C76847F0096B15F /* WriteOperation.swift in Sources */,
 				574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */,
 				57B23F601C7FB1C6006403CC /* KCS_FMDatabase.m in Sources */,

@@ -11,7 +11,7 @@ import PromiseKit
 
 internal class PushOperation<T: Persistable where T: NSObject>: SyncOperation<T, UInt, [ErrorType]?> {
     
-    internal override init(sync: Sync?, cache: Cache<T>?, client: Client) {
+    internal override init(sync: Sync<T>?, cache: Cache<T>?, client: Client) {
         super.init(sync: sync, cache: cache, client: client)
     }
     

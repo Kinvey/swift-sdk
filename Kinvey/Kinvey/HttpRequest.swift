@@ -67,6 +67,7 @@ enum HttpHeader {
     
     case Authorization(credential: Credential?)
     case APIVersion(version: Int)
+    case RequestId(requestId: String)
     
     var name: String {
         get {
@@ -75,6 +76,8 @@ enum HttpHeader {
                 return "Authorization"
             case .APIVersion:
                 return "X-Kinvey-API-Version"
+            case .RequestId:
+                return RequestIdHeaderKey
             }
         }
     }
@@ -86,6 +89,8 @@ enum HttpHeader {
                 return credential?.authorizationHeader
             case .APIVersion(let version):
                 return String(version)
+            case .RequestId(let requestId):
+                return requestId
             }
         }
     }
@@ -161,7 +166,7 @@ internal class HttpRequest: NSObject, Request {
     
     let httpMethod: HttpMethod
     let endpoint: Endpoint
-    let defaultHeaders = [
+    let defaultHeaders: [HttpHeader] = [
         HttpHeader.APIVersion(version: restApiVersion)
     ]
     
@@ -199,6 +204,7 @@ internal class HttpRequest: NSObject, Request {
         if let timeout = timeout {
             self.request.timeoutInterval = timeout
         }
+        self.request.setValue(NSUUID().UUIDString, forHTTPHeaderField: RequestIdHeaderKey)
     }
     
     init(httpMethod: HttpMethod = .Get, endpoint: Endpoint, credential: Credential? = nil, timeout: NSTimeInterval? = nil, client: Client = sharedClient) {
@@ -213,6 +219,7 @@ internal class HttpRequest: NSObject, Request {
         if let timeout = timeout {
             request.timeoutInterval = timeout
         }
+        self.request.setValue(NSUUID().UUIDString, forHTTPHeaderField: RequestIdHeaderKey)
     }
     
     func prepareRequest() {

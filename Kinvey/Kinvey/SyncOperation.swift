@@ -12,9 +12,9 @@ internal class SyncOperation<T: Persistable, R, E where T: NSObject>: Operation<
     
     internal typealias CompletionHandler = (R, E) -> Void
     
-    let sync: Sync?
+    let sync: Sync<T>?
     
-    internal init(sync: Sync?, cache: Cache<T>?, client: Client) {
+    internal init(sync: Sync<T>?, cache: Cache<T>?, client: Client) {
         self.sync = sync
         super.init(cache: cache, client: client)
     }

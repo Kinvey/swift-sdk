@@ -11,9 +11,9 @@ import RealmSwift
 
 class RealmResultsArray<T: Object>: NSArray {
     
-    let results: Results<T>
+    let results: RealmSwift.Results<T>
     
-    init(_ results: Results<T>) {
+    init(_ results: RealmSwift.Results<T>) {
         self.results = results
         super.init()
     }

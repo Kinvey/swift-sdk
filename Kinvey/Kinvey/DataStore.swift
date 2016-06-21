@@ -68,7 +68,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public let type: DataStoreType
     
     private let cache: Cache<T>?
-    private let sync: Sync?
+    private let sync: Sync<T>?
     
     private var deltaSet: Bool
     
