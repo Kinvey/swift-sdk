@@ -55,4 +55,8 @@ public class Entity: Object, Persistable {
         acl <- map[PersistableAclKey]
     }
     
+    public override class func primaryKey() -> String? {
+        return kinveyObjectIdPropertyName()
+    }
+    
 }

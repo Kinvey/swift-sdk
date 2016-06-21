@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal protocol CacheProtocol {
+internal protocol CacheType {
     
     var persistenceId: String { get }
     var collectionName: String { get }
@@ -40,7 +40,7 @@ internal protocol CacheProtocol {
     
 }
 
-extension CacheProtocol {
+extension CacheType {
     
     func isEmpty() -> Bool {
         return count() == 0
@@ -48,7 +48,7 @@ extension CacheProtocol {
     
 }
 
-internal class Cache<T: Persistable where T: NSObject>: CacheProtocol {
+internal class Cache<T: Persistable where T: NSObject>: CacheType {
     
     internal typealias Type = T
     

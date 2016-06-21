@@ -10,13 +10,12 @@ import Foundation
 import Realm
 import RealmSwift
 
-internal class RealmCache<T: Persistable where T: NSObject>: Cache<T>, Sync {
+internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
     
     let realm: Realm
     let objectSchema: ObjectSchema
     let propertyNames: [String]
-    let operationQueue: NSOperationQueue
-    let thread: NSThread
+    let executor: Executor
     
     lazy var entityType = T.self as! Entity.Type
     
@@ -28,22 +27,12 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T>, Sync {
         let className = NSStringFromClass(T.self).componentsSeparatedByString(".").last!
         objectSchema = realm.schema[className]!
         propertyNames = objectSchema.properties.map { return $0.name }
-        operationQueue = NSOperationQueue.currentQueue()!
-        thread = NSThread.currentThread()
+        executor = Executor()
         print("\(realm.configuration.fileURL!.path!)")
         super.init(persistenceId: persistenceId)
     }
     
-    private func execute(block: () -> Void) {
-        if thread == NSThread.currentThread() {
-            block()
-        } else {
-            operationQueue.addOperationWithBlock(block)
-            operationQueue.waitUntilAllOperationsAreFinished()
-        }
-    }
-    
-    private func results(query: Query) -> Results<Entity> {
+    private func results(query: Query) -> RealmSwift.Results<Entity> {
         var realmResults = self.realm.objects(self.entityType)
         if let predicate = query.predicate {
             realmResults = realmResults.filter(predicate)
@@ -58,7 +47,9 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T>, Sync {
     
     override func detach(entity: T) -> T {
         let json = entity.dictionaryWithValuesForKeys(propertyNames)
-        return T(JSON: json)!
+        let obj = T()
+        obj.setValuesForKeysWithDictionary(json)
+        return obj
     }
     
     override func detach(array: [T]) -> [T] {
@@ -70,16 +61,16 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T>, Sync {
     }
     
     override func saveEntity(entity: T) {
-        execute {
+        executor.executeAndWait {
             try! self.realm.write {
-                self.realm.add(entity as! Entity)
+                self.realm.create(entity.dynamicType as! Entity.Type, value: (entity as! Entity), update: true)
             }
         }
     }
     
     override func findEntityByQuery(query: Query) -> [T] {
         var results = [T]()
-        execute {
+        executor.executeAndWait {
             results = (RealmResultsArray<Entity>(self.results(query)) as NSArray) as! [T]
         }
         return results
@@ -87,7 +78,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T>, Sync {
     
     override func removeEntities(entities: [T]) -> Bool {
         var result = false
-        execute {
+        executor.executeAndWait {
             try! self.realm.write {
                 self.realm.delete(entities.map { $0 as! Entity })
             }
@@ -98,7 +89,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T>, Sync {
     
     override func removeEntitiesByQuery(query: Query) -> UInt {
         var result = UInt(0)
-        execute {
+        executor.executeAndWait {
             try! self.realm.write {
                 let results = self.results(query)
                 result = UInt(results.count)
@@ -108,64 +99,75 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T>, Sync {
         return result
     }
     
-    func createPendingOperation(request: NSURLRequest!, objectId: String?) -> PendingOperation {
-        return RealmPendingOperation(objectId: objectId)
-    }
-    
-    func savePendingOperation(pendingOperation: PendingOperation) {
-        
-    }
-    
-    func pendingOperations() -> [PendingOperation] {
-        var results = [RealmPendingOperation]()
-        execute {
-            let realmResults = self.realm.objects(RealmPendingOperation.self)
-            results = (RealmResultsArray<RealmPendingOperation>(realmResults) as NSArray) as! [RealmPendingOperation]
-        }
-        return results
-    }
-    
-    func pendingOperations(objectId: String?) -> [PendingOperation] {
-        return []
-    }
-    
-    func removePendingOperation(pendingOperation: PendingOperation) {
-        
-    }
-    
-    func removeAllPendingOperations() {
-        
-    }
-    
-    func removeAllPendingOperations(objectId: String?) {
-        
-    }
-    
 }
 
-internal class RealmPendingOperation: Object, PendingOperation {
+internal class RealmPendingOperation: Object, PendingOperationType {
     
+    dynamic var requestId: String
+    dynamic var date: NSDate
+    
+    dynamic var collectionName: String
     dynamic var objectId: String?
     
-    init(objectId: String?) {
+    dynamic var method: String
+    dynamic var url: String
+    dynamic var headers: NSData
+    dynamic var body: NSData?
+    
+    init(request: NSURLRequest, collectionName: String, objectId: String?) {
+        date = NSDate()
+        requestId = request.valueForHTTPHeaderField(RequestIdHeaderKey)!
+        self.collectionName = collectionName
         self.objectId = objectId
+        method = request.HTTPMethod ?? "GET"
+        url = request.URL!.absoluteString
+        headers = try! NSJSONSerialization.dataWithJSONObject(request.allHTTPHeaderFields!, options: [])
+        body = request.HTTPBody
         super.init()
     }
     
     required init() {
+        date = NSDate()
+        requestId = ""
+        collectionName = ""
+        method = ""
+        url = ""
+        headers = NSData()
         super.init()
     }
     
     required init(value: AnyObject, schema: RLMSchema) {
+        date = NSDate()
+        requestId = ""
+        collectionName = ""
+        method = ""
+        url = ""
+        headers = NSData()
         super.init(value: value, schema: schema)
     }
     
     required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        date = NSDate()
+        requestId = ""
+        collectionName = ""
+        method = ""
+        url = ""
+        headers = NSData()
         super.init(realm: realm, schema: schema)
     }
     
     func buildRequest() -> NSMutableURLRequest {
-        return NSMutableURLRequest()
+        let request = NSMutableURLRequest(URL: NSURL(string: url)!)
+        request.HTTPMethod = method
+        request.allHTTPHeaderFields = try? NSJSONSerialization.JSONObjectWithData(headers, options: []) as! [String : String]
+        if let body = body {
+            request.HTTPBody = body
+        }
+        return request
+    }
+    
+    override class func primaryKey() -> String? {
+        return "requestId"
     }
     
 }

@@ -12,12 +12,12 @@ internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T
     
     var persistable: T
     
-    init(inout persistable: T, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(inout persistable: T, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
         self.persistable = persistable
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
-    init(persistable: T, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache<T>? = nil, client: Client) {
+    init(persistable: T, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
         self.persistable = persistable
         super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal protocol PendingOperation {
+internal protocol PendingOperationType {
     
     var objectId: String? { get }
     
