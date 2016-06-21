@@ -104,7 +104,7 @@ class SyncStoreTests: StoreTestCase {
     func testPurgeInvalidDataStoreType() {
         save()
         
-        store = DataStore<Person>.getInstance()
+        store = DataStore<Person>.getInstance(.Network)
         
         weak var expectationPurge = expectationWithDescription("Purge")
         
@@ -179,7 +179,7 @@ class SyncStoreTests: StoreTestCase {
     func testSyncInvalidDataStoreType() {
         save()
         
-        store = DataStore<Person>.getInstance()
+        store = DataStore<Person>.getInstance(.Network)
         
         weak var expectationSync = expectationWithDescription("Sync")
         
@@ -271,7 +271,7 @@ class SyncStoreTests: StoreTestCase {
     func testPushInvalidDataStoreType() {
         save()
         
-        store = DataStore<Person>.getInstance()
+        store = DataStore<Person>.getInstance(.Network)
         
         weak var expectationPush = expectationWithDescription("Push")
         
@@ -311,8 +311,6 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPull() {
-        save()
-        
         weak var expectationPull = expectationWithDescription("Pull")
         
         store.pull() { results, error in
@@ -332,10 +330,28 @@ class SyncStoreTests: StoreTestCase {
         }
     }
     
-    func testPullInvalidDataStoreType() {
+    func testPullPendingSyncItems() {
         save()
         
-        store = DataStore<Person>.getInstance()
+        weak var expectationPull = expectationWithDescription("Pull")
+        
+        store.pull() { results, error in
+            self.assertThread()
+            XCTAssertNil(results)
+            XCTAssertNotNil(error)
+            
+            expectationPull?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationPull = nil
+        }
+        
+    }
+    func testPullInvalidDataStoreType() {
+        //save()
+        
+        store = DataStore<Person>.getInstance(.Network)
         
         weak var expectationPull = expectationWithDescription("Pull")
         
