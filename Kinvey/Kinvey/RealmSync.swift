@@ -43,12 +43,12 @@ class RealmSync<T: Persistable where T: NSObject>: Sync<T> {
         }
     }
     
-    override func pendingOperations() -> Results<PendingOperationIMP> {
+    override func pendingOperations() -> Results<RealmPendingOperation> {
         return pendingOperations(nil)
     }
     
-    override func pendingOperations(objectId: String?) -> Results<PendingOperationIMP> {
-        var results: Results<PendingOperationIMP>?
+    override func pendingOperations(objectId: String?) -> Results<RealmPendingOperation> {
+        var results: Results<RealmPendingOperation>?
         executor.executeAndWait {
             var realmResults = self.realm.objects(RealmPendingOperation.self)
             if let objectId = objectId {
@@ -60,15 +60,27 @@ class RealmSync<T: Persistable where T: NSObject>: Sync<T> {
     }
     
     override func removePendingOperation(pendingOperation: RealmPendingOperation) {
-        print("")
+        executor.executeAndWait {
+            try! self.realm.write {
+                self.realm.delete(pendingOperation)
+            }
+        }
     }
     
     override func removeAllPendingOperations() {
-        print("")
+        removeAllPendingOperations(nil)
     }
     
     override func removeAllPendingOperations(objectId: String?) {
-        print("")
+        executor.executeAndWait {
+            try! self.realm.write {
+                var realmResults = self.realm.objects(RealmPendingOperation.self)
+                if let objectId = objectId {
+                    realmResults = realmResults.filter("objectId == %@", objectId)
+                }
+                self.realm.delete(realmResults)
+            }
+        }
     }
     
 }
