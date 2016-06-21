@@ -115,6 +115,7 @@ internal typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorTyp
 
 extension NSURLRequest {
     
+    /// Description for the NSURLRequest including url, headers and the body content
     public override var description: String {
         var description = "\(HTTPMethod ?? "GET") \(URL?.absoluteString ?? "")"
         if let headers = allHTTPHeaderFields {
@@ -132,6 +133,7 @@ extension NSURLRequest {
 
 extension NSHTTPURLResponse {
     
+    /// Description for the NSHTTPURLResponse including url and headers
     public override var description: String {
         var description = "\(statusCode) \(NSHTTPURLResponse.localizedStringForStatusCode(statusCode))"
         for keyPair in allHeaderFields {
@@ -140,6 +142,7 @@ extension NSHTTPURLResponse {
         return description
     }
     
+    /// Description for the NSHTTPURLResponse including url, headers and the body content
     public func description(body: NSData?) -> String {
         var description = self.description
         if let body = body, let bodyString = String(data: body, encoding: NSUTF8StringEncoding) {
