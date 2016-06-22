@@ -10,28 +10,28 @@ import Foundation
 
 class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
     
-    var memory = [String : Type]()
+    var memory = [String : T]()
     
     init() {
         super.init(persistenceId: "")
     }
     
-    override func saveEntity(entity: Type) {
-        let objId = entity[T.kinveyObjectIdPropertyName()] as! String
+    override func saveEntity(entity: T) {
+        let objId = entity.kinveyObjectId!
         memory[objId] = entity
     }
     
-    override func saveEntities(entities: [Type]) {
+    override func saveEntities(entities: [T]) {
         for entity in entities {
             saveEntity(entity)
         }
     }
     
-    override func findEntity(objectId: String) -> Type? {
+    override func findEntity(objectId: String) -> T? {
         return memory[objectId]
     }
     
-    override func findEntityByQuery(query: Query) -> [Type] {
+    override func findEntityByQuery(query: Query) -> [T] {
         guard let predicate = query.predicate else {
             return memory.values.map({ (json) -> Type in
                 return json
@@ -45,17 +45,18 @@ class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
     }
     
     override func findIdsLmtsByQuery(query: Query) -> [String : String] {
-        return findEntityByQuery(query).map { (entity) -> (String, NSDate) in
-            let kmd = entity[T.kinveyMetadataPropertyName() ?? PersistableMetadataKey] as! JsonDictionary
-            return (entity[T.kinveyObjectIdPropertyName()] as! String, kmd[Metadata.LmtKey] as! NSDate)
-            }.reduce([String : String](), combine: { (items, pair) in
-                var items = items
-                items[pair.0] = pair.1.toString()
-                return items
-            })
+        var results = [String : String]()
+        let array = findEntityByQuery(query).map { (entity) -> (String, String) in
+            let kmd = entity.kinveyMetadata!
+            return (entity.kinveyObjectId!, kmd.lmt!)
+        }
+        for item in array {
+            results[item.0] = item.1
+        }
+        return results
     }
     
-    override func findAll() -> [Type] {
+    override func findAll() -> [T] {
         return findEntityByQuery(Query())
     }
     
@@ -63,8 +64,8 @@ class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
         return UInt(memory.count)
     }
     
-    override func removeEntity(entity: Type) -> Bool {
-        let objId = entity[Type.kinveyObjectIdPropertyName()] as! String
+    override func removeEntity(entity: T) -> Bool {
+        let objId = entity.kinveyObjectId!
         return memory.removeValueForKey(objId) != nil
     }
     

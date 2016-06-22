@@ -23,11 +23,11 @@ public class Metadata: Object, Mappable {
     /// Authentication Token Key.
     public static let AuthTokenKey = "authtoken"
     
-    private dynamic var lmt: String?
-    private dynamic var ect: String?
+    internal dynamic var lmt: String?
+    internal dynamic var ect: String?
     
     /// Last Modification Time.
-    public var lastModifiedtime: NSDate? {
+    public var lastModifiedTime: NSDate? {
         get {
             return self.lmt?.toDate()
         }

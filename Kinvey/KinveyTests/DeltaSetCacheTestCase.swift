@@ -44,6 +44,12 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         do {
             let person = Person()
+            person.personId = "noChange"
+            person.metadata = Metadata(JSON: [Metadata.LmtKey : date.toString()])
+            cache.saveEntity(person)
+        }
+        do {
+            let person = Person()
             person.personId = "delete"
             person.metadata = Metadata(JSON: [Metadata.LmtKey : date.toString()])
             cache.saveEntity(person)

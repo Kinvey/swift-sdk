@@ -25,11 +25,11 @@ class Recipe: NSObject, Persistable {
         return "Recipe"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "name" : "name",
-            "id" : Kinvey.PersistableIdKey
-        ]
-    }
+//    static func kinveyPropertyMapping() -> [String : String] {
+//        return [
+//            "name" : "name",
+//            "id" : Kinvey.PersistableIdKey
+//        ]
+//    }
     
 }
