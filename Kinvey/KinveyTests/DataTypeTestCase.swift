@@ -28,7 +28,7 @@ class DataTypeTestCase: StoreTestCase {
         let fullName2 = FullName2()
         fullName2.firstName = "Victor"
         fullName2.lastName = "Barros"
-//        fullName2.fontDescriptor = UIFontDescriptor(name: "Arial", size: 12)
+        fullName2.fontDescriptor = UIFontDescriptor(name: "Arial", size: 12)
         dataType.fullName2 = fullName2
         
         let tuple = save(dataType, store: store)
@@ -63,6 +63,7 @@ class DataTypeTestCase: StoreTestCase {
                     if let fullName = dataType.fullName2 {
                         XCTAssertEqual(fullName.firstName, "Victor")
                         XCTAssertEqual(fullName.lastName, "Barros")
+                        XCTAssertEqual(fullName.fontDescriptor, UIFontDescriptor(name: "Arial", size: 12))
                     }
                 }
             }
@@ -188,10 +189,16 @@ class FullName2TransformType: TransformType {
     typealias JSON = JsonDictionary
     
     func transformFromJSON(value: AnyObject?) -> FullName2? {
+        if let value = value as? JsonDictionary {
+            return FullName2(JSON: value)
+        }
         return nil
     }
     
     func transformToJSON(value: FullName2?) -> JsonDictionary? {
+        if let value = value {
+            return value.toJSON()
+        }
         return nil
     }
     
@@ -201,7 +208,7 @@ class FullName2: NSObject, Mappable {
     
     dynamic var firstName: String?
     dynamic var lastName: String?
-//    dynamic var fontDescriptor: UIFontDescriptor?
+    dynamic var fontDescriptor: UIFontDescriptor?
     
     override init() {
     }
@@ -212,21 +219,34 @@ class FullName2: NSObject, Mappable {
     func mapping(map: Map) {
         firstName <- map["firstName"]
         lastName <- map["lastName"]
+        fontDescriptor <- (map["fontDescriptor"], UIFontDescriptorTransformType())
     }
     
 }
 
-//extension UIFontDescriptor: Object {
-//    
-//    public func toJson() -> JsonDictionary {
-//        return [
-//            "name" : objectForKey(UIFontDescriptorNameAttribute)!,
-//            "size" : objectForKey(UIFontDescriptorSizeAttribute)!
-//        ]
-//    }
-//    
-//    public convenience init?(json: JsonDictionary) {
-//        self.init(name: json[UIFontDescriptorNameAttribute] as! String, size: json[UIFontDescriptorSizeAttribute] as! CGFloat)
-//    }
-//    
-//}
+class UIFontDescriptorTransformType: TransformType {
+    
+    typealias Object = UIFontDescriptor
+    typealias JSON = JsonDictionary
+    
+    func transformFromJSON(value: AnyObject?) -> Object? {
+        if let value = value as? JsonDictionary,
+            let fontName = value[UIFontDescriptorNameAttribute] as? String,
+            let fontSize = value[UIFontDescriptorSizeAttribute] as? CGFloat
+        {
+            return UIFontDescriptor(name: fontName, size: fontSize)
+        }
+        return nil
+    }
+    
+    func transformToJSON(value: Object?) -> JSON? {
+        if let value = value {
+            return [
+                UIFontDescriptorNameAttribute : value.fontAttributes()[UIFontDescriptorNameAttribute]!,
+                UIFontDescriptorSizeAttribute : value.fontAttributes()[UIFontDescriptorSizeAttribute]!
+            ]
+        }
+        return nil
+    }
+    
+}

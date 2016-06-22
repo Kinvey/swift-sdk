@@ -19,6 +19,10 @@ class Person: Entity {
         return "Person"
     }
     
+    override class func kinveyObjectIdPropertyName() -> String {
+        return "personId"
+    }
+    
     override func mapping(map: Map) {
         super.mapping(map)
         

@@ -31,8 +31,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
         request.execute { () -> Void in
             if let cache = self.cache {
                 let json = cache.findEntityByQuery(self.query)
-//                let array = self.fromJson(jsonArray: json)
-//                completionHandler?(array, nil)
+                completionHandler?(json, nil)
             } else {
                 completionHandler?([], nil)
             }
@@ -44,7 +43,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
     
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
-        let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
+        let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(T.kinveyMetadataPropertyName()).\(Metadata.LmtKey)"] : nil
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.kinveyCollectionName(), query: query, fields: fields)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK,
@@ -122,10 +121,13 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                         self.executeLocal(completionHandler)
                     }
                 } else {
-//                    let persistableArray = T.fromJson(jsonArray)
-//                    let persistableJson = self.merge(persistableArray, jsonArray: jsonArray)
-//                    self.cache?.saveEntities(persistableJson)
-//                    completionHandler?(persistableArray, nil)
+                    let entities = [T](JSONArray: jsonArray)
+                    if let cache = self.cache, let entities = entities {
+                        cache.saveEntities(entities)
+                        completionHandler?(entities, nil)
+                    } else {
+                        completionHandler?(nil, Error.InvalidResponse)
+                    }
                 }
             } else if let error = error {
                 completionHandler?(nil, error)

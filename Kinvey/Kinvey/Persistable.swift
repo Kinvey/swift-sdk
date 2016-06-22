@@ -25,6 +25,8 @@ public protocol Persistable: Mappable {
     /// Provides the ACL property name.
     static func kinveyAclPropertyName() -> String?
     
+    static func kinveyPropertyMapping() -> [String : String]
+    
 }
 
 extension Persistable where Self: NSObject {

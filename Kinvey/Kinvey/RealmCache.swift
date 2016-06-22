@@ -63,7 +63,17 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
     override func saveEntity(entity: T) {
         executor.executeAndWait {
             try! self.realm.write {
-                self.realm.create(entity.dynamicType as! Entity.Type, value: (entity as! Entity), update: true)
+                self.realm.add((entity as! Entity), update: true)
+            }
+        }
+    }
+    
+    override func saveEntities(entities: [T]) {
+        executor.executeAndWait {
+            try! self.realm.write {
+                for entity in entities {
+                    self.realm.add((entity as! Entity), update: true)
+                }
             }
         }
     }
