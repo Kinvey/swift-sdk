@@ -55,21 +55,13 @@ public class Entity: Object, Persistable {
         acl <- map[PersistableAclKey]
     }
     
-    public class func kinveyPropertyMapping() -> [String : String] {
-        //TODO
-        let propertyDefaultValues = ObjCRuntime.propertyDefaultValues(self)
-        let obj = self.init()
-        obj.setValuesForKeysWithDictionary(propertyDefaultValues)
-        let result = obj.toJSON()
-        for keyPair in result {
-            for keyPair2 in propertyDefaultValues {
-                if unsafeAddressOf(keyPair.1) == unsafeAddressOf(keyPair2.1) {
-                    print("\(keyPair.0) <- \(keyPair2.0)")
-                    break
-                }
-            }
+    public class func kinveyPropertyMapping(propertyName: String) -> String? {
+        switch propertyName {
+        case "objectId": return PersistableIdKey
+        case "metadata": return PersistableMetadataKey
+        case "acl": return PersistableAclKey
+        default: return nil
         }
-        return [:]
     }
     
     public override class func primaryKey() -> String? {

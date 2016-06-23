@@ -20,11 +20,23 @@ public class Metadata: Object, Mappable {
     /// Entity Creation Time Key.
     public static let EctKey = "ect"
     
+    public static let LrtKey = "lrt"
+    
     /// Authentication Token Key.
     public static let AuthTokenKey = "authtoken"
     
     internal dynamic var lmt: String?
     internal dynamic var ect: String?
+    internal dynamic var lrt: NSDate = NSDate()
+    
+    public var lastReadTime: NSDate {
+        get {
+            return self.lrt
+        }
+        set {
+            lrt = newValue
+        }
+    }
     
     /// Last Modification Time.
     public var lastModifiedTime: NSDate? {
@@ -72,7 +84,7 @@ public class Metadata: Object, Mappable {
     }
     
     public override class func ignoredProperties() -> [String] {
-        return ["lastModifiedtime", "entityCreationTime"]
+        return ["lastModifiedTime", "entityCreationTime", "lastReadTime"]
     }
 
 }

@@ -119,6 +119,7 @@ public class Acl: Object, Mappable {
         creator <- map[Acl.CreatorKey]
         
         guard let creatorValue = creator else {
+            self.init()
             return nil
         }
         

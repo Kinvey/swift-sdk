@@ -291,14 +291,14 @@ extension Query {
                 var keyPaths = [String]()
                 var persistableType = self.persistableType
                 for item in keyPath.componentsSeparatedByString(".") {
-                    keyPaths.append(persistableType?.kinveyPropertyMapping()[item] ?? item)
+                    keyPaths.append(persistableType?.kinveyPropertyMapping(item) ?? item)
                     if let persistableTypeTmp = persistableType {
                         persistableType = ObjCRuntime.typeForPropertyName(persistableTypeTmp as! AnyClass, propertyName: item) as? Persistable.Type
                     }
                 }
                 keyPath = keyPaths.joinWithSeparator(".")
             } else {
-                keyPath = persistableType?.kinveyPropertyMapping()[keyPath] ?? expression.keyPath
+                keyPath = persistableType?.kinveyPropertyMapping(keyPath) ?? expression.keyPath
             }
             return NSExpression(forKeyPath: keyPath)
         default:
@@ -380,11 +380,23 @@ extension Endpoint {
             }
             let queryStr = query.urlQueryStringEncoded()
             let urlQuery = "?query=\(queryStr)"
+            
+            var sortStr = ""
+            if let sortDescriptors = query.sortDescriptors {
+                var sorts = [String : Int]()
+                for sortDescriptor in sortDescriptors {
+                    sorts[sortDescriptor.key!] = sortDescriptor.ascending ? 1 : -1
+                }
+                let data = try! NSJSONSerialization.dataWithJSONObject(sorts, options: [])
+                sortStr = "&sort=\(String(data: data, encoding: NSUTF8StringEncoding)!.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!)"
+            }
+            
             var fieldsStr = ""
             if let fields = fields {
                 fieldsStr = "&fields=\(fields.joinWithSeparator(",").stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!)"
             }
-            return NSURL(string: url + urlQuery + fieldsStr)!
+            
+            return NSURL(string: url + urlQuery + sortStr + fieldsStr)!
         case .PushRegisterDevice(let client):
             return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")
         case .PushUnRegisterDevice(let client):

@@ -27,15 +27,15 @@ internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T
         request.execute { () -> Void in
             let request = self.client.networkRequestFactory.buildAppDataSave(self.persistable)
             
-//            let persistable = self.fillObject(self.persistable)
-//            if let cache = self.cache {
-//                cache.saveEntity(persistable)
-//            }
-//            
-//            if let sync = self.sync {
-//                sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
-//            }
-//            completionHandler?(self.persistable, nil)
+            let persistable = self.fillObject(&self.persistable)
+            if let cache = self.cache {
+                cache.saveEntity(persistable)
+            }
+            
+            if let sync = self.sync {
+                sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
+            }
+            completionHandler?(self.persistable, nil)
         }
         return request
     }
