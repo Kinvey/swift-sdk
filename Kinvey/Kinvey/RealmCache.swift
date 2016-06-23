@@ -19,11 +19,15 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
     
     lazy var entityType = T.self as! Entity.Type
     
-    required init(persistenceId: String) {
+    required init(persistenceId: String, filePath: String? = nil) {
         if !(T.self is Entity.Type) {
             preconditionFailure("\(T.self) needs to be a Entity")
         }
-        realm = try! Realm()
+        var configuration = Realm.Configuration()
+        if let filePath = filePath {
+            configuration.fileURL = NSURL(fileURLWithPath: filePath)
+        }
+        realm = try! Realm(configuration: configuration)
         let className = NSStringFromClass(T.self).componentsSeparatedByString(".").last!
         objectSchema = realm.schema[className]!
         propertyNames = objectSchema.properties.map { return $0.name }
@@ -42,6 +46,11 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
                 realmResults = realmResults.sorted(sortDescriptor.key!, ascending: sortDescriptor.ascending)
             }
         }
+        
+        if self.ttl > 0, let kmdKey = T.kinveyMetadataPropertyName() {
+            realmResults = realmResults.filter("\(kmdKey).lrt >= %@", NSDate().dateByAddingTimeInterval(-self.ttl))
+        }
+        
         return realmResults
     }
     
@@ -76,6 +85,14 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
                 }
             }
         }
+    }
+    
+    override func findEntity(objectId: String) -> T? {
+        var result: T?
+        executor.executeAndWait {
+            result = self.realm.objectForPrimaryKey(self.entityType, key: objectId) as? T
+        }
+        return result
     }
     
     override func findEntityByQuery(query: Query) -> [T] {
