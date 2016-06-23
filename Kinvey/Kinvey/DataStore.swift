@@ -282,11 +282,15 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
+        let executor = Executor()
+        
         let operation = PurgeOperation<T>(sync: sync, cache: cache, client: client)
         let request = operation.execute { (count, error: ErrorType?) -> Void in
             if let count = count {
-                self.pull(query) { (results, error) -> Void in
-                    completionHandler?(count, error)
+                executor.execute {
+                    self.pull(query) { (results, error) -> Void in
+                        completionHandler?(count, error)
+                    }
                 }
             } else {
                 completionHandler?(count, error)
