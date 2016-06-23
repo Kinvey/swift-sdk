@@ -28,7 +28,7 @@ internal class CacheManager: NSObject {
     }
     
     func cache<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Cache<T>? {
-        return RealmCache<T>(persistenceId: persistenceId, filePath: filePath)
+        return RealmCache<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey)
     }
     
     func clearAll(tag: String? = nil) {
