@@ -111,18 +111,20 @@ extension Persistable where Self: NSObject {
     
     public mutating func mapping(map: Map) {
         let originalThread = NSThread.currentThread()
-        let operationQueue = NSOperationQueue()
-        operationQueue.name = "Kinvey Property Mapping"
-        operationQueue.maxConcurrentOperationCount = 1
-        operationQueue.addOperationWithBlock {
-            let currentThread = NSThread.currentThread()
-            currentThread.threadDictionary[KinveyMappingTypeKey] = [NSStringFromClass(Self.self) : Dictionary<String, String>()]
-            self.kinveyPropertyMapping(map)
-            if originalThread.threadDictionary[KinveyMappingTypeKey] != nil {
-                originalThread.threadDictionary[KinveyMappingTypeKey] = currentThread.threadDictionary[KinveyMappingTypeKey]
+        let runningMapping = originalThread.threadDictionary[KinveyMappingTypeKey] != nil
+        if runningMapping {
+            let operationQueue = NSOperationQueue()
+            operationQueue.name = "Kinvey Property Mapping"
+            operationQueue.maxConcurrentOperationCount = 1
+            operationQueue.addOperationWithBlock {
+                NSThread.currentThread().threadDictionary[KinveyMappingTypeKey] = [NSStringFromClass(Self.self) : Dictionary<String, String>()]
+                self.kinveyPropertyMapping(map)
+                originalThread.threadDictionary[KinveyMappingTypeKey] = NSThread.currentThread().threadDictionary[KinveyMappingTypeKey]
             }
+            operationQueue.waitUntilAllOperationsAreFinished()
+        } else {
+            self.kinveyPropertyMapping(map)
         }
-        operationQueue.waitUntilAllOperationsAreFinished()
     }
     
     mutating func readMap(propertyName: String, cls: AnyClass, map: Map) {
