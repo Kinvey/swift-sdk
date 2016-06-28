@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 @testable import Kinvey
 
 class DirectoryEntry: Entity {
@@ -23,13 +22,13 @@ class DirectoryEntry: Entity {
         return "HelixProjectDirectory"
     }
     
-    override func mapping(map: Map) {
-        super.mapping(map)
+    override func kinveyPropertyMapping(map: Map) {
+        super.kinveyPropertyMapping(map)
         
-        uniqueId <- map[PersistableIdKey]
-        nameFirst <- map["nameFirst"]
-        nameLast <- map["nameLast"]
-        email <- map["email"]
+        uniqueId <- ("uniqueId", map[PersistableIdKey])
+        nameFirst <- ("nameFirst", map["nameFirst"])
+        nameLast <- ("nameLast", map["nameLast"])
+        email <- ("email", map["email"])
     }
     
     override class func ignoredProperties() -> [String] {

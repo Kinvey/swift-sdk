@@ -6,7 +6,6 @@
 //  Copyright © 2016 Kinvey. All rights reserved.
 //
 
-import ObjectMapper
 @testable import Kinvey
 
 class Person: Entity {
@@ -23,23 +22,12 @@ class Person: Entity {
         return "personId"
     }
     
-    override class func kinveyPropertyMapping(propertyName: String) -> String? {
-        if let result = super.kinveyPropertyMapping(propertyName) {
-            return result
-        } else {
-            switch propertyName {
-            case "personId": return PersistableIdKey
-            default: return nil
-            }
-        }
-    }
-    
-    override func mapping(map: Map) {
-        super.mapping(map)
+    override func kinveyPropertyMapping(map: Map) {
+        super.kinveyPropertyMapping(map)
         
-        personId <- map[PersistableIdKey]
-        name <- map["name"]
-        age <- map["age"]
+        personId <- ("personId", map[PersistableIdKey])
+        name <- ("name", map["name"])
+        age <- ("age", map["age"])
     }
     
 }

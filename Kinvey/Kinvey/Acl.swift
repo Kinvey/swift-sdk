@@ -9,28 +9,31 @@
 import Foundation
 import Realm
 import RealmSwift
-import ObjectMapper
 
 class AclTransformType: TransformType {
     
     typealias Object = [String]
-    typealias JSON = [String]
+    typealias JSON = String
     
     func transformFromJSON(value: AnyObject?) -> [String]? {
         if let value = value as? String,
             let data = value.dataUsingEncoding(NSUTF8StringEncoding),
             let json = try? NSJSONSerialization.JSONObjectWithData(data, options: []),
-            let array = json as? Object
+            let array = json as? [String]
         {
             return array
-        } else if let value = value as? [String] {
-            return value
         }
         return nil
     }
     
-    func transformToJSON(value: [String]?) -> [String]? {
-        return value
+    func transformToJSON(value: [String]?) -> String? {
+        if let value = value,
+            let data = try? NSJSONSerialization.dataWithJSONObject(value, options: []),
+            let json = String(data: data, encoding: NSUTF8StringEncoding)
+        {
+            return json
+        }
+        return nil
     }
 
 }
@@ -58,17 +61,16 @@ public class Acl: Object, Mappable {
     /// Specifies the list of user _ids that are explicitly allowed to read the entity.
     public var readers: [String]? {
         get {
-            if let value = readersValue, let array = AclTransformType().transformFromJSON(value) {
+            if let value = readersValue,
+                let array = AclTransformType().transformFromJSON(value)
+            {
                 return array
             }
             return nil
         }
         set {
-            if let newValue = newValue,
-                let data = try? NSJSONSerialization.dataWithJSONObject(newValue, options: []),
-                let json = String(data: data, encoding: NSUTF8StringEncoding)
-            {
-                readersValue = json
+            if let value = newValue {
+                readersValue = AclTransformType().transformToJSON(value)
             } else {
                 readersValue = nil
             }
@@ -80,17 +82,16 @@ public class Acl: Object, Mappable {
     /// Specifies the list of user _ids that are explicitly allowed to modify the entity.
     public var writers: [String]? {
         get {
-            if let value = writersValue, let array = AclTransformType().transformFromJSON(value) {
+            if let value = writersValue,
+                let array = AclTransformType().transformFromJSON(value)
+            {
                 return array
             }
             return nil
         }
         set {
-            if let newValue = newValue,
-                let data = try? NSJSONSerialization.dataWithJSONObject(newValue, options: []),
-                let json = String(data: data, encoding: NSUTF8StringEncoding)
-            {
-                writersValue = json
+            if let value = newValue {
+                writersValue = AclTransformType().transformToJSON(value)
             } else {
                 writersValue = nil
             }

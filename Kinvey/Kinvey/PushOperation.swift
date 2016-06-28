@@ -21,6 +21,7 @@ internal class PushOperation<T: Persistable where T: NSObject>: SyncOperation<T,
         var count = UInt(0)
         var errors = [ErrorType]()
         if let sync = sync {
+            let executor = Executor()
             for pendingOperation in sync.pendingOperations() {
                 let request = HttpRequest(request: pendingOperation.buildRequest(), timeout: timeout, client: client)
                 let operation = NSBlockOperation {
@@ -32,14 +33,19 @@ internal class PushOperation<T: Persistable where T: NSObject>: SyncOperation<T,
                             let data = data
                         {
                             let json = self.client.responseParser.parse(data)
-                            if let cache = self.cache, let json = json, let objectId = pendingOperation.objectId where request.request.HTTPMethod != "DELETE" {
+                            var objectId: String?
+                            executor.executeAndWait {
+                                objectId = pendingOperation.objectId
+                            }
+                            if let cache = self.cache, let json = json, let objectId = objectId where request.request.HTTPMethod != "DELETE" {
                                 if let entity = cache.findEntity(objectId) {
                                     cache.removeEntity(entity)
                                 }
                                 
                                 let persistable = T(JSON: json)
-                                //                            let persistableJson = self.merge(persistable, json: json)
-                                //                            cache.saveEntity(persistableJson)
+                                if let persistable = persistable {
+                                    cache.saveEntity(persistable)
+                                }
                             }
                             if request.request.HTTPMethod != "DELETE" {
                                 self.sync?.removePendingOperation(pendingOperation)

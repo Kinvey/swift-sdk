@@ -8,7 +8,6 @@
 
 import XCTest
 import WebKit
-import ObjectMapper
 import KinveyApp
 @testable import Kinvey
 

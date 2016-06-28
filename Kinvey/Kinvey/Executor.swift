@@ -15,6 +15,7 @@ class Executor {
     
     init() {
         operationQueue = NSOperationQueue.currentQueue()!
+        operationQueue.maxConcurrentOperationCount = 1
         thread = NSThread.currentThread()
     }
     

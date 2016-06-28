@@ -199,6 +199,7 @@ class AclTestCase: StoreTestCase {
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, readers: [user.userId])
+        
         let person = save(newPerson)
         
         XCTAssertNotNil(person.personId)

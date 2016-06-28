@@ -7,7 +7,6 @@
 //
 
 import XCTest
-import ObjectMapper
 @testable import Kinvey
 
 class DataTypeTestCase: StoreTestCase {
@@ -38,7 +37,7 @@ class DataTypeTestCase: StoreTestCase {
             XCTAssertTrue(savedPersistable.boolValue)
         }
         
-        let query = Query(format: "_acl.creator == %@", client.activeUser!.userId)
+        let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         
         weak var expectationFind = expectationWithDescription("Find")
         
@@ -152,13 +151,13 @@ class DataType: Entity, BooleanType {
         return "DataType"
     }
     
-    override func mapping(map: Map) {
-        super.mapping(map)
+    override func kinveyPropertyMapping(map: Map) {
+        super.kinveyPropertyMapping(map)
         
-        boolValue <- map["boolValue"]
-        colorValue <- (map["colorValue"], UIColorTransformType())
-        fullName <- map["fullName"]
-        fullName2 <- (map["fullName2"], FullName2TransformType())
+        boolValue <- ("boolValue", map["boolValue"])
+        colorValue <- ("colorValue", map["colorValue"], UIColorTransformType())
+        fullName <- ("fullName", map["fullName"])
+        fullName2 <- ("fullName2", map["fullName2"], FullName2TransformType())
     }
     
     override class func ignoredProperties() -> [String] {
@@ -176,9 +175,11 @@ class FullName: Entity {
         return "FullName"
     }
     
-    override func mapping(map: Map) {
-        firstName <- map["firstName"]
-        lastName <- map["lastName"]
+    override func kinveyPropertyMapping(map: Map) {
+        super.kinveyPropertyMapping(map)
+        
+        firstName <- ("firstName", map["firstName"])
+        lastName <- ("lastName", map["lastName"])
     }
     
 }

@@ -18,7 +18,9 @@ internal class CacheManager: NSObject {
         self.persistenceId = persistenceId
         self.encryptionKey = encryptionKey
         var realmConfiguration = Realm.Configuration()
-        //TODO
+        if let encryptionKey = encryptionKey {
+            realmConfiguration.encryptionKey = encryptionKey
+        }
         realmConfiguration.schemaVersion = schemaVersion
         realmConfiguration.migrationBlock = { migration, oldSchemaVersion in
             let migration = Migration(realmMigration: migration)
