@@ -21,8 +21,6 @@ class CustomEndpointTests: KinveyTestCase {
             "queryParam" : Query(format: "age >= %@", 21)
         ]
         
-        client.logNetworkEnabled = true
-        
         weak var expectationCustomEndpoint = expectationWithDescription("Custom Endpoint")
         
         CustomEndpoint.execute("echo", params: params) { response, error in

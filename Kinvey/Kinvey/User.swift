@@ -8,7 +8,6 @@
 
 import Foundation
 import PromiseKit
-import ObjectMapper
 
 /// Class that represents an `User`.
 @objc(__KNVUser)

@@ -20,7 +20,7 @@ internal class SyncManager: NSObject {
     }
     
     func sync<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Sync<T> {
-        return RealmSync<T>(persistenceId: persistenceId)
+        return RealmSync<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey)
     }
     
 }

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 
 private let lockEncryptionKey = NSLock()
 

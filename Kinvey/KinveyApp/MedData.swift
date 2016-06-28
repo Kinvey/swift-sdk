@@ -7,7 +7,6 @@
 //
 
 import Kinvey
-import ObjectMapper
 
 class MedData: Entity {
     
@@ -27,20 +26,10 @@ class MedData: Entity {
         return "meddata"
     }
     
-    override func mapping(map: Map) {
-        super.mapping(map)
+    override func kinveyPropertyMapping(map: Map) {
+        super.kinveyPropertyMapping(map)
         
-        entityId <- map[PersistableIdKey]
-        seq <- map["seq"]
-        first <- map["first"]
-        last <- map["last"]
-        age <- map["age"]
-        street <- map["street"]
-        city <- map["city"]
-        state <- map["state"]
-        zip <- map["zip"]
-        dollar <- map["dollar"]
-        pick <- map["pick"]
+        entityId <- ("entityId", map[PersistableIdKey])
     }
     
 }

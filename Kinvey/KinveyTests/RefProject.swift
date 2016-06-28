@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 @testable import Kinvey
 
 class RefProject: Entity {
@@ -19,11 +18,10 @@ class RefProject: Entity {
         return "HelixProjectProjects"
     }
     
-    override func mapping(map: Map) {
-        super.mapping(map)
+    override func kinveyPropertyMapping(map: Map) {
+        super.kinveyPropertyMapping(map)
         
-        uniqueId <- map[PersistableIdKey]
-        name <- map["name"]
+        uniqueId <- ("uniqueId", map[PersistableIdKey])
     }
     
 }

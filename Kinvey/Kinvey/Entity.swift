@@ -9,7 +9,6 @@
 import Foundation
 import Realm
 import RealmSwift
-import ObjectMapper
 
 public class Entity: Object, Persistable {
     
@@ -49,19 +48,10 @@ public class Entity: Object, Persistable {
         super.init(value: value, schema: schema)
     }
     
-    public func mapping(map: Map) {
-        objectId <- map[PersistableIdKey]
-        metadata <- map[PersistableMetadataKey]
-        acl <- map[PersistableAclKey]
-    }
-    
-    public class func kinveyPropertyMapping(propertyName: String) -> String? {
-        switch propertyName {
-        case "objectId": return PersistableIdKey
-        case "metadata": return PersistableMetadataKey
-        case "acl": return PersistableAclKey
-        default: return nil
-        }
+    public func kinveyPropertyMapping(map: Map) {
+        objectId <- ("objectId", map[PersistableIdKey])
+        metadata <- ("metadata", map[PersistableMetadataKey])
+        acl <- ("acl", map[PersistableAclKey])
     }
     
     public override class func primaryKey() -> String? {

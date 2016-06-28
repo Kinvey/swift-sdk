@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectMapper
 
 protocol RequestFactory {
     

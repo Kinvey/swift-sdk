@@ -9,7 +9,6 @@
 import XCTest
 import ObjectiveC
 import RealmSwift
-import ObjectMapper
 @testable import Kinvey
 
 class CacheMigrationTestCaseStep2: XCTestCase {
@@ -44,11 +43,10 @@ class CacheMigrationTestCaseStep2: XCTestCase {
                 return "CacheMigrationTestCase_Person"
             }
             
-            override func mapping(map: Map) {
-                super.mapping(map)
+            override func kinveyPropertyMapping(map: Map) {
+                super.kinveyPropertyMapping(map)
                 
-                personId <- map[PersistableIdKey]
-                fullName <- map["fullName"]
+                personId <- ("personId", map[PersistableIdKey])
             }
             
         }
