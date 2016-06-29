@@ -31,7 +31,6 @@
 		57470FA51C76926B0096B15F /* PushOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA41C76926B0096B15F /* PushOperation.swift */; };
 		57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA61C7698B30096B15F /* MultiRequest.swift */; };
 		57470FAB1C769EF00096B15F /* PurgeOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FAA1C769EF00096B15F /* PurgeOperation.swift */; };
-		57471A301CCAED1600628933 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
 		574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* DataStoreType.swift */; };
 		574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912721C5932A700EA4F26 /* WritePolicy.swift */; };
 		574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA61C729EAF00CDC48F /* GetOperation.swift */; };
@@ -93,6 +92,19 @@
 		5793B8691D219A450088B5F9 /* TransformOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B85A1D219A450088B5F9 /* TransformOf.swift */; };
 		5793B86A1D219A450088B5F9 /* TransformType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B85B1D219A450088B5F9 /* TransformType.swift */; };
 		5793B86B1D219A450088B5F9 /* URLTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5793B85C1D219A450088B5F9 /* URLTransform.swift */; };
+		5793B87D1D2306A60088B5F9 /* EncryptedDataStoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */; };
+		5793B88C1D2306A60088B5F9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
+		5793B88D1D2306A60088B5F9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
+		5793B88E1D2306A60088B5F9 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
+		5793B88F1D2306A60088B5F9 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
+		5793B8911D2306A60088B5F9 /* Caminandes 3 - TRAILER.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5781D1371CE3D61B00369F40 /* Caminandes 3 - TRAILER.mp4 */; };
+		5793B8921D2306A60088B5F9 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 57A2ED951C4D5F74006D26A9 /* Media.xcassets */; };
+		5793B8941D2306A60088B5F9 /* Kinvey.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5793B8951D2306A60088B5F9 /* KIF.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D21CDCE88900492D6C /* KIF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5793B89B1D2307220088B5F9 /* StoreTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */; };
+		5793B89C1D2307290088B5F9 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
+		5793B89D1D2307360088B5F9 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
+		5793B89E1D2339250088B5F9 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
 		57A27C851C178F17000DF951 /* Kinvey.h in Headers */ = {isa = PBXBuildFile; fileRef = 57A27C841C178F17000DF951 /* Kinvey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57A27C8C1C178F18000DF951 /* Kinvey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57A27C811C178F17000DF951 /* Kinvey.framework */; };
 		57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A27C901C178F18000DF951 /* KinveyTestCase.swift */; };
@@ -404,6 +416,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5793B86E1D2306A60088B5F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57A27C801C178F17000DF951;
+			remoteInfo = Kinvey;
+		};
+		5793B8701D2306A60088B5F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5765B8431C9771BC00080FFA;
+			remoteInfo = KinveyApp;
+		};
 		57A27C8D1C178F18000DF951 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 57A27C781C178F17000DF951 /* Project object */;
@@ -474,6 +500,17 @@
 			dstSubfolderSpec = 10;
 			files = (
 				57D386A21CC19D0C0014050D /* Kinvey.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5793B8931D2306A60088B5F9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				5793B8941D2306A60088B5F9 /* Kinvey.framework in CopyFiles */,
+				5793B8951D2306A60088B5F9 /* KIF.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -599,6 +636,8 @@
 		5793B85A1D219A450088B5F9 /* TransformOf.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransformOf.swift; sourceTree = "<group>"; };
 		5793B85B1D219A450088B5F9 /* TransformType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransformType.swift; sourceTree = "<group>"; };
 		5793B85C1D219A450088B5F9 /* URLTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLTransform.swift; sourceTree = "<group>"; };
+		5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Encrypted.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5793B89A1D2306A70088B5F9 /* KinveyTests copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "KinveyTests copy-Info.plist"; path = "/Users/victor/Documents/ios-library/Kinvey/KinveyTests copy-Info.plist"; sourceTree = "<absolute>"; };
 		57A27C811C178F17000DF951 /* Kinvey.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Kinvey.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A27C841C178F17000DF951 /* Kinvey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Kinvey.h; sourceTree = "<group>"; };
 		57A27C861C178F17000DF951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -988,6 +1027,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5793B88B1D2306A60088B5F9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5793B88C1D2306A60088B5F9 /* QuartzCore.framework in Frameworks */,
+				5793B88D1D2306A60088B5F9 /* CoreGraphics.framework in Frameworks */,
+				5793B88E1D2306A60088B5F9 /* Kinvey.framework in Frameworks */,
+				5793B88F1D2306A60088B5F9 /* RealmSwift.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		57A27C7D1C178F17000DF951 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1012,6 +1062,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57A465921CC030AF009E7384 /* Kinvey.framework in Frameworks */,
+				5793B89E1D2339250088B5F9 /* RealmSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1159,6 +1210,7 @@
 				57A465831CC02A59009E7384 /* KinveyAppTests */,
 				57A27C821C178F17000DF951 /* Products */,
 				DBD4AA6B25714F7AAA213880 /* Frameworks */,
+				5793B89A1D2306A70088B5F9 /* KinveyTests copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1171,6 +1223,7 @@
 				57D643141CA3268000F6D16E /* KinveyTests Migration Database Step 1.xctest */,
 				57D6433B1CA3268600F6D16E /* KinveyTests Migration Database Step 2.xctest */,
 				57A465821CC02A59009E7384 /* KinveyAppTests.xctest */,
+				5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2137,6 +2190,26 @@
 			productReference = 5765B8441C9771BC00080FFA /* KinveyApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		5793B86C1D2306A60088B5F9 /* KinveyTests Encrypted */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5793B8961D2306A60088B5F9 /* Build configuration list for PBXNativeTarget "KinveyTests Encrypted" */;
+			buildPhases = (
+				5793B8711D2306A60088B5F9 /* Sources */,
+				5793B88B1D2306A60088B5F9 /* Frameworks */,
+				5793B8901D2306A60088B5F9 /* Resources */,
+				5793B8931D2306A60088B5F9 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5793B86D1D2306A60088B5F9 /* PBXTargetDependency */,
+				5793B86F1D2306A60088B5F9 /* PBXTargetDependency */,
+			);
+			name = "KinveyTests Encrypted";
+			productName = KinveyTests;
+			productReference = 5793B8991D2306A60088B5F9 /* KinveyTests Encrypted.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		57A27C801C178F17000DF951 /* Kinvey */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 57A27C951C178F18000DF951 /* Build configuration list for PBXNativeTarget "Kinvey" */;
@@ -2274,6 +2347,7 @@
 			targets = (
 				57A27C801C178F17000DF951 /* Kinvey */,
 				57A27C8A1C178F18000DF951 /* KinveyTests */,
+				5793B86C1D2306A60088B5F9 /* KinveyTests Encrypted */,
 				57D642EF1CA3268000F6D16E /* KinveyTests Migration Database Step 1 */,
 				57D643161CA3268600F6D16E /* KinveyTests Migration Database Step 2 */,
 				5765B8431C9771BC00080FFA /* KinveyApp */,
@@ -2290,6 +2364,15 @@
 				5765B8511C9771BC00080FFA /* LaunchScreen.storyboard in Resources */,
 				5765B84E1C9771BC00080FFA /* Assets.xcassets in Resources */,
 				5765B84C1C9771BC00080FFA /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5793B8901D2306A60088B5F9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5793B8911D2306A60088B5F9 /* Caminandes 3 - TRAILER.mp4 in Resources */,
+				5793B8921D2306A60088B5F9 /* Media.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2348,6 +2431,17 @@
 				57A960A41CC8278E005E52A8 /* PerformanceTestLongData.swift in Sources */,
 				5765B8491C9771BC00080FFA /* MICLoginViewController.swift in Sources */,
 				5765B8471C9771BC00080FFA /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5793B8711D2306A60088B5F9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5793B87D1D2306A60088B5F9 /* EncryptedDataStoreTestCase.swift in Sources */,
+				5793B89B1D2307220088B5F9 /* StoreTestCase.swift in Sources */,
+				5793B89D1D2307360088B5F9 /* Person.swift in Sources */,
+				5793B89C1D2307290088B5F9 /* KinveyTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2558,7 +2652,6 @@
 				57A4656F1CC00931009E7384 /* PerformanceTestCase.swift in Sources */,
 				57A9609F1CC6D6A9005E52A8 /* RefProject.swift in Sources */,
 				57A9609D1CC6D675005E52A8 /* DirectoryEntry.swift in Sources */,
-				57471A301CCAED1600628933 /* EncryptedDataStoreTestCase.swift in Sources */,
 				571991091CB45EEE00070CDA /* Person.swift in Sources */,
 				5781D1311CE3ADBC00369F40 /* ErrorTestCase.swift in Sources */,
 				5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */,
@@ -2617,6 +2710,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5793B86D1D2306A60088B5F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57A27C801C178F17000DF951 /* Kinvey */;
+			targetProxy = 5793B86E1D2306A60088B5F9 /* PBXContainerItemProxy */;
+		};
+		5793B86F1D2306A60088B5F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5765B8431C9771BC00080FFA /* KinveyApp */;
+			targetProxy = 5793B8701D2306A60088B5F9 /* PBXContainerItemProxy */;
+		};
 		57A27C8E1C178F18000DF951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 57A27C801C178F17000DF951 /* Kinvey */;
@@ -2694,6 +2797,49 @@
 				INFOPLIST_FILE = KinveyApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		5793B8971D2306A60088B5F9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = "KinveyTests copy-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-framework",
+					IOKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		5793B8981D2306A60088B5F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = "KinveyTests copy-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-framework",
+					IOKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinvey.KinveyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -3007,6 +3153,15 @@
 			buildConfigurations = (
 				5765B85E1C9771BD00080FFA /* Debug */,
 				5765B85F1C9771BD00080FFA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5793B8961D2306A60088B5F9 /* Build configuration list for PBXNativeTarget "KinveyTests Encrypted" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5793B8971D2306A60088B5F9 /* Debug */,
+				5793B8981D2306A60088B5F9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

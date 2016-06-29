@@ -301,7 +301,8 @@ static NSOperationQueue* kcsRequestQueue;
 
 -(NSMutableURLRequest *)requestForURL:(NSURL *)url
 {
-    NSMutableURLRequest* request = [self.class requestForURL:url];
+    NSMutableURLRequest* request = [self.class requestForURL:url
+                                                      client:self.client];
     
     NSString* clientAppVersion = self.clientAppVersion;
     if (clientAppVersion) {

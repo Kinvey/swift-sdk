@@ -34,12 +34,14 @@ class JsonResponseParser: ResponseParser {
         return nil
     }
     
-    func parseUser<U : User>(data: NSData?) -> U? {
+    func parseUser(data: NSData?) -> User? {
         if let data = data where data.length > 0,
             let result = try? NSJSONSerialization.JSONObjectWithData(data, options: []) as? JsonDictionary,
-            let json = result,
-            let user = Mapper<U>().map(json)
+            let json = result
         {
+            let map = Map(mappingType: .FromJSON, JSONDictionary: json)
+            let user = client.userType.init(map)
+            user?.mapping(map)
             return user
         }
         return nil

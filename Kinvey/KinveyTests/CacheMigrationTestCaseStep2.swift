@@ -11,6 +11,24 @@ import ObjectiveC
 import RealmSwift
 @testable import Kinvey
 
+class Person: Entity {
+    
+    dynamic var personId: String?
+    dynamic var fullName: String?
+    
+    override class func kinveyCollectionName() -> String {
+        return "CacheMigrationTestCase_Person"
+    }
+    
+    override func kinveyPropertyMapping(map: Map) {
+        super.kinveyPropertyMapping(map)
+        
+        personId <- ("personId", map[PersistableIdKey])
+        fullName <- ("fullName", map["fullName"])
+    }
+    
+}
+
 class CacheMigrationTestCaseStep2: XCTestCase {
     
     let defaultTimeout = KinveyTestCase.defaultTimeout
@@ -34,23 +52,6 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     }
     
     func testMigration() {
-        class Person: Entity {
-            
-            dynamic var personId: String?
-            dynamic var fullName: String?
-            
-            override class func kinveyCollectionName() -> String {
-                return "CacheMigrationTestCase_Person"
-            }
-            
-            override func kinveyPropertyMapping(map: Map) {
-                super.kinveyPropertyMapping(map)
-                
-                personId <- ("personId", map[PersistableIdKey])
-            }
-            
-        }
-        
         var migrationCalled = false
         var migrationPersonCalled = false
         

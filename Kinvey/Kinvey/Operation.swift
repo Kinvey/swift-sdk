@@ -62,24 +62,6 @@ internal class Operation<T: Persistable where T: NSObject>: NSObject {
         return persistable
     }
     
-    func fillJson(json: [String : AnyObject]) -> [String : AnyObject] {
-        return [:]
-//        var json = json
-//        if let user = client.activeUser {
-//            let aclKey = T.kinveyAclPropertyName ?? PersistableAclKey
-//            if var acl = json[aclKey] as? [String : AnyObject] where acl[Acl.CreatorKey] as? String == nil {
-//                acl[Acl.CreatorKey] = user.userId
-//            } else {
-//                json[aclKey] = [Acl.CreatorKey : user.userId]
-//            }
-//        }
-//        let kmdKey = persistableType.kmdKey ?? PersistableMetadataKey
-//        if json[kmdKey] == nil {
-//            json[kmdKey] = [Metadata.EctKey : NSDate().toString()]
-//        }
-//        return json
-    }
-    
     func merge(inout persistableArray: [T], jsonArray: [JsonDictionary]) {
         if persistableArray.count == jsonArray.count && persistableArray.count > 0 {
             for (index, _) in persistableArray.enumerate() {
