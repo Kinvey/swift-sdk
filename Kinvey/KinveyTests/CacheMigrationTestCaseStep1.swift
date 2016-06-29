@@ -12,6 +12,26 @@ import RealmSwift
 import KIF
 @testable import Kinvey
 
+class Person: Entity {
+    
+    dynamic var personId: String?
+    dynamic var firstName: String?
+    dynamic var lastName: String?
+    
+    override class func kinveyCollectionName() -> String {
+        return "CacheMigrationTestCase_Person"
+    }
+    
+    override func kinveyPropertyMapping(map: Map) {
+        super.kinveyPropertyMapping(map)
+        
+        personId <- ("personId", map[PersistableIdKey])
+        firstName <- ("firstName", map["firstName"])
+        lastName <- ("lastName", map["lastName"])
+    }
+    
+}
+
 class CacheMigrationTestCaseStep1: XCTestCase {
     
     let defaultTimeout = KinveyTestCase.defaultTimeout
@@ -36,24 +56,6 @@ class CacheMigrationTestCaseStep1: XCTestCase {
     
     func testMigration() {
         Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret")
-        
-        class Person: Entity {
-            
-            dynamic var personId: String?
-            dynamic var firstName: String?
-            dynamic var lastName: String?
-            
-            override class func kinveyCollectionName() -> String {
-                return "CacheMigrationTestCase_Person"
-            }
-
-            override func kinveyPropertyMapping(map: Map) {
-                super.kinveyPropertyMapping(map)
-                
-                personId <- ("personId", map[PersistableIdKey])
-            }
-            
-        }
         
         let store = DataStore<Person>.getInstance(.Sync)
         

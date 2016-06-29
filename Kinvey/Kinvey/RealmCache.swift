@@ -48,8 +48,8 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
             }
         }
         
-        if self.ttl > 0, let kmdKey = T.kinveyMetadataPropertyName() {
-            realmResults = realmResults.filter("\(kmdKey).lrt >= %@", NSDate().dateByAddingTimeInterval(-self.ttl))
+        if let ttl = ttl, let kmdKey = T.kinveyMetadataPropertyName() {
+            realmResults = realmResults.filter("\(kmdKey).lrt >= %@", NSDate().dateByAddingTimeInterval(-ttl))
         }
         
         return realmResults
@@ -73,7 +73,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
     override func saveEntity(entity: T) {
         executor.executeAndWait {
             try! self.realm.write {
-                self.realm.add((entity as! Entity), update: true)
+                self.realm.create((entity.dynamicType as! Entity.Type), value: entity, update: true)
             }
         }
     }
@@ -82,7 +82,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         executor.executeAndWait {
             try! self.realm.write {
                 for entity in entities {
-                    self.realm.add((entity as! Entity), update: true)
+                    self.realm.create((entity.dynamicType as! Entity.Type), value: entity, update: true)
                 }
             }
         }
@@ -92,6 +92,9 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         var result: T?
         executor.executeAndWait {
             result = self.realm.objectForPrimaryKey(self.entityType, key: objectId) as? T
+            if result != nil {
+                result = self.detach(result!)
+            }
         }
         return result
     }
@@ -100,15 +103,58 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         var results = [T]()
         executor.executeAndWait {
             results = (RealmResultsArray<Entity>(self.results(query)) as NSArray) as! [T]
+            results = self.detach(results)
         }
         return results
+    }
+    
+    override func findIdsLmtsByQuery(query: Query) -> [String : String] {
+        var results = [String : String]()
+        executor.executeAndWait {
+            for entity in self.results(query) {
+                results[entity.kinveyObjectId!] = entity.kinveyMetadata!.lmt!
+            }
+        }
+        return results
+    }
+    
+    override func findAll() -> [T] {
+        var results = [T]()
+        executor.executeAndWait {
+            results = (RealmResultsArray<Entity>(self.realm.objects(self.entityType)) as NSArray) as! [T]
+            results = self.detach(results)
+        }
+        return results
+    }
+    
+    override func count() -> UInt {
+        var result = UInt(0)
+        executor.executeAndWait {
+            result = UInt(self.realm.objects(self.entityType).count)
+        }
+        return result
+    }
+    
+    override func removeEntity(entity: T) -> Bool {
+        var result = false
+        executor.executeAndWait {
+            try! self.realm.write {
+                let entity = self.realm.objectForPrimaryKey((entity.dynamicType as! Entity.Type), key: entity.kinveyObjectId)!
+                self.realm.delete(entity)
+            }
+            result = true
+        }
+        return result
     }
     
     override func removeEntities(entities: [T]) -> Bool {
         var result = false
         executor.executeAndWait {
             try! self.realm.write {
-                self.realm.delete(entities.map { $0 as! Entity })
+                for entity in entities {
+                    let entity = self.realm.objectForPrimaryKey((entity.dynamicType as! Entity.Type), key: entity.kinveyObjectId)!
+                    self.realm.delete(entity)
+                }
             }
             result = true
         }
@@ -125,6 +171,14 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
             }
         }
         return result
+    }
+    
+    override func removeAllEntities() {
+        executor.executeAndWait {
+            try! self.realm.write {
+                self.realm.delete(self.realm.objects(self.entityType))
+            }
+        }
     }
     
 }

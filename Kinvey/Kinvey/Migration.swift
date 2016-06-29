@@ -23,26 +23,26 @@ public class Migration: NSObject {
     }
     
     /// Method that performs a migration in a specific collection.
-    public func execute(persistableClass: AnyClass, migrationObjectHandler: MigrationObjectHandler? = nil) {
-//        let realmClassName = RealmEntitySchema.realmClassNameForClass(persistableClass)
-//        let oldObjectSchema = realmMigration.oldSchema[realmClassName]
-//        if let oldObjectSchema = oldObjectSchema {
-//            let oldProperties = oldObjectSchema.properties.map { $0.name }
-//            
-//            realmMigration.enumerate(realmClassName) { (oldObject, newObject) in
-//                if let oldObject = oldObject {
-//                    let oldDictionary = oldObject.dictionaryWithValuesForKeys(oldProperties)
-//                    
-//                    let newDictionary = migrationObjectHandler?(oldEntity: oldDictionary)
-//                    if let newObject = newObject {
-//                        self.realmMigration.delete(newObject)
-//                    }
-//                    if let newDictionary = newDictionary {
-//                        self.realmMigration.create(realmClassName, value: newDictionary)
-//                    }
-//                }
-//            }
-//        }
+    public func execute<T: Entity>(type: T.Type, oldClassName: String? = nil, migrationObjectHandler: MigrationObjectHandler? = nil) {
+        let className = type.className()
+        let oldClassName = oldClassName ?? className
+        let oldObjectSchema = realmMigration.oldSchema[className]
+        if let oldObjectSchema = oldObjectSchema {
+            let oldProperties = oldObjectSchema.properties.map { $0.name }
+            realmMigration.enumerate(oldClassName) { (oldObject, newObject) in
+                if let oldObject = oldObject {
+                    let oldDictionary = oldObject.dictionaryWithValuesForKeys(oldProperties)
+                    
+                    let newDictionary = migrationObjectHandler?(oldEntity: oldDictionary)
+                    if let newObject = newObject {
+                        self.realmMigration.delete(newObject)
+                    }
+                    if let newDictionary = newDictionary {
+                        self.realmMigration.create(className, value: newDictionary)
+                    }
+                }
+            }
+        }
     }
     
 }

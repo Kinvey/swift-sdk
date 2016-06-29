@@ -76,7 +76,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public var ttl: TTL? {
         didSet {
             if let cache = cache {
-                cache.ttl = ttl != nil ? ttl!.1.toTimeInterval(ttl!.0) : 0
+                cache.ttl = ttl != nil ? ttl!.1.toTimeInterval(ttl!.0) : nil
             }
         }
     }

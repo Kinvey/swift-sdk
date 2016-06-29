@@ -798,6 +798,25 @@ class UserTests: KinveyTestCase {
             let webView = micViewController.valueForKey("webView") as? WKWebView
             XCTAssertNotNil(webView)
             if let webView = webView {
+                var wait = true
+                while wait {
+                    weak var expectationWait = expectationWithDescription("Wait")
+                    
+                    webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
+                        if let result = result where !(result is NSNull) {
+                            wait = false
+                        }
+                        expectationWait?.fulfill()
+                    })
+                    
+                    waitForExpectationsWithTimeout(defaultTimeout) { error in
+                        expectationWait = nil
+                    }
+                }
+                
+                tester().waitForAnimationsToFinish()
+                tester().waitForTimeInterval(1)
+                
                 weak var expectationTypeUsername = expectationWithDescription("Type Username")
                 weak var expectationTypePassword = expectationWithDescription("Type Password")
                 
@@ -872,9 +891,31 @@ class UserTests: KinveyTestCase {
                 expectationLogin?.fulfill()
             }
             
+            tester().waitForAnimationsToFinish()
+            tester().waitForTimeInterval(1)
+            
             let webView = micViewController.valueForKey("webView") as? WKWebView
             XCTAssertNotNil(webView)
             if let webView = webView {
+                var wait = true
+                while wait {
+                    weak var expectationWait = expectationWithDescription("Wait")
+                    
+                    webView.evaluateJavaScript("document.getElementById('ping-username').value", completionHandler: { (result, error) -> Void in
+                        if let result = result where !(result is NSNull) {
+                            wait = false
+                        }
+                        expectationWait?.fulfill()
+                    })
+                    
+                    waitForExpectationsWithTimeout(defaultTimeout) { error in
+                        expectationWait = nil
+                    }
+                }
+                
+                tester().waitForAnimationsToFinish()
+                tester().waitForTimeInterval(1)
+                
                 weak var expectationTypeUsername = expectationWithDescription("Type Username")
                 weak var expectationTypePassword = expectationWithDescription("Type Password")
                 
@@ -950,6 +991,14 @@ class UserTests: KinveyTestCase {
             let webView = micViewController.valueForKey("webView") as? UIWebView
             XCTAssertNotNil(webView)
             if let webView = webView {
+                var result: String?
+                while result == nil {
+                    result = webView.stringByEvaluatingJavaScriptFromString("document.getElementById('ping-username').value")
+                }
+                
+                tester().waitForAnimationsToFinish()
+                tester().waitForTimeInterval(1)
+                
                 webView.stringByEvaluatingJavaScriptFromString("document.getElementById('ping-username').value = 'ivan'")
                 webView.stringByEvaluatingJavaScriptFromString("document.getElementById('ping-password').value = 'Zse45rfv'")
                 webView.stringByEvaluatingJavaScriptFromString("document.getElementById('userpass').submit()")

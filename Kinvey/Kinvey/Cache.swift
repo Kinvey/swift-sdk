@@ -12,7 +12,7 @@ internal protocol CacheType {
     
     var persistenceId: String { get }
     var collectionName: String { get }
-    var ttl: NSTimeInterval { get set }
+    var ttl: NSTimeInterval? { get set }
     
     associatedtype Type
     
@@ -54,9 +54,9 @@ internal class Cache<T: Persistable where T: NSObject>: CacheType {
     
     let persistenceId: String
     let collectionName: String
-    var ttl: NSTimeInterval
+    var ttl: NSTimeInterval?
     
-    init(persistenceId: String, ttl: NSTimeInterval = DBL_MAX) {
+    init(persistenceId: String, ttl: NSTimeInterval? = nil) {
         self.persistenceId = persistenceId
         self.collectionName = T.kinveyCollectionName()
         self.ttl = ttl
