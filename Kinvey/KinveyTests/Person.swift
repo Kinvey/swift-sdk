@@ -26,8 +26,8 @@ class Person: Entity {
         super.kinveyPropertyMapping(map)
         
         personId <- ("personId", map[PersistableIdKey])
-        name <- ("name", map["name"])
-        age <- ("age", map["age"])
+        name <- map["name"]
+        age <- map["age"]
     }
     
 }

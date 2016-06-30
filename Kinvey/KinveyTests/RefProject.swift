@@ -21,7 +21,8 @@ class RefProject: Entity {
     override func kinveyPropertyMapping(map: Map) {
         super.kinveyPropertyMapping(map)
         
-        uniqueId <- ("uniqueId", map[PersistableIdKey])
+        uniqueId <- map[PersistableIdKey]
+        name <- map["name"]
     }
     
 }

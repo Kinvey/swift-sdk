@@ -23,8 +23,8 @@ class Person: Entity {
     override func kinveyPropertyMapping(map: Map) {
         super.kinveyPropertyMapping(map)
         
-        personId <- ("personId", map[PersistableIdKey])
-        fullName <- ("fullName", map["fullName"])
+        personId <- map[PersistableIdKey]
+        fullName <- map["fullName"]
     }
     
 }

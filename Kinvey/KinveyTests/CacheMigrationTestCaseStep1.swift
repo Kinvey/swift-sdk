@@ -25,9 +25,9 @@ class Person: Entity {
     override func kinveyPropertyMapping(map: Map) {
         super.kinveyPropertyMapping(map)
         
-        personId <- ("personId", map[PersistableIdKey])
-        firstName <- ("firstName", map["firstName"])
-        lastName <- ("lastName", map["lastName"])
+        personId <- map[PersistableIdKey]
+        firstName <- map["firstName"]
+        lastName <- map["lastName"]
     }
     
 }
