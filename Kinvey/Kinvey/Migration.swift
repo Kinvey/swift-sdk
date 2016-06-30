@@ -7,13 +7,14 @@
 //
 
 import Foundation
+import Realm
 import RealmSwift
 
 /// Class used to perform migrations in your local cache.
 @objc(KNVMigration)
 public class Migration: NSObject {
     
-    public typealias MigrationHandler = (migration: Migration, schemaVersion: CUnsignedLongLong) -> Void
+    public typealias MigrationHandler = (migration: Migration, schemaVersion: UInt64) -> Void
     public typealias MigrationObjectHandler = (oldEntity: JsonDictionary) -> JsonDictionary?
     
     let realmMigration: RealmSwift.Migration
@@ -26,7 +27,7 @@ public class Migration: NSObject {
     public func execute<T: Entity>(type: T.Type, oldClassName: String? = nil, migrationObjectHandler: MigrationObjectHandler? = nil) {
         let className = type.className()
         let oldClassName = oldClassName ?? className
-        let oldObjectSchema = realmMigration.oldSchema[className]
+        let oldObjectSchema = realmMigration.oldSchema[oldClassName]
         if let oldObjectSchema = oldObjectSchema {
             let oldProperties = oldObjectSchema.properties.map { $0.name }
             realmMigration.enumerate(oldClassName) { (oldObject, newObject) in

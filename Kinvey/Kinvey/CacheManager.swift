@@ -7,16 +7,20 @@
 //
 
 import Foundation
+import Realm
 import RealmSwift
 
 internal class CacheManager: NSObject {
     
     private let persistenceId: String
     private let encryptionKey: NSData?
+    private let schemaVersion: UInt64
     
-    init(persistenceId: String, encryptionKey: NSData? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+    init(persistenceId: String, encryptionKey: NSData? = nil, schemaVersion: UInt64 = 0, migrationHandler: Migration.MigrationHandler? = nil) {
         self.persistenceId = persistenceId
         self.encryptionKey = encryptionKey
+        self.schemaVersion = schemaVersion
+        
         var realmConfiguration = Realm.Configuration()
         if let encryptionKey = encryptionKey {
             realmConfiguration.encryptionKey = encryptionKey
@@ -26,11 +30,16 @@ internal class CacheManager: NSObject {
             let migration = Migration(realmMigration: migration)
             migrationHandler?(migration: migration, schemaVersion: oldSchemaVersion)
         }
-        let _ = try! Realm(configuration: realmConfiguration)
+        do {
+            _ = try Realm(configuration: realmConfiguration)
+        } catch {
+            realmConfiguration.deleteRealmIfMigrationNeeded = true
+            _ = try! Realm(configuration: realmConfiguration)
+        }
     }
     
     func cache<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Cache<T>? {
-        return RealmCache<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey)
+        return RealmCache<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
     func clearAll(tag: String? = nil) {

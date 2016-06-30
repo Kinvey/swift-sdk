@@ -19,7 +19,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
     
     lazy var entityType = T.self as! Entity.Type
     
-    required init(persistenceId: String, filePath: String? = nil, encryptionKey: NSData? = nil) {
+    required init(persistenceId: String, filePath: String? = nil, encryptionKey: NSData? = nil, schemaVersion: UInt64) {
         if !(T.self is Entity.Type) {
             preconditionFailure("\(T.self) needs to be a Entity")
         }
@@ -28,7 +28,15 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
             configuration.fileURL = NSURL(fileURLWithPath: filePath)
         }
         configuration.encryptionKey = encryptionKey
-        realm = try! Realm(configuration: configuration)
+        configuration.schemaVersion = schemaVersion
+        
+        do {
+            realm = try Realm(configuration: configuration)
+        } catch {
+            configuration.deleteRealmIfMigrationNeeded = true
+            realm = try! Realm(configuration: configuration)
+        }
+        
         let className = NSStringFromClass(T.self).componentsSeparatedByString(".").last!
         objectSchema = realm.schema[className]!
         propertyNames = objectSchema.properties.map { return $0.name }
