@@ -25,10 +25,10 @@ class DirectoryEntry: Entity {
     override func kinveyPropertyMapping(map: Map) {
         super.kinveyPropertyMapping(map)
         
-        uniqueId <- ("uniqueId", map[PersistableIdKey])
-        nameFirst <- ("nameFirst", map["nameFirst"])
-        nameLast <- ("nameLast", map["nameLast"])
-        email <- ("email", map["email"])
+        uniqueId <- map[PersistableIdKey]
+        nameFirst <- map["nameFirst"]
+        nameLast <- map["nameLast"]
+        email <- map["email"]
     }
     
     override class func ignoredProperties() -> [String] {

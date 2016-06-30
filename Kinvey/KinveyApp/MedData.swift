@@ -29,7 +29,17 @@ class MedData: Entity {
     override func kinveyPropertyMapping(map: Map) {
         super.kinveyPropertyMapping(map)
         
-        entityId <- ("entityId", map[PersistableIdKey])
+        entityId <- map[PersistableIdKey]
+        seq <- map["seq"]
+        first <- map["first"]
+        last <- map["last"]
+        age <- map["age"]
+        street <- map["street"]
+        city <- map["city"]
+        state <- map["state"]
+        zip <- map["zip"]
+        dollar <- map["dollar"]
+        pick <- map["pick"]
     }
     
 }

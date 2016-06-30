@@ -154,10 +154,10 @@ class DataType: Entity, BooleanType {
     override func kinveyPropertyMapping(map: Map) {
         super.kinveyPropertyMapping(map)
         
-        boolValue <- ("boolValue", map["boolValue"])
-        colorValue <- ("colorValue", map["colorValue"], UIColorTransformType())
-        fullName <- ("fullName", map["fullName"])
-        fullName2 <- ("fullName2", map["fullName2"], FullName2TransformType())
+        boolValue <- map["boolValue"]
+        colorValue <- (map["colorValue"], UIColorTransformType())
+        fullName <- map["fullName"]
+        fullName2 <- (map["fullName2"], FullName2TransformType())
     }
     
     override class func ignoredProperties() -> [String] {
@@ -178,8 +178,8 @@ class FullName: Entity {
     override func kinveyPropertyMapping(map: Map) {
         super.kinveyPropertyMapping(map)
         
-        firstName <- ("firstName", map["firstName"])
-        lastName <- ("lastName", map["lastName"])
+        firstName <- map["firstName"]
+        lastName <- map["lastName"]
     }
     
 }

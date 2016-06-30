@@ -297,8 +297,8 @@ extension Query {
                     }
                 }
                 keyPath = keyPaths.joinWithSeparator(".")
-            } else {
-                keyPath = persistableType?.kinveyPropertyMapping(keyPath) ?? expression.keyPath
+            } else if let translatedKeyPath = persistableType?.kinveyPropertyMapping(keyPath) {
+                keyPath = translatedKeyPath
             }
             return NSExpression(forKeyPath: keyPath)
         default:
