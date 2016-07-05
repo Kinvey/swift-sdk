@@ -110,7 +110,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         self.type = type
         self.deltaSet = deltaSet
         self.client = client
-        collectionName = T.kinveyCollectionName()
+        collectionName = T.collectionName()
         if let _ = T.self as? Entity.Type {
             cache = client.cacheManager.cache(filePath: filePath, type: T.self)
             sync = client.syncManager.sync(filePath: filePath, type: T.self)
@@ -163,7 +163,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     
     /// Deletes a record.
     public func remove(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) throws -> Request {
-        guard let id = persistable.kinveyObjectId else {
+        guard let id = persistable.entityId else {
             throw Error.ObjectIdMissing
         }
         return removeById(id, writePolicy:writePolicy, completionHandler: completionHandler)
@@ -173,7 +173,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func remove(array: [T], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         var ids: [String] = []
         for persistable in array {
-            if let id = persistable.kinveyObjectId {
+            if let id = persistable.entityId {
                 ids.append(id)
             }
         }
@@ -193,7 +193,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// Deletes a list of records using the `_id` of the records.
     public func removeById(ids: [String], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         precondition(ids.count > 0)
-        let query = Query(format: "\(T.kinveyObjectIdPropertyName()) IN %@", ids)
+        let query = Query(format: "\(T.entityIdProperty()) IN %@", ids)
         return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     

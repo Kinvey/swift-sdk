@@ -56,16 +56,20 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
             }
         }
         
-        if let ttl = ttl, let kmdKey = T.kinveyMetadataPropertyName() {
+        if let ttl = ttl, let kmdKey = T.metadataProperty() {
             realmResults = realmResults.filter("\(kmdKey).lrt >= %@", NSDate().dateByAddingTimeInterval(-ttl))
         }
         
         return realmResults
     }
     
+    private func newInstance<P: Persistable>(type: P.Type) -> P {
+        return type.init()
+    }
+    
     override func detach(entity: T) -> T {
         let json = entity.dictionaryWithValuesForKeys(propertyNames)
-        let obj = T()
+        let obj = newInstance(T.self)
         obj.setValuesForKeysWithDictionary(json)
         return obj
     }
@@ -120,7 +124,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         var results = [String : String]()
         executor.executeAndWait {
             for entity in self.results(query) {
-                results[entity.kinveyObjectId!] = entity.kinveyMetadata!.lmt!
+                results[entity.entityId!] = entity.metadata!.lmt!
             }
         }
         return results
@@ -147,7 +151,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         var result = false
         executor.executeAndWait {
             try! self.realm.write {
-                let entity = self.realm.objectForPrimaryKey((entity.dynamicType as! Entity.Type), key: entity.kinveyObjectId)!
+                let entity = self.realm.objectForPrimaryKey((entity.dynamicType as! Entity.Type), key: entity.entityId)!
                 self.realm.delete(entity)
             }
             result = true
@@ -160,11 +164,13 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         executor.executeAndWait {
             try! self.realm.write {
                 for entity in entities {
-                    let entity = self.realm.objectForPrimaryKey((entity.dynamicType as! Entity.Type), key: entity.kinveyObjectId)!
-                    self.realm.delete(entity)
+                    let entity = self.realm.objectForPrimaryKey((entity.dynamicType as! Entity.Type), key: entity.entityId)
+                    if let entity = entity {
+                        self.realm.delete(entity)
+                        result = true
+                    }
                 }
             }
-            result = true
         }
         return result
     }

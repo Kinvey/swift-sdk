@@ -30,8 +30,7 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?
                 let realmObjects = cache.findEntityByQuery(self.query)
                 count = UInt(realmObjects.count)
                 let detachedObjects = cache.detach(realmObjects)
-                if cache.removeEntities(realmObjects) {
-                    let idKey = T.kinveyObjectIdPropertyName()
+                if cache.removeEntities(realmObjects), let idKey = T.entityIdProperty() {
                     for object in detachedObjects {
                         if let objectId = object[idKey] as? String, let sync = self.sync {
                             if objectId.hasPrefix(ObjectIdTmpPrefix) {

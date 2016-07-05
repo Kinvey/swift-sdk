@@ -23,12 +23,12 @@ class LongData: Entity {
     dynamic var pick: String?
     dynamic var paragraph: String?
     
-    override class func kinveyCollectionName() -> String {
+    override class func collectionName() -> String {
         return "longdata"
     }
     
-    override func kinveyPropertyMapping(map: Map) {
-        super.kinveyPropertyMapping(map)
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
         
         id <- map[PersistableIdKey]
         seq <- map["seq"]

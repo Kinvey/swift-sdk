@@ -37,7 +37,7 @@ class RealmSync<T: Persistable where T: NSObject>: Sync<T> {
     }
     
     override func createPendingOperation(request: NSURLRequest, objectId: String?) -> RealmPendingOperation {
-        return RealmPendingOperation(request: request, collectionName: T.kinveyCollectionName(), objectId: objectId)
+        return RealmPendingOperation(request: request, collectionName: T.collectionName(), objectId: objectId)
     }
     
     override func savePendingOperation(pendingOperation: RealmPendingOperation) {

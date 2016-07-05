@@ -110,7 +110,7 @@ class HttpRequestFactory: RequestFactory {
     }
     
     func buildAppDataSave<T: Persistable>(persistable: T) -> HttpRequest {
-        let collectionName = T.kinveyCollectionName()
+        let collectionName = T.collectionName()
         let bodyObject = Mapper<T>().toJSON(persistable)
         let objId = bodyObject[PersistableIdKey] as? String
         let isNewObj = objId == nil

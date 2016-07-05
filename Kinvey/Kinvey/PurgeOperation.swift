@@ -28,14 +28,12 @@ internal class PurgeOperation<T: Persistable where T: NSObject>: SyncOperation<T
                 case .Update:
                     if let objectId = pendingOperation.objectId {
                         promises.append(Promise<Void> { fulfill, reject in
-                            let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.kinveyCollectionName(), id: objectId)
+                            let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.collectionName(), id: objectId)
                             requests.addRequest(request)
                             request.execute() { data, response, error in
                                 if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
-                                    if let cache = self.cache {
-                                        let persistable = T(JSON: json)
-                                        //                                    let persistableJson = self.merge(persistable, json: json)
-                                        //                                    cache.saveEntity(persistableJson)
+                                    if let cache = self.cache, let persistable = T(JSON: json) {
+                                        cache.saveEntity(persistable)
                                     }
                                     self.sync?.removePendingOperation(pendingOperation)
                                     fulfill()
@@ -45,7 +43,7 @@ internal class PurgeOperation<T: Persistable where T: NSObject>: SyncOperation<T
                                     reject(Error.InvalidResponse)
                                 }
                             }
-                            })
+                        })
                     } else {
                         sync.removePendingOperation(pendingOperation)
                     }
@@ -53,16 +51,16 @@ internal class PurgeOperation<T: Persistable where T: NSObject>: SyncOperation<T
                     promises.append(Promise<Void> { fulfill, reject in
                         sync.removePendingOperation(pendingOperation)
                         fulfill()
-                        })
+                    })
                 case .Create:
                     promises.append(Promise<Void> { fulfill, reject in
                         if let objectId = pendingOperation.objectId {
-                            let query = Query(format: "\(T.kinveyObjectIdPropertyName()) == %@", objectId)
+                            let query = Query(format: "\(T.entityIdProperty()) == %@", objectId)
                             cache?.removeEntitiesByQuery(query)
                         }
                         sync.removePendingOperation(pendingOperation)
                         fulfill()
-                        })
+                    })
                 default:
                     break
                 }

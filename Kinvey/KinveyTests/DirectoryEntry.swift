@@ -18,12 +18,12 @@ class DirectoryEntry: Entity {
     
     dynamic var refProject: RefProject?
     
-    override class func kinveyCollectionName() -> String {
+    override class func collectionName() -> String {
         return "HelixProjectDirectory"
     }
     
-    override func kinveyPropertyMapping(map: Map) {
-        super.kinveyPropertyMapping(map)
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
         
         uniqueId <- map[PersistableIdKey]
         nameFirst <- map["nameFirst"]

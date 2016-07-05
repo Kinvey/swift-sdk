@@ -53,11 +53,11 @@ internal class Operation<T: Persistable where T: NSObject>: NSObject {
     }
     
     func fillObject(inout persistable: T) -> T {
-        if persistable.kinveyObjectId == nil {
-            persistable.kinveyObjectId = "\(ObjectIdTmpPrefix)\(NSUUID().UUIDString)"
+        if persistable.entityId == nil {
+            persistable.entityId = "\(ObjectIdTmpPrefix)\(NSUUID().UUIDString)"
         }
-        if persistable.kinveyAcl == nil, let activeUser = client.activeUser {
-            persistable.kinveyAcl = Acl(creator: activeUser.userId)
+        if persistable.acl == nil, let activeUser = client.activeUser {
+            persistable.acl = Acl(creator: activeUser.userId)
         }
         return persistable
     }

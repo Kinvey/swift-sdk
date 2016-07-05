@@ -14,7 +14,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     override func tearDown() {
         if let activeUser = client.activeUser {
             let store = DataStore<Person>.getInstance(.Network)
-            let query = Query(format: "\(Person.kinveyAclPropertyName() ?? PersistableAclKey).creator == %@", activeUser.userId)
+            let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
             
             weak var expectationRemoveAll = expectationWithDescription("Remove All")
             
@@ -139,7 +139,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.kinveyAclPropertyName() ?? PersistableAclKey).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -243,7 +243,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.kinveyAclPropertyName() ?? PersistableAclKey).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -344,7 +344,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             }
         }
         
-        let query = Query(format: "\(Person.kinveyAclPropertyName() ?? PersistableAclKey).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -445,7 +445,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let store = DataStore<Person>.getInstance(.Sync)
         
-        let query = Query(format: "\(Person.kinveyAclPropertyName() ?? PersistableAclKey).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -555,7 +555,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         let store = DataStore<Person>.getInstance(.Sync)
         
-        let query = Query(format: "\(Person.kinveyAclPropertyName() ?? PersistableAclKey).creator == %@", activeUser.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
@@ -592,11 +592,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 
                 if let persons = persons {
                     XCTAssertEqual(persons.count, countBackend + countLocal)
-                    for (i, person) in persons[0..<countBackend].enumerate() {
-                        XCTAssertEqual(person.name, String(format: "Person %03d", i + 1))
-                    }
-                    for (i, person) in persons[countBackend..<persons.count].enumerate() {
-                        XCTAssertEqual(person.name, String(format: "Person Cached %03d", i + 1))
+                    if persons.count > 0 {
+                        for (i, person) in persons[0..<countBackend].enumerate() {
+                            XCTAssertEqual(person.name, String(format: "Person %03d", i + 1))
+                        }
+                        for (i, person) in persons[countBackend..<persons.count].enumerate() {
+                            XCTAssertEqual(person.name, String(format: "Person Cached %03d", i + 1))
+                        }
                     }
                 }
                 
@@ -629,7 +631,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         signUp()
         
         let store = DataStore<Person>.getInstance(.Network)
-        let query = Query(format: "\(Person.kinveyAclPropertyName() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
         weak var expectationFind = expectationWithDescription("Find")
         
@@ -653,7 +655,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         signUp()
         
         let store = DataStore<Person>.getInstance(.Network)
-        let query = Query(format: "\(Person.kinveyAclPropertyName() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
         class OnePersonURLProtocol: NSURLProtocol {
             
