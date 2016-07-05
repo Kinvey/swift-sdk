@@ -233,6 +233,7 @@ public class User: NSObject, Credential, Mappable {
         self.client = client
     }
     
+    /// Constructor that validates if the map contains at least the `userId`.
     public required convenience init?(_ map: Map) {
         var userId: String?
         var acl: Acl?
@@ -248,6 +249,7 @@ public class User: NSObject, Credential, Mappable {
         self.init(userId: userIdValue, acl: acl, metadata: metadata)
     }
     
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     public func mapping(map: Map) {
         userId <- map[PersistableIdKey]
         acl <- map[PersistableAclKey]

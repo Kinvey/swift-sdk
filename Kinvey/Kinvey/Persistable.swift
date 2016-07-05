@@ -15,8 +15,10 @@ public protocol Persistable: Mappable {
     /// Provides the collection name to be matched with the backend.
     static func collectionName() -> String
     
+    /// Default Constructor.
     init()
     
+    /// Override this method to tell how to map your own objects.
     mutating func propertyMapping(map: Map)
     
 }
@@ -33,46 +35,55 @@ private func kinveyMappingType(left left: String, right: String) {
     }
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T>(inout left: T, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T>(inout left: T?, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T>(inout left: T!, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T: Mappable>(inout left: T, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T: Mappable>(inout left: T?, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <T: Mappable>(inout left: T!, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(inout left: Transform.Object, right: (String, Map, Transform)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- (right.1, right.2)
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(inout left: Transform.Object?, right: (String, Map, Transform)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- (right.1, right.2)
 }
 
+/// Override operator used during the `propertyMapping(_:)` method.
 public func <- <Transform: TransformType>(inout left: Transform.Object!, right: (String, Map, Transform)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- (right.1, right.2)

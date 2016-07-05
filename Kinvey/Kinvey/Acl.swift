@@ -114,6 +114,7 @@ public class Acl: Object, Mappable {
         self.writers = writers
     }
     
+    /// Constructor that validates if the map contains at least the creator.
     public required convenience init?(_ map: Map) {
         var creator: String?
         
@@ -127,18 +128,28 @@ public class Acl: Object, Mappable {
         self.init(creator: creatorValue)
     }
     
+    /// Default Constructor.
     public required init() {
         super.init()
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public required init(value: AnyObject, schema: RLMSchema) {
         super.init(value: value, schema: schema)
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public required init(realm: RLMRealm, schema: RLMObjectSchema) {
         super.init(realm: realm, schema: schema)
     }
     
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     public func mapping(map: Map) {
         creator <- map[Acl.CreatorKey]
         globalRead.value <- map[Acl.GlobalReadKey]
@@ -147,6 +158,10 @@ public class Acl: Object, Mappable {
         writers <- (map[Acl.WritersKey], AclTransformType())
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public override class func ignoredProperties() -> [String] {
         return ["readers", "writers"]
     }
