@@ -113,12 +113,8 @@ extension Persistable {
         return propertyMapping()[propertyName]
     }
     
-    internal static func entityIdProperty() -> String? {
-        let propertyMapping = propertyMappingReverse()
-        if let ids = propertyMapping[PersistableIdKey] {
-            return ids.last
-        }
-        return nil
+    internal static func entityIdProperty() -> String {
+        return propertyMappingReverse()[PersistableIdKey]!.last!
     }
     
     internal static func aclProperty() -> String? {
@@ -144,15 +140,10 @@ extension Persistable where Self: NSObject {
     
     internal var entityId: String? {
         get {
-            if let idKey = self.dynamicType.entityIdProperty() {
-                return self[idKey] as? String
-            }
-            return nil
+            return self[self.dynamicType.entityIdProperty()] as? String
         }
         set {
-            if let idKey = self.dynamicType.entityIdProperty() {
-                self[idKey] = newValue
-            }
+            self[self.dynamicType.entityIdProperty()] = newValue
         }
     }
     
