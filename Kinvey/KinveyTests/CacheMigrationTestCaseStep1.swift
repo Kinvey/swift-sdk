@@ -18,12 +18,12 @@ class Person: Entity {
     dynamic var firstName: String?
     dynamic var lastName: String?
     
-    override class func kinveyCollectionName() -> String {
+    override class func collectionName() -> String {
         return "CacheMigrationTestCase_Person"
     }
     
-    override func kinveyPropertyMapping(map: Map) {
-        super.kinveyPropertyMapping(map)
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
         
         personId <- map[PersistableIdKey]
         firstName <- map["firstName"]

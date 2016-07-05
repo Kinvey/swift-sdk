@@ -37,7 +37,7 @@ internal class Sync<T: Persistable where T: NSObject>: SyncType {
     let persistenceId: String
     
     required init(persistenceId: String) {
-        self.collectionName = T.kinveyCollectionName()
+        self.collectionName = T.collectionName()
         self.persistenceId = persistenceId
     }
     

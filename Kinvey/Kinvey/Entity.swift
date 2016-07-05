@@ -10,25 +10,23 @@ import Foundation
 import Realm
 import RealmSwift
 
+internal func StringFromClass(cls: AnyClass) -> String {
+    var className = NSStringFromClass(cls)
+    while className.hasPrefix("RLMStandalone_") {
+        let classObj: AnyClass! = NSClassFromString(className)!
+        let superClass: AnyClass! = class_getSuperclass(classObj)
+        className = NSStringFromClass(superClass)
+    }
+    return className
+}
+
 public class Entity: Object, Persistable {
     
-    public class func kinveyCollectionName() -> String {
+    public class func collectionName() -> String {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    public class func kinveyObjectIdPropertyName() -> String {
-        return "objectId"
-    }
-    
-    public class func kinveyMetadataPropertyName() -> String? {
-        return "metadata"
-    }
-    
-    public class func kinveyAclPropertyName() -> String? {
-        return "acl"
-    }
-    
-    public dynamic var objectId: String?
+    public dynamic var entityId: String?
     public dynamic var metadata: Metadata?
     public dynamic var acl: Acl?
     
@@ -48,14 +46,33 @@ public class Entity: Object, Persistable {
         super.init(value: value, schema: schema)
     }
     
-    public func kinveyPropertyMapping(map: Map) {
-        objectId <- ("objectId", map[PersistableIdKey])
+    public func propertyMapping(map: Map) {
+        entityId <- ("entityId", map[PersistableIdKey])
         metadata <- ("metadata", map[PersistableMetadataKey])
         acl <- ("acl", map[PersistableAclKey])
     }
     
     public override class func primaryKey() -> String? {
-        return kinveyObjectIdPropertyName()
+        return entityIdProperty()
+    }
+    
+    public func mapping(map: Map) {
+        let originalThread = NSThread.currentThread()
+        let runningMapping = originalThread.threadDictionary[KinveyMappingTypeKey] != nil
+        if runningMapping {
+            let operationQueue = NSOperationQueue()
+            operationQueue.name = "Kinvey Property Mapping"
+            operationQueue.maxConcurrentOperationCount = 1
+            operationQueue.addOperationWithBlock {
+                let className = StringFromClass(self.dynamicType)
+                NSThread.currentThread().threadDictionary[KinveyMappingTypeKey] = [className : Dictionary<String, String>()]
+                self.propertyMapping(map)
+                originalThread.threadDictionary[KinveyMappingTypeKey] = NSThread.currentThread().threadDictionary[KinveyMappingTypeKey]
+            }
+            operationQueue.waitUntilAllOperationsAreFinished()
+        } else {
+            self.propertyMapping(map)
+        }
     }
     
 }

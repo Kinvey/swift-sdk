@@ -15,7 +15,7 @@ internal class RemoveByQueryOperation<T: Persistable where T: NSObject>: RemoveO
     }
     
     override func buildRequest() -> HttpRequest {
-        return client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: T.kinveyCollectionName(), query: query)
+        return client.networkRequestFactory.buildAppDataRemoveByQuery(collectionName: T.collectionName(), query: query)
     }
     
 }

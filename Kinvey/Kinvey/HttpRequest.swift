@@ -287,17 +287,17 @@ extension Query {
         switch expression.expressionType {
         case .KeyPathExpressionType:
             var keyPath = expression.keyPath
+            var persistableType = self.persistableType
             if keyPath.containsString(".") {
                 var keyPaths = [String]()
-                var persistableType = self.persistableType
                 for item in keyPath.componentsSeparatedByString(".") {
-                    keyPaths.append(persistableType?.kinveyPropertyMapping(item) ?? item)
+                    keyPaths.append(persistableType?.propertyMapping(item) ?? item)
                     if let persistableTypeTmp = persistableType {
                         persistableType = ObjCRuntime.typeForPropertyName(persistableTypeTmp as! AnyClass, propertyName: item) as? Persistable.Type
                     }
                 }
                 keyPath = keyPaths.joinWithSeparator(".")
-            } else if let translatedKeyPath = persistableType?.kinveyPropertyMapping(keyPath) {
+            } else if let translatedKeyPath = persistableType?.propertyMapping(keyPath) {
                 keyPath = translatedKeyPath
             }
             return NSExpression(forKeyPath: keyPath)

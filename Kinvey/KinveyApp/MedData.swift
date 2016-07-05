@@ -10,7 +10,6 @@ import Kinvey
 
 class MedData: Entity {
     
-    dynamic var entityId: String?
     dynamic var seq: Int = 0
     dynamic var first: String?
     dynamic var last: String?
@@ -22,14 +21,13 @@ class MedData: Entity {
     dynamic var dollar: String?
     dynamic var pick: String?
     
-    override class func kinveyCollectionName() -> String {
+    override class func collectionName() -> String {
         return "meddata"
     }
     
-    override func kinveyPropertyMapping(map: Map) {
-        super.kinveyPropertyMapping(map)
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
         
-        entityId <- map[PersistableIdKey]
         seq <- map["seq"]
         first <- map["first"]
         last <- map["last"]

@@ -33,7 +33,7 @@ internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T
             }
             
             if let sync = self.sync {
-                sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
+                sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.entityId))
             }
             completionHandler?(self.persistable, nil)
         }

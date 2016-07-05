@@ -35,7 +35,7 @@ class StoreTestCase: KinveyTestCase {
             XCTAssertNil(error)
             
             if let persistable = persistable {
-                XCTAssertNotNil(persistable.kinveyObjectId)
+                XCTAssertNotNil(persistable.entityId)
             }
             
             savedPersistable = persistable

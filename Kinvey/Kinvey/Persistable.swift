@@ -1,4 +1,4 @@
-//
+  //
 //  Persistable.swift
 //  Kinvey
 //
@@ -13,29 +13,23 @@ import CoreData
 public protocol Persistable: Mappable {
     
     /// Provides the collection name to be matched with the backend.
-    static func kinveyCollectionName() -> String
+    static func collectionName() -> String
     
-    /// Provides the object id property name.
-    static func kinveyObjectIdPropertyName() -> String
+    init()
     
-    /// Provides the metadata property name.
-    static func kinveyMetadataPropertyName() -> String?
-    
-    /// Provides the ACL property name.
-    static func kinveyAclPropertyName() -> String?
-    
-    mutating func kinveyPropertyMapping(map: Map)
+    mutating func propertyMapping(map: Map)
     
 }
 
 private func kinveyMappingType(left left: String, right: String) {
-    if var kinveyMappingType = NSThread.currentThread().threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
+    let currentThread = NSThread.currentThread()
+    if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
         let className = kinveyMappingType.first?.0,
         var classMapping = kinveyMappingType[className]
     {
         classMapping[left] = right
         kinveyMappingType[className] = classMapping
-        NSThread.currentThread().threadDictionary[KinveyMappingTypeKey] = kinveyMappingType
+        currentThread.threadDictionary[KinveyMappingTypeKey] = kinveyMappingType
     }
 }
 
@@ -84,71 +78,60 @@ public func <- <Transform: TransformType>(inout left: Transform.Object!, right: 
     left <- (right.1, right.2)
 }
 
-private var propertyMapping = [String : (String, String)]()
+internal let KinveyMappingTypeKey = "Kinvey Mapping Type"
 
 extension Persistable {
     
-    static func kinveyPropertyMapping(propertyName: String) -> String? {
-        if let type = Self.self as? NSObject.Type {
-            let currentThread = NSThread.currentThread()
-            currentThread.threadDictionary[KinveyMappingTypeKey] = [NSStringFromClass(type) : Dictionary<String, String>()]
-            let obj = type.init() as! Self
-            obj.toJSON()
-            if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
-                let kinveyMappingClassType = kinveyMappingType[NSStringFromClass(type)]
-            {
-                return kinveyMappingClassType[propertyName]
+    static func propertyMappingReverse() -> [String : [String]] {
+        var results = [String : [String]]()
+        for keyPair in propertyMapping() {
+            var properties = results[keyPair.1]
+            if properties == nil {
+                properties = [String]()
             }
+            properties!.append(keyPair.0)
+            results[keyPair.1] = properties
+        }
+        return results
+    }
+    
+    static func propertyMapping() -> [String : String] {
+        let currentThread = NSThread.currentThread()
+        let className = StringFromClass(self as! AnyClass)
+        currentThread.threadDictionary[KinveyMappingTypeKey] = [className : Dictionary<String, String>()]
+        let obj = self.init()
+        obj.toJSON()
+        if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
+            let kinveyMappingClassType = kinveyMappingType[className]
+        {
+            return kinveyMappingClassType
+        }
+        return [:]
+    }
+    
+    static func propertyMapping(propertyName: String) -> String? {
+        return propertyMapping()[propertyName]
+    }
+    
+    internal static func entityIdProperty() -> String? {
+        let propertyMapping = propertyMappingReverse()
+        if let ids = propertyMapping[PersistableIdKey] {
+            return ids.last
         }
         return nil
     }
     
+    internal static func aclProperty() -> String? {
+        return propertyMappingReverse()[PersistableAclKey]?.last
+    }
+    
+    internal static func metadataProperty() -> String? {
+        return propertyMappingReverse()[PersistableMetadataKey]?.last
+    }
+    
 }
 
-private let KinveyMappingTypeKey = "Kinvey Mapping Type"
-
 extension Persistable where Self: NSObject {
-    
-    public mutating func mapping(map: Map) {
-        let originalThread = NSThread.currentThread()
-        let runningMapping = originalThread.threadDictionary[KinveyMappingTypeKey] != nil
-        if runningMapping {
-            let operationQueue = NSOperationQueue()
-            operationQueue.name = "Kinvey Property Mapping"
-            operationQueue.maxConcurrentOperationCount = 1
-            operationQueue.addOperationWithBlock {
-                NSThread.currentThread().threadDictionary[KinveyMappingTypeKey] = [NSStringFromClass(Self.self) : Dictionary<String, String>()]
-                self.kinveyPropertyMapping(map)
-                originalThread.threadDictionary[KinveyMappingTypeKey] = NSThread.currentThread().threadDictionary[KinveyMappingTypeKey]
-            }
-            operationQueue.waitUntilAllOperationsAreFinished()
-        } else {
-            self.kinveyPropertyMapping(map)
-        }
-    }
-    
-    mutating func readMap(propertyName: String, cls: AnyClass, map: Map) {
-        if let type = cls as? NSObject.Type {
-            readMap(propertyName, type: type, map: map)
-        }
-    }
-    
-    mutating func readMap<T>(propertyName: String, type: T.Type, map: Map) {
-        var value: T?
-        value <- map
-        self[propertyName] = value as? AnyObject
-    }
-    
-    func writeMap(propertyName: String, cls: AnyClass, map: Map) {
-        if let type = cls as? NSObject.Type {
-            writeMap(propertyName, type: type, map: map)
-        }
-    }
-    
-    func writeMap<T>(propertyName: String, type: T.Type, map: Map) {
-        var value = self[propertyName] as? Mappable
-        value <- map
-    }
     
     public subscript(key: String) -> AnyObject? {
         get {
@@ -159,38 +142,43 @@ extension Persistable where Self: NSObject {
         }
     }
     
-    internal var kinveyObjectId: String? {
+    internal var entityId: String? {
         get {
-            return self[Self.kinveyObjectIdPropertyName()] as? String
+            if let idKey = self.dynamicType.entityIdProperty() {
+                return self[idKey] as? String
+            }
+            return nil
         }
         set {
-            self[Self.kinveyObjectIdPropertyName()] = newValue
+            if let idKey = self.dynamicType.entityIdProperty() {
+                self[idKey] = newValue
+            }
         }
     }
     
-    internal var kinveyAcl: Acl? {
+    internal var acl: Acl? {
         get {
-            if let aclKey = Self.kinveyAclPropertyName() {
+            if let aclKey = self.dynamicType.aclProperty() {
                 return self[aclKey] as? Acl
             }
             return nil
         }
         set {
-            if let aclKey = Self.kinveyAclPropertyName() {
+            if let aclKey = self.dynamicType.aclProperty() {
                 self[aclKey] = newValue
             }
         }
     }
     
-    internal var kinveyMetadata: Metadata? {
+    internal var metadata: Metadata? {
         get {
-            if let kmdKey = Self.kinveyMetadataPropertyName() {
+            if let kmdKey = self.dynamicType.metadataProperty() {
                 return self[kmdKey] as? Metadata
             }
             return nil
         }
         set {
-            if let kmdKey = Self.kinveyMetadataPropertyName() {
+            if let kmdKey = self.dynamicType.metadataProperty() {
                 self[kmdKey] = newValue
             }
         }

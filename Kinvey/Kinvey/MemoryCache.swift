@@ -17,7 +17,7 @@ class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
     }
     
     override func saveEntity(entity: T) {
-        let objId = entity.kinveyObjectId!
+        let objId = entity.entityId!
         memory[objId] = entity
     }
     
@@ -47,8 +47,8 @@ class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
     override func findIdsLmtsByQuery(query: Query) -> [String : String] {
         var results = [String : String]()
         let array = findEntityByQuery(query).map { (entity) -> (String, String) in
-            let kmd = entity.kinveyMetadata!
-            return (entity.kinveyObjectId!, kmd.lmt!)
+            let kmd = entity.metadata!
+            return (entity.entityId!, kmd.lmt!)
         }
         for item in array {
             results[item.0] = item.1
@@ -65,7 +65,7 @@ class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
     }
     
     override func removeEntity(entity: T) -> Bool {
-        let objId = entity.kinveyObjectId!
+        let objId = entity.entityId!
         return memory.removeValueForKey(objId) != nil
     }
     

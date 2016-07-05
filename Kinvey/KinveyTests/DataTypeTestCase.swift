@@ -147,12 +147,12 @@ class DataType: Entity, BooleanType {
         }
     }
     
-    override class func kinveyCollectionName() -> String {
+    override class func collectionName() -> String {
         return "DataType"
     }
     
-    override func kinveyPropertyMapping(map: Map) {
-        super.kinveyPropertyMapping(map)
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
         
         boolValue <- map["boolValue"]
         colorValue <- (map["colorValue"], UIColorTransformType())
@@ -171,12 +171,12 @@ class FullName: Entity {
     dynamic var firstName: String?
     dynamic var lastName: String?
     
-    override class func kinveyCollectionName() -> String {
+    override class func collectionName() -> String {
         return "FullName"
     }
     
-    override func kinveyPropertyMapping(map: Map) {
-        super.kinveyPropertyMapping(map)
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
         
         firstName <- map["firstName"]
         lastName <- map["lastName"]

@@ -43,8 +43,8 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
     
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
-        let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(T.kinveyMetadataPropertyName()).\(Metadata.LmtKey)"] : nil
-        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.kinveyCollectionName(), query: query, fields: fields)
+        let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(T.metadataProperty()).\(Metadata.LmtKey)"] : nil
+        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.collectionName(), query: query, fields: fields)
         request.execute() { data, response, error in
             if let response = response where response.isResponseOK,
                 let jsonArray = self.client.responseParser.parseArray(data)
@@ -87,7 +87,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                             let refKeys = Set<String>(refObjs.keys)
                             let deleted = deltaSet.deleted.subtract(refKeys)
                             if deleted.count > 0 {
-                                let query = Query(format: "\(T.kinveyObjectIdPropertyName()) IN %@", deleted)
+                                let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted)
                                 cache.removeEntitiesByQuery(query)
                             }
                             self.executeLocal(completionHandler)
@@ -106,7 +106,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                                     let refKeys = Set<String>(refObjs.keys)
                                     let deleted = deltaSet.deleted.subtract(refKeys)
                                     if deleted.count > 0 {
-                                        let query = Query(format: "\(T.kinveyObjectIdPropertyName()) IN %@", deleted)
+                                        let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted)
                                         cache.removeEntitiesByQuery(query)
                                     }
                                 }

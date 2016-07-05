@@ -14,12 +14,12 @@ class RefProject: Entity {
     dynamic var uniqueId: String?
     dynamic var name: String?
     
-    override class func kinveyCollectionName() -> String {
+    override class func collectionName() -> String {
         return "HelixProjectProjects"
     }
     
-    override func kinveyPropertyMapping(map: Map) {
-        super.kinveyPropertyMapping(map)
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
         
         uniqueId <- map[PersistableIdKey]
         name <- map["name"]

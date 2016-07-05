@@ -58,7 +58,7 @@ internal class Cache<T: Persistable where T: NSObject>: CacheType {
     
     init(persistenceId: String, ttl: NSTimeInterval? = nil) {
         self.persistenceId = persistenceId
-        self.collectionName = T.kinveyCollectionName()
+        self.collectionName = T.collectionName()
         self.ttl = ttl
     }
     
