@@ -22,40 +22,62 @@ internal func StringFromClass(cls: AnyClass) -> String {
 
 public class Entity: Object, Persistable {
     
+    /// Override this method and return the name of the collection for Kinvey.
     public class func collectionName() -> String {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
+    /// The `_id` property mapped in the Kinvey backend.
     public dynamic var entityId: String?
+    
+    /// The `_kmd` property mapped in the Kinvey backend.
     public dynamic var metadata: Metadata?
+    
+    /// The `_acl` property mapped in the Kinvey backend.
     public dynamic var acl: Acl?
     
+    /// Constructor that validates if the map contains the required fields.
     public required init?(_ map: Map) {
         super.init()
     }
     
+    /// Default Constructor.
     public required init() {
         super.init()
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public required init(realm: RLMRealm, schema: RLMObjectSchema) {
         super.init(realm: realm, schema: schema)
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public required init(value: AnyObject, schema: RLMSchema) {
         super.init(value: value, schema: schema)
     }
     
+    /// Override this method to tell how to map your own objects.
     public func propertyMapping(map: Map) {
         entityId <- ("entityId", map[PersistableIdKey])
         metadata <- ("metadata", map[PersistableMetadataKey])
         acl <- ("acl", map[PersistableAclKey])
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public override class func primaryKey() -> String? {
         return entityIdProperty()
     }
     
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     public func mapping(map: Map) {
         let originalThread = NSThread.currentThread()
         let runningMapping = originalThread.threadDictionary[KinveyMappingTypeKey] != nil

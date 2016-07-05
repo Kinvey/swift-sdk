@@ -19,7 +19,8 @@ public class Metadata: Object, Mappable {
     /// Entity Creation Time Key.
     public static let EctKey = "ect"
     
-    public static let LrtKey = "lrt"
+    /// Last Read Time Key.
+    internal static let LrtKey = "lrt"
     
     /// Authentication Token Key.
     public static let AuthTokenKey = "authtoken"
@@ -28,6 +29,7 @@ public class Metadata: Object, Mappable {
     internal dynamic var ect: String?
     internal dynamic var lrt: NSDate = NSDate()
     
+    /// Last Read Time
     public var lastReadTime: NSDate {
         get {
             return self.lrt
@@ -60,28 +62,43 @@ public class Metadata: Object, Mappable {
     /// Authentication Token.
     public internal(set) var authtoken: String?
     
+    /// Constructor that validates if the map can be build a new instance of Metadata.
     public required init?(_ map: Map) {
         super.init()
     }
     
+    /// Default Constructor.
     public required init() {
         super.init()
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public required init(realm: RLMRealm, schema: RLMObjectSchema) {
         super.init(realm: realm, schema: schema)
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public required init(value: AnyObject, schema: RLMSchema) {
         super.init(value: value, schema: schema)
     }
     
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     public func mapping(map: Map) {
         lmt <- map[Metadata.LmtKey]
         ect <- map[Metadata.EctKey]
         authtoken <- map[Metadata.AuthTokenKey]
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public override class func ignoredProperties() -> [String] {
         return ["lastModifiedTime", "entityCreationTime", "lastReadTime"]
     }
