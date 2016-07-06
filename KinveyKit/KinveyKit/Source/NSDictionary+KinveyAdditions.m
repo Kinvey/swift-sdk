@@ -23,6 +23,7 @@
 #import "KCSMutableOrderedDictionary.h"
 #import "KCSObjectMapper.h"
 #import "KCSFile.h"
+#import "NSDate+ISO8601.h"
 #import <UIKit/UIKit.h>
 
 @interface KCSKinveyRef ()
@@ -107,7 +108,7 @@
     return result;
 }
 
--(id)transformValue:(id)value
++(id)transformValue:(id)value
 {
     if ([value isKindOfClass:[KCSKinveyRef class]]) {
         return [((KCSKinveyRef*) value) proxyForJson];
@@ -139,13 +140,33 @@
             }
         }
         return results;
+    } else if ([value isKindOfClass:[NSDate class]]) {
+        return [value stringWithISO8601Encoding];
+    } else if ([value isKindOfClass:[NSString class]]) {
+        NSError* error = nil;
+        NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"ISODate\\(\\\"([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{3})?Z)\"\\)"
+                                                                               options:0
+                                                                                 error:&error];
+        if (!error) {
+            NSString* str = value;
+            NSArray<NSTextCheckingResult*> *matches = [regex matchesInString:str
+                                                                     options:0
+                                                                       range:NSMakeRange(0, str.length)];
+            if (matches.count > 0) {
+                NSTextCheckingResult* textCheckingResult = matches.firstObject;
+                if (textCheckingResult.numberOfRanges > 1) {
+                    NSString* dateStr = [str substringWithRange:[textCheckingResult rangeAtIndex:1]];
+                    value = [NSDate dateFromISO8601EncodedString:dateStr];
+                }
+            }
+        }
     }
     return value;
 }
 
 -(NSData *)kcsJSONDataRepresentation:(NSError *__autoreleasing *)_error
 {
-    NSMutableDictionary *dictionary = [self transformValue:self];
+    NSMutableDictionary *dictionary = [self.class transformValue:self];
     
     NSError* error = nil;
     NSData* data = [NSJSONSerialization dataWithJSONObject:dictionary

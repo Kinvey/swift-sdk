@@ -27,6 +27,8 @@
 - (NSDictionary*) invert;
 -(NSString*)queryString;
 
++(id)transformValue:(id)value;
+
 -(NSData*)kcsJSONDataRepresentation:(NSError**)error;
 -(NSString*)kcsJSONStringRepresentation:(NSError**)error;
 
