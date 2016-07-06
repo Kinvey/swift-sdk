@@ -143,6 +143,10 @@
         jsonObj = jsonObj ? jsonObj : jsonResponse;
     }
     
+    if (jsonObj) {
+        jsonObj = [NSDictionary transformValue:jsonObj];
+    }
+    
     return jsonObj;
 }
 
