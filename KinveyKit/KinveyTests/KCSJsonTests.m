@@ -8,6 +8,8 @@
 
 #import <XCTest/XCTest.h>
 #import "NSDictionary+KinveyAdditions.h"
+#import "KCSObjectMapper.h"
+#import "Event.h"
 
 @interface KCSJsonTests : XCTestCase
 
@@ -61,7 +63,7 @@
     
     XCTAssertNil(error);
     XCTAssertNotNil(json);
-    XCTAssertEqualObjects(json, @"{\"date\":\"2016-01-02T03:04:05.006Z\"}");
+    XCTAssertEqualObjects(json, @"{\"date\":\"ISODate(\\\"2016-01-02T03:04:05.006Z\\\")\"}");
 }
 
 - (void)testDateMillisecondsFromJson
@@ -75,7 +77,11 @@
     XCTAssertNil(error);
     XCTAssertNotNil(jsonObject);
     NSDictionary* expected = @{ @"date" : [NSDate dateWithTimeIntervalSince1970:1451703845.006] };
-    XCTAssertEqualObjects(jsonObject, expected);
+    Event* event = [KCSObjectMapper makeObjectOfType:[Event class]
+                                            withData:jsonObject
+                              withResourceDictionary:[NSMutableDictionary dictionary]
+                                              object:nil];
+    XCTAssertEqualObjects(event.date, expected[@"date"]);
 }
 
 - (void)testDateFromJson
@@ -89,7 +95,11 @@
     XCTAssertNil(error);
     XCTAssertNotNil(jsonObject);
     NSDictionary* expected = @{ @"date" : [NSDate dateWithTimeIntervalSince1970:1451703845] };
-    XCTAssertEqualObjects(jsonObject, expected);
+    Event* event = [KCSObjectMapper makeObjectOfType:[Event class]
+                                            withData:jsonObject
+                              withResourceDictionary:[NSMutableDictionary dictionary]
+                                              object:nil];
+    XCTAssertEqualObjects(event.date, expected[@"date"]);
 }
 
 @end
