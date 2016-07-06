@@ -42,6 +42,7 @@
         Event* event = [[Event alloc] init];
         event.name = @"Event 1";
         event.descriptionEvent = [NSMutableString stringWithString:@"test"];
+        event.date = [NSDate dateWithTimeIntervalSince1970:1451703845.006];
         
         NSMutableArray* events = [NSMutableArray arrayWithObject:event];
         
@@ -55,6 +56,9 @@
             
             XCTAssertTrue([event.descriptionEvent isKindOfClass:[NSMutableString class]]);
             XCTAssertTrue([objectsOrNil.firstObject.descriptionEvent isKindOfClass:[NSMutableString class]]);
+            
+            XCTAssertTrue([event.date isKindOfClass:[NSDate class]]);
+            XCTAssertTrue([objectsOrNil.firstObject.date isKindOfClass:[NSDate class]]);
             
             objectId = event.entityId;
             
@@ -73,17 +77,16 @@
         KCSCollection* collection = [KCSCollection collectionFromString:@"Event" ofClass:[Event class]];
         KCSBackgroundAppdataStore* store = [KCSBackgroundAppdataStore storeWithCollection:collection options:nil];
         
-        Event* event = [[Event alloc] init];
-        event.entityId = objectId;
-        
-        [store loadObjectWithID:event
+        [store loadObjectWithID:objectId
             withCompletionBlock:^(NSArray *objectsOrNil, NSError *errorOrNil)
         {
             XCTAssertNotNil(objectsOrNil);
             XCTAssertNil(errorOrNil);
+            Event* event = objectsOrNil.firstObject;
             XCTAssertEqual(objectsOrNil.firstObject, event);
             XCTAssertNotNil(event.name);
             XCTAssertEqualObjects(event.name, @"Event 1");
+            XCTAssertEqualObjects(event.date, [NSDate dateWithTimeIntervalSince1970:1451703845.006]);
             
             [expectationLoad fulfill];
         } withProgressBlock:nil];
