@@ -33,13 +33,6 @@ class NetworkStoreTests: StoreTestCase {
         event.acl?.globalRead.value = true
         event.acl?.globalWrite.value = true
         
-        let myFriend: User // set to a valid User
-        event.acl?.readers?.append(myFriend.userId)
-        
-        //add 'myFriend' to the writers list as well
-        event.acl?.writers?.append(myFriend.userId)
-        //... and then save the event
-        
         weak var expectationCreate = expectationWithDescription("Create")
         
         store.save(event) { event, error in
