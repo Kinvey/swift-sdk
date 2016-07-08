@@ -107,8 +107,8 @@ if (self.type != KNVDataStoreTypeSync) { \
         }
         self.cls = cls;
         self.client = client;
-        self.cache = [client.client.cacheManager cache:[cls kinveyCollectionName]];
-        self.sync = [client.client.syncManager sync:[cls kinveyCollectionName]];
+//        self.cache = [client.client.cacheManager cache:[cls kinveyCollectionName]];
+//        self.sync = [client.client.syncManager sync:[cls kinveyCollectionName]];
     }
     return self;
 }
@@ -127,41 +127,6 @@ if (self.type != KNVDataStoreTypeSync) { \
     completionHandler:completionHandler];
 }
 
--(id<KNVRequest>)save:(id<KNVPersistable>)persistable
-         writePolicty:(KNVWritePolicy)writePolicy
-    completionHandler:(KNVDataStoreHandler(KNV_PERSISTABLE))completionHandler
-{
-    __KNVSaveOperation* operation = [[__KNVSaveOperation alloc] initWithPersistable:persistable
-                                                                        writePolicy:(enum WritePolicy)writePolicy
-                                                                               sync:self.sync
-                                                                              cache:self.cache
-                                                                             client:self.client.client];
-    id<KNVRequest> request = [operation execute:KNV_DISPATCH_ASYNC_MAIN_QUEUE(KNV_PERSISTABLE _Nullable, completionHandler)];
-    return request;
-}
-
--(id<KNVRequest>)findById:(NSString*)objectId
-        completionHandler:(KNVDataStoreHandler(KNV_PERSISTABLE))completionHandler
-{
-    return [self findById:objectId
-               readPolicy:self.readPolicy
-        completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)findById:(NSString*)objectId
-               readPolicy:(KNVReadPolicy)readPolicy
-        completionHandler:(KNVDataStoreHandler(KNV_PERSISTABLE))completionHandler
-{
-    assert(objectId);
-    __KNVGetOperation *operation = [[__KNVGetOperation alloc] initWithId:objectId
-                                                              readPolicy:(enum ReadPolicy)readPolicy
-                                                         persistableType:self.cls
-                                                                   cache:self.cache
-                                                                  client:self.client.client];
-    id<KNVRequest> request = [operation execute:KNV_DISPATCH_ASYNC_MAIN_QUEUE(KNV_PERSISTABLE, completionHandler)];
-    return request;
-}
-
 -(id<KNVRequest>)find:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
 {
     return [self find:nil
@@ -176,100 +141,12 @@ if (self.type != KNVDataStoreTypeSync) { \
     completionHandler:completionHandler];
 }
 
--(id<KNVRequest>)find:(KNVQuery*)query
-           readPolicy:(KNVReadPolicy)readPolicy
-    completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
-{
-    return [self find:query
-             deltaSet:YES
-           readPolicy:readPolicy
-    completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)find:(KNVQuery*)query
-             deltaSet:(BOOL)deltaSet
-    completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
-{
-    return [self find:query
-             deltaSet:deltaSet
-           readPolicy:self.readPolicy
-    completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)find:(KNVQuery*)query
-             deltaSet:(BOOL)deltaSet
-           readPolicy:(KNVReadPolicy)readPolicy
-    completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
-{
-    __KNVFindOperation *operation = [[__KNVFindOperation alloc] initWithQuery:KNV_QUERY(query)
-                                                                     deltaSet:deltaSet
-                                                                   readPolicy:(enum ReadPolicy)readPolicy
-                                                              persistableType:self.cls
-                                                                        cache:self.cache
-                                                                       client:self.client.client];
-    id<KNVRequest> request = [operation execute:KNV_DISPATCH_ASYNC_MAIN_QUEUE(NSArray<KNV_PERSISTABLE>*, completionHandler)];
-    return request;
-}
-
 -(id<KNVRequest>)remove:(KNV_PERSISTABLE)persistable
       completionHandler:(KNVDataStoreHandler(NSUInteger))completionHandler
 {
     return [self remove:persistable
             writePolicy:self.writePolicy
       completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)remove:(KNV_PERSISTABLE)persistable
-            writePolicy:(KNVWritePolicy)writePolicy
-      completionHandler:(KNVDataStoreHandler(NSUInteger))completionHandler
-{
-    NSString* objectId = [__KNVPersistable kinveyObjectId:persistable];
-    if (!objectId) {
-        @throw [__KNVError ObjectIdMissing];
-    }
-    return [self removeById:objectId
-                writePolicy:writePolicy
-          completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)removeById:(NSString*)objectId
-          completionHandler:(KNVDataStoreHandler(NSUInteger))completionHandler
-{
-    KNVQuery* query = [[KNVQuery alloc] initWithFormat:[NSString stringWithFormat:@"%@ == %%@", [__KNVPersistable idKey:self.cls]]
-                                         argumentArray:@[objectId]];
-    return [self removeWithQuery:query
-               completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)removeById:(NSString*)objectId
-                writePolicy:(KNVWritePolicy)writePolicy
-          completionHandler:(KNVDataStoreHandler(NSUInteger))completionHandler
-{
-    KNVQuery* query = [[KNVQuery alloc] initWithFormat:[NSString stringWithFormat:@"%@ == %%@", [__KNVPersistable idKey:self.cls]]
-                                         argumentArray:@[objectId]];
-    return [self removeWithQuery:query
-                     writePolicy:writePolicy
-               completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)removeByIds:(NSArray<NSString*>*)ids
-           completionHandler:(KNVDataStoreHandler(NSUInteger))completionHandler
-{
-    KNVQuery* query = [[KNVQuery alloc] initWithFormat:[NSString stringWithFormat:@"%@ IN %%@", [__KNVPersistable idKey:self.cls]]
-                                         argumentArray:@[ids]];
-    return [self removeWithQuery:query
-               completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)removeByIds:(NSArray<NSString*>*)ids
-                 writePolicy:(KNVWritePolicy)writePolicy
-           completionHandler:(KNVDataStoreHandler(NSUInteger))completionHandler
-{
-    KNVQuery* query = [[KNVQuery alloc] initWithFormat:[NSString stringWithFormat:@"%@ IN %%@", [__KNVPersistable idKey:self.cls]]
-                                         argumentArray:@[ids]];
-    return [self removeWithQuery:query
-                     writePolicy:writePolicy
-               completionHandler:completionHandler];
 }
 
 -(id<KNVRequest>)removeAll:(KNVDataStoreHandler(NSUInteger))completionHandler
@@ -294,109 +171,16 @@ if (self.type != KNVDataStoreTypeSync) { \
                completionHandler:completionHandler];
 }
 
--(id<KNVRequest>)removeWithQuery:(KNVQuery*)query
-                     writePolicy:(KNVWritePolicy)writePolicy
-               completionHandler:(KNVDataStoreHandler(NSUInteger))completionHandler
-{
-    __KNVRemoveOperation *operation = [[__KNVRemoveOperation alloc] initWithQuery:KNV_QUERY(query)
-                                                                      writePolicy:(enum WritePolicy)writePolicy
-                                                                             sync:self.sync
-                                                                  persistableType:self.cls
-                                                                            cache:self.cache
-                                                                           client:self.client.client];
-    id<KNVRequest> request = [operation executeUInt:KNV_DISPATCH_ASYNC_MAIN_QUEUE(NSUInteger, completionHandler)];
-    return request;
-}
-
--(id<KNVRequest>)push:(KNVDataStoreHandler(NSUInteger))completionHandler
-{
-    KNV_CHECK_DATA_STORE_TYPE(NSUInteger, 0)
-    
-    __KNVPushOperation *operation = [[__KNVPushOperation alloc] initWithSync:self.sync
-                                                             persistableType:self.cls
-                                                                       cache:self.cache
-                                                                      client:self.client.client];
-    id<KNVRequest> request = [operation executeUInt:KNV_DISPATCH_ASYNC_MAIN_QUEUE(NSUInteger, completionHandler)];
-    return request;
-}
-
 -(id<KNVRequest>)pull:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>* _Nullable))completionHandler
 {
     return [self pullWithQuery:nil
              completionHandler:completionHandler];
 }
 
--(id<KNVRequest>)pullWithQuery:(KNVQuery*)query
-             completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
-{
-    return [self pullWithQuery:query
-                      deltaSet:YES
-             completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)pullWithQuery:(KNVQuery*)query
-                      deltaSet:(BOOL)deltaSet
-             completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
-{
-    return [self pullWithQuery:query
-                      deltaSet:deltaSet
-                    readPolicy:self.readPolicy
-             completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)pullWithQuery:(KNVQuery*)query
-                    readPolicy:(KNVReadPolicy)readPolicy
-             completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
-{
-    return [self pullWithQuery:query
-                      deltaSet:YES
-                    readPolicy:readPolicy
-             completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)pullWithQuery:(KNVQuery*)query
-                      deltaSet:(BOOL)deltaSet
-                    readPolicy:(KNVReadPolicy)readPolicy
-             completionHandler:(KNVDataStoreHandler(NSArray<KNV_PERSISTABLE>*))completionHandler
-{
-    KNV_CHECK_DATA_STORE_TYPE(NSArray<KNV_PERSISTABLE>*, nil)
-    
-    __KNVFindOperation *operation = [[__KNVFindOperation alloc] initWithQuery:KNV_QUERY(query)
-                                                                     deltaSet:deltaSet
-                                                                   readPolicy:(enum ReadPolicy)readPolicy
-                                                              persistableType:self.cls
-                                                                        cache:self.cache
-                                                                       client:self.client.client];
-    id<KNVRequest> request = [operation execute:KNV_DISPATCH_ASYNC_MAIN_QUEUE(NSArray<KNV_PERSISTABLE>* _Nullable, completionHandler)];
-    return request;
-}
-
 -(id<KNVRequest>)purge:(KNVDataStoreHandler(NSUInteger))completionHandler
 {
     return [self purgeWithQuery:nil
               completionHandler:completionHandler];
-}
-
--(id<KNVRequest>)purgeWithQuery:(KNVQuery*)query
-              completionHandler:(KNVDataStoreHandler(NSUInteger))completionHandler
-{
-    KNV_CHECK_DATA_STORE_TYPE(NSUInteger, 0)
-    
-    __KNVPurgeOperation *operation = [[__KNVPurgeOperation alloc] initWithSync:self.sync
-                                                               persistableType:self.cls
-                                                                         cache:self.cache
-                                                                        client:self.client.client];
-    id<KNVRequest> request = [operation executeUInt:^(NSUInteger count, NSError * _Nullable error) {
-        if (!error) {
-            [self pullWithQuery:KNV_QUERY(query)
-              completionHandler:^(NSArray * _Nullable array, NSError * _Nullable error) {
-                if (completionHandler) completionHandler(count, error);
-            }];
-        } else {
-            if (completionHandler) completionHandler(count, error);
-        }
-    }];
-    return request;
 }
 
 -(id<KNVRequest>)sync:(KNVDataStoreHandler2(NSUInteger, NSArray<KNV_PERSISTABLE>*))completionHandler

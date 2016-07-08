@@ -22,18 +22,6 @@ public protocol JsonObject {
 
 }
 
-/// Protocol used to serialize and deserialize JSON objects into objects.
-@objc(KNVObject)
-public protocol Object {
-    
-    /// Deserialize JSON object into object.
-    init?(json: JsonDictionary)
-    
-    /// Serialize object to JSON.
-    func toJson() -> JsonDictionary
-    
-}
-
 extension JsonObject {
     
     subscript(key: String) -> AnyObject? {

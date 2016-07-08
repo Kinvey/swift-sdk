@@ -7,10 +7,11 @@
 //
 
 import Foundation
+import Realm
+import RealmSwift
 
 /// This class represents the metadata information for a record
-@objc(KNVMetadata)
-public class Metadata: NSObject {
+public class Metadata: Object, Mappable {
     
     /// Last Modification Time Key.
     public static let LmtKey = "lmt"
@@ -18,50 +19,88 @@ public class Metadata: NSObject {
     /// Entity Creation Time Key.
     public static let EctKey = "ect"
     
+    /// Last Read Time Key.
+    internal static let LrtKey = "lrt"
+    
     /// Authentication Token Key.
     public static let AuthTokenKey = "authtoken"
     
-    private let lmtString: String?
-    private let ectString: String?
+    internal dynamic var lmt: String?
+    internal dynamic var ect: String?
+    internal dynamic var lrt: NSDate = NSDate()
+    
+    /// Last Read Time
+    public var lastReadTime: NSDate {
+        get {
+            return self.lrt
+        }
+        set {
+            lrt = newValue
+        }
+    }
     
     /// Last Modification Time.
-    public lazy var lmt: NSDate? = self.lmtString?.toDate()
+    public var lastModifiedTime: NSDate? {
+        get {
+            return self.lmt?.toDate()
+        }
+        set {
+            lmt = newValue?.toString()
+        }
+    }
     
     /// Entity Creation Time.
-    public lazy var ect: NSDate? = self.ectString?.toDate()
+    public var entityCreationTime: NSDate? {
+        get {
+            return self.ect?.toDate()
+        }
+        set {
+            ect = newValue?.toString()
+        }
+    }
     
     /// Authentication Token.
     public internal(set) var authtoken: String?
     
-    /// Default Constructor
-    public init(lmt: String? = nil, ect: String? = nil, authtoken: String? = nil) {
-        self.lmtString = lmt
-        self.ectString = ect
-        self.authtoken = authtoken
+    /// Constructor that validates if the map can be build a new instance of Metadata.
+    public required init?(_ map: Map) {
+        super.init()
     }
     
-    /// Constructor used to build a new `Metadata` instance from a JSON object.
-    public convenience init(json: JsonDictionary) {
-        self.init(
-            lmt: json[Metadata.LmtKey] as? String,
-            ect: json[Metadata.EctKey] as? String,
-            authtoken: json[Metadata.AuthTokenKey] as? String
-        )
+    /// Default Constructor.
+    public required init() {
+        super.init()
     }
     
-    /// The JSON representation for the `Metadata` instance.
-    public func toJson() -> [String : AnyObject] {
-        var json: [String : AnyObject] = [:]
-        if let lmtString = lmtString {
-            json[Metadata.LmtKey] = lmtString
-        }
-        if let ectString = ectString {
-            json[Metadata.EctKey] = ectString
-        }
-        if let authtoken = authtoken {
-            json[Metadata.AuthTokenKey] = authtoken
-        }
-        return json
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
+    public required init(value: AnyObject, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+    
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    public func mapping(map: Map) {
+        lmt <- map[Metadata.LmtKey]
+        ect <- map[Metadata.EctKey]
+        authtoken <- map[Metadata.AuthTokenKey]
+    }
+    
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
+    public override class func ignoredProperties() -> [String] {
+        return ["lastModifiedTime", "entityCreationTime", "lastReadTime"]
     }
 
 }

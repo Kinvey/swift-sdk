@@ -8,73 +8,68 @@
 
 import Foundation
 
-@objc
-class MemoryCache: NSObject, Cache {
+class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
     
-    var persistenceId: String = ""
-    var collectionName: String = ""
-    var ttl: NSTimeInterval = 0
-    let type: Persistable.Type
+    var memory = [String : T]()
     
-    var memory = [String : JsonDictionary]()
-    
-    init(type: Persistable.Type) {
-        self.type = type
+    init() {
+        super.init(persistenceId: "")
     }
     
-    func saveEntity(entity: JsonDictionary) {
-        let objId = entity[type.idKey] as! String
+    override func saveEntity(entity: T) {
+        let objId = entity.entityId!
         memory[objId] = entity
     }
     
-    func saveEntities(entities: [JsonDictionary]) {
+    override func saveEntities(entities: [T]) {
         for entity in entities {
             saveEntity(entity)
         }
     }
     
-    func findEntity(objectId: String) -> JsonDictionary? {
+    override func findEntity(objectId: String) -> T? {
         return memory[objectId]
     }
     
-    func findEntityByQuery(query: Query) -> [JsonDictionary] {
+    override func findEntityByQuery(query: Query) -> [T] {
         guard let predicate = query.predicate else {
-            return memory.values.map({ (json) -> JsonDictionary in
+            return memory.values.map({ (json) -> Type in
                 return json
             })
         }
         return memory.filter({ (key, obj) -> Bool in
             return predicate.evaluateWithObject(obj)
-        }).map({ (key, obj) -> JsonDictionary in
+        }).map({ (key, obj) -> Type in
             return obj
         })
     }
     
-    func findIdsLmtsByQuery(query: Query) -> [String : String] {
-        return findEntityByQuery(query).map { (entity) -> (String, NSDate) in
-            let kmd = entity[type.kmdKey ?? PersistableMetadataKey] as! JsonDictionary
-            return (entity[type.idKey] as! String, kmd[Metadata.LmtKey] as! NSDate)
-            }.reduce([String : String](), combine: { (items, pair) in
-                var items = items
-                items[pair.0] = pair.1.toString()
-                return items
-            })
+    override func findIdsLmtsByQuery(query: Query) -> [String : String] {
+        var results = [String : String]()
+        let array = findEntityByQuery(query).map { (entity) -> (String, String) in
+            let kmd = entity.metadata!
+            return (entity.entityId!, kmd.lmt!)
+        }
+        for item in array {
+            results[item.0] = item.1
+        }
+        return results
     }
     
-    func findAll() -> [JsonDictionary] {
+    override func findAll() -> [T] {
         return findEntityByQuery(Query())
     }
     
-    func count() -> UInt {
+    override func count() -> UInt {
         return UInt(memory.count)
     }
     
-    func removeEntity(entity: JsonDictionary) -> Bool {
-        let objId = entity[type.idKey] as! String
+    override func removeEntity(entity: T) -> Bool {
+        let objId = entity.entityId!
         return memory.removeValueForKey(objId) != nil
     }
     
-    func removeEntitiesByQuery(query: Query) -> UInt {
+    override func removeEntitiesByQuery(query: Query) -> UInt {
         let objs = findEntityByQuery(query)
         for obj in objs {
             removeEntity(obj)
@@ -82,7 +77,7 @@ class MemoryCache: NSObject, Cache {
         return UInt(objs.count)
     }
     
-    func removeAllEntities() {
+    override func removeAllEntities() {
         memory.removeAll()
     }
     

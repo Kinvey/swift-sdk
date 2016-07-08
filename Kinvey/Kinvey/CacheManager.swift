@@ -8,27 +8,38 @@
 
 import Foundation
 import Realm
+import RealmSwift
 
-@objc(__KNVCacheManager)
 internal class CacheManager: NSObject {
     
     private let persistenceId: String
     private let encryptionKey: NSData?
+    private let schemaVersion: UInt64
     
-    init(persistenceId: String, encryptionKey: NSData? = nil, schemaVersion: CUnsignedLongLong = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+    init(persistenceId: String, encryptionKey: NSData? = nil, schemaVersion: UInt64 = 0, migrationHandler: Migration.MigrationHandler? = nil) {
         self.persistenceId = persistenceId
         self.encryptionKey = encryptionKey
-        let realmConfiguration = KCSRealmEntityPersistence.configurationForPersistenceId(persistenceId, filePath: nil, encryptionKey: encryptionKey)
+        self.schemaVersion = schemaVersion
+        
+        var realmConfiguration = Realm.Configuration()
+        if let encryptionKey = encryptionKey {
+            realmConfiguration.encryptionKey = encryptionKey
+        }
         realmConfiguration.schemaVersion = schemaVersion
         realmConfiguration.migrationBlock = { migration, oldSchemaVersion in
             let migration = Migration(realmMigration: migration)
             migrationHandler?(migration: migration, schemaVersion: oldSchemaVersion)
         }
-        let _ = try! RLMRealm(configuration: realmConfiguration)
+        do {
+            _ = try Realm(configuration: realmConfiguration)
+        } catch {
+            realmConfiguration.deleteRealmIfMigrationNeeded = true
+            _ = try! Realm(configuration: realmConfiguration)
+        }
     }
     
-    func cache(collectionName: String? = nil, filePath: String? = nil) -> Cache {
-        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName, filePath: filePath, encryptionKey: encryptionKey) as! Cache
+    func cache<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Cache<T>? {
+        return RealmCache<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
     func clearAll(tag: String? = nil) {
@@ -46,14 +57,14 @@ internal class CacheManager: NSObject {
                     return path.hasSuffix(".realm") && (tag == nil || path.caseInsensitiveCompare(tag! + ".realm") == .OrderedSame)
                 })
                 for realmFile in array {
-                    let realmConfiguration = RLMRealmConfiguration.defaultConfiguration()
+                    var realmConfiguration = Realm.Configuration.defaultConfiguration
                     realmConfiguration.fileURL = NSURL(fileURLWithPath: (basePath as NSString).stringByAppendingPathComponent(realmFile))
                     if let encryptionKey = encryptionKey {
                         realmConfiguration.encryptionKey = encryptionKey
                     }
-                    if let realm = try? RLMRealm(configuration: realmConfiguration) where !realm.isEmpty {
-                        try! realm.transactionWithBlock {
-                            realm.deleteAllObjects()
+                    if let realm = try? Realm(configuration: realmConfiguration) where !realm.isEmpty {
+                        try! realm.write {
+                            realm.deleteAll()
                         }
                     }
                 }

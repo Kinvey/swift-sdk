@@ -8,32 +8,22 @@
 
 @testable import Kinvey
 
-class Person: NSObject, Persistable {
+class Person: Entity {
     
     dynamic var personId: String?
     dynamic var name: String?
     dynamic var age: Int = 0
-    dynamic var acl: Acl? = nil
     
-    override init() {
-    }
-    
-    init(personId: String? = nil, name: String) {
-        self.personId = personId
-        self.name = name
-    }
-    
-    static func kinveyCollectionName() -> String {
+    override class func collectionName() -> String {
         return "Person"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "personId" : Kinvey.PersistableIdKey,
-            "acl" : Kinvey.PersistableAclKey,
-            "name" : "name",
-            "age" : "age"
-        ]
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
+        
+        personId <- ("personId", map[PersistableIdKey])
+        name <- map["name"]
+        age <- map["age"]
     }
     
 }
