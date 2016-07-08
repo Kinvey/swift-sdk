@@ -81,7 +81,14 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
     }
 
-    /// Factory method that returns a `DataStore`.
+    /**
+     Factory method that returns a `DataStore`.
+     - parameter type: defines the data store type which will define the behavior of the `DataStore`. Default value: `Cache`
+     - parameter deltaSet: Enables delta set cache which will increase performance and reduce data consumption. Default value: `false`
+     - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
+     - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
+     */
     public class func getInstance(type: DataStoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
@@ -122,7 +129,13 @@ public class DataStore<T: Persistable where T: NSObject> {
         writePolicy = type.writePolicy
     }
     
-    /// Gets a single record using the `_id` of the record.
+    /**
+     Gets a single record using the `_id` of the record.
+     - parameter id: The `_id` value of the entity to be find
+     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter completionHandler: Completion handler to be called once the respose returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     public func findById(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         precondition(!id.isEmpty)
         let readPolicy = readPolicy ?? self.readPolicy
@@ -131,12 +144,27 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
-    /// Gets a single record using the `_id` of the record.
+    /**
+     Gets a single record using the `_id` of the record.
+     
+     PS: This method is just a shortcut for `findById()`
+     - parameter id: The `_id` value of the entity to be find
+     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter completionHandler: Completion handler to be called once the respose returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     public func find(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         return findById(id, readPolicy: readPolicy, completionHandler: completionHandler)
     }
     
-    /// Gets a list of records that matches with the query passed by parameter.
+    /**
+     Gets a list of records that matches with the query passed by parameter.
+     - parameter query: The query used to filter the results
+     - parameter deltaSet: Enforces delta set cache otherwise use the client's `deltaSet` value. Default value: `false`
+     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter completionHandler: Completion handler to be called once the respose returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
     public func find(query: Query = Query(), deltaSet: Bool? = nil, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let deltaSet = deltaSet ?? self.deltaSet
