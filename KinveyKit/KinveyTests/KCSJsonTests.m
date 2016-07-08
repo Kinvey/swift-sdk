@@ -8,6 +8,8 @@
 
 #import <XCTest/XCTest.h>
 #import "NSDictionary+KinveyAdditions.h"
+#import "KCSObjectMapper.h"
+#import "Event.h"
 
 @interface KCSJsonTests : XCTestCase
 
@@ -49,6 +51,55 @@
     XCTAssertEqualObjects(NSStringFromClass([json class]), @"__NSCFDictionary");
     NSString* jsonString = [json kcsJSONStringRepresentation:nil];
     XCTAssertNotNil(jsonString);
+}
+
+- (void)testDateToJson
+{
+    NSDictionary* jsonObject = @{
+        @"date" : [NSDate dateWithTimeIntervalSince1970:1451703845.006]
+    };
+    NSError* error = nil;
+    NSString* json = [jsonObject kcsJSONStringRepresentation:&error];
+    
+    XCTAssertNil(error);
+    XCTAssertNotNil(json);
+    XCTAssertEqualObjects(json, @"{\"date\":\"ISODate(\\\"2016-01-02T03:04:05.006Z\\\")\"}");
+}
+
+- (void)testDateMillisecondsFromJson
+{
+    NSString* json = @"{\"date\":\"ISODate(\\\"2016-01-02T03:04:05.006Z\\\")\"}";
+    NSData* data = [json dataUsingEncoding:NSUTF8StringEncoding];
+    NSError* error = nil;
+    NSDictionary* jsonObject = [NSDictionary transformValue:[NSJSONSerialization JSONObjectWithData:data
+                                                                                            options:0
+                                                                                              error:&error]];
+    XCTAssertNil(error);
+    XCTAssertNotNil(jsonObject);
+    NSDictionary* expected = @{ @"date" : [NSDate dateWithTimeIntervalSince1970:1451703845.006] };
+    Event* event = [KCSObjectMapper makeObjectOfType:[Event class]
+                                            withData:jsonObject
+                              withResourceDictionary:[NSMutableDictionary dictionary]
+                                              object:nil];
+    XCTAssertEqualObjects(event.date, expected[@"date"]);
+}
+
+- (void)testDateFromJson
+{
+    NSString* json = @"{\"date\":\"ISODate(\\\"2016-01-02T03:04:05Z\\\")\"}";
+    NSData* data = [json dataUsingEncoding:NSUTF8StringEncoding];
+    NSError* error = nil;
+    NSDictionary* jsonObject = [NSDictionary transformValue:[NSJSONSerialization JSONObjectWithData:data
+                                                                                            options:0
+                                                                                              error:&error]];
+    XCTAssertNil(error);
+    XCTAssertNotNil(jsonObject);
+    NSDictionary* expected = @{ @"date" : [NSDate dateWithTimeIntervalSince1970:1451703845] };
+    Event* event = [KCSObjectMapper makeObjectOfType:[Event class]
+                                            withData:jsonObject
+                              withResourceDictionary:[NSMutableDictionary dictionary]
+                                              object:nil];
+    XCTAssertEqualObjects(event.date, expected[@"date"]);
 }
 
 @end
