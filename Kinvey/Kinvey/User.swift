@@ -11,7 +11,7 @@ import PromiseKit
 
 /// Class that represents an `User`.
 @objc(__KNVUser)
-public class User: NSObject, Credential {
+public class User: NSObject, Credential, Mappable {
     
     /// Username Key.
     public static let PersistableUsernameKey = "username"
@@ -35,7 +35,7 @@ public class User: NSObject, Credential {
     /// `email` property of the user.
     public var email: String?
     
-    internal let client: Client
+    internal var client: Client
     
     /// Creates a new `User` taking (optionally) a username and password. If no `username` or `password` was provided, random values will be generated automatically.
     public class func signup(username username: String? = nil, password: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
@@ -233,62 +233,29 @@ public class User: NSObject, Credential {
         self.client = client
     }
     
-    /// Constructor used to build a new `User` instance from a JSON object.
-    public required init?(json: JsonDictionary, client: Client = Kinvey.sharedClient) {
-        if let userId = json[PersistableIdKey] as? String {
-            self.userId = userId
-        } else {
+    /// Constructor that validates if the map contains at least the `userId`.
+    public required convenience init?(_ map: Map) {
+        var userId: String?
+        var acl: Acl?
+        var metadata: Metadata?
+        
+        userId <- map[PersistableIdKey]
+        guard let userIdValue = userId else {
             return nil
         }
         
-        if let username = json["username"] as? String {
-            self.username = username
-        }
-        
-        if let email = json["email"] as? String {
-            self.email = email
-        }
-        
-        if let acl = json[PersistableAclKey] as? [String : String] {
-            self.acl = Acl(json: acl)
-        } else {
-            self.acl = nil
-        }
-        
-        if let kmd = json[PersistableMetadataKey] as? [String : AnyObject] {
-            metadata = Metadata(json: kmd)
-        } else {
-            metadata = nil
-        }
-        
-        self.client = client
-        
-        super.init()
+        acl <- map[PersistableAclKey]
+        metadata <- map[PersistableMetadataKey]
+        self.init(userId: userIdValue, acl: acl, metadata: metadata)
     }
     
-    /// The JSON representation for the `User` instance.
-    public func toJson() -> [String : AnyObject] {
-        var json: [String : AnyObject] = [:]
-        
-        json[Kinvey.PersistableIdKey] = userId
-        
-        if let acl = acl {
-            json[Kinvey.PersistableAclKey] = acl.toJson()
-        }
-        
-        if let metadata = metadata {
-            json[Kinvey.PersistableMetadataKey] = metadata.toJson()
-        }
-        
-        if let username = username {
-            json["username"] = username
-        }
-        
-        if let email = email {
-            json["email"] = email
-        }
-        
-        return json
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    public func mapping(map: Map) {
+        userId <- map[PersistableIdKey]
+        acl <- map[PersistableAclKey]
+        metadata <- map[PersistableMetadataKey]
+        username <- map["username"]
+        email <- map["email"]
     }
     
     /// Sign out the current active user.
@@ -343,7 +310,7 @@ public class User: NSObject, Credential {
             if let kcsUser = kcsUser {
                 let authString = kcsUser.authString
                 let authtoken = authString.hasPrefix(authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(authtokenPrefix.characters.count)) : authString
-                user = User(userId: kcsUser.userId, metadata: Metadata(authtoken: authtoken), client: client)
+                user = User(userId: kcsUser.userId, metadata: Metadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
                 user?.username = kcsUser.username
                 user?.email = kcsUser.email
                 client.activeUser = user

@@ -67,6 +67,7 @@ enum HttpHeader {
     
     case Authorization(credential: Credential?)
     case APIVersion(version: Int)
+    case RequestId(requestId: String)
     
     var name: String {
         get {
@@ -75,6 +76,8 @@ enum HttpHeader {
                 return "Authorization"
             case .APIVersion:
                 return "X-Kinvey-API-Version"
+            case .RequestId:
+                return RequestIdHeaderKey
             }
         }
     }
@@ -86,6 +89,8 @@ enum HttpHeader {
                 return credential?.authorizationHeader
             case .APIVersion(let version):
                 return String(version)
+            case .RequestId(let requestId):
+                return requestId
             }
         }
     }
@@ -161,7 +166,7 @@ internal class HttpRequest: NSObject, Request {
     
     let httpMethod: HttpMethod
     let endpoint: Endpoint
-    let defaultHeaders = [
+    let defaultHeaders: [HttpHeader] = [
         HttpHeader.APIVersion(version: restApiVersion)
     ]
     
@@ -199,6 +204,7 @@ internal class HttpRequest: NSObject, Request {
         if let timeout = timeout {
             self.request.timeoutInterval = timeout
         }
+        self.request.setValue(NSUUID().UUIDString, forHTTPHeaderField: RequestIdHeaderKey)
     }
     
     init(httpMethod: HttpMethod = .Get, endpoint: Endpoint, credential: Credential? = nil, timeout: NSTimeInterval? = nil, client: Client = sharedClient) {
@@ -213,6 +219,7 @@ internal class HttpRequest: NSObject, Request {
         if let timeout = timeout {
             request.timeoutInterval = timeout
         }
+        self.request.setValue(NSUUID().UUIDString, forHTTPHeaderField: RequestIdHeaderKey)
     }
     
     func prepareRequest() {
@@ -280,18 +287,18 @@ extension Query {
         switch expression.expressionType {
         case .KeyPathExpressionType:
             var keyPath = expression.keyPath
+            var persistableType = self.persistableType
             if keyPath.containsString(".") {
                 var keyPaths = [String]()
-                var persistableType = self.persistableType
                 for item in keyPath.componentsSeparatedByString(".") {
-                    keyPaths.append(persistableType?.kinveyPropertyMapping()[item] ?? item)
+                    keyPaths.append(persistableType?.propertyMapping(item) ?? item)
                     if let persistableTypeTmp = persistableType {
-                        persistableType = ObjCRuntime.typeForPropertyName(persistableTypeTmp, propertyName: item) as? Persistable.Type
+                        persistableType = ObjCRuntime.typeForPropertyName(persistableTypeTmp as! AnyClass, propertyName: item) as? Persistable.Type
                     }
                 }
                 keyPath = keyPaths.joinWithSeparator(".")
-            } else {
-                keyPath = persistableType?.kinveyPropertyMapping()[keyPath] ?? expression.keyPath
+            } else if let translatedKeyPath = persistableType?.propertyMapping(keyPath) {
+                keyPath = translatedKeyPath
             }
             return NSExpression(forKeyPath: keyPath)
         default:
@@ -373,11 +380,23 @@ extension Endpoint {
             }
             let queryStr = query.urlQueryStringEncoded()
             let urlQuery = "?query=\(queryStr)"
+            
+            var sortStr = ""
+            if let sortDescriptors = query.sortDescriptors {
+                var sorts = [String : Int]()
+                for sortDescriptor in sortDescriptors {
+                    sorts[sortDescriptor.key!] = sortDescriptor.ascending ? 1 : -1
+                }
+                let data = try! NSJSONSerialization.dataWithJSONObject(sorts, options: [])
+                sortStr = "&sort=\(String(data: data, encoding: NSUTF8StringEncoding)!.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!)"
+            }
+            
             var fieldsStr = ""
             if let fields = fields {
                 fieldsStr = "&fields=\(fields.joinWithSeparator(",").stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!)"
             }
-            return NSURL(string: url + urlQuery + fieldsStr)!
+            
+            return NSURL(string: url + urlQuery + sortStr + fieldsStr)!
         case .PushRegisterDevice(let client):
             return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")
         case .PushUnRegisterDevice(let client):

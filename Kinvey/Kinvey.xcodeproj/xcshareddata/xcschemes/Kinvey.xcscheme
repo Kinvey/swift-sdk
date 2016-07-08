@@ -40,12 +40,6 @@
             </BuildableReference>
             <SkippedTests>
                <Test
-                  Identifier = "DeltaSetCacheTestCase/testPerformance_1_9()">
-               </Test>
-               <Test
-                  Identifier = "DeltaSetCacheTestCase/testPerformance_9_1()">
-               </Test>
-               <Test
                   Identifier = "PerformanceTestCase">
                </Test>
             </SkippedTests>
@@ -67,6 +61,16 @@
                BlueprintIdentifier = "57D643161CA3268600F6D16E"
                BuildableName = "KinveyTests Migration Database Step 2.xctest"
                BlueprintName = "KinveyTests Migration Database Step 2"
+               ReferencedContainer = "container:Kinvey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5793B86C1D2306A60088B5F9"
+               BuildableName = "KinveyTests Encrypted.xctest"
+               BlueprintName = "KinveyTests Encrypted"
                ReferencedContainer = "container:Kinvey.xcodeproj">
             </BuildableReference>
          </TestableReference>

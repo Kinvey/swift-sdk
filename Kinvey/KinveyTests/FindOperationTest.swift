@@ -26,7 +26,7 @@ class FindOperationTest: StoreTestCase {
         let person = self.person
         
         weak var expectationSave = expectationWithDescription("Save")
-        
+
         store.save(person, writePolicy: .ForceLocal) { (person, error) -> Void in
             XCTAssertNotNil(person)
             XCTAssertNil(error)

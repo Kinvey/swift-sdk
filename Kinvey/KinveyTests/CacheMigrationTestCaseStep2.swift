@@ -8,14 +8,33 @@
 
 import XCTest
 import ObjectiveC
+import RealmSwift
 @testable import Kinvey
+
+class Person: Entity {
+    
+    dynamic var personId: String?
+    dynamic var fullName: String?
+    
+    override class func collectionName() -> String {
+        return "CacheMigrationTestCase_Person"
+    }
+    
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
+        
+        personId <- map[PersistableIdKey]
+        fullName <- map["fullName"]
+    }
+    
+}
 
 class CacheMigrationTestCaseStep2: XCTestCase {
     
     let defaultTimeout = KinveyTestCase.defaultTimeout
     
     override func tearDown() {
-        let realmConfiguration = RLMRealmConfiguration.defaultConfiguration()
+        let realmConfiguration = Realm.Configuration.defaultConfiguration
         if let fileURL = realmConfiguration.fileURL, var path = fileURL.path {
             var pathComponents = (path as NSString).pathComponents
             pathComponents[pathComponents.count - 1] = "com.kinvey.appKey_cache.realm"
@@ -33,25 +52,6 @@ class CacheMigrationTestCaseStep2: XCTestCase {
     }
     
     func testMigration() {
-        @objc(CacheMigrationTestCase_Person)
-        class Person: NSObject, Persistable {
-            
-            dynamic var personId: String?
-            dynamic var fullName: String?
-            
-            @objc static func kinveyCollectionName() -> String {
-                return "CacheMigrationTestCase_Person"
-            }
-            
-            @objc static func kinveyPropertyMapping() -> [String : String] {
-                return [
-                    "personId" : PersistableIdKey,
-                    "fullName" : "fullName"
-                ]
-            }
-            
-        }
-        
         var migrationCalled = false
         var migrationPersonCalled = false
         

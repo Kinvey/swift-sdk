@@ -8,14 +8,14 @@
 
 import Foundation
 
-class RemoveOperation: WriteOperation {
+class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?> {
     
     let query: Query
     lazy var request: HttpRequest = self.buildRequest()
     
-    init(query: Query, writePolicy: WritePolicy, sync: Sync? = nil, persistableType: Persistable.Type, cache: Cache? = nil, client: Client) {
+    init(query: Query, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
         self.query = query
-        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistableType, cache: cache, client: client)
+        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
     func buildRequest() -> HttpRequest {
@@ -25,18 +25,24 @@ class RemoveOperation: WriteOperation {
     override func executeLocal(completionHandler: CompletionHandler? = nil) -> Request {
         let request = LocalRequest()
         request.execute { () -> Void in
-            let objects = self.cache?.findEntityByQuery(self.query)
-            let count = self.cache?.removeEntitiesByQuery(self.query)
-            let idKey = self.persistableType.idKey
-            if let objects = objects {
-                for object in objects {
-                    if let objectId = object[idKey] as? String, let sync = self.sync {
-                        if objectId.hasPrefix(ObjectIdTmpPrefix) {
-                            sync.removeAllPendingOperations(objectId)
-                        } else {
-                            sync.savePendingOperation(sync.createPendingOperation(self.request.request, objectId: objectId))
+            var count: UInt?
+            if let cache = self.cache {
+                let realmObjects = cache.findEntityByQuery(self.query)
+                count = UInt(realmObjects.count)
+                let detachedObjects = cache.detach(realmObjects)
+                if cache.removeEntities(realmObjects) {
+                    let idKey = T.entityIdProperty()
+                    for object in detachedObjects {
+                        if let objectId = object[idKey] as? String, let sync = self.sync {
+                            if objectId.hasPrefix(ObjectIdTmpPrefix) {
+                                sync.removeAllPendingOperations(objectId)
+                            } else {
+                                sync.savePendingOperation(sync.createPendingOperation(self.request.request, objectId: objectId))
+                            }
                         }
                     }
+                } else {
+                    count = 0
                 }
             }
             completionHandler?(count, nil)

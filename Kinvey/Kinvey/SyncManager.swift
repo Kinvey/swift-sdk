@@ -19,8 +19,8 @@ internal class SyncManager: NSObject {
         self.encryptionKey = encryptionKey
     }
     
-    func sync(collectionName: String, filePath: String? = nil) -> Sync {
-        return KCSRealmEntityPersistence(persistenceId: persistenceId, collectionName: collectionName, filePath: filePath, encryptionKey: encryptionKey) as! Sync
+    func sync<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Sync<T> {
+        return RealmSync<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey)
     }
     
 }

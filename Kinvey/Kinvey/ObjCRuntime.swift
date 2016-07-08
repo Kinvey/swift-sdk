@@ -47,60 +47,55 @@ internal class ObjCRuntime: NSObject {
     
     internal class func typeForPropertyName(cls: AnyClass, propertyName: String) -> AnyClass? {
         let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
-        var propertyCount = UInt32(0)
-        let properties = class_copyPropertyList(cls, &propertyCount)
-        defer { free(properties) }
-        for i in UInt32(0) ..< propertyCount {
-            let property = properties[Int(i)]
-            if let propertyNameTmp = String.fromCString(property_getName(property)) where propertyNameTmp == propertyName
-            {
-                var attributeCount = UInt32(0)
-                let attributes = property_copyAttributeList(property, &attributeCount)
-                defer { free(attributes) }
-                for x in UInt32(0) ..< attributeCount {
-                    let attribute = attributes[Int(x)]
-                    if let attributeName = String.fromCString(attribute.name) where attributeName == "T",
-                        let attributeValue = String.fromCString(attribute.value),
-                        let textCheckingResult = regexClassName.matchesInString(attributeValue, options: [], range: NSMakeRange(0, attributeValue.characters.count)).first
-                    {
-                        let attributeValueNSString = attributeValue as NSString
-                        let propertyTypeName = attributeValueNSString.substringWithRange(textCheckingResult.rangeAtIndex(1))
-                        if let propertyTypeNameClass = NSClassFromString(propertyTypeName) {
-                            return propertyTypeNameClass
-                        }
-                    }
-                }
-            }
+        
+        let property = class_getProperty(cls, propertyName)
+        let attributeValueCString = property_copyAttributeValue(property, "T")
+        defer { free(attributeValueCString) }
+        if let attributeValue = String.fromCString(attributeValueCString),
+            let textCheckingResult = regexClassName.matchesInString(attributeValue, options: [], range: NSMakeRange(0, attributeValue.characters.count)).first
+        {
+            let attributeValueNSString = attributeValue as NSString
+            let propertyTypeName = attributeValueNSString.substringWithRange(textCheckingResult.rangeAtIndex(1))
+            return NSClassFromString(propertyTypeName)
         }
         return nil
     }
     
     internal class func properties(cls: AnyClass) -> [String : AnyClass] {
         let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
-        var propertyCount = UInt32(0)
-        let properties = class_copyPropertyList(cls, &propertyCount)
-        defer { free(properties) }
+        var cls: AnyClass? = cls
         var results = [String : AnyClass]()
-        for i in UInt32(0) ..< propertyCount {
-            let property = properties[Int(i)]
-            if let propertyName = String.fromCString(property_getName(property))
-            {
-                var attributeCount = UInt32(0)
-                let attributes = property_copyAttributeList(property, &attributeCount)
-                defer { free(attributes) }
-                for x in UInt32(0) ..< attributeCount {
-                    let attribute = attributes[Int(x)]
-                    if let attributeName = String.fromCString(attribute.name) where attributeName == "T",
-                        let attributeValue = String.fromCString(attribute.value),
-                        let textCheckingResult = regexClassName.matchesInString(attributeValue, options: [], range: NSMakeRange(0, attributeValue.characters.count)).first
-                    {
-                        let attributeValueNSString = attributeValue as NSString
-                        let propertyTypeName = attributeValueNSString.substringWithRange(textCheckingResult.rangeAtIndex(1))
-                        if let propertyTypeNameClass = NSClassFromString(propertyTypeName) {
-                            results[propertyName] = propertyTypeNameClass
+        while cls != nil {
+            var propertyCount = UInt32(0)
+            let properties = class_copyPropertyList(cls, &propertyCount)
+            defer { free(properties) }
+            for i in UInt32(0) ..< propertyCount {
+                let property = properties[Int(i)]
+                if let propertyName = String.fromCString(property_getName(property))
+                {
+                    var attributeCount = UInt32(0)
+                    let attributes = property_copyAttributeList(property, &attributeCount)
+                    defer { free(attributes) }
+                    for x in UInt32(0) ..< attributeCount {
+                        let attribute = attributes[Int(x)]
+                        if let attributeName = String.fromCString(attribute.name) where attributeName == "T",
+                            let attributeValue = String.fromCString(attribute.value),
+                            let textCheckingResult = regexClassName.matchesInString(attributeValue, options: [], range: NSMakeRange(0, attributeValue.characters.count)).first
+                        {
+                            let attributeValueNSString = attributeValue as NSString
+                            let propertyTypeName = attributeValueNSString.substringWithRange(textCheckingResult.rangeAtIndex(1))
+                            if let propertyTypeNameClass = NSClassFromString(propertyTypeName) {
+                                results[propertyName] = propertyTypeNameClass
+                                break
+                            }
                         }
                     }
                 }
+            }
+            if cls == Entity.self {
+                cls = nil
+            } else {
+                cls = class_getSuperclass(cls)
             }
         }
         return results
@@ -108,15 +103,72 @@ internal class ObjCRuntime: NSObject {
     
     internal class func propertyNames(cls: AnyClass) -> [String] {
         let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
-        var propertyCount = UInt32(0)
-        let properties = class_copyPropertyList(cls, &propertyCount)
-        defer { free(properties) }
+        var cls: AnyClass? = cls
         var results = [String]()
-        for i in UInt32(0) ..< propertyCount {
-            let property = properties[Int(i)]
-            if let propertyName = String.fromCString(property_getName(property))
-            {
-                results.append(propertyName)
+        while cls != nil {
+            var propertyCount = UInt32(0)
+            let properties = class_copyPropertyList(cls, &propertyCount)
+            defer { free(properties) }
+            for i in UInt32(0) ..< propertyCount {
+                let property = properties[Int(i)]
+                if let propertyName = String.fromCString(property_getName(property))
+                {
+                    results.append(propertyName)
+                }
+            }
+            if cls == Entity.self {
+                cls = nil
+            } else {
+                cls = class_getSuperclass(cls)
+            }
+        }
+        return results
+    }
+    
+    internal class func propertyDefaultValues(cls: AnyClass) -> [String : AnyObject] {
+        let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])
+        var cls: AnyClass? = cls
+        var results = [String : AnyObject]()
+        while cls != nil {
+            var propertyCount = UInt32(0)
+            let properties = class_copyPropertyList(cls, &propertyCount)
+            defer { free(properties) }
+            for i in UInt32(0) ..< propertyCount {
+                let property = properties[Int(i)]
+                if let propertyName = String.fromCString(property_getName(property))
+                {
+                    var attributeCount = UInt32(0)
+                    let attributes = property_copyAttributeList(property, &attributeCount)
+                    defer { free(attributes) }
+                    for x in UInt32(0) ..< attributeCount {
+                        let attribute = attributes[Int(x)]
+                        if let attributeName = String.fromCString(attribute.name) where attributeName == "T",
+                            let attributeValue = String.fromCString(attribute.value)
+                        {
+                            if let textCheckingResult = regexClassName.matchesInString(attributeValue, options: [], range: NSMakeRange(0, attributeValue.characters.count)).first {
+                                let attributeValueNSString = attributeValue as NSString
+                                let propertyTypeName = attributeValueNSString.substringWithRange(textCheckingResult.rangeAtIndex(1))
+                                if let propertyTypeNameClass = NSClassFromString(propertyTypeName) {
+                                    results[propertyName] = (propertyTypeNameClass as! NSObject.Type).init()
+                                    break
+                                }
+                            } else if attributeValue.characters.count > 0 {
+                                switch attributeValue.characters.first! {
+                                case "q":
+                                    results[propertyName] = Int(0)
+                                    break
+                                default:
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if cls == Entity.self {
+                cls = nil
+            } else {
+                cls = class_getSuperclass(cls)
             }
         }
         return results

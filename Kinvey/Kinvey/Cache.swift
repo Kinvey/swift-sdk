@@ -8,28 +8,31 @@
 
 import Foundation
 
-@objc(__KNVCache)
-internal protocol Cache {
+internal protocol CacheType {
     
-    var persistenceId: String { get set }
-    var collectionName: String { get set }
-    var ttl: NSTimeInterval { get set }
+    var persistenceId: String { get }
+    var collectionName: String { get }
+    var ttl: NSTimeInterval? { get set }
     
-    func saveEntity(entity: JsonDictionary)
+    associatedtype Type
     
-    func saveEntities(entities: [JsonDictionary])
+    func saveEntity(entity: Type)
     
-    func findEntity(objectId: String) -> JsonDictionary?
+    func saveEntities(entities: [Type])
     
-    func findEntityByQuery(query: Query) -> [JsonDictionary]
+    func findEntity(objectId: String) -> Type?
+    
+    func findEntityByQuery(query: Query) -> [Type]
     
     func findIdsLmtsByQuery(query: Query) -> [String : String]
     
-    func findAll() -> [JsonDictionary]
+    func findAll() -> [Type]
     
     func count() -> UInt
     
-    func removeEntity(entity: JsonDictionary) -> Bool
+    func removeEntity(entity: Type) -> Bool
+    
+    func removeEntities(entity: [Type]) -> Bool
     
     func removeEntitiesByQuery(query: Query) -> UInt
     
@@ -37,10 +40,78 @@ internal protocol Cache {
     
 }
 
-extension Cache {
+extension CacheType {
     
     func isEmpty() -> Bool {
         return count() == 0
+    }
+    
+}
+
+internal class Cache<T: Persistable where T: NSObject>: CacheType {
+    
+    internal typealias Type = T
+    
+    let persistenceId: String
+    let collectionName: String
+    var ttl: NSTimeInterval?
+    
+    init(persistenceId: String, ttl: NSTimeInterval? = nil) {
+        self.persistenceId = persistenceId
+        self.collectionName = T.collectionName()
+        self.ttl = ttl
+    }
+    
+    func detach(entity: T) -> T {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func detach(entity: [T]) -> [T] {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func saveEntity(entity: T) {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func saveEntities(entities: [T]) {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func findEntity(objectId: String) -> T? {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func findEntityByQuery(query: Query) -> [T] {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func findIdsLmtsByQuery(query: Query) -> [String : String] {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func findAll() -> [T] {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func count() -> UInt {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func removeEntity(entity: T) -> Bool {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func removeEntities(entity: [T]) -> Bool {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func removeEntitiesByQuery(query: Query) -> UInt {
+        preconditionFailure("Method \(#function) must be overridden")
+    }
+    
+    func removeAllEntities() {
+        preconditionFailure("Method \(#function) must be overridden")
     }
     
 }

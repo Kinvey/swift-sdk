@@ -8,14 +8,18 @@
 
 import Foundation
 
-@objc(__KNVSaveOperation)
-internal class SaveOperation: WriteOperation {
+internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T, T?> {
     
-    let persistable: Persistable
+    var persistable: T
     
-    init(persistable: Persistable, writePolicy: WritePolicy, sync: Sync? = nil, cache: Cache? = nil, client: Client) {
+    init(inout persistable: T, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
         self.persistable = persistable
-        super.init(writePolicy: writePolicy, sync: sync, persistableType: persistable.dynamicType, cache: cache, client: client)
+        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+    }
+    
+    init(persistable: T, writePolicy: WritePolicy, sync: Sync<T>? = nil, cache: Cache<T>? = nil, client: Client) {
+        self.persistable = persistable
+        super.init(writePolicy: writePolicy, sync: sync, cache: cache, client: client)
     }
     
     override func executeLocal(completionHandler: CompletionHandler?) -> Request {
@@ -23,15 +27,13 @@ internal class SaveOperation: WriteOperation {
         request.execute { () -> Void in
             let request = self.client.networkRequestFactory.buildAppDataSave(self.persistable)
             
-            let persistable = self.fillObject(self.persistable)
+            let persistable = self.fillObject(&self.persistable)
             if let cache = self.cache {
-                var json = persistable._toJson()
-                json = self.fillJson(json)
-                cache.saveEntity(json)
+                cache.saveEntity(persistable)
             }
             
             if let sync = self.sync {
-                sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.kinveyObjectId))
+                sync.savePendingOperation(sync.createPendingOperation(request.request, objectId: persistable.entityId))
             }
             completionHandler?(self.persistable, nil)
         }
@@ -45,16 +47,11 @@ internal class SaveOperation: WriteOperation {
                 if let response = response where response.isResponseOK {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
-                        let persistable = self.persistableType.fromJson(json)
-                        if let cache = self.cache {
-                            var persistableJson = self.merge(persistable, json: json)
-                            if var kmd = persistableJson[PersistableMetadataKey] as? [String : AnyObject] where kmd[PersistableMetadataLastRetrievedTimeKey] == nil {
-                                kmd[PersistableMetadataLastRetrievedTimeKey] = NSDate().toString()
-                                persistableJson[PersistableMetadataKey] = kmd
-                            }
-                            cache.saveEntity(persistableJson)
+                        let persistable = T(JSON: json)
+                        if let persistable = persistable, let cache = self.cache {
+                            cache.saveEntity(persistable)
                         }
-                        self.persistable.merge(persistable)
+                        self.merge(&self.persistable, json: json)
                     }
                     completionHandler?(self.persistable, nil)
                 } else if let error = error {

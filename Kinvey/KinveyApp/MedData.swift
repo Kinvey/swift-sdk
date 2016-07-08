@@ -8,11 +8,8 @@
 
 import Kinvey
 
-class MedData: NSObject, Persistable {
+class MedData: Entity {
     
-    dynamic var id: String?
-    dynamic var acl: Acl?
-    dynamic var kmd: Metadata?
     dynamic var seq: Int = 0
     dynamic var first: String?
     dynamic var last: String?
@@ -24,26 +21,23 @@ class MedData: NSObject, Persistable {
     dynamic var dollar: String?
     dynamic var pick: String?
     
-    static func kinveyCollectionName() -> String {
+    override class func collectionName() -> String {
         return "meddata"
     }
     
-    static func kinveyPropertyMapping() -> [String : String] {
-        return [
-            "id" : Kinvey.PersistableIdKey,
-            "acl" : Kinvey.PersistableAclKey,
-            "kmd" : Kinvey.PersistableMetadataKey,
-            "seq" : "seq",
-            "first" : "first",
-            "last" : "last",
-            "age" : "age",
-            "street" : "street",
-            "city" : "city",
-            "state" : "state",
-            "zip" : "zip",
-            "dollar" : "dollar",
-            "pick" : "pick"
-        ]
+    override func propertyMapping(map: Map) {
+        super.propertyMapping(map)
+        
+        seq <- map["seq"]
+        first <- map["first"]
+        last <- map["last"]
+        age <- map["age"]
+        street <- map["street"]
+        city <- map["city"]
+        state <- map["state"]
+        zip <- map["zip"]
+        dollar <- map["dollar"]
+        pick <- map["pick"]
     }
     
 }

@@ -22,7 +22,7 @@ class DataStoreTypeTag: Hashable {
     
     var hashValue: Int {
         var hash = NSDecimalNumber(integer: 5)
-        hash = 23 * hash + NSDecimalNumber(integer: NSStringFromClass(persistableType).hashValue)
+        hash = 23 * hash + NSDecimalNumber(integer: NSStringFromClass(persistableType as! AnyClass).hashValue)
         hash = 23 * hash + NSDecimalNumber(integer: tag.hashValue)
         hash = 23 * hash + NSDecimalNumber(integer: type.hashValue)
         return hash.hashValue
@@ -67,15 +67,17 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// DataStoreType defines how the DataStore will behave.
     public let type: DataStoreType
     
-    private let cache: Cache
-    private let sync: Sync
+    private let cache: Cache<T>?
+    private let sync: Sync<T>?
     
     private var deltaSet: Bool
     
     /// TTL (Time to Live) defines a filter of how old the data returned from the DataStore can be.
     public var ttl: TTL? {
         didSet {
-            cache.ttl = ttl != nil ? ttl!.1.toTimeInterval(ttl!.0) : 0
+            if let cache = cache {
+                cache.ttl = ttl != nil ? ttl!.1.toTimeInterval(ttl!.0) : nil
+            }
         }
     }
 
@@ -108,9 +110,14 @@ public class DataStore<T: Persistable where T: NSObject> {
         self.type = type
         self.deltaSet = deltaSet
         self.client = client
-        collectionName = T.kinveyCollectionName()
-        cache = client.cacheManager.cache(collectionName, filePath: filePath)
-        sync = client.syncManager.sync(collectionName, filePath: filePath)
+        collectionName = T.collectionName()
+        if let _ = T.self as? Entity.Type {
+            cache = client.cacheManager.cache(filePath: filePath, type: T.self)
+            sync = client.syncManager.sync(filePath: filePath, type: T.self)
+        } else {
+            cache = nil
+            sync = nil
+        }
         readPolicy = type.readPolicy
         writePolicy = type.writePolicy
     }
@@ -119,7 +126,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func findById(id: String, readPolicy: ReadPolicy? = nil, completionHandler: ObjectCompletionHandler? = nil) -> Request {
         precondition(!id.isEmpty)
         let readPolicy = readPolicy ?? self.readPolicy
-        let operation = GetOperation(id: id, readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
+        let operation = GetOperation<T>(id: id, readPolicy: readPolicy, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -133,7 +140,15 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func find(query: Query = Query(), deltaSet: Bool? = nil, readPolicy: ReadPolicy? = nil, completionHandler: ArrayCompletionHandler?) -> Request {
         let readPolicy = readPolicy ?? self.readPolicy
         let deltaSet = deltaSet ?? self.deltaSet
-        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: readPolicy, persistableType: T.self, cache: cache, client: client)
+        let operation = FindOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: readPolicy, cache: cache, client: client)
+        let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
+        return request
+    }
+    
+    /// Creates or updates a record.
+    public func save(inout persistable: T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
+        let writePolicy = writePolicy ?? self.writePolicy
+        let operation = SaveOperation<T>(persistable: &persistable, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -141,14 +156,14 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// Creates or updates a record.
     public func save(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = SaveOperation(persistable: persistable, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
+        let operation = SaveOperation<T>(persistable: persistable, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
     
     /// Deletes a record.
     public func remove(persistable: T, writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) throws -> Request {
-        guard let id = persistable.kinveyObjectId else {
+        guard let id = persistable.entityId else {
             throw Error.ObjectIdMissing
         }
         return removeById(id, writePolicy:writePolicy, completionHandler: completionHandler)
@@ -158,7 +173,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public func remove(array: [T], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         var ids: [String] = []
         for persistable in array {
-            if let id = persistable.kinveyObjectId {
+            if let id = persistable.entityId {
                 ids.append(id)
             }
         }
@@ -170,7 +185,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         precondition(!id.isEmpty)
 
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = RemoveByIdOperation(objectId: id, writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = RemoveByIdOperation<T>(objectId: id, writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -178,14 +193,14 @@ public class DataStore<T: Persistable where T: NSObject> {
     /// Deletes a list of records using the `_id` of the records.
     public func removeById(ids: [String], writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         precondition(ids.count > 0)
-        let query = Query(format: "\(T.idKey) IN %@", ids)
+        let query = Query(format: "\(T.entityIdProperty()) IN %@", ids)
         return remove(query, writePolicy: writePolicy, completionHandler: completionHandler)
     }
     
     /// Deletes a list of records that matches with the query passed by parameter.
     public func remove(query: Query = Query(), writePolicy: WritePolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy
-        let operation = RemoveByQueryOperation(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = RemoveByQueryOperation<T>(query: Query(query: query, persistableType: T.self), writePolicy: writePolicy, sync: sync, cache: cache, client: client)
         let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
         return request
     }
@@ -203,7 +218,7 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PushOperation(sync: sync, persistableType: T.self, cache: cache, client: client)
+        let operation = PushOperation<T>(sync: sync, cache: cache, client: client)
         let request = operation.execute(timeout: timeout, completionHandler: completionHandler)
         return request
     }
@@ -222,14 +237,17 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
         
         let deltaSet = deltaSet ?? self.deltaSet
-        let operation = FindOperation(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, persistableType: T.self, cache: cache, client: client)
+        let operation = FindOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }
     
     /// Returns the number of changes not synced yet.
     public func syncCount() -> UInt {
-        return UInt(sync.pendingOperations().count)
+        if let sync = sync {
+            return UInt(sync.pendingOperations().count)
+        }
+        return 0
     }
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
@@ -264,11 +282,15 @@ public class DataStore<T: Persistable where T: NSObject> {
             return LocalRequest()
         }
         
-        let operation = PurgeOperation(sync: sync, persistableType: T.self, cache: cache, client: client)
+        let executor = Executor()
+        
+        let operation = PurgeOperation<T>(sync: sync, cache: cache, client: client)
         let request = operation.execute { (count, error: ErrorType?) -> Void in
             if let count = count {
-                self.pull(query) { (results, error) -> Void in
-                    completionHandler?(count, error)
+                executor.execute {
+                    self.pull(query) { (results, error) -> Void in
+                        completionHandler?(count, error)
+                    }
                 }
             } else {
                 completionHandler?(count, error)
@@ -330,8 +352,8 @@ public class DataStore<T: Persistable where T: NSObject> {
 
     /// Clear all data for the collection attached to the DataStore.
     public func clearCache() {
-        cache.removeAllEntities()
-        sync.removeAllPendingOperations()
+        cache?.removeAllEntities()
+        sync?.removeAllPendingOperations()
     }
 
 }
