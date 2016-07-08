@@ -23,6 +23,7 @@
 #import "KCSMutableOrderedDictionary.h"
 #import "KCSObjectMapper.h"
 #import "KCSFile.h"
+#import "NSDate+ISO8601.h"
 #import <UIKit/UIKit.h>
 
 @interface KCSKinveyRef ()
@@ -107,7 +108,7 @@
     return result;
 }
 
--(id)transformValue:(id)value
++(id)transformValue:(id)value
 {
     if ([value isKindOfClass:[KCSKinveyRef class]]) {
         return [((KCSKinveyRef*) value) proxyForJson];
@@ -139,13 +140,15 @@
             }
         }
         return results;
+    } else if ([value isKindOfClass:[NSDate class]]) {
+        return [NSString stringWithFormat:@"ISODate(\"%@\")", [value stringWithISO8601Encoding]];
     }
     return value;
 }
 
 -(NSData *)kcsJSONDataRepresentation:(NSError *__autoreleasing *)_error
 {
-    NSMutableDictionary *dictionary = [self transformValue:self];
+    NSMutableDictionary *dictionary = [self.class transformValue:self];
     
     NSError* error = nil;
     NSData* data = [NSJSONSerialization dataWithJSONObject:dictionary
