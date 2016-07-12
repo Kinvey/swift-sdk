@@ -111,7 +111,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         self.deltaSet = deltaSet
         self.client = client
         collectionName = T.collectionName()
-        if let _ = T.self as? Entity.Type {
+        if type != .Network, let _ = T.self as? Entity.Type {
             cache = client.cacheManager.cache(filePath: filePath, type: T.self)
             sync = client.syncManager.sync(filePath: filePath, type: T.self)
         } else {
