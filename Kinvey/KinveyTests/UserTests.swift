@@ -279,17 +279,6 @@ class UserTests: KinveyTestCase {
             
             var foo: String?
             
-            required init?(_ map: Map) {
-                var userId: String?
-                userId <- map[PersistableIdKey]
-                
-                guard let userIdValue = userId else {
-                    return nil
-                }
-                
-                super.init(userId: userIdValue)
-            }
-            
             override func mapping(map: Map) {
                 super.mapping(map)
                 
@@ -332,17 +321,6 @@ class UserTests: KinveyTestCase {
         class MyUser: User {
             
             var foo: String?
-            
-            required init?(_ map: Map) {
-                var userId: String?
-                userId <- map[PersistableIdKey]
-                
-                guard let userIdValue = userId else {
-                    return nil
-                }
-                
-                super.init(userId: userIdValue)
-            }
             
             override func mapping(map: Map) {
                 super.mapping(map)
@@ -631,6 +609,70 @@ class UserTests: KinveyTestCase {
             
             waitForExpectationsWithTimeout(defaultTimeout) { error in
                 expectationDestroy = nil
+            }
+        }
+    }
+    
+    func testSendEmailConfirmation() {
+        signUp()
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            weak var expectationSave = expectationWithDescription("Save")
+            
+            user.email = "victor@kinvey.com"
+            
+            user.save() { user, error in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNil(error)
+                XCTAssertNotNil(user)
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationSave = nil
+            }
+            
+            class Mock204URLProtocol: NSURLProtocol {
+                
+                override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                    return true
+                }
+                
+                override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                    return request
+                }
+                
+                private override func startLoading() {
+                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 204, HTTPVersion: "HTTP/1.1", headerFields: [:])!
+                    client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                    client!.URLProtocol(self, didLoadData: NSData())
+                    client!.URLProtocolDidFinishLoading(self)
+                }
+                
+                private override func stopLoading() {
+                }
+                
+            }
+            
+            setURLProtocol(Mock204URLProtocol.self)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationSendEmailConfirmation = expectationWithDescription("Send Email Confirmation")
+            
+            user.sendEmailConfirmation { error in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNil(error)
+                
+                expectationSendEmailConfirmation?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationSendEmailConfirmation = nil
             }
         }
     }
