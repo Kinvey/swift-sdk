@@ -98,7 +98,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.getInstance(.Network)
+        let store = DataStore<Person>.getInstance()
         
         let person = Person()
         person.name = "Victor"
@@ -167,7 +167,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         do {
             weak var expectationFind = expectationWithDescription("Find")
             
-            store.find(query) { persons, error in
+            store.find(query, readPolicy: .ForceNetwork) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -198,7 +198,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.getInstance(.Network)
+        let store = DataStore<Person>.getInstance()
         
         let person = Person()
         person.name = "Victor"
@@ -271,7 +271,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         do {
             weak var expectationFind = expectationWithDescription("Find")
             
-            store.find(query) { persons, error in
+            store.find(query, readPolicy: .ForceNetwork) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -299,7 +299,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.getInstance(.Network)
+        let store = DataStore<Person>.getInstance()
         
         let person = Person()
         person.name = "Victor"
@@ -372,7 +372,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         do {
             weak var expectationFind = expectationWithDescription("Find")
             
-            store.find(query) { persons, error in
+            store.find(query, readPolicy: .ForceNetwork) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -419,11 +419,11 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let saveAndCache: (Int) -> Void = { i in
             let person = Person()
             person.name = String(format: "Person Cached %02d", i)
-            let store = DataStore<Person>.getInstance(.Network)
+            let store = DataStore<Person>.getInstance()
             
             weak var expectationSave = self.expectationWithDescription("Save")
             
-            store.save(person) { (person, error) -> Void in
+            store.save(person, writePolicy: .ForceNetwork) { (person, error) -> Void in
                 XCTAssertNotNil(person)
                 XCTAssertNil(error)
                 
@@ -529,7 +529,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let saveAndCache: (Int) -> Void = { n in
-            let store = DataStore<Person>.getInstance(.Network)
+            let store = DataStore<Person>.getInstance()
             
             for i in 1...n {
                 let person = Person()
@@ -630,12 +630,12 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindEmpty() {
         signUp()
         
-        let store = DataStore<Person>.getInstance(.Network)
+        let store = DataStore<Person>.getInstance()
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
         weak var expectationFind = expectationWithDescription("Find")
         
-        store.find(query) { results, error in
+        store.find(query, readPolicy: .ForceNetwork) { results, error in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -654,7 +654,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindOneRecord() {
         signUp()
         
-        let store = DataStore<Person>.getInstance(.Network)
+        let store = DataStore<Person>.getInstance()
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
         class OnePersonURLProtocol: NSURLProtocol {
@@ -706,7 +706,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         
         weak var expectationFind = expectationWithDescription("Find")
         
-        store.find(query) { results, error in
+        store.find(query, readPolicy: .ForceNetwork) { results, error in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             

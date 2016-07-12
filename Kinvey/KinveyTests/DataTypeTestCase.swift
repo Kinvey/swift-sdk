@@ -14,7 +14,7 @@ class DataTypeTestCase: StoreTestCase {
     func testSave() {
         signUp()
         
-        let store = DataStore<DataType>.getInstance(.Network)
+        let store = DataStore<DataType>.getInstance()
         let dataType = DataType()
         dataType.boolValue = true
         dataType.colorValue = UIColor.orangeColor()
@@ -41,7 +41,7 @@ class DataTypeTestCase: StoreTestCase {
         
         weak var expectationFind = expectationWithDescription("Find")
         
-        store.find(query) { results, error in
+        store.find(query, readPolicy: .ForceNetwork) { results, error in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
