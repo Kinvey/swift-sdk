@@ -119,6 +119,37 @@ public class User: NSObject, Credential, Mappable {
         return request
     }
     
+    public class func sendEmailConfirmation(forUsername username: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        let request = client.networkRequestFactory.buildSendEmailConfirmation(forUsername: username)
+        Promise<Void> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK {
+                    fulfill()
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+            }.then {
+                completionHandler?(nil)
+            }.error { error in
+                completionHandler?(error)
+        }
+        return request
+    }
+    
+    public func sendEmailConfirmation(client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+        guard let username = username else {
+            preconditionFailure("Username is required to send the email confirmation")
+        }
+        guard let _ = email else {
+            preconditionFailure("Email is required to send the email confirmation")
+        }
+        
+        return User.sendEmailConfirmation(forUsername: username, client: client, completionHandler: completionHandler)
+    }
+    
     private class func resetPassword(usernameOrEmail usernameOrEmail: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserResetPassword(usernameOrEmail: usernameOrEmail)
         Promise<Void> { fulfill, reject in

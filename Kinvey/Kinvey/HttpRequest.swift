@@ -359,6 +359,8 @@ extension Endpoint {
             return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/login")
         case .UserResetPassword(let usernameOrEmail, let client):
             return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/\(usernameOrEmail)/user-password-reset-initiate")
+        case .SendEmailConfirmation(let client, let username):
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/\(username)/user-email-verification-initiate")
         case .UserForgotUsername(let client):
             return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/user-forgot-username")
         case .OAuthAuth(let client, let redirectURI):
