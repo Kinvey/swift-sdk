@@ -119,6 +119,15 @@ public class User: NSObject, Credential, Mappable {
         return request
     }
     
+    /**
+     Sends a request to confirm email address to the specified user.
+     
+     The user must have a valid email set in its `email` field, on the server, for this to work. The user will receive an email with a time-bound link to a verification web page.
+     
+     - parameter username: Username of the user that needs to send the email confirmation
+     - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter completionHandler: Completion handler to be called once the response returns from the server
+     */
     public class func sendEmailConfirmation(forUsername username: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildSendEmailConfirmation(forUsername: username)
         Promise<Void> { fulfill, reject in
@@ -139,6 +148,14 @@ public class User: NSObject, Credential, Mappable {
         return request
     }
     
+    /**
+     Sends a request to confirm email address to the user.
+     
+     The user must have a valid email set in its `email` field, on the server, for this to work. The user will receive an email with a time-bound link to a verification web page.
+     
+     - parameter client: define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter completionHandler: Completion handler to be called once the response returns from the server
+     */
     public func sendEmailConfirmation(client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         guard let username = username else {
             preconditionFailure("Username is required to send the email confirmation")
