@@ -621,7 +621,7 @@ class UserTests: KinveyTestCase {
         if let user = client.activeUser {
             weak var expectationSave = expectationWithDescription("Save")
             
-            user.email = "\(user.username)@kinvey.com"
+            user.email = "\(user.username!)@kinvey.com"
             
             user.save() { user, error in
                 XCTAssertTrue(NSThread.isMainThread())
@@ -683,7 +683,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            user.email = "\(user.username)@kinvey.com"
+            user.email = "\(user.username!)@kinvey.com"
             
             weak var expectationSave = expectationWithDescription("Save")
             
