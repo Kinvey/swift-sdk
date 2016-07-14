@@ -163,6 +163,16 @@ public class User: NSObject, Credential, Mappable {
         return LocalRequest()
     }
     
+    /**
+     Changes the password for the current user and automatically updates the session with a new valid session.
+     - parameter newPassword: A new password for the user
+     - parameter client: Define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter completionHandler: Completion handler to be called once the response returns from the server
+     */
+    public func changePassword(newPassword newPassword: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        return save(newPassword: newPassword, client: client, completionHandler: completionHandler)
+    }
+    
     class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserForgotUsername(email: email)
         Promise<Void> { fulfill, reject in
@@ -266,8 +276,8 @@ public class User: NSObject, Credential, Mappable {
     }
     
     /// Creates or updates a `User`.
-    public func save(client client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
-        let request = client.networkRequestFactory.buildUserSave(user: self)
+    public func save(newPassword newPassword: String? = nil, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        let request = client.networkRequestFactory.buildUserSave(user: self, newPassword: newPassword)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
                 if let response = response where response.isResponseOK, let user = client.responseParser.parseUser(data) {
