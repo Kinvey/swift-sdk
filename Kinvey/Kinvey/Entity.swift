@@ -77,6 +77,23 @@ public class Entity: Object, Persistable {
         return entityIdProperty()
     }
     
+    public override class func ignoredProperties() -> [String] {
+        var properties = [String]()
+        for property in ObjCRuntime.properties(self) {
+            if !(ObjCRuntime.type(property.1, isSubtypeOf: NSDate.self) ||
+                ObjCRuntime.type(property.1, isSubtypeOf: NSData.self) ||
+                ObjCRuntime.type(property.1, isSubtypeOf: NSString.self) ||
+                ObjCRuntime.type(property.1, isSubtypeOf: RLMObjectBase.self) ||
+                ObjCRuntime.type(property.1, isSubtypeOf: RLMOptionalBase.self) ||
+                ObjCRuntime.type(property.1, isSubtypeOf: RLMListBase.self) ||
+                ObjCRuntime.type(property.1, isSubtypeOf: RLMCollection.self))
+            {
+                properties.append(property.0)
+            }
+        }
+        return properties
+    }
+    
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     public func mapping(map: Map) {
         let originalThread = NSThread.currentThread()
@@ -87,7 +104,7 @@ public class Entity: Object, Persistable {
             operationQueue.maxConcurrentOperationCount = 1
             operationQueue.addOperationWithBlock {
                 let className = StringFromClass(self.dynamicType)
-                NSThread.currentThread().threadDictionary[KinveyMappingTypeKey] = [className : Dictionary<String, String>()]
+                NSThread.currentThread().threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
                 self.propertyMapping(map)
                 originalThread.threadDictionary[KinveyMappingTypeKey] = NSThread.currentThread().threadDictionary[KinveyMappingTypeKey]
             }

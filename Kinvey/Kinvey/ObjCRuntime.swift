@@ -15,6 +15,29 @@ internal class ObjCRuntime: NSObject {
     private override init() {
     }
     
+    internal class func type(target: AnyClass, isSubtypeOf cls: AnyClass) -> Bool {
+        if target == cls {
+            return true
+        }
+        
+        if let superCls = class_getSuperclass(target) {
+            return type(superCls, isSubtypeOf: cls)
+        }
+        return false
+    }
+    
+    internal class func types(forType cls: AnyClass) -> [AnyClass] {
+        var result = [AnyClass]()
+        var classCount: UInt32 = 0
+        let classList = objc_copyClassList(&classCount)
+        for i in 0..<Int(classCount) {
+            if let subCls = classList[i] where type(subCls, isSubtypeOf: cls) {
+                result.append(subCls)
+            }
+        }
+        return result
+    }
+    
     internal class func propertyNamesForTypeInClass(cls: AnyClass, type: AnyClass) -> [String]? {
         var propertyNames = [String]()
         let regexClassName = try! NSRegularExpression(pattern: "@\"(\\w+)(?:<(\\w+)>)?\"", options: [])

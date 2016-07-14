@@ -47,4 +47,35 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testSaveAddress() {
+        let person = Person()
+        person.name = "Victor Barros"
+        
+        let address = Address()
+        address.city = "Vancouver"
+        
+        person.address = address
+        
+        weak var expectationSave = expectationWithDescription("Save")
+        
+        store.save(person, writePolicy: .ForceNetwork) { person, error in
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            if let person = person {
+                XCTAssertNotNil(person.address)
+                
+                if let address = person.address {
+                    XCTAssertNotNil(address.city)
+                }
+            }
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationSave = nil
+        }
+    }
+    
 }

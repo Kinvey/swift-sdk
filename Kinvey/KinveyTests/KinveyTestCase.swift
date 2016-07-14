@@ -79,14 +79,14 @@ class KinveyTestCase: XCTestCase {
         }
     }
     
-    func signUp(mustHaveAValidUserInTheEnd: Bool = true, completionHandler: ((User?, ErrorType?) -> Void)? = nil) {
+    func signUp(username username: String? = nil, password: String? = nil, mustHaveAValidUserInTheEnd: Bool = true, completionHandler: ((User?, ErrorType?) -> Void)? = nil) {
         if let user = client.activeUser {
             user.logout()
         }
         
         weak var expectationSignUp = expectationWithDescription("Sign Up")
         
-        User.signup { user, error in
+        User.signup(username: username, password: password) { user, error in
             if let completionHandler = completionHandler {
                 completionHandler(user, error)
             } else {
@@ -159,7 +159,7 @@ class KinveyTestCase: XCTestCase {
             client.urlSession = NSURLSession(configuration: sessionConfiguration)
             XCTAssertEqual(client.urlSession.configuration.protocolClasses!.count, 1)
         } else {
-            client.urlSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+            client?.urlSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
         }
     }
     

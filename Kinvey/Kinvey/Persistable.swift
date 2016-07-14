@@ -109,7 +109,7 @@ extension Persistable {
     static func propertyMapping() -> [String : String] {
         let currentThread = NSThread.currentThread()
         let className = StringFromClass(self as! AnyClass)
-        currentThread.threadDictionary[KinveyMappingTypeKey] = [className : Dictionary<String, String>()]
+        currentThread.threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
         let obj = self.init()
         obj.toJSON()
         if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
