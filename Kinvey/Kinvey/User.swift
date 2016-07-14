@@ -163,6 +163,12 @@ public class User: NSObject, Credential, Mappable {
         return LocalRequest()
     }
     
+    /**
+     Changes the password for the current user and automatically updates the session with a new valid session.
+     - parameter newPassword: A new password for the user
+     - parameter client: Define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter completionHandler: Completion handler to be called once the response returns from the server
+     */
     public func changePassword(withNewPassword newPassword: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         return save(newPassword: newPassword, client: client, completionHandler: completionHandler)
     }
