@@ -74,7 +74,7 @@ class CacheMigrationTestCaseStep2: XCTestCase {
         XCTAssertTrue(migrationCalled)
         XCTAssertTrue(migrationPersonCalled)
         
-        let store = DataStore<Person>.getInstance(.Sync)
+        let store = DataStore<Person>.collection(.Sync)
         
         weak var expectationFind = expectationWithDescription("Find")
         

@@ -14,7 +14,7 @@ class FindOperationTest: StoreTestCase {
     override func setUp() {
         super.setUp()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
     }
     
     override func tearDown() {

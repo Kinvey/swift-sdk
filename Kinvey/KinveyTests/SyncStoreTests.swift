@@ -25,7 +25,7 @@ class SyncStoreTests: StoreTestCase {
         
         signUp()
         
-        store = DataStore<Person>.getInstance(.Sync)
+        store = DataStore<Person>.collection(.Sync)
     }
     
     func testCustomTag() {
@@ -66,7 +66,7 @@ class SyncStoreTests: StoreTestCase {
             removeFiles()
             XCTAssertFalse(fileManager.fileExistsAtPath(customPath))
             
-            store = DataStore<Person>.getInstance(.Sync, tag: tag)
+            store = DataStore<Person>.collection(.Sync, tag: tag)
             defer {
                 removeFiles()
                 XCTAssertFalse(fileManager.fileExistsAtPath(customPath))
@@ -104,7 +104,7 @@ class SyncStoreTests: StoreTestCase {
     func testPurgeInvalidDataStoreType() {
         save()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         weak var expectationPurge = expectationWithDescription("Purge")
         
@@ -179,7 +179,7 @@ class SyncStoreTests: StoreTestCase {
     func testSyncInvalidDataStoreType() {
         save()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         weak var expectationSync = expectationWithDescription("Sync")
         
@@ -271,7 +271,7 @@ class SyncStoreTests: StoreTestCase {
     func testPushInvalidDataStoreType() {
         save()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         weak var expectationPush = expectationWithDescription("Push")
         
@@ -351,7 +351,7 @@ class SyncStoreTests: StoreTestCase {
     func testPullInvalidDataStoreType() {
         //save()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         weak var expectationPull = expectationWithDescription("Pull")
         

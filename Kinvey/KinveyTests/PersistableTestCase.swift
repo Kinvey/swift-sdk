@@ -12,7 +12,7 @@ import XCTest
 class PersistableTestCase: StoreTestCase {
     
     func testAclNull() {
-        store = DataStore<Person>.getInstance()
+        store = DataStore<Person>.collection()
         
         class NullAclURLProtocol : NSURLProtocol {
             
@@ -71,7 +71,7 @@ class PersistableTestCase: StoreTestCase {
     }
     
     func testAclEmpty() {
-        store = DataStore<Person>.getInstance()
+        store = DataStore<Person>.collection()
         
         class NullAclURLProtocol : NSURLProtocol {
             
@@ -131,7 +131,7 @@ class PersistableTestCase: StoreTestCase {
     }
     
     func testKmdNull() {
-        store = DataStore<Person>.getInstance()
+        store = DataStore<Person>.collection()
         
         class NullAclURLProtocol : NSURLProtocol {
             
@@ -189,7 +189,7 @@ class PersistableTestCase: StoreTestCase {
     }
     
     func testKmdEmpty() {
-        store = DataStore<Person>.getInstance()
+        store = DataStore<Person>.collection()
         
         class NullAclURLProtocol : NSURLProtocol {
             

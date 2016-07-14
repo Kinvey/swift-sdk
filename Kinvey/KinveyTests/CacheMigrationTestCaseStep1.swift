@@ -57,7 +57,7 @@ class CacheMigrationTestCaseStep1: XCTestCase {
     func testMigration() {
         Kinvey.sharedClient.initialize(appKey: "appKey", appSecret: "appSecret")
         
-        let store = DataStore<Person>.getInstance(.Sync)
+        let store = DataStore<Person>.collection(.Sync)
         
         var person = Person()
         person.firstName = "Victor"

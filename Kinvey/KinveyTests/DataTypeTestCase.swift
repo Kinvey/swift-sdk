@@ -14,7 +14,7 @@ class DataTypeTestCase: StoreTestCase {
     func testSave() {
         signUp()
         
-        let store = DataStore<DataType>.getInstance()
+        let store = DataStore<DataType>.collection()
         let dataType = DataType()
         dataType.boolValue = true
         dataType.colorValue = UIColor.orangeColor()
