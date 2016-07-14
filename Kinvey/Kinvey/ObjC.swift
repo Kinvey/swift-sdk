@@ -57,9 +57,9 @@ extension User {
     }
     
     /// Creates or updates a `User`.
-    public func save(client client: Client = Kinvey.sharedClient, completionHandler: UserHandlerObjC? = nil) -> Request {
-        return save(client: client, completionHandler: { (user, error) -> Void in
-            completionHandler?(user, error as? NSError)
+    public func save(client client: Client = Kinvey.sharedClient, completionHandler: UserHandlerObjC) -> Request {
+        return save(newPassword: nil, client: client, completionHandler: { (user, error) -> Void in
+            completionHandler(user, error as? NSError)
         })
     }
     

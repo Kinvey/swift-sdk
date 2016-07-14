@@ -77,10 +77,19 @@ class HttpRequestFactory: RequestFactory {
     }
     
     func buildUserSave(user user: User) -> HttpRequest {
+        return buildUserSave(user: user, newPassword: nil)
+    }
+    
+    func buildUserSave(user user: User, newPassword: String?) -> HttpRequest {
         let request = HttpRequest(httpMethod: .Put, endpoint: Endpoint.UserById(client: client, userId: user.userId), credential: client.activeUser, client: client)
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let bodyObject = user.toJSON()
+        var bodyObject = user.toJSON()
+        
+        if let newPassword = newPassword {
+            bodyObject["password"] = newPassword
+        }
+        
         request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }

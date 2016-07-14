@@ -42,7 +42,7 @@ class UserTests: KinveyTestCase {
         
         setURLProtocol(ErrorURLProtocol.self)
         
-        signUp(false) { (user, error) -> Void in
+        signUp(mustHaveAValidUserInTheEnd: false) { (user, error) -> Void in
             XCTAssertTrue(NSThread.isMainThread())
             XCTAssertNotNil(error)
             XCTAssertNil(user)
@@ -52,7 +52,7 @@ class UserTests: KinveyTestCase {
     func testSignUpTimeoutError() {
         setURLProtocol(TimeoutErrorURLProtocol.self)
         
-        signUp(false) { (user, error) -> Void in
+        signUp(mustHaveAValidUserInTheEnd: false) { (user, error) -> Void in
             XCTAssertTrue(NSThread.isMainThread())
             XCTAssertNotNil(error)
             XCTAssertNil(user)
@@ -167,6 +167,68 @@ class UserTests: KinveyTestCase {
             }
             
             XCTAssertNil(client.activeUser)
+        }
+    }
+    
+    func testChangePassword() {
+        signUp()
+        
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        
+        guard let user = Kinvey.sharedClient.activeUser else {
+            return
+        }
+        
+        let store = DataStore<Person>.getInstance()
+        
+        do {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            store.find(readPolicy: .ForceNetwork) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            client.logNetworkEnabled = true
+            defer {
+                client.logNetworkEnabled = false
+            }
+            
+            weak var expectationChangePassword = expectationWithDescription("Change Password")
+            
+            user.changePassword(withNewPassword: "test") { user, error in
+                XCTAssertNotNil(user)
+                XCTAssertNil(error)
+                
+                expectationChangePassword?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationChangePassword = nil
+            }
+        }
+        
+        do {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            store.find(readPolicy: .ForceNetwork) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
         }
     }
     
