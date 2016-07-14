@@ -14,13 +14,13 @@ class AclTestCase: StoreTestCase {
     func testNoPermissionToDelete() {
         signUp()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         let person = save(newPerson)
         
         signUp()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         weak var expectationRemove = expectationWithDescription("Remove")
         
@@ -50,13 +50,13 @@ class AclTestCase: StoreTestCase {
     func testNoPermissionToDeletePush() {
         signUp()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         let person = save(newPerson)
         
         signUp()
         
-        store = DataStore<Person>.getInstance(.Sync)
+        store = DataStore<Person>.collection(.Sync)
         
         weak var expectationFind = expectationWithDescription("Find")
         
@@ -116,7 +116,7 @@ class AclTestCase: StoreTestCase {
     func testGlobalRead() {
         signUp()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, globalRead: true)
@@ -152,7 +152,7 @@ class AclTestCase: StoreTestCase {
     func testGlobalWrite() {
         signUp()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, globalWrite: true)
@@ -195,7 +195,7 @@ class AclTestCase: StoreTestCase {
         
         signUp()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, readers: [user.userId])
@@ -239,7 +239,7 @@ class AclTestCase: StoreTestCase {
         
         signUp()
         
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.collection(.Network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, writers: [user.userId])

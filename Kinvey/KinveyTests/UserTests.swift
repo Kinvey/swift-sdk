@@ -179,7 +179,7 @@ class UserTests: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.getInstance()
+        let store = DataStore<Person>.collection()
         
         do {
             weak var expectationFind = expectationWithDescription("Find")
@@ -204,7 +204,7 @@ class UserTests: KinveyTestCase {
             
             weak var expectationChangePassword = expectationWithDescription("Change Password")
             
-            user.changePassword(withNewPassword: "test") { user, error in
+            user.changePassword(newPassword: "test") { user, error in
                 XCTAssertNotNil(user)
                 XCTAssertNil(error)
                 
@@ -1082,7 +1082,7 @@ class UserTests: KinveyTestCase {
         XCTAssertNotNil(Kinvey.sharedClient.activeUser)
         
         if Kinvey.sharedClient.activeUser != nil {
-            let store = DataStore<Person>.getInstance()
+            let store = DataStore<Person>.collection()
             
             weak var expectationFind = expectationWithDescription("Find")
             

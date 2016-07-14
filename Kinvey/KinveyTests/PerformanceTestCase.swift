@@ -17,7 +17,7 @@ class PerformanceTestCase: StoreTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            store = DataStore<Person>.getInstance(.Sync)
+            store = DataStore<Person>.collection(.Sync)
             
             let n = 1000
             
@@ -71,7 +71,7 @@ class PerformanceTestCase: StoreTestCase {
         XCTAssertNotNil(client.activeUser)
         
         if let user = client.activeUser {
-            store = DataStore<Person>.getInstance(.Sync)
+            store = DataStore<Person>.collection(.Sync)
             
             let n = 10000
             

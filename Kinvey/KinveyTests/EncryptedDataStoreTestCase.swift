@@ -29,7 +29,7 @@ class EncryptedDataStoreTestCase: StoreTestCase {
     func testEncryptedDataStore() {
         signUp()
         
-        store = DataStore<Person>.getInstance(.Network, client: client)
+        store = DataStore<Person>.collection(.Network, client: client)
         
         save(newPerson)
     }

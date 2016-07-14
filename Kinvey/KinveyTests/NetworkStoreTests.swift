@@ -15,7 +15,7 @@ class NetworkStoreTests: StoreTestCase {
         super.setUp()
         signUp()
         
-        store = DataStore<Person>.getInstance()
+        store = DataStore<Person>.collection()
     }
     
     override func assertThread() {
@@ -23,7 +23,7 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testSaveEvent() {
-        let store = DataStore<Event>.getInstance(.Network)
+        let store = DataStore<Event>.collection(.Network)
         
         let event = Event()
         event.name = "Friday Party!"

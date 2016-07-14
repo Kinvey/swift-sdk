@@ -13,7 +13,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     
     override func tearDown() {
         if let activeUser = client.activeUser {
-            let store = DataStore<Person>.getInstance(.Network)
+            let store = DataStore<Person>.collection(.Network)
             let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
             
             weak var expectationRemoveAll = expectationWithDescription("Remove All")
@@ -98,7 +98,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.getInstance()
+        let store = DataStore<Person>.collection()
         
         let person = Person()
         person.name = "Victor"
@@ -198,7 +198,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.getInstance()
+        let store = DataStore<Person>.collection()
         
         let person = Person()
         person.name = "Victor"
@@ -299,7 +299,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             return
         }
         
-        let store = DataStore<Person>.getInstance()
+        let store = DataStore<Person>.collection()
         
         let person = Person()
         person.name = "Victor"
@@ -419,7 +419,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let saveAndCache: (Int) -> Void = { i in
             let person = Person()
             person.name = String(format: "Person Cached %02d", i)
-            let store = DataStore<Person>.getInstance()
+            let store = DataStore<Person>.collection()
             
             weak var expectationSave = self.expectationWithDescription("Save")
             
@@ -443,7 +443,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             saveAndCache(i)
         }
         
-        let store = DataStore<Person>.getInstance(.Sync)
+        let store = DataStore<Person>.collection(.Sync)
         
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
         query.ascending("name")
@@ -529,7 +529,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         let saveAndCache: (Int) -> Void = { n in
-            let store = DataStore<Person>.getInstance()
+            let store = DataStore<Person>.collection()
             
             for i in 1...n {
                 let person = Person()
@@ -553,7 +553,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         saveAndCache(countLocal)
         save(countBackend)
         
-        let store = DataStore<Person>.getInstance(.Sync)
+        let store = DataStore<Person>.collection(.Sync)
         
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
         query.ascending("name")
@@ -630,7 +630,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindEmpty() {
         signUp()
         
-        let store = DataStore<Person>.getInstance()
+        let store = DataStore<Person>.collection()
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
         weak var expectationFind = expectationWithDescription("Find")
@@ -654,7 +654,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindOneRecord() {
         signUp()
         
-        let store = DataStore<Person>.getInstance()
+        let store = DataStore<Person>.collection()
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
         class OnePersonURLProtocol: NSURLProtocol {
