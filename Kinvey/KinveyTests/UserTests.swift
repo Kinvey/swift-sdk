@@ -220,8 +220,8 @@ class UserTests: KinveyTestCase {
             weak var expectationFind = expectationWithDescription("Find")
             
             store.find(readPolicy: .ForceNetwork) { results, error in
-                XCTAssertNil(results)
-                XCTAssertNotNil(error)
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
                 
                 expectationFind?.fulfill()
             }
