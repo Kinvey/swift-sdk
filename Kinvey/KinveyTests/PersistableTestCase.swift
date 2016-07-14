@@ -12,7 +12,7 @@ import XCTest
 class PersistableTestCase: StoreTestCase {
     
     func testAclNull() {
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.getInstance()
         
         class NullAclURLProtocol : NSURLProtocol {
             
@@ -54,7 +54,7 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectationWithDescription("Find")
         
-        store.find { (results, error) in
+        store.find(readPolicy: .ForceNetwork) { (results, error) in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -71,7 +71,7 @@ class PersistableTestCase: StoreTestCase {
     }
     
     func testAclEmpty() {
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.getInstance()
         
         class NullAclURLProtocol : NSURLProtocol {
             
@@ -114,7 +114,7 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectationWithDescription("Find")
         
-        store.find { (results, error) in
+        store.find(readPolicy: .ForceNetwork) { (results, error) in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -131,7 +131,7 @@ class PersistableTestCase: StoreTestCase {
     }
     
     func testKmdNull() {
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.getInstance()
         
         class NullAclURLProtocol : NSURLProtocol {
             
@@ -172,7 +172,7 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectationWithDescription("Find")
         
-        store.find { (results, error) in
+        store.find(readPolicy: .ForceNetwork) { (results, error) in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -189,7 +189,7 @@ class PersistableTestCase: StoreTestCase {
     }
     
     func testKmdEmpty() {
-        store = DataStore<Person>.getInstance(.Network)
+        store = DataStore<Person>.getInstance()
         
         class NullAclURLProtocol : NSURLProtocol {
             
@@ -231,7 +231,7 @@ class PersistableTestCase: StoreTestCase {
         
         weak var expectationFind = expectationWithDescription("Find")
         
-        store.find { (results, error) in
+        store.find(readPolicy: .ForceNetwork) { (results, error) in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
