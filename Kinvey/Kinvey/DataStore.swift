@@ -80,6 +80,14 @@ public class DataStore<T: Persistable where T: NSObject> {
             }
         }
     }
+    
+    /**
+     Deprecated method. Please use `collection()` instead.
+     */
+    @available(*, deprecated=3.1.0, message="Please use `collection()` instead")
+    public class func getInstance(type: DataStoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
+        return collection(type, deltaSet: deltaSet, client: client, tag: tag)
+    }
 
     /**
      Factory method that returns a `DataStore`.
