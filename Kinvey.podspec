@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.name         = "Kinvey"
   s.version      = "3.0.22"
-  s.summary      = "Kinvey iOS SDK Beta."
+  s.summary      = "Kinvey iOS SDK"
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
-	Kinvey iOS SDK #{s.version} Beta
+	Kinvey iOS SDK #{s.version}
                    DESC
 
   s.homepage     = "http://devcenter.kinvey.com/ios-v3.0/guides/getting-started"
@@ -79,7 +79,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :http => "http://download.kinvey.com/iOS/Kinvey-#{s.version}-Beta.zip" }
+  s.source       = { :http => "http://download.kinvey.com/iOS/Kinvey-#{s.version}.zip" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -90,10 +90,10 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/*"
+  s.source_files  = "Kinvey-#{s.version}/Kinvey.framework/Headers/*"
   # s.exclude_files = "Classes/Exclude"
 
-  s.public_header_files = "Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/*"
+  s.public_header_files = "Kinvey-#{s.version}/Kinvey.framework/Headers/*"
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -107,13 +107,13 @@ Pod::Spec.new do |s|
   # s.resource  = "icon.png"
   # s.resources = "Resources/*.png"
 
-  s.preserve_paths = "Kinvey-#{s.version}-Beta/**"
+  s.preserve_paths = "Kinvey-#{s.version}/**"
   s.prepare_command = <<-CMD
-    cat Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h | sed 's/\<Kinvey[/]/\"/g' | sed 's/\.h\>/\.h\"/g' > Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h_
-		rm Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h
-		mv Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h_ Kinvey-#{s.version}-Beta/Kinvey.framework/Headers/Kinvey.h
+    cat Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h | sed 's/\<Kinvey[/]/\"/g' | sed 's/\.h\>/\.h\"/g' > Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h_
+		rm Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h
+		mv Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h_ Kinvey-#{s.version}/Kinvey.framework/Headers/Kinvey.h
   CMD
-  s.ios.vendored_frameworks = "Kinvey-#{s.version}-Beta/Kinvey.framework"
+  s.ios.vendored_frameworks = "Kinvey-#{s.version}/Kinvey.framework"
 
   # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
