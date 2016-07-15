@@ -90,6 +90,41 @@ public class User: NSObject, Credential, Mappable {
         return User.destroy(userId: userId, hard: hard, client: client, completionHandler: completionHandler)
     }
     
+    /**
+     Sign in a user with a social identity.
+     - parameter authSource: Authentication source enum
+     - parameter authData: Authentication data from the social provider
+     - parameter client: Define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter completionHandler: Completion handler to be called once the response returns from the server
+     */
+    public class func login(authSource: AuthSource, authData: [String : AnyObject], client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+        precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
+        
+        let request = client.networkRequestFactory.buildUserSocialLogin(authSource.rawValue, authData: authData)
+        Promise<User> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK {
+                    let user = client.responseParser.parseUser(data)
+                    if let user = user {
+                        client.activeUser = user
+                        fulfill(user)
+                    } else {
+                        reject(Error.InvalidResponse)
+                    }
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+            }.then { user in
+                completionHandler?(client.activeUser, nil)
+            }.error { error in
+                completionHandler?(nil, error)
+        }
+        return request
+    }
+    
     /// Sign in a user and set as a current active user.
     public class func login(username username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
