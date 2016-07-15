@@ -868,6 +868,85 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testFacebookLogin() {
+        class FakeFacebookSocialLoginURLProtocol: NSURLProtocol {
+            
+            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                return true
+            }
+            
+            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                let userId = "503bc9806065332d6f000005"
+                let headers = [
+                    "Location" : "https://baas.kinvey.com/user/:appKey/\(userId)",
+                    "Content-Type" : "application/json"
+                ]
+                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 201, HTTPVersion: "HTTP/1.1", headerFields: headers)!
+                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                
+                let jsonResponse = [
+                    "_id": userId,
+                    "username": "73abe64e-139e-4034-9f88-08e3d9e1e5f8",
+                    "password": "a94fa673-993e-4770-ac64-af82e6ab02b7",
+                    "_socialIdentity": [
+                        "facebook": [
+                            "id": "100004289534145",
+                            "name": "Kois Steel",
+                            "gender": "female",
+                            "email": "kois.steel@testFB.net",
+                            "birthday": "2012/08/20",
+                            "location": "Cambridge, USA"
+                        ]
+                    ],
+                    "_kmd": [
+                        "lmt": "2012-08-27T19:24:47.975Z",
+                        "ect": "2012-08-27T19:24:47.975Z",
+                        "authtoken": "8d4c427d-51ee-4f0f-bd99-acd2192d43d2.Clii9/Pjq05g8C5rqQgQg9ty+qewsxlTjhgNjyt9Pn4="
+                    ],
+                    "_acl": [
+                        "creator": "503bc9806065332d6f000005"
+                    ]
+                ]
+                
+                let data = try! NSJSONSerialization.dataWithJSONObject(jsonResponse, options: [])
+                client!.URLProtocol(self, didLoadData: data)
+                client!.URLProtocolDidFinishLoading(self)
+            }
+            
+            override func stopLoading() {
+            }
+            
+        }
+        
+        setURLProtocol(FakeFacebookSocialLoginURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFacebookLogin = expectationWithDescription("Facebook Login")
+        
+        let fakeFacebookData = [
+            "access_token": "AAAD30ogoDZCYBAKS50rOwCxMR7tIX8F90YDyC3vp63j0IvyCU0MELE2QMLnsWXKo2LcRgwA51hFr1UUpqXkSHu4lCj4VZCIuGG7DHZAHuZArzjvzTZAwQ",
+            "expires": "5105388"
+        ]
+        User.login(authSource: .Facebook, fakeFacebookData) { user, error in
+            XCTAssertNotNil(user)
+            XCTAssertNil(error)
+            
+            expectationFacebookLogin?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationFacebookLogin = nil
+        }
+        
+        client.activeUser = nil
+    }
+    
     func testMICLoginWKWebView() {
         defer {
             if let user = client?.activeUser {
