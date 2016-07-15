@@ -14,6 +14,7 @@
 		571991071CB45EC400070CDA /* SyncStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */; };
 		571991091CB45EEE00070CDA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571991081CB45EEE00070CDA /* Person.swift */; };
 		572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576E95AC1C20DB7C00258CC3 /* NetworkStoreTests.swift */; };
+		572005CA1D342B2800AE9AC5 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572005C91D342B2800AE9AC5 /* Book.swift */; };
 		5728212D1C63E0F500373EC8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212C1C63E0F500373EC8 /* File.swift */; };
 		5728212F1C63E10700373EC8 /* FileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728212E1C63E10700373EC8 /* FileStore.swift */; };
 		5728213B1C6482C000373EC8 /* NSURLSessionTaskRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */; };
@@ -563,6 +564,7 @@
 		57198FEA1CAF33C700070CDA /* KCSQueryProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KCSQueryProtocol.h; sourceTree = "<group>"; };
 		5719905A1CB301D500070CDA /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		571991081CB45EEE00070CDA /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		572005C91D342B2800AE9AC5 /* Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
 		5728212C1C63E0F500373EC8 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		5728212E1C63E10700373EC8 /* FileStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStore.swift; sourceTree = "<group>"; };
 		5728213A1C6482C000373EC8 /* NSURLSessionTaskRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSURLSessionTaskRequest.swift; sourceTree = "<group>"; };
@@ -1354,6 +1356,7 @@
 				571991081CB45EEE00070CDA /* Person.swift */,
 				57A9609C1CC6D675005E52A8 /* DirectoryEntry.swift */,
 				57A9609E1CC6D6A9005E52A8 /* RefProject.swift */,
+				572005C91D342B2800AE9AC5 /* Book.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -2668,6 +2671,7 @@
 				57C563041C9CC7270011FB36 /* NSDate.swift in Sources */,
 				57A27C911C178F18000DF951 /* KinveyTestCase.swift in Sources */,
 				57A4656D1CBEF7B6009E7384 /* PersistableTestCase.swift in Sources */,
+				572005CA1D342B2800AE9AC5 /* Book.swift in Sources */,
 				57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */,
 				572005C81D30236300AE9AC5 /* NetworkStoreTests.swift in Sources */,
 				5771F9FF1D301F6300903777 /* Event.swift in Sources */,
