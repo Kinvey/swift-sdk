@@ -18,11 +18,11 @@ build-ios:
 	carthage build --no-skip-current --platform ios
 
 pack:
-	mkdir -p build/Kinvey-$(VERSION)-Beta
+	mkdir -p build/Kinvey-$(VERSION)
 	cd Kinvey/Carthage/Build/iOS; \
-	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework ../../../../build/Kinvey-$(VERSION)-Beta
+	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework ../../../../build/Kinvey-$(VERSION)
 	cd build; \
-	zip -r Kinvey-$(VERSION)-Beta.zip Kinvey-$(VERSION)-Beta
+	zip -r Kinvey-$(VERSION).zip Kinvey-$(VERSION)
 
 docs:
 	jazzy --swift-version 2.2 \
