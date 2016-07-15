@@ -14,6 +14,7 @@ internal enum Endpoint {
     case UserById(client: Client, userId: String)
     case UserExistsByUsername(client: Client)
     case UserLogin(client: Client)
+    case SendEmailConfirmation(client: Client, username: String)
     case UserResetPassword(usernameOrEmail: String, client: Client)
     case UserForgotUsername(client: Client)
     

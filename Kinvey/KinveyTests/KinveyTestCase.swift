@@ -86,7 +86,7 @@ class KinveyTestCase: XCTestCase {
         
         weak var expectationSignUp = expectationWithDescription("Sign Up")
         
-        User.signup(username: username, password: password) { user, error in
+        let handler: (User?, ErrorType?) -> Void = { user, error in
             if let completionHandler = completionHandler {
                 completionHandler(user, error)
             } else {
@@ -96,6 +96,12 @@ class KinveyTestCase: XCTestCase {
             }
             
             expectationSignUp?.fulfill()
+        }
+        
+        if let username = username {
+            User.signup(username: username, completionHandler: handler)
+        } else {
+            User.signup(completionHandler: handler)
         }
         
         waitForExpectationsWithTimeout(defaultTimeout) { error in
