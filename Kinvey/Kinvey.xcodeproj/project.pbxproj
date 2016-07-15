@@ -135,6 +135,7 @@
 		57A960A11CC6D6FE005E52A8 /* JsonTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A01CC6D6FE005E52A8 /* JsonTestCase.swift */; };
 		57A960A41CC8278E005E52A8 /* PerformanceTestLongData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A31CC8278E005E52A8 /* PerformanceTestLongData.swift */; };
 		57A960A61CC827A3005E52A8 /* PerformanceTestMedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */; };
+		57AC52881D395F7D000887D3 /* AuthSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AC52871D395F7D000887D3 /* AuthSource.swift */; };
 		57ADC0C41CC95CF4002B517A /* PerformanceTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */; };
 		57B0C2131CDCE8E200492D6C /* Realm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1DA1CDCE88900492D6C /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57B0C2141CDCE8FC00492D6C /* KeychainAccess.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57B0C1D01CDCE88900492D6C /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -671,6 +672,7 @@
 		57A960A01CC6D6FE005E52A8 /* JsonTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonTestCase.swift; sourceTree = "<group>"; };
 		57A960A31CC8278E005E52A8 /* PerformanceTestLongData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestLongData.swift; sourceTree = "<group>"; };
 		57A960A51CC827A3005E52A8 /* PerformanceTestMedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestMedData.swift; sourceTree = "<group>"; };
+		57AC52871D395F7D000887D3 /* AuthSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthSource.swift; sourceTree = "<group>"; };
 		57ADC0C31CC95CF4002B517A /* PerformanceTestData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTestData.swift; sourceTree = "<group>"; };
 		57B0C14E1CDC4D8200492D6C /* Kinvey.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Kinvey.xcconfig; sourceTree = "<group>"; };
 		57B0C1C01CDCE3E600492D6C /* KinveyTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = KinveyTests.xcconfig; sourceTree = "<group>"; };
@@ -1256,6 +1258,7 @@
 				57E4DB181C8A26CA0017B406 /* Keychain.swift */,
 				57A27C9D1C178FB5000DF951 /* Client.swift */,
 				57A27C9F1C178FC0000DF951 /* User.swift */,
+				57AC52871D395F7D000887D3 /* AuthSource.swift */,
 				57A27CA11C17910E000DF951 /* Acl.swift */,
 				57A27CA31C179118000DF951 /* Metadata.swift */,
 				574912701C59323B00EA4F26 /* DataStoreType.swift */,
@@ -2470,6 +2473,7 @@
 				573DD9851D11CCD6006ECF1C /* RealmCache.swift in Sources */,
 				57A27CA21C17910E000DF951 /* Acl.swift in Sources */,
 				5793B85F1D219A450088B5F9 /* Mappable.swift in Sources */,
+				57AC52881D395F7D000887D3 /* AuthSource.swift in Sources */,
 				57E1C3A31C17B3FF00578974 /* Query.swift in Sources */,
 				5793B8661D219A450088B5F9 /* EnumTransform.swift in Sources */,
 				57B23EB71C7FA62A006403CC /* KCSClient+KinveyDataStore.m in Sources */,
