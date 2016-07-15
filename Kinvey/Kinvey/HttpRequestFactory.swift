@@ -263,5 +263,15 @@ class HttpRequestFactory: RequestFactory {
         )
         return request
     }
+    
+    func buildSendEmailConfirmation(forUsername username: String) -> HttpRequest {
+        let request = HttpRequest(
+            httpMethod: .Post,
+            endpoint: Endpoint.SendEmailConfirmation(client: client, username: username),
+            credential: client,
+            client: client
+        )
+        return request
+    }
 
 }
