@@ -97,7 +97,7 @@ public class User: NSObject, Credential, Mappable {
      - parameter client: Define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
      - parameter completionHandler: Completion handler to be called once the response returns from the server
      */
-    public class func login(authSource: AuthSource, authData: [String : AnyObject], client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
+    public class func login(authSource authSource: AuthSource, _ authData: [String : AnyObject], client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) -> Request {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
         
         let request = client.networkRequestFactory.buildUserSocialLogin(authSource.rawValue, authData: authData)
