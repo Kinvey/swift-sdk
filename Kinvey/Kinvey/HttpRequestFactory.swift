@@ -48,6 +48,20 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildUserSocialLogin(authSource: String, authData: [String : AnyObject]) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.User(client: client), client: client)
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let socialIdentity = [
+            authSource : authData
+        ]
+        let bodyObject = [
+            "_socialIdentity" : socialIdentity
+        ]
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        return request
+    }
+    
     func buildUserLogin(username username: String, password: String) -> HttpRequest {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserLogin(client: client), client: client)
         request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")

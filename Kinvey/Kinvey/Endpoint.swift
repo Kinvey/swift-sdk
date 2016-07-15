@@ -36,4 +36,97 @@ internal enum Endpoint {
     case URL(url: NSURL)
     case CustomEndpooint(client: Client, name: String)
     
+    func url() -> NSURL {
+        switch self {
+        case .User(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)")
+        case .UserById(let client, let userId):
+            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/\(userId)")
+        case .UserExistsByUsername(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/check-username-exists")
+        case .UserLogin(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/login")
+        case .UserResetPassword(let usernameOrEmail, let client):
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/\(usernameOrEmail)/user-password-reset-initiate")
+        case .UserForgotUsername(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/user-forgot-username")
+        case .OAuthAuth(let client, let redirectURI):
+            let characterSet = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
+            characterSet.removeCharactersInString(":#[]@!$&'()*+,;=")
+            let redirectURIEncoded = redirectURI.absoluteString.stringByAddingPercentEncodingWithAllowedCharacters(characterSet) ?? redirectURI.absoluteString
+            let query = "?client_id=\(client.appKey!)&redirect_uri=\(redirectURIEncoded)&response_type=code"
+            return NSURL(string: client.authHostName.URLByAppendingPathComponent("/oauth/auth").absoluteString + query)!
+        case .OAuthToken(let client):
+            return client.authHostName.URLByAppendingPathComponent("/oauth/token")
+        case .AppData(let client, let collectionName):
+            return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")
+        case .AppDataById(let client, let collectionName, let id):
+            return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
+        case .AppDataByQuery(let client, let collectionName, let query, let fields):
+            let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
+            if (query.isEmpty()){
+                return NSURL(string: url)!
+            }
+            let queryStr = query.urlQueryStringEncoded()
+            let urlQuery = "?query=\(queryStr)"
+            
+            var sortStr = ""
+            if let sortDescriptors = query.sortDescriptors {
+                var sorts = [String : Int]()
+                for sortDescriptor in sortDescriptors {
+                    sorts[sortDescriptor.key!] = sortDescriptor.ascending ? 1 : -1
+                }
+                let data = try! NSJSONSerialization.dataWithJSONObject(sorts, options: [])
+                sortStr = "&sort=\(String(data: data, encoding: NSUTF8StringEncoding)!.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!)"
+            }
+            
+            var fieldsStr = ""
+            if let fields = fields {
+                fieldsStr = "&fields=\(fields.joinWithSeparator(",").stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!)"
+            }
+            
+            return NSURL(string: url + urlQuery + sortStr + fieldsStr)!
+        case .PushRegisterDevice(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")
+        case .PushUnRegisterDevice(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/unregister-device")
+        case .BlobById(let client, let fileId):
+            return BlobDownload(client: client, fileId: fileId, query: nil, tls: false, ttlInSeconds: nil).url()
+        case .BlobUpload(let client, let fileId, let tls):
+            return BlobDownload(client: client, fileId: fileId, query: nil, tls: tls, ttlInSeconds: nil).url()
+        case .BlobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
+            let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")").absoluteString
+            
+            var queryParams: [String : String] = [:]
+            
+            if let query = query {
+                queryParams["query"] = query.urlQueryStringEncoded()
+            }
+            
+            if tls {
+                queryParams["tls"] = "true"
+            }
+            
+            if let ttlInSeconds = ttlInSeconds {
+                queryParams["ttl_in_seconds"] = String(ttlInSeconds)
+            }
+            
+            var urlQuery = queryParams.count > 0 ? "?" : ""
+            for queryItem in queryParams {
+                urlQuery += "\(queryItem.0)=\(queryItem.1)&"
+            }
+            if urlQuery.characters.count > 0 {
+                urlQuery.removeAtIndex(urlQuery.endIndex.predecessor())
+            }
+            
+            return NSURL(string: url + urlQuery)!
+        case .BlobByQuery(let client, let query):
+            return BlobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil).url()
+        case .URL(let url):
+            return url
+        case .CustomEndpooint(let client, let name):
+            return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/custom/\(name)")
+        }
+    }
+    
 }

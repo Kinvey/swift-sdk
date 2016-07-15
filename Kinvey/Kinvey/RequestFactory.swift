@@ -12,6 +12,7 @@ protocol RequestFactory {
     
     func buildUserSignUp(username username: String?, password: String?) -> HttpRequest
     func buildUserDelete(userId userId: String, hard: Bool) -> HttpRequest
+    func buildUserSocialLogin(authSource: String, authData: [String : AnyObject]) -> HttpRequest
     func buildUserLogin(username username: String, password: String) -> HttpRequest
     func buildUserExists(username username: String) -> HttpRequest
     func buildUserGet(userId userId: String) -> HttpRequest
