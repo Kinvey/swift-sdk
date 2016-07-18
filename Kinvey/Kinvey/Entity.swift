@@ -12,7 +12,7 @@ import RealmSwift
 
 internal func StringFromClass(cls: AnyClass) -> String {
     var className = NSStringFromClass(cls)
-    while className.hasPrefix("RLMStandalone_") {
+    while className.hasPrefix("RLMStandalone_") || className.hasPrefix("RLMUnmanaged_") {
         let classObj: AnyClass! = NSClassFromString(className)!
         let superClass: AnyClass! = class_getSuperclass(classObj)
         className = NSStringFromClass(superClass)
