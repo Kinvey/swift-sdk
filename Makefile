@@ -20,7 +20,7 @@ build-ios:
 pack:
 	mkdir -p build/Kinvey-$(VERSION)
 	cd Kinvey/Carthage/Build/iOS; \
-	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework ../../../../build/Kinvey-$(VERSION)
+	cp -R Kinvey.framework PromiseKit.framework KeychainAccess.framework Realm.framework RealmSwift.framework ../../../../build/Kinvey-$(VERSION)
 	cd build; \
 	zip -r Kinvey-$(VERSION).zip Kinvey-$(VERSION)
 

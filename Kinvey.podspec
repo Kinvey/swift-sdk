@@ -139,6 +139,7 @@ Pod::Spec.new do |s|
 	
   s.dependency "PromiseKit", "~> 3.1.1"
   s.dependency "KeychainAccess", "~> 2.3.5"
-  s.dependency "Realm", "~> 0.103.0"
+  s.dependency "Realm", "~> 1.0.2"
+  s.dependency "RealmSwift", "~> 1.0.2"
 
 end
