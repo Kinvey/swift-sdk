@@ -381,6 +381,9 @@ public class User: NSObject, Credential, Mappable {
         return request
     }
     
+    /**
+     This method allows users to do exact queries for other users restricted to the `UserQuery` attributes.
+     */
     public func lookup(userQuery: UserQuery, client: Client = Kinvey.sharedClient, completionHandler: UsersHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserLookup(user: self, userQuery: userQuery)
         Promise<[User]> { fulfill, reject in

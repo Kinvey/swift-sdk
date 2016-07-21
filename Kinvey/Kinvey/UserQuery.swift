@@ -8,6 +8,9 @@
 
 import Foundation
 
+/**
+ Struct that contains all the parameters available for user lookup.
+ */
 public struct UserQuery: Mappable {
     
     public var userId: String?
@@ -26,16 +29,20 @@ public struct UserQuery: Mappable {
     public var linkedInFirstName: String?
     public var linkedInLastName: String?
     
+    /// Constructor to build a `UserQuery` object as desired.
     public init(@noescape _ block: (inout UserQuery) -> Void) {
         block(&self)
     }
     
+    /// Default Constructor.
     public init() {
     }
     
+    /// Constructor for object mapping.
     public init?(_ map: Map) {
     }
     
+    /// Performs the object mapping.
     public mutating func mapping(map: Map) {
         userId <- map["_id"]
         username <- map["username"]
