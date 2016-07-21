@@ -108,6 +108,16 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildUserLookup(user user: User, userQuery: UserQuery) -> HttpRequest {
+        let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserLookup(client: client), credential: client.activeUser, client: client)
+        request.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let bodyObject = userQuery.toJSON()
+        
+        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
+        return request
+    }
+    
     func buildUserResetPassword(usernameOrEmail usernameOrEmail: String) -> HttpRequest {
         let request = HttpRequest(httpMethod: .Post, endpoint: Endpoint.UserResetPassword(usernameOrEmail: usernameOrEmail, client: client), credential: client, client: client)
         return request
