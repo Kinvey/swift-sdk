@@ -274,6 +274,68 @@ class UserTests: KinveyTestCase {
         }
     }
     
+    func testLookup() {
+        let username = NSUUID().UUIDString
+        let password = NSUUID().UUIDString
+        let email = "\(username)@kinvey.com"
+        signUp(username: username, password: password)
+        
+        XCTAssertNotNil(client.activeUser)
+        
+        if let user = client.activeUser {
+            do {
+                weak var expectationSave = expectationWithDescription("Save")
+                
+                user.email = email
+                
+                user.save() { user, error in
+                    XCTAssertTrue(NSThread.isMainThread())
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(user)
+                    
+                    expectationSave?.fulfill()
+                }
+                
+                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                    expectationSave = nil
+                }
+            }
+            
+            do {
+                client.logNetworkEnabled = true
+                
+                weak var expectationUserLookup = expectationWithDescription("User Lookup")
+                
+                let userQuery = UserQuery {
+                    $0.username = username
+                }
+                
+                user.lookup(userQuery) { users, error in
+                    XCTAssertTrue(NSThread.isMainThread())
+                    XCTAssertNotNil(users)
+                    XCTAssertNil(error)
+                    
+                    if let users = users {
+                        XCTAssertEqual(users.count, 1)
+                        
+                        if let user = users.first {
+                            XCTAssertEqual(user.username, username)
+                            XCTAssertEqual(user.email, email)
+                        }
+                    }
+                    
+                    expectationUserLookup?.fulfill()
+                }
+                
+                waitForExpectationsWithTimeout(defaultTimeout) { error in
+                    expectationUserLookup = nil
+                }
+                
+                client.logNetworkEnabled = false
+            }
+        }
+    }
+    
     func testSave() {
         class MyUser: User {
             
