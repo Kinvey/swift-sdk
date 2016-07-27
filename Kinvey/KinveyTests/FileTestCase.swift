@@ -13,9 +13,9 @@ class FileTestCase: StoreTestCase {
     
     var file: File?
     
-    var fileStore: FileStore {
+    lazy var fileStore: FileStore = {
         return FileStore.getInstance()
-    }
+    }()
     
     override func tearDown() {
         if let file = file, let _ = file.fileId {

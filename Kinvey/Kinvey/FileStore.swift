@@ -327,15 +327,21 @@ public class FileStore {
         return download(&file, cacheEnabled: cacheEnabled, ttl: ttl, completionHandler: completionHandler)
     }
     
-    /// Downloads a file using the `downloadURL` of the `File` instance.
-    public func download(inout file: File, cacheEnabled: Bool = true, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
+    private func requiresFileId(inout file: File) {
         guard let _ = file.fileId else {
             fatalError("File.fileId is required")
         }
+    }
+    
+    /// Downloads a file using the `downloadURL` of the `File` instance.
+    public func download(inout file: File, cacheEnabled: Bool = true, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
+        requiresFileId(&file)
         
         if let fileId = file.fileId, let cachedFile = cachedFile(fileId) {
             file = cachedFile
-            completionHandler?(file, file.pathURL, nil)
+            dispatch_async(dispatch_get_main_queue()) {
+                completionHandler?(file, file.pathURL, nil)
+            }
         }
         
         if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
@@ -359,6 +365,21 @@ public class FileStore {
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
     public func download(file: File, ttl: TTL? = nil, completionHandler: FileDataCompletionHandler? = nil) -> Request {
+        var file = file
+        return download(&file, ttl: ttl, completionHandler: completionHandler)
+    }
+    
+    /// Downloads a file using the `downloadURL` of the `File` instance.
+    public func download(inout file: File, ttl: TTL? = nil, completionHandler: FileDataCompletionHandler? = nil) -> Request {
+        requiresFileId(&file)
+        
+        if let fileId = file.fileId, let cachedFile = cachedFile(fileId), let path = file.path, let data = NSData(contentsOfFile: path) {
+            file = cachedFile
+            dispatch_async(dispatch_get_main_queue()) {
+                completionHandler?(file, data, nil)
+            }
+        }
+        
         if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
             return downloadFile(file, downloadURL: downloadURL, completionHandler: completionHandler)
         } else {
@@ -387,6 +408,10 @@ public class FileStore {
                     let json = self.client.responseParser.parse(data),
                     let count = json["count"] as? UInt
                 {
+                    if let cache = self.cache {
+                        cache.remove(file)
+                    }
+                    
                     fulfill(count)
                 } else if let error = error {
                     reject(error)
@@ -429,6 +454,13 @@ public class FileStore {
             completionHandler?(nil, error)
         }
         return request
+    }
+    
+    /**
+     Clear cached files from local storage.
+     */
+    public func clearCache() {
+        client.cacheManager.clearAll()
     }
     
 }
