@@ -41,6 +41,18 @@ class RealmFileCache: FileCache {
         }
     }
     
+    func remove(file: File) {
+        executor.executeAndWait {
+            try! self.realm.write {
+                if file.realm != self.realm, let fileId = file.fileId, let file = self.realm.objectForPrimaryKey(File.self, key: fileId) {
+                    self.realm.delete(file)
+                } else {
+                    self.realm.delete(file)
+                }
+            }
+        }
+    }
+    
     func get(fileId: String) -> File? {
         var file: File? = nil
         

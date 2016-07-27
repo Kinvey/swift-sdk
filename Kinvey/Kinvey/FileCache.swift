@@ -12,6 +12,8 @@ protocol FileCache {
     
     func save(file: File, beforeSave: (() -> Void)?)
     
+    func remove(file: File)
+    
     func get(fileId: String) -> File?
     
 }
