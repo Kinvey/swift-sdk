@@ -11,10 +11,12 @@ import RealmSwift
 
 class RealmFileCache: FileCache {
     
+    let persistenceId: String
     let realm: Realm
     let executor: Executor
     
     init(persistenceId: String, filePath: String? = nil, encryptionKey: NSData? = nil, schemaVersion: UInt64) {
+        self.persistenceId = persistenceId
         var configuration = Realm.Configuration()
         if let filePath = filePath {
             configuration.fileURL = NSURL(fileURLWithPath: filePath)
@@ -48,6 +50,14 @@ class RealmFileCache: FileCache {
                     self.realm.delete(file)
                 } else {
                     self.realm.delete(file)
+                }
+                
+                if let path = file.path {
+                    do {
+                        try NSFileManager.defaultManager().removeItemAtPath((path as NSString).stringByExpandingTildeInPath)
+                    } catch {
+                        //ignore possible errors if for any reason is not possible to delete the file
+                    }
                 }
             }
         }
