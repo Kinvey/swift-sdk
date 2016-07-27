@@ -150,7 +150,7 @@ public class Push: NSObject {
         Promise<Bool> { fulfill, reject in
             let request = self.client.networkRequestFactory.buildPushUnRegisterDevice(deviceToken)
             request.execute({ (data, response, error) -> Void in
-                if let response = response where response.isResponseOK {
+                if let response = response where response.isOK {
                     fulfill(true)
                 } else if let error = error {
                     reject(error)
@@ -173,7 +173,7 @@ public class Push: NSObject {
             Promise<Bool> { fulfill, reject in
                 let request = self.client.networkRequestFactory.buildPushRegisterDevice(deviceToken)
                 request.execute({ (data, response, error) -> Void in
-                    if let response = response where response.isResponseOK {
+                    if let response = response where response.isOK {
                         fulfill(true)
                     } else if let error = error {
                         reject(error)

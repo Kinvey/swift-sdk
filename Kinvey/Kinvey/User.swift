@@ -44,7 +44,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserSignUp(username: username, password: password)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK {
+                if let response = response where response.isOK {
                     client.activeUser = client.responseParser.parseUser(data)
                     fulfill(client.activeUser!)
                 } else if let error = error {
@@ -66,7 +66,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserDelete(userId: userId, hard: hard)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK {
+                if let response = response where response.isOK {
                     if let activeUser = client.activeUser where activeUser.userId == userId {
                         client.activeUser = nil
                     }
@@ -103,7 +103,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserSocialLogin(authSource.rawValue, authData: authData)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK {
+                if let response = response where response.isOK {
                     let user = client.responseParser.parseUser(data)
                     if let user = user {
                         client.activeUser = user
@@ -132,7 +132,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserLogin(username: username, password: password)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK {
+                if let response = response where response.isOK {
                     let user = client.responseParser.parseUser(data)
                     if let user = user {
                         client.activeUser = user
@@ -167,7 +167,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildSendEmailConfirmation(forUsername: username)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK {
+                if let response = response where response.isOK {
                     fulfill()
                 } else if let error = error {
                     reject(error)
@@ -206,7 +206,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserResetPassword(usernameOrEmail: usernameOrEmail)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK {
+                if let response = response where response.isOK {
                     fulfill()
                 } else if let error = error {
                     reject(error)
@@ -260,7 +260,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserForgotUsername(email: email)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK {
+                if let response = response where response.isOK {
                     fulfill()
                 } else if let error = error {
                     reject(error)
@@ -281,7 +281,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserExists(username: username)
         Promise<Bool> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK, let json = client.responseParser.parse(data), let usernameExists = json["usernameExists"] as? Bool {
+                if let response = response where response.isOK, let json = client.responseParser.parse(data), let usernameExists = json["usernameExists"] as? Bool {
                     fulfill(usernameExists)
                 } else if let error = error {
                     reject(error)
@@ -302,7 +302,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserGet(userId: userId)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK, let user = client.responseParser.parseUser(data) {
+                if let response = response where response.isOK, let user = client.responseParser.parseUser(data) {
                     fulfill(user)
                 } else if let error = error {
                     reject(error)
@@ -363,7 +363,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserSave(user: self, newPassword: newPassword)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK, let user = client.responseParser.parseUser(data) {
+                if let response = response where response.isOK, let user = client.responseParser.parseUser(data) {
                     client.activeUser = user
                     fulfill(user)
                 } else if let error = error {

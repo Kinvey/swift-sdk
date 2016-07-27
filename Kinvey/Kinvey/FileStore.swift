@@ -14,10 +14,12 @@ public class FileStore {
     
     public typealias FileCompletionHandler = (File?, ErrorType?) -> Void
     public typealias FileDataCompletionHandler = (File?, NSData?, ErrorType?) -> Void
+    public typealias FilePathCompletionHandler = (File?, NSURL?, ErrorType?) -> Void
     public typealias UIntCompletionHandler = (UInt?, ErrorType?) -> Void
     public typealias FileArrayCompletionHandler = ([File]?, ErrorType?) -> Void
     
     private let client: Client
+    private let cache: FileCache?
     
     /// Factory method that returns a `FileStore`.
     public class func getInstance(client: Client = sharedClient) -> FileStore {
@@ -26,6 +28,7 @@ public class FileStore {
     
     private init(client: Client) {
         self.client = client
+        self.cache = client.cacheManager.fileCache(filePath: client.filePath())
     }
 
 #if os(iOS)
@@ -75,7 +78,7 @@ public class FileStore {
             file.uploadURL = NSURL(string: uploadURL)
         }
         if let downloadURL = json["_downloadURL"] as? String {
-            file.downloadURL = NSURL(string: downloadURL)
+            file.download = downloadURL
         }
         if let requiredHeaders = json["_requiredHeaders"] as? [String : String] {
             file.uploadHeaders = requiredHeaders
@@ -91,7 +94,7 @@ public class FileStore {
         let request = self.client.networkRequestFactory.buildBlobDownloadFile(file, ttl: ttl)
         return (request, Promise<File> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
-                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
+                if let response = response where response.isOK, let json = self.client.responseParser.parse(data) {
                     self.fillFile(file, json: json)
                     fulfill(file)
                 } else if let error = error {
@@ -107,6 +110,21 @@ public class FileStore {
     public func upload(file: File, data: NSData, completionHandler: FileCompletionHandler? = nil) -> Request {
         let requests = MultiRequest()
         Promise<(file: File, skip: Int?)> { fulfill, reject in //creating bucket
+            let createUpdateFileEntry = {
+                let request = self.client.networkRequestFactory.buildBlobUploadFile(file)
+                requests += request
+                request.execute({ (data, response, error) -> Void in
+                    if let response = response where response.isOK, let json = self.client.responseParser.parse(data) {
+                        self.fillFile(file, json: json)
+                        fulfill((file: file, skip: nil))
+                    } else if let error = error {
+                        reject(error)
+                    } else {
+                        reject(Error.InvalidResponse)
+                    }
+                })
+            }
+            
             if let _ = file.fileId {
                 let request = NSMutableURLRequest(URL: file.uploadURL!)
                 request.HTTPMethod = "PUT"
@@ -132,7 +150,9 @@ public class FileStore {
                     }
                     
                     let regexRange = try! NSRegularExpression(pattern: "[bytes=]?(\\d+)-(\\d+)", options: [])
-                    if let response = response as? NSHTTPURLResponse
+                    if let response = response as? NSHTTPURLResponse where 200 <= response.statusCode && response.statusCode < 300 {
+                        createUpdateFileEntry()
+                    } else if let response = response as? NSHTTPURLResponse
                         where response.statusCode == 308,
                         let rangeString = response.allHeaderFields["Range"] as? String,
                         let textCheckingResult = regexRange.matchesInString(rangeString, options: [], range: NSMakeRange(0, rangeString.characters.count)).first
@@ -154,18 +174,7 @@ public class FileStore {
                 requests += NSURLSessionTaskRequest(client: client, task: dataTask)
                 dataTask.resume()
             } else {
-                let request = client.networkRequestFactory.buildBlobUploadFile(file)
-                requests += request
-                request.execute({ (data, response, error) -> Void in
-                    if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
-                        self.fillFile(file, json: json)
-                        fulfill((file: file, skip: nil))
-                    } else if let error = error {
-                        reject(error)
-                    } else {
-                        reject(Error.InvalidResponse)
-                    }
-                })
+                createUpdateFileEntry()
             }
         }.then { file, skip in //uploading data
             return Promise<File> { fulfill, reject in
@@ -218,11 +227,68 @@ public class FileStore {
         return request
     }
     
+    private func downloadFile(file: File, cacheEnabled: Bool = true, downloadURL: NSURL, completionHandler: FilePathCompletionHandler? = nil) -> NSURLSessionTaskRequest {
+        let downloadTaskRequest = NSURLSessionTaskRequest(client: client, url: downloadURL)
+        Promise<NSURL> { fulfill, reject in
+            downloadTaskRequest.downloadTaskWithURL(file) { (url: NSURL?, response, error) in
+                if let response = response where response.isOK || response.isNotModified, let url = url {
+                    if let pathURL = file.pathURL where response.isNotModified {
+                        fulfill(pathURL)
+                    } else if cacheEnabled {
+                        let fileManager = NSFileManager()
+                        if let fileId = file.fileId,
+                            let baseFolder = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first
+                        {
+                            do {
+                                var baseFolderURL = NSURL(fileURLWithPath: baseFolder)
+                                baseFolderURL = baseFolderURL.URLByAppendingPathComponent(self.client.appKey!).URLByAppendingPathComponent("files")
+                                if !fileManager.fileExistsAtPath(baseFolderURL.path!) {
+                                    try fileManager.createDirectoryAtURL(baseFolderURL, withIntermediateDirectories: true, attributes: nil)
+                                }
+                                let toURL = baseFolderURL.URLByAppendingPathComponent(fileId)
+                                if let path = toURL.path where fileManager.fileExistsAtPath(path) {
+                                    do {
+                                        try fileManager.removeItemAtPath(path)
+                                    }
+                                }
+                                try fileManager.moveItemAtURL(url, toURL: toURL)
+                                
+                                if let cache = self.cache {
+                                    cache.save(file) {
+                                        file.path = (toURL.path! as NSString).stringByAbbreviatingWithTildeInPath
+                                        file.etag = response.etag
+                                    }
+                                }
+                                
+                                fulfill(toURL)
+                            } catch let error {
+                                reject(error)
+                            }
+                        } else {
+                            reject(Error.InvalidResponse)
+                        }
+                    } else {
+                        fulfill(url)
+                    }
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+        }.then { url in
+            completionHandler?(file, url, nil)
+        }.error { error in
+            completionHandler?(file, nil, error)
+        }
+        return downloadTaskRequest
+    }
+    
     private func downloadFile(file: File, downloadURL: NSURL, completionHandler: FileDataCompletionHandler? = nil) -> NSURLSessionTaskRequest {
         let downloadTaskRequest = NSURLSessionTaskRequest(client: client, url: downloadURL)
         Promise<NSData> { fulfill, reject in
-            downloadTaskRequest.downloadTaskWithURL(file) { (data, response, error) -> Void in
-                if let response = response where response.isResponseOK, let data = data {
+            downloadTaskRequest.downloadTaskWithURL(file) { (data: NSData?, response, error) -> Void in
+                if let response = response where response.isOK, let data = data {
                     fulfill(data)
                 } else if let error = error {
                     reject(error)
@@ -236,6 +302,59 @@ public class FileStore {
             completionHandler?(file, nil, error)
         }
         return downloadTaskRequest
+    }
+    
+    public func cachedFile(fileId: String) -> File? {
+        if let cache = cache {
+            return cache.get(fileId)
+        }
+        return nil
+    }
+    
+    public func cachedFile(inout file: File) {
+        guard let fileId = file.fileId else {
+            fatalError("File.fileId is required")
+        }
+        
+        if let cachedFile = cachedFile(fileId) {
+            file = cachedFile
+        }
+    }
+    
+    /// Downloads a file using the `downloadURL` of the `File` instance.
+    public func download(file: File, cacheEnabled: Bool = true, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
+        var file = file
+        return download(&file, cacheEnabled: cacheEnabled, ttl: ttl, completionHandler: completionHandler)
+    }
+    
+    /// Downloads a file using the `downloadURL` of the `File` instance.
+    public func download(inout file: File, cacheEnabled: Bool = true, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
+        guard let _ = file.fileId else {
+            fatalError("File.fileId is required")
+        }
+        
+        if let fileId = file.fileId, let cachedFile = cachedFile(fileId) {
+            file = cachedFile
+            completionHandler?(file, file.pathURL, nil)
+        }
+        
+        if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
+            return downloadFile(file, cacheEnabled: cacheEnabled, downloadURL: downloadURL, completionHandler: completionHandler)
+        } else {
+            let fileMetadata = getFileMetadata(file, ttl: ttl)
+            fileMetadata.1.then { file in
+                return Promise {
+                    if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
+                        self.downloadFile(file, cacheEnabled: cacheEnabled, downloadURL: downloadURL, completionHandler: completionHandler)
+                    } else {
+                        completionHandler?(file, nil, Error.InvalidResponse)
+                    }
+                }
+            }.error { error in
+                completionHandler?(file, nil, error)
+            }
+            return fileMetadata.0
+        }
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
@@ -264,7 +383,7 @@ public class FileStore {
         let request = client.networkRequestFactory.buildBlobDeleteFile(file)
         Promise<UInt> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
-                if let response = response where response.isResponseOK,
+                if let response = response where response.isOK,
                     let json = self.client.responseParser.parse(data),
                     let count = json["count"] as? UInt
                 {
@@ -288,7 +407,7 @@ public class FileStore {
         let request = client.networkRequestFactory.buildBlobQueryFile(query, ttl: ttl)
         Promise<[File]> { fulfill, reject in
             request.execute({ (data, response, error) -> Void in
-                if let response = response where response.isResponseOK,
+                if let response = response where response.isOK,
                     let jsonArray = self.client.responseParser.parseArray(data)
                 {
                     var files: [File] = []

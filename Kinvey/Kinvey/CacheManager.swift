@@ -42,6 +42,10 @@ internal class CacheManager: NSObject {
         return RealmCache<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
+    func fileCache(filePath filePath: String? = nil) -> FileCache? {
+        return RealmFileCache(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
+    }
+    
     func clearAll(tag: String? = nil) {
         let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
         if let path = paths.first as NSString? {

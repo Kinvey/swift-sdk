@@ -24,6 +24,8 @@
 		572C45951C86C29300A41935 /* KinveyInternal-Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 572C45931C86C29300A41935 /* KinveyInternal-Swift.h */; };
 		573150981CBD8D910022A05C /* QueryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573150971CBD8D910022A05C /* QueryTest.swift */; };
 		57379DA51C72AAA900E240E9 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57379DA41C72AAA900E240E9 /* Operation.swift */; };
+		573851AC1D47C7EB00E4712A /* FileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573851AB1D47C7EB00E4712A /* FileCache.swift */; };
+		573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573851AD1D47C7F800E4712A /* RealmFileCache.swift */; };
 		573DD9851D11CCD6006ECF1C /* RealmCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573DD9841D11CCD6006ECF1C /* RealmCache.swift */; };
 		573E55F11CAC8BA8003D2F23 /* CustomEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */; };
 		57403A7D1C4D92E3008ECCD4 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57403A7C1C4D92E3008ECCD4 /* Error.swift */; };
@@ -576,6 +578,8 @@
 		573150971CBD8D910022A05C /* QueryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryTest.swift; sourceTree = "<group>"; };
 		57379DA41C72AAA900E240E9 /* Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
 		57379DA61C72AE7F00E240E9 /* GetOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperationTest.swift; sourceTree = "<group>"; };
+		573851AB1D47C7EB00E4712A /* FileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileCache.swift; sourceTree = "<group>"; };
+		573851AD1D47C7F800E4712A /* RealmFileCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmFileCache.swift; sourceTree = "<group>"; };
 		573DD9841D11CCD6006ECF1C /* RealmCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmCache.swift; sourceTree = "<group>"; };
 		573E55F01CAC8BA8003D2F23 /* CustomEndpointTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomEndpointTests.swift; sourceTree = "<group>"; };
 		57403A7C1C4D92E3008ECCD4 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
@@ -1293,6 +1297,8 @@
 				57B0E94F1C5FF52200BA984F /* Push.swift */,
 				5728212C1C63E0F500373EC8 /* File.swift */,
 				5728212E1C63E10700373EC8 /* FileStore.swift */,
+				573851AB1D47C7EB00E4712A /* FileCache.swift */,
+				573851AD1D47C7F800E4712A /* RealmFileCache.swift */,
 				57757F3D1C652A5600C810E9 /* Reachability.swift */,
 				577155BA1CA21CC200C91B4B /* Migration.swift */,
 				57D643471CAB3C8A00F6D16E /* MemoryCache.swift */,
@@ -2482,6 +2488,7 @@
 				57E4DB051C89FE170017B406 /* KNVUser.m in Sources */,
 				57E7C7A51C504AC500848748 /* Cache.swift in Sources */,
 				57557FE61D185BC3001D991C /* RealmResultsArray.swift in Sources */,
+				573851AC1D47C7EB00E4712A /* FileCache.swift in Sources */,
 				574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */,
 				57BB56B41C4D8D2B00F6B548 /* LocalRequest.swift in Sources */,
 				57B23F371C7FB082006403CC /* KCSQuery2.m in Sources */,
@@ -2556,6 +2563,7 @@
 				57DB87E81C62B0F6002BA684 /* NSData.swift in Sources */,
 				57B23ED71C7FA877006403CC /* KCSLogManager.m in Sources */,
 				57E1C3B11C18156700578974 /* HttpRequestFactory.swift in Sources */,
+				573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */,
 				577E6FA61D18E1F900B5DA36 /* RealmSync.swift in Sources */,
 				57B23EF41C7FAA3E006403CC /* KCSNetworkObserver.m in Sources */,
 				57B23ECB1C7FA7B8006403CC /* KCSFileRequestManager.m in Sources */,

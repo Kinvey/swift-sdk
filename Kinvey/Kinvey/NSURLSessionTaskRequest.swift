@@ -59,9 +59,8 @@ class NSURLSessionTaskRequest: NSObject, Request {
     }
     
     private func downloadTask(url: NSURL?, response: NSURLResponse?, error: NSError?, fulfill: ((NSData, Response)) -> Void, reject: (ErrorType) -> Void) {
-        if let response = response as? NSHTTPURLResponse where 200 <= response.statusCode && response.statusCode < 300, let url = url {
-            let data = NSData(contentsOfURL: url)
-            fulfill((data!, HttpResponse(response: response)))
+        if let response = response as? NSHTTPURLResponse where 200 <= response.statusCode && response.statusCode < 300, let url = url, let data = NSData(contentsOfURL: url) {
+            fulfill((data, HttpResponse(response: response)))
         } else if let error = error {
             reject(error)
         } else {
@@ -69,7 +68,17 @@ class NSURLSessionTaskRequest: NSObject, Request {
         }
     }
     
-    func downloadTaskWithURL(file: File, completionHandler: DataResponseCompletionHandler?) {
+    private func downloadTask(url: NSURL?, response: NSURLResponse?, error: NSError?, fulfill: ((NSURL, Response)) -> Void, reject: (ErrorType) -> Void) {
+        if let response = response as? NSHTTPURLResponse?, let httpResponse = HttpResponse(response: response) where httpResponse.isOK || httpResponse.isNotModified, let url = url {
+            fulfill((url, httpResponse))
+        } else if let error = error {
+            reject(error)
+        } else {
+            reject(Error.InvalidResponse)
+        }
+    }
+    
+    func downloadTaskWithURL(file: File, completionHandler: DataResponseCompletionHandler) {
         self.file = file
         Promise<(NSData, Response)> { fulfill, reject in
             if let resumeData = file.resumeDownloadData {
@@ -83,9 +92,33 @@ class NSURLSessionTaskRequest: NSObject, Request {
             }
             task!.resume()
         }.then { data, response in
-            completionHandler?(data, response, nil)
+            completionHandler(data, response, nil)
         }.error { error in
-            completionHandler?(nil, nil, error)
+            completionHandler(nil, nil, error)
+        }
+    }
+    
+    func downloadTaskWithURL(file: File, completionHandler: PathResponseCompletionHandler) {
+        self.file = file
+        Promise<(NSURL, Response)> { fulfill, reject in
+            if let resumeData = file.resumeDownloadData {
+                task = self.client.urlSession.downloadTaskWithResumeData(resumeData) { (url, response, error) -> Void in
+                    self.downloadTask(url, response: response, error: error, fulfill: fulfill, reject: reject)
+                }
+            } else {
+                let request = NSMutableURLRequest(URL: url)
+                if let etag = file.etag {
+                    request.setValue(etag, forHTTPHeaderField: "If-None-Match")
+                }
+                task = self.client.urlSession.downloadTaskWithRequest(request) { (url, response, error) -> Void in
+                    self.downloadTask(url, response: response, error: error, fulfill: fulfill, reject: reject)
+                }
+            }
+            task!.resume()
+        }.then { data, response in
+            completionHandler(data, response, nil)
+        }.error { error in
+            completionHandler(nil, nil, error)
         }
     }
     
