@@ -256,7 +256,13 @@ public class User: NSObject, Credential, Mappable {
         return save(newPassword: newPassword, client: client, completionHandler: completionHandler)
     }
     
-    class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
+    /**
+     Sends an email with the username associated with the email provided.
+     - parameter email: Email associated with the user
+     - parameter client: Define the `Client` to be used for all the requests for the `DataStore` that will be returned. Default value: `Kinvey.sharedClient`
+     - parameter completionHandler: Completion handler to be called once the response returns from the server
+     */
+    public class func forgotUsername(email email: String, client: Client = Kinvey.sharedClient, completionHandler: VoidHandler? = nil) -> Request {
         let request = client.networkRequestFactory.buildUserForgotUsername(email: email)
         Promise<Void> { fulfill, reject in
             request.execute() { (data, response, error) in
