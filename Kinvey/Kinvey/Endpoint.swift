@@ -12,6 +12,7 @@ internal enum Endpoint {
     
     case User(client: Client)
     case UserById(client: Client, userId: String)
+    case UserLookup(client: Client)
     case UserExistsByUsername(client: Client)
     case UserLogin(client: Client)
     case SendEmailConfirmation(client: Client, username: String)
@@ -42,6 +43,8 @@ internal enum Endpoint {
             return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)")
         case .UserById(let client, let userId):
             return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/\(userId)")
+        case .UserLookup(let client):
+            return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/_lookup")
         case .UserExistsByUsername(let client):
             return client.apiHostName.URLByAppendingPathComponent("/rpc/\(client.appKey!)/check-username-exists")
         case .UserLogin(let client):

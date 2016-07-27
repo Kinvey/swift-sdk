@@ -17,6 +17,7 @@ public class User: NSObject, Credential, Mappable {
     public static let PersistableUsernameKey = "username"
     
     public typealias UserHandler = (User?, ErrorType?) -> Void
+    public typealias UsersHandler = ([User]?, ErrorType?) -> Void
     public typealias VoidHandler = (ErrorType?) -> Void
     public typealias BoolHandler = (Bool, ErrorType?) -> Void
     
@@ -382,6 +383,29 @@ public class User: NSObject, Credential, Mappable {
             completionHandler?(client.activeUser, nil)
         }.error { error in
             completionHandler?(nil, error)
+        }
+        return request
+    }
+    
+    /**
+     This method allows users to do exact queries for other users restricted to the `UserQuery` attributes.
+     */
+    public func lookup(userQuery: UserQuery, client: Client = Kinvey.sharedClient, completionHandler: UsersHandler? = nil) -> Request {
+        let request = client.networkRequestFactory.buildUserLookup(user: self, userQuery: userQuery)
+        Promise<[User]> { fulfill, reject in
+            request.execute() { (data, response, error) in
+                if let response = response where response.isResponseOK, let users = client.responseParser.parseUsers(data) {
+                    fulfill(users)
+                } else if let error = error {
+                    reject(error)
+                } else {
+                    reject(Error.InvalidResponse)
+                }
+            }
+            }.then { users in
+                completionHandler?(users, nil)
+            }.error { error in
+                completionHandler?(nil, error)
         }
         return request
     }

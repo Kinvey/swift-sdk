@@ -45,6 +45,7 @@
 		5756FE881D136C9C0087141E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1E91CDCE88900492D6C /* RealmSwift.framework */; };
 		5756FE891D136CAF0087141E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
 		575772861C4728E5001D56F5 /* TTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575772851C4728E5001D56F5 /* TTL.swift */; };
+		575792C01D412CD20065CC22 /* UserQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575792BF1D412CD20065CC22 /* UserQuery.swift */; };
 		5759854E1CC833930054DF08 /* LongData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5759854D1CC833930054DF08 /* LongData.swift */; };
 		575985501CC834FE0054DF08 /* MedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5759854F1CC834FE0054DF08 /* MedData.swift */; };
 		5765B83D1C972D7000080FFA /* URLProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5765B83C1C972D7000080FFA /* URLProtocols.swift */; };
@@ -594,6 +595,7 @@
 		5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncStoreTests.swift; sourceTree = "<group>"; };
 		57557FE51D185BC3001D991C /* RealmResultsArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmResultsArray.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
+		575792BF1D412CD20065CC22 /* UserQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserQuery.swift; sourceTree = "<group>"; };
 		5759854D1CC833930054DF08 /* LongData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LongData.swift; sourceTree = "<group>"; };
 		5759854F1CC834FE0054DF08 /* MedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MedData.swift; sourceTree = "<group>"; };
 		5765B8351C92365700080FFA /* FindOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperationTest.swift; sourceTree = "<group>"; };
@@ -1256,6 +1258,7 @@
 				57E4DB181C8A26CA0017B406 /* Keychain.swift */,
 				57A27C9D1C178FB5000DF951 /* Client.swift */,
 				57A27C9F1C178FC0000DF951 /* User.swift */,
+				575792BF1D412CD20065CC22 /* UserQuery.swift */,
 				57AC52871D395F7D000887D3 /* AuthSource.swift */,
 				57A27CA11C17910E000DF951 /* Acl.swift */,
 				57A27CA31C179118000DF951 /* Metadata.swift */,
@@ -2596,6 +2599,7 @@
 				57B23F321C7FB046006403CC /* KCSClientConfiguration.m in Sources */,
 				5793B8681D219A450088B5F9 /* NSDecimalNumberTransform.swift in Sources */,
 				57B23F051C7FAF39006403CC /* NSString+KinveyAdditions.m in Sources */,
+				575792C01D412CD20065CC22 /* UserQuery.swift in Sources */,
 				57B23ECD1C7FA7D3006403CC /* KCSFileUtils.m in Sources */,
 				5793B85D1D219A450088B5F9 /* FromJSON.swift in Sources */,
 				57A2ED881C49BADD006D26A9 /* HttpResponse.swift in Sources */,

@@ -18,6 +18,7 @@ protocol RequestFactory {
     func buildUserGet(userId userId: String) -> HttpRequest
     func buildUserSave(user user: User) -> HttpRequest
     func buildUserSave(user user: User, newPassword: String?) -> HttpRequest
+    func buildUserLookup(user user: User, userQuery: UserQuery) -> HttpRequest
     func buildSendEmailConfirmation(forUsername forUsername: String) -> HttpRequest
     func buildUserResetPassword(usernameOrEmail usernameOrEmail: String) -> HttpRequest
     func buildUserForgotUsername(email email: String) -> HttpRequest
