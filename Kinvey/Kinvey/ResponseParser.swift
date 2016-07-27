@@ -15,6 +15,7 @@ internal protocol ResponseParser {
     func parse(data: NSData?) -> JsonDictionary?
     func parseArray(data: NSData?) -> [JsonDictionary]?
     func parseUser(data: NSData?) -> User?
+    func parseUsers(data: NSData?) -> [User]?
 
 }
 
