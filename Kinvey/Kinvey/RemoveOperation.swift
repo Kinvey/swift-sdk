@@ -52,13 +52,13 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?
     
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
         request.execute() { data, response, error in
-            if let response = response where response.isResponseOK,
+            if let response = response where response.isOK,
                 let results = self.client.responseParser.parse(data),
                 let count = results["count"] as? UInt
             {
                 self.cache?.removeEntitiesByQuery(self.query)
                 completionHandler?(count, nil)
-            } else if let response = response where response.isResponseUnauthorized,
+            } else if let response = response where response.isUnauthorized,
                 let json = self.client.responseParser.parse(data) as? [String : String]
             {
                 completionHandler?(nil, Error.buildUnauthorized(json))

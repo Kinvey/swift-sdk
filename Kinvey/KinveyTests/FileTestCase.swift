@@ -43,9 +43,10 @@ class FileTestCase: StoreTestCase {
     func testUpload() {
         signUp()
         
-        let file = File()
+        let file = File() {
+            $0.publicAccessible = true
+        }
         self.file = file
-        file.publicAccessible = true
         let path = NSBundle(forClass: self.dynamicType).pathForResource("Caminandes 3 - TRAILER", ofType: "mp4")!
         
         weak var expectationUpload = expectationWithDescription("Upload")
@@ -67,9 +68,10 @@ class FileTestCase: StoreTestCase {
     func testUploadAndResume() {
         signUp()
         
-        let file = File()
+        let file = File() {
+            $0.publicAccessible = true
+        }
         self.file = file
-        file.publicAccessible = true
         let path = NSBundle(forClass: self.dynamicType).pathForResource("Caminandes 3 - TRAILER", ofType: "mp4")!
         
         do {
@@ -110,7 +112,7 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectationWithDescription("Download")
             
-            fileStore.download(file) { (file, data, error) in
+            fileStore.download(file) { (file, data: NSData?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
@@ -131,9 +133,10 @@ class FileTestCase: StoreTestCase {
     func testDownloadAndResume() {
         signUp()
         
-        let file = File()
+        let file = File() {
+            $0.publicAccessible = true
+        }
         self.file = file
-        file.publicAccessible = true
         let path = NSBundle(forClass: self.dynamicType).pathForResource("Caminandes 3 - TRAILER", ofType: "mp4")!
         
         weak var expectationUpload = expectationWithDescription("Upload")
@@ -154,7 +157,7 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectationWithDescription("Download")
             
-            let request = fileStore.download(file) { (file, data, error) in
+            let request = fileStore.download(file) { (file, data: NSData?, error) in
                 XCTFail()
             }
             
@@ -177,7 +180,7 @@ class FileTestCase: StoreTestCase {
         do {
             weak var expectationDownload = expectationWithDescription("Download")
             
-            fileStore.download(file) { (file, data, error) in
+            fileStore.download(file) { (file, data: NSData?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
@@ -190,6 +193,288 @@ class FileTestCase: StoreTestCase {
             }
             
             waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationDownload = nil
+            }
+        }
+    }
+    
+    func testUploadDataDownloadPath() {
+        signUp()
+        
+        let file = File() {
+            $0.publicAccessible = true
+        }
+        self.file = file
+        let data = "Hello".dataUsingEncoding(NSUTF8StringEncoding)!
+        
+        do {
+            weak var expectationUpload = expectationWithDescription("Upload")
+            
+            fileStore.upload(file, data: data) { (file, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNil(error)
+                
+                expectationUpload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUpload = nil
+            }
+        }
+        
+        XCTAssertNotNil(file.fileId)
+        
+        do {
+            weak var expectationDownload = expectationWithDescription("Download")
+            
+            fileStore.download(file) { (file, url: NSURL?, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNotNil(url)
+                XCTAssertNil(error)
+                
+                if let url = url, let data = NSData(contentsOfURL: url) {
+                    XCTAssertEqual(data.length, data.length)
+                }
+                
+                expectationDownload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationDownload = nil
+            }
+        }
+        
+        do {
+            weak var expectationCached = expectationWithDescription("Cached")
+            weak var expectationDownload = expectationWithDescription("Download")
+            
+            fileStore.download(file) { (file, url: NSURL?, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNotNil(url)
+                XCTAssertNotNil(url?.path)
+                XCTAssertNil(error)
+                
+                if let url = url,
+                    let path = url.path,
+                    let dataTmp = NSData(contentsOfFile: (path as NSString).stringByExpandingTildeInPath)
+                {
+                    XCTAssertEqual(dataTmp.length, data.length)
+                } else {
+                    XCTFail()
+                }
+                
+                if let _ = expectationCached {
+                    expectationCached?.fulfill()
+                    expectationCached = nil
+                } else {
+                    expectationDownload?.fulfill()
+                }
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationCached = nil
+                expectationDownload = nil
+            }
+        }
+        
+        let data2 = "Hello World".dataUsingEncoding(NSUTF8StringEncoding)!
+        
+        do {
+            weak var expectationUpload = expectationWithDescription("Upload")
+            
+            fileStore.upload(file, data: data2) { (file, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNil(error)
+                
+                expectationUpload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUpload = nil
+            }
+        }
+        
+        do {
+            weak var expectationCached = expectationWithDescription("Cached")
+            weak var expectationDownload = expectationWithDescription("Download")
+            
+            fileStore.download(file) { (file, url: NSURL?, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNotNil(url)
+                XCTAssertNotNil(url?.path)
+                XCTAssertNil(error)
+                
+                if let _ = expectationCached {
+                    if let url = url,
+                        let path = url.path,
+                        let dataTmp = NSData(contentsOfFile: (path as NSString).stringByExpandingTildeInPath)
+                    {
+                        XCTAssertEqual(dataTmp.length, data.length)
+                    } else {
+                        XCTFail()
+                    }
+                    
+                    expectationCached?.fulfill()
+                    expectationCached = nil
+                } else {
+                    if let url = url,
+                        let path = url.path,
+                        let dataTmp = NSData(contentsOfFile: (path as NSString).stringByExpandingTildeInPath)
+                    {
+                        XCTAssertEqual(dataTmp.length, data2.length)
+                    } else {
+                        XCTFail()
+                    }
+                    
+                    expectationDownload?.fulfill()
+                }
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationCached = nil
+                expectationDownload = nil
+            }
+        }
+    }
+    
+    func testUploadPathDownloadPath() {
+        signUp()
+        
+        let file = File() {
+            $0.publicAccessible = true
+        }
+        self.file = file
+        let data = "Hello".dataUsingEncoding(NSUTF8StringEncoding)!
+        
+        let path = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent("upload").path!
+        XCTAssertTrue(data.writeToFile(path, atomically: true))
+        
+        do {
+            weak var expectationUpload = expectationWithDescription("Upload")
+            
+            fileStore.upload(file, path: path) { (file, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNil(error)
+                
+                expectationUpload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUpload = nil
+            }
+        }
+        
+        XCTAssertNotNil(file.fileId)
+        
+        do {
+            weak var expectationDownload = expectationWithDescription("Download")
+            
+            fileStore.download(file) { (file, url: NSURL?, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNotNil(url)
+                XCTAssertNil(error)
+                
+                if let url = url, let data = NSData(contentsOfURL: url) {
+                    XCTAssertEqual(data.length, data.length)
+                }
+                
+                expectationDownload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationDownload = nil
+            }
+        }
+        
+        do {
+            weak var expectationCached = expectationWithDescription("Cached")
+            weak var expectationDownload = expectationWithDescription("Download")
+            
+            fileStore.download(file) { (file, url: NSURL?, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNotNil(url)
+                XCTAssertNotNil(url?.path)
+                XCTAssertNil(error)
+                
+                if let url = url,
+                    let path = url.path,
+                    let dataTmp = NSData(contentsOfFile: (path as NSString).stringByExpandingTildeInPath)
+                {
+                    XCTAssertEqual(dataTmp.length, data.length)
+                } else {
+                    XCTFail()
+                }
+                
+                if let _ = expectationCached {
+                    expectationCached?.fulfill()
+                    expectationCached = nil
+                } else {
+                    expectationDownload?.fulfill()
+                }
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationCached = nil
+                expectationDownload = nil
+            }
+        }
+        
+        let data2 = "Hello World".dataUsingEncoding(NSUTF8StringEncoding)!
+        XCTAssertTrue(data2.writeToFile(path, atomically: true))
+        
+        do {
+            weak var expectationUpload = expectationWithDescription("Upload")
+            
+            fileStore.upload(file, path: path) { (file, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNil(error)
+                
+                expectationUpload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUpload = nil
+            }
+        }
+        
+        do {
+            weak var expectationCached = expectationWithDescription("Cached")
+            weak var expectationDownload = expectationWithDescription("Download")
+            
+            fileStore.download(file) { (file, url: NSURL?, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNotNil(url)
+                XCTAssertNotNil(url?.path)
+                XCTAssertNil(error)
+                
+                if let _ = expectationCached {
+                    if let url = url,
+                        let path = url.path,
+                        let dataTmp = NSData(contentsOfFile: (path as NSString).stringByExpandingTildeInPath)
+                    {
+                        XCTAssertEqual(dataTmp.length, data.length)
+                    } else {
+                        XCTFail()
+                    }
+                    
+                    expectationCached?.fulfill()
+                    expectationCached = nil
+                } else {
+                    if let url = url,
+                        let path = url.path,
+                        let dataTmp = NSData(contentsOfFile: (path as NSString).stringByExpandingTildeInPath)
+                    {
+                        XCTAssertEqual(dataTmp.length, data2.length)
+                    } else {
+                        XCTFail()
+                    }
+                    
+                    expectationDownload?.fulfill()
+                }
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationCached = nil
                 expectationDownload = nil
             }
         }

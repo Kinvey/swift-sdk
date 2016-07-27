@@ -31,7 +31,7 @@ internal class PurgeOperation<T: Persistable where T: NSObject>: SyncOperation<T
                             let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.collectionName(), id: objectId)
                             requests.addRequest(request)
                             request.execute() { data, response, error in
-                                if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
+                                if let response = response where response.isOK, let json = self.client.responseParser.parse(data) {
                                     if let cache = self.cache, let persistable = T(JSON: json) {
                                         cache.saveEntity(persistable)
                                     }

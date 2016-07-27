@@ -10,7 +10,10 @@ import Foundation
 
 internal protocol Response {
     
-    var isResponseOK: Bool { get }
-    var isResponseUnauthorized: Bool { get }
+    var isOK: Bool { get }
+    var isNotModified: Bool { get }
+    var isUnauthorized: Bool { get }
+    
+    var etag: String? { get }
 
 }

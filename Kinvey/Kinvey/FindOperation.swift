@@ -46,7 +46,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
         let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(T.metadataProperty()).\(Metadata.LmtKey)"] : nil
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.collectionName(), query: query, fields: fields)
         request.execute() { data, response, error in
-            if let response = response where response.isResponseOK,
+            if let response = response where response.isOK,
                 let jsonArray = self.client.responseParser.parseArray(data)
             {
                 self.resultsHandler?(jsonArray)

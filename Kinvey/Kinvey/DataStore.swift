@@ -44,8 +44,6 @@ func ==(lhs: DataStoreTypeTag, rhs: DataStoreTypeTag) -> Bool {
         lhs.type == rhs.type
 }
 
-let defaultTag = "kinvey"
-
 /// Class to interact with a specific collection in the backend.
 public class DataStore<T: Persistable where T: NSObject> {
     
@@ -102,20 +100,8 @@ public class DataStore<T: Persistable where T: NSObject> {
         let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
         var dataStore = client.dataStoreInstances[key] as? DataStore
         if dataStore == nil {
-            let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-            let path = paths.first! as NSString
-            var filePath = path.stringByAppendingPathComponent(client.appKey!) as NSString
-            
-            let fileManager = NSFileManager.defaultManager()
-            do {
-                let filePath = filePath as String
-                if !fileManager.fileExistsAtPath(filePath) {
-                    try! fileManager.createDirectoryAtPath(filePath, withIntermediateDirectories: true, attributes: nil)
-                }
-            }
-            
-            filePath = filePath.stringByAppendingPathComponent("\(tag).realm")
-            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: filePath as String, encryptionKey: client.encryptionKey)
+            let filePath = client.filePath(tag)
+            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: filePath, encryptionKey: client.encryptionKey)
             client.dataStoreInstances[key] = dataStore
         }
         return dataStore!

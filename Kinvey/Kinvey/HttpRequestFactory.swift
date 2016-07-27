@@ -224,7 +224,7 @@ class HttpRequestFactory: RequestFactory {
             bodyObject["_filename"] = fileName
         }
         
-        if let size = file.size {
+        if let size = file.size.value {
             bodyObject["size"] = String(size)
         }
         

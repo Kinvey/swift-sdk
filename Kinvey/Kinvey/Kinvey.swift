@@ -26,3 +26,7 @@ typealias PendingOperationIMP = RealmPendingOperation
 
 /// Shared client instance for simplicity. Use this instance if *you don't need* to handle with multiple Kinvey environments.
 public let sharedClient = Client.sharedClient
+
+let defaultTag = "kinvey"
+
+let userDocumentDirectory: String = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!

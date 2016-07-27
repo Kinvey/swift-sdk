@@ -29,7 +29,7 @@ internal class PushOperation<T: Persistable where T: NSObject>: SyncOperation<T,
                     condition.lock()
                     request.execute() { data, response, error in
                         condition.lock()
-                        if let response = response where response.isResponseOK,
+                        if let response = response where response.isOK,
                             let data = data
                         {
                             let json = self.client.responseParser.parse(data)
@@ -56,7 +56,7 @@ internal class PushOperation<T: Persistable where T: NSObject>: SyncOperation<T,
                             } else {
                                 errors.append(Error.InvalidResponse)
                             }
-                        } else if let response = response where response.isResponseUnauthorized,
+                        } else if let response = response where response.isUnauthorized,
                             let data = data,
                             let json = self.client.responseParser.parse(data) as? [String : String]
                         {
