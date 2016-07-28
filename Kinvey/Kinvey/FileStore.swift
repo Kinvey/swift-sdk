@@ -346,22 +346,24 @@ public class FileStore {
             }
         }
         
-        if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
-            return downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
-        } else {
-            let fileMetadata = getFileMetadata(file, ttl: ttl)
-            fileMetadata.1.then { file in
-                return Promise {
-                    if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
-                        self.downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
-                    } else {
-                        completionHandler?(file, nil, Error.InvalidResponse)
+        if storeType == .Cache || storeType == .Network {
+            if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
+                return downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
+            } else {
+                let fileMetadata = getFileMetadata(file, ttl: ttl)
+                fileMetadata.1.then { file in
+                    return Promise {
+                        if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
+                            self.downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
+                        } else {
+                            completionHandler?(file, nil, Error.InvalidResponse)
+                        }
                     }
+                    }.error { error in
+                        completionHandler?(file, nil, error)
                 }
-            }.error { error in
-                completionHandler?(file, nil, error)
+                return fileMetadata.0
             }
-            return fileMetadata.0
         }
     }
     
