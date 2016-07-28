@@ -35,7 +35,7 @@
 		57470FA51C76926B0096B15F /* PushOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA41C76926B0096B15F /* PushOperation.swift */; };
 		57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FA61C7698B30096B15F /* MultiRequest.swift */; };
 		57470FAB1C769EF00096B15F /* PurgeOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57470FAA1C769EF00096B15F /* PurgeOperation.swift */; };
-		574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* DataStoreType.swift */; };
+		574912711C59323B00EA4F26 /* StoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912701C59323B00EA4F26 /* StoreType.swift */; };
 		574912731C5932A700EA4F26 /* WritePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574912721C5932A700EA4F26 /* WritePolicy.swift */; };
 		574B0FA71C729EAF00CDC48F /* GetOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA61C729EAF00CDC48F /* GetOperation.swift */; };
 		574B0FA91C729EB900CDC48F /* FindOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA81C729EB900CDC48F /* FindOperation.swift */; };
@@ -589,7 +589,7 @@
 		57470FA61C7698B30096B15F /* MultiRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiRequest.swift; sourceTree = "<group>"; };
 		57470FAA1C769EF00096B15F /* PurgeOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurgeOperation.swift; sourceTree = "<group>"; };
 		57471A2F1CCAED1600628933 /* EncryptedDataStoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncryptedDataStoreTestCase.swift; sourceTree = "<group>"; };
-		574912701C59323B00EA4F26 /* DataStoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreType.swift; sourceTree = "<group>"; };
+		574912701C59323B00EA4F26 /* StoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreType.swift; sourceTree = "<group>"; };
 		574912721C5932A700EA4F26 /* WritePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WritePolicy.swift; sourceTree = "<group>"; };
 		574B0FA61C729EAF00CDC48F /* GetOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetOperation.swift; sourceTree = "<group>"; };
 		574B0FA81C729EB900CDC48F /* FindOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperation.swift; sourceTree = "<group>"; };
@@ -1263,7 +1263,7 @@
 				57AC52871D395F7D000887D3 /* AuthSource.swift */,
 				57A27CA11C17910E000DF951 /* Acl.swift */,
 				57A27CA31C179118000DF951 /* Metadata.swift */,
-				574912701C59323B00EA4F26 /* DataStoreType.swift */,
+				574912701C59323B00EA4F26 /* StoreType.swift */,
 				57E7C7B21C51545900848748 /* ReadPolicy.swift */,
 				574912721C5932A700EA4F26 /* WritePolicy.swift */,
 				576E95A31C1FB10700258CC3 /* DataStore.swift */,
@@ -2527,7 +2527,7 @@
 				57B23EF21C7FAA23006403CC /* KCSFile+KCSInternal.m in Sources */,
 				57B0E9501C5FF52200BA984F /* Push.swift in Sources */,
 				57D643461CAAFA7C00F6D16E /* KNVError.m in Sources */,
-				574912711C59323B00EA4F26 /* DataStoreType.swift in Sources */,
+				574912711C59323B00EA4F26 /* StoreType.swift in Sources */,
 				57E7C7B11C50539C00848748 /* SyncManager.swift in Sources */,
 				E9073D011C986D9600475E16 /* CustomEndpoint.swift in Sources */,
 				57B23EF01C7FAA18006403CC /* KCSMockFileOperation.m in Sources */,

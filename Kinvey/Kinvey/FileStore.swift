@@ -227,45 +227,47 @@ public class FileStore {
         return request
     }
     
-    private func downloadFile(file: File, cacheEnabled: Bool = true, downloadURL: NSURL, completionHandler: FilePathCompletionHandler? = nil) -> NSURLSessionTaskRequest {
+    private func downloadFile(file: File, storeType: StoreType = .Cache, downloadURL: NSURL, completionHandler: FilePathCompletionHandler? = nil) -> NSURLSessionTaskRequest {
         let downloadTaskRequest = NSURLSessionTaskRequest(client: client, url: downloadURL)
         Promise<NSURL> { fulfill, reject in
             downloadTaskRequest.downloadTaskWithURL(file) { (url: NSURL?, response, error) in
                 if let response = response where response.isOK || response.isNotModified, let url = url {
-                    if let pathURL = file.pathURL where response.isNotModified {
-                        fulfill(pathURL)
-                    } else if cacheEnabled {
-                        let fileManager = NSFileManager()
-                        if let fileId = file.fileId,
-                            let baseFolder = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first
-                        {
-                            do {
-                                var baseFolderURL = NSURL(fileURLWithPath: baseFolder)
-                                baseFolderURL = baseFolderURL.URLByAppendingPathComponent(self.client.appKey!).URLByAppendingPathComponent("files")
-                                if !fileManager.fileExistsAtPath(baseFolderURL.path!) {
-                                    try fileManager.createDirectoryAtURL(baseFolderURL, withIntermediateDirectories: true, attributes: nil)
-                                }
-                                let toURL = baseFolderURL.URLByAppendingPathComponent(fileId)
-                                if let path = toURL.path where fileManager.fileExistsAtPath(path) {
-                                    do {
-                                        try fileManager.removeItemAtPath(path)
-                                    }
-                                }
-                                try fileManager.moveItemAtURL(url, toURL: toURL)
-                                
-                                if let cache = self.cache {
-                                    cache.save(file) {
-                                        file.path = (toURL.path! as NSString).stringByAbbreviatingWithTildeInPath
-                                        file.etag = response.etag
-                                    }
-                                }
-                                
-                                fulfill(toURL)
-                            } catch let error {
-                                reject(error)
-                            }
+                    if storeType == .Cache {
+                        if let pathURL = file.pathURL where response.isNotModified {
+                            fulfill(pathURL)
                         } else {
-                            reject(Error.InvalidResponse)
+                            let fileManager = NSFileManager()
+                            if let fileId = file.fileId,
+                                let baseFolder = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first
+                            {
+                                do {
+                                    var baseFolderURL = NSURL(fileURLWithPath: baseFolder)
+                                    baseFolderURL = baseFolderURL.URLByAppendingPathComponent(self.client.appKey!).URLByAppendingPathComponent("files")
+                                    if !fileManager.fileExistsAtPath(baseFolderURL.path!) {
+                                        try fileManager.createDirectoryAtURL(baseFolderURL, withIntermediateDirectories: true, attributes: nil)
+                                    }
+                                    let toURL = baseFolderURL.URLByAppendingPathComponent(fileId)
+                                    if let path = toURL.path where fileManager.fileExistsAtPath(path) {
+                                        do {
+                                            try fileManager.removeItemAtPath(path)
+                                        }
+                                    }
+                                    try fileManager.moveItemAtURL(url, toURL: toURL)
+                                    
+                                    if let cache = self.cache {
+                                        cache.save(file) {
+                                            file.path = (toURL.path! as NSString).stringByAbbreviatingWithTildeInPath
+                                            file.etag = response.etag
+                                        }
+                                    }
+                                    
+                                    fulfill(toURL)
+                                } catch let error {
+                                    reject(error)
+                                }
+                            } else {
+                                reject(Error.InvalidResponse)
+                            }
                         }
                     } else {
                         fulfill(url)
@@ -322,9 +324,9 @@ public class FileStore {
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
-    public func download(file: File, cacheEnabled: Bool = true, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
+    public func download(file: File, storeType: StoreType = .Cache, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
         var file = file
-        return download(&file, cacheEnabled: cacheEnabled, ttl: ttl, completionHandler: completionHandler)
+        return download(&file, storeType: storeType, ttl: ttl, completionHandler: completionHandler)
     }
     
     private func requiresFileId(inout file: File) {
@@ -334,10 +336,10 @@ public class FileStore {
     }
     
     /// Downloads a file using the `downloadURL` of the `File` instance.
-    public func download(inout file: File, cacheEnabled: Bool = true, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
+    public func download(inout file: File, storeType: StoreType = .Cache, ttl: TTL? = nil, completionHandler: FilePathCompletionHandler? = nil) -> Request {
         requiresFileId(&file)
         
-        if let fileId = file.fileId, let cachedFile = cachedFile(fileId) {
+        if storeType == .Sync || storeType == .Cache, let fileId = file.fileId, let cachedFile = cachedFile(fileId) {
             file = cachedFile
             dispatch_async(dispatch_get_main_queue()) {
                 completionHandler?(file, file.pathURL, nil)
@@ -345,13 +347,13 @@ public class FileStore {
         }
         
         if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
-            return downloadFile(file, cacheEnabled: cacheEnabled, downloadURL: downloadURL, completionHandler: completionHandler)
+            return downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
         } else {
             let fileMetadata = getFileMetadata(file, ttl: ttl)
             fileMetadata.1.then { file in
                 return Promise {
                     if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
-                        self.downloadFile(file, cacheEnabled: cacheEnabled, downloadURL: downloadURL, completionHandler: completionHandler)
+                        self.downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
                     } else {
                         completionHandler?(file, nil, Error.InvalidResponse)
                     }

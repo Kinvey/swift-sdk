@@ -9,7 +9,7 @@
 import Foundation
 
 /// Defines the behavior of a DataStore instance.
-public enum DataStoreType {
+public enum StoreType {
     
     /// Ready to work completly offline and synchronize with the server manually calling methods like `pull`, `push`, `sync` (push + pull) and `purge`.
     case Sync
