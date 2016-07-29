@@ -40,6 +40,26 @@ class FileTestCase: StoreTestCase {
         super.tearDown()
     }
     
+    private func reportMemory() -> UInt? {
+        var info = task_basic_info()
+        var count = mach_msg_type_number_t(sizeofValue(info))/4
+        
+        let kerr: kern_return_t = withUnsafeMutablePointer(&info) {
+            
+            task_info(mach_task_self_,
+                      task_flavor_t(TASK_BASIC_INFO),
+                      task_info_t($0),
+                      &count)
+            
+        }
+        
+        if kerr == KERN_SUCCESS {
+            return info.resident_size
+        }
+        
+        return nil
+    }
+    
     func testUpload() {
         signUp()
         
@@ -51,11 +71,29 @@ class FileTestCase: StoreTestCase {
         
         weak var expectationUpload = expectationWithDescription("Upload")
         
+        let memoryBefore = reportMemory()
+        XCTAssertNotNil(memoryBefore)
+        
         fileStore.upload(file, path: path) { (file, error) in
+            XCTAssertTrue(NSThread.isMainThread())
             XCTAssertNotNil(file)
             XCTAssertNil(error)
             
+            let memoryNow = self.reportMemory()
+            XCTAssertNotNil(memoryNow)
+            if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
+                let diff = memoryNow - memoryBefore
+                XCTAssertLessThan(diff, 10899706)
+            }
+            
             expectationUpload?.fulfill()
+        }
+        
+        let memoryNow = reportMemory()
+        XCTAssertNotNil(memoryNow)
+        if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
+            let diff = memoryNow - memoryBefore
+            XCTAssertLessThan(diff, 10899706)
         }
         
         waitForExpectationsWithTimeout(defaultTimeout) { error in
@@ -63,6 +101,26 @@ class FileTestCase: StoreTestCase {
         }
         
         XCTAssertNotNil(file.fileId)
+        
+        do {
+            weak var expectationDownload = expectationWithDescription("Download")
+            
+            fileStore.download(file) { (file, data: NSData?, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNotNil(data)
+                XCTAssertNil(error)
+                
+                if let data = data {
+                    XCTAssertEqual(data.length, 10899706)
+                }
+                
+                expectationDownload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationDownload = nil
+            }
+        }
     }
     
     func testUploadAndResume() {

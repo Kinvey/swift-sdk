@@ -46,17 +46,18 @@ class RealmFileCache: FileCache {
     func remove(file: File) {
         executor.executeAndWait {
             try! self.realm.write {
-                if file.realm != self.realm, let fileId = file.fileId, let file = self.realm.objectForPrimaryKey(File.self, key: fileId) {
-                    self.realm.delete(file)
-                } else {
+                if let fileId = file.fileId, let file = self.realm.objectForPrimaryKey(File.self, key: fileId) {
                     self.realm.delete(file)
                 }
                 
                 if let path = file.path {
-                    do {
-                        try NSFileManager.defaultManager().removeItemAtPath((path as NSString).stringByExpandingTildeInPath)
-                    } catch {
-                        //ignore possible errors if for any reason is not possible to delete the file
+                    let fileManager = NSFileManager.defaultManager()
+                    if fileManager.fileExistsAtPath(path) {
+                        do {
+                            try NSFileManager.defaultManager().removeItemAtPath((path as NSString).stringByExpandingTildeInPath)
+                        } catch {
+                            //ignore possible errors if for any reason is not possible to delete the file
+                        }
                     }
                 }
             }
