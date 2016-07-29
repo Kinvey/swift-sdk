@@ -42,7 +42,7 @@ public class FileStore {
     
     /// Uploads a file using the file path.
     public func upload(file: File, path: String, completionHandler: FileCompletionHandler? = nil) -> Request {
-        return upload(file, stream: NSInputStream(fileAtPath: path)!, completionHandler: completionHandler)
+        return upload(file, fromData: nil, fromFile: NSURL(fileURLWithPath: path), completionHandler: completionHandler)
     }
     
     /// Uploads a file using a input stream.
@@ -108,12 +108,17 @@ public class FileStore {
     
     /// Uploads a file using a `NSData`.
     public func upload(file: File, data: NSData, completionHandler: FileCompletionHandler? = nil) -> Request {
+        return upload(file, fromData: data, fromFile: nil, completionHandler: completionHandler)
+    }
+    
+    /// Uploads a file using a `NSData`.
+    private func upload(file: File, fromData: NSData?, fromFile: NSURL?, completionHandler: FileCompletionHandler? = nil) -> Request {
         let requests = MultiRequest()
         Promise<(file: File, skip: Int?)> { fulfill, reject in //creating bucket
             let createUpdateFileEntry = {
                 let request = self.client.networkRequestFactory.buildBlobUploadFile(file)
                 requests += request
-                request.execute({ (data, response, error) -> Void in
+                request.execute { (data, response, error) -> Void in
                     if let response = response where response.isOK, let json = self.client.responseParser.parse(data) {
                         self.fillFile(file, json: json)
                         fulfill((file: file, skip: nil))
@@ -122,7 +127,7 @@ public class FileStore {
                     } else {
                         reject(Error.InvalidResponse)
                     }
-                })
+                }
             }
             
             if let _ = file.fileId {
@@ -134,7 +139,15 @@ public class FileStore {
                     }
                 }
                 request.setValue("0", forHTTPHeaderField: "Content-Length")
-                request.setValue("bytes */\(data.length)", forHTTPHeaderField: "Content-Range")
+                if let data = fromData {
+                    request.setValue("bytes */\(data.length)", forHTTPHeaderField: "Content-Range")
+                } else if let fromFile = fromFile,
+                    let path = fromFile.path,
+                    let attrs = try? NSFileManager.defaultManager().attributesOfItemAtPath((path as NSString).stringByExpandingTildeInPath),
+                    let fileSize = attrs[NSFileSize] as? UInt64
+                {
+                    request.setValue("bytes */\(fileSize)", forHTTPHeaderField: "Content-Range")
+                }
                 
                 if self.client.logNetworkEnabled {
                     do {
@@ -185,15 +198,8 @@ public class FileStore {
                         request.setValue(header.1, forHTTPHeaderField: header.0)
                     }
                 }
-                let uploadData: NSData
-                if let skip = skip {
-                    let startIndex = skip + 1
-                    uploadData = data.subdataWithRange(NSMakeRange(startIndex, data.length - startIndex))
-                    request.setValue("bytes \(startIndex)-\(data.length - 1)/\(data.length)", forHTTPHeaderField: "Content-Range")
-                } else {
-                    uploadData = data
-                }
-                let uploadTask = self.client.urlSession.uploadTaskWithRequest(request, fromData: uploadData) { (data, response, error) -> Void in
+                
+                let handle: (NSData?, NSURLResponse?, NSError?) -> Void = { data, response, error in
                     if let response = response as? NSHTTPURLResponse where 200 <= response.statusCode && response.statusCode < 300 {
                         fulfill(file)
                     } else if let error = error {
@@ -202,8 +208,31 @@ public class FileStore {
                         reject(Error.InvalidResponse)
                     }
                 }
-                requests += NSURLSessionTaskRequest(client: self.client, task: uploadTask)
-                uploadTask.resume()
+                
+                if let data = fromData {
+                    let uploadData: NSData
+                    if let skip = skip {
+                        let startIndex = skip + 1
+                        uploadData = data.subdataWithRange(NSMakeRange(startIndex, data.length - startIndex))
+                        request.setValue("bytes \(startIndex)-\(data.length - 1)/\(data.length)", forHTTPHeaderField: "Content-Range")
+                    } else {
+                        uploadData = data
+                    }
+                    
+                    let uploadTask = self.client.urlSession.uploadTaskWithRequest(request, fromData: uploadData) { (data, response, error) -> Void in
+                        handle(data, response, error)
+                    }
+                    requests += NSURLSessionTaskRequest(client: self.client, task: uploadTask)
+                    uploadTask.resume()
+                } else if let fromFile = fromFile {
+                    let uploadTask = self.client.urlSession.uploadTaskWithRequest(request, fromFile: fromFile) { (data, response, error) -> Void in
+                        handle(data, response, error)
+                    }
+                    requests += NSURLSessionTaskRequest(client: self.client, task: uploadTask)
+                    uploadTask.resume()
+                } else {
+                    reject(Error.InvalidResponse)
+                }
             }
         }.then { file in //fetching download url
             return self.getFileMetadata(file).1
@@ -364,6 +393,8 @@ public class FileStore {
                 }
                 return fileMetadata.0
             }
+        } else {
+            return LocalRequest()
         }
     }
     
