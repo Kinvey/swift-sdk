@@ -68,13 +68,13 @@ class NSURLSessionTaskRequest: NSObject, Request {
         }
     }
     
-    private func downloadTask(url: NSURL?, response: NSURLResponse?, error: NSError?, fulfill: ((NSURL, Response)) -> Void, reject: (ErrorType) -> Void) {
+    private func downloadTask(url: NSURL?, response: NSURLResponse?, error: NSError?, completionHandler: PathResponseCompletionHandler) {
         if let response = response as? NSHTTPURLResponse?, let httpResponse = HttpResponse(response: response) where httpResponse.isOK || httpResponse.isNotModified, let url = url {
-            fulfill((url, httpResponse))
+            completionHandler(url, httpResponse, nil)
         } else if let error = error {
-            reject(error)
+            completionHandler(nil, nil, error)
         } else {
-            reject(Error.InvalidResponse)
+            completionHandler(nil, nil, Error.InvalidResponse)
         }
     }
     
@@ -100,26 +100,21 @@ class NSURLSessionTaskRequest: NSObject, Request {
     
     func downloadTaskWithURL(file: File, completionHandler: PathResponseCompletionHandler) {
         self.file = file
-        Promise<(NSURL, Response)> { fulfill, reject in
-            if let resumeData = file.resumeDownloadData {
-                task = self.client.urlSession.downloadTaskWithResumeData(resumeData) { (url, response, error) -> Void in
-                    self.downloadTask(url, response: response, error: error, fulfill: fulfill, reject: reject)
-                }
-            } else {
-                let request = NSMutableURLRequest(URL: url)
-                if let etag = file.etag {
-                    request.setValue(etag, forHTTPHeaderField: "If-None-Match")
-                }
-                task = self.client.urlSession.downloadTaskWithRequest(request) { (url, response, error) -> Void in
-                    self.downloadTask(url, response: response, error: error, fulfill: fulfill, reject: reject)
-                }
+        
+        if let resumeData = file.resumeDownloadData {
+            task = self.client.urlSession.downloadTaskWithResumeData(resumeData) { (url, response, error) -> Void in
+                self.downloadTask(url, response: response, error: error, completionHandler: completionHandler)
             }
-            task!.resume()
-        }.then { data, response in
-            completionHandler(data, response, nil)
-        }.error { error in
-            completionHandler(nil, nil, error)
+        } else {
+            let request = NSMutableURLRequest(URL: url)
+            if let etag = file.etag {
+                request.setValue(etag, forHTTPHeaderField: "If-None-Match")
+            }
+            task = self.client.urlSession.downloadTaskWithRequest(request) { (url, response, error) -> Void in
+                self.downloadTask(url, response: response, error: error, completionHandler: completionHandler)
+            }
         }
+        task!.resume()
     }
     
 }

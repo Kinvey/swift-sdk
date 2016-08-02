@@ -153,6 +153,19 @@ class FileTestCase: StoreTestCase {
         XCTAssertNotNil(file.fileId)
         
         do {
+            weak var expectationWait = expectationWithDescription("Wait")
+            
+            let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC)))
+            dispatch_after(delayTime, dispatch_get_main_queue()) {
+                expectationWait?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationWait = nil
+            }
+        }
+        
+        do {
             weak var expectationUpload = expectationWithDescription("Upload")
             
             fileStore.upload(file, path: path) { (file, error) in
@@ -535,6 +548,109 @@ class FileTestCase: StoreTestCase {
                 expectationCached = nil
                 expectationDownload = nil
             }
+        }
+    }
+    
+    func testUploadTTLExpired() {
+        signUp()
+        
+        let file = File() {
+            $0.publicAccessible = false
+        }
+        self.file = file
+        let data = "Hello".dataUsingEncoding(NSUTF8StringEncoding)!
+        
+        let beforeDate = NSDate()
+        let ttl = TTL(10, .Second)
+        
+        do {
+            weak var expectationUpload = expectationWithDescription("Upload")
+            
+            fileStore.upload(file, data: data, ttl: ttl) { (file, error) in
+                XCTAssertNotNil(file)
+                XCTAssertNil(error)
+                
+                expectationUpload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUpload = nil
+            }
+        }
+        
+        XCTAssertNotNil(file.fileId)
+        XCTAssertNotNil(file.expiresAt)
+        
+        if let expiresAt = file.expiresAt {
+            XCTAssertGreaterThan(expiresAt.timeIntervalSinceDate(beforeDate), ttl.1.toTimeInterval(ttl.0))
+            
+            let twentySecs = TTL(20, .Second)
+            XCTAssertLessThan(expiresAt.timeIntervalSinceDate(beforeDate), twentySecs.1.toTimeInterval(twentySecs.0))
+        }
+    }
+    
+    func testDownloadTTLExpired() {
+        signUp()
+        
+        let file = File() {
+            $0.publicAccessible = false
+        }
+        self.file = file
+        let data = "Hello".dataUsingEncoding(NSUTF8StringEncoding)!
+        
+        let ttl = TTL(10, .Second)
+        
+        do {
+            weak var expectationUpload = expectationWithDescription("Upload")
+            
+            fileStore.upload(file, data: data) { (file, error) in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNotNil(file)
+                XCTAssertNil(error)
+                
+                expectationUpload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationUpload = nil
+            }
+        }
+        
+        XCTAssertNotNil(file.fileId)
+        
+        file.download = nil
+        file.expiresAt = nil
+        
+        let beforeDate = NSDate()
+        
+        do {
+            weak var expectationDownload = expectationWithDescription("Download")
+            
+            fileStore.download(file, ttl: ttl) { (file, url: NSURL?, error) in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNotNil(file)
+                XCTAssertNotNil(url)
+                XCTAssertNil(error)
+                
+                if let url = url, let data = NSData(contentsOfURL: url) {
+                    XCTAssertEqual(data.length, data.length)
+                }
+                
+                expectationDownload?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationDownload = nil
+            }
+        }
+        
+        XCTAssertNotNil(file.expiresAt)
+        
+        if let expiresAt = file.expiresAt {
+            XCTAssertGreaterThan(expiresAt.timeIntervalSinceDate(beforeDate), ttl.1.toTimeInterval(ttl.0))
+            
+            let twentySecs = TTL(20, .Second)
+            XCTAssertLessThan(expiresAt.timeIntervalSinceDate(beforeDate), twentySecs.1.toTimeInterval(twentySecs.0))
         }
     }
     

@@ -33,20 +33,20 @@ public class FileStore {
 
 #if os(iOS)
     /// Uploads a `UIImage` in a PNG format.
-    public func upload(file: File, image: UIImage, completionHandler: FileCompletionHandler? = nil) -> Request {
+    public func upload(file: File, image: UIImage, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         let data = UIImagePNGRepresentation(image)!
         file.mimeType = "image/png"
-        return upload(file, data: data, completionHandler: completionHandler)
+        return upload(file, data: data, ttl: ttl, completionHandler: completionHandler)
     }
 #endif
     
     /// Uploads a file using the file path.
-    public func upload(file: File, path: String, completionHandler: FileCompletionHandler? = nil) -> Request {
-        return upload(file, fromData: nil, fromFile: NSURL(fileURLWithPath: path), completionHandler: completionHandler)
+    public func upload(file: File, path: String, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+        return upload(file, fromData: nil, fromFile: NSURL(fileURLWithPath: path), ttl: ttl, completionHandler: completionHandler)
     }
     
     /// Uploads a file using a input stream.
-    public func upload(file: File, stream: NSInputStream, completionHandler: FileCompletionHandler? = nil) -> Request {
+    public func upload(file: File, stream: NSInputStream, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         let data = NSMutableData()
         stream.open()
         var buffer = [UInt8](count: 4096, repeatedValue: 0)
@@ -55,7 +55,7 @@ public class FileStore {
             data.appendBytes(buffer, length: read)
         }
         stream.close()
-        return upload(file, data: data, completionHandler: completionHandler)
+        return upload(file, data: data, ttl: ttl, completionHandler: completionHandler)
     }
     
     private func fillFile(file: File, json: [String : AnyObject]) {
@@ -87,6 +87,8 @@ public class FileStore {
             let dateFormatter = NSDateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
             file.expiresAt = dateFormatter.dateFromString(expiresAt)
+        } else {
+            file.expiresAt = nil
         }
     }
     
@@ -107,12 +109,12 @@ public class FileStore {
     }
     
     /// Uploads a file using a `NSData`.
-    public func upload(file: File, data: NSData, completionHandler: FileCompletionHandler? = nil) -> Request {
-        return upload(file, fromData: data, fromFile: nil, completionHandler: completionHandler)
+    public func upload(file: File, data: NSData, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
+        return upload(file, fromData: data, fromFile: nil, ttl: ttl, completionHandler: completionHandler)
     }
     
     /// Uploads a file using a `NSData`.
-    private func upload(file: File, fromData: NSData?, fromFile: NSURL?, completionHandler: FileCompletionHandler? = nil) -> Request {
+    private func upload(file: File, fromData: NSData?, fromFile: NSURL?, ttl: TTL? = nil, completionHandler: FileCompletionHandler? = nil) -> Request {
         let requests = MultiRequest()
         Promise<(file: File, skip: Int?)> { fulfill, reject in //creating bucket
             let createUpdateFileEntry = {
@@ -235,7 +237,7 @@ public class FileStore {
                 }
             }
         }.then { file in //fetching download url
-            return self.getFileMetadata(file).1
+            return self.getFileMetadata(file, ttl: ttl).1
         }.then { file in
             completionHandler?(file, nil)
         }.error { error in
@@ -259,14 +261,21 @@ public class FileStore {
     private func downloadFile(file: File, storeType: StoreType = .Cache, downloadURL: NSURL, completionHandler: FilePathCompletionHandler? = nil) -> NSURLSessionTaskRequest {
         let downloadTaskRequest = NSURLSessionTaskRequest(client: client, url: downloadURL)
         Promise<NSURL> { fulfill, reject in
+            let executor = Executor()
             downloadTaskRequest.downloadTaskWithURL(file) { (url: NSURL?, response, error) in
                 if let response = response where response.isOK || response.isNotModified, let url = url {
                     if storeType == .Cache {
-                        if let pathURL = file.pathURL where response.isNotModified {
+                        var pathURL: NSURL? = nil
+                        var fileId: String? = nil
+                        executor.executeAndWait {
+                            fileId = file.fileId
+                            pathURL = file.pathURL
+                        }
+                        if let pathURL = pathURL where response.isNotModified {
                             fulfill(pathURL)
                         } else {
                             let fileManager = NSFileManager()
-                            if let fileId = file.fileId,
+                            if let fileId = fileId,
                                 let baseFolder = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first
                             {
                                 do {
@@ -376,20 +385,18 @@ public class FileStore {
         }
         
         if storeType == .Cache || storeType == .Network {
-            if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
+            if let downloadURL = file.downloadURL where file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
                 return downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
             } else {
                 let fileMetadata = getFileMetadata(file, ttl: ttl)
-                fileMetadata.1.then { file in
-                    return Promise {
-                        if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
-                            self.downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
-                        } else {
-                            completionHandler?(file, nil, Error.InvalidResponse)
-                        }
+                fileMetadata.1.then({ file in
+                    if let downloadURL = file.downloadURL where file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
+                        self.downloadFile(file, storeType: storeType, downloadURL: downloadURL, completionHandler: completionHandler)
+                    } else {
+                        completionHandler?(file, nil, Error.InvalidResponse)
                     }
-                    }.error { error in
-                        completionHandler?(file, nil, error)
+                }).error { error in
+                    completionHandler?(file, nil, error)
                 }
                 return fileMetadata.0
             }
@@ -415,13 +422,13 @@ public class FileStore {
             }
         }
         
-        if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
+        if let downloadURL = file.downloadURL where file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
             return downloadFile(file, downloadURL: downloadURL, completionHandler: completionHandler)
         } else {
             let fileMetadata = getFileMetadata(file, ttl: ttl)
             fileMetadata.1.then { file in
                 return Promise {
-                    if let downloadURL = file.downloadURL, let expiresAt = file.expiresAt where expiresAt.timeIntervalSinceNow > 0 {
+                    if let downloadURL = file.downloadURL where file.publicAccessible || file.expiresAt?.timeIntervalSinceNow > 0 {
                         self.downloadFile(file, downloadURL: downloadURL, completionHandler: completionHandler)
                     } else {
                         completionHandler?(file, nil, Error.InvalidResponse)
