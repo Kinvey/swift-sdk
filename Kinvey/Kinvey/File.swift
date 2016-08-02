@@ -7,37 +7,67 @@
 //
 
 import Foundation
+import RealmSwift
+import Realm
 
 /// Class that represents a file in the backend holding all metadata of the file, but don't hold the data itself.
-@objc(KNVFile)
-public class File: NSObject {
+public class File: Object {
     
     /// `_id` property of the file.
-    public var fileId: String?
+    public dynamic var fileId: String?
     
     /// `_filename` property of the file.
-    public var fileName: String?
+    public dynamic var fileName: String?
     
     /// `size` property of the file.
-    public var size: UInt64?
+    public let size = RealmOptional<Int64>()
     
     /// `mimeType` property of the file.
-    public var mimeType: String?
+    public dynamic var mimeType: String?
     
     /// `_public` property of the file, which represents if the file is accessible without need of credentials.
-    public var publicAccessible: Bool
+    public dynamic var publicAccessible = false
     
     /// `_acl` property of the file.
-    public var acl: Acl?
+    public dynamic var acl: Acl?
     
     /// `_kmd` property of the file.
-    public var metadata: Metadata?
+    public dynamic var metadata: Metadata?
+    
+    /// Temporary download URL String of the file.
+    public dynamic var download: String?
     
     /// Temporary download URL of the file.
-    public var downloadURL: NSURL?
+    public dynamic var downloadURL: NSURL? {
+        get {
+            if let download = download {
+                return NSURL(string: download)
+            }
+            return nil
+        }
+        set {
+            download = newValue?.absoluteString
+        }
+    }
     
     /// Expiration data of the `downloadURL`.
-    public var expiresAt: NSDate?
+    public dynamic var expiresAt: NSDate?
+    
+    dynamic var etag: String?
+    
+    dynamic var path: String?
+    
+    dynamic var pathURL: NSURL? {
+        get {
+            if let path = path {
+                return NSURL(string: path)
+            }
+            return nil
+        }
+        set {
+            path = newValue?.path
+        }
+    }
     
     /// Temporary upload URL of the file.
     var uploadURL: NSURL?
@@ -47,13 +77,36 @@ public class File: NSObject {
     
     var resumeDownloadData: NSData?
     
+    public required init() {
+        super.init()
+    }
+    
+    public required init(realm: RLMRealm, schema: RLMObjectSchema) {
+        super.init(realm: realm, schema: schema)
+    }
+    
+    public required init(value: AnyObject, schema: RLMSchema) {
+        super.init(value: value, schema: schema)
+    }
+    
     /// Constructor of a file instance.
-    public init(fileId: String? = nil, fileName: String? = nil, size: UInt64? = nil, mimeType: String? = nil, publicAccessible: Bool = false) {
-        self.fileId = fileId
-        self.fileName = fileName
-        self.size = size
-        self.mimeType = mimeType
-        self.publicAccessible = publicAccessible
+    public init(@noescape _ block: (File) -> Void) {
+        super.init()
+        block(self)
+    }
+    
+    public override class func primaryKey() -> String? {
+        return "fileId"
+    }
+    
+    public override class func ignoredProperties() -> [String] {
+        return [
+            "downloadURL",
+            "pathURL",
+            "uploadURL",
+            "uploadHeaders",
+            "resumeDownloadData"
+        ]
     }
     
 }

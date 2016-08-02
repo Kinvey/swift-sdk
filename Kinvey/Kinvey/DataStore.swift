@@ -12,9 +12,9 @@ class DataStoreTypeTag: Hashable {
     
     let persistableType: Persistable.Type
     let tag: String
-    let type: DataStoreType
+    let type: StoreType
     
-    init(persistableType: Persistable.Type, tag: String, type: DataStoreType) {
+    init(persistableType: Persistable.Type, tag: String, type: StoreType) {
         self.persistableType = persistableType
         self.tag = tag
         self.type = type
@@ -44,8 +44,6 @@ func ==(lhs: DataStoreTypeTag, rhs: DataStoreTypeTag) -> Bool {
         lhs.type == rhs.type
 }
 
-let defaultTag = "kinvey"
-
 /// Class to interact with a specific collection in the backend.
 public class DataStore<T: Persistable where T: NSObject> {
     
@@ -65,7 +63,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     public let client: Client
     
     /// DataStoreType defines how the DataStore will behave.
-    public let type: DataStoreType
+    public let type: StoreType
     
     private let cache: Cache<T>?
     private let sync: Sync<T>?
@@ -85,7 +83,7 @@ public class DataStore<T: Persistable where T: NSObject> {
      Deprecated method. Please use `collection()` instead.
      */
     @available(*, deprecated=3.0.22, message="Please use `collection()` instead")
-    public class func getInstance(type: DataStoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
+    public class func getInstance(type: StoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
         return collection(type, deltaSet: deltaSet, client: client, tag: tag)
     }
 
@@ -97,31 +95,19 @@ public class DataStore<T: Persistable where T: NSObject> {
      - parameter tag: A tag/nickname for your `DataStore` which will cache instances with the same tag name. Default value: `Kinvey.defaultTag`
      - returns: An instance of `DataStore` which can be a new instance or a cached instance if you are passing a `tag` parameter.
      */
-    public class func collection(type: DataStoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
+    public class func collection(type: StoreType = .Cache, deltaSet: Bool? = nil, client: Client = sharedClient, tag: String = defaultTag) -> DataStore {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before creating a DataStore.")
         let key = DataStoreTypeTag(persistableType: T.self, tag: tag, type: type)
         var dataStore = client.dataStoreInstances[key] as? DataStore
         if dataStore == nil {
-            let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-            let path = paths.first! as NSString
-            var filePath = path.stringByAppendingPathComponent(client.appKey!) as NSString
-            
-            let fileManager = NSFileManager.defaultManager()
-            do {
-                let filePath = filePath as String
-                if !fileManager.fileExistsAtPath(filePath) {
-                    try! fileManager.createDirectoryAtPath(filePath, withIntermediateDirectories: true, attributes: nil)
-                }
-            }
-            
-            filePath = filePath.stringByAppendingPathComponent("\(tag).realm")
-            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: filePath as String, encryptionKey: client.encryptionKey)
+            let filePath = client.filePath(tag)
+            dataStore = DataStore<T>(type: type, deltaSet: deltaSet ?? false, client: client, filePath: filePath, encryptionKey: client.encryptionKey)
             client.dataStoreInstances[key] = dataStore
         }
         return dataStore!
     }
     
-    private init(type: DataStoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: NSData?) {
+    private init(type: StoreType, deltaSet: Bool, client: Client, filePath: String?, encryptionKey: NSData?) {
         self.type = type
         self.deltaSet = deltaSet
         self.client = client

@@ -23,15 +23,27 @@ struct HttpResponse: Response {
         self.init(response: response)
     }
     
-    var isResponseOK: Bool {
+    var isOK: Bool {
         get {
             return 200 <= response.statusCode && response.statusCode < 300
         }
     }
     
-    var isResponseUnauthorized: Bool {
+    var isNotModified: Bool {
+        get {
+            return response.statusCode == 304
+        }
+    }
+    
+    var isUnauthorized: Bool {
         get {
             return response.statusCode == 401
+        }
+    }
+    
+    var etag: String? {
+        get {
+            return response.allHeaderFields["Etag"] as? String
         }
     }
 
