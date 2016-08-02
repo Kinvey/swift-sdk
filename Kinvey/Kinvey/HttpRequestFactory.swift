@@ -238,10 +238,17 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    private func ttlInSeconds(ttl: TTL?) -> UInt? {
+        if let ttl = ttl {
+            return UInt(ttl.1.toTimeInterval(ttl.0))
+        }
+        return nil
+    }
+    
     func buildBlobDownloadFile(file: File, ttl: TTL?) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Get,
-            endpoint: Endpoint.BlobDownload(client: client, fileId: file.fileId!, query: nil, tls: true, ttlInSeconds: nil),
+            endpoint: Endpoint.BlobDownload(client: client, fileId: file.fileId!, query: nil, tls: true, ttlInSeconds: ttlInSeconds(ttl)),
             credential: client.activeUser,
             client: client
         )
@@ -261,7 +268,7 @@ class HttpRequestFactory: RequestFactory {
     func buildBlobQueryFile(query: Query, ttl: TTL?) -> HttpRequest {
         let request = HttpRequest(
             httpMethod: .Get,
-            endpoint: Endpoint.BlobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil),
+            endpoint: Endpoint.BlobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: ttlInSeconds(ttl)),
             credential: client.activeUser,
             client: client
         )
