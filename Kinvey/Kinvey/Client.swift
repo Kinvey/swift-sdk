@@ -220,4 +220,21 @@ public class Client: NSObject, Credential {
     internal func isInitialized () -> Bool {
         return self.appKey != nil && self.appSecret != nil
     }
+    
+    internal func filePath(tag: String = defaultTag) -> String {
+        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+        let path = paths.first! as NSString
+        var filePath = path.stringByAppendingPathComponent(self.appKey!) as NSString
+        
+        let fileManager = NSFileManager.defaultManager()
+        do {
+            let filePath = filePath as String
+            if !fileManager.fileExistsAtPath(filePath) {
+                try! fileManager.createDirectoryAtPath(filePath, withIntermediateDirectories: true, attributes: nil)
+            }
+        }
+        
+        filePath = filePath.stringByAppendingPathComponent("\(tag).realm")
+        return filePath as String
+    }
 }

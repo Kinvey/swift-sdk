@@ -42,10 +42,35 @@ internal class CacheManager: NSObject {
         return RealmCache<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
+    func fileCache(filePath filePath: String? = nil) -> FileCache? {
+        return RealmFileCache(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
+    }
+    
+    func clearFiles() {
+        if let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first {
+            let basePath = (path as NSString).stringByAppendingPathComponent(persistenceId).stringByAppendingString("files")
+            
+            let fileManager = NSFileManager.defaultManager()
+            
+            var isDirectory = ObjCBool(false)
+            let exists = fileManager.fileExistsAtPath(basePath, isDirectory: &isDirectory)
+            if exists && isDirectory {
+                if let files = try? fileManager.subpathsOfDirectoryAtPath(basePath) {
+                    for file in files {
+                        do {
+                            try fileManager.removeItemAtPath(file)
+                        } catch {
+                            //ignore possible errors if for any reason is not possible to delete the file
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func clearAll(tag: String? = nil) {
-        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-        if let path = paths.first as NSString? {
-            let basePath = path.stringByAppendingPathComponent(persistenceId)
+        if let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first {
+            let basePath = (path as NSString).stringByAppendingPathComponent(persistenceId)
             
             let fileManager = NSFileManager.defaultManager()
             

@@ -44,7 +44,7 @@ internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T
         let request = client.networkRequestFactory.buildAppDataSave(persistable)
         if checkRequirements(completionHandler) {
             request.execute() { data, response, error in
-                if let response = response where response.isResponseOK {
+                if let response = response where response.isOK {
                     let json = self.client.responseParser.parse(data)
                     if let json = json {
                         let persistable = T(JSON: json)

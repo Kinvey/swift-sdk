@@ -117,6 +117,7 @@ extension RequestType {
 }
 
 internal typealias DataResponseCompletionHandler = (NSData?, Response?, ErrorType?) -> Void
+internal typealias PathResponseCompletionHandler = (NSURL?, Response?, ErrorType?) -> Void
 
 extension NSURLRequest {
     

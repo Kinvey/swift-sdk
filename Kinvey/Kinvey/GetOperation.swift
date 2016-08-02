@@ -29,7 +29,7 @@ internal class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T> 
     override func executeNetwork(completionHandler: CompletionHandler?) -> Request {
         let request = client.networkRequestFactory.buildAppDataGetById(collectionName: T.collectionName(), id: id)
         request.execute() { data, response, error in
-            if let response = response where response.isResponseOK, let json = self.client.responseParser.parse(data) {
+            if let response = response where response.isOK, let json = self.client.responseParser.parse(data) {
                 let obj = T(JSON: json)
                 if let obj = obj, let cache = self.cache {
                     cache.saveEntity(obj)
