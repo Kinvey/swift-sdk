@@ -394,7 +394,7 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserLookup(user: self, userQuery: userQuery)
         Promise<[User]> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isResponseOK, let users = client.responseParser.parseUsers(data) {
+                if let response = response where response.isOK, let users = client.responseParser.parseUsers(data) {
                     fulfill(users)
                 } else if let error = error {
                     reject(error)
