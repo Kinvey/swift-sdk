@@ -273,7 +273,7 @@ public class DataStore<T: Persistable where T: NSObject> {
     }
     
     /// Calls `push` and then `pull` methods, so it sends all the pending records in the local cache and then gets the records from the backend and saves locally in the local cache.
-    public func sync(query: Query = Query(), completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
+    public func sync(query: Query = Query(), deltaSet: Bool? = nil, completionHandler: UIntArrayCompletionHandler? = nil) -> Request {
         let completionHandler = dispatchAsyncMainQueue(completionHandler)
         if type == .Network {
             completionHandler?(nil, nil, [Error.InvalidDataStoreType])
@@ -283,7 +283,8 @@ public class DataStore<T: Persistable where T: NSObject> {
         let requests = MultiRequest()
         let request = push() { count, errors in
             if let count = count where errors == nil || errors!.isEmpty {
-                let request = self.pull(query) { results, error in
+                let deltaSet = deltaSet ?? self.deltaSet
+                let request = self.pull(query, deltaSet: deltaSet) { results, error in
                     completionHandler?(count, results, error != nil ? [error!] : nil)
                 }
                 requests.addRequest(request)
