@@ -37,10 +37,8 @@ internal class PurgeOperation<T: Persistable where T: NSObject>: SyncOperation<T
                                     }
                                     self.sync?.removePendingOperation(pendingOperation)
                                     fulfill()
-                                } else if let error = error {
-                                    reject(error)
                                 } else {
-                                    reject(Error.InvalidResponse)
+                                    reject(buildError(data, response, error, self.client))
                                 }
                             }
                         })

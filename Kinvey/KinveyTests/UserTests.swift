@@ -1326,5 +1326,46 @@ class UserTests: KinveyTestCase {
             XCTFail()
         }
     }
+    
+    func testMICErrorMessage() {
+        defer {
+            if let user = client?.activeUser {
+                user.logout()
+            }
+        }
+        
+        weak var expectationLogin = expectationWithDescription("Login")
+        
+        let redirectURI = NSURL(string: "throwAnError://")!
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: false) { (user, error) -> Void in
+            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertNotNil(error)
+            XCTAssertNotNil(error as? Kinvey.Error)
+            XCTAssertNil(user)
+            
+            if let error = error as? Kinvey.Error {
+                switch error {
+                case .UnknownJsonError(let json):
+                    let responseBody = [
+                        "error" : "invalid_client",
+                        "error_description" : "Client authentication failed.",
+                        "debug" : "Client Verification Failed: redirect uri not valid"
+                    ]
+                    XCTAssertEqual(json.count, responseBody.count)
+                    XCTAssertEqual(json["error"] as? String, responseBody["error"])
+                    XCTAssertEqual(json["error_description"] as? String, responseBody["error_description"])
+                    XCTAssertEqual(json["debug"] as? String, responseBody["debug"])
+                default:
+                    XCTFail()
+                }
+            }
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { error in
+            expectationLogin = nil
+        }
+    }
 
 }

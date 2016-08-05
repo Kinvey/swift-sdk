@@ -35,10 +35,8 @@ internal class GetOperation<T: Persistable where T: NSObject>: ReadOperation<T> 
                     cache.saveEntity(obj)
                 }
                 completionHandler?(obj, nil)
-            } else if let error = error {
-                completionHandler?(nil, error)
             } else {
-                completionHandler?(nil, Error.InvalidResponse)
+                completionHandler?(nil, buildError(data, response, error, self.client))
             }
         }
         return request

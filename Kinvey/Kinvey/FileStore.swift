@@ -99,10 +99,8 @@ public class FileStore {
                 if let response = response where response.isOK, let json = self.client.responseParser.parse(data) {
                     self.fillFile(file, json: json)
                     fulfill(file)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, self.client))
                 }
             })
         })
@@ -124,10 +122,8 @@ public class FileStore {
                     if let response = response where response.isOK, let json = self.client.responseParser.parse(data) {
                         self.fillFile(file, json: json)
                         fulfill((file: file, skip: nil))
-                    } else if let error = error {
-                        reject(error)
                     } else {
-                        reject(Error.InvalidResponse)
+                        reject(buildError(data, response, error, self.client))
                     }
                 }
             }
@@ -180,10 +176,8 @@ public class FileStore {
                         } else {
                             reject(Error.InvalidResponse)
                         }
-                    } else if let error = error {
-                        reject(error)
                     } else {
-                        reject(Error.InvalidResponse)
+                        reject(buildError(data, HttpResponse(response: response), error, self.client))
                     }
                 }
                 requests += NSURLSessionTaskRequest(client: client, task: dataTask)
@@ -204,10 +198,8 @@ public class FileStore {
                 let handle: (NSData?, NSURLResponse?, NSError?) -> Void = { data, response, error in
                     if let response = response as? NSHTTPURLResponse where 200 <= response.statusCode && response.statusCode < 300 {
                         fulfill(file)
-                    } else if let error = error {
-                        reject(error)
                     } else {
-                        reject(Error.InvalidResponse)
+                        reject(buildError(data, HttpResponse(response: response), error, self.client))
                     }
                 }
                 
@@ -310,10 +302,8 @@ public class FileStore {
                     } else {
                         fulfill(url)
                     }
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(nil, response, error, self.client))
                 }
             }
         }.then { url in
@@ -330,10 +320,8 @@ public class FileStore {
             downloadTaskRequest.downloadTaskWithURL(file) { (data: NSData?, response, error) -> Void in
                 if let response = response where response.isOK, let data = data {
                     fulfill(data)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, self.client))
                 }
             }
         }.then { data in
@@ -455,10 +443,8 @@ public class FileStore {
                     }
                     
                     fulfill(count)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, self.client))
                 }
             })
         }.then { count in
@@ -484,10 +470,8 @@ public class FileStore {
                         files.append(file)
                     }
                     fulfill(files)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, self.client))
                 }
             })
         }.then { files in

@@ -20,11 +20,23 @@ public enum Error: ErrorType {
     /// Error where Object ID is required.
     case ObjectIdMissing
     
+    /// Error when a method is not allowed, usually when you are using a Data Link Connector (DLC).
+    case MethodNotAllowed(debug: String, description: String)
+    
+    /// Error when a Data Link endpoint is not found, usually when you are using a Data Link Connector (DLC).
+    case DataLinkEntityNotFound(debug: String, description: String)
+    
+    /// Error when the type is unknow.
+    case UnknownError(error: String)
+    
+    /// Error when the type is unknow.
+    case UnknownJsonError(json: [String : AnyObject])
+    
     /// Error when a Invalid Response coming from the backend.
     case InvalidResponse
     
     /// Error when a Unauthorized Response coming from the backend.
-    case Unauthorized (error: String, description: String)
+    case Unauthorized(error: String, description: String)
     
     /// Error when calls a method that requires an active user.
     case NoActiveUser
@@ -32,11 +44,14 @@ public enum Error: ErrorType {
     /// Error when a request was cancelled.
     case RequestCancelled
     
+    /// Error when a request reached a timeout.
+    case RequestTimeout
+    
     /// Error when calls a method not available for a specific data store type.
     case InvalidDataStoreType
     
     /// Invalid operation
-    case InvalidOperation (description: String)
+    case InvalidOperation(description: String)
     
     /// Error when a `User` doen't have an email or username.
     case UserWithoutEmailOrUsername
@@ -60,6 +75,22 @@ public enum Error: ErrorType {
                 return NSLocalizedString("Error.\(self)", bundle: bundle, comment: "")
             }
         }
+    }
+    
+    static func buildUnknownError(error: String) -> Error {
+        return UnknownError(error: error)
+    }
+    
+    static func buildUnknownJsonError(json: [String : AnyObject]) -> Error {
+        return UnknownJsonError(json: json)
+    }
+    
+    static func buildDataLinkEntityNotFound(json: [String : String]) -> Error {
+        return DataLinkEntityNotFound(debug: json["debug"]!, description: json["description"]!)
+    }
+    
+    static func buildMethodNotAllowed(json: [String : String]) -> Error {
+        return MethodNotAllowed(debug: json["debug"]!, description: json["description"]!)
     }
     
     static func buildUnauthorized(json: [String : String]) -> Error {
