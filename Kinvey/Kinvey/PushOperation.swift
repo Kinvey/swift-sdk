@@ -54,7 +54,7 @@ internal class PushOperation<T: Persistable where T: NSObject>: SyncOperation<T,
                                 self.sync?.removePendingOperation(pendingOperation)
                                 count += _count
                             } else {
-                                errors.append(Error.InvalidResponse)
+                                errors.append(buildError(data, response, error, self.client))
                             }
                         } else if let response = response where response.isUnauthorized,
                             let data = data,
@@ -70,10 +70,8 @@ internal class PushOperation<T: Persistable where T: NSObject>: SyncOperation<T,
                                 break
                             }
                             errors.append(error)
-                        } else if let error = error {
-                            errors.append(error)
                         } else {
-                            errors.append(Error.InvalidResponse)
+                            errors.append(buildError(data, response, error, self.client))
                         }
                         condition.signal()
                         condition.unlock()

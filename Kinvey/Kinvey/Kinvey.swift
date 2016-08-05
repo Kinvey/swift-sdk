@@ -30,3 +30,23 @@ public let sharedClient = Client.sharedClient
 let defaultTag = "kinvey"
 
 let userDocumentDirectory: String = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!
+
+func buildError(data: NSData?, _ response: NSURLResponse?, _ error: ErrorType?, _ client: Client) -> ErrorType {
+    return buildError(data, HttpResponse(response: response), error, client)
+}
+
+func buildError(data: NSData?, _ response: Response?, _ error: ErrorType?, _ client: Client) -> ErrorType {
+    if let error = error {
+        return error as NSError
+    } else if let response = response where response.isUnauthorized,
+        let json = client.responseParser.parse(data) as? [String : String]
+    {
+        return Error.buildUnauthorized(json)
+    } else if let response = response where response.isMethodNotAllowed, let json = client.responseParser.parse(data) as? [String : String] where json["error"] == "MethodNotAllowed" {
+        return Error.buildMethodNotAllowed(json)
+    } else if let response = response where response.isNotFound, let json = client.responseParser.parse(data) as? [String : String] where json["error"] == "DataLinkEntityNotFound" {
+        return Error.buildDataLinkEntityNotFound(json)
+    } else {
+        return KinveyError.InvalidResponse
+    }
+}

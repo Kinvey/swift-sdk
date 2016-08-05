@@ -152,10 +152,8 @@ public class Push: NSObject {
             request.execute({ (data, response, error) -> Void in
                 if let response = response where response.isOK {
                     fulfill(true)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, self.client))
                 }
             })
         }.then { success in
@@ -175,10 +173,8 @@ public class Push: NSObject {
                 request.execute({ (data, response, error) -> Void in
                     if let response = response where response.isOK {
                         fulfill(true)
-                    } else if let error = error {
-                        reject(error)
                     } else {
-                        reject(Error.InvalidResponse)
+                        reject(buildError(data, response, error, self.client))
                     }
                 })
             }.then { success in
