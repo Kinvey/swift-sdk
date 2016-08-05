@@ -40,7 +40,7 @@ class FileTestCase: StoreTestCase {
         super.tearDown()
     }
     
-    private func reportMemory() -> UInt? {
+    private func reportMemory() -> Int64? {
         var info = task_basic_info()
         var count = mach_msg_type_number_t(sizeofValue(info))/4
         
@@ -54,7 +54,7 @@ class FileTestCase: StoreTestCase {
         }
         
         if kerr == KERN_SUCCESS {
-            return info.resident_size
+            return Int64(info.resident_size)
         }
         
         return nil
