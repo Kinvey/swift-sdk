@@ -34,7 +34,7 @@ class JsonResponseParser: ResponseParser {
         return nil
     }
     
-    private func parseUser<U: User where U: Mappable>(json: JsonDictionary, userType: U.Type) -> U? {
+    private func parseUser<U: User>(json: JsonDictionary, userType: U.Type) -> U? {
         let map = Map(mappingType: .FromJSON, JSONDictionary: json)
         let user = userType.init(map)
         user?.mapping(map)
