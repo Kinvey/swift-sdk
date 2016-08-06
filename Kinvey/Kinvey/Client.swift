@@ -128,6 +128,9 @@ public class Client: NSObject, Credential {
     /// Enables logging for any network calls.
     public var logNetworkEnabled = false
     
+    /// Stores the MIC API Version to be used in MIC calls 
+    public var micApiVersion: String? = "v2"
+    
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public override init() {
         apiHostName = Client.defaultApiHostName
