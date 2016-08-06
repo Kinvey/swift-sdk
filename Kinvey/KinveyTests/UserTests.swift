@@ -336,19 +336,19 @@ class UserTests: KinveyTestCase {
         }
     }
     
-    func testSave() {
-        class MyUser: User {
+    class MyUser: User {
+        
+        var foo: String?
+        
+        override func mapping(map: Map) {
+            super.mapping(map)
             
-            var foo: String?
-            
-            override func mapping(map: Map) {
-                super.mapping(map)
-                
-                foo <- map["foo"]
-            }
-            
+            foo <- map["foo"]
         }
         
+    }
+    
+    func testSave() {
         client.userType = MyUser.self
         
         signUp()
@@ -380,18 +380,6 @@ class UserTests: KinveyTestCase {
     }
     
     func testSaveTimeoutError() {
-        class MyUser: User {
-            
-            var foo: String?
-            
-            override func mapping(map: Map) {
-                super.mapping(map)
-                
-                foo <- map["foo"]
-            }
-            
-        }
-        
         client.userType = MyUser.self
         
         signUp()
