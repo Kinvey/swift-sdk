@@ -206,6 +206,7 @@
 {
     [self.activityIndicatorView startAnimating];
     
+    [KCSUser setMICApiVersion:self.micApiVersion];
     [KCSUser parseMICRedirectURI:self.redirectURI
                           forURL:url
                           client:self.client
