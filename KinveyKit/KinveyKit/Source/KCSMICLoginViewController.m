@@ -312,9 +312,9 @@
             NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data
                                                                  options:0
                                                                    error:&error];
-            if (!error && json && [json isKindOfClass:[NSDictionary class]] && [json[@"error"] isKindOfClass:[NSString class]]) {
+            if (!error && json && [json isKindOfClass:[NSDictionary class]]) {
                 NSError* error = [KCSErrorUtilities createError:json
-                                                    description:json[@"description"]
+                                                    description:json[@"description"] ? json[@"description"] : @""
                                                       errorCode:KCSLoginFailureError
                                                          domain:KCSUserErrorDomain
                                                       requestId:nil];
