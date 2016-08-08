@@ -129,7 +129,7 @@ public class Client: NSObject, Credential {
     public var logNetworkEnabled = false
     
     /// Stores the MIC API Version to be used in MIC calls 
-    public var micApiVersion: String? = "v2"
+    public var micApiVersion: String? = "v1"
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public override init() {
