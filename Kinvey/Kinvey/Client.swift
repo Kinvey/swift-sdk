@@ -126,7 +126,17 @@ public class Client: NSObject, Credential {
     var dataStoreInstances = [DataStoreTypeTag : AnyObject]()
     
     /// Enables logging for any network calls.
-    public var logNetworkEnabled = false
+    public var logNetworkEnabled = false {
+        didSet {
+            KCSClient.configureLoggingWithNetworkEnabled(
+                logNetworkEnabled,
+                debugEnabled: false,
+                traceEnabled: false,
+                warningEnabled: false,
+                errorEnabled: false
+            )
+        }
+    }
     
     /// Default constructor. The `initialize` method still need to be called after instanciate a new instance.
     public override init() {
