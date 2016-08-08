@@ -169,7 +169,7 @@
 		57B23E9F1C7FA2BF006403CC /* KCSHttpRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E1F1C7F9414006403CC /* KCSHttpRequest.h */; };
 		57B23EA01C7FA2BF006403CC /* KCSHttpRequest+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23E201C7F9414006403CC /* KCSHttpRequest+Private.h */; };
 		57B23EA91C7FA492006403CC /* KCSClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DD31C7F9414006403CC /* KCSClient.m */; };
-		57B23EAA1C7FA499006403CC /* KCSClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DD21C7F9414006403CC /* KCSClient.h */; };
+		57B23EAA1C7FA499006403CC /* KCSClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DD21C7F9414006403CC /* KCSClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57B23EAB1C7FA510006403CC /* KinveyUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DC71C7F9414006403CC /* KinveyUser.m */; };
 		57B23EAC1C7FA518006403CC /* KinveyUser+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DC61C7F9414006403CC /* KinveyUser+Private.h */; };
 		57B23EAD1C7FA55D006403CC /* KCSBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23E091C7F9414006403CC /* KCSBase64.m */; };
