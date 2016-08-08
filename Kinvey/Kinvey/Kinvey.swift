@@ -46,6 +46,8 @@ func buildError(data: NSData?, _ response: Response?, _ error: ErrorType?, _ cli
         return Error.buildMethodNotAllowed(json)
     } else if let response = response where response.isNotFound, let json = client.responseParser.parse(data) as? [String : String] where json["error"] == "DataLinkEntityNotFound" {
         return Error.buildDataLinkEntityNotFound(json)
+    } else if let _ = response, let json = client.responseParser.parse(data) {
+        return Error.buildUnknownJsonError(json)
     } else {
         return KinveyError.InvalidResponse
     }
