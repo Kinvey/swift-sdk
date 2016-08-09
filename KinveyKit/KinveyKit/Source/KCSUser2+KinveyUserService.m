@@ -295,10 +295,11 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
         if (error) {
             if (completionBlock) completionBlock(nil, error);
         } else {
+            NSError* jsonParseError = nil;
+            NSMutableDictionary* jsonResponse = [NSJSONSerialization JSONObjectWithData:networkResponse.jsonData
+                                                                                options:NSJSONReadingMutableContainers
+                                                                                  error:&jsonParseError];
             if (networkResponse.code == 200 && networkResponse.jsonData) {
-                NSMutableDictionary* jsonResponse = [NSJSONSerialization JSONObjectWithData:networkResponse.jsonData
-                                                                                    options:NSJSONReadingMutableContainers
-                                                                                      error:&error];
                 if (error) {
                     if (completionBlock) completionBlock(nil, error);
                 } else {
@@ -309,9 +310,12 @@ NSString* const kKCSMICRedirectURIKey = @"redirect_uri";
                 }
             } else {
                 if (completionBlock) {
-                    NSError* error = [NSError errorWithDomain:[NSHTTPURLResponse localizedStringForStatusCode:networkResponse.code]
-                                                         code:networkResponse.code
-                                                     userInfo:@{}];
+                    NSError* error = jsonParseError;
+                    if (!error) {
+                        error = [NSError errorWithDomain:[NSHTTPURLResponse localizedStringForStatusCode:networkResponse.code]
+                                                    code:networkResponse.code
+                                                userInfo:jsonResponse];
+                    }
                     completionBlock(nil, error);
                 }
             }
