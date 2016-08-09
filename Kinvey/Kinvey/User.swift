@@ -444,6 +444,7 @@ public class User: NSObject, Credential, Mappable {
             micVC.setValue(forceUIWebView, forKey: "forceUIWebView")
         }
         micVC.client = client
+        micVC.micApiVersion = client.micApiVersion
         let navigationVC = UINavigationController(rootViewController: micVC)
         
         var viewController = UIApplication.sharedApplication().keyWindow?.rootViewController
