@@ -8,6 +8,8 @@
 
 #import "KCSMICLoginViewController.h"
 #import <WebKit/WebKit.h>
+#import "KCSErrorUtilities.h"
+#import "KinveyErrorCodes.h"
 
 @interface KCSMICLoginViewController () <UIWebViewDelegate, WKNavigationDelegate>
 
@@ -255,6 +257,9 @@
 
 -(void)webViewDidFinishLoad:(UIWebView *)webView
 {
+    NSString* body = [webView stringByEvaluatingJavaScriptFromString:@"document.body.innerText"];
+    [self handleError:body];
+    
     [self.activityIndicatorView stopAnimating];
 }
 
@@ -292,7 +297,31 @@
 
 -(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
+    [webView evaluateJavaScript:@"document.body.innerText" completionHandler:^(id _Nullable body, NSError * _Nullable error) {
+        [self handleError:body];
+    }];
+    
     [self.activityIndicatorView stopAnimating];
+}
+
+-(void)handleError:(NSString*)body {
+    if ([body isKindOfClass:[NSString class]]) {
+        NSData* data = [(NSString*) body dataUsingEncoding:NSUTF8StringEncoding];
+        if (data) {
+            NSError* error = nil;
+            NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data
+                                                                 options:0
+                                                                   error:&error];
+            if (!error && json && [json isKindOfClass:[NSDictionary class]]) {
+                NSError* error = [KCSErrorUtilities createError:json
+                                                    description:json[@"description"] ? json[@"description"] : @""
+                                                      errorCode:KCSLoginFailureError
+                                                         domain:KCSUserErrorDomain
+                                                      requestId:nil];
+                [self failWithError:error];
+            }
+        }
+    }
 }
 
 @end
