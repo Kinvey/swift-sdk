@@ -91,4 +91,12 @@ internal class KinveyError: NSObject {
     private override init() {
     }
     
+    internal static func buildUnknownError(error: String) -> NSError {
+        return Error.buildUnknownError(error).error
+    }
+    
+    internal static func buildUnknownJsonError(json: [String : AnyObject]) -> NSError {
+        return Error.buildUnknownJsonError(json).error
+    }
+    
 }

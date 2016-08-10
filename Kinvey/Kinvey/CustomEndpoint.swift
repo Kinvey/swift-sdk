@@ -27,10 +27,8 @@ public class CustomEndpoint: NSObject {
             if let completionHandler = dispatchAsyncMainQueue(completionHandler) {
                 if let response = response where response.isOK, let json = client.responseParser.parse(data) {
                     completionHandler(json, nil)
-                } else if let error = error {
-                    completionHandler(nil, error)
                 } else {
-                    completionHandler(nil, Error.InvalidResponse)
+                    completionHandler(nil, buildError(data, response, error, client))
                 }
             }
         }

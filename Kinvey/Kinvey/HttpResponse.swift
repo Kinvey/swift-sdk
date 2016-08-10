@@ -23,6 +23,13 @@ struct HttpResponse: Response {
         self.init(response: response)
     }
     
+    init?(response: NSURLResponse?) {
+        guard let response = response as? NSHTTPURLResponse else {
+            return nil
+        }
+        self.init(response: response)
+    }
+    
     var isOK: Bool {
         get {
             return 200 <= response.statusCode && response.statusCode < 300
@@ -38,6 +45,18 @@ struct HttpResponse: Response {
     var isUnauthorized: Bool {
         get {
             return response.statusCode == 401
+        }
+    }
+    
+    var isNotFound: Bool {
+        get {
+            return response.statusCode == 404
+        }
+    }
+    
+    var isMethodNotAllowed: Bool {
+        get {
+            return response.statusCode == 405
         }
     }
     

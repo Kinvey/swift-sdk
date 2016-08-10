@@ -74,10 +74,8 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                                 operation.execute { (results, error) -> Void in
                                     if let results = results as? [AnyObject] {
                                         fulfill(results)
-                                    } else if let error = error {
-                                        reject(error)
                                     } else {
-                                        reject(Error.InvalidResponse)
+                                        reject(buildError(data, response, error, self.client))
                                     }
                                 }
                             }
@@ -111,10 +109,8 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                                     }
                                 }
                                 self.executeLocal(completionHandler)
-                            } else if let error = error {
-                                completionHandler?(nil, error)
                             } else {
-                                completionHandler?(nil, Error.InvalidResponse)
+                                completionHandler?(nil, buildError(data, response, error, self.client))
                             }
                         }
                     } else {
@@ -126,13 +122,11 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                         cache.saveEntities(entities)
                         completionHandler?(entities, nil)
                     } else {
-                        completionHandler?(nil, Error.InvalidResponse)
+                        completionHandler?(nil, buildError(data, response, error, self.client))
                     }
                 }
-            } else if let error = error {
-                completionHandler?(nil, error)
             } else {
-                completionHandler?(nil, Error.InvalidResponse)
+                completionHandler?(nil, buildError(data, response, error, self.client))
             }
         }
         return request

@@ -257,7 +257,7 @@ internal class HttpRequest: NSObject, Request {
                 }
             }
             
-            completionHandler?(data, HttpResponse(response: response as? NSHTTPURLResponse), error)
+            completionHandler?(data, HttpResponse(response: response), error)
         }
         task!.resume()
     }
