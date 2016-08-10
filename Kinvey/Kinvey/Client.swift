@@ -126,7 +126,17 @@ public class Client: NSObject, Credential {
     var dataStoreInstances = [DataStoreTypeTag : AnyObject]()
     
     /// Enables logging for any network calls.
-    public var logNetworkEnabled = false
+    public var logNetworkEnabled = false {
+        didSet {
+            KCSClient.configureLoggingWithNetworkEnabled(
+                logNetworkEnabled,
+                debugEnabled: false,
+                traceEnabled: false,
+                warningEnabled: false,
+                errorEnabled: false
+            )
+        }
+    }
     
     /// Stores the MIC API Version to be used in MIC calls 
     public var micApiVersion: String? = "v1"

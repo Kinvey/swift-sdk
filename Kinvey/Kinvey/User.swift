@@ -48,10 +48,8 @@ public class User: NSObject, Credential, Mappable {
                 if let response = response where response.isOK {
                     client.activeUser = client.responseParser.parseUser(data)
                     fulfill(client.activeUser!)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
         }.then { user in
@@ -72,10 +70,8 @@ public class User: NSObject, Credential, Mappable {
                         client.activeUser = nil
                     }
                     fulfill()
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
         }.then { _ in
@@ -104,18 +100,11 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserSocialLogin(authSource.rawValue, authData: authData)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isOK {
-                    let user = client.responseParser.parseUser(data)
-                    if let user = user {
-                        client.activeUser = user
-                        fulfill(user)
-                    } else {
-                        reject(Error.InvalidResponse)
-                    }
-                } else if let error = error {
-                    reject(error)
+                if let response = response where response.isOK, let user = client.responseParser.parseUser(data) {
+                    client.activeUser = user
+                    fulfill(user)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
             }.then { user in
@@ -133,18 +122,11 @@ public class User: NSObject, Credential, Mappable {
         let request = client.networkRequestFactory.buildUserLogin(username: username, password: password)
         Promise<User> { fulfill, reject in
             request.execute() { (data, response, error) in
-                if let response = response where response.isOK {
-                    let user = client.responseParser.parseUser(data)
-                    if let user = user {
-                        client.activeUser = user
-                        fulfill(user)
-                    } else {
-                        reject(Error.InvalidResponse)
-                    }
-                } else if let error = error {
-                    reject(error)
+                if let response = response where response.isOK, let user = client.responseParser.parseUser(data) {
+                    client.activeUser = user
+                    fulfill(user)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
         }.then { user in
@@ -170,10 +152,8 @@ public class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response where response.isOK {
                     fulfill()
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
             }.then {
@@ -209,10 +189,8 @@ public class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response where response.isOK {
                     fulfill()
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
         }.then {
@@ -269,10 +247,8 @@ public class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response where response.isOK {
                     fulfill()
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
         }.then {
@@ -290,10 +266,8 @@ public class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response where response.isOK, let json = client.responseParser.parse(data), let usernameExists = json["usernameExists"] as? Bool {
                     fulfill(usernameExists)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
         }.then { exists in
@@ -311,10 +285,8 @@ public class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response where response.isOK, let user = client.responseParser.parseUser(data) {
                     fulfill(user)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
         }.then { user in
@@ -373,10 +345,8 @@ public class User: NSObject, Credential, Mappable {
                 if let response = response where response.isOK, let user = client.responseParser.parseUser(data) {
                     client.activeUser = user
                     fulfill(user)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
         }.then { user in
@@ -396,10 +366,8 @@ public class User: NSObject, Credential, Mappable {
             request.execute() { (data, response, error) in
                 if let response = response where response.isOK, let users = client.responseParser.parseUsers(data) {
                     fulfill(users)
-                } else if let error = error {
-                    reject(error)
                 } else {
-                    reject(Error.InvalidResponse)
+                    reject(buildError(data, response, error, client))
                 }
             }
             }.then { users in
@@ -438,7 +406,13 @@ public class User: NSObject, Credential, Mappable {
                 user?.email = kcsUser.email
                 client.activeUser = user
             }
-            completionHandler?(user, error)
+            if actionResult == KCSUserActionResult.KCSUserInteractionCancel {
+                completionHandler?(user, Error.RequestCancelled)
+            } else if actionResult == KCSUserActionResult.KCSUserInteractionTimeout {
+                completionHandler?(user, Error.RequestTimeout)
+            } else {
+                completionHandler?(user, error)
+            }
         }
         if forceUIWebView {
             micVC.setValue(forceUIWebView, forKey: "forceUIWebView")

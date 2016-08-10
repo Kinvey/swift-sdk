@@ -112,6 +112,9 @@
 + (NSError * _Nonnull)RequestCancelled;
 + (NSError * _Nonnull)InvalidStoreType;
 
++ (NSError * _Nonnull)buildUnknownError:(NSString * _Nonnull)error;
++ (NSError * _Nonnull)buildUnknownJsonError:(NSDictionary<NSString *, id> * _Nonnull)json;
+
 @end
 
 @interface __KNVLocalRequest : NSObject <KNVRequest>

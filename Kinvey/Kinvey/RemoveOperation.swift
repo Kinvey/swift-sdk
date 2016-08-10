@@ -58,14 +58,8 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?
             {
                 self.cache?.removeEntitiesByQuery(self.query)
                 completionHandler?(count, nil)
-            } else if let response = response where response.isUnauthorized,
-                let json = self.client.responseParser.parse(data) as? [String : String]
-            {
-                completionHandler?(nil, Error.buildUnauthorized(json))
-            } else if let error = error {
-                completionHandler?(nil, error)
             } else {
-                completionHandler?(nil, Error.InvalidResponse)
+                completionHandler?(nil, buildError(data, response, error, self.client))
             }
         }
         return request

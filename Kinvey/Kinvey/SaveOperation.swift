@@ -54,10 +54,8 @@ internal class SaveOperation<T: Persistable where T: NSObject>: WriteOperation<T
                         self.merge(&self.persistable, json: json)
                     }
                     completionHandler?(self.persistable, nil)
-                } else if let error = error {
-                    completionHandler?(nil, error as NSError)
                 } else {
-                    completionHandler?(nil, KinveyError.InvalidResponse)
+                    completionHandler?(nil, buildError(data, response, error, self.client))
                 }
             }
         }
