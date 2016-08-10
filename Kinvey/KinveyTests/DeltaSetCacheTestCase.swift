@@ -726,4 +726,136 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
+    func testFindOneRecordDeltaSet() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.Sync, deltaSet: true)
+        
+        let person = Person()
+        person.name = "Victor"
+        
+        weak var expectationSave = expectationWithDescription("Save")
+        
+        store.save(person) { (person, error) in
+            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertNotNil(person)
+            XCTAssertNil(error)
+            
+            expectationSave?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            expectationSave = nil
+        }
+        
+        weak var expectationPush = expectationWithDescription("Push")
+        
+        store.push() { (count, error) in
+            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertNotNil(count)
+            XCTAssertNil(error)
+            
+            expectationPush?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            expectationPush = nil
+        }
+        
+        let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
+        
+        class OnePersonURLProtocol: NSURLProtocol {
+            
+            static var userId = ""
+            static var urlProtocolCalled = false
+            
+            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                return !urlProtocolCalled
+            }
+            
+            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                return request
+            }
+            
+            override func startLoading() {
+                OnePersonURLProtocol.urlProtocolCalled = true
+                
+                var queryParams = [String : String]()
+                let components = request.URL?.query?.componentsSeparatedByString("&")
+                XCTAssertNotNil(components)
+                if let components = components {
+                    for component in components {
+                        let keyValuePair = component.componentsSeparatedByString("=")
+                        queryParams[keyValuePair[0]] = keyValuePair[1]
+                    }
+                    let fields = queryParams["fields"]
+                    XCTAssertNotNil(fields)
+                    if let fields = fields {
+                        let fieldsArray = fields.componentsSeparatedByString(",").sort()
+                        XCTAssertGreaterThanOrEqual(fieldsArray.count, 2)
+                        if fieldsArray.count >= 2 {
+                            XCTAssertEqual(fieldsArray[0], "_id")
+                            XCTAssertEqual(fieldsArray[1], "_kmd.lmt")
+                        }
+                    }
+                }
+                
+                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                
+                let object = [
+                    [
+                        "_id": NSUUID().UUIDString,
+                        "name": "Victor",
+                        "_acl": [
+                            "creator": OnePersonURLProtocol.userId
+                        ],
+                        "_kmd": [
+                            "lmt": "2016-03-18T17:48:14.875Z",
+                            "ect": "2016-03-18T17:48:14.875Z"
+                        ]
+                    ]
+                ]
+                let data = try! NSJSONSerialization.dataWithJSONObject(object, options: [])
+                client!.URLProtocol(self, didLoadData: data)
+                
+                client!.URLProtocolDidFinishLoading(self)
+            }
+            
+            override func stopLoading() {
+            }
+            
+        }
+        
+        OnePersonURLProtocol.userId = client.activeUser!.userId
+        
+        setURLProtocol(OnePersonURLProtocol.self)
+        defer {
+            setURLProtocol(nil)
+        }
+        
+        weak var expectationFind = expectationWithDescription("Find")
+        
+        store.find(query, readPolicy: .ForceNetwork) { results, error in
+            XCTAssertNotNil(results)
+            XCTAssertNil(error)
+            
+            if let results = results {
+                XCTAssertEqual(results.count, 1)
+                
+                if let person = results.first {
+                    XCTAssertEqual(person.name, "Victor")
+                }
+            }
+            
+            expectationFind?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            expectationFind = nil
+        }
+        
+        XCTAssertTrue(OnePersonURLProtocol.urlProtocolCalled)
+    }
+    
 }
