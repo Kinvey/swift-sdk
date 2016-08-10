@@ -43,7 +43,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
     
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
-        let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(T.metadataProperty()).\(Metadata.LmtKey)"] : nil
+        let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
         let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.collectionName(), query: query, fields: fields)
         request.execute() { data, response, error in
             if let response = response where response.isOK,
