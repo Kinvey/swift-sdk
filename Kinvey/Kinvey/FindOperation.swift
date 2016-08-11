@@ -16,6 +16,16 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
     let query: Query
     let deltaSet: Bool
     
+    lazy var isEmptyQuery: Bool = {
+        return self.query.predicate == nil || self.query.predicate == NSPredicate()
+    }()
+    
+    var mustRemoveCachedRecords: Bool {
+        get {
+            return isEmptyQuery
+        }
+    }
+    
     typealias ResultsHandler = ([JsonDictionary]) -> Void
     let resultsHandler: ResultsHandler?
     
@@ -82,7 +92,9 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                             promises.append(promise)
                         }
                         when(promises).thenInBackground { results in
-                            self.removeCachedRecords(cache, refObjs: refObjs, deleted: deltaSet.deleted)
+                            if self.mustRemoveCachedRecords {
+                                self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
+                            }
                             self.executeLocal(completionHandler)
                         }.error { error in
                             completionHandler?(nil, error)
@@ -95,8 +107,8 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                         }
                         operation.execute { (results, error) -> Void in
                             if let _ = results {
-                                if let refObjs = newRefObjs {
-                                    self.removeCachedRecords(cache, refObjs: refObjs, deleted: deltaSet.deleted)
+                                if self.mustRemoveCachedRecords, let refObjs = newRefObjs {
+                                    self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
                                 }
                                 self.executeLocal(completionHandler)
                             } else {
@@ -109,6 +121,11 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                 } else {
                     let entities = [T](JSONArray: jsonArray)
                     if let cache = self.cache, let entities = entities {
+                        if self.isEmptyQuery {
+                            let refObjs = self.reduceToIdsLmts(jsonArray)
+                            let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
+                            self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
+                        }
                         cache.saveEntities(entities)
                         completionHandler?(entities, nil)
                     } else {
@@ -122,15 +139,12 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
         return request
     }
     
-    private func removeCachedRecords(cache: Cache<T>, refObjs: [String : String], deleted: Set<String>) {
-        let mustRemoveCachedRecords = query.predicate == nil || query.predicate == NSPredicate()
-        if mustRemoveCachedRecords {
-            let refKeys = Set<String>(refObjs.keys)
-            let deleted = deleted.subtract(refKeys)
-            if deleted.count > 0 {
-                let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted)
-                cache.removeEntitiesByQuery(query)
-            }
+    private func removeCachedRecords<S : SequenceType where S.Generator.Element == String>(cache: Cache<T>, keys: S, deleted: Set<String>) {
+        let refKeys = Set<String>(keys)
+        let deleted = deleted.subtract(refKeys)
+        if deleted.count > 0 {
+            let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted)
+            cache.removeEntitiesByQuery(query)
         }
     }
     

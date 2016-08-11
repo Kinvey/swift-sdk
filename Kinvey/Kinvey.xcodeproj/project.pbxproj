@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57089DD61D5CE80D00A36035 /* PullOperation.swift */; };
 		5714EBB01CCECE35001E3ECF /* AclTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */; };
 		5714EBB21CCEEAF9001E3ECF /* RemoveByIdOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */; };
 		57162EEF1CB83A2400A3C408 /* KCSClient2+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DFC1C7F9414006403CC /* KCSClient2+KCSInternal.m */; };
@@ -562,6 +563,7 @@
 
 /* Begin PBXFileReference section */
 		5706FEC21C1F9A6D0037E7D0 /* StoreTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreTestCase.swift; sourceTree = "<group>"; };
+		57089DD61D5CE80D00A36035 /* PullOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullOperation.swift; sourceTree = "<group>"; };
 		5711C46C1C74F52F00073806 /* SaveOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperationTest.swift; sourceTree = "<group>"; };
 		5714EBAF1CCECE35001E3ECF /* AclTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AclTestCase.swift; sourceTree = "<group>"; };
 		5714EBB11CCEEAF9001E3ECF /* RemoveByIdOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByIdOperation.swift; sourceTree = "<group>"; };
@@ -1150,6 +1152,7 @@
 				57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */,
 				57470FA41C76926B0096B15F /* PushOperation.swift */,
 				57470FAA1C769EF00096B15F /* PurgeOperation.swift */,
+				57089DD61D5CE80D00A36035 /* PullOperation.swift */,
 			);
 			name = Operations;
 			sourceTree = "<group>";
@@ -2550,6 +2553,7 @@
 				57470FA71C7698B30096B15F /* MultiRequest.swift in Sources */,
 				57B23F021C7FAF39006403CC /* NSDictionary+KinveyAdditions.m in Sources */,
 				57B23F391C7FB0CD006403CC /* KCSQueryAdapter.m in Sources */,
+				57089DD71D5CE80D00A36035 /* PullOperation.swift in Sources */,
 				57B23F5E1C7FB1B6006403CC /* KCS_DDTTYLogger.m in Sources */,
 				57E7C7A71C504B0900848748 /* CacheManager.swift in Sources */,
 				57B23EEC1C7FA9F3006403CC /* KCSNSURLCxnFileOperation.m in Sources */,
