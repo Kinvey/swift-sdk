@@ -651,6 +651,72 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
     }
     
+    func testPullAllRecords() {
+        signUp()
+        
+        let store = DataStore<Person>.collection(.Sync)
+        
+        let person = Person()
+        person.name = "Victor"
+        
+        do {
+            weak var expectationSave = expectationWithDescription("Save")
+            
+            store.save(person) { person, error in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                if let person = person {
+                    XCTAssertEqual(person.name, "Victor")
+                }
+                
+                expectationSave?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+                expectationSave = nil
+            }
+        }
+        
+        do {
+            weak var expectationPush = expectationWithDescription("Push")
+            
+            store.push() { count, error in
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                if let count = count {
+                    XCTAssertEqual(count, 1)
+                }
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+                expectationPush = nil
+            }
+        }
+        
+        do {
+            weak var expectationPull = expectationWithDescription("Pull")
+            
+            store.pull(deltaSet: true) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertGreaterThanOrEqual(results.count, 1)
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+                expectationPull = nil
+            }
+        }
+    }
+    
     func testFindOneRecord() {
         signUp()
         
