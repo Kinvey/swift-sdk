@@ -82,12 +82,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                             promises.append(promise)
                         }
                         when(promises).thenInBackground { results in
-                            let refKeys = Set<String>(refObjs.keys)
-                            let deleted = deltaSet.deleted.subtract(refKeys)
-                            if deleted.count > 0 {
-                                let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted)
-                                cache.removeEntitiesByQuery(query)
-                            }
+                            self.removeCachedRecords(cache, refObjs: refObjs, deleted: deltaSet.deleted)
                             self.executeLocal(completionHandler)
                         }.error { error in
                             completionHandler?(nil, error)
@@ -101,12 +96,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                         operation.execute { (results, error) -> Void in
                             if let _ = results {
                                 if let refObjs = newRefObjs {
-                                    let refKeys = Set<String>(refObjs.keys)
-                                    let deleted = deltaSet.deleted.subtract(refKeys)
-                                    if deleted.count > 0 {
-                                        let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted)
-                                        cache.removeEntitiesByQuery(query)
-                                    }
+                                    self.removeCachedRecords(cache, refObjs: refObjs, deleted: deltaSet.deleted)
                                 }
                                 self.executeLocal(completionHandler)
                             } else {
@@ -130,6 +120,18 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
             }
         }
         return request
+    }
+    
+    private func removeCachedRecords(cache: Cache<T>, refObjs: [String : String], deleted: Set<String>) {
+        let mustRemoveCachedRecords = query.predicate == nil || query.predicate == NSPredicate()
+        if mustRemoveCachedRecords {
+            let refKeys = Set<String>(refObjs.keys)
+            let deleted = deleted.subtract(refKeys)
+            if deleted.count > 0 {
+                let query = Query(format: "\(T.entityIdProperty()) IN %@", deleted)
+                cache.removeEntitiesByQuery(query)
+            }
+        }
     }
     
 }
