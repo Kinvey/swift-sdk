@@ -20,7 +20,7 @@ internal func StringFromClass(cls: AnyClass) -> String {
     return className
 }
 
-public class Entity: Object, Persistable {
+public class Entity: Object, Persistable, BuilderType {
     
     /// Override this method and return the name of the collection for Kinvey.
     public class func collectionName() -> String {

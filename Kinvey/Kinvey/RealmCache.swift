@@ -123,7 +123,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
     override func findIdsLmtsByQuery(query: Query) -> [String : String] {
         var results = [String : String]()
         executor.executeAndWait {
-            for entity in self.results(query) {
+            for entity in self.results(Query(predicate: query.predicate)) {
                 results[entity.entityId!] = entity.metadata!.lmt!
             }
         }

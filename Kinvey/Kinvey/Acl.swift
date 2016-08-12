@@ -39,7 +39,7 @@ class AclTransformType: TransformType {
 }
 
 /// This class represents the ACL (Access Control List) for a record.
-public class Acl: Object, Mappable {
+public class Acl: Object, Mappable, BuilderType {
     
     static let CreatorKey = "creator"
     static let GlobalReadKey = "gr"
