@@ -77,6 +77,10 @@ public class Entity: Object, Persistable, BuilderType {
         return entityIdProperty()
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public override class func ignoredProperties() -> [String] {
         var properties = [String]()
         for property in ObjCRuntime.properties(self) {

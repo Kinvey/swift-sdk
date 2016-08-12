@@ -77,14 +77,23 @@ public class File: Object {
     
     var resumeDownloadData: NSData?
     
+    /// Default Constructor
     public required init() {
         super.init()
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public required init(realm: RLMRealm, schema: RLMObjectSchema) {
         super.init(realm: realm, schema: schema)
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public required init(value: AnyObject, schema: RLMSchema) {
         super.init(value: value, schema: schema)
     }
@@ -95,10 +104,18 @@ public class File: Object {
         block(self)
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public override class func primaryKey() -> String? {
         return "fileId"
     }
     
+    /**
+     WARNING: This is an internal initializer not intended for public use.
+     :nodoc:
+     */
     public override class func ignoredProperties() -> [String] {
         return [
             "downloadURL",

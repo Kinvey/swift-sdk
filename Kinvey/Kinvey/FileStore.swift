@@ -332,6 +332,7 @@ public class FileStore {
         return downloadTaskRequest
     }
     
+    /// Returns the cached file, if exists.
     public func cachedFile(fileId: String) -> File? {
         if let cache = cache {
             return cache.get(fileId)
@@ -339,6 +340,7 @@ public class FileStore {
         return nil
     }
     
+    /// Returns the cached file, if exists.
     public func cachedFile(inout file: File) {
         guard let fileId = file.fileId else {
             fatalError("File.fileId is required")
