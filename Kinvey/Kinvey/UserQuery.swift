@@ -11,7 +11,7 @@ import Foundation
 /**
  Struct that contains all the parameters available for user lookup.
  */
-public struct UserQuery: Mappable {
+public struct UserQuery: Mappable, BuilderType {
     
     /// Filter by User's ID
     public var userId: String?
