@@ -121,7 +121,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                 } else {
                     let entities = [T](JSONArray: jsonArray)
                     if let cache = self.cache, let entities = entities {
-                        if self.isEmptyQuery {
+                        if self.mustRemoveCachedRecords {
                             let refObjs = self.reduceToIdsLmts(jsonArray)
                             let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
                             self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)

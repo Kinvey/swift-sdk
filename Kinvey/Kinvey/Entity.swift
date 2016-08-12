@@ -20,21 +20,7 @@ internal func StringFromClass(cls: AnyClass) -> String {
     return className
 }
 
-public protocol EntityType {
-    
-    init()
-    init(@noescape _ block: (Self) -> Void)
-    
-}
-
-extension EntityType {
-    public init(@noescape _ block: (Self) -> Void) {
-        self.init()
-        block(self)
-    }
-}
-
-public class Entity: Object, Persistable, EntityType {
+public class Entity: Object, Persistable, BuilderType {
     
     /// Override this method and return the name of the collection for Kinvey.
     public class func collectionName() -> String {
