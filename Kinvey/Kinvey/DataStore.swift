@@ -259,7 +259,7 @@ public class DataStore<T: Persistable where T: NSObject> {
         }
         
         let deltaSet = deltaSet ?? self.deltaSet
-        let operation = FindOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, cache: cache, client: client)
+        let operation = PullOperation<T>(query: Query(query: query, persistableType: T.self), deltaSet: deltaSet, readPolicy: .ForceNetwork, cache: cache, client: client)
         let request = operation.execute(completionHandler)
         return request
     }

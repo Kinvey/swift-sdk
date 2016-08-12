@@ -311,22 +311,192 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPull() {
-        weak var expectationPull = expectationWithDescription("Pull")
-        
-        store.pull() { results, error in
-            self.assertThread()
-            XCTAssertNotNil(results)
-            XCTAssertNil(error)
-            
-            if let results = results {
-                XCTAssertGreaterThanOrEqual(results.count, 1)
-            }
-            
-            expectationPull?.fulfill()
+        MockKinveyBackend.kid = client.appKey!
+        setURLProtocol(MockKinveyBackend.self)
+        defer {
+            setURLProtocol(nil)
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationPull = nil
+        let lmt = NSDate()
+        
+        MockKinveyBackend.appdata = [
+            "Person" : [
+                Person { $0.personId = "Victor"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON(),
+                Person { $0.personId = "Hugo"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON(),
+                Person { $0.personId = "Barros"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON()
+            ]
+        ]
+        
+        do {
+            weak var expectationPull = expectationWithDescription("Pull")
+            
+            store.pull() { results, error in
+                self.assertThread()
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 3)
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationPull = nil
+            }
+        }
+        
+        do {
+            let query = Query(format: "personId == %@", "Victor")
+            
+            weak var expectationPull = expectationWithDescription("Pull")
+            
+            store.pull(query) { results, error in
+                self.assertThread()
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 1)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.personId, "Victor")
+                    }
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationPull = nil
+            }
+        }
+        
+        do {
+            weak var expectationPull = expectationWithDescription("Pull")
+            
+            store.find() { results, error in
+                self.assertThread()
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 3)
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationPull = nil
+            }
+        }
+        
+        MockKinveyBackend.appdata = [
+            "Person" : [
+                Person { $0.personId = "Hugo"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON()
+            ]
+        ]
+        
+        do {
+            let query = Query(format: "personId == %@", "Victor")
+            
+            weak var expectationPull = expectationWithDescription("Pull")
+            
+            store.pull(query) { results, error in
+                self.assertThread()
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 0)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.personId, "Victor")
+                    }
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationPull = nil
+            }
+        }
+        
+        do {
+            weak var expectationPull = expectationWithDescription("Pull")
+            
+            store.find() { results, error in
+                self.assertThread()
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 2)
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationPull = nil
+            }
+        }
+        
+        MockKinveyBackend.appdata = [
+            "Person" : [
+                Person { $0.personId = "Victor"; $0.metadata = Metadata { $0.lastModifiedTime = lmt } }.toJSON()
+            ]
+        ]
+        
+        store.clearCache()
+        
+        do {
+            let query = Query(format: "personId == %@", "Victor")
+            
+            weak var expectationPull = expectationWithDescription("Pull")
+            
+            store.pull(query) { results, error in
+                self.assertThread()
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 1)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.personId, "Victor")
+                    }
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationPull = nil
+            }
+        }
+        
+        do {
+            weak var expectationPull = expectationWithDescription("Pull")
+            
+            store.find() { results, error in
+                self.assertThread()
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 1)
+                }
+                
+                expectationPull?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationPull = nil
+            }
         }
     }
     

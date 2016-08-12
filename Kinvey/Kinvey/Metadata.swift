@@ -11,7 +11,7 @@ import Realm
 import RealmSwift
 
 /// This class represents the metadata information for a record
-public class Metadata: Object, Mappable {
+public class Metadata: Object, Mappable, BuilderType {
     
     /// Last Modification Time Key.
     public static let LmtKey = "lmt"
