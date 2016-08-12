@@ -353,6 +353,7 @@
 		57BEAE2D1C98805600479206 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2C1C98805600479206 /* CoreGraphics.framework */; };
 		57BEAE2F1C98805E00479206 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57BEAE2E1C98805E00479206 /* QuartzCore.framework */; };
 		57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BEAE341C98AB3900479206 /* MainViewController.swift */; };
+		57C2F1731D5E5A68005A214B /* BuilderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C2F1721D5E5A68005A214B /* BuilderType.swift */; };
 		57C563041C9CC7270011FB36 /* NSDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C457A1C86690700A41935 /* NSDate.swift */; };
 		57C563051C9CC7290011FB36 /* NSDate2StringValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C458D1C86A70000A41935 /* NSDate2StringValueTransformer.swift */; };
 		57C563061C9CC7410011FB36 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
@@ -990,6 +991,7 @@
 		57BEAE2C1C98805600479206 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		57BEAE2E1C98805E00479206 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		57BEAE341C98AB3900479206 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		57C2F1721D5E5A68005A214B /* BuilderType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuilderType.swift; sourceTree = "<group>"; };
 		57C71DC71C3EFBF900B1BEF2 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		57D1E75D1C7D21720009834A /* KNVReadPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KNVReadPolicy.h; sourceTree = "<group>"; };
 		57D643141CA3268000F6D16E /* KinveyTests Migration Database Step 1.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "KinveyTests Migration Database Step 1.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1315,6 +1317,7 @@
 				57557FE51D185BC3001D991C /* RealmResultsArray.swift */,
 				577E6FA31D18B33900B5DA36 /* Results.swift */,
 				577E6FA71D18E45F00B5DA36 /* Executor.swift */,
+				57C2F1721D5E5A68005A214B /* BuilderType.swift */,
 			);
 			path = Kinvey;
 			sourceTree = "<group>";
@@ -2526,6 +2529,7 @@
 				57B23EA91C7FA492006403CC /* KCSClient.m in Sources */,
 				5793B8651D219A450088B5F9 /* DateTransform.swift in Sources */,
 				57A2ED8E1C49D20B006D26A9 /* HttpRequest.swift in Sources */,
+				57C2F1731D5E5A68005A214B /* BuilderType.swift in Sources */,
 				57B23F701C7FB264006403CC /* KCSURLConnectionDelegateAdapter.m in Sources */,
 				57B23EDD1C7FA8BF006403CC /* KCSPendingOperationRealm.m in Sources */,
 				57B23F0C1C7FAF84006403CC /* KCSDataModel.m in Sources */,
