@@ -22,6 +22,7 @@ public protocol BuilderType {
 /// Builder constructor implementation.
 extension BuilderType {
     
+    /// Builder Constructor.
     public init(@noescape _ block: (Self) -> Void) {
         self.init()
         block(self)

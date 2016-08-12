@@ -20,6 +20,7 @@ internal func StringFromClass(cls: AnyClass) -> String {
     return className
 }
 
+/// Base class for entity classes that are mapped to a collection in Kinvey.
 public class Entity: Object, Persistable, BuilderType {
     
     /// Override this method and return the name of the collection for Kinvey.
