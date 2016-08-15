@@ -29,6 +29,7 @@
 @property (nonatomic, strong) NSURLSessionDataTask* dataTask;
 @property (nonatomic) long long expectedLength;
 @property (nonatomic) BOOL done;
+@property (nonatomic, getter=isCancelled, setter=setCancelled:) BOOL cancelled;
 @property (nonatomic, strong) KCSNetworkResponse* response;
 @property (nonatomic, strong) NSError* error;
 @property (nonatomic, strong) NSURLSession* session;
@@ -37,6 +38,8 @@
 @end
 
 @implementation KCSNSURLSessionOperation
+
+@synthesize cancelled = _cancelled;
 
 - (NSURLSession*) session
 {
@@ -108,11 +111,19 @@
 
 -(BOOL)isCancelled
 {
-    return self.dataTask.state == NSURLSessionTaskStateCanceling;
+    return _cancelled;
+}
+
+-(void)setCancelled:(BOOL)cancelled
+{
+    [self willChangeValueForKey:@"cancelled"];
+    _cancelled = cancelled;
+    [self willChangeValueForKey:@"cancelled"];
 }
 
 -(void)cancel
 {
+    self.cancelled = YES;
     [self.dataTask cancel];
     [super cancel];
 }

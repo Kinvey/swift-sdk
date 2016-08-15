@@ -433,6 +433,23 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
      op.response.code == 429);
 }
 
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"cancelled"] &&
+        [object isKindOfClass:[NSOperation<KCSNetworkOperation> class]] &&
+        [(__bridge NSObject*)context isKindOfClass:[NSOperation<KCSNetworkOperation> class]] &&
+        [change[NSKeyValueChangeNewKey] isKindOfClass:[NSNumber class]] &&
+        ((NSNumber*) change[NSKeyValueChangeNewKey]).boolValue)
+    {
+        [((__bridge NSOperation<KCSNetworkOperation>*) context) cancel];
+    } else {
+        [super observeValueForKeyPath:keyPath
+                             ofObject:object
+                               change:change
+                              context:context];
+    }
+}
+
 - (void) retryOp:(NSOperation<KCSNetworkOperation>*)oldOp request:(NSURLRequest*)request
 {
     NSUInteger newcount = oldOp.retryCount + 1;
@@ -440,18 +457,28 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         [self callCallback:oldOp request:request];
     } else {
         NSOperation<KCSNetworkOperation>* op = [[[oldOp class] alloc] initWithRequest:request];
+        [oldOp addObserver:self
+                forKeyPath:@"cancelled"
+                   options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+                   context:(__bridge void * _Nullable)(op)];
         op.clientRequestId = oldOp.clientRequestId;
         op.retryCount = newcount;
         @weakify(op);
         op.completionBlock = ^() {
             @strongify(op);
-            [self requestCallback:op request:request];
+            [oldOp removeObserver:self
+                       forKeyPath:@"cancelled"];
+            if (!(op.isCancelled)) {
+                [self requestCallback:op request:request];
+            }
         };
         
         double delayInSeconds = 0.1 * pow(2, newcount - 1); //exponential backoff
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [kcsRequestQueue addOperation:op];
+            if (!(op.isCancelled)) {
+                [kcsRequestQueue addOperation:op];
+            }
         });
     }
 }
