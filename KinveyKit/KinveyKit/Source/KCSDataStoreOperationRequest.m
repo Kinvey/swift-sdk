@@ -58,8 +58,10 @@
     @synchronized (self) {
         self.dataStoreOperation.completionBlock = nil;
         [self.dataStoreOperation cancel];
+        self.dataStoreOperation = nil;
         
         [self.request cancel];
+        self.request = nil;
         
         [super cancel];
     }

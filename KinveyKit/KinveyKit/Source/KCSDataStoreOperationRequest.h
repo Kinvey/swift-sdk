@@ -15,7 +15,7 @@
 
 -(instancetype)initWithDataStoreOperation:(DataStoreOperation*)dataStoreOperation;
 
-@property (weak) DataStoreOperation* dataStoreOperation;
-@property (weak, atomic) KCSRequest* request;
+@property (strong, atomic) DataStoreOperation* dataStoreOperation;
+@property (strong, atomic) KCSRequest* request;
 
 @end
