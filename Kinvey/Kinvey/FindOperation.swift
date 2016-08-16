@@ -120,13 +120,15 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
                     }
                 } else {
                     let entities = [T](JSONArray: jsonArray)
-                    if let cache = self.cache, let entities = entities {
-                        if self.mustRemoveCachedRecords {
-                            let refObjs = self.reduceToIdsLmts(jsonArray)
-                            let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
-                            self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
+                    if let entities = entities {
+                        if let cache = self.cache {
+                            if self.mustRemoveCachedRecords {
+                                let refObjs = self.reduceToIdsLmts(jsonArray)
+                                let deltaSet = self.computeDeltaSet(self.query, refObjs: refObjs)
+                                self.removeCachedRecords(cache, keys: refObjs.keys, deleted: deltaSet.deleted)
+                            }
+                            cache.saveEntities(entities)
                         }
-                        cache.saveEntities(entities)
                         completionHandler?(entities, nil)
                     } else {
                         completionHandler?(nil, buildError(data, response, error, self.client))
