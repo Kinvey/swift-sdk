@@ -22,6 +22,8 @@
 #import "KinveyCoreInternal.h"
 #import "KCSURLProtocol.h"
 
+#define CANCELLED_PROPERTY_KEY @"cancelled"
+
 @interface KCSNSURLSessionOperation () <NSURLSessionDelegate, NSURLSessionDataDelegate>
 
 @property (nonatomic, strong) NSMutableURLRequest* request;
@@ -116,9 +118,9 @@
 
 -(void)setCancelled:(BOOL)cancelled
 {
-    [self willChangeValueForKey:@"cancelled"];
+    [self willChangeValueForKey:CANCELLED_PROPERTY_KEY];
     _cancelled = cancelled;
-    [self willChangeValueForKey:@"cancelled"];
+    [self didChangeValueForKey:CANCELLED_PROPERTY_KEY];
 }
 
 -(void)cancel
