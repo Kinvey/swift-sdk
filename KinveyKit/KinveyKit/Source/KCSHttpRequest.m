@@ -459,7 +459,7 @@ BOOL opIsRetryableKCSError(NSOperation<KCSNetworkOperation>* op)
         NSOperation<KCSNetworkOperation>* op = [[[oldOp class] alloc] initWithRequest:request];
         [oldOp addObserver:self
                 forKeyPath:@"cancelled"
-                   options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+                   options:(NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
                    context:(__bridge void * _Nullable)(op)];
         op.clientRequestId = oldOp.clientRequestId;
         op.retryCount = newcount;
