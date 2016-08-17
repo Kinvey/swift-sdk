@@ -93,6 +93,26 @@ internal let KinveyMappingTypeKey = "Kinvey Mapping Type"
 
 extension Persistable {
     
+    /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
+    public mutating func mapping(map: Map) {
+        let originalThread = NSThread.currentThread()
+        let runningMapping = originalThread.threadDictionary[KinveyMappingTypeKey] != nil
+        if runningMapping {
+            let operationQueue = NSOperationQueue()
+            operationQueue.name = "Kinvey Property Mapping"
+            operationQueue.maxConcurrentOperationCount = 1
+            operationQueue.addOperationWithBlock {
+                let className = StringFromClass(self.dynamicType as! AnyClass)
+                NSThread.currentThread().threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
+                self.propertyMapping(map)
+                originalThread.threadDictionary[KinveyMappingTypeKey] = NSThread.currentThread().threadDictionary[KinveyMappingTypeKey]
+            }
+            operationQueue.waitUntilAllOperationsAreFinished()
+        } else {
+            self.propertyMapping(map)
+        }
+    }
+    
     static func propertyMappingReverse() -> [String : [String]] {
         var results = [String : [String]]()
         for keyPair in propertyMapping() {

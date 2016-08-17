@@ -52,3 +52,13 @@ func buildError(data: NSData?, _ response: Response?, _ error: ErrorType?, _ cli
         return KinveyError.InvalidResponse
     }
 }
+
+internal func StringFromClass(cls: AnyClass) -> String {
+    var className = NSStringFromClass(cls)
+    while className.hasPrefix("RLMStandalone_") || className.hasPrefix("RLMUnmanaged_") {
+        let classObj: AnyClass! = NSClassFromString(className)!
+        let superClass: AnyClass! = class_getSuperclass(classObj)
+        className = NSStringFromClass(superClass)
+    }
+    return className
+}
