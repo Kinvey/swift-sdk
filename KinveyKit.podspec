@@ -28,6 +28,7 @@ Pod::Spec.new do |s|
       cp KinveyKit-#{s.version}/KinveyKit.framework/Headers/* KinveyKit-#{s.version}/include/KinveyKit
     CMD
   s.vendored_libraries = "KinveyKit-#{s.version}/libKinveyKit.a"
+	s.source_files = "KinveyKit-#{s.version}/include/KinveyKit/*.h"
   s.public_header_files = "KinveyKit-#{s.version}/include/KinveyKit/*.h"
   s.frameworks = 'Accounts', 'CoreGraphics', 'CoreLocation', 'MobileCoreServices', 'Security', 'Social', 'SystemConfiguration'
   s.weak_framework = 'WebKit'
