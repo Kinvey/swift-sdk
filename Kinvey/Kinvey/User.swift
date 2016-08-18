@@ -390,29 +390,44 @@ public class User: NSObject, Credential, Mappable {
             return authorization
         }
     }
+    
+    private class func micCompletionCall(user kcsUser: KCSUser?, error: NSError?, actionResult: KCSUserActionResult, client: Client, completionHandler: UserHandler? = nil) {
+        var user: User? = nil
+        if let kcsUser = kcsUser {
+            let authString = kcsUser.authString
+            let authtoken = authString.hasPrefix(authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(authtokenPrefix.characters.count)) : authString
+            user = User(userId: kcsUser.userId, metadata: Metadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
+            user?.username = kcsUser.username
+            user?.email = kcsUser.email
+            client.activeUser = user
+        }
+        if actionResult == KCSUserActionResult.KCSUserInteractionCancel {
+            completionHandler?(user, Error.RequestCancelled)
+        } else if actionResult == KCSUserActionResult.KCSUserInteractionTimeout {
+            completionHandler?(user, Error.RequestTimeout)
+        } else {
+            completionHandler?(user, error)
+        }
+    }
+    
+    /// Login with MIC using Authorization Grant flow.
+    public class func loginWithAuthorization(redirectURI redirectURI: NSURL, username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
+        let options = [
+            "username" : username,
+            "password" : password
+        ]
+        KCSUser.loginWithAuthorizationCodeAPI(redirectURI.absoluteString, options: options) { (kcsUser, error, actionResult) in
+            micCompletionCall(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
+        }
+    }
 
 #if os(iOS)
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
     public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
 
-        let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) -> Void in
-            var user: User? = nil
-            if let kcsUser = kcsUser {
-                let authString = kcsUser.authString
-                let authtoken = authString.hasPrefix(authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(authtokenPrefix.characters.count)) : authString
-                user = User(userId: kcsUser.userId, metadata: Metadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
-                user?.username = kcsUser.username
-                user?.email = kcsUser.email
-                client.activeUser = user
-            }
-            if actionResult == KCSUserActionResult.KCSUserInteractionCancel {
-                completionHandler?(user, Error.RequestCancelled)
-            } else if actionResult == KCSUserActionResult.KCSUserInteractionTimeout {
-                completionHandler?(user, Error.RequestTimeout)
-            } else {
-                completionHandler?(user, error)
-            }
+        let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) in
+            micCompletionCall(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
         }
         if forceUIWebView {
             micVC.setValue(forceUIWebView, forKey: "forceUIWebView")
