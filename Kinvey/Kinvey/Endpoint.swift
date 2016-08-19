@@ -25,7 +25,7 @@ internal enum Endpoint {
     
     case AppData(client: Client, collectionName: String)
     case AppDataById(client: Client, collectionName: String, id: String)
-    case AppDataByQuery(client: Client, collectionName: String, query: Query, fields: Set<String>?)
+    case AppDataByQuery(client: Client, collectionName: String, query: Query)
     
     case PushRegisterDevice(client: Client)
     case PushUnRegisterDevice(client: Client)
@@ -74,30 +74,18 @@ internal enum Endpoint {
             return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)")
         case .AppDataById(let client, let collectionName, let id):
             return client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/\(id)")
-        case .AppDataByQuery(let client, let collectionName, let query, let fields):
+        case .AppDataByQuery(let client, let collectionName, let query):
             let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/").absoluteString
             if (query.isEmpty()){
                 return NSURL(string: url)!
             }
-            let queryStr = query.urlQueryStringEncoded()
-            let urlQuery = "?query=\(queryStr)"
             
-            var sortStr = ""
-            if let sortDescriptors = query.sortDescriptors {
-                var sorts = [String : Int]()
-                for sortDescriptor in sortDescriptors {
-                    sorts[sortDescriptor.key!] = sortDescriptor.ascending ? 1 : -1
-                }
-                let data = try! NSJSONSerialization.dataWithJSONObject(sorts, options: [])
-                sortStr = "&sort=\(String(data: data, encoding: NSUTF8StringEncoding)!.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!)"
+            let queryParams = query.queryParams
+            if queryParams.count > 0 {
+                return NSURL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
             }
             
-            var fieldsStr = ""
-            if let fields = fields {
-                fieldsStr = "&fields=\(fields.joinWithSeparator(",").stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!)"
-            }
-            
-            return NSURL(string: url + urlQuery + sortStr + fieldsStr)!
+            return NSURL(string: url)!
         case .PushRegisterDevice(let client):
             return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")
         case .PushUnRegisterDevice(let client):
@@ -109,29 +97,22 @@ internal enum Endpoint {
         case .BlobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
             let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")").absoluteString
             
-            var queryParams: [String : String] = [:]
-            
             if let query = query {
-                queryParams["query"] = query.urlQueryStringEncoded()
+                var queryParams = query.queryParams
+                
+                if tls {
+                    queryParams["tls"] = "true"
+                }
+                
+                if let ttlInSeconds = ttlInSeconds {
+                    queryParams["ttl_in_seconds"] = String(ttlInSeconds)
+                }
+                
+                if queryParams.count > 0 {
+                    return NSURL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
+                }
             }
-            
-            if tls {
-                queryParams["tls"] = "true"
-            }
-            
-            if let ttlInSeconds = ttlInSeconds {
-                queryParams["ttl_in_seconds"] = String(ttlInSeconds)
-            }
-            
-            var urlQuery = queryParams.count > 0 ? "?" : ""
-            for queryItem in queryParams {
-                urlQuery += "\(queryItem.0)=\(queryItem.1)&"
-            }
-            if urlQuery.characters.count > 0 {
-                urlQuery.removeAtIndex(urlQuery.endIndex.predecessor())
-            }
-            
-            return NSURL(string: url + urlQuery)!
+            return NSURL(string: url)!
         case .BlobByQuery(let client, let query):
             return BlobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil).url()
         case .URL(let url):
