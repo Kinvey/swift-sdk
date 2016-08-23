@@ -95,7 +95,7 @@ class UserTests: KinveyTestCase {
             userId = user.userId
             weak var expectationDestroyUser = expectationWithDescription("Destroy User")
             
-            user.destroy(hard: false, completionHandler: { (error) -> Void in
+            user.destroy(hard: true, completionHandler: { (error) -> Void in
                 XCTAssertTrue(NSThread.isMainThread())
                 XCTAssertNil(error)
                 expectationDestroyUser?.fulfill()
