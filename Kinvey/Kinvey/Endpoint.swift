@@ -12,6 +12,7 @@ internal enum Endpoint {
     
     case User(client: Client)
     case UserById(client: Client, userId: String)
+    case UserDelete(client: Client, userId: String, hard: Bool)
     case UserLookup(client: Client)
     case UserExistsByUsername(client: Client)
     case UserLogin(client: Client)
@@ -43,6 +44,12 @@ internal enum Endpoint {
             return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)")
         case .UserById(let client, let userId):
             return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/\(userId)")
+        case .UserDelete(let client, let userId, let hard):
+            let url = client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/\(userId)")
+            if hard {
+                return NSURL(string: url.absoluteString + "?hard=true")!
+            }
+            return url
         case .UserLookup(let client):
             return client.apiHostName.URLByAppendingPathComponent("/user/\(client.appKey!)/_lookup")
         case .UserExistsByUsername(let client):
