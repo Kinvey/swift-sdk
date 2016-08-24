@@ -12,6 +12,8 @@ import Foundation
 class OperationQueueRequest: NSObject, Request {
     
     let operationQueue: NSOperationQueue
+    var uploadProgress: ((Int64, Int64) -> Void)?
+    var downloadProgress: ((Int64, Int64) -> Void)?
     
     override init() {
         operationQueue = NSOperationQueue()

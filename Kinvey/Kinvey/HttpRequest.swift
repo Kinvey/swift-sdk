@@ -163,7 +163,7 @@ extension NSHTTPURLResponse {
 public let restApiVersion = 4
 
 @objc(__KNVHttpRequest)
-internal class HttpRequest: NSObject, Request {
+internal class HttpRequest: TaskProgressRequest, Request {
     
     let httpMethod: HttpMethod
     let endpoint: Endpoint
@@ -176,8 +176,6 @@ internal class HttpRequest: NSObject, Request {
     var request: NSMutableURLRequest
     let credential: Credential?
     let client: Client
-    
-    private var task: NSURLSessionTask?
     
     internal var executing: Bool {
         get {
