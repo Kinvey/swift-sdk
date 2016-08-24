@@ -10,9 +10,7 @@ import Foundation
 import PromiseKit
 
 @objc(__KNVNSURLSessionDownloadTaskRequest)
-class NSURLSessionTaskRequest: NSObject, Request {
-    
-    var task: NSURLSessionTask?
+class NSURLSessionTaskRequest: TaskProgressRequest, Request {
     
     var executing: Bool {
         get {
@@ -35,10 +33,10 @@ class NSURLSessionTaskRequest: NSObject, Request {
         self.url = url
     }
     
-    init(client: Client, task: NSURLSessionTask) {
-        self.client = client
+    convenience init(client: Client, task: NSURLSessionTask) {
+        self.init(client: client, url: task.originalRequest!.URL!)
         self.task = task
-        self.url = task.originalRequest!.URL!
+        addObservers(task)
     }
     
     func cancel() {

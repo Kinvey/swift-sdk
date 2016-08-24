@@ -216,13 +216,13 @@ public class FileStore {
                     let uploadTask = self.client.urlSession.uploadTaskWithRequest(request, fromData: uploadData) { (data, response, error) -> Void in
                         handle(data, response, error)
                     }
-                    requests += NSURLSessionTaskRequest(client: self.client, task: uploadTask)
+                    requests += (NSURLSessionTaskRequest(client: self.client, task: uploadTask), addProgress: true)
                     uploadTask.resume()
                 } else if let fromFile = fromFile {
                     let uploadTask = self.client.urlSession.uploadTaskWithRequest(request, fromFile: fromFile) { (data, response, error) -> Void in
                         handle(data, response, error)
                     }
-                    requests += NSURLSessionTaskRequest(client: self.client, task: uploadTask)
+                    requests += (NSURLSessionTaskRequest(client: self.client, task: uploadTask), addProgress: true)
                     uploadTask.resume()
                 } else {
                     reject(Error.InvalidResponse)

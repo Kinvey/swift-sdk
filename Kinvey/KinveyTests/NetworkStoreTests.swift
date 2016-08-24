@@ -33,17 +33,130 @@ class NetworkStoreTests: StoreTestCase {
         event.acl?.globalRead.value = true
         event.acl?.globalWrite.value = true
         
-        weak var expectationCreate = expectationWithDescription("Create")
-        
-        store.save(event) { event, error in
-            XCTAssertNotNil(event)
-            XCTAssertNil(error)
+        do {
+            weak var expectationCreate = expectationWithDescription("Create")
             
-            expectationCreate?.fulfill()
+            let request = store.save(event) { event, error in
+                XCTAssertNotNil(event)
+                XCTAssertNil(error)
+                
+                expectationCreate?.fulfill()
+            }
+            
+            var uploadProgressCount = 0
+            var uploadProgressSent: Int64? = nil
+            var uploadProgressTotal: Int64? = nil
+            request.uploadProgress = {
+                XCTAssertTrue(NSThread.isMainThread())
+                if uploadProgressCount == 0 {
+                    uploadProgressSent = $0
+                    uploadProgressTotal = $1
+                } else {
+                    XCTAssertEqual(uploadProgressTotal, $1)
+                    XCTAssertGreaterThan($0, uploadProgressSent!)
+                    uploadProgressSent = $0
+                }
+                uploadProgressCount += 1
+                print("Upload: \($0)/\($1)")
+            }
+            
+            var downloadProgressCount = 0
+            var downloadProgressSent: Int64? = nil
+            var downloadProgressTotal: Int64? = nil
+            request.downloadProgress = {
+                XCTAssertTrue(NSThread.isMainThread())
+                if downloadProgressCount == 0 {
+                    downloadProgressSent = $0
+                    downloadProgressTotal = $1
+                } else {
+                    XCTAssertEqual(downloadProgressTotal, $1)
+                    XCTAssertGreaterThan($0, downloadProgressSent!)
+                    downloadProgressSent = $0
+                }
+                downloadProgressCount += 1
+                print("Download: \($0)/\($1)")
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationCreate = nil
+            }
+            
+            XCTAssertGreaterThan(uploadProgressCount, 0)
+            XCTAssertGreaterThan(downloadProgressCount, 0)
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationCreate = nil
+        do {
+            class DelayURLProtocol: NSURLProtocol {
+                
+                static var delay: NSTimeInterval?
+                
+                override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                    return true
+                }
+                
+                override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                    return request
+                }
+                
+                override func startLoading() {
+                    if let delay = DelayURLProtocol.delay {
+                        NSThread.sleepForTimeInterval(delay)
+                    }
+                    
+                    NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue()) { (response, data, error) in
+                        self.client?.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .NotAllowed)
+                        self.client?.URLProtocol(self, didLoadData: data!)
+                        if let delay = DelayURLProtocol.delay {
+                            NSThread.sleepForTimeInterval(delay)
+                        }
+                        self.client?.URLProtocolDidFinishLoading(self)
+                    }
+                }
+                
+                override func stopLoading() {
+                }
+                
+            }
+            
+            DelayURLProtocol.delay = 1
+            
+            setURLProtocol(DelayURLProtocol.self)
+            defer {
+                setURLProtocol(nil)
+            }
+            
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            let request = store.find() { (events, error) in
+                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertNotNil(events)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
+            }
+            
+            var downloadProgressCount = 0
+            var downloadProgressSent: Int64? = nil
+            var downloadProgressTotal: Int64? = nil
+            request.downloadProgress = {
+                XCTAssertTrue(NSThread.isMainThread())
+                if downloadProgressCount == 0 {
+                    downloadProgressSent = $0
+                    downloadProgressTotal = $1
+                } else {
+                    XCTAssertEqual(downloadProgressTotal, $1)
+                    XCTAssertGreaterThan($0, downloadProgressSent!)
+                    downloadProgressSent = $0
+                }
+                downloadProgressCount += 1
+                print("Download: \($0)/\($1)")
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
+            
+            XCTAssertGreaterThan(downloadProgressCount, 0)
         }
     }
     

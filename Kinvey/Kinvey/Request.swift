@@ -21,4 +21,10 @@ public protocol Request {
     /// Cancels a request in progress.
     func cancel()
     
+    /// Report upload progress of the request
+    var uploadProgress: ((Int64, Int64) -> Void)? { get set }
+    
+    /// Report download progress of the request
+    var downloadProgress: ((Int64, Int64) -> Void)? { get set }
+    
 }
