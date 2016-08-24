@@ -87,15 +87,17 @@ class UserTests: KinveyTestCase {
     }
     
     func testSignUpAndDestroyHard() {
-        signUp()
+        signUp(username: "tempUser", password: "tempPass")
+        
+        var userId:String = ""
         
         if let user = client.activeUser {
+            userId = user.userId
             weak var expectationDestroyUser = expectationWithDescription("Destroy User")
             
             user.destroy(hard: true, completionHandler: { (error) -> Void in
                 XCTAssertTrue(NSThread.isMainThread())
                 XCTAssertNil(error)
-                
                 expectationDestroyUser?.fulfill()
             })
             
@@ -105,6 +107,25 @@ class UserTests: KinveyTestCase {
             
             XCTAssertNil(client.activeUser)
         }
+        
+        signUp()
+
+        if let _ = client.activeUser {
+            weak var expectationFindDestroyedUser = expectationWithDescription("Find Destoyed User")
+            
+            User.get(userId: userId , completionHandler: { (user, error) in
+                XCTAssertNil(user)
+                XCTAssertNotNil(error)
+                expectationFindDestroyedUser?.fulfill()
+            })
+            
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFindDestroyedUser = nil
+            }
+
+        }
+
     }
     
     func testSignUpAndDestroyClassFunc() {
