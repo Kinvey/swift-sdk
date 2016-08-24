@@ -35,16 +35,12 @@ class HttpRequestFactory: RequestFactory {
     }
     
     func buildUserDelete(userId userId: String, hard: Bool) -> HttpRequest {
-        let request = HttpRequest(httpMethod: .Delete, endpoint: Endpoint.UserById(client: client, userId: userId), credential: client.activeUser, client: client)
         
+        
+        let request = HttpRequest(httpMethod: .Delete, endpoint: Endpoint.UserDelete(client: client, userId: userId, hard: hard), credential: client.activeUser, client: client)
+
         //FIXME: make it configurable
         request.request.setValue("2", forHTTPHeaderField: "X-Kinvey-API-Version")
-        
-        var bodyObject = JsonDictionary()
-        if hard {
-            bodyObject["hard"] = true
-        }
-        request.request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(bodyObject, options: [])
         return request
     }
     
