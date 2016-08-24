@@ -391,7 +391,7 @@ public class User: NSObject, Credential, Mappable {
         }
     }
     
-    private class func micCompletionCall(user kcsUser: KCSUser?, error: NSError?, actionResult: KCSUserActionResult, client: Client, completionHandler: UserHandler? = nil) {
+    private class func onMicLoginComplete(user kcsUser: KCSUser?, error: NSError?, actionResult: KCSUserActionResult, client: Client, completionHandler: UserHandler? = nil) {
         var user: User? = nil
         if let kcsUser = kcsUser {
             let authString = kcsUser.authString
@@ -417,7 +417,7 @@ public class User: NSObject, Credential, Mappable {
             "password" : password
         ]
         KCSUser.loginWithAuthorizationCodeAPI(redirectURI.absoluteString, options: options) { (kcsUser, error, actionResult) in
-            micCompletionCall(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
+            onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
         }
     }
 
@@ -427,7 +427,7 @@ public class User: NSObject, Credential, Mappable {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
 
         let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) in
-            micCompletionCall(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
+            onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
         }
         if forceUIWebView {
             micVC.setValue(forceUIWebView, forKey: "forceUIWebView")
