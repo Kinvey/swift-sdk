@@ -139,10 +139,14 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         return results
     }
     
-    override func count() -> UInt {
+    override func count(query: Query? = nil) -> UInt {
         var result = UInt(0)
         executor.executeAndWait {
-            result = UInt(self.realm.objects(self.entityType).count)
+            if let query = query {
+                result = UInt(self.results(query).count)
+            } else {
+                result = UInt(self.realm.objects(self.entityType).count)
+            }
         }
         return result
     }

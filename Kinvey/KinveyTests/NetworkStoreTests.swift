@@ -192,6 +192,70 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testCount() {
+        let store = DataStore<Event>.collection(.Network)
+        
+        var eventsCount: UInt? = nil
+        
+        do {
+            weak var expectationCount = expectationWithDescription("Count")
+            
+            store.count { (count, error) in
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                if let count = count {
+                    eventsCount = count
+                }
+                
+                expectationCount?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationCount = nil
+            }
+        }
+        
+        XCTAssertNotNil(eventsCount)
+        
+        do {
+            let event = Event()
+            event.name = "Friday Party!"
+            
+            weak var expectationCreate = expectationWithDescription("Create")
+            
+            store.save(event) { event, error in
+                XCTAssertNotNil(event)
+                XCTAssertNil(error)
+                
+                expectationCreate?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationCreate = nil
+            }
+        }
+        
+        do {
+            weak var expectationCount = expectationWithDescription("Count")
+            
+            store.count { (count, error) in
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                if let eventsCount = eventsCount, let count = count {
+                    XCTAssertEqual(eventsCount + 1, count)
+                }
+                
+                expectationCount?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationCount = nil
+            }
+        }
+    }
+    
     class MethodNotAllowedError: NSURLProtocol {
         
         override class func canInitWithRequest(request: NSURLRequest) -> Bool {

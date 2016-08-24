@@ -26,6 +26,7 @@ internal enum Endpoint {
     case AppData(client: Client, collectionName: String)
     case AppDataById(client: Client, collectionName: String, id: String)
     case AppDataByQuery(client: Client, collectionName: String, query: Query)
+    case AppDataCount(client: Client, collectionName: String, query: Query?)
     
     case PushRegisterDevice(client: Client)
     case PushUnRegisterDevice(client: Client)
@@ -85,6 +86,15 @@ internal enum Endpoint {
                 return NSURL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
             }
             
+            return NSURL(string: url)!
+        case .AppDataCount(let client, let collectionName, let query):
+            let url = client.apiHostName.URLByAppendingPathComponent("/appdata/\(client.appKey!)/\(collectionName)/_count").absoluteString
+            if let query = query {
+                let queryParams = query.queryParams
+                if queryParams.count > 0 {
+                    return NSURL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
+                }
+            }
             return NSURL(string: url)!
         case .PushRegisterDevice(let client):
             return client.apiHostName.URLByAppendingPathComponent("/push/\(client.appKey!)/register-device")
