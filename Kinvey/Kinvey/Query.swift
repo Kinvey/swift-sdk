@@ -13,7 +13,7 @@ import Foundation
 public class Query: NSObject, BuilderType {
     
     /// Fields to be included in the results of the query.
-    internal var fields: Set<String>?
+    public var fields: Set<String>?
     
     /// `NSPredicate` used to filter records.
     public var predicate: NSPredicate?
