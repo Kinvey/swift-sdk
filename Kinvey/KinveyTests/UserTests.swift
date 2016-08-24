@@ -14,7 +14,7 @@ import KinveyApp
 class UserTests: KinveyTestCase {
 
     func testSignUp() {
-        signUp()
+        signUp()l
     }
     
     func testSignUp404StatusCode() {
@@ -133,7 +133,6 @@ class UserTests: KinveyTestCase {
         
         if let user = client.activeUser {
             weak var expectationDestroyUser = expectationWithDescription("Destroy User")
-            Client.sharedClient.logNetworkEnabled = true
             
             User.destroy(userId: user.userId, completionHandler: { (error) -> Void in
                 XCTAssertTrue(NSThread.isMainThread())
