@@ -14,7 +14,7 @@ import KinveyApp
 class UserTests: KinveyTestCase {
 
     func testSignUp() {
-        signUp()l
+        signUp()
     }
     
     func testSignUp404StatusCode() {
