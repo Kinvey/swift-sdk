@@ -28,7 +28,7 @@ internal protocol CacheType {
     
     func findAll() -> [Type]
     
-    func count() -> UInt
+    func count(query: Query?) -> UInt
     
     func removeEntity(entity: Type) -> Bool
     
@@ -43,7 +43,7 @@ internal protocol CacheType {
 extension CacheType {
     
     func isEmpty() -> Bool {
-        return count() == 0
+        return count(nil) == 0
     }
     
 }
@@ -94,7 +94,7 @@ internal class Cache<T: Persistable where T: NSObject>: CacheType {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func count() -> UInt {
+    func count(query: Query? = nil) -> UInt {
         preconditionFailure("Method \(#function) must be overridden")
     }
     

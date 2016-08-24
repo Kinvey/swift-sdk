@@ -138,6 +138,11 @@ class HttpRequestFactory: RequestFactory {
         return request
     }
     
+    func buildAppDataCountByQuery(collectionName collectionName: String, query: Query?) -> HttpRequest {
+        let request = HttpRequest(endpoint: Endpoint.AppDataCount(client: client, collectionName: collectionName, query: query), credential: client.activeUser, client: client)
+        return request
+    }
+    
     func buildAppDataSave<T: Persistable>(persistable: T) -> HttpRequest {
         let collectionName = T.collectionName()
         let bodyObject = Mapper<T>().toJSON(persistable)
