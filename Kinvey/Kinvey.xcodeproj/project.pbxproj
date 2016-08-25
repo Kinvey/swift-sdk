@@ -418,6 +418,7 @@
 		57E7C7B71C519FD000848748 /* HttpHeaderCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */; };
 		57F717BD1CAF165500DD7750 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DAB1C7F9414006403CC /* KCSPush.m */; };
 		57F717BE1CAF165800DD7750 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAA1C7F9414006403CC /* KCSPush.h */; };
+		57F91C261D6D15590012850A /* TaskProgressRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C251D6D15590012850A /* TaskProgressRequest.swift */; };
 		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
 		57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */; };
@@ -1028,6 +1029,7 @@
 		57E7C7B21C51545900848748 /* ReadPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReadPolicy.swift; path = Kinvey/ReadPolicy.swift; sourceTree = SOURCE_ROOT; };
 		57E7C7B41C51981400848748 /* RequestType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestType.swift; sourceTree = "<group>"; };
 		57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
+		57F91C251D6D15590012850A /* TaskProgressRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskProgressRequest.swift; sourceTree = "<group>"; };
 		57FB57D81C86581300AA590F /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncOperation.swift; sourceTree = "<group>"; };
 		57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveOperation.swift; sourceTree = "<group>"; };
@@ -1288,6 +1290,7 @@
 				5783B5061C1910B00077F8A6 /* JsonObject.swift */,
 				57E7C7B41C51981400848748 /* RequestType.swift */,
 				57C71DC71C3EFBF900B1BEF2 /* Request.swift */,
+				57F91C251D6D15590012850A /* TaskProgressRequest.swift */,
 				57A2ED8D1C49D20B006D26A9 /* HttpRequest.swift */,
 				57BB56B31C4D8D2B00F6B548 /* LocalRequest.swift */,
 				57470FA61C7698B30096B15F /* MultiRequest.swift */,
@@ -2579,6 +2582,7 @@
 				57E1C3B11C18156700578974 /* HttpRequestFactory.swift in Sources */,
 				573851AE1D47C7F800E4712A /* RealmFileCache.swift in Sources */,
 				577E6FA61D18E1F900B5DA36 /* RealmSync.swift in Sources */,
+				57F91C261D6D15590012850A /* TaskProgressRequest.swift in Sources */,
 				57B23EF41C7FAA3E006403CC /* KCSNetworkObserver.m in Sources */,
 				57B23ECB1C7FA7B8006403CC /* KCSFileRequestManager.m in Sources */,
 				57B23F2D1C7FB021006403CC /* KCSObjectMapper.m in Sources */,

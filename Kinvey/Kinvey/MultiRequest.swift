@@ -11,12 +11,27 @@ import Foundation
 @objc(__KNVMultiRequest)
 internal class MultiRequest: NSObject, Request {
     
+    private var addProgresses = [Bool]()
     private var requests = [Request]()
     
-    internal func addRequest(request: Request) {
+    var progress: (ProgressStatus -> Void)? {
+        didSet {
+            for (index, request) in requests.enumerate() {
+                if addProgresses[index] {
+                    request.progress = progress
+                }
+            }
+        }
+    }
+    
+    internal func addRequest(request: Request, addProgress: Bool = false) {
         if _cancelled {
             request.cancel()
         }
+        if addProgress {
+            request.progress = progress
+        }
+        addProgresses.append(addProgress)
         requests.append(request)
     }
     
@@ -54,4 +69,8 @@ internal class MultiRequest: NSObject, Request {
 
 func +=(lhs: MultiRequest, rhs: Request) {
     lhs.addRequest(rhs)
+}
+
+func +=(lhs: MultiRequest, rhs: (Request, addProgress: Bool)) {
+    lhs.addRequest(rhs.0, addProgress: rhs.addProgress)
 }
