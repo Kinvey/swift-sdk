@@ -74,9 +74,19 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         return obj
     }
     
-    override func detach(array: [T]) -> [T] {
+    override func detach(array: [T], query: Query?) -> [T] {
         var results = [T]()
-        for entity in array {
+        let skip = query?.skip ?? 0
+        let limit = query?.limit ?? array.count
+        var arrayEnumerate: [T]
+        if skip != 0 || limit != array.count {
+            let begin = max(min(skip, array.count), 0)
+            let end = max(min(skip + limit, array.count), 0)
+            arrayEnumerate = Array<T>(array[begin ..< end])
+        } else {
+            arrayEnumerate = array
+        }
+        for entity in arrayEnumerate {
             results.append(detach(entity))
         }
         return results
@@ -115,7 +125,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         var results = [T]()
         executor.executeAndWait {
             results = (RealmResultsArray<Entity>(self.results(query)) as NSArray) as! [T]
-            results = self.detach(results)
+            results = self.detach(results, query: query)
         }
         return results
     }
@@ -134,15 +144,19 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         var results = [T]()
         executor.executeAndWait {
             results = (RealmResultsArray<Entity>(self.realm.objects(self.entityType)) as NSArray) as! [T]
-            results = self.detach(results)
+            results = self.detach(results, query: nil)
         }
         return results
     }
     
-    override func count() -> UInt {
+    override func count(query: Query? = nil) -> UInt {
         var result = UInt(0)
         executor.executeAndWait {
-            result = UInt(self.realm.objects(self.entityType).count)
+            if let query = query {
+                result = UInt(self.results(query).count)
+            } else {
+                result = UInt(self.realm.objects(self.entityType).count)
+            }
         }
         return result
     }

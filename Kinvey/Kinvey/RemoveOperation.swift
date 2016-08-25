@@ -29,7 +29,7 @@ class RemoveOperation<T: Persistable where T: NSObject>: WriteOperation<T, UInt?
             if let cache = self.cache {
                 let realmObjects = cache.findEntityByQuery(self.query)
                 count = UInt(realmObjects.count)
-                let detachedObjects = cache.detach(realmObjects)
+                let detachedObjects = cache.detach(realmObjects, query: query)
                 if cache.removeEntities(realmObjects) {
                     let idKey = T.entityIdProperty()
                     for object in detachedObjects {

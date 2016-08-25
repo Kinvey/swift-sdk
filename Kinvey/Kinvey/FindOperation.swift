@@ -17,7 +17,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
     let deltaSet: Bool
     
     lazy var isEmptyQuery: Bool = {
-        return self.query.predicate == nil || self.query.predicate == NSPredicate()
+        return (self.query.predicate == nil || self.query.predicate == NSPredicate()) && self.query.skip == nil && self.query.limit == nil
     }()
     
     var mustRemoveCachedRecords: Bool {
@@ -54,7 +54,7 @@ internal class FindOperation<T: Persistable where T: NSObject>: ReadOperation<T>
     override func executeNetwork(completionHandler: CompletionHandler? = nil) -> Request {
         let deltaSet = self.deltaSet && (cache != nil ? !cache!.isEmpty() : false)
         let fields: Set<String>? = deltaSet ? [PersistableIdKey, "\(PersistableMetadataKey).\(Metadata.LmtKey)"] : nil
-        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.collectionName(), query: query, fields: fields)
+        let request = client.networkRequestFactory.buildAppDataFindByQuery(collectionName: T.collectionName(), query: fields != nil ? Query(query) { $0.fields = fields } : query)
         request.execute() { data, response, error in
             if let response = response where response.isOK,
                 let jsonArray = self.client.responseParser.parseArray(data)

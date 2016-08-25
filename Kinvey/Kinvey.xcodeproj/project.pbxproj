@@ -419,6 +419,7 @@
 		57F717BD1CAF165500DD7750 /* KCSPush.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DAB1C7F9414006403CC /* KCSPush.m */; };
 		57F717BE1CAF165800DD7750 /* KCSPush.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B23DAA1C7F9414006403CC /* KCSPush.h */; };
 		57F91C261D6D15590012850A /* TaskProgressRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C251D6D15590012850A /* TaskProgressRequest.swift */; };
+		57F91C291D6E2C020012850A /* CountOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F91C281D6E2C020012850A /* CountOperation.swift */; };
 		57FB57D91C86581300AA590F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB57D81C86581300AA590F /* String.swift */; };
 		57FEB6B91C8E480300B43FC0 /* SyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */; };
 		57FF4F6D1CCFE71B002947FF /* RemoveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */; };
@@ -1030,6 +1031,7 @@
 		57E7C7B41C51981400848748 /* RequestType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestType.swift; sourceTree = "<group>"; };
 		57E7C7B61C519FD000848748 /* HttpHeaderCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaderCredential.swift; sourceTree = "<group>"; };
 		57F91C251D6D15590012850A /* TaskProgressRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskProgressRequest.swift; sourceTree = "<group>"; };
+		57F91C281D6E2C020012850A /* CountOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountOperation.swift; sourceTree = "<group>"; };
 		57FB57D81C86581300AA590F /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		57FEB6B81C8E480300B43FC0 /* SyncOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncOperation.swift; sourceTree = "<group>"; };
 		57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveOperation.swift; sourceTree = "<group>"; };
@@ -1151,6 +1153,7 @@
 				57470FA21C76847F0096B15F /* WriteOperation.swift */,
 				574B0FA61C729EAF00CDC48F /* GetOperation.swift */,
 				574B0FA81C729EB900CDC48F /* FindOperation.swift */,
+				57F91C281D6E2C020012850A /* CountOperation.swift */,
 				574B0FAA1C729EC900CDC48F /* SaveOperation.swift */,
 				57FF4F6C1CCFE71B002947FF /* RemoveOperation.swift */,
 				574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */,
@@ -2648,6 +2651,7 @@
 				57162EEF1CB83A2400A3C408 /* KCSClient2+KCSInternal.m in Sources */,
 				57B23F041C7FAF39006403CC /* NSError+KinveyKit.m in Sources */,
 				57B23EE51C7FA947006403CC /* KCSNetworkResponse.m in Sources */,
+				57F91C291D6E2C020012850A /* CountOperation.swift in Sources */,
 				57B23EC91C7FA79E006403CC /* KCSFileRequest.m in Sources */,
 				577E6FA41D18B33900B5DA36 /* Results.swift in Sources */,
 				57470FA31C76847F0096B15F /* WriteOperation.swift in Sources */,

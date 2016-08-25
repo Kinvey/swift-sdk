@@ -24,7 +24,8 @@ protocol RequestFactory {
     func buildUserForgotUsername(email email: String) -> HttpRequest
     
     func buildAppDataGetById(collectionName collectionName: String, id: String) -> HttpRequest
-    func buildAppDataFindByQuery(collectionName collectionName: String, query: Query, fields: Set<String>?) -> HttpRequest
+    func buildAppDataFindByQuery(collectionName collectionName: String, query: Query) -> HttpRequest
+    func buildAppDataCountByQuery(collectionName collectionName: String, query: Query?) -> HttpRequest
     func buildAppDataSave<T: Persistable>(persistable: T) -> HttpRequest
     func buildAppDataRemoveByQuery(collectionName collectionName: String, query: Query) -> HttpRequest
     func buildAppDataRemoveById(collectionName collectionName: String, objectId: String) -> HttpRequest
