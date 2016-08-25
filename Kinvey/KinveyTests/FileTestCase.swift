@@ -74,7 +74,7 @@ class FileTestCase: StoreTestCase {
         let memoryBefore = reportMemory()
         XCTAssertNotNil(memoryBefore)
         
-        fileStore.upload(file, path: path) { (file, error) in
+        let request = fileStore.upload(file, path: path) { (file, error) in
             XCTAssertTrue(NSThread.isMainThread())
             XCTAssertNotNil(file)
             XCTAssertNil(error)
@@ -89,6 +89,27 @@ class FileTestCase: StoreTestCase {
             expectationUpload?.fulfill()
         }
         
+        var uploadProgressCount = 0
+        var uploadProgressSent: Int64? = nil
+        var uploadProgressTotal: Int64? = nil
+        request.progress = {
+            XCTAssertTrue(NSThread.isMainThread())
+            if $0.countOfBytesSent == $0.countOfBytesExpectedToSend {
+                //upload finished
+            } else {
+                if uploadProgressCount == 0 {
+                    uploadProgressSent = $0.countOfBytesSent
+                    uploadProgressTotal = $0.countOfBytesExpectedToSend
+                } else {
+                    XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
+                    XCTAssertGreaterThan($0.countOfBytesSent, uploadProgressSent!)
+                    uploadProgressSent = $0.countOfBytesSent
+                }
+                uploadProgressCount += 1
+                print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
+            }
+        }
+        
         let memoryNow = reportMemory()
         XCTAssertNotNil(memoryNow)
         if let memoryBefore = memoryBefore, let memoryNow = memoryNow {
@@ -100,12 +121,14 @@ class FileTestCase: StoreTestCase {
             expectationUpload = nil
         }
         
+        XCTAssertGreaterThan(uploadProgressCount, 0)
+        
         XCTAssertNotNil(file.fileId)
         
         do {
             weak var expectationDownload = expectationWithDescription("Download")
             
-            fileStore.download(file) { (file, data: NSData?, error) in
+            let request = fileStore.download(file) { (file, data: NSData?, error) in
                 XCTAssertNotNil(file)
                 XCTAssertNotNil(data)
                 XCTAssertNil(error)
@@ -117,9 +140,28 @@ class FileTestCase: StoreTestCase {
                 expectationDownload?.fulfill()
             }
             
+            var downloadProgressCount = 0
+            var downloadProgressSent: Int64? = nil
+            var downloadProgressTotal: Int64? = nil
+            request.progress = {
+                XCTAssertTrue(NSThread.isMainThread())
+                if downloadProgressCount == 0 {
+                    downloadProgressSent = $0.countOfBytesReceived
+                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
+                } else {
+                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
+                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
+                    downloadProgressSent = $0.countOfBytesReceived
+                }
+                downloadProgressCount += 1
+                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
+            }
+            
             waitForExpectationsWithTimeout(defaultTimeout) { error in
                 expectationDownload = nil
             }
+            
+            XCTAssertGreaterThan(downloadProgressCount, 0)
         }
     }
     

@@ -12,6 +12,7 @@ import Foundation
 class OperationQueueRequest: NSObject, Request {
     
     let operationQueue: NSOperationQueue
+    var progress: (ProgressStatus -> Void)?
     
     override init() {
         operationQueue = NSOperationQueue()

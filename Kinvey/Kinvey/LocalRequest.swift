@@ -16,6 +16,8 @@ internal class LocalRequest: NSObject, Request {
     
     typealias LocalHandler = () -> Void
     
+    var progress: (ProgressStatus -> Void)?
+    
     let localHandler: LocalHandler?
     
     init(_ localHandler: LocalHandler? = nil) {
