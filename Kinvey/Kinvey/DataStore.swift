@@ -167,6 +167,20 @@ public class DataStore<T: Persistable where T: NSObject> {
         return request
     }
     
+    /**
+     Gets a count of how many records that matches with the (optional) query passed by parameter.
+     - parameter query: The query used to filter the results
+     - parameter readPolicy: Enforces a different `ReadPolicy` otherwise use the client's `ReadPolicy`. Default value: `nil`
+     - parameter completionHandler: Completion handler to be called once the respose returns
+     - returns: A `Request` instance which will allow cancel the request later
+     */
+    public func count(query: Query? = nil, readPolicy: ReadPolicy? = nil, completionHandler: UIntCompletionHandler?) -> Request {
+        let readPolicy = readPolicy ?? self.readPolicy
+        let operation = CountOperation<T>(query: query, readPolicy: readPolicy, cache: cache, client: client)
+        let request = operation.execute(dispatchAsyncMainQueue(completionHandler))
+        return request
+    }
+    
     /// Creates or updates a record.
     public func save(inout persistable: T, writePolicy: WritePolicy? = nil, completionHandler: ObjectCompletionHandler?) -> Request {
         let writePolicy = writePolicy ?? self.writePolicy

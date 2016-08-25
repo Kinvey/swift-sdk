@@ -60,7 +60,10 @@ class MemoryCache<T: Persistable where T: NSObject>: Cache<T> {
         return findEntityByQuery(Query())
     }
     
-    override func count() -> UInt {
+    override func count(query: Query? = nil) -> UInt {
+        if let query = query {
+            return UInt(findEntityByQuery(query).count)
+        }
         return UInt(memory.count)
     }
     
