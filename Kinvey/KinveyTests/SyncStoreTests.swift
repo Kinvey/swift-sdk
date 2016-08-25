@@ -801,8 +801,6 @@ class SyncStoreTests: StoreTestCase {
             return
         }
         
-        client.logNetworkEnabled = true
-        
         var i = 0
         
         measureBlock {
@@ -839,6 +837,225 @@ class SyncStoreTests: StoreTestCase {
             }
             
             store.find(query, readPolicy: .ForceLocal) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, limit)
+                    
+                    XCTAssertNotNil(results.first)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.name, "Person \(skip)")
+                    }
+                    
+                    XCTAssertNotNil(results.last)
+                    
+                    if let person = results.last {
+                        XCTAssertEqual(person.name, "Person \(skip + 1)")
+                    }
+                }
+                
+                skip += limit
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            let query = Query {
+                $0.limit = 5
+                $0.ascending("name")
+            }
+            
+            store.find(query, readPolicy: .ForceLocal) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 5)
+                    
+                    XCTAssertNotNil(results.first)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.name, "Person 0")
+                    }
+                    
+                    XCTAssertNotNil(results.last)
+                    
+                    if let person = results.last {
+                        XCTAssertEqual(person.name, "Person 4")
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            let query = Query {
+                $0.skip = 5
+                $0.ascending("name")
+            }
+            
+            store.find(query, readPolicy: .ForceLocal) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 5)
+                    
+                    XCTAssertNotNil(results.first)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.name, "Person 5")
+                    }
+                    
+                    XCTAssertNotNil(results.last)
+                    
+                    if let person = results.last {
+                        XCTAssertEqual(person.name, "Person 9")
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            let query = Query {
+                $0.skip = 6
+                $0.limit = 6
+                $0.ascending("name")
+            }
+            
+            store.find(query, readPolicy: .ForceLocal) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 4)
+                    
+                    XCTAssertNotNil(results.first)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.name, "Person 6")
+                    }
+                    
+                    XCTAssertNotNil(results.last)
+                    
+                    if let person = results.last {
+                        XCTAssertEqual(person.name, "Person 9")
+                    }
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+
+        
+        do {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            let query = Query {
+                $0.skip = 10
+                $0.ascending("name")
+            }
+            
+            store.find(query, readPolicy: .ForceLocal) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 0)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            let query = Query {
+                $0.skip = 11
+                $0.ascending("name")
+            }
+            
+            store.find(query, readPolicy: .ForceLocal) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, 0)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
+        do {
+            weak var expectationPush = expectationWithDescription("Push")
+            
+            store.push { count, error in
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                if let count = count {
+                    XCTAssertEqual(count, 10)
+                }
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationPush = nil
+            }
+        }
+        
+        skip = 0
+        
+        for _ in 0 ..< 5 {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            let query = Query {
+                $0.predicate = NSPredicate(format: "acl.creator == %@", user.userId)
+                $0.skip = skip
+                $0.limit = limit
+                $0.ascending("name")
+            }
+            
+            store.pull(query) { results, error in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
                 

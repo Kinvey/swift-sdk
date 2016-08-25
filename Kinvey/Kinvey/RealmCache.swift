@@ -76,14 +76,18 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
     
     override func detach(array: [T], query: Query?) -> [T] {
         var results = [T]()
-        for (index, entity) in array.enumerate() {
-            if let query = query, let skip = query.skip where skip > index {
-                continue
-            }
+        let skip = query?.skip ?? 0
+        let limit = query?.limit ?? array.count
+        var arrayEnumerate: [T]
+        if skip != 0 || limit != array.count {
+            let begin = max(min(skip, array.count), 0)
+            let end = max(min(skip + limit, array.count), 0)
+            arrayEnumerate = Array<T>(array[begin ..< end])
+        } else {
+            arrayEnumerate = array
+        }
+        for entity in arrayEnumerate {
             results.append(detach(entity))
-            if let query = query, let limit = query.limit where results.count == limit {
-                break
-            }
         }
         return results
     }
