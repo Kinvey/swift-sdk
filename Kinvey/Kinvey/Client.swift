@@ -205,6 +205,10 @@ public class Client: NSObject, Credential {
         self.authHostName = authHostName
         self.appKey = appKey
         self.appSecret = appSecret
+        
+        //legacy initilization
+        KCSClient.sharedClient().initializeKinveyServiceForAppKey(appKey, withAppSecret: appSecret, usingOptions: nil)
+        
         if let json = NSUserDefaults.standardUserDefaults().objectForKey(appKey) as? [String : AnyObject] {
             let user = Mapper<User>().map(json)
             if let user = user, let metadata = user.metadata, let authtoken = keychain.authtoken {
