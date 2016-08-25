@@ -46,35 +46,36 @@ class NetworkStoreTests: StoreTestCase {
             var uploadProgressCount = 0
             var uploadProgressSent: Int64? = nil
             var uploadProgressTotal: Int64? = nil
-            request.uploadProgress = {
-                XCTAssertTrue(NSThread.isMainThread())
-                if uploadProgressCount == 0 {
-                    uploadProgressSent = $0
-                    uploadProgressTotal = $1
-                } else {
-                    XCTAssertEqual(uploadProgressTotal, $1)
-                    XCTAssertGreaterThan($0, uploadProgressSent!)
-                    uploadProgressSent = $0
-                }
-                uploadProgressCount += 1
-                print("Upload: \($0)/\($1)")
-            }
             
             var downloadProgressCount = 0
             var downloadProgressSent: Int64? = nil
             var downloadProgressTotal: Int64? = nil
-            request.downloadProgress = {
+            
+            request.progress = {
                 XCTAssertTrue(NSThread.isMainThread())
-                if downloadProgressCount == 0 {
-                    downloadProgressSent = $0
-                    downloadProgressTotal = $1
+                if $0.countOfBytesSent == $0.countOfBytesExpectedToSend && $0.countOfBytesExpectedToReceive > 0 {
+                    if downloadProgressCount == 0 {
+                        downloadProgressSent = $0.countOfBytesReceived
+                        downloadProgressTotal = $0.countOfBytesExpectedToReceive
+                    } else {
+                        XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
+                        XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
+                        downloadProgressSent = $0.countOfBytesReceived
+                    }
+                    downloadProgressCount += 1
+                    print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
                 } else {
-                    XCTAssertEqual(downloadProgressTotal, $1)
-                    XCTAssertGreaterThan($0, downloadProgressSent!)
-                    downloadProgressSent = $0
+                    if uploadProgressCount == 0 {
+                        uploadProgressSent = $0.countOfBytesSent
+                        uploadProgressTotal = $0.countOfBytesExpectedToSend
+                    } else {
+                        XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
+                        XCTAssertGreaterThan($0.countOfBytesSent, uploadProgressSent!)
+                        uploadProgressSent = $0.countOfBytesSent
+                    }
+                    uploadProgressCount += 1
+                    print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
                 }
-                downloadProgressCount += 1
-                print("Download: \($0)/\($1)")
             }
             
             waitForExpectationsWithTimeout(defaultTimeout) { error in
@@ -138,18 +139,18 @@ class NetworkStoreTests: StoreTestCase {
             var downloadProgressCount = 0
             var downloadProgressSent: Int64? = nil
             var downloadProgressTotal: Int64? = nil
-            request.downloadProgress = {
+            request.progress = {
                 XCTAssertTrue(NSThread.isMainThread())
                 if downloadProgressCount == 0 {
-                    downloadProgressSent = $0
-                    downloadProgressTotal = $1
+                    downloadProgressSent = $0.countOfBytesReceived
+                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
                 } else {
-                    XCTAssertEqual(downloadProgressTotal, $1)
-                    XCTAssertGreaterThan($0, downloadProgressSent!)
-                    downloadProgressSent = $0
+                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
+                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
+                    downloadProgressSent = $0.countOfBytesReceived
                 }
                 downloadProgressCount += 1
-                print("Download: \($0)/\($1)")
+                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
             }
             
             waitForExpectationsWithTimeout(defaultTimeout) { error in

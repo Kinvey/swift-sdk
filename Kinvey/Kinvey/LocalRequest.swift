@@ -16,8 +16,7 @@ internal class LocalRequest: NSObject, Request {
     
     typealias LocalHandler = () -> Void
     
-    var uploadProgress: ((Int64, Int64) -> Void)?
-    var downloadProgress: ((Int64, Int64) -> Void)?
+    var progress: (ProgressStatus -> Void)?
     
     let localHandler: LocalHandler?
     

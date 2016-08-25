@@ -13,20 +13,12 @@ internal class MultiRequest: NSObject, Request {
     
     private var addProgresses = [Bool]()
     private var requests = [Request]()
-    var uploadProgress: ((Int64, Int64) -> Void)? {
+    
+    var progress: (ProgressStatus -> Void)? {
         didSet {
             for (index, request) in requests.enumerate() {
                 if addProgresses[index] {
-                    request.uploadProgress = uploadProgress
-                }
-            }
-        }
-    }
-    var downloadProgress: ((Int64, Int64) -> Void)? {
-        didSet {
-            for (index, request) in requests.enumerate() {
-                if addProgresses[index] {
-                    request.downloadProgress = downloadProgress
+                    request.progress = progress
                 }
             }
         }
@@ -37,8 +29,7 @@ internal class MultiRequest: NSObject, Request {
             request.cancel()
         }
         if addProgress {
-            request.uploadProgress = uploadProgress
-            request.downloadProgress = downloadProgress
+            request.progress = progress
         }
         addProgresses.append(addProgress)
         requests.append(request)

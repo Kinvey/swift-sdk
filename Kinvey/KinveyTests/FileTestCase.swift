@@ -92,18 +92,22 @@ class FileTestCase: StoreTestCase {
         var uploadProgressCount = 0
         var uploadProgressSent: Int64? = nil
         var uploadProgressTotal: Int64? = nil
-        request.uploadProgress = { countOfBytesSent, countOfBytesExpectedToSend in
+        request.progress = {
             XCTAssertTrue(NSThread.isMainThread())
-            if uploadProgressCount == 0 {
-                uploadProgressSent = countOfBytesSent
-                uploadProgressTotal = countOfBytesExpectedToSend
+            if $0.countOfBytesSent == $0.countOfBytesExpectedToSend {
+                //upload finished
             } else {
-                XCTAssertEqual(uploadProgressTotal, countOfBytesExpectedToSend)
-                XCTAssertGreaterThan(countOfBytesSent, uploadProgressSent!)
-                uploadProgressSent = countOfBytesSent
+                if uploadProgressCount == 0 {
+                    uploadProgressSent = $0.countOfBytesSent
+                    uploadProgressTotal = $0.countOfBytesExpectedToSend
+                } else {
+                    XCTAssertEqual(uploadProgressTotal, $0.countOfBytesExpectedToSend)
+                    XCTAssertGreaterThan($0.countOfBytesSent, uploadProgressSent!)
+                    uploadProgressSent = $0.countOfBytesSent
+                }
+                uploadProgressCount += 1
+                print("Upload: \($0.countOfBytesSent)/\($0.countOfBytesExpectedToSend)")
             }
-            uploadProgressCount += 1
-            print("Upload: \(countOfBytesSent)/\(countOfBytesExpectedToSend)")
         }
         
         let memoryNow = reportMemory()
@@ -139,18 +143,18 @@ class FileTestCase: StoreTestCase {
             var downloadProgressCount = 0
             var downloadProgressSent: Int64? = nil
             var downloadProgressTotal: Int64? = nil
-            request.downloadProgress = { countOfBytesReceived, countOfBytesExpectedToReceive in
+            request.progress = {
                 XCTAssertTrue(NSThread.isMainThread())
                 if downloadProgressCount == 0 {
-                    downloadProgressSent = countOfBytesReceived
-                    downloadProgressTotal = countOfBytesExpectedToReceive
+                    downloadProgressSent = $0.countOfBytesReceived
+                    downloadProgressTotal = $0.countOfBytesExpectedToReceive
                 } else {
-                    XCTAssertEqual(downloadProgressTotal, countOfBytesExpectedToReceive)
-                    XCTAssertGreaterThan(countOfBytesReceived, downloadProgressSent!)
-                    downloadProgressSent = countOfBytesReceived
+                    XCTAssertEqual(downloadProgressTotal, $0.countOfBytesExpectedToReceive)
+                    XCTAssertGreaterThan($0.countOfBytesReceived, downloadProgressSent!)
+                    downloadProgressSent = $0.countOfBytesReceived
                 }
                 downloadProgressCount += 1
-                print("Download: \(countOfBytesReceived)/\(countOfBytesExpectedToReceive)")
+                print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
             }
             
             waitForExpectationsWithTimeout(defaultTimeout) { error in
