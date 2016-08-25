@@ -66,7 +66,7 @@ internal class Cache<T: Persistable where T: NSObject>: CacheType {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
-    func detach(entity: [T]) -> [T] {
+    func detach(entity: [T], query: Query) -> [T] {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
