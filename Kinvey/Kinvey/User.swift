@@ -391,14 +391,18 @@ public class User: NSObject, Credential, Mappable {
         }
     }
     
+    internal convenience init(_ kcsUser: KCSUser, client: Client) {
+        let authString = kcsUser.authString
+        let authtoken = authString.hasPrefix(User.authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(User.authtokenPrefix.characters.count)) : authString
+        self.init(userId: kcsUser.userId, metadata: Metadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
+        username = kcsUser.username
+        email = kcsUser.email
+    }
+    
     private class func onMicLoginComplete(user kcsUser: KCSUser?, error: NSError?, actionResult: KCSUserActionResult, client: Client, completionHandler: UserHandler? = nil) {
         var user: User? = nil
         if let kcsUser = kcsUser {
-            let authString = kcsUser.authString
-            let authtoken = authString.hasPrefix(authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(authtokenPrefix.characters.count)) : authString
-            user = User(userId: kcsUser.userId, metadata: Metadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
-            user?.username = kcsUser.username
-            user?.email = kcsUser.email
+            user = User(kcsUser, client: client)
             client.activeUser = user
         }
         if actionResult == KCSUserActionResult.KCSUserInteractionCancel {
@@ -410,7 +414,9 @@ public class User: NSObject, Credential, Mappable {
         }
     }
     
-    /// Login with MIC using Authorization Grant flow.
+    /**
+     Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
+     */
     public class func loginWithAuthorization(redirectURI redirectURI: NSURL, username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         let options = [
             "username" : username,
