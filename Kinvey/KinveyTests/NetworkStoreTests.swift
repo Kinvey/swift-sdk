@@ -263,8 +263,6 @@ class NetworkStoreTests: StoreTestCase {
             return
         }
         
-        client.logNetworkEnabled = true
-        
         var i = 0
         
         measureBlock {
