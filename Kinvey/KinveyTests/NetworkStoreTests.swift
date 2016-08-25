@@ -256,6 +256,82 @@ class NetworkStoreTests: StoreTestCase {
         }
     }
     
+    func testSaveAndFind10SkipLimit() {
+        XCTAssertNotNil(Kinvey.sharedClient.activeUser)
+        
+        guard let user = Kinvey.sharedClient.activeUser else {
+            return
+        }
+        
+        client.logNetworkEnabled = true
+        
+        var i = 0
+        
+        measureBlock {
+            let person = Person {
+                $0.name = "Person \(i)"
+            }
+            
+            weak var expectationSave = self.expectationWithDescription("Save")
+            
+            self.store.save(person, writePolicy: .ForceNetwork) { person, error in
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationSave?.fulfill()
+            }
+            
+            self.waitForExpectationsWithTimeout(self.defaultTimeout) { error in
+                expectationSave = nil
+            }
+            
+            i += 1
+        }
+        
+        var skip = 0
+        let limit = 2
+        
+        for _ in 0 ..< 5 {
+            weak var expectationFind = expectationWithDescription("Find")
+            
+            let query = Query {
+                $0.predicate = NSPredicate(format: "acl.creator == %@", user.userId)
+                $0.skip = skip
+                $0.limit = limit
+                $0.ascending("name")
+            }
+            
+            store.find(query, readPolicy: .ForceNetwork) { results, error in
+                XCTAssertNotNil(results)
+                XCTAssertNil(error)
+                
+                if let results = results {
+                    XCTAssertEqual(results.count, limit)
+                    
+                    XCTAssertNotNil(results.first)
+                    
+                    if let person = results.first {
+                        XCTAssertEqual(person.name, "Person \(skip)")
+                    }
+                    
+                    XCTAssertNotNil(results.last)
+                    
+                    if let person = results.last {
+                        XCTAssertEqual(person.name, "Person \(skip + 1)")
+                    }
+                }
+                
+                skip += limit
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectationsWithTimeout(defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+    }
+    
     class MethodNotAllowedError: NSURLProtocol {
         
         override class func canInitWithRequest(request: NSURLRequest) -> Bool {

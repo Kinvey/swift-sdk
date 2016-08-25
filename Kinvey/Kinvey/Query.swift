@@ -131,7 +131,9 @@ public class Query: NSObject, BuilderType {
     }
     
     convenience init(query: Query, persistableType: Persistable.Type) {
-        self.init(predicate: query.predicate, sortDescriptors: query.sortDescriptors, persistableType: persistableType)
+        self.init(query) {
+            $0.persistableType = persistableType
+        }
     }
     
     /// Default Constructor.
@@ -182,6 +184,7 @@ public class Query: NSObject, BuilderType {
             $0.sortDescriptors = query.sortDescriptors
             $0.skip = query.skip
             $0.limit = query.limit
+            $0.persistableType = persistableType
         }
     }
     
