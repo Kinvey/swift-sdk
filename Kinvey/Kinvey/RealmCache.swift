@@ -74,10 +74,16 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         return obj
     }
     
-    override func detach(array: [T]) -> [T] {
+    override func detach(array: [T], query: Query?) -> [T] {
         var results = [T]()
-        for entity in array {
+        for (index, entity) in array.enumerate() {
+            if let query = query, let skip = query.skip where skip > index {
+                continue
+            }
             results.append(detach(entity))
+            if let query = query, let limit = query.limit where results.count == limit {
+                break
+            }
         }
         return results
     }
@@ -115,7 +121,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         var results = [T]()
         executor.executeAndWait {
             results = (RealmResultsArray<Entity>(self.results(query)) as NSArray) as! [T]
-            results = self.detach(results)
+            results = self.detach(results, query: query)
         }
         return results
     }
@@ -134,7 +140,7 @@ internal class RealmCache<T: Persistable where T: NSObject>: Cache<T> {
         var results = [T]()
         executor.executeAndWait {
             results = (RealmResultsArray<Entity>(self.realm.objects(self.entityType)) as NSArray) as! [T]
-            results = self.detach(results)
+            results = self.detach(results, query: nil)
         }
         return results
     }
