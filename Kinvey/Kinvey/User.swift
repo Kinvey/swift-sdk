@@ -390,29 +390,50 @@ public class User: NSObject, Credential, Mappable {
             return authorization
         }
     }
+    
+    internal convenience init(_ kcsUser: KCSUser, client: Client) {
+        let authString = kcsUser.authString
+        let authtoken = authString.hasPrefix(User.authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(User.authtokenPrefix.characters.count)) : authString
+        self.init(userId: kcsUser.userId, metadata: Metadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
+        username = kcsUser.username
+        email = kcsUser.email
+    }
+    
+    private class func onMicLoginComplete(user kcsUser: KCSUser?, error: NSError?, actionResult: KCSUserActionResult, client: Client, completionHandler: UserHandler? = nil) {
+        var user: User? = nil
+        if let kcsUser = kcsUser {
+            user = User(kcsUser, client: client)
+            client.activeUser = user
+        }
+        if actionResult == KCSUserActionResult.KCSUserInteractionCancel {
+            completionHandler?(user, Error.RequestCancelled)
+        } else if actionResult == KCSUserActionResult.KCSUserInteractionTimeout {
+            completionHandler?(user, Error.RequestTimeout)
+        } else {
+            completionHandler?(user, error)
+        }
+    }
+    
+    /**
+     Login with MIC using Automated Authorization Grant Flow. We strongly recommend use [Authorization Code Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#authorization-grant) instead of [Automated Authorization Grant Flow](http://devcenter.kinvey.com/rest/guides/mobile-identity-connect#automated-authorization-grant) for security reasons.
+     */
+    public class func loginWithAuthorization(redirectURI redirectURI: NSURL, username: String, password: String, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
+        let options = [
+            "username" : username,
+            "password" : password
+        ]
+        KCSUser.loginWithAuthorizationCodeAPI(redirectURI.absoluteString, options: options) { (kcsUser, error, actionResult) in
+            onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
+        }
+    }
 
 #if os(iOS)
     /// Presents the MIC View Controller to sign in a user using MIC (Mobile Identity Connect).
     public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
 
-        let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) -> Void in
-            var user: User? = nil
-            if let kcsUser = kcsUser {
-                let authString = kcsUser.authString
-                let authtoken = authString.hasPrefix(authtokenPrefix) ? authString.substringFromIndex(authString.startIndex.advancedBy(authtokenPrefix.characters.count)) : authString
-                user = User(userId: kcsUser.userId, metadata: Metadata(JSON: [Metadata.AuthTokenKey : authtoken]), client: client)
-                user?.username = kcsUser.username
-                user?.email = kcsUser.email
-                client.activeUser = user
-            }
-            if actionResult == KCSUserActionResult.KCSUserInteractionCancel {
-                completionHandler?(user, Error.RequestCancelled)
-            } else if actionResult == KCSUserActionResult.KCSUserInteractionTimeout {
-                completionHandler?(user, Error.RequestTimeout)
-            } else {
-                completionHandler?(user, error)
-            }
+        let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) in
+            onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
         }
         if forceUIWebView {
             micVC.setValue(forceUIWebView, forKey: "forceUIWebView")

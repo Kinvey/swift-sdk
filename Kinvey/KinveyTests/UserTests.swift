@@ -1376,5 +1376,40 @@ class UserTests: KinveyTestCase {
             expectationLogin = nil
         }
     }
+    
+    func testMICLoginAutomatedAuthorizationGrantFlow() {
+        if let user = client?.activeUser {
+            user.logout()
+        }
+        defer {
+            if let user = client?.activeUser {
+                user.logout()
+            }
+        }
+        
+        Kinvey.sharedClient.initialize(appKey: "kid_rJVLE1Z5", appSecret: "cd385840cbd94e2caaa8f824c2ff7f46")
+        
+        XCTAssertNil(client.activeUser)
+        
+        weak var expectationLogin = expectationWithDescription("Login")
+        
+        let redirectURI = NSURL(string: "micAuthGrantFlow://")!
+        User.loginWithAuthorization(
+            redirectURI: redirectURI,
+            username: "custom",
+            password: "1234"
+        ) { user, error in
+            XCTAssertNotNil(user)
+            XCTAssertNil(error)
+            
+            expectationLogin?.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            expectationLogin = nil
+        }
+        
+        XCTAssertNotNil(client.activeUser)
+    }
 
 }

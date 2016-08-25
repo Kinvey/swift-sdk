@@ -43,6 +43,8 @@
 		574B0FA91C729EB900CDC48F /* FindOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FA81C729EB900CDC48F /* FindOperation.swift */; };
 		574B0FAB1C729EC900CDC48F /* SaveOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAA1C729EC900CDC48F /* SaveOperation.swift */; };
 		574B0FAD1C729F3300CDC48F /* RemoveByQueryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */; };
+		575181571D63943F005C8ECF /* MICAuthorizationGrantViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575181561D63943F005C8ECF /* MICAuthorizationGrantViewController.swift */; };
+		575181581D63B645005C8ECF /* KCSClientConfiguration+KCSInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B23DFE1C7F9414006403CC /* KCSClientConfiguration+KCSInternal.m */; };
 		57557FE61D185BC3001D991C /* RealmResultsArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57557FE51D185BC3001D991C /* RealmResultsArray.swift */; };
 		5756FE861D136C330087141E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1DC1CDCE88900492D6C /* RealmSwift.framework */; };
 		5756FE871D136C990087141E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0C1E91CDCE88900492D6C /* RealmSwift.framework */; };
@@ -603,6 +605,7 @@
 		574B0FA81C729EB900CDC48F /* FindOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FindOperation.swift; sourceTree = "<group>"; };
 		574B0FAA1C729EC900CDC48F /* SaveOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveOperation.swift; sourceTree = "<group>"; };
 		574B0FAC1C729F3300CDC48F /* RemoveByQueryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveByQueryOperation.swift; sourceTree = "<group>"; };
+		575181561D63943F005C8ECF /* MICAuthorizationGrantViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MICAuthorizationGrantViewController.swift; sourceTree = "<group>"; };
 		5753BB3B1C23F29000EB9D3A /* SyncStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncStoreTests.swift; sourceTree = "<group>"; };
 		57557FE51D185BC3001D991C /* RealmResultsArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmResultsArray.swift; sourceTree = "<group>"; };
 		575772851C4728E5001D56F5 /* TTL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTL.swift; sourceTree = "<group>"; };
@@ -1172,6 +1175,7 @@
 				5765B8461C9771BC00080FFA /* AppDelegate.swift */,
 				57BEAE341C98AB3900479206 /* MainViewController.swift */,
 				5765B8481C9771BC00080FFA /* MICLoginViewController.swift */,
+				575181561D63943F005C8ECF /* MICAuthorizationGrantViewController.swift */,
 				5765B84A1C9771BC00080FFA /* Main.storyboard */,
 				5765B84D1C9771BC00080FFA /* Assets.xcassets */,
 				5765B84F1C9771BC00080FFA /* LaunchScreen.storyboard */,
@@ -2462,6 +2466,7 @@
 				57BEAE351C98AB3900479206 /* MainViewController.swift in Sources */,
 				57A960A41CC8278E005E52A8 /* PerformanceTestLongData.swift in Sources */,
 				5765B8491C9771BC00080FFA /* MICLoginViewController.swift in Sources */,
+				575181571D63943F005C8ECF /* MICAuthorizationGrantViewController.swift in Sources */,
 				5765B8471C9771BC00080FFA /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2642,6 +2647,7 @@
 				57B23F551C7FB1A4006403CC /* KCS_DDASLLogger.m in Sources */,
 				57B23ED51C7FA855006403CC /* KCSLogFormatter.m in Sources */,
 				57B23E901C7F988D006403CC /* KCSKeychain.m in Sources */,
+				575181581D63B645005C8ECF /* KCSClientConfiguration+KCSInternal.m in Sources */,
 				5793B8631D219A450088B5F9 /* CustomDateFormatTransform.swift in Sources */,
 				57B23EFF1C7FAF1B006403CC /* KCSDBTools.m in Sources */,
 				57470FA11C76834B0096B15F /* ReadOperation.swift in Sources */,
