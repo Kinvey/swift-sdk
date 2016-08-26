@@ -32,6 +32,9 @@
 
 @implementation DataStoreOperation
 
+@synthesize finished = _finished;
+@synthesize executing = _executing;
+
 - (void)start
 {
     [self setExecuting:YES];

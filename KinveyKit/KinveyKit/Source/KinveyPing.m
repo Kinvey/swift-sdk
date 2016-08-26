@@ -24,6 +24,8 @@
 
 @implementation KCSPingResult
 
+@synthesize description = _description;
+
 - (instancetype) initWithDescription:(NSString *)description withResult:(BOOL)result
 {
     self = [super init];
