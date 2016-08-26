@@ -33,6 +33,7 @@ public class ProgressStatus: NSObject {
     
 }
 
+/// Compare 2 ProgressStatus instances and returns `true` if they are equal
 public func ==(lhs: ProgressStatus, rhs: ProgressStatus) -> Bool {
     return lhs.countOfBytesSent == rhs.countOfBytesSent &&
         lhs.countOfBytesExpectedToSend == rhs.countOfBytesExpectedToSend &&
@@ -40,6 +41,7 @@ public func ==(lhs: ProgressStatus, rhs: ProgressStatus) -> Bool {
         lhs.countOfBytesExpectedToReceive == rhs.countOfBytesExpectedToReceive
 }
 
+/// Compare 2 ProgressStatus instances and returns `true` if they are not equal
 public func !=(lhs: ProgressStatus, rhs: ProgressStatus) -> Bool {
     return lhs.countOfBytesSent != rhs.countOfBytesSent ||
         lhs.countOfBytesExpectedToSend != rhs.countOfBytesExpectedToSend ||
