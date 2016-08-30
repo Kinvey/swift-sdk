@@ -165,7 +165,7 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNil(error)
             
             if let count = count {
-                XCTAssertGreaterThanOrEqual(Int(count), 1)
+                XCTAssertEqual(Int(count), 1)
             }
             
             expectationSync?.fulfill()
@@ -174,6 +174,9 @@ class SyncStoreTests: StoreTestCase {
         waitForExpectationsWithTimeout(defaultTimeout) { error in
             expectationSync = nil
         }
+
+        XCTAssertEqual(store.syncCount(), 0)
+
     }
     
     func testSyncInvalidDataStoreType() {
@@ -229,6 +232,7 @@ class SyncStoreTests: StoreTestCase {
         waitForExpectationsWithTimeout(defaultTimeout) { error in
             expectationSync = nil
         }
+        XCTAssertEqual(store.syncCount(), 1)
     }
     
     func testSyncNoCompletionHandler() {
@@ -255,7 +259,7 @@ class SyncStoreTests: StoreTestCase {
             XCTAssertNil(error)
             
             if let count = count {
-                XCTAssertGreaterThanOrEqual(Int(count), 1)
+                XCTAssertEqual(Int(count), 1)
             }
             
             expectationPush?.fulfill()
@@ -269,7 +273,7 @@ class SyncStoreTests: StoreTestCase {
     }
     
     func testPushInvalidDataStoreType() {
-        save()
+        //save()
         
         store = DataStore<Person>.collection(.Network)
         
@@ -330,6 +334,8 @@ class SyncStoreTests: StoreTestCase {
         do {
             weak var expectationPull = expectationWithDescription("Pull")
             
+            store.clearCache()
+            
             store.pull() { results, error in
                 self.assertThread()
                 XCTAssertNotNil(results)
@@ -337,6 +343,10 @@ class SyncStoreTests: StoreTestCase {
                 
                 if let results = results {
                     XCTAssertEqual(results.count, 3)
+                    
+                    let cacheCount = Int((self.store.cache?.count())!)
+                    XCTAssertEqual(cacheCount, results.count)
+
                 }
                 
                 expectationPull?.fulfill()
@@ -351,6 +361,8 @@ class SyncStoreTests: StoreTestCase {
             let query = Query(format: "personId == %@", "Victor")
             
             weak var expectationPull = expectationWithDescription("Pull")
+         
+            store.clearCache()
             
             store.pull(query) { results, error in
                 self.assertThread()
@@ -360,29 +372,12 @@ class SyncStoreTests: StoreTestCase {
                 if let results = results {
                     XCTAssertEqual(results.count, 1)
                     
+                    let cacheCount = Int((self.store.cache?.count())!)
+                    XCTAssertEqual(cacheCount, results.count)
+                    
                     if let person = results.first {
                         XCTAssertEqual(person.personId, "Victor")
                     }
-                }
-                
-                expectationPull?.fulfill()
-            }
-            
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
-                expectationPull = nil
-            }
-        }
-        
-        do {
-            weak var expectationPull = expectationWithDescription("Pull")
-            
-            store.find() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(results.count, 3)
                 }
                 
                 expectationPull?.fulfill()
@@ -404,6 +399,8 @@ class SyncStoreTests: StoreTestCase {
             
             weak var expectationPull = expectationWithDescription("Pull")
             
+            store.clearCache()
+            
             store.pull(query) { results, error in
                 self.assertThread()
                 XCTAssertNotNil(results)
@@ -414,27 +411,11 @@ class SyncStoreTests: StoreTestCase {
                     
                     if let person = results.first {
                         XCTAssertEqual(person.personId, "Victor")
+                        
+                        let cacheCount = Int((self.store.cache?.count())!)
+                        XCTAssertEqual(cacheCount, results.count)
+
                     }
-                }
-                
-                expectationPull?.fulfill()
-            }
-            
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
-                expectationPull = nil
-            }
-        }
-        
-        do {
-            weak var expectationPull = expectationWithDescription("Pull")
-            
-            store.find() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(results.count, 2)
                 }
                 
                 expectationPull?.fulfill()
@@ -451,12 +432,14 @@ class SyncStoreTests: StoreTestCase {
             ]
         ]
         
-        store.clearCache()
+        
         
         do {
             let query = Query(format: "personId == %@", "Victor")
             
             weak var expectationPull = expectationWithDescription("Pull")
+        
+            store.clearCache()
             
             store.pull(query) { results, error in
                 self.assertThread()
@@ -468,27 +451,11 @@ class SyncStoreTests: StoreTestCase {
                     
                     if let person = results.first {
                         XCTAssertEqual(person.personId, "Victor")
+                        
+                        let cacheCount = Int((self.store.cache?.count())!)
+                        XCTAssertEqual(cacheCount, results.count)
+
                     }
-                }
-                
-                expectationPull?.fulfill()
-            }
-            
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
-                expectationPull = nil
-            }
-        }
-        
-        do {
-            weak var expectationPull = expectationWithDescription("Pull")
-            
-            store.find() { results, error in
-                self.assertThread()
-                XCTAssertNotNil(results)
-                XCTAssertNil(error)
-                
-                if let results = results {
-                    XCTAssertEqual(results.count, 1)
                 }
                 
                 expectationPull?.fulfill()
