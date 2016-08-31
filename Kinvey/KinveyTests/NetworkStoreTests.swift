@@ -19,26 +19,33 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     override func assertThread() {
-        XCTAssertTrue(NSThread.isMainThread())
+        XCTAssertTrue(Thread.isMainThread)
     }
     
     func testSaveEvent() {
-        let store = DataStore<Event>.collection(.Network)
+        let store = DataStore<Event>.collection(.network)
         
         let event = Event()
         event.name = "Friday Party!"
-        event.date = NSDate(timeIntervalSince1970: 1468001397) // Fri, 08 Jul 2016 18:09:57 GMT
+        event.publishDate = Date(timeIntervalSince1970: 1468001397) // Fri, 08 Jul 2016 18:09:57 GMT
         event.location = "The closest pub!"
         
         event.acl?.globalRead.value = true
         event.acl?.globalWrite.value = true
         
         do {
-            weak var expectationCreate = expectationWithDescription("Create")
+            weak var expectationCreate = expectation(description: "Create")
             
             let request = store.save(event) { event, error in
                 XCTAssertNotNil(event)
                 XCTAssertNil(error)
+                
+                if let event = event {
+                    XCTAssertNotNil(event.entityId)
+                    XCTAssertNotNil(event.name)
+                    XCTAssertNotNil(event.publishDate)
+                    XCTAssertNotNil(event.location)
+                }
                 
                 expectationCreate?.fulfill()
             }
@@ -52,7 +59,7 @@ class NetworkStoreTests: StoreTestCase {
             var downloadProgressTotal: Int64? = nil
             
             request.progress = {
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 if $0.countOfBytesSent == $0.countOfBytesExpectedToSend && $0.countOfBytesExpectedToReceive > 0 {
                     if downloadProgressCount == 0 {
                         downloadProgressSent = $0.countOfBytesReceived
@@ -78,7 +85,7 @@ class NetworkStoreTests: StoreTestCase {
                 }
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCreate = nil
             }
             
@@ -86,31 +93,55 @@ class NetworkStoreTests: StoreTestCase {
             XCTAssertGreaterThan(downloadProgressCount, 0)
         }
         
+        XCTAssertNotNil(event.entityId)
+        
+        if let eventId = event.entityId {
+            weak var expectationFind = expectation(description: "Find")
+            
+            let request = store.find(eventId) { event, error in
+                XCTAssertNotNil(event)
+                XCTAssertNil(error)
+                
+                if let event = event {
+                    XCTAssertNotNil(event.entityId)
+                    XCTAssertNotNil(event.name)
+                    XCTAssertNotNil(event.publishDate)
+                    XCTAssertNotNil(event.location)
+                }
+                
+                expectationFind?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationFind = nil
+            }
+        }
+        
         do {
-            class DelayURLProtocol: NSURLProtocol {
+            class DelayURLProtocol: URLProtocol {
                 
-                static var delay: NSTimeInterval?
+                static var delay: TimeInterval?
                 
-                override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+                override class func canInit(with request: URLRequest) -> Bool {
                     return true
                 }
                 
-                override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+                override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                     return request
                 }
                 
                 override func startLoading() {
                     if let delay = DelayURLProtocol.delay {
-                        NSThread.sleepForTimeInterval(delay)
+                        Thread.sleep(forTimeInterval: delay)
                     }
                     
-                    NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue()) { (response, data, error) in
-                        self.client?.URLProtocol(self, didReceiveResponse: response!, cacheStoragePolicy: .NotAllowed)
-                        self.client?.URLProtocol(self, didLoadData: data!)
+                    NSURLConnection.sendAsynchronousRequest(request, queue: OperationQueue()) { (response, data, error) in
+                        self.client?.urlProtocol(self, didReceive: response!, cacheStoragePolicy: .notAllowed)
+                        self.client?.urlProtocol(self, didLoad: data!)
                         if let delay = DelayURLProtocol.delay {
-                            NSThread.sleepForTimeInterval(delay)
+                            Thread.sleep(forTimeInterval: delay)
                         }
-                        self.client?.URLProtocolDidFinishLoading(self)
+                        self.client?.urlProtocolDidFinishLoading(self)
                     }
                 }
                 
@@ -126,10 +157,10 @@ class NetworkStoreTests: StoreTestCase {
                 setURLProtocol(nil)
             }
             
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
             let request = store.find() { (events, error) in
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 XCTAssertNotNil(events)
                 XCTAssertNil(error)
                 
@@ -140,7 +171,7 @@ class NetworkStoreTests: StoreTestCase {
             var downloadProgressSent: Int64? = nil
             var downloadProgressTotal: Int64? = nil
             request.progress = {
-                XCTAssertTrue(NSThread.isMainThread())
+                XCTAssertTrue(Thread.isMainThread)
                 if downloadProgressCount == 0 {
                     downloadProgressSent = $0.countOfBytesReceived
                     downloadProgressTotal = $0.countOfBytesExpectedToReceive
@@ -153,7 +184,7 @@ class NetworkStoreTests: StoreTestCase {
                 print("Download: \($0.countOfBytesReceived)/\($0.countOfBytesExpectedToReceive)")
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
             
@@ -162,7 +193,7 @@ class NetworkStoreTests: StoreTestCase {
     }
     
     func testSaveAddress() {
-        let person = Person()
+        var person = Person()
         person.name = "Victor Barros"
         
         let address = Address()
@@ -170,9 +201,9 @@ class NetworkStoreTests: StoreTestCase {
         
         person.address = address
         
-        weak var expectationSave = expectationWithDescription("Save")
+        weak var expectationSave = expectation(description: "Save")
         
-        store.save(person, writePolicy: .ForceNetwork) { person, error in
+        store.save(person, writePolicy: .forceNetwork) { person, error in
             XCTAssertNotNil(person)
             XCTAssertNil(error)
             
@@ -187,18 +218,18 @@ class NetworkStoreTests: StoreTestCase {
             expectationSave?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }
     
     func testCount() {
-        let store = DataStore<Event>.collection(.Network)
+        let store = DataStore<Event>.collection(.network)
         
-        var eventsCount: UInt? = nil
+        var eventsCount: Int? = nil
         
         do {
-            weak var expectationCount = expectationWithDescription("Count")
+            weak var expectationCount = expectation(description: "Count")
             
             store.count { (count, error) in
                 XCTAssertNotNil(count)
@@ -211,7 +242,7 @@ class NetworkStoreTests: StoreTestCase {
                 expectationCount?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCount = nil
             }
         }
@@ -222,7 +253,7 @@ class NetworkStoreTests: StoreTestCase {
             let event = Event()
             event.name = "Friday Party!"
             
-            weak var expectationCreate = expectationWithDescription("Create")
+            weak var expectationCreate = expectation(description: "Create")
             
             store.save(event) { event, error in
                 XCTAssertNotNil(event)
@@ -231,13 +262,13 @@ class NetworkStoreTests: StoreTestCase {
                 expectationCreate?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCreate = nil
             }
         }
         
         do {
-            weak var expectationCount = expectationWithDescription("Count")
+            weak var expectationCount = expectation(description: "Count")
             
             store.count { (count, error) in
                 XCTAssertNotNil(count)
@@ -250,7 +281,7 @@ class NetworkStoreTests: StoreTestCase {
                 expectationCount?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationCount = nil
             }
         }
@@ -265,21 +296,21 @@ class NetworkStoreTests: StoreTestCase {
         
         var i = 0
         
-        measureBlock {
-            let person = Person {
+        measure {
+            var person = Person {
                 $0.name = "Person \(i)"
             }
             
-            weak var expectationSave = self.expectationWithDescription("Save")
+            weak var expectationSave = self.expectation(description: "Save")
             
-            self.store.save(person, writePolicy: .ForceNetwork) { person, error in
+            self.store.save(person, writePolicy: .forceNetwork) { person, error in
                 XCTAssertNotNil(person)
                 XCTAssertNil(error)
                 
                 expectationSave?.fulfill()
             }
             
-            self.waitForExpectationsWithTimeout(self.defaultTimeout) { error in
+            self.waitForExpectations(timeout: self.defaultTimeout) { error in
                 expectationSave = nil
             }
             
@@ -290,7 +321,7 @@ class NetworkStoreTests: StoreTestCase {
         let limit = 2
         
         for _ in 0 ..< 5 {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
             let query = Query {
                 $0.predicate = NSPredicate(format: "acl.creator == %@", user.userId)
@@ -299,7 +330,7 @@ class NetworkStoreTests: StoreTestCase {
                 $0.ascending("name")
             }
             
-            store.find(query, readPolicy: .ForceNetwork) { results, error in
+            store.find(query, readPolicy: .forceNetwork) { results, error in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
                 
@@ -324,35 +355,35 @@ class NetworkStoreTests: StoreTestCase {
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
+            waitForExpectations(timeout: defaultTimeout) { error in
                 expectationFind = nil
             }
         }
     }
     
-    class MethodNotAllowedError: NSURLProtocol {
+    class MethodNotAllowedError: URLProtocol {
         
-        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+        override class func canInit(with request: URLRequest) -> Bool {
             return true
         }
         
-        override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+        override class func canonicalRequest(for request: URLRequest) -> URLRequest {
             return request
         }
         
         override func startLoading() {
-            let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 405, HTTPVersion: "1.1", headerFields: [:])!
-            client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+            let response = HTTPURLResponse(url: request.url!, statusCode: 405, httpVersion: "1.1", headerFields: [:])!
+            client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             
             let responseBody = [
                 "error": "MethodNotAllowed",
                 "debug": "insert' method is not allowed for this collection.",
                 "description": "The method is not allowed for this resource."
             ]
-            let responseBodyData = try! NSJSONSerialization.dataWithJSONObject(responseBody, options: [])
-            client!.URLProtocol(self, didLoadData: responseBodyData)
+            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+            client!.urlProtocol(self, didLoad: responseBodyData)
             
-            client!.URLProtocolDidFinishLoading(self)
+            client!.urlProtocolDidFinishLoading(self)
         }
         
         override func stopLoading() {
@@ -360,29 +391,29 @@ class NetworkStoreTests: StoreTestCase {
         
     }
     
-    class DataLinkEntityNotFoundError: NSURLProtocol {
+    class DataLinkEntityNotFoundError: URLProtocol {
         
-        override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+        override class func canInit(with request: URLRequest) -> Bool {
             return true
         }
         
-        override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+        override class func canonicalRequest(for request: URLRequest) -> URLRequest {
             return request
         }
         
         override func startLoading() {
-            let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 404, HTTPVersion: "1.1", headerFields: [:])!
-            client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+            let response = HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: "1.1", headerFields: [:])!
+            client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             
             let responseBody = [
                 "error": "DataLinkEntityNotFound",
                 "debug": "Error: Not Found",
                 "description": "The data link could not find this entity"
             ]
-            let responseBodyData = try! NSJSONSerialization.dataWithJSONObject(responseBody, options: [])
-            client!.URLProtocol(self, didLoadData: responseBodyData)
+            let responseBodyData = try! JSONSerialization.data(withJSONObject: responseBody, options: [])
+            client!.urlProtocol(self, didLoad: responseBodyData)
             
-            client!.URLProtocolDidFinishLoading(self)
+            client!.urlProtocolDidFinishLoading(self)
         }
         
         override func stopLoading() {
@@ -396,16 +427,16 @@ class NetworkStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find("sample-id", readPolicy: .ForceNetwork) { person, error in
+        store.find("sample-id", readPolicy: .forceNetwork) { person, error in
             XCTAssertNil(person)
             XCTAssertNotNil(error)
             XCTAssertTrue(error is Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .DataLinkEntityNotFound(let debug, let description):
+                case .dataLinkEntityNotFound(let debug, let description):
                     XCTAssertEqual(debug, "Error: Not Found")
                     XCTAssertEqual(description, "The data link could not find this entity")
                 default:
@@ -416,7 +447,7 @@ class NetworkStoreTests: StoreTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
@@ -430,16 +461,16 @@ class NetworkStoreTests: StoreTestCase {
         let person = Person()
         person.name = "Victor Barros"
         
-        weak var expectationSave = expectationWithDescription("Save")
+        weak var expectationSave = expectation(description: "Save")
         
-        store.save(person, writePolicy: .ForceNetwork) { person, error in
+        store.save(person, writePolicy: .forceNetwork) { person, error in
             XCTAssertNil(person)
             XCTAssertNotNil(error)
             XCTAssertTrue(error is Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .MethodNotAllowed(let debug, let description):
+                case .methodNotAllowed(let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
@@ -450,7 +481,7 @@ class NetworkStoreTests: StoreTestCase {
             expectationSave?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationSave = nil
         }
     }
@@ -461,16 +492,16 @@ class NetworkStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find(readPolicy: .ForceNetwork) { person, error in
+        store.find(readPolicy: .forceNetwork) { person, error in
             XCTAssertNil(person)
             XCTAssertNotNil(error)
             XCTAssertTrue(error is Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .MethodNotAllowed(let debug, let description):
+                case .methodNotAllowed(let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
@@ -481,7 +512,7 @@ class NetworkStoreTests: StoreTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
@@ -492,16 +523,16 @@ class NetworkStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find("sample-id", readPolicy: .ForceNetwork) { person, error in
+        store.find("sample-id", readPolicy: .forceNetwork) { person, error in
             XCTAssertNil(person)
             XCTAssertNotNil(error)
             XCTAssertTrue(error is Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .MethodNotAllowed(let debug, let description):
+                case .methodNotAllowed(let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
@@ -512,7 +543,7 @@ class NetworkStoreTests: StoreTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationFind = nil
         }
     }
@@ -523,16 +554,16 @@ class NetworkStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        weak var expectationRemove = expectationWithDescription("Remove")
+        weak var expectationRemove = expectation(description: "Remove")
         
-        store.removeById("sample-id", writePolicy: .ForceNetwork) { person, error in
+        store.removeById("sample-id", writePolicy: .forceNetwork) { person, error in
             XCTAssertNil(person)
             XCTAssertNotNil(error)
             XCTAssertTrue(error is Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .MethodNotAllowed(let debug, let description):
+                case .methodNotAllowed(let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
@@ -543,7 +574,7 @@ class NetworkStoreTests: StoreTestCase {
             expectationRemove?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
     }
@@ -554,16 +585,16 @@ class NetworkStoreTests: StoreTestCase {
             setURLProtocol(nil)
         }
         
-        weak var expectationRemove = expectationWithDescription("Remove")
+        weak var expectationRemove = expectation(description: "Remove")
         
-        store.remove(writePolicy: .ForceNetwork) { count, error in
+        store.remove(writePolicy: .forceNetwork) { count, error in
             XCTAssertNil(count)
             XCTAssertNotNil(error)
             XCTAssertTrue(error is Kinvey.Error)
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .MethodNotAllowed(let debug, let description):
+                case .methodNotAllowed(let debug, let description):
                     XCTAssertEqual(debug, "insert' method is not allowed for this collection.")
                     XCTAssertEqual(description, "The method is not allowed for this resource.")
                 default:
@@ -574,7 +605,7 @@ class NetworkStoreTests: StoreTestCase {
             expectationRemove?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
     }

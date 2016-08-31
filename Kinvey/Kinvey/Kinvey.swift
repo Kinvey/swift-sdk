@@ -29,22 +29,22 @@ public let sharedClient = Client.sharedClient
 
 let defaultTag = "kinvey"
 
-let userDocumentDirectory: String = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first!
+let userDocumentDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
 
-func buildError(data: NSData?, _ response: NSURLResponse?, _ error: ErrorType?, _ client: Client) -> ErrorType {
+func buildError(_ data: Data?, _ response: URLResponse?, _ error: Swift.Error?, _ client: Client) -> Swift.Error {
     return buildError(data, HttpResponse(response: response), error, client)
 }
 
-func buildError(data: NSData?, _ response: Response?, _ error: ErrorType?, _ client: Client) -> ErrorType {
+func buildError(_ data: Data?, _ response: Response?, _ error: Swift.Error?, _ client: Client) -> Swift.Error {
     if let error = error {
-        return error as NSError
-    } else if let response = response where response.isUnauthorized,
+        return error
+    } else if let response = response , response.isUnauthorized,
         let json = client.responseParser.parse(data) as? [String : String]
     {
         return Error.buildUnauthorized(json)
-    } else if let response = response where response.isMethodNotAllowed, let json = client.responseParser.parse(data) as? [String : String] where json["error"] == "MethodNotAllowed" {
+    } else if let response = response , response.isMethodNotAllowed, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "MethodNotAllowed" {
         return Error.buildMethodNotAllowed(json)
-    } else if let response = response where response.isNotFound, let json = client.responseParser.parse(data) as? [String : String] where json["error"] == "DataLinkEntityNotFound" {
+    } else if let response = response , response.isNotFound, let json = client.responseParser.parse(data) as? [String : String] , json["error"] == "DataLinkEntityNotFound" {
         return Error.buildDataLinkEntityNotFound(json)
     } else if let _ = response, let json = client.responseParser.parse(data) {
         return Error.buildUnknownJsonError(json)

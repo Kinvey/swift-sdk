@@ -36,7 +36,7 @@ public class NotificationPromise: Promise<[AnyHashable: Any]> {
         return pending.promise
     }
 
-    fileprivate class func go() -> (NotificationPromise, @escaping (Notification) -> Void) {
+    fileprivate class func go() -> (NotificationPromise, (Notification) -> Void) {
         let (p, fulfill, _) = NotificationPromise.pending()
         let promise = p as! NotificationPromise
         _ = promise.pending.promise.then { fulfill($0.userInfo ?? [:]) }

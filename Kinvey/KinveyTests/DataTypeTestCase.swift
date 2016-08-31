@@ -17,7 +17,7 @@ class DataTypeTestCase: StoreTestCase {
         let store = DataStore<DataType>.collection()
         let dataType = DataType()
         dataType.boolValue = true
-        dataType.colorValue = UIColor.orangeColor()
+        dataType.colorValue = UIColor.orange
         
         let fullName = FullName()
         fullName.firstName = "Victor"
@@ -39,9 +39,9 @@ class DataTypeTestCase: StoreTestCase {
         
         let query = Query(format: "acl.creator == %@", client.activeUser!.userId)
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find(query, readPolicy: .ForceNetwork) { results, error in
+        store.find(query, readPolicy: .forceNetwork) { results, error in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -50,7 +50,7 @@ class DataTypeTestCase: StoreTestCase {
                 
                 if let dataType = results.first {
                     XCTAssertTrue(dataType.boolValue)
-                    XCTAssertEqual(dataType.colorValue, UIColor.orangeColor())
+                    XCTAssertEqual(dataType.colorValue, UIColor.orange)
                     
                     XCTAssertNotNil(dataType.fullName)
                     if let fullName = dataType.fullName {
@@ -70,7 +70,7 @@ class DataTypeTestCase: StoreTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+        waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationFind = nil
         }
     }
@@ -82,7 +82,7 @@ class UIColorTransformType : TransformType {
     typealias Object = UIColor
     typealias JSON = JsonDictionary
     
-    func transformFromJSON(value: AnyObject?) -> UIColor? {
+    func transformFromJSON(_ value: Any?) -> UIColor? {
         if let value = value as? JsonDictionary,
             let red = value["red"] as? CGFloat,
             let green = value["green"] as? CGFloat,
@@ -94,7 +94,7 @@ class UIColorTransformType : TransformType {
         return nil
     }
     
-    func transformToJSON(value: UIColor?) -> JsonDictionary? {
+    func transformToJSON(_ value: UIColor?) -> JsonDictionary? {
         if let value = value {
             var red: CGFloat = 0
             var green: CGFloat = 0
@@ -113,32 +113,32 @@ class UIColorTransformType : TransformType {
     
 }
 
-class DataType: Entity, BooleanType {
+class DataType: Entity {
     
     dynamic var boolValue: Bool = false
     dynamic var fullName: FullName?
     
-    private dynamic var fullName2Value: String?
+    fileprivate dynamic var fullName2Value: String?
     dynamic var fullName2: FullName2?
     
     dynamic var objectValue: NSObject?
     
-    private dynamic var colorValueString: String?
+    fileprivate dynamic var colorValueString: String?
     dynamic var colorValue: UIColor? {
         get {
             if let colorValueString = colorValueString,
-                let data = colorValueString.dataUsingEncoding(NSUTF8StringEncoding),
-                let json = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
+                let data = colorValueString.data(using: String.Encoding.utf8),
+                let json = try? JSONSerialization.jsonObject(with: data, options: [])
             {
-                return UIColorTransformType().transformFromJSON(json)
+                return UIColorTransformType().transformFromJSON(json as AnyObject?)
             }
             return nil
         }
         set {
             if let newValue = newValue,
                 let json = UIColorTransformType().transformToJSON(newValue),
-                let data = try? NSJSONSerialization.dataWithJSONObject(json, options: []),
-                let stringValue = String(data: data, encoding: NSUTF8StringEncoding)
+                let data = try? JSONSerialization.data(withJSONObject: json),
+                let stringValue = String(data: data, encoding: String.Encoding.utf8)
             {
                 colorValueString = stringValue
             } else {
@@ -151,7 +151,7 @@ class DataType: Entity, BooleanType {
         return "DataType"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         boolValue <- map["boolValue"]
@@ -175,7 +175,7 @@ class FullName: Entity {
         return "FullName"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         firstName <- map["firstName"]
@@ -189,14 +189,14 @@ class FullName2TransformType: TransformType {
     typealias Object = FullName2
     typealias JSON = JsonDictionary
     
-    func transformFromJSON(value: AnyObject?) -> FullName2? {
+    func transformFromJSON(_ value: Any?) -> FullName2? {
         if let value = value as? JsonDictionary {
             return FullName2(JSON: value)
         }
         return nil
     }
     
-    func transformToJSON(value: FullName2?) -> JsonDictionary? {
+    func transformToJSON(_ value: FullName2?) -> JsonDictionary? {
         if let value = value {
             return value.toJSON()
         }
@@ -214,7 +214,7 @@ class FullName2: NSObject, Mappable {
     override init() {
     }
     
-    required init?(_ map: Map) {
+    required init?(map: Map) {
     }
     
     func mapping(map: Map) {
@@ -230,7 +230,7 @@ class UIFontDescriptorTransformType: TransformType {
     typealias Object = UIFontDescriptor
     typealias JSON = JsonDictionary
     
-    func transformFromJSON(value: AnyObject?) -> Object? {
+    func transformFromJSON(_ value: Any?) -> Object? {
         if let value = value as? JsonDictionary,
             let fontName = value[UIFontDescriptorNameAttribute] as? String,
             let fontSize = value[UIFontDescriptorSizeAttribute] as? CGFloat
@@ -240,11 +240,11 @@ class UIFontDescriptorTransformType: TransformType {
         return nil
     }
     
-    func transformToJSON(value: Object?) -> JSON? {
+    func transformToJSON(_ value: Object?) -> JSON? {
         if let value = value {
             return [
-                UIFontDescriptorNameAttribute : value.fontAttributes()[UIFontDescriptorNameAttribute]!,
-                UIFontDescriptorSizeAttribute : value.fontAttributes()[UIFontDescriptorSizeAttribute]!
+                UIFontDescriptorNameAttribute : value.fontAttributes[UIFontDescriptorNameAttribute]!,
+                UIFontDescriptorSizeAttribute : value.fontAttributes[UIFontDescriptorSizeAttribute]!
             ]
         }
         return nil

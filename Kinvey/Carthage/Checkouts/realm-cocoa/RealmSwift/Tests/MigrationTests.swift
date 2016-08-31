@@ -32,7 +32,6 @@ private func realmWithSingleClassProperties(_ fileURL: URL, className: String, p
     schema.objectSchema = [objectSchema]
     let config = RLMRealmConfiguration()
     config.fileURL = fileURL
-    config.dynamic = true
     config.customSchema = schema
     return try! RLMRealm(configuration: config)
 }
@@ -64,7 +63,7 @@ class MigrationTests: TestCase {
         let config = Realm.Configuration(fileURL: fileURL, schemaVersion: schemaVersion,
             migrationBlock: { migration, oldSchemaVersion in
                 if let block = block {
-                    block(migration: migration, oldSchemaVersion: oldSchemaVersion)
+                    block(migration, oldSchemaVersion)
                 }
                 didRun = true
                 return
@@ -75,13 +74,13 @@ class MigrationTests: TestCase {
                 _ = try! Realm(configuration: config)
             }
         } else {
-            try! migrateRealm(config)
+            try! Realm.performMigration(for: config)
         }
 
         XCTAssertEqual(didRun, shouldRun)
     }
 
-    private func migrateAndTestDefaultRealm(_ schemaVersion: UInt64 = 1, block: MigrationBlock) {
+    private func migrateAndTestDefaultRealm(_ schemaVersion: UInt64 = 1, block: @escaping MigrationBlock) {
         migrateAndTestRealm(defaultRealmURL(), schemaVersion: schemaVersion, block: block)
         let config = Realm.Configuration(fileURL: defaultRealmURL(),
                                          schemaVersion: schemaVersion)
@@ -98,7 +97,7 @@ class MigrationTests: TestCase {
                                          migrationBlock: { _, _ in didRun = true })
         Realm.Configuration.defaultConfiguration = config
 
-        try! migrateRealm()
+        try! Realm.performMigration()
 
         XCTAssertEqual(didRun, true)
         XCTAssertEqual(1, try! schemaVersionAtURL(defaultRealmURL()))
@@ -112,7 +111,7 @@ class MigrationTests: TestCase {
     }
 
     func testSchemaVersionAtURL() {
-        assertFails(.Fail) {
+        assertFails(.fail) {
             // Version should throw before Realm creation
             try schemaVersionAtURL(defaultRealmURL())
         }
@@ -120,7 +119,7 @@ class MigrationTests: TestCase {
         _ = try! Realm()
         XCTAssertEqual(0, try! schemaVersionAtURL(defaultRealmURL()),
                        "Initial version should be 0")
-        assertFails(.Fail) {
+        assertFails(.fail) {
             try schemaVersionAtURL(URL(fileURLWithPath: "/dev/null"))
         }
     }
@@ -135,14 +134,14 @@ class MigrationTests: TestCase {
         migrateAndTestRealm(testRealmURL(), shouldRun: false, autoMigration: false)
 
         // test auto-migration
-        migrateAndTestRealm(testRealmURL(), schemaVersion: 2, shouldRun: true, autoMigration: true)
+        migrateAndTestRealm(testRealmURL(), shouldRun: true, schemaVersion: 2, autoMigration: true)
     }
 
     func testMigrationProperties() {
         let prop = RLMProperty(name: "stringCol", type: RLMPropertyType.int, objectClassName: nil,
                                linkOriginPropertyName: nil, indexed: false, optional: false)
         _ = autoreleasepool {
-            realmWithSingleClassProperties(defaultRealmURL(), className: "SwiftStringObject", properties: [prop!])
+            realmWithSingleClassProperties(defaultRealmURL(), className: "SwiftStringObject", properties: [prop])
         }
 
         migrateAndTestDefaultRealm() { migration, oldSchemaVersion in
@@ -210,8 +209,8 @@ class MigrationTests: TestCase {
                 let soo = SwiftOptionalObject()
                 soo.optNSStringCol = "NSString"
                 soo.optStringCol = "String"
-                soo.optBinaryCol = NSData()
-                soo.optDateCol = NSDate()
+                soo.optBinaryCol = Data()
+                soo.optDateCol = Date()
                 soo.optIntCol.value = 1
                 soo.optInt8Col.value = 2
                 soo.optInt16Col.value = 3
@@ -232,10 +231,10 @@ class MigrationTests: TestCase {
                 XCTAssertTrue(newObject!["optNSStringCol"]! is NSString)
                 XCTAssertTrue(oldObject!["optStringCol"]! is String)
                 XCTAssertTrue(newObject!["optStringCol"]! is String)
-                XCTAssertTrue(oldObject!["optBinaryCol"]! is NSData)
-                XCTAssertTrue(newObject!["optBinaryCol"]! is NSData)
-                XCTAssertTrue(oldObject!["optDateCol"]! is NSDate)
-                XCTAssertTrue(newObject!["optDateCol"]! is NSDate)
+                XCTAssertTrue(oldObject!["optBinaryCol"]! is Data)
+                XCTAssertTrue(newObject!["optBinaryCol"]! is Data)
+                XCTAssertTrue(oldObject!["optDateCol"]! is Date)
+                XCTAssertTrue(newObject!["optDateCol"]! is Date)
                 XCTAssertTrue(oldObject!["optIntCol"]! is Int)
                 XCTAssertTrue(newObject!["optIntCol"]! is Int)
                 XCTAssertTrue(oldObject!["optInt8Col"]! is Int)
@@ -304,7 +303,7 @@ class MigrationTests: TestCase {
             let prop = RLMProperty(name: "id", type: .int, objectClassName: nil,
                                    linkOriginPropertyName: nil, indexed: false, optional: false)
             let realm = realmWithSingleClassProperties(defaultRealmURL(),
-                className: "DeletedClass", properties: [prop!])
+                className: "DeletedClass", properties: [prop])
             try! realm.transaction {
                 realm.createObject("DeletedClass", withValue: [0])
             }
@@ -331,7 +330,7 @@ class MigrationTests: TestCase {
                 linkOriginPropertyName: nil, indexed: false, optional: false)
             autoreleasepool {
                 let realm = realmWithSingleClassProperties(defaultRealmURL(), className: "SwiftStringObject",
-                    properties: [prop!])
+                    properties: [prop])
                 try! realm.transaction {
                     realm.createObject("SwiftStringObject", withValue: ["a"])
                 }
@@ -376,12 +375,12 @@ class MigrationTests: TestCase {
                 XCTAssertEqual((newObj!["doubleCol"] as! Double), 12.3 as Double)
 
                 let binaryCol = "a".data(using: String.Encoding.utf8)!
-                XCTAssertEqual((oldObj!["binaryCol"] as! NSData), binaryCol)
-                XCTAssertEqual((newObj!["binaryCol"] as! NSData), binaryCol)
+                XCTAssertEqual((oldObj!["binaryCol"] as! Data), binaryCol)
+                XCTAssertEqual((newObj!["binaryCol"] as! Data), binaryCol)
 
-                let dateCol = NSDate(timeIntervalSince1970: 1)
-                XCTAssertEqual((oldObj!["dateCol"] as! NSDate), dateCol)
-                XCTAssertEqual((newObj!["dateCol"] as! NSDate), dateCol)
+                let dateCol = Date(timeIntervalSince1970: 1)
+                XCTAssertEqual((oldObj!["dateCol"] as! Date), dateCol)
+                XCTAssertEqual((newObj!["dateCol"] as! Date), dateCol)
 
                 // FIXME - test that casting to SwiftBoolObject throws
                 XCTAssertEqual(((oldObj!["objectCol"] as! MigrationObject)["boolCol"] as! Bool), true)
@@ -397,8 +396,8 @@ class MigrationTests: TestCase {
                 newObj!["intCol"] = 1
                 newObj!["floatCol"] = 1.0
                 newObj!["doubleCol"] = 10.0
-                newObj!["binaryCol"] = NSData(bytes: "b", length: 1)
-                newObj!["dateCol"] = NSDate(timeIntervalSince1970: 2)
+                newObj!["binaryCol"] = Data(bytes: "b", count: 1)
+                newObj!["dateCol"] = Date(timeIntervalSince1970: 2)
 
                 let falseObj = SwiftBoolObject(value: [false])
                 newObj!["objectCol"] = falseObj
@@ -437,8 +436,8 @@ class MigrationTests: TestCase {
         XCTAssertEqual(object.intCol, 1)
         XCTAssertEqual(object.floatCol, 1.0 as Float)
         XCTAssertEqual(object.doubleCol, 10.0)
-        XCTAssertEqual(object.binaryCol, NSData(bytes: "b", length: 1))
-        XCTAssertEqual(object.dateCol, NSDate(timeIntervalSince1970: 2))
+        XCTAssertEqual(object.binaryCol, Data(bytes: "b", count: 1))
+        XCTAssertEqual(object.dateCol, Date(timeIntervalSince1970: 2))
         XCTAssertEqual(object.objectCol!.boolCol, false)
         XCTAssertEqual(object.arrayCol.count, 2)
         XCTAssertEqual(object.arrayCol[0].boolCol, false)
@@ -452,12 +451,12 @@ class MigrationTests: TestCase {
         let prop = RLMProperty(name: "name", type: RLMPropertyType.string, objectClassName: nil,
                                linkOriginPropertyName: nil, indexed: false, optional: false)
         _ = autoreleasepool {
-            realmWithSingleClassProperties(defaultRealmURL(), className: "SwiftEmployeeObject", properties: [prop!])
+            realmWithSingleClassProperties(defaultRealmURL(), className: "SwiftEmployeeObject", properties: [prop])
         }
 
         let config = Realm.Configuration(fileURL: defaultRealmURL(), objectTypes: [SwiftEmployeeObject.self])
         autoreleasepool {
-            assertFails(.SchemaMismatch) {
+            assertFails(.schemaMismatch) {
                 try Realm(configuration: config)
             }
         }
@@ -467,7 +466,7 @@ class MigrationTests: TestCase {
         let prop = RLMProperty(name: "name", type: RLMPropertyType.string, objectClassName: nil,
                                linkOriginPropertyName: nil, indexed: false, optional: false)
         _ = autoreleasepool {
-            realmWithSingleClassProperties(defaultRealmURL(), className: "SwiftEmployeeObject", properties: [prop!])
+            realmWithSingleClassProperties(defaultRealmURL(), className: "SwiftEmployeeObject", properties: [prop])
         }
 
         var config = Realm.Configuration(fileURL: defaultRealmURL(), objectTypes: [SwiftEmployeeObject.self])
@@ -500,7 +499,7 @@ class MigrationTests: TestCase {
         class_replaceMethod(metaClass, #selector(RLMObjectBase.sharedSchema), imp, "@@:")
 
         autoreleasepool {
-            assertFails(.SchemaMismatch) {
+            assertFails(.schemaMismatch) {
                 try Realm()
             }
         }
@@ -528,7 +527,6 @@ private func realmWithSingleClassProperties(fileURL: NSURL, className: String, p
     schema.objectSchema = [objectSchema]
     let config = RLMRealmConfiguration()
     config.fileURL = fileURL
-    config.dynamic = true
     config.customSchema = schema
     return try! RLMRealm(configuration: config)
 }
@@ -571,7 +569,7 @@ class MigrationTests: TestCase {
                 _ = try! Realm(configuration: config)
             }
         } else {
-            migrateRealm(config)
+            try! Realm.performMigration(for: config)
         }
 
         XCTAssertEqual(didRun, shouldRun)
@@ -594,7 +592,7 @@ class MigrationTests: TestCase {
                                          migrationBlock: { _, _ in didRun = true })
         Realm.Configuration.defaultConfiguration = config
 
-        migrateRealm()
+        try! Realm.performMigration()
 
         XCTAssertEqual(didRun, true)
         XCTAssertEqual(1, try! schemaVersionAtURL(defaultRealmURL()))
@@ -799,7 +797,7 @@ class MigrationTests: TestCase {
             let prop = RLMProperty(name: "id", type: .Int, objectClassName: nil,
                 linkOriginPropertyName: nil, indexed: false, optional: false)
             let realm = realmWithSingleClassProperties(defaultRealmURL(),
-                className: "DeletedClass", properties: [prop!])
+                className: "DeletedClass", properties: [prop])
             try! realm.transactionWithBlock {
                 realm.createObject("DeletedClass", withValue: [])
             }

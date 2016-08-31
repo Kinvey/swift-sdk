@@ -10,14 +10,14 @@ import UIKit
 import Kinvey
 import WebKit
 
-public class MICLoginViewController: UIViewController {
+open class MICLoginViewController: UIViewController {
 
     @IBOutlet weak var userIdLabel: UILabel!
     @IBOutlet weak var forceUIWebViewSwitch: UISwitch!
     
-    public var completionHandler: User.UserHandler?
+    open var completionHandler: User.UserHandler?
     
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
@@ -27,18 +27,18 @@ public class MICLoginViewController: UIViewController {
         )
     }
 
-    public override func didReceiveMemoryWarning() {
+    open override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
-    @IBAction func login(sender: UIButton) {
-        NSURLCache.sharedURLCache().removeAllCachedResponses()
-        NSHTTPCookieStorage.sharedHTTPCookieStorage().removeCookiesSinceDate(NSDate(timeIntervalSince1970: 0))
-        WKWebsiteDataStore.defaultDataStore().removeDataOfTypes(WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: NSDate(timeIntervalSince1970: 0), completionHandler: {})
+    @IBAction func login(_ sender: UIButton) {
+        URLCache.shared.removeAllCachedResponses()
+        HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
+        WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: {})
         
-        let redirectURI = NSURL(string: "kinveyAuthDemo://")!
-        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: forceUIWebViewSwitch.on) { (user, error) -> Void in
+        let redirectURI = URL(string: "kinveyAuthDemo://")!
+        User.presentMICViewController(redirectURI: redirectURI, timeout: 60, forceUIWebView: forceUIWebViewSwitch.isOn) { (user, error) -> Void in
             if let user = user {
                 self.userIdLabel.text = user.userId
             }

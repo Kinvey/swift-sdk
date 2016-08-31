@@ -11,37 +11,37 @@ import RealmSwift
 import Realm
 
 /// Class that represents a file in the backend holding all metadata of the file, but don't hold the data itself.
-public class File: Object {
+open class File: Object {
     
     /// `_id` property of the file.
-    public dynamic var fileId: String?
+    open dynamic var fileId: String?
     
     /// `_filename` property of the file.
-    public dynamic var fileName: String?
+    open dynamic var fileName: String?
     
     /// `size` property of the file.
-    public let size = RealmOptional<Int64>()
+    open let size = RealmOptional<Int64>()
     
     /// `mimeType` property of the file.
-    public dynamic var mimeType: String?
+    open dynamic var mimeType: String?
     
     /// `_public` property of the file, which represents if the file is accessible without need of credentials.
-    public dynamic var publicAccessible = false
+    open dynamic var publicAccessible = false
     
     /// `_acl` property of the file.
-    public dynamic var acl: Acl?
+    open dynamic var acl: Acl?
     
     /// `_kmd` property of the file.
-    public dynamic var metadata: Metadata?
+    open dynamic var metadata: Metadata?
     
     /// Temporary download URL String of the file.
-    public dynamic var download: String?
+    open dynamic var download: String?
     
     /// Temporary download URL of the file.
-    public dynamic var downloadURL: NSURL? {
+    open dynamic var downloadURL: URL? {
         get {
             if let download = download {
-                return NSURL(string: download)
+                return URL(string: download)
             }
             return nil
         }
@@ -51,16 +51,16 @@ public class File: Object {
     }
     
     /// Expiration data of the `downloadURL`.
-    public dynamic var expiresAt: NSDate?
+    open dynamic var expiresAt: Date?
     
     dynamic var etag: String?
     
     dynamic var path: String?
     
-    dynamic var pathURL: NSURL? {
+    dynamic var pathURL: URL? {
         get {
             if let path = path {
-                return NSURL(string: path)
+                return URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
             }
             return nil
         }
@@ -70,12 +70,12 @@ public class File: Object {
     }
     
     /// Temporary upload URL of the file.
-    var uploadURL: NSURL?
+    var uploadURL: URL?
     
     /// Headers needed to submit the request to the `uploadURL`.
     var uploadHeaders: [String : String]?
     
-    var resumeDownloadData: NSData?
+    var resumeDownloadData: Data?
     
     /// Default Constructor
     public required init() {
@@ -94,12 +94,12 @@ public class File: Object {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public required init(value: AnyObject, schema: RLMSchema) {
+    public required init(value: Any, schema: RLMSchema) {
         super.init(value: value, schema: schema)
     }
     
     /// Constructor of a file instance.
-    public init(@noescape _ block: (File) -> Void) {
+    public init(_ block: (File) -> Void) {
         super.init()
         block(self)
     }
@@ -108,7 +108,7 @@ public class File: Object {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public override class func primaryKey() -> String? {
+    open override class func primaryKey() -> String? {
         return "fileId"
     }
     
@@ -116,7 +116,7 @@ public class File: Object {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public override class func ignoredProperties() -> [String] {
+    open override class func ignoredProperties() -> [String] {
         return [
             "downloadURL",
             "pathURL",

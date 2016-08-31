@@ -27,7 +27,7 @@ import XCTest
 import KeychainAccess
 
 class SharedCredentialTests: XCTestCase {
-    
+
     override func setUp() {
         super.setUp()
     }
@@ -38,9 +38,9 @@ class SharedCredentialTests: XCTestCase {
 
     func testGetSharedPassword() {
         do {
-            let expectation = expectationWithDescription("getSharedPassword")
+            let expectation = self.expectation(description: "getSharedPassword")
 
-            let keychain = Keychain(server: "https://kishikawakatsumi.com", protocolType: .HTTPS)
+            let keychain = Keychain(server: "https://kishikawakatsumi.com", protocolType: .https)
 
             keychain.getSharedPassword("kishikawakatsumi") { (password, error) -> () in
                 XCTAssertNil(password)
@@ -48,12 +48,12 @@ class SharedCredentialTests: XCTestCase {
                 expectation.fulfill()
             }
 
-            waitForExpectationsWithTimeout(10.0, handler: nil)
+            waitForExpectations(timeout: 10.0, handler: nil)
         }
         do {
-            let expectation = expectationWithDescription("getSharedPassword")
+            let expectation = self.expectation(description: "getSharedPassword")
 
-            let keychain = Keychain(server: "https://kishikawakatsumi.com", protocolType: .HTTPS)
+            let keychain = Keychain(server: "https://kishikawakatsumi.com", protocolType: .https)
 
             keychain.getSharedPassword { (account, password, error) -> () in
                 XCTAssertNil(account)
@@ -62,7 +62,7 @@ class SharedCredentialTests: XCTestCase {
                 expectation.fulfill()
             }
 
-            waitForExpectationsWithTimeout(10.0, handler: nil)
+            waitForExpectations(timeout: 10.0, handler: nil)
         }
 
     }
@@ -72,13 +72,13 @@ class SharedCredentialTests: XCTestCase {
             var passwords = Set<String>()
             for _ in 0...100_000 {
                 let password = Keychain.generatePassword()
-                
+
                 XCTAssertEqual(password.characters.count, "xxx-xxx-xxx-xxx".characters.count)
                 XCTAssertFalse(passwords.contains(password))
 
                 passwords.insert(password)
             }
         }
-
     }
+
 }

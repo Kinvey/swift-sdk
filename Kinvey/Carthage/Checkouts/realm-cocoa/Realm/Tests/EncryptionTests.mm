@@ -169,7 +169,6 @@
     @autoreleasepool {
         RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
         config.encryptionKey = key;
-        config.dynamic = YES;
         config.customSchema = schema;
         [RLMRealm realmWithConfiguration:config error:nil];
     }
@@ -207,11 +206,11 @@
         migrationRan = YES;
     };
 
-    XCTAssertNotNil([RLMRealm migrateRealm:configuration]);
+    XCTAssertFalse([RLMRealm performMigrationForConfiguration:configuration error:nil]);
     XCTAssertFalse(migrationRan);
 
     configuration.encryptionKey = key;
-    XCTAssertNil([RLMRealm migrateRealm:configuration]);
+    XCTAssertTrue([RLMRealm performMigrationForConfiguration:configuration error:nil]);
     XCTAssertTrue(migrationRan);
 }
 

@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
-  s.name             = "KeychainAccess"
-  s.version          = "2.3.6"
-  s.summary          = "KeychainAccess is a simple Swift wrapper for Keychain that works on iOS and OS X."
+  s.name             = 'KeychainAccess'
+  s.version          = '3.0.0'
+  s.summary          = 'KeychainAccess is a simple Swift wrapper for Keychain that works on iOS and OS X.'
   s.description      = <<-DESC
                          KeychainAccess is a simple Swift wrapper for Keychain that works on iOS and OS X.
                          Makes using Keychain APIs exremely easy and much more palatable to use in Swift.
@@ -16,18 +16,20 @@ Pod::Spec.new do |s|
                            - Works on both iOS & OS X
                            - watchOS and tvOS are also supported
                        DESC
-  s.homepage         = "https://github.com/kishikawakatsumi/KeychainAccess"
-  s.screenshots      = "https://raw.githubusercontent.com/kishikawakatsumi/KeychainAccess/master/Screenshots/01.png"
+  s.homepage         = 'https://github.com/kishikawakatsumi/KeychainAccess'
+  s.screenshots      = 'https://raw.githubusercontent.com/kishikawakatsumi/KeychainAccess/master/Screenshots/01.png'
   s.license          = 'MIT'
-  s.author           = { "kishikawa katsumi" => "kishikawakatsumi@mac.com" }
-  s.source           = { :git => "https://github.com/kishikawakatsumi/KeychainAccess.git", :tag => "v#{s.version}" }
+  s.author           = { 'kishikawa katsumi' => 'kishikawakatsumi@mac.com' }
+  s.source           = { :git => 'https://github.com/kishikawakatsumi/KeychainAccess.git', :tag => "v#{s.version}" }
   s.social_media_url = 'https://twitter.com/k_katsumi'
+  
+  s.requires_arc = true
+  s.source_files = 'Lib/KeychainAccess/*.swift'
 
-  s.ios.deployment_target = "8.0"
-  s.osx.deployment_target = "10.9"
+  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '3.0' }
+
+  s.ios.deployment_target = '8.0'
+  s.osx.deployment_target = '10.9'
   s.watchos.deployment_target = '2.0'
   s.tvos.deployment_target = '9.0'
-  s.requires_arc = true
-
-  s.source_files = 'Lib/KeychainAccess/*.swift'
 end

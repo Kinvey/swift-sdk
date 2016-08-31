@@ -12,11 +12,11 @@ import RealmSwift
 
 internal class CacheManager: NSObject {
     
-    private let persistenceId: String
-    private let encryptionKey: NSData?
-    private let schemaVersion: UInt64
+    fileprivate let persistenceId: String
+    fileprivate let encryptionKey: Data?
+    fileprivate let schemaVersion: UInt64
     
-    init(persistenceId: String, encryptionKey: NSData? = nil, schemaVersion: UInt64 = 0, migrationHandler: Migration.MigrationHandler? = nil) {
+    init(persistenceId: String, encryptionKey: Data? = nil, schemaVersion: UInt64 = 0, migrationHandler: Migration.MigrationHandler? = nil) {
         self.persistenceId = persistenceId
         self.encryptionKey = encryptionKey
         self.schemaVersion = schemaVersion
@@ -28,7 +28,7 @@ internal class CacheManager: NSObject {
         realmConfiguration.schemaVersion = schemaVersion
         realmConfiguration.migrationBlock = { migration, oldSchemaVersion in
             let migration = Migration(realmMigration: migration)
-            migrationHandler?(migration: migration, schemaVersion: oldSchemaVersion)
+            migrationHandler?(migration, oldSchemaVersion)
         }
         do {
             _ = try Realm(configuration: realmConfiguration)
@@ -38,27 +38,27 @@ internal class CacheManager: NSObject {
         }
     }
     
-    func cache<T: Persistable where T: NSObject>(filePath filePath: String? = nil, type: T.Type) -> Cache<T>? {
+    func cache<T: Persistable>(filePath: String? = nil, type: T.Type) -> Cache<T>? where T: NSObject {
         return RealmCache<T>(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
-    func fileCache(filePath filePath: String? = nil) -> FileCache? {
+    func fileCache(filePath: String? = nil) -> FileCache? {
         return RealmFileCache(persistenceId: persistenceId, filePath: filePath, encryptionKey: encryptionKey, schemaVersion: schemaVersion)
     }
     
     func clearFiles() {
-        if let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first {
-            let basePath = (path as NSString).stringByAppendingPathComponent(persistenceId).stringByAppendingString("files")
+        if let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first {
+            let basePath = (path as NSString).appendingPathComponent(persistenceId) + "files"
             
-            let fileManager = NSFileManager.defaultManager()
+            let fileManager = FileManager.default
             
             var isDirectory = ObjCBool(false)
-            let exists = fileManager.fileExistsAtPath(basePath, isDirectory: &isDirectory)
-            if exists && isDirectory {
-                if let files = try? fileManager.subpathsOfDirectoryAtPath(basePath) {
+            let exists = fileManager.fileExists(atPath: basePath, isDirectory: &isDirectory)
+            if exists && isDirectory.boolValue {
+                if let files = try? fileManager.subpathsOfDirectory(atPath: basePath) {
                     for file in files {
                         do {
-                            try fileManager.removeItemAtPath(file)
+                            try fileManager.removeItem(atPath: file)
                         } catch {
                             //ignore possible errors if for any reason is not possible to delete the file
                         }
@@ -68,28 +68,28 @@ internal class CacheManager: NSObject {
         }
     }
     
-    func clearAll(tag: String? = nil) {
-        if let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first {
-            let basePath = (path as NSString).stringByAppendingPathComponent(persistenceId)
+    func clearAll(_ tag: String? = nil) {
+        if let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first {
+            let basePath = (path as NSString).appendingPathComponent(persistenceId)
             
-            let fileManager = NSFileManager.defaultManager()
+            let fileManager = FileManager.default
             
             var isDirectory = ObjCBool(false)
-            let exists = fileManager.fileExistsAtPath(basePath, isDirectory: &isDirectory)
-            if exists && isDirectory {
-                var array = try! fileManager.subpathsOfDirectoryAtPath(basePath)
+            let exists = fileManager.fileExists(atPath: basePath, isDirectory: &isDirectory)
+            if exists && isDirectory.boolValue {
+                var array = try! fileManager.subpathsOfDirectory(atPath: basePath)
                 array = array.filter({ (path) -> Bool in
-                    return path.hasSuffix(".realm") && (tag == nil || path.caseInsensitiveCompare(tag! + ".realm") == .OrderedSame)
+                    return path.hasSuffix(".realm") && (tag == nil || path.caseInsensitiveCompare(tag! + ".realm") == .orderedSame)
                 })
                 for realmFile in array {
                     var realmConfiguration = Realm.Configuration.defaultConfiguration
-                    realmConfiguration.fileURL = NSURL(fileURLWithPath: (basePath as NSString).stringByAppendingPathComponent(realmFile))
+                    realmConfiguration.fileURL = URL(fileURLWithPath: (basePath as NSString).appendingPathComponent(realmFile))
                     if let encryptionKey = encryptionKey {
                         realmConfiguration.encryptionKey = encryptionKey
                     }
-                    if let realm = try? Realm(configuration: realmConfiguration) where !realm.isEmpty {
+                    if let realm = try? Realm(configuration: realmConfiguration) , !realm.isEmpty {
                         try! realm.write {
-                            realm.deleteAll()
+                            realm.deleteAllObjects()
                         }
                     }
                 }

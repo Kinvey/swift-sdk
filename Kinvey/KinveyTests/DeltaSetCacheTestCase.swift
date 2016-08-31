@@ -13,10 +13,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     
     override func tearDown() {
         if let activeUser = client.activeUser {
-            let store = DataStore<Person>.collection(.Network)
+            let store = DataStore<Person>.collection(.network)
             let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
             
-            weak var expectationRemoveAll = expectationWithDescription("Remove All")
+            weak var expectationRemoveAll = expectation(description: "Remove All")
             
             store.remove(query) { (count, error) -> Void in
                 XCTAssertNotNil(count)
@@ -25,7 +25,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationRemoveAll?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationRemoveAll = nil
             }
         }
@@ -34,7 +34,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     }
     
     func testComputeDelta() {
-        let date = NSDate()
+        let date = Date()
         let cache = MemoryCache<Person>()
         do {
             let person = Person()
@@ -54,7 +54,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             person.metadata = Metadata(JSON: [Metadata.LmtKey : date.toString()])
             cache.saveEntity(person)
         }
-        let operation = Operation<Person>(cache: cache, client: client)
+        let operation = Operation(cache: cache, client: client)
         let query = Query()
         let refObjs: [JsonDictionary] = [
             [
@@ -66,7 +66,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             [
                 PersistableIdKey : "update",
                 PersistableMetadataKey : [
-                    Metadata.LmtKey : NSDate(timeInterval: 1, sinceDate: date).toString()
+                    Metadata.LmtKey : Date(timeInterval: 1, since: date).toString()
                 ]
             ],
             [
@@ -104,7 +104,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         person.name = "Victor"
         
         do {
-            weak var expectationSave = expectationWithDescription("Save")
+            weak var expectationSave = expectation(description: "Save")
             
             store.save(person) { (person, error) -> Void in
                 XCTAssertNotNil(person)
@@ -113,7 +113,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationSave = nil
             }
         }
@@ -124,9 +124,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let person = Person()
             person.name = "Victor Barros"
             
-            weak var expectationCreate = expectationWithDescription("Create")
+            weak var expectationCreate = expectation(description: "Create")
             
-            let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, client: client)
+            let createOperation = SaveOperation<Person>(persistable: person, writePolicy: .forceNetwork, client: client)
             createOperation.execute { (results, error) -> Void in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
@@ -134,7 +134,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationCreate?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationCreate = nil
             }
         }
@@ -143,9 +143,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         query.ascending("name")
         
         do {
-            weak var expectationRead = expectationWithDescription("Read")
+            weak var expectationRead = expectation(description: "Read")
             
-            store.find(query, readPolicy: .ForceLocal) { persons, error in
+            store.find(query, readPolicy: .forceLocal) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -159,15 +159,15 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationRead?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationRead = nil
             }
         }
         
         do {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, readPolicy: .ForceNetwork) { persons, error in
+            store.find(query, readPolicy: .forceNetwork) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -184,7 +184,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationFind = nil
             }
         }
@@ -204,7 +204,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         person.name = "Victor"
         
         do {
-            weak var expectationSave = expectationWithDescription("Save")
+            weak var expectationSave = expectation(description: "Save")
             
             store.save(person) { (person, error) -> Void in
                 XCTAssertNotNil(person)
@@ -213,7 +213,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationSave = nil
             }
         }
@@ -228,9 +228,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             person.personId = personId
             person.name = "Victor Barros"
             
-            weak var expectationUpdate = expectationWithDescription("Update")
+            weak var expectationUpdate = expectation(description: "Update")
             
-            let updateOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, client: client)
+            let updateOperation = SaveOperation(persistable: person, writePolicy: .forceNetwork, client: client)
             updateOperation.execute { (results, error) -> Void in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
@@ -238,7 +238,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationUpdate?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationUpdate = nil
             }
         }
@@ -247,9 +247,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         query.ascending("name")
         
         do {
-            weak var expectationRead = expectationWithDescription("Read")
+            weak var expectationRead = expectation(description: "Read")
             
-            store.find(query, readPolicy: .ForceLocal) { persons, error in
+            store.find(query, readPolicy: .forceLocal) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -263,15 +263,15 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationRead?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationRead = nil
             }
         }
         
         do {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, readPolicy: .ForceNetwork) { persons, error in
+            store.find(query, readPolicy: .forceNetwork) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -285,7 +285,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationFind = nil
             }
         }
@@ -305,7 +305,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         person.name = "Victor"
         
         do {
-            weak var expectationSave = expectationWithDescription("Save")
+            weak var expectationSave = expectation(description: "Save")
             
             store.save(person) { (person, error) -> Void in
                 XCTAssertNotNil(person)
@@ -314,7 +314,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationSave = nil
             }
         }
@@ -325,11 +325,11 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         }
         
         do {
-            weak var expectationDelete = expectationWithDescription("Delete")
+            weak var expectationDelete = expectation(description: "Delete")
             
             let query = Query(format: "personId == %@", personId)
             query.persistableType = Person.self
-            let createRemove = RemoveByQueryOperation<Person>(query: query, writePolicy: .ForceNetwork, client: client)
+            let createRemove = RemoveByQueryOperation<Person>(query: query, writePolicy: .forceNetwork, client: client)
             createRemove.execute { (count, error) -> Void in
                 XCTAssertNotNil(count)
                 XCTAssertNil(error)
@@ -339,7 +339,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationDelete?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationDelete = nil
             }
         }
@@ -348,9 +348,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         query.ascending("name")
         
         do {
-            weak var expectationRead = expectationWithDescription("Read")
+            weak var expectationRead = expectation(description: "Read")
             
-            store.find(query, readPolicy: .ForceLocal) { persons, error in
+            store.find(query, readPolicy: .forceLocal) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -364,15 +364,15 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationRead?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationRead = nil
             }
         }
         
         do {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
-            store.find(query, readPolicy: .ForceNetwork) { persons, error in
+            store.find(query, readPolicy: .forceNetwork) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
@@ -383,7 +383,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationFind = nil
             }
         }
@@ -401,9 +401,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             let person = Person()
             person.name = String(format: "Person %02d", i)
             
-            weak var expectationCreate = self.expectationWithDescription("Create")
+            weak var expectationCreate = self.expectation(description: "Create")
             
-            let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, client: self.client)
+            let createOperation = SaveOperation(persistable: person, writePolicy: .forceNetwork, client: self.client)
             createOperation.execute { (results, error) -> Void in
                 XCTAssertNotNil(results)
                 XCTAssertNil(error)
@@ -411,7 +411,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationCreate?.fulfill()
             }
             
-            self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+            self.waitForExpectations(timeout: self.defaultTimeout) { (error) -> Void in
                 expectationCreate = nil
             }
         }
@@ -421,16 +421,16 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             person.name = String(format: "Person Cached %02d", i)
             let store = DataStore<Person>.collection()
             
-            weak var expectationSave = self.expectationWithDescription("Save")
+            weak var expectationSave = self.expectation(description: "Save")
             
-            store.save(person, writePolicy: .ForceNetwork) { (person, error) -> Void in
+            store.save(person, writePolicy: .forceNetwork) { (person, error) -> Void in
                 XCTAssertNotNil(person)
                 XCTAssertNil(error)
                 
                 expectationSave?.fulfill()
             }
             
-            self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+            self.waitForExpectations(timeout: self.defaultTimeout) { (error) -> Void in
                 expectationSave = nil
             }
         }
@@ -443,22 +443,22 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             saveAndCache(i)
         }
         
-        let store = DataStore<Person>.collection(.Sync)
+        let store = DataStore<Person>.collection(.sync)
         
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
-            weak var expectationRead = expectationWithDescription("Read")
+            weak var expectationRead = expectation(description: "Read")
             
-            store.find(query, readPolicy: .ForceLocal) { persons, error in
+            store.find(query, readPolicy: .forceLocal) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
                 if let persons = persons {
                     XCTAssertEqual(persons.count, 5)
                     
-                    for (i, person) in persons.enumerate() {
+                    for (i, person) in persons.enumerated() {
                         XCTAssertEqual(person.name, String(format: "Person Cached %02d", i + 1))
                     }
                 }
@@ -466,13 +466,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationRead?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationRead = nil
             }
         }
         
         do {
-            weak var expectationPull = expectationWithDescription("Pull")
+            weak var expectationPull = expectation(description: "Pull")
             
             store.pull(query) { (persons, error) -> Void in
                 XCTAssertNotNil(persons)
@@ -481,10 +481,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 if let persons = persons {
                     XCTAssertEqual(persons.count, 15)
                     if persons.count == 15 {
-                        for (i, person) in persons[0..<10].enumerate() {
+                        for (i, person) in persons[0..<10].enumerated() {
                             XCTAssertEqual(person.name, String(format: "Person %02d", i + 1))
                         }
-                        for (i, person) in persons[10..<persons.count].enumerate() {
+                        for (i, person) in persons[10..<persons.count].enumerated() {
                             XCTAssertEqual(person.name, String(format: "Person Cached %02d", i + 1))
                         }
                     }
@@ -493,13 +493,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationPull?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) -> Void in
+            waitForExpectations(timeout: defaultTimeout) { (error) -> Void in
                 expectationPull = nil
             }
         }
     }
     
-    func perform(countBackend countBackend: Int, countLocal: Int) {
+    func perform(countBackend: Int, countLocal: Int) {
         self.signUp()
         
         XCTAssertNotNil(self.client.activeUser)
@@ -512,9 +512,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 let person = Person()
                 person.name = String(format: "Person %03d", i)
                 
-                weak var expectationCreate = self.expectationWithDescription("Create")
+                weak var expectationCreate = self.expectation(description: "Create")
                 
-                let createOperation = SaveOperation(persistable: person, writePolicy: .ForceNetwork, client: self.client)
+                let createOperation = SaveOperation(persistable: person, writePolicy: .forceNetwork, client: self.client)
                 createOperation.execute { (results, error) -> Void in
                     XCTAssertNotNil(results)
                     XCTAssertNil(error)
@@ -522,7 +522,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     expectationCreate?.fulfill()
                 }
                 
-                self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+                self.waitForExpectations(timeout: self.defaultTimeout) { (error) -> Void in
                     expectationCreate = nil
                 }
             }
@@ -535,7 +535,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 let person = Person()
                 person.name = String(format: "Person Cached %03d", i)
                 
-                weak var expectationSave = self.expectationWithDescription("Save")
+                weak var expectationSave = self.expectation(description: "Save")
                 
                 store.save(person) { (person, error) -> Void in
                     XCTAssertNotNil(person)
@@ -544,7 +544,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     expectationSave?.fulfill()
                 }
                 
-                self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+                self.waitForExpectations(timeout: self.defaultTimeout) { (error) -> Void in
                     expectationSave = nil
                 }
             }
@@ -553,22 +553,22 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         saveAndCache(countLocal)
         save(countBackend)
         
-        let store = DataStore<Person>.collection(.Sync)
+        let store = DataStore<Person>.collection(.sync)
         
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", activeUser.userId)
         query.ascending("name")
         
         do {
-            weak var expectationRead = self.expectationWithDescription("Read")
+            weak var expectationRead = self.expectation(description: "Read")
             
-            store.find(query, readPolicy: .ForceLocal) { persons, error in
+            store.find(query, readPolicy: .forceLocal) { persons, error in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
                 if let persons = persons {
                     XCTAssertEqual(persons.count, countLocal)
                     
-                    for (i, person) in persons.enumerate() {
+                    for (i, person) in persons.enumerated() {
                         XCTAssertEqual(person.name, String(format: "Person Cached %03d", i + 1))
                     }
                 }
@@ -576,7 +576,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationRead?.fulfill()
             }
             
-            self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+            self.waitForExpectations(timeout: self.defaultTimeout) { (error) -> Void in
                 expectationRead = nil
             }
         }
@@ -584,19 +584,19 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         self.startMeasuring()
         
         do {
-            weak var expectationFind = self.expectationWithDescription("Find")
+            weak var expectationFind = self.expectation(description: "Find")
             
-            store.find(query, readPolicy: .ForceNetwork) { (persons, error) -> Void in
+            store.find(query, readPolicy: .forceNetwork) { (persons, error) -> Void in
                 XCTAssertNotNil(persons)
                 XCTAssertNil(error)
                 
                 if let persons = persons {
                     XCTAssertEqual(persons.count, countBackend + countLocal)
                     if persons.count > 0 {
-                        for (i, person) in persons[0..<countBackend].enumerate() {
+                        for (i, person) in persons[0..<countBackend].enumerated() {
                             XCTAssertEqual(person.name, String(format: "Person %03d", i + 1))
                         }
-                        for (i, person) in persons[countBackend..<persons.count].enumerate() {
+                        for (i, person) in persons[countBackend..<persons.count].enumerated() {
                             XCTAssertEqual(person.name, String(format: "Person Cached %03d", i + 1))
                         }
                     }
@@ -605,7 +605,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationFind?.fulfill()
             }
             
-            self.waitForExpectationsWithTimeout(self.defaultTimeout) { (error) -> Void in
+            self.waitForExpectations(timeout: self.defaultTimeout) { (error) -> Void in
                 expectationFind = nil
             }
         }
@@ -616,13 +616,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     }
     
     func testPerformance_1_9() {
-        measureMetrics(self.dynamicType.defaultPerformanceMetrics(), automaticallyStartMeasuring: false) { () -> Void in
+        measureMetrics(type(of: self).defaultPerformanceMetrics(), automaticallyStartMeasuring: false) { () -> Void in
             self.perform(countBackend: 1, countLocal: 9)
         }
     }
     
     func testPerformance_9_1() {
-        measureMetrics(self.dynamicType.defaultPerformanceMetrics(), automaticallyStartMeasuring: false) { () -> Void in
+        measureMetrics(type(of: self).defaultPerformanceMetrics(), automaticallyStartMeasuring: false) { () -> Void in
             self.perform(countBackend: 9, countLocal: 1)
         }
     }
@@ -633,9 +633,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let store = DataStore<Person>.collection()
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find(query, readPolicy: .ForceNetwork) { results, error in
+        store.find(query, readPolicy: .forceNetwork) { results, error in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -646,7 +646,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+        waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationFind = nil
         }
     }
@@ -654,13 +654,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testPullAllRecords() {
         signUp()
         
-        let store = DataStore<Person>.collection(.Sync)
+        let store = DataStore<Person>.collection(.sync)
         
         let person = Person()
         person.name = "Victor"
         
         do {
-            weak var expectationSave = expectationWithDescription("Save")
+            weak var expectationSave = expectation(description: "Save")
             
             store.save(person) { person, error in
                 XCTAssertNotNil(person)
@@ -673,13 +673,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationSave?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationSave = nil
             }
         }
         
         do {
-            weak var expectationPush = expectationWithDescription("Push")
+            weak var expectationPush = expectation(description: "Push")
             
             store.push() { count, error in
                 XCTAssertNotNil(count)
@@ -692,13 +692,13 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationPush?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationPush = nil
             }
         }
         
         do {
-            weak var expectationPull = expectationWithDescription("Pull")
+            weak var expectationPull = expectation(description: "Pull")
             
             store.pull(deltaSet: true) { results, error in
                 XCTAssertNotNil(results)
@@ -711,7 +711,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 expectationPull?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationPull = nil
             }
         }
@@ -723,25 +723,25 @@ class DeltaSetCacheTestCase: KinveyTestCase {
         let store = DataStore<Person>.collection()
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
-        class OnePersonURLProtocol: NSURLProtocol {
+        class OnePersonURLProtocol: URLProtocol {
             
             static var userId = ""
             
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            override class func canInit(with request: URLRequest) -> Bool {
                 return true
             }
             
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
             
             override func startLoading() {
-                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
-                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 
                 let object = [
                     [
-                        "_id": NSUUID().UUIDString,
+                        "_id": UUID().uuidString,
                         "name": "Person 1",
                         "_acl": [
                             "creator": OnePersonURLProtocol.userId
@@ -752,10 +752,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         ]
                     ]
                 ]
-                let data = try! NSJSONSerialization.dataWithJSONObject(object, options: [])
-                client!.URLProtocol(self, didLoadData: data)
+                let data = try! JSONSerialization.data(withJSONObject: object, options: [])
+                client!.urlProtocol(self, didLoad: data)
                 
-                client!.URLProtocolDidFinishLoading(self)
+                client!.urlProtocolDidFinishLoading(self)
             }
             
             override func stopLoading() {
@@ -770,9 +770,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             setURLProtocol(nil)
         }
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find(query, readPolicy: .ForceNetwork) { results, error in
+        store.find(query, readPolicy: .forceNetwork) { results, error in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -787,7 +787,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+        waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationFind = nil
         }
     }
@@ -795,51 +795,51 @@ class DeltaSetCacheTestCase: KinveyTestCase {
     func testFindOneRecordDeltaSet() {
         signUp()
         
-        let store = DataStore<Person>.collection(.Sync, deltaSet: true)
+        let store = DataStore<Person>.collection(.sync, deltaSet: true)
         
         let person = Person()
         person.name = "Victor"
         
-        weak var expectationSave = expectationWithDescription("Save")
+        weak var expectationSave = expectation(description: "Save")
         
         store.save(person) { (person, error) in
-            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(person)
             XCTAssertNil(error)
             
             expectationSave?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+        waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationSave = nil
         }
         
-        weak var expectationPush = expectationWithDescription("Push")
+        weak var expectationPush = expectation(description: "Push")
         
         store.push() { (count, error) in
-            XCTAssertTrue(NSThread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             XCTAssertNotNil(count)
             XCTAssertNil(error)
             
             expectationPush?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+        waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationPush = nil
         }
         
         let query = Query(format: "\(Person.aclProperty() ?? PersistableAclKey).creator == %@", client.activeUser!.userId)
         
-        class OnePersonURLProtocol: NSURLProtocol {
+        class OnePersonURLProtocol: URLProtocol {
             
             static var userId = ""
             static var urlProtocolCalled = false
             
-            override class func canInitWithRequest(request: NSURLRequest) -> Bool {
+            override class func canInit(with request: URLRequest) -> Bool {
                 return !urlProtocolCalled
             }
             
-            override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
+            override class func canonicalRequest(for request: URLRequest) -> URLRequest {
                 return request
             }
             
@@ -847,17 +847,17 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                 OnePersonURLProtocol.urlProtocolCalled = true
                 
                 var queryParams = [String : String]()
-                let components = request.URL?.query?.componentsSeparatedByString("&")
+                let components = request.url?.query?.components(separatedBy: "&")
                 XCTAssertNotNil(components)
                 if let components = components {
                     for component in components {
-                        let keyValuePair = component.componentsSeparatedByString("=")
+                        let keyValuePair = component.components(separatedBy: "=")
                         queryParams[keyValuePair[0]] = keyValuePair[1]
                     }
                     let fields = queryParams["fields"]
                     XCTAssertNotNil(fields)
                     if let fields = fields {
-                        let fieldsArray = fields.componentsSeparatedByString(",").sort()
+                        let fieldsArray = fields.components(separatedBy: ",").sorted()
                         XCTAssertGreaterThanOrEqual(fieldsArray.count, 2)
                         if fieldsArray.count >= 2 {
                             XCTAssertEqual(fieldsArray[0], "_id")
@@ -866,12 +866,12 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                     }
                 }
                 
-                let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 200, HTTPVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
-                client!.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type" : "application/json; charset=utf-8"])!
+                client!.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
                 
                 let object = [
                     [
-                        "_id": NSUUID().UUIDString,
+                        "_id": UUID().uuidString,
                         "name": "Victor",
                         "_acl": [
                             "creator": OnePersonURLProtocol.userId
@@ -882,10 +882,10 @@ class DeltaSetCacheTestCase: KinveyTestCase {
                         ]
                     ]
                 ]
-                let data = try! NSJSONSerialization.dataWithJSONObject(object, options: [])
-                client!.URLProtocol(self, didLoadData: data)
+                let data = try! JSONSerialization.data(withJSONObject: object, options: [])
+                client!.urlProtocol(self, didLoad: data)
                 
-                client!.URLProtocolDidFinishLoading(self)
+                client!.urlProtocolDidFinishLoading(self)
             }
             
             override func stopLoading() {
@@ -900,9 +900,9 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             setURLProtocol(nil)
         }
         
-        weak var expectationFind = expectationWithDescription("Find")
+        weak var expectationFind = expectation(description: "Find")
         
-        store.find(query, readPolicy: .ForceNetwork) { results, error in
+        store.find(query, readPolicy: .forceNetwork) { results, error in
             XCTAssertNotNil(results)
             XCTAssertNil(error)
             
@@ -917,7 +917,7 @@ class DeltaSetCacheTestCase: KinveyTestCase {
             expectationFind?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+        waitForExpectations(timeout: defaultTimeout) { (error) in
             expectationFind = nil
         }
         

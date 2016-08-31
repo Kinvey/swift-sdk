@@ -2,12 +2,19 @@ language: objective-c
 osx_image: xcode8
 
 env:
-  - PLATFORM=iOS  SDK=iphonesimulator  UUID='9793E592-F0FF-4C4A-BEEF-FDD50A67E8C1'
-  - PLATFORM=tvOS SDK=appletvsimulator UUID='273D776F-196E-4F2A-AEF2-E1E3EAE99B47'
+  - PLATFORM=iOS NAME='iPhone SE'
+  - PLATFORM=tvOS NAME='Apple TV 1080p'
+
+before_install:
+  - if [ -n "$NAME" ]; then
+      export UUID=$(instruments -s | ruby -e "ARGF.each_line{ |ln| ln =~ /$NAME .* \[(.*)\]/; if \$1; puts(\$1); exit; end }");
+    fi
 
 install:
   - carthage bootstrap --platform $PLATFORM
 
 script:
-  - if [ -n "$UUID" ]; then xcrun instruments -w "$UUID" || true; sleep 15; fi
-  - set -o pipefail && xcodebuild -scheme PMKUIKit -sdk $SDK -destination "id=$UUID" clean build test | xcpretty
+  - set -o pipefail;
+    xcrun instruments -w "$UUID";
+    sleep 15;
+    xcodebuild -scheme PMKUIKit -destination "id=$UUID" test | xcpretty

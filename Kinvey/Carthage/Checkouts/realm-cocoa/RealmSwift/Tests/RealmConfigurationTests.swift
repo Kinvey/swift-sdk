@@ -38,8 +38,16 @@ class RealmConfigurationTests: TestCase {
         let fileURL = Realm.Configuration.defaultConfiguration.fileURL
         let configuration = Realm.Configuration(fileURL: URL(fileURLWithPath: "/dev/null"))
         Realm.Configuration.defaultConfiguration = configuration
-        XCTAssertEqual(Realm.Configuration.defaultConfiguration.fileURL, NSURL(fileURLWithPath: "/dev/null"))
+        XCTAssertEqual(Realm.Configuration.defaultConfiguration.fileURL, URL(fileURLWithPath: "/dev/null"))
         Realm.Configuration.defaultConfiguration.fileURL = fileURL
+    }
+
+    func testCannotSetMutuallyExclusiveProperties() {
+        var configuration = Realm.Configuration()
+        configuration.readOnly = true
+        configuration.deleteRealmIfMigrationNeeded = true
+        assertThrows(try! Realm(configuration: configuration),
+                     reason: "Cannot set `deleteRealmIfMigrationNeeded` when `readOnly` is set.")
     }
 }
 
@@ -63,6 +71,14 @@ class RealmConfigurationTests: TestCase {
         Realm.Configuration.defaultConfiguration = configuration
         XCTAssertEqual(Realm.Configuration.defaultConfiguration.fileURL, NSURL(fileURLWithPath: "/dev/null"))
         Realm.Configuration.defaultConfiguration.fileURL = fileURL
+    }
+
+    func testCannotSetMutuallyExclusiveProperties() {
+        var configuration = Realm.Configuration()
+        configuration.readOnly = true
+        configuration.deleteRealmIfMigrationNeeded = true
+        assertThrows(try! Realm(configuration: configuration),
+                     reason: "Cannot set `deleteRealmIfMigrationNeeded` when `readOnly` is set.")
     }
 }
 

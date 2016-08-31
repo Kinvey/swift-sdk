@@ -20,7 +20,7 @@ class Person: Entity {
         return "Person"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         personId <- ("personId", map[PersistableIdKey])
@@ -31,16 +31,23 @@ class Person: Entity {
     
 }
 
+extension Person {
+    convenience init(_ block: (Person) -> Void) {
+        self.init()
+        block(self)
+    }
+}
+
 class AddressTransform: TransformType {
     
     typealias Object = Address
-    typealias JSON = [String : AnyObject]
+    typealias JSON = [String : Any]
     
-    func transformFromJSON(value: AnyObject?) -> Object? {
+    func transformFromJSON(_ value: Any?) -> Object? {
         var jsonDict: [String : AnyObject]? = nil
         if let value = value as? String,
-            let data = value.dataUsingEncoding(NSUTF8StringEncoding),
-            let json = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
+            let data = value.data(using: String.Encoding.utf8),
+            let json = try? JSONSerialization.jsonObject(with: data)
         {
             jsonDict = json as? [String : AnyObject]
         } else {
@@ -54,9 +61,9 @@ class AddressTransform: TransformType {
         return nil
     }
     
-    func transformToJSON(value: Object?) -> JSON? {
+    func transformToJSON(_ value: Object?) -> JSON? {
         if let value = value {
-            var json = [String : AnyObject]()
+            var json = [String : Any]()
             if let city = value.city {
                 json["city"] = city
             }

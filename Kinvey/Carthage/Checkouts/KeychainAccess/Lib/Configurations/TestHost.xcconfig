@@ -1,20 +1,21 @@
 SUPPORTED_PLATFORMS = macosx iphoneos iphonesimulator appletvos appletvsimulator;
 TARGETED_DEVICE_FAMILY = 1,2,3;
 
-COMBINE_HIDPI_IMAGES = YES
+COMBINE_HIDPI_IMAGES = YES;
 COPY_PHASE_STRIP = NO;
 INFOPLIST_FILE = TestHost/Info.plist;
 PRODUCT_NAME = $(TARGET_NAME);
 CLANG_MODULES_AUTOLINK = NO;
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-EMBEDDED_CONTENT_CONTAINS_SWIFT = YES
+EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 
-PRODUCT_BUNDLE_IDENTIFIER = com.kishikawakatsumi.TestHost;
+PRODUCT_BUNDLE_IDENTIFIER = com.kishikawakatsumi.KeychainAccess.TestHost;
 
-CODE_SIGNING_REQUIRED[sdk=macosx*] = NO;
 CODE_SIGN_ENTITLEMENTS = TestHost/TestHost.entitlements;
-PROVISIONING_PROFILE[sdk=iphone*] = ;
-PROVISIONING_PROFILE[sdk=appletv*] = ;
+PROVISIONING_PROFILE_SPECIFIER[sdk=iphone*] = iOS Development;
+
+CODE_SIGN_IDENTITY[sdk=macosx*] = Developer ID Application
+PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*] = KeychainAccess Tests
 OTHER_CODE_SIGN_FLAGS[sdk=macosx*] = --deep;
 
 PRINCIPAL_CLASS[sdk=iphone*] = UIApplication;

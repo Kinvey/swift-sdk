@@ -19,12 +19,12 @@ public protocol Persistable: Mappable {
     init()
     
     /// Override this method to tell how to map your own objects.
-    mutating func propertyMapping(map: Map)
+    mutating func propertyMapping(_ map: Map)
     
 }
 
-private func kinveyMappingType(left left: String, right: String) {
-    let currentThread = NSThread.currentThread()
+private func kinveyMappingType(left: String, right: String) {
+    let currentThread = Thread.current
     if var kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
         let className = kinveyMappingType.first?.0,
         var classMapping = kinveyMappingType[className]
@@ -36,55 +36,55 @@ private func kinveyMappingType(left left: String, right: String) {
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T>(inout left: T, right: (String, Map)) {
+public func <- <T>(left: inout T, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T>(inout left: T?, right: (String, Map)) {
+public func <- <T>(left: inout T?, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T>(inout left: T!, right: (String, Map)) {
+public func <- <T>(left: inout T!, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T: Mappable>(inout left: T, right: (String, Map)) {
+public func <- <T: Mappable>(left: inout T, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T: Mappable>(inout left: T?, right: (String, Map)) {
+public func <- <T: Mappable>(left: inout T?, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <T: Mappable>(inout left: T!, right: (String, Map)) {
+public func <- <T: Mappable>(left: inout T!, right: (String, Map)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- right.1
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <Transform: TransformType>(inout left: Transform.Object, right: (String, Map, Transform)) {
+public func <- <Transform: TransformType>(left: inout Transform.Object, right: (String, Map, Transform)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- (right.1, right.2)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <Transform: TransformType>(inout left: Transform.Object?, right: (String, Map, Transform)) {
+public func <- <Transform: TransformType>(left: inout Transform.Object?, right: (String, Map, Transform)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- (right.1, right.2)
 }
 
 /// Override operator used during the `propertyMapping(_:)` method.
-public func <- <Transform: TransformType>(inout left: Transform.Object!, right: (String, Map, Transform)) {
+public func <- <Transform: TransformType>(left: inout Transform.Object!, right: (String, Map, Transform)) {
     kinveyMappingType(left: right.0, right: right.1.currentKey!)
     left <- (right.1, right.2)
 }
@@ -107,11 +107,11 @@ extension Persistable {
     }
     
     static func propertyMapping() -> [String : String] {
-        let currentThread = NSThread.currentThread()
-        let className = StringFromClass(self as! AnyClass)
+        let currentThread = Thread.current
+        let className = StringFromClass(cls: self as! AnyClass)
         currentThread.threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
         let obj = self.init()
-        obj.toJSON()
+        let _ = obj.toJSON()
         if let kinveyMappingType = currentThread.threadDictionary[KinveyMappingTypeKey] as? [String : [String : String]],
             let kinveyMappingClassType = kinveyMappingType[className]
         {
@@ -120,7 +120,7 @@ extension Persistable {
         return [:]
     }
     
-    static func propertyMapping(propertyName: String) -> String? {
+    static func propertyMapping(_ propertyName: String) -> String? {
         return propertyMapping()[propertyName]
     }
     
@@ -140,9 +140,9 @@ extension Persistable {
 
 extension Persistable where Self: NSObject {
     
-    public subscript(key: String) -> AnyObject? {
+    public subscript(key: String) -> Any? {
         get {
-            return self.valueForKey(key)
+            return self.value(forKey: key)
         }
         set {
             self.setValue(newValue, forKey: key)
@@ -151,22 +151,22 @@ extension Persistable where Self: NSObject {
     
     internal var entityId: String? {
         get {
-            return self[self.dynamicType.entityIdProperty()] as? String
+            return self[type(of: self).entityIdProperty()] as? String
         }
         set {
-            self[self.dynamicType.entityIdProperty()] = newValue
+            self[type(of: self).entityIdProperty()] = newValue
         }
     }
     
     internal var acl: Acl? {
         get {
-            if let aclKey = self.dynamicType.aclProperty() {
+            if let aclKey = type(of: self).aclProperty() {
                 return self[aclKey] as? Acl
             }
             return nil
         }
         set {
-            if let aclKey = self.dynamicType.aclProperty() {
+            if let aclKey = type(of: self).aclProperty() {
                 self[aclKey] = newValue
             }
         }
@@ -174,13 +174,13 @@ extension Persistable where Self: NSObject {
     
     internal var metadata: Metadata? {
         get {
-            if let kmdKey = self.dynamicType.metadataProperty() {
+            if let kmdKey = type(of: self).metadataProperty() {
                 return self[kmdKey] as? Metadata
             }
             return nil
         }
         set {
-            if let kmdKey = self.dynamicType.metadataProperty() {
+            if let kmdKey = type(of: self).metadataProperty() {
                 self[kmdKey] = newValue
             }
         }

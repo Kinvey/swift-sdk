@@ -71,12 +71,12 @@ class ObjectTests: TestCase {
 
     func testSharedSchemaUnmanaged() {
         let object = SwiftObject()
-        XCTAssertEqual(object.dynamicType.sharedSchema(), SwiftObject.sharedSchema())
+        XCTAssertEqual(type(of: object).sharedSchema(), SwiftObject.sharedSchema())
     }
 
     func testSharedSchemaManaged() {
         let object = SwiftObject()
-        XCTAssertEqual(object.dynamicType.sharedSchema(), SwiftObject.sharedSchema())
+        XCTAssertEqual(type(of: object).sharedSchema(), SwiftObject.sharedSchema())
     }
 
     func testInvalidated() {
@@ -107,12 +107,49 @@ class ObjectTests: TestCase {
         // swiftlint:enable line_length
     }
 
-    func testPrimaryKey() {
+    func testSchemaHasPrimaryKey() {
         XCTAssertNil(Object.primaryKey(), "primary key should default to nil")
         XCTAssertNil(SwiftStringObject.primaryKey())
         XCTAssertNil(SwiftStringObject().objectSchema.primaryKeyProperty)
         XCTAssertEqual(SwiftPrimaryStringObject.primaryKey()!, "stringCol")
         XCTAssertEqual(SwiftPrimaryStringObject().objectSchema.primaryKeyProperty!.name, "stringCol")
+    }
+
+    func testCannotUpdatePrimaryKey() {
+        let realm = self.realmWithTestPath()
+        let primaryKeyReason = "Primary key can't be changed .*after an object is inserted."
+
+        let intObj = SwiftPrimaryIntObject()
+        intObj.intCol = 1
+        intObj.intCol = 0; // can change primary key unattached
+        XCTAssertEqual(0, intObj.intCol)
+
+        let optionalIntObj = SwiftPrimaryOptionalIntObject()
+        optionalIntObj.intCol.value = 1
+        optionalIntObj.intCol.value = 0; // can change primary key unattached
+        XCTAssertEqual(0, optionalIntObj.intCol.value)
+
+        let stringObj = SwiftPrimaryStringObject()
+        stringObj.stringCol = "a"
+        stringObj.stringCol = "b" // can change primary key unattached
+        XCTAssertEqual("b", stringObj.stringCol)
+
+        try! realm.write {
+            realm.add(intObj)
+            assertThrows(intObj.intCol = 2, reason: primaryKeyReason)
+            assertThrows(intObj["intCol"] = 2, reason: primaryKeyReason)
+            assertThrows(intObj.setValue(2, forKey: "intCol"), reason: primaryKeyReason)
+
+            realm.add(optionalIntObj)
+            assertThrows(optionalIntObj.intCol.value = 2, reason: primaryKeyReason)
+            assertThrows(optionalIntObj["intCol"] = 2, reason: primaryKeyReason)
+            assertThrows(optionalIntObj.setValue(2, forKey: "intCol"), reason: primaryKeyReason)
+
+            realm.add(stringObj)
+            assertThrows(stringObj.stringCol = "c", reason: primaryKeyReason)
+            assertThrows(stringObj["stringCol"] = "c", reason: primaryKeyReason)
+            assertThrows(stringObj.setValue("c", forKey: "stringCol"), reason: primaryKeyReason)
+        }
     }
 
     func testIgnoredProperties() {
@@ -165,11 +202,11 @@ class ObjectTests: TestCase {
             XCTAssertEqual(object.value(forKey: "doubleCol") as! Double!, 12.3)
             XCTAssertEqual(object.value(forKey: "stringCol") as! String!, "a")
 
-            let expected = (object.value(forKey: "binaryCol") as! NSData) as Data
+            let expected = object.value(forKey: "binaryCol") as! Data
             let actual = "a".data(using: String.Encoding.utf8)!
             XCTAssertTrue(expected == actual)
 
-            XCTAssertEqual(object.value(forKey: "dateCol") as! NSDate!, NSDate(timeIntervalSince1970: 1))
+            XCTAssertEqual(object.value(forKey: "dateCol") as! Date!, Date(timeIntervalSince1970: 1))
             XCTAssertEqual((object.value(forKey: "objectCol")! as! SwiftBoolObject).boolCol, false)
             XCTAssert(object.value(forKey: "arrayCol")! is List<SwiftBoolObject>)
         }
@@ -181,8 +218,8 @@ class ObjectTests: TestCase {
         }
     }
 
-    func setAndTestAllTypes(_ setter: (SwiftObject, AnyObject?, String) -> (),
-                            getter: (SwiftObject, String) -> (AnyObject?), object: SwiftObject) {
+    func setAndTestAllTypes(_ setter: (SwiftObject, Any?, String) -> (),
+                            getter: (SwiftObject, String) -> (Any?), object: SwiftObject) {
         setter(object, true, "boolCol")
         XCTAssertEqual(getter(object, "boolCol") as! Bool!, true)
 
@@ -198,12 +235,12 @@ class ObjectTests: TestCase {
         setter(object, "z", "stringCol")
         XCTAssertEqual(getter(object, "stringCol") as! String!, "z")
 
-        setter(object, "z".data(using: String.Encoding.utf8), "binaryCol")
-        let gotData = (getter(object, "binaryCol") as! NSData) as Data
+        setter(object, "z".data(using: String.Encoding.utf8)! as Data, "binaryCol")
+        let gotData = getter(object, "binaryCol") as! Data
         XCTAssertTrue(gotData == "z".data(using: String.Encoding.utf8)!)
 
-        setter(object, NSDate(timeIntervalSince1970: 333), "dateCol")
-        XCTAssertEqual(getter(object, "dateCol") as! NSDate!, NSDate(timeIntervalSince1970: 333))
+        setter(object, Date(timeIntervalSince1970: 333), "dateCol")
+        XCTAssertEqual(getter(object, "dateCol") as! Date!, Date(timeIntervalSince1970: 333))
 
         let boolObject = SwiftBoolObject(value: [true])
         setter(object, boolObject, "objectCol")
@@ -225,8 +262,8 @@ class ObjectTests: TestCase {
         XCTAssertEqual((getter(object, "arrayCol") as! List<SwiftBoolObject>).first!, boolObject)
     }
 
-    func dynamicSetAndTestAllTypes(_ setter: (DynamicObject, AnyObject?, String) -> (),
-                                   getter: (DynamicObject, String) -> (AnyObject?), object: DynamicObject,
+    func dynamicSetAndTestAllTypes(_ setter: (DynamicObject, Any?, String) -> (),
+                                   getter: (DynamicObject, String) -> (Any?), object: DynamicObject,
                                    boolObject: DynamicObject) {
         setter(object, true, "boolCol")
         XCTAssertEqual((getter(object, "boolCol") as! Bool), true)
@@ -243,16 +280,16 @@ class ObjectTests: TestCase {
         setter(object, "z", "stringCol")
         XCTAssertEqual((getter(object, "stringCol") as! String), "z")
 
-        setter(object, "z".data(using: String.Encoding.utf8), "binaryCol")
-        let gotData = (getter(object, "binaryCol") as! NSData) as Data
+        setter(object, "z".data(using: String.Encoding.utf8)! as Data, "binaryCol")
+        let gotData = getter(object, "binaryCol") as! Data
         XCTAssertTrue(gotData == "z".data(using: String.Encoding.utf8)!)
 
-        setter(object, NSDate(timeIntervalSince1970: 333), "dateCol")
-        XCTAssertEqual((getter(object, "dateCol") as! NSDate), NSDate(timeIntervalSince1970: 333))
+        setter(object, Date(timeIntervalSince1970: 333), "dateCol")
+        XCTAssertEqual((getter(object, "dateCol") as! Date), Date(timeIntervalSince1970: 333))
 
         setter(object, boolObject, "objectCol")
         XCTAssertEqual((getter(object, "objectCol") as! DynamicObject), boolObject)
-        XCTAssertEqual(((getter(object, "objectCol") as! DynamicObject)["boolCol"] as! NSNumber), true as NSNumber)
+        XCTAssertEqual(((getter(object, "objectCol") as! DynamicObject)["boolCol"] as! Bool), true)
 
         setter(object, [boolObject], "arrayCol")
         XCTAssertEqual((getter(object, "arrayCol") as! List<DynamicObject>).count, 1)
@@ -269,7 +306,7 @@ class ObjectTests: TestCase {
     }
 
     // Yields a read-write migration `SwiftObject` to the given block
-    private func withMigrationObject(block: ((MigrationObject, Migration) -> ())) {
+    private func withMigrationObject(block: @escaping ((MigrationObject, Migration) -> ())) {
         autoreleasepool {
             let realm = self.realmWithTestPath()
             try! realm.write {
@@ -292,11 +329,11 @@ class ObjectTests: TestCase {
     }
 
     func testSetValueForKey() {
-        let setter: (Object, AnyObject?, String) -> () = { object, value, key in
+        let setter: (Object, Any?, String) -> () = { object, value, key in
             object.setValue(value, forKey: key)
             return
         }
-        let getter: (Object, String) -> (AnyObject?) = { object, key in
+        let getter: (Object, String) -> (Any?) = { object, key in
             object.value(forKey: key)
         }
 
@@ -313,11 +350,11 @@ class ObjectTests: TestCase {
     }
 
     func testSubscript() {
-        let setter: (Object, AnyObject?, String) -> () = { object, value, key in
+        let setter: (Object, Any?, String) -> () = { object, value, key in
             object[key] = value
             return
         }
-        let getter: (Object, String) -> (AnyObject?) = { object, key in
+        let getter: (Object, String) -> (Any?) = { object, key in
             object[key]
         }
 
@@ -348,6 +385,25 @@ class ObjectTests: TestCase {
         XCTAssertEqual(dynamicArray[1], str2)
         XCTAssertEqual(arrayObject.dynamicList("intArray").count, 0)
         assertThrows(arrayObject.dynamicList("noSuchList"))
+    }
+
+    func testObjectiveCTypeProperties() {
+        let realm = try! Realm()
+        var object: SwiftObjectiveCTypesObject!
+        let now = NSDate()
+        let data = "fizzbuzz".data(using: .utf8)! as Data as NSData
+        try! realm.write {
+            object = SwiftObjectiveCTypesObject()
+            realm.add(object)
+            object.stringCol = "Hello world!"
+            object.dateCol = now
+            object.dataCol = data
+            object.numCol = 42
+        }
+        XCTAssertEqual("Hello world!", object.stringCol)
+        XCTAssertEqual(now, object.dateCol)
+        XCTAssertEqual(data, object.dataCol)
+        XCTAssertEqual(42, object.numCol)
     }
 }
 
@@ -438,12 +494,49 @@ class ObjectTests: TestCase {
         // swiftlint:enable line_length
     }
 
-    func testPrimaryKey() {
+    func testSchemaHasPrimaryKey() {
         XCTAssertNil(Object.primaryKey(), "primary key should default to nil")
         XCTAssertNil(SwiftStringObject.primaryKey())
         XCTAssertNil(SwiftStringObject().objectSchema.primaryKeyProperty)
         XCTAssertEqual(SwiftPrimaryStringObject.primaryKey()!, "stringCol")
         XCTAssertEqual(SwiftPrimaryStringObject().objectSchema.primaryKeyProperty!.name, "stringCol")
+    }
+
+    func testCannotUpdatePrimaryKey() {
+        let realm = self.realmWithTestPath()
+        let primaryKeyReason = "Primary key can't be changed .*after an object is inserted."
+
+        let intObj = SwiftPrimaryIntObject()
+        intObj.intCol = 1
+        intObj.intCol = 0; // can change primary key unattached
+        XCTAssertEqual(0, intObj.intCol)
+
+        let optionalIntObj = SwiftPrimaryOptionalIntObject()
+        optionalIntObj.intCol.value = 1
+        optionalIntObj.intCol.value = 0; // can change primary key unattached
+        XCTAssertEqual(0, optionalIntObj.intCol.value)
+
+        let stringObj = SwiftPrimaryStringObject()
+        stringObj.stringCol = "a"
+        stringObj.stringCol = "b" // can change primary key unattached
+        XCTAssertEqual("b", stringObj.stringCol)
+
+        try! realm.write {
+            realm.add(intObj)
+            assertThrows(intObj.intCol = 2, reason: primaryKeyReason)
+            assertThrows(intObj["intCol"] = 2, reason: primaryKeyReason)
+            assertThrows(intObj.setValue(2, forKey: "intCol"), reason: primaryKeyReason)
+
+            realm.add(optionalIntObj)
+            assertThrows(optionalIntObj.intCol.value = 2, reason: primaryKeyReason)
+            assertThrows(optionalIntObj["intCol"] = 2, reason: primaryKeyReason)
+            assertThrows(optionalIntObj.setValue(2, forKey: "intCol"), reason: primaryKeyReason)
+
+            realm.add(stringObj)
+            assertThrows(stringObj.stringCol = "c", reason: primaryKeyReason)
+            assertThrows(stringObj["stringCol"] = "c", reason: primaryKeyReason)
+            assertThrows(stringObj.setValue("c", forKey: "stringCol"), reason: primaryKeyReason)
+        }
     }
 
     func testIgnoredProperties() {

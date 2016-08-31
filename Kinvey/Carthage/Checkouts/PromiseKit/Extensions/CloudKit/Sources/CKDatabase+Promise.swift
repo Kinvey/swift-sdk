@@ -53,15 +53,6 @@ extension CKDatabase {
         return PromiseKit.wrap { perform(query, inZoneWith: zoneID, completionHandler: $0) }
     }
 
-    /// Searches the specified zone asynchronously for records that match the query parameters.
-    public func perform(_ query: CKQuery, inZoneWith zoneID: CKRecordZoneID? = nil) -> Promise<CKRecord?> {
-        return PromiseKit.wrap { resolve in
-            perform(query, inZoneWith: zoneID) { records, error in
-                resolve(records?.first, error)
-            }
-        }
-    }
-
     /// Fetches the record for the current user.
     public func fetchUserRecord(_ container: CKContainer = CKContainer.default()) -> Promise<CKRecord> {
         return container.fetchUserRecordID().then(on: zalgo) { uid -> Promise<CKRecord> in

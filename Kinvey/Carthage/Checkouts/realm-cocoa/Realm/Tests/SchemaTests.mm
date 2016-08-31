@@ -22,11 +22,16 @@
 
 #import "RLMAccessor.h"
 #import "RLMObjectSchema_Private.hpp"
+#import "RLMObject_Private.h"
 #import "RLMProperty_Private.h"
-#import "RLMRealmConfiguration_Private.h"
+#import "RLMRealmConfiguration_Private.hpp"
 #import "RLMRealm_Dynamic.h"
+#import "RLMRealm_Private.hpp"
 #import "RLMSchema_Private.hpp"
+#import "RLMUtil.hpp"
 #import "schema.hpp"
+
+#import <realm/table.hpp>
 
 #import <algorithm>
 #import <objc/runtime.h>
@@ -395,7 +400,7 @@ RLM_ARRAY_TYPE(NotARealClass)
     schema.objectSchema = objectSchema;
 
     // create realm with schema
-    [self realmWithTestPathAndSchema:schema];
+    @autoreleasepool { [self realmWithTestPathAndSchema:schema]; }
 
     // get dynamic realm and extract schema
     RLMRealm *realm = [self realmWithTestPathAndSchema:nil];
@@ -590,7 +595,7 @@ RLM_ARRAY_TYPE(NotARealClass)
     RLMSchema *schema = [[RLMSchema alloc] init];
     schema.objectSchema = @[objectSchema];
     RLMAssertThrowsWithReasonMatching([self realmWithTestPathAndSchema:schema],
-                                      @".*Can't index property.*double.*");
+                                      @"Property 'UnindexableProperty.unindexable' of type 'double' cannot be indexed");
 }
 
 - (void)testClassWithRequiredNullableProperties {
@@ -637,7 +642,7 @@ RLM_ARRAY_TYPE(NotARealClass)
     RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
     config.customSchema = [RLMSchema schemaWithObjectClasses:@[ InvalidLinkingObjectsPropertyMissingSourcePropertyOfLink.class ]];
     RLMAssertThrowsWithReasonMatching([RLMRealm realmWithConfiguration:config error:nil],
-                                      @"Property '.*nosuchproperty' .* origin of linking objects property '.*linkingObjects' does not exist");
+                                      @"Property 'InvalidLinkingObjectsPropertyMissingSourcePropertyOfLink.nosuchproperty' declared as origin of linking objects property 'InvalidLinkingObjectsPropertyMissingSourcePropertyOfLink.linkingObjects' does not exist");
 }
 
 - (void)testClassWithInvalidLinkingObjectsPropertySourcePropertyNotALink {
@@ -645,7 +650,7 @@ RLM_ARRAY_TYPE(NotARealClass)
     RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
     config.customSchema = [RLMSchema schemaWithObjectClasses:@[ InvalidLinkingObjectsPropertySourcePropertyNotALink.class ]];
     RLMAssertThrowsWithReasonMatching([RLMRealm realmWithConfiguration:config error:nil],
-                                      @"Property '.*integer' .* origin of linking objects property '.*linkingObjects' is not a link");
+                                      @"Property 'InvalidLinkingObjectsPropertySourcePropertyNotALink.integer' declared as origin of linking objects property 'InvalidLinkingObjectsPropertySourcePropertyNotALink.linkingObjects' is not a link");
 }
 
 - (void)testClassWithInvalidLinkingObjectsPropertySourcePropertysLinkElsewhere {
@@ -653,7 +658,7 @@ RLM_ARRAY_TYPE(NotARealClass)
     RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
     config.customSchema = [RLMSchema schemaWithObjectClasses:@[ InvalidLinkingObjectsPropertySourcePropertyLinksElsewhere.class, IntObject.class ]];
     RLMAssertThrowsWithReasonMatching([RLMRealm realmWithConfiguration:config error:nil],
-                                      @"Property '.*link' .* origin of linking objects property '.*linkingObjects' links to a different class");
+                                      @"Property 'InvalidLinkingObjectsPropertySourcePropertyLinksElsewhere.link' declared as origin of linking objects property 'InvalidLinkingObjectsPropertySourcePropertyLinksElsewhere.linkingObjects' links to type 'IntObject'");
 }
 
 - (void)testMixedIsRejected {
@@ -726,6 +731,24 @@ RLM_ARRAY_TYPE(NotARealClass)
     XCTAssertEqualObjects(@"NumberObject", [[[[NumberObject alloc] init] objectSchema] className]);
     // Verify that child class doesn't use the parent class's schema
     XCTAssertEqualObjects(@"NumberDefaultsObject", [[[[NumberDefaultsObject alloc] init] objectSchema] className]);
+}
+
+- (void)testCreateUnmanagedObjectWithUninitializedSchema {
+    if (self.isParent) {
+        RLMRunChildAndWait();
+        return;
+    }
+    XCTAssertTrue(RLMSchema.partialSharedSchema.objectSchema.count == 0);
+    XCTAssertNoThrow([[IntObject alloc] initWithValue:@[@0]]);
+}
+
+- (void)testCreateUnmanagedObjectWithNestedObjectWithUninitializedSchema {
+    if (self.isParent) {
+        RLMRunChildAndWait();
+        return;
+    }
+    XCTAssertTrue(RLMSchema.partialSharedSchema.objectSchema.count == 0);
+    XCTAssertNoThrow([[IntegerArrayPropertyObject alloc] initWithValue:(@[@0, @[@[@0]]])]);
 }
 
 - (void)testMultipleProcessesTryingToInitializeSchema {
@@ -921,6 +944,57 @@ RLM_ARRAY_TYPE(NotARealClass)
 
     // Should have been left in a sensible state after the errors
     XCTAssertEqual(1, [[IntObject allObjectsInRealm:realm].firstObject intCol]);
+}
+
+- (void)testInsertingColumnsInBackgroundProcess {
+    RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
+    config.schemaMode = realm::SchemaMode::Additive;
+    if (!self.isParent) {
+        config.dynamic = true;
+        RLMRealm *realm = [RLMRealm realmWithConfiguration:config error:nil];
+        [realm beginWriteTransaction];
+        realm->_info[@"IntObject"].table()->insert_column(0, realm::type_String, "col");
+        [realm commitWriteTransaction];
+        return;
+    }
+
+    RLMRealm *realm = [RLMRealm realmWithConfiguration:config error:nil];
+    [realm transactionWithBlock:^{
+        [IntObject createInRealm:realm withValue:@[@5]];
+    }];
+
+    RLMRunChildAndWait();
+    XCTAssertEqual(5, [[IntObject allObjectsInRealm:realm].firstObject intCol]);
+    XCTAssertEqual(1U, [IntObject objectsInRealm:realm where:@"intCol = 5"].count);
+
+    __block IntObject *io = [IntObject new];
+    io.intCol = 6;
+    [realm transactionWithBlock:^{ [realm addObject:io]; }];
+    XCTAssertEqual(io.intCol, 6);
+    XCTAssertEqualObjects(io[@"intCol"], @6);
+
+    [realm transactionWithBlock:^{ io = [IntObject createInRealm:realm withValue:@[@7]]; }];
+    XCTAssertEqual(io.intCol, 7);
+
+    [realm transactionWithBlock:^{ io = [IntObject createInRealm:realm withValue:@{@"intCol": @8}]; }];
+    XCTAssertEqual(io.intCol, 8);
+
+    [realm transactionWithBlock:^{ io.intCol = 9; }];
+    XCTAssertEqual(io.intCol, 9);
+
+    [realm transactionWithBlock:^{ io[@"intCol"] = @10; }];
+    XCTAssertEqual(io.intCol, 10);
+
+    // Create query, add column, run query
+    RLMResults *query = [IntObject objectsInRealm:realm where:@"intCol > 5"];
+    RLMRunChildAndWait();
+    XCTAssertEqual(query.count, 3U);
+
+    // Create query, create TV, add column, reevaluate query
+    query = [IntObject objectsInRealm:realm where:@"intCol > 5"];
+    (void)[query lastObject];
+    RLMRunChildAndWait();
+    XCTAssertEqual(query.count, 3U);
 }
 #endif
 
