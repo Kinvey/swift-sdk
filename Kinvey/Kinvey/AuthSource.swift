@@ -14,18 +14,18 @@ import Foundation
 public enum AuthSource: String {
 
     /// Facebook social identity
-    case Facebook = "facebook"
+    case facebook = "facebook"
     
     /// Twitter social identity
-    case Twitter = "twitter"
+    case twitter = "twitter"
     
     /// Google+ social identity
-    case GooglePlus = "google"
+    case googlePlus = "google"
     
     /// LinkedIn social identity
-    case LinkedIn = "linkedIn"
+    case linkedIn = "linkedIn"
     
     /// Kinvey MIC social identity
-    case Kinvey = "kinveyAuth"
+    case kinvey = "kinveyAuth"
     
 }

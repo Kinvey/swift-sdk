@@ -12,9 +12,9 @@ import XCTest
 class EncryptedDataStoreTestCase: StoreTestCase {
     
     lazy var filePath: NSString = {
-        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         var filePath = paths.first! as NSString
-        filePath = filePath.stringByAppendingPathComponent("com.kinvey.\(appInitialize.appKey)_cache.realm")
+        filePath = filePath.appendingPathComponent("com.kinvey.\(appInitialize.appKey)_cache.realm") as NSString
         return filePath
     }()
     
@@ -29,7 +29,7 @@ class EncryptedDataStoreTestCase: StoreTestCase {
     func testEncryptedDataStore() {
         signUp()
         
-        store = DataStore<Person>.collection(.Network, client: client)
+        store = DataStore<Person>.collection(.network, client: client)
         
         save(newPerson)
     }
@@ -42,15 +42,15 @@ class EncryptedDataStoreTestCase: StoreTestCase {
         deleteAllDocumentFiles()
     }
     
-    private func deleteAllDocumentFiles() {
-        let fileManager = NSFileManager.defaultManager()
+    fileprivate func deleteAllDocumentFiles() {
+        let fileManager = FileManager.default
         
-        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         if let path = paths.first {
-            let url = NSURL(fileURLWithPath: path)
-            for url in try! fileManager.contentsOfDirectoryAtURL(url, includingPropertiesForKeys: [], options: [.SkipsSubdirectoryDescendants, .SkipsHiddenFiles]) {
-                if fileManager.fileExistsAtPath(url.path!) {
-                    try! fileManager.removeItemAtURL(url)
+            let url = URL(fileURLWithPath: path)
+            for url in try! fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: [], options: [.skipsSubdirectoryDescendants, .skipsHiddenFiles]) {
+                if fileManager.fileExists(atPath: url.path) {
+                    try! fileManager.removeItem(at: url)
                 }
             }
         }

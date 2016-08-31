@@ -1,4 +1,3 @@
-import PromiseKit
 import Bolts
 
 extension Promise {
@@ -39,3 +38,7 @@ extension Promise {
 //        }
 //    }
 //}
+
+#if !COCOAPODS
+import PromiseKit
+#endif

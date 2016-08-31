@@ -22,7 +22,7 @@ class DirectoryEntry: Entity {
         return "HelixProjectDirectory"
     }
     
-    override func propertyMapping(map: Map) {
+    override func propertyMapping(_ map: Map) {
         super.propertyMapping(map)
         
         uniqueId <- map[PersistableIdKey]

@@ -9,7 +9,7 @@
 import Foundation
 import RealmSwift
 
-class RealmSync<T: Persistable where T: NSObject>: Sync<T> {
+class RealmSync<T: Persistable>: Sync<T> where T: NSObject {
     
     let realm: Realm
     let objectSchema: ObjectSchema
@@ -18,32 +18,36 @@ class RealmSync<T: Persistable where T: NSObject>: Sync<T> {
     
     lazy var entityType = T.self as! Entity.Type
     
-    required init(persistenceId: String, filePath: String? = nil, encryptionKey: NSData? = nil) {
+    required init(persistenceId: String, filePath: String? = nil, encryptionKey: Data? = nil) {
         if !(T.self is Entity.Type) {
             preconditionFailure("\(T.self) needs to be a Entity")
         }
         var configuration = Realm.Configuration()
         if let filePath = filePath {
-            configuration.fileURL = NSURL(fileURLWithPath: filePath)
+            configuration.fileURL = URL(fileURLWithPath: filePath)
         }
         configuration.encryptionKey = encryptionKey
         realm = try! Realm(configuration: configuration)
-        let className = NSStringFromClass(T.self).componentsSeparatedByString(".").last!
+        let className = NSStringFromClass(T.self).components(separatedBy: ".").last!
         objectSchema = realm.schema[className]!
         propertyNames = objectSchema.properties.map { return $0.name }
         executor = Executor()
 //        print("\(realm.configuration.fileURL!.path!)")
         super.init(persistenceId: persistenceId)
     }
+
+    required init(persistenceId: String) {
+        fatalError("init(persistenceId:) has not been implemented")
+    }
     
-    override func createPendingOperation(request: NSURLRequest, objectId: String?) -> RealmPendingOperation {
+    override func createPendingOperation(_ request: URLRequest, objectId: String?) -> RealmPendingOperation {
         return RealmPendingOperation(request: request, collectionName: T.collectionName(), objectId: objectId)
     }
     
-    override func savePendingOperation(pendingOperation: RealmPendingOperation) {
+    override func savePendingOperation(_ pendingOperation: RealmPendingOperation) {
         executor.executeAndWait {
             try! self.realm.write {
-                self.realm.create(RealmPendingOperation.self, value: pendingOperation, update: true)
+                self.realm.createObject(ofType: RealmPendingOperation.self, populatedWith: pendingOperation, update: true)
             }
         }
     }
@@ -52,19 +56,19 @@ class RealmSync<T: Persistable where T: NSObject>: Sync<T> {
         return pendingOperations(nil)
     }
     
-    override func pendingOperations(objectId: String?) -> Results<RealmPendingOperation> {
+    override func pendingOperations(_ objectId: String?) -> Results<RealmPendingOperation> {
         var results: Results<RealmPendingOperation>?
         executor.executeAndWait {
-            var realmResults = self.realm.objects(RealmPendingOperation.self)
+            var realmResults = self.realm.allObjects(ofType: RealmPendingOperation.self)
             if let objectId = objectId {
-                realmResults = realmResults.filter("objectId == %@", objectId)
+                realmResults = realmResults.filter(using: "objectId == %@", objectId)
             }
             results = Results(realmResults)
         }
         return results!
     }
     
-    override func removePendingOperation(pendingOperation: RealmPendingOperation) {
+    override func removePendingOperation(_ pendingOperation: RealmPendingOperation) {
         executor.executeAndWait {
             try! self.realm.write {
                 self.realm.delete(pendingOperation)
@@ -76,12 +80,12 @@ class RealmSync<T: Persistable where T: NSObject>: Sync<T> {
         removeAllPendingOperations(nil)
     }
     
-    override func removeAllPendingOperations(objectId: String?) {
+    override func removeAllPendingOperations(_ objectId: String?) {
         executor.executeAndWait {
             try! self.realm.write {
-                var realmResults = self.realm.objects(RealmPendingOperation.self)
+                var realmResults = self.realm.allObjects(ofType: RealmPendingOperation.self)
                 if let objectId = objectId {
-                    realmResults = realmResults.filter("objectId == %@", objectId)
+                    realmResults = realmResults.filter(using: "objectId == %@", objectId)
                 }
                 self.realm.delete(realmResults)
             }

@@ -15,11 +15,11 @@ class RealmFileCache: FileCache {
     let realm: Realm
     let executor: Executor
     
-    init(persistenceId: String, filePath: String? = nil, encryptionKey: NSData? = nil, schemaVersion: UInt64) {
+    init(persistenceId: String, filePath: String? = nil, encryptionKey: Data? = nil, schemaVersion: UInt64) {
         self.persistenceId = persistenceId
         var configuration = Realm.Configuration()
         if let filePath = filePath {
-            configuration.fileURL = NSURL(fileURLWithPath: filePath)
+            configuration.fileURL = URL(fileURLWithPath: filePath)
         }
         configuration.encryptionKey = encryptionKey
         configuration.schemaVersion = schemaVersion
@@ -34,27 +34,27 @@ class RealmFileCache: FileCache {
         executor = Executor()
     }
     
-    func save(file: File, beforeSave: (() -> Void)?) {
+    func save(_ file: File, beforeSave: (() -> Void)?) {
         executor.executeAndWait {
             try! self.realm.write {
                 beforeSave?()
-                self.realm.create(File.self, value: file, update: true)
+                self.realm.createObject(ofType: File.self, populatedWith: file, update: true)
             }
         }
     }
     
-    func remove(file: File) {
+    func remove(_ file: File) {
         executor.executeAndWait {
             try! self.realm.write {
-                if let fileId = file.fileId, let file = self.realm.objectForPrimaryKey(File.self, key: fileId) {
+                if let fileId = file.fileId, let file = self.realm.object(ofType: File.self, forPrimaryKey: fileId) {
                     self.realm.delete(file)
                 }
                 
                 if let path = file.path {
-                    let fileManager = NSFileManager.defaultManager()
-                    if fileManager.fileExistsAtPath(path) {
+                    let fileManager = FileManager.default
+                    if fileManager.fileExists(atPath: path) {
                         do {
-                            try NSFileManager.defaultManager().removeItemAtPath((path as NSString).stringByExpandingTildeInPath)
+                            try FileManager.default.removeItem(atPath: (path as NSString).expandingTildeInPath)
                         } catch {
                             //ignore possible errors if for any reason is not possible to delete the file
                         }
@@ -64,11 +64,11 @@ class RealmFileCache: FileCache {
         }
     }
     
-    func get(fileId: String) -> File? {
+    func get(_ fileId: String) -> File? {
         var file: File? = nil
         
         executor.executeAndWait {
-            file = self.realm.objectForPrimaryKey(File.self, key: fileId)
+            file = self.realm.object(ofType: File.self, forPrimaryKey: fileId)
         }
         
         return file

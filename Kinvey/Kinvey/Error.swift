@@ -9,7 +9,7 @@
 import Foundation
 
 /// Enum that contains all error types in the library.
-public enum Error: ErrorType {
+public enum Error: Swift.Error {
     
     /// Constant for 401 responses where the credentials are not enough to complete the request.
     public static let InsufficientCredentials = "InsufficientCredentials"
@@ -18,43 +18,43 @@ public enum Error: ErrorType {
     public static let InvalidCredentials = "InvalidCredentials"
     
     /// Error where Object ID is required.
-    case ObjectIdMissing
+    case objectIdMissing
     
     /// Error when a method is not allowed, usually when you are using a Data Link Connector (DLC).
-    case MethodNotAllowed(debug: String, description: String)
+    case methodNotAllowed(debug: String, description: String)
     
     /// Error when a Data Link endpoint is not found, usually when you are using a Data Link Connector (DLC).
-    case DataLinkEntityNotFound(debug: String, description: String)
+    case dataLinkEntityNotFound(debug: String, description: String)
     
     /// Error when the type is unknow.
-    case UnknownError(error: String)
+    case unknownError(error: String)
     
     /// Error when the type is unknow.
-    case UnknownJsonError(json: [String : AnyObject])
+    case unknownJsonError(json: [String : Any])
     
     /// Error when a Invalid Response coming from the backend.
-    case InvalidResponse
+    case invalidResponse
     
     /// Error when a Unauthorized Response coming from the backend.
-    case Unauthorized(error: String, description: String)
+    case unauthorized(error: String, description: String)
     
     /// Error when calls a method that requires an active user.
-    case NoActiveUser
+    case noActiveUser
     
     /// Error when a request was cancelled.
-    case RequestCancelled
+    case requestCancelled
     
     /// Error when a request reached a timeout.
-    case RequestTimeout
+    case requestTimeout
     
     /// Error when calls a method not available for a specific data store type.
-    case InvalidDataStoreType
+    case invalidDataStoreType
     
     /// Invalid operation
-    case InvalidOperation(description: String)
+    case invalidOperation(description: String)
     
     /// Error when a `User` doen't have an email or username.
-    case UserWithoutEmailOrUsername
+    case userWithoutEmailOrUsername
     
     var error: NSError {
         get {
@@ -65,11 +65,11 @@ public enum Error: ErrorType {
     /// Error localized description.
     public var localizedDescription: String {
         get {
-            let bundle = NSBundle(forClass: Client.self)
+            let bundle = Bundle(for: Client.self)
             switch self {
-            case .Unauthorized(_, let description):
+            case .unauthorized(_, let description):
                 return description
-            case .InvalidOperation(let description):
+            case .invalidOperation(let description):
                 return description
             default:
                 return NSLocalizedString("Error.\(self)", bundle: bundle, comment: "")
@@ -77,24 +77,24 @@ public enum Error: ErrorType {
         }
     }
     
-    static func buildUnknownError(error: String) -> Error {
-        return UnknownError(error: error)
+    static func buildUnknownError(_ error: String) -> Error {
+        return unknownError(error: error)
     }
     
-    static func buildUnknownJsonError(json: [String : AnyObject]) -> Error {
-        return UnknownJsonError(json: json)
+    static func buildUnknownJsonError(_ json: [String : Any]) -> Error {
+        return unknownJsonError(json: json)
     }
     
-    static func buildDataLinkEntityNotFound(json: [String : String]) -> Error {
-        return DataLinkEntityNotFound(debug: json["debug"]!, description: json["description"]!)
+    static func buildDataLinkEntityNotFound(_ json: [String : String]) -> Error {
+        return dataLinkEntityNotFound(debug: json["debug"]!, description: json["description"]!)
     }
     
-    static func buildMethodNotAllowed(json: [String : String]) -> Error {
-        return MethodNotAllowed(debug: json["debug"]!, description: json["description"]!)
+    static func buildMethodNotAllowed(_ json: [String : String]) -> Error {
+        return methodNotAllowed(debug: json["debug"]!, description: json["description"]!)
     }
     
-    static func buildUnauthorized(json: [String : String]) -> Error {
-        return Unauthorized(error: json["error"]!, description: json["description"]!)
+    static func buildUnauthorized(_ json: [String : String]) -> Error {
+        return unauthorized(error: json["error"]!, description: json["description"]!)
     }
     
 }

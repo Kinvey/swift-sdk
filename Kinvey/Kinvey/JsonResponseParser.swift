@@ -16,17 +16,17 @@ class JsonResponseParser: ResponseParser {
         self.client = client
     }
     
-    func parseArray(data: NSData?) -> [JsonDictionary]? {
-        if let data = data where data.length > 0 {
-            let result = try? NSJSONSerialization.JSONObjectWithData(data, options: []) as! [JsonDictionary]
+    func parseArray(_ data: Data?) -> [JsonDictionary]? {
+        if let data = data , data.count > 0 {
+            let result = try? JSONSerialization.jsonObject(with: data, options: []) as! [JsonDictionary]
             return result
         }
         return nil
     }
     
-    func parse(data: NSData?) -> JsonDictionary? {
-        if let data = data where data.length > 0,
-            let result = try? NSJSONSerialization.JSONObjectWithData(data, options: []) as? JsonDictionary,
+    func parse(_ data: Data?) -> JsonDictionary? {
+        if let data = data , data.count > 0,
+            let result = try? JSONSerialization.jsonObject(with: data, options: []) as? JsonDictionary,
             let json = result
         {
             return json
@@ -34,16 +34,16 @@ class JsonResponseParser: ResponseParser {
         return nil
     }
     
-    private func parseUser<U: User>(json: JsonDictionary, userType: U.Type) -> U? {
-        let map = Map(mappingType: .FromJSON, JSONDictionary: json)
-        let user = userType.init(map)
-        user?.mapping(map)
+    fileprivate func parseUser<U: User>(_ json: JsonDictionary, userType: U.Type) -> U? {
+        let map = Map(mappingType: .fromJSON, JSON: json)
+        let user = userType.init(map: map)
+        user?.mapping(map: map)
         return user
     }
     
-    func parseUser(data: NSData?) -> User? {
-        if let data = data where data.length > 0,
-            let result = try? NSJSONSerialization.JSONObjectWithData(data, options: []) as? JsonDictionary,
+    func parseUser(_ data: Data?) -> User? {
+        if let data = data , data.count > 0,
+            let result = try? JSONSerialization.jsonObject(with: data, options: []) as? JsonDictionary,
             let json = result
         {
             let user = parseUser(json, userType: client.userType)
@@ -52,9 +52,9 @@ class JsonResponseParser: ResponseParser {
         return nil
     }
     
-    func parseUsers(data: NSData?) -> [User]? {
-        if let data = data where data.length > 0,
-            let result = try? NSJSONSerialization.JSONObjectWithData(data, options: []) as? [JsonDictionary],
+    func parseUsers(_ data: Data?) -> [User]? {
+        if let data = data , data.count > 0,
+            let result = try? JSONSerialization.jsonObject(with: data, options: []) as? [JsonDictionary],
             let jsonArray = result
         {
             var users = [User]()

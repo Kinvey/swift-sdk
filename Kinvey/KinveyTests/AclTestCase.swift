@@ -14,15 +14,15 @@ class AclTestCase: StoreTestCase {
     func testNoPermissionToDelete() {
         signUp()
         
-        store = DataStore<Person>.collection(.Network)
+        store = DataStore<Person>.collection(.network)
         
         let person = save(newPerson)
         
         signUp()
         
-        store = DataStore<Person>.collection(.Network)
+        store = DataStore<Person>.collection(.network)
         
-        weak var expectationRemove = expectationWithDescription("Remove")
+        weak var expectationRemove = expectation(description: "Remove")
         
         try! store.remove(person) { (count, error) -> Void in
             self.assertThread()
@@ -32,7 +32,7 @@ class AclTestCase: StoreTestCase {
             
             if let error = error as? Kinvey.Error {
                 switch error {
-                case .Unauthorized(let error, _):
+                case .unauthorized(let error, _):
                     XCTAssertEqual(error, Kinvey.Error.InsufficientCredentials)
                 default:
                     XCTFail()
@@ -42,7 +42,7 @@ class AclTestCase: StoreTestCase {
             expectationRemove?.fulfill()
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
+        waitForExpectations(timeout: defaultTimeout) { error in
             expectationRemove = nil
         }
     }
@@ -50,73 +50,83 @@ class AclTestCase: StoreTestCase {
     func testNoPermissionToDeletePush() {
         signUp()
         
-        store = DataStore<Person>.collection(.Network)
+        store = DataStore<Person>.collection(.network)
         
         let person = save(newPerson)
         
         signUp()
         
-        store = DataStore<Person>.collection(.Sync)
+        store = DataStore<Person>.collection(.sync)
         
-        weak var expectationFind = expectationWithDescription("Find")
-        
-        store.find(person.personId!, readPolicy: .ForceNetwork) { person, error in
-            self.assertThread()
-            XCTAssertNotNil(person)
-            XCTAssertNil(error)
+        do {
+            weak var expectationFind = expectation(description: "Find")
             
-            expectationFind?.fulfill()
-        }
-        
-        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
-            expectationFind = nil
-        }
-        
-        weak var expectationRemove = expectationWithDescription("Remove")
-        
-        try! store.remove(person) { (count, error) -> Void in
-            self.assertThread()
-            XCTAssertNotNil(count)
-            XCTAssertNil(error)
-            
-            expectationRemove?.fulfill()
-        }
-        
-        waitForExpectationsWithTimeout(defaultTimeout) { error in
-            expectationRemove = nil
-        }
-        
-        weak var expectationPush = expectationWithDescription("Push")
-        
-        store.push() { count, errors in
-            self.assertThread()
-            XCTAssertEqual(count, 0)
-            XCTAssertNotNil(errors)
-            
-            if let errors = errors {
-                XCTAssertNotNil(errors.first as? Kinvey.Error)
-                if let error = errors.first as? Kinvey.Error {
-                    switch error {
-                    case .Unauthorized(let error, _):
-                        XCTAssertEqual(error, Kinvey.Error.InsufficientCredentials)
-                    default:
-                        XCTFail()
-                    }
-                }
+            store.find(person.personId!, readPolicy: .forceNetwork) { person, error in
+                self.assertThread()
+                XCTAssertNotNil(person)
+                XCTAssertNil(error)
+                
+                expectationFind?.fulfill()
             }
             
-            expectationPush?.fulfill()
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationFind = nil
+            }
         }
         
-        waitForExpectationsWithTimeout(defaultTimeout) { (error) in
-            expectationPush = nil
+        XCTAssertEqual(store.syncCount(), 0)
+        
+        do {
+            weak var expectationRemove = expectation(description: "Remove")
+            
+            try! store.remove(person) { (count, error) -> Void in
+                self.assertThread()
+                XCTAssertNotNil(count)
+                XCTAssertNil(error)
+                
+                expectationRemove?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { error in
+                expectationRemove = nil
+            }
+        }
+        
+        XCTAssertEqual(store.syncCount(), 1)
+        
+        do {
+            weak var expectationPush = expectation(description: "Push")
+            
+            store.push() { count, errors in
+                self.assertThread()
+                XCTAssertEqual(count, 0)
+                XCTAssertNotNil(errors)
+                
+                if let errors = errors {
+                    XCTAssertNotNil(errors.first as? Kinvey.Error)
+                    if let error = errors.first as? Kinvey.Error {
+                        switch error {
+                        case .unauthorized(let error, _):
+                            XCTAssertEqual(error, Kinvey.Error.InsufficientCredentials)
+                        default:
+                            XCTFail()
+                        }
+                    }
+                }
+                
+                expectationPush?.fulfill()
+            }
+            
+            waitForExpectations(timeout: defaultTimeout) { (error) in
+                expectationPush = nil
+            }
         }
     }
     
     func testGlobalRead() {
         signUp()
         
-        store = DataStore<Person>.collection(.Network)
+        store = DataStore<Person>.collection(.network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, globalRead: true)
@@ -124,7 +134,7 @@ class AclTestCase: StoreTestCase {
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
             store.find(personId) { person, error in
                 XCTAssertNotNil(person)
@@ -143,7 +153,7 @@ class AclTestCase: StoreTestCase {
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationFind = nil
             }
         }
@@ -152,7 +162,7 @@ class AclTestCase: StoreTestCase {
     func testGlobalWrite() {
         signUp()
         
-        store = DataStore<Person>.collection(.Network)
+        store = DataStore<Person>.collection(.network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, globalWrite: true)
@@ -160,7 +170,7 @@ class AclTestCase: StoreTestCase {
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
             store.find(personId) { person, error in
                 XCTAssertNotNil(person)
@@ -179,7 +189,7 @@ class AclTestCase: StoreTestCase {
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationFind = nil
             }
         }
@@ -195,7 +205,7 @@ class AclTestCase: StoreTestCase {
         
         signUp()
         
-        store = DataStore<Person>.collection(.Network)
+        store = DataStore<Person>.collection(.network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, readers: [user.userId])
@@ -204,7 +214,7 @@ class AclTestCase: StoreTestCase {
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
             store.find(personId) { person, error in
                 XCTAssertNotNil(person)
@@ -223,7 +233,7 @@ class AclTestCase: StoreTestCase {
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationFind = nil
             }
         }
@@ -239,7 +249,7 @@ class AclTestCase: StoreTestCase {
         
         signUp()
         
-        store = DataStore<Person>.collection(.Network)
+        store = DataStore<Person>.collection(.network)
         
         let newPerson = self.newPerson
         newPerson.acl = Acl(creator: sharedClient.activeUser!.userId, writers: [user.userId])
@@ -247,7 +257,7 @@ class AclTestCase: StoreTestCase {
         
         XCTAssertNotNil(person.personId)
         if let personId = person.personId {
-            weak var expectationFind = expectationWithDescription("Find")
+            weak var expectationFind = expectation(description: "Find")
             
             store.find(personId) { person, error in
                 XCTAssertNotNil(person)
@@ -266,7 +276,7 @@ class AclTestCase: StoreTestCase {
                 expectationFind?.fulfill()
             }
             
-            waitForExpectationsWithTimeout(defaultTimeout) { (error) in
+            waitForExpectations(timeout: defaultTimeout) { (error) in
                 expectationFind = nil
             }
         }

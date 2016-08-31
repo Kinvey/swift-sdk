@@ -12,19 +12,22 @@ import RealmSwift
 
 internal func StringFromClass(cls: AnyClass) -> String {
     var className = NSStringFromClass(cls)
-    while className.hasPrefix("RLMStandalone_") || className.hasPrefix("RLMUnmanaged_") {
+    let regex = try! NSRegularExpression(pattern: "RLM.+_.+") // regex to catch Realm classnames like `RLMStandalone_`, `RLMUnmanaged_` or `RLMAccessor_`
+    var nMatches = regex.numberOfMatches(in: className, range: NSRange(location: 0, length: className.characters.count))
+    while nMatches > 0 {
         let classObj: AnyClass! = NSClassFromString(className)!
         let superClass: AnyClass! = class_getSuperclass(classObj)
         className = NSStringFromClass(superClass)
+        nMatches = regex.numberOfMatches(in: className, range: NSRange(location: 0, length: className.characters.count))
     }
     return className
 }
 
 /// Base class for entity classes that are mapped to a collection in Kinvey.
-public class Entity: Object, Persistable, BuilderType {
+open class Entity: Object, Persistable {
     
     /// Override this method and return the name of the collection for Kinvey.
-    public class func collectionName() -> String {
+    open class func collectionName() -> String {
         preconditionFailure("Method \(#function) must be overridden")
     }
     
@@ -38,7 +41,7 @@ public class Entity: Object, Persistable, BuilderType {
     public dynamic var acl: Acl?
     
     /// Constructor that validates if the map contains the required fields.
-    public required init?(_ map: Map) {
+    public required init?(map: Map) {
         super.init()
     }
     
@@ -59,12 +62,12 @@ public class Entity: Object, Persistable, BuilderType {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public required init(value: AnyObject, schema: RLMSchema) {
+    public required init(value: Any, schema: RLMSchema) {
         super.init(value: value, schema: schema)
     }
     
     /// Override this method to tell how to map your own objects.
-    public func propertyMapping(map: Map) {
+    open func propertyMapping(_ map: Map) {
         entityId <- ("entityId", map[PersistableIdKey])
         metadata <- ("metadata", map[PersistableMetadataKey])
         acl <- ("acl", map[PersistableAclKey])
@@ -74,7 +77,7 @@ public class Entity: Object, Persistable, BuilderType {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public override class func primaryKey() -> String? {
+    open override class func primaryKey() -> String? {
         return entityIdProperty()
     }
     
@@ -82,7 +85,7 @@ public class Entity: Object, Persistable, BuilderType {
      WARNING: This is an internal initializer not intended for public use.
      :nodoc:
      */
-    public override class func ignoredProperties() -> [String] {
+    open override class func ignoredProperties() -> [String] {
         var properties = [String]()
         for property in ObjCRuntime.properties(self) {
             if !(ObjCRuntime.type(property.1, isSubtypeOf: NSDate.self) ||
@@ -101,17 +104,17 @@ public class Entity: Object, Persistable, BuilderType {
     
     /// This function is where all variable mappings should occur. It is executed by Mapper during the mapping (serialization and deserialization) process.
     public func mapping(map: Map) {
-        let originalThread = NSThread.currentThread()
+        let originalThread = Thread.current
         let runningMapping = originalThread.threadDictionary[KinveyMappingTypeKey] != nil
         if runningMapping {
-            let operationQueue = NSOperationQueue()
+            let operationQueue = OperationQueue()
             operationQueue.name = "Kinvey Property Mapping"
             operationQueue.maxConcurrentOperationCount = 1
-            operationQueue.addOperationWithBlock {
-                let className = StringFromClass(self.dynamicType)
-                NSThread.currentThread().threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
+            operationQueue.addOperation {
+                let className = StringFromClass(cls: type(of: self))
+                Thread.current.threadDictionary[KinveyMappingTypeKey] = [className : [String : String]()]
                 self.propertyMapping(map)
-                originalThread.threadDictionary[KinveyMappingTypeKey] = NSThread.currentThread().threadDictionary[KinveyMappingTypeKey]
+                originalThread.threadDictionary[KinveyMappingTypeKey] = Thread.current.threadDictionary[KinveyMappingTypeKey]
             }
             operationQueue.waitUntilAllOperationsAreFinished()
         } else {

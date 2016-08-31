@@ -3,7 +3,7 @@ osx_image: xcode8
 
 env:
   - ACTION=test PLATFORM=Mac DESTINATION='platform=OS X'
-  - ACTION=test PLATFORM=iOS DESTINATION='platform=iOS Simulator,name=iPhone 6S' UUID='703928AC-3599-4D74-B70C-7AF137553954'
+  - ACTION=test PLATFORM=iOS DESTINATION='platform=iOS Simulator,name=iPhone 6S' UUID='7FC06F6D-AF72-4B38-9A96-1F934EA2E27F'
 
 install:
   - carthage bootstrap --platform $PLATFORM

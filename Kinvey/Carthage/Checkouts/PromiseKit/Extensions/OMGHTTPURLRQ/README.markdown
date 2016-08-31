@@ -2,7 +2,30 @@
 
 This project provides convenience methods on NSURLSession using [OMGHTTPURLRQ].
 
-## CococaPods
+## Usage
+
+```swift
+URLSession.shared.POST(url, formData: params).then { data -> Void in
+    // by default you just get the raw `Data`
+}
+
+URLSession.shared.GET(url).asDictionary().then { json -> Void in
+    // call `asDictionary()` to have the result decoded
+    // as JSON with the result being an `NSDictionary`
+    // the promise is rejected if the JSON can not be
+    // decoded or the resulting object is not a dictionary
+}
+
+URLSession.shared.PUT(url, json: params).asArray().then { json -> Void in
+    // json: NSArray
+}
+
+URLSession.shared.DELETE(url).asString().then { string -> Void in
+    // string: String
+}
+```
+
+## CocoaPods
 
 ```ruby
 pod "PromiseKit/OMGHTTPURLRQ" ~> 4.0

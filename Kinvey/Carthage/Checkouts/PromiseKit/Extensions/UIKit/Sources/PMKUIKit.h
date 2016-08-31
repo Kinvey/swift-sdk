@@ -1,2 +1,2 @@
-#import <PMKUIKit/UIView+AnyPromise.h>
-#import <PMKUIKit/UIViewController+AnyPromise.h>
+#import "UIView+AnyPromise.h"
+#import "UIViewController+AnyPromise.h"

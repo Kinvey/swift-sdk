@@ -9,9 +9,9 @@
 import Foundation
 import RealmSwift
 
-class Results<T: Object>: NSFastEnumeration, CollectionType {
+class Results<T: Object>: NSFastEnumeration, Collection {
     
-    typealias Generator = RealmSwift.Results<T>.Generator
+    typealias Iterator = RealmSwift.Results<T>.Iterator
     typealias SubSequence = RealmSwift.Results<T>.SubSequence
     typealias Index = RealmSwift.Results<T>.Index
     typealias _Element = RealmSwift.Results<T>._Element
@@ -26,8 +26,8 @@ class Results<T: Object>: NSFastEnumeration, CollectionType {
         return results.count
     }
     
-    @objc func countByEnumeratingWithState(state: UnsafeMutablePointer<NSFastEnumerationState>, objects buffer: AutoreleasingUnsafeMutablePointer<AnyObject?>, count len: Int) -> Int {
-        return results.countByEnumeratingWithState(state, objects: buffer, count: len)
+    func countByEnumerating(with state: UnsafeMutablePointer<NSFastEnumerationState>, objects buffer: AutoreleasingUnsafeMutablePointer<AnyObject?>, count len: Int) -> Int {
+        return results.countByEnumerating(with: state, objects: buffer, count: len)
     }
     
     var startIndex: Index {
@@ -48,8 +48,8 @@ class Results<T: Object>: NSFastEnumeration, CollectionType {
         }
     }
     
-    func generate() -> Generator {
-        return results.generate()
+    func makeIterator() -> Iterator {
+        return results.makeIterator()
     }
     
     subscript (bounds: Range<Index>) -> SubSequence {
@@ -58,16 +58,16 @@ class Results<T: Object>: NSFastEnumeration, CollectionType {
         }
     }
     
-    func prefixUpTo(end: Index) -> SubSequence {
-        return results.prefixUpTo(end)
+    func prefix(upTo end: Index) -> SubSequence {
+        return results.prefix(upTo: end)
     }
     
-    func suffixFrom(start: Index) -> SubSequence {
-        return results.suffixFrom(start)
+    func suffix(from start: Index) -> SubSequence {
+        return results.suffix(from: start)
     }
     
-    func prefixThrough(position: Index) -> SubSequence {
-        return results.prefixThrough(position)
+    func prefix(through position: Index) -> SubSequence {
+        return results.prefix(through: position)
     }
     
     var isEmpty: Bool {
@@ -76,10 +76,19 @@ class Results<T: Object>: NSFastEnumeration, CollectionType {
         }
     }
     
-    var first: Generator.Element? {
+    var first: Iterator.Element? {
         get {
             return results.first
         }
+    }
+    
+    /// Returns the position immediately after the given index.
+    ///
+    /// - Parameter i: A valid index of the collection. `i` must be less than
+    ///   `endIndex`.
+    /// - Returns: The index value immediately after `i`.
+    public func index(after i: Int) -> Int {
+        return results.index(after: i)
     }
     
 }

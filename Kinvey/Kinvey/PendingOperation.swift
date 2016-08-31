@@ -12,6 +12,6 @@ internal protocol PendingOperationType {
     
     var objectId: String? { get }
     
-    func buildRequest() -> NSMutableURLRequest
+    func buildRequest() -> URLRequest
     
 }

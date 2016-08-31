@@ -12,23 +12,23 @@ import Foundation
 public enum StoreType {
     
     /// Ready to work completly offline and synchronize with the server manually calling methods like `pull`, `push`, `sync` (push + pull) and `purge`.
-    case Sync
+    case sync
     
     /// Callbacks will be called twice, the 1st call will return data from the local cache in the device and the 2nd call will return the most recent data from the backend.
-    case Cache
+    case cache
     
     /// Guaranteed that all the data returned will be the most recent data from the backend.
-    case Network
+    case network
     
     var readPolicy: ReadPolicy {
         get {
             switch self {
-            case .Cache:
-                return .Both
-            case .Network:
-                return .ForceNetwork
-            case .Sync:
-                return .ForceLocal
+            case .cache:
+                return .both
+            case .network:
+                return .forceNetwork
+            case .sync:
+                return .forceLocal
             }
         }
     }
@@ -36,12 +36,12 @@ public enum StoreType {
     var writePolicy: WritePolicy {
         get {
             switch self {
-            case .Cache:
-                return .LocalThenNetwork
-            case .Network:
-                return .ForceNetwork
-            case .Sync:
-                return .ForceLocal
+            case .cache:
+                return .localThenNetwork
+            case .network:
+                return .forceNetwork
+            case .sync:
+                return .forceLocal
             }
         }
     }
