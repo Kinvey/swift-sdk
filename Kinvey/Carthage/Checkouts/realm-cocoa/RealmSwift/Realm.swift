@@ -1134,9 +1134,9 @@ public final class Realm {
     public func addNotificationBlock(block: NotificationBlock) -> NotificationToken {
         return rlmRealm.addNotificationBlock { rlmNotification, _ in
             switch rlmNotification {
-            case RLMRealmDidChangeNotification:
+            case DidChange:
                 block(notification: .DidChange, realm: self)
-            case RLMRealmRefreshRequiredNotification:
+            case RefreshRequired:
                 block(notification: .RefreshRequired, realm: self)
             default:
                 fatalError("Unhandled notification type: \(rlmNotification)")

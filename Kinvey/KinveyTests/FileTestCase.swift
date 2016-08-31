@@ -459,7 +459,7 @@ class FileTestCase: StoreTestCase {
         self.file = file
         let data = "Hello".dataUsingEncoding(NSUTF8StringEncoding)!
         
-        let path = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent("upload").path!
+        let path = NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent("upload")!.path!
         XCTAssertTrue(data.writeToFile(path, atomically: true))
         
         do {

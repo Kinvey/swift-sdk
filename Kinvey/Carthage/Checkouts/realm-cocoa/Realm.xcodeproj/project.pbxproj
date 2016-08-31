@@ -2110,6 +2110,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5D660FBD1BE98BEF0021E04F /* RealmSwift.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -2117,6 +2118,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5D660FBD1BE98BEF0021E04F /* RealmSwift.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
@@ -2124,6 +2126,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5D660FC01BE98BEF0021E04F /* Tests.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -2131,6 +2134,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5D660FC01BE98BEF0021E04F /* Tests.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
