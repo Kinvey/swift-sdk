@@ -105,7 +105,7 @@ internal enum Endpoint {
         case .BlobUpload(let client, let fileId, let tls):
             return BlobDownload(client: client, fileId: fileId, query: nil, tls: tls, ttlInSeconds: nil).url()
         case .BlobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
-            let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")")!.absoluteString
+            let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")")!.absoluteString!
             
             var queryParams = [String : String]()
             
