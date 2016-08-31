@@ -272,11 +272,11 @@ public class FileStore {
                             {
                                 do {
                                     var baseFolderURL = NSURL(fileURLWithPath: baseFolder)
-                                    baseFolderURL = baseFolderURL.URLByAppendingPathComponent(self.client.appKey!).URLByAppendingPathComponent("files")
+                                    baseFolderURL = baseFolderURL.URLByAppendingPathComponent(self.client.appKey!)!.URLByAppendingPathComponent("files")!
                                     if !fileManager.fileExistsAtPath(baseFolderURL.path!) {
                                         try fileManager.createDirectoryAtURL(baseFolderURL, withIntermediateDirectories: true, attributes: nil)
                                     }
-                                    let toURL = baseFolderURL.URLByAppendingPathComponent(fileId)
+                                    let toURL = baseFolderURL.URLByAppendingPathComponent(fileId)!
                                     if let path = toURL.path where fileManager.fileExistsAtPath(path) {
                                         do {
                                             try fileManager.removeItemAtPath(path)

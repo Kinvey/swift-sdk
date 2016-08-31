@@ -432,7 +432,7 @@ public class User: NSObject, Credential, Mappable {
     public class func presentMICViewController(redirectURI redirectURI: NSURL, timeout: NSTimeInterval = 0, forceUIWebView: Bool = false, client: Client = Kinvey.sharedClient, completionHandler: UserHandler? = nil) {
         precondition(client.isInitialized(), "Client is not initialized. Call Kinvey.sharedClient.initialize(...) to initialize the client before attempting to log in.")
 
-        let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString, timeout: timeout) { (kcsUser, error, actionResult) in
+        let micVC = KCSMICLoginViewController(redirectURI: redirectURI.absoluteString!, timeout: timeout) { (kcsUser, error, actionResult) in
             onMicLoginComplete(user: kcsUser, error: error, actionResult: actionResult, client: client, completionHandler: completionHandler)
         }
         if forceUIWebView {
