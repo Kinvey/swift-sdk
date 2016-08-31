@@ -105,7 +105,7 @@ internal enum Endpoint {
         case .BlobUpload(let client, let fileId, let tls):
             return BlobDownload(client: client, fileId: fileId, query: nil, tls: tls, ttlInSeconds: nil).url()
         case .BlobDownload(let client, let fileId, let query, let tls, let ttlInSeconds):
-            let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")")!.absoluteString!
+            let url = client.apiHostName.URLByAppendingPathComponent("/blob/\(client.appKey!)/\(fileId ?? "")")!.absoluteString
             
             var queryParams = [String : String]()
             
@@ -122,11 +122,7 @@ internal enum Endpoint {
                     queryParams[key] = value
                 }
             }
-            
-            if queryParams.count > 0 {
-                return NSURL(string: "\(url)?\(queryParams.urlQueryEncoded)")!
-            }
-            return NSURL(string: url)!
+            return NSURL(string: url!)!
         case .BlobByQuery(let client, let query):
             return BlobDownload(client: client, fileId: nil, query: query, tls: true, ttlInSeconds: nil).url()
         case .URL(let url):
