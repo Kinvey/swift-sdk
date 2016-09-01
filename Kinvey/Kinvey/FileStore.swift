@@ -142,7 +142,7 @@ public class FileStore {
                 } else if let fromFile = fromFile,
                     let path = fromFile.path,
                     let attrs = try? NSFileManager.defaultManager().attributesOfItemAtPath((path as NSString).stringByExpandingTildeInPath),
-                    let fileSize = attrs[NSFileSize] as? UInt64
+                    let fileSize = attrs[NSFileSize] as? UInt
                 {
                     request.setValue("bytes */\(fileSize)", forHTTPHeaderField: "Content-Range")
                 }

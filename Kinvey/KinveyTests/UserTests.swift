@@ -1096,14 +1096,6 @@ class UserTests: KinveyTestCase {
                     expectationSubmitForm = nil
                 }
             }
-            
-            expectationLogin = expectationWithDescription("Login")
-            
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
-                expectationLogin = nil
-            }
-            
-            find()
         } else {
             XCTFail()
         }
@@ -1195,14 +1187,6 @@ class UserTests: KinveyTestCase {
                     expectationSubmitForm = nil
                 }
             }
-            
-            expectationLogin = expectationWithDescription("Login")
-            
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
-                expectationLogin = nil
-            }
-            
-            find()
         } else {
             XCTFail()
         }
@@ -1257,14 +1241,6 @@ class UserTests: KinveyTestCase {
                 webView.stringByEvaluatingJavaScriptFromString("document.getElementById('ping-password').value = 'Zse45rfv'")
                 webView.stringByEvaluatingJavaScriptFromString("document.getElementById('userpass').submit()")
             }
-            
-            expectationLogin = expectationWithDescription("Login")
-            
-            waitForExpectationsWithTimeout(defaultTimeout) { error in
-                expectationLogin = nil
-            }
-            
-            find()
         } else {
             XCTFail()
         }
@@ -1419,7 +1395,7 @@ class UserTests: KinveyTestCase {
                 case 1:
                     XCTAssertEqual(request.URL!.absoluteString, tempLoginUri)
                     let redirectRequest = NSURLRequest(URL: NSURL(string: "micauthgrantflow://?code=\(code)")!)
-                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 302, HTTPVersion: "HTTP/1.1", headerFields: ["Location" : redirectRequest.URL!.absoluteString])!
+                    let response = NSHTTPURLResponse(URL: request.URL!, statusCode: 302, HTTPVersion: "HTTP/1.1", headerFields: ["Location" : redirectRequest.URL!.absoluteString!])!
                     client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: .NotAllowed)
                     client?.URLProtocol(self, wasRedirectedToRequest: redirectRequest, redirectResponse: response)
                     let data = "Found. Redirecting to micauthgrantflow://?code=\(code)".dataUsingEncoding(NSUTF8StringEncoding)!
